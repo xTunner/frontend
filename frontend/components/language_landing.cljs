@@ -46,7 +46,7 @@
                                         :title "Operations Engineer @Kickstarter"}]}
                 "python" {:language "Python"
                         :headline "CircleCI makes Continous Integration and Deployment for Python projects a breeze."
-                        :logo-path "/img/outer/languages/ruby-logo.svg"
+                        :logo-path "/img/outer/languages/python-logo.svg"
                         :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
                                     :title "Built For Ruby"
                                     :icon "/img/outer/languages/gear-icon.svg"}
@@ -61,6 +61,31 @@
                                         :img "/img/outer/languages/olivier.jpg"
                                         :author "Olivier Melcher"
                                         :title "Developer @PasswordBox"}
+                                       {:text "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure."
+                                        :img "/assets/img/outer/stories/john.jpg"
+                                        :author "John Duff"
+                                        :title "Director of Engineering @Shopify"}
+                                       {:text "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. CircleCI's customer support is outstanding. We get quick, thorough answers to all our questions."
+                                        :img "/img/outer/languages/aaron.jpg"
+                                        :author "Aaron Suggs"
+                                        :title "Operations Engineer @Kickstarter"}]}
+                "node" {:language "Node"
+                        :headline "CircleCI makes Continous Integration and Deployment for Node.js projects a breeze."
+                        :logo-path "/img/outer/languages/node-logo.svg"
+                        :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
+                                    :title "Built For Ruby"
+                                    :icon "/img/outer/languages/gear-icon.svg"}
+                                   {:feature "Circle manages all your database requirements for your, such as running your rake commands for creating, loading, and migrating your database. We have pre-installed more than a dozen databases and queues, including PostgreSQL, MySQL, and MongoDB. You can also add custom database commands via your circle.yml."
+                                    :title "Database Management"
+                                    :icon "/img/outer/languages/file-icon.svg"}
+                                   {:feature "For the majority of Ruby projects no configuration is required; you just run your builds on CircleCI and it works! CircleCI will automatically infer your test commands if you're using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha."
+                                    :title "Inference That Just Works"
+                                    :icon "/img/outer/languages/book-icon.svg"}]
+                        :docs-link "/docs/language-ruby-on-rails"
+                        :testimonials [{:text "I was up and running in CircleCI with Node in literally minutes.  It guessed the correct settings and was running my tests before I even understood what was happening.  Later when we needed more fine grained control it was very easy to grow into greater customization with our integrations.  CircleCI has transformed our testing and deployment process, and allowed us to develop and deploy much faster."
+                                        :img "/img/outer/languages/ben.jpg"
+                                        :author "Ben Bernard"
+                                        :title "CTO @FieldBook"}
                                        {:text "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure."
                                         :img "/assets/img/outer/stories/john.jpg"
                                         :author "John Duff"
