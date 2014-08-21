@@ -47,9 +47,7 @@
   [:div#hero
    [:div.container
     [:h1 "Ship better code, faster"]
-    (if (:top_copy ab-tests)
       [:h3 "CircleCI gives web developers powerful Continuous Integration and Deployment with easy setup and maintenance."]
-      [:h3 "CircleCI is Continuous Integration and Delivery for modern web development."])
     [:div.how.row-fluid
        hero-graphic]
     [:div.row-fluid
