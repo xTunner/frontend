@@ -11,10 +11,3 @@
     (-> (goog.net.jsloader.load "//connect.facebook.net/en_US/fbds.js")
         (.addCallback track-conversion)))
   
-  
-  
-  
-  
-  
-  
-  
