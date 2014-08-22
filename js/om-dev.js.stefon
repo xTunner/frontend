@@ -27,5 +27,5 @@
 
   "stefon-hack-for-om.coffee.ref"
 
-  "../../components/react/react.js"
+  "../../components/react/react-with-addons.js"
 ]
