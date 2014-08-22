@@ -33,6 +33,7 @@
   (mixpanel/track "View Build" (merge {:running (build-model/running? build)
                                        :build-num (:build_num build)
                                        :vcs-url (vcs-url/project-name (:vcs_url build))
+                                       :oss (boolean (:oss build))
                                        :outcome (:outcome build)}
                                       (when (:stop_time build)
                                         {:elapsed_hours (/ (- (.getTime (js/Date.))
