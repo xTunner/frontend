@@ -1,0 +1,33 @@
+[
+ ;; all of the resources we need to build the app, except for the compiled app code
+  "../vendor/console-shim.js" ;; TODO: necessary?
+  "../../components/jquery/jquery.js" ;; TODO: used by ab-tests
+  "../../components/jquery.cookie/jquery.cookie.js" ;; TODO: used by ab-tests
+  "../../components/jquery-placeholder/jquery.placeholder.js" ;; TODO: necessary?
+  "../../components/viewport-units-buggyfill/viewport-units-buggyfill.js" ;; temporary until apple releases a fix
+  "../../components/uri.js/src/URI.min.js" ;; TODO: necessary?
+  "../../components/knockout/build/output/knockout-latest.js" ;; TODO: used by ab-tests
+  "../../components/underscore/underscore.js" ;; TODO: used by CI.terminal
+
+  "bootstrap.js.stefon" ;; TODO: replace with the om version
+
+  "../vendor/md5.js" ;; TODO: necessary? used by ab-tests
+  "../vendor/stickyMojo.js" ;; TODO: what do we use this for?
+
+  "module_setup.coffee" ;; necessary, for now
+  "libs/" ;; TODO: trim the libs we don't need
+  "inner/_obj.coffee"
+  "inner/config_diagnostic.coffee"
+
+  "../views/outer/docs/"
+  "../views/shared/contact_us.hamlc"
+  "outer/versions.coffee"
+
+  "ab_test_definitions.coffee" ;; TODO: necessary, convert to clojurescript
+
+  "stefon-hack-for-om.coffee.ref"
+
+  "../../components/react/react.min.js"
+  "../../public/cljs/production/frontend.js"
+  "setup-frontend.coffee"
+]
