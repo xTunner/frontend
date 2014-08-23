@@ -30,6 +30,7 @@
             [frontend.components.common :as common]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.seq :refer [dissoc-in]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [ankha.core :as ankha])
@@ -85,14 +86,16 @@
               restore-state! #(put! controls-ch [:state-restored])
               dom-com (dominant-component app)
               show-inspector? (get-in app state/show-inspector-path)
-              logged-in? (get-in app state/user-path)]
+              logged-in? (get-in app state/user-path)
+              ;; simple optimzation for real-time updates when the build is running
+              app-without-container-data (dissoc-in app state/container-data-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (if inner? "inner" "outer")}
-              (om/build keyq/KeyboardHandler app
+              (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
               (when show-inspector?
@@ -100,9 +103,9 @@
                 ;;     expanding all datastructures.
                 (om/build inspector/inspector app))
               (when (and inner? logged-in?)
-                (om/build aside/aside app))
+                (om/build aside/aside app-without-container-data))
               [:main.app-main {:tab-index 1}
-               (om/build header/header app)
+               (om/build header/header app-without-container-data)
                [:div.main-body
                 (om/build dom-com app)]
                [:footer.main-foot
