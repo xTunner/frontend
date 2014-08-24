@@ -1,5 +1,6 @@
 [
- ;; all of the resources we need to build the app, except for the compiled app code
+ ;; all of the resources we need to build the app
+ ;; EXCEPT FOR the compiled app code
   "../vendor/console-shim.js" ;; TODO: necessary?
   "../../components/jquery/jquery.js" ;; TODO: used by ab-tests
   "../../components/jquery.cookie/jquery.cookie.js" ;; TODO: used by ab-tests
