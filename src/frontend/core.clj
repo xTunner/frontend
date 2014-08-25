@@ -18,4 +18,4 @@
   "Starts the server that will serve the assets when visiting circle with ?use-local-assets=true"
   []
   (println "starting server on port 8080")
-  (httpkit/run-server (stefon/asset-pipeline (site #'routes) stefon-options) {:port 8082}))
+  (httpkit/run-server (stefon/asset-pipeline (site #'routes) stefon-options) {:port 8080}))
