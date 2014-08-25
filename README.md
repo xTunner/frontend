@@ -1,14 +1,49 @@
-# frontend
+# CircleCI's frontend
 
-A Clojure library designed to ... well, that part is up to you.
+This is an open-source mirror of the code that is running [CircleCI's](https://circleci.com) frontend. CircleCI provides powerful Continuous Integration and Deployment with easy setup and maintenance.
+
+Feel free to fork and make contributions. We'll try to get them into the main application.
 
 ## Usage
 
-FIXME
+First, start the server that will serve the compiled assets:
 
-## License
+```
+lein run
+```
 
-Copyright © 2014 FIXME
+That will start a server on port 8080.
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+In your `/etc/hosts`, add the following line:
+
+```
+127.0.0.1 circlehost
+```
+
+That will let you use your locally compiled assets on https://circleci.com.
+
+
+Next, compile the frontend clojurescript assets:
+
+```
+lein cljsbuild auto whitespace
+```
+
+We'll use the whitespace profile so that it produces a single javascript file.
+
+
+Download all of the 3rd-party javascript dependencies. Requires bower (`npm install -g bower`):
+
+```
+bower install
+```
+
+To test that everything worked, visit [http://circlehost:8080/assets/css/app.css.less](http://circlehost:8080/assets/css/app.css.less) and [http://circlehost:8080/assets/js/om-whitespace.js.stefon](http://circlehost:8080/assets/js/om-whitespace.js.stefon) in your browser.
+
+Now you should have everything you need to start hacking on Circle's frontend!
+
+Visit [https://circleci.com?use-local-assets=true&om-build-id=whitespace](https://circleci.com?use-local-assets=true&om-build-id=whitespace) in Chrome. You'll see a page with the text "Help". You'll need to click the shield in the URL bar and click "Load unsafe script".
+
+If everything worked properly, you should see the normal CircleCI website. If things didn't work properly, please open an issue.
+
+To get back to the website using the default assets, visit [https://circleci.com?use-local-assets=false&om-build-id=production](https://circleci.com?use-local-assets=false&om-build-id=production).
