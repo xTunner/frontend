@@ -9,7 +9,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.docs :as doc-utils]
-            [goog.string :as gstring])
+            [goog.string :as gstring]
+            [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
                    [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -92,7 +93,7 @@
                    (string/replace #"^-" "") ; don't let first or last be dashes
                    (string/replace #"-$" "")))]
       (dommy/set-html! heading
-                       (goog.string/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
+                       (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
 
 (defn markdown [markdown]
   (om/component
