@@ -30,14 +30,38 @@
 (defn container-id [container]
   (int (last (re-find #"container_(\d+)" (.-id container)))))
 
+
+(defn extract-from
+  "Extract data from a nested map. Returns a new nested map comprising only the
+  nested keys from `path`.
+
+  user=> (extract-from nil nil)
+  nil
+  user=> (extract-from nil [])
+  nil
+  user=> (extract-from nil [:a])
+  nil
+  user=> (extract-from {} [:a])
+  nil
+  user=> (extract-from {:a 1} [:a])
+  {:a 1}
+  user=> (extract-from {:a {:b {:c 1}}, :d 2} [:a :b])
+  {:a {:b {:c 1}}}"
+  [m path]
+  (when (seq path)
+    (let [sentinel (js-obj)
+          value (get-in m path sentinel)]
+      (when-not (identical? value sentinel)
+        (assoc-in {} path value)))))
+
 (defn merge-settings
   "Merge new settings from inputs over a subset of project settings."
-  [path project settings]
-  (letfn [(merge-existing [settings-value & args]
-            (utils/deep-merge (get-in project path) settings-value))]
-    (if path
-      (update-in settings path merge-existing)
-      settings)))
+  [paths project settings]
+  (letfn []
+    (if (not (seq paths))
+      settings
+      (utils/deep-merge (apply merge {} (map (partial extract-from project) paths))
+                        settings))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -518,13 +542,13 @@
   ;; The settings posted to the settings API will be:
   ;;   {:aws {:keypair {:access_key_id "new key id"
   ;;                    :secret_access_key "secret key"}}}
-  [target message {:keys [project-id merge-path]} previous-state current-state]
+  [target message {:keys [project-id merge-paths]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         comms (get-in current-state [:comms])
         uuid frontend.async/*uuid*
         inputs (get-in current-state state/inputs-path)
         project (get-in current-state state/project-path)
-        settings (merge-settings merge-path project inputs)]
+        settings (merge-settings merge-paths project inputs)]
     (go
      (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
        (if (= :success (:status api-result))

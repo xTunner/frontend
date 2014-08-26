@@ -586,7 +586,10 @@
               :data-loading-text "Saving",
               :value "Save notification hooks",
               :type "submit",
-              :on-click #(do (put! controls-ch [:saved-project-settings {:project-id project-id}]))}])]])))))
+              :on-click #(do
+                          (let [event-data {:project-id project-id
+                                            :merge-paths (map vector project-model/notification-keys)}]
+                            (put! controls-ch [:saved-project-settings event-data])))}])]])))))
 
 (defn webhooks [project-data owner]
   (om/component
