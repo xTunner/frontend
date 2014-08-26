@@ -91,15 +91,24 @@
 
 
 
-(defn home-button [{:keys [source]} controls-ch]
+(defn home-button [{:keys [source button_copy]} controls-ch]
   [:a.btn.btn-primary.bold-btn {:on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
                                                                                             :properties {:source "hero"}
                                                                                             :path (gh-utils/auth-url)}])
                                 :href (gh-utils/auth-url)
                                 :title "Sign up with GitHub"}
    [:i.fa.fa-github-alt]
-   " Sign up with "
-   [:strong.white "GitHub"]])
+   (if button_copy
+     [:span 
+      " Begin "
+      [:strong.white "Free Trial"]
+      ]
+     [:span 
+      " Sign up with "
+      [:strong.white "GitHub"]
+      ]
+     )])
+
 
 (def invite-form
   [:div#inviteForm.fade.hide.invite-form.modal {:tabIndex "-1",
