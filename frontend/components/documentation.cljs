@@ -53,13 +53,27 @@
                     :type "submit"}
            [:i.fa.fa-search]]])))))
 
-(defrender article-list [data]
+(defrender article-list [articles]
   (html
-   (doc-utils/render-haml-template "article_list" data)))
+   [:ul.article_list
+    (for [article articles]
+      [:li {:id (str "list_entry_" (:slug article))}
+       [:a {:href (:url article)} (:title_with_child_count article)]])]))
 
-(defrender docs-categories [data]
+(defrender docs-category [category]
   (html
-   (doc-utils/render-haml-template "categories" data)))
+   [:ul.articles
+    [:li {:id (str "category_header_" (:slug category))}
+     [:h4
+      [:a {:href (:url category)} (:title category)]]]
+   (for [child (:children category)]
+      [:li {:id (gstring/format "category_entry_%_%" (:slug category) (:slug child))}
+       [:a {:href (:url child)} (:short_title_with_child_count child)]])]))
+
+(defrender docs-categories [categories]
+  (html
+   [:div
+    (om/build-all docs-category categories)]))
 
 (defrender front-page [app owner]
   (let [query-results (get-in app state/docs-articles-results-path)
@@ -82,10 +96,10 @@
        [:h4 "Having problems? Check these sections"]
        [:ul.articles.span4
         [:h4 "Getting started"]
-        (om/build article-list {:article (:gettingstarted docs) :slug true})]
+        (om/build article-list (get-in docs [:gettingstarted :children]))]
        [:ul.articles.span4
         [:h4 "Troubleshooting"]
-        (om/build article-list {:article (:troubleshooting docs) :slug true})]]])))
+        (om/build article-list (get-in docs [:troubleshooting :children]))]]])))
 
 (defn add-link-targets [node]
   (doseq [heading (sel node
@@ -119,7 +133,7 @@
        [:div
         (doc-utils/render-haml-template "docs_title" {:article doc})
         (if-not (empty? (:children doc))
-          (om/build article-list (assoc doc :article doc))
+          (om/build article-list (:children doc))
           (doc-utils/render-haml-template (:slug doc) (assoc doc :article doc)))]))))
 
 (defrender documentation [app owner opts]
@@ -133,7 +147,7 @@
       [:div.container.content
        [:div.row
         [:aside.span3
-         (om/build docs-categories {:categories categories})]
+        (om/build docs-categories categories)]
         [:div.offset1.span8
          (when subpage
            (om/build docs-search app))
