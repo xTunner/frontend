@@ -227,6 +227,49 @@
           (when show-config
             [:div.build-config-string [:pre config-string]])])))))
 
+(defn expected-duration
+  [{:keys [start stop build]} owner opts]
+  (reify
+    om/IDisplayName (display-name [_] "Expected Duration")
+    om/IInitState
+    (init-state [_]
+      {:watcher-uuid (utils/uuid)
+       :now (datetime/server-now)
+       :has-watcher? false})
+    om/IDidMount
+    (did-mount [_]
+      (when-not stop
+        (let [timer-atom (om/get-shared owner [:timer-atom])
+              uuid (om/get-state owner [:watcher-uuid])]
+          (add-watch timer-atom uuid (fn [_k _r _p t]
+                                       (om/set-state! owner [:now] t)))
+          (om/set-state! owner [:has-watcher?] true))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (when (om/get-state owner [:has-watcher?])
+        (remove-watch (om/get-shared owner [:timer-atom])
+                      (om/get-state owner [:watcher-uuid]))))
+
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (and stop (om/get-state owner [:has-watcher?]))
+        (remove-watch (om/get-shared owner [:timer-atom])
+                      (om/get-state owner [:watcher-uuid]))))
+    om/IRenderState
+    (render-state [_ {:keys [now]}]
+      (let [end-ms (if stop
+                     (.getTime (js/Date. stop))
+                     now)
+            formatter (get opts :formatter datetime/as-duration)
+            duration-ms (- end-ms (.getTime (js/Date. start)))
+            previous-build (:previous_successful_build build)
+            past-ms (:build_time_millis previous-build)]
+        (if (and past-ms
+                 (= (:status build) "running")
+                 (< duration-ms (* 1.5 past-ms)))
+          (dom/span nil " / " (formatter past-ms))
+          (dom/span nil ""))))))
+
 (defn build-head [data owner]
   (reify
     om/IRender
@@ -266,11 +309,15 @@
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
+               
                [:th "Duration"]
                [:td (if (build-model/running? build)
                       (om/build common/updating-duration {:start (:start_time build)
                                                           :stop (:stop_time build)})
-                      (build-model/duration build))]]
+                      (build-model/duration build))
+                    (om/build expected-duration {:start (:start_time build)
+                                                :stop (:stop_time build)
+                                                :build build})]]
               [:tr
                [:th "Previous"]
                (if-not (:previous build)
