@@ -53,6 +53,14 @@
                     :type "submit"}
            [:i.fa.fa-search]]])))))
 
+(defrender article-list [data]
+  (html
+   (doc-utils/render-haml-template "article_list" data)))
+
+(defrender docs-categories [data]
+  (html
+   (doc-utils/render-haml-template "categories" data)))
+
 (defrender front-page [app owner]
   (let [query-results (get-in app state/docs-articles-results-path)
         query (get-in app state/docs-articles-results-query-path)
@@ -74,10 +82,10 @@
        [:h4 "Having problems? Check these sections"]
        [:ul.articles.span4
         [:h4 "Getting started"]
-        (doc-utils/render-haml-template "article_list" {:article (:gettingstarted docs) :slug true})]
+        (om/build article-list {:article (:gettingstarted docs) :slug true})]
        [:ul.articles.span4
         [:h4 "Troubleshooting"]
-        (doc-utils/render-haml-template "article_list" {:article (:troubleshooting docs) :slug true})]]])))
+        (om/build article-list {:article (:troubleshooting docs) :slug true})]]])))
 
 (defn add-link-targets [node]
   (doseq [heading (sel node
@@ -111,7 +119,7 @@
        [:div
         (doc-utils/render-haml-template "docs_title" {:article doc})
         (if (:category doc)
-          (doc-utils/render-haml-template "article_list" (assoc doc :article doc))
+          (om/build article-list (assoc doc :article doc))
           (doc-utils/render-haml-template (:slug doc) (assoc doc :article doc)))]))))
 
 (defrender documentation [app owner opts]
@@ -125,7 +133,7 @@
       [:div.container.content
        [:div.row
         [:aside.span3
-         (doc-utils/render-haml-template "categories" {:categories categories})]
+         (om/build docs-categories {:categories categories})]
         [:div.offset1.span8
          (when subpage
            (om/build docs-search app))
