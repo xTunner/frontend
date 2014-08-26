@@ -9,4 +9,3 @@ exports = this
 exports.ab_test_definitions =
   a_is_a: [true, false]
   split_form: [true, false]
-  button_copy: [true, false]
