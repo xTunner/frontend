@@ -118,7 +118,7 @@
       (html
        [:div
         (doc-utils/render-haml-template "docs_title" {:article doc})
-        (if (:category doc)
+        (if-not (empty? (:children doc))
           (om/build article-list (assoc doc :article doc))
           (doc-utils/render-haml-template (:slug doc) (assoc doc :article doc)))]))))
 
