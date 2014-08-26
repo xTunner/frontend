@@ -1,6 +1,8 @@
 (ns frontend.utils.docs
   (:require [clojure.string :as string]
-            [frontend.utils :as utils :include-macros true]))
+            [frontend.utils :as utils :include-macros true]
+            [goog.string :as gstring]
+            goog.string.format))
 
 (defn include-article [template-name]
   ((aget (aget js/window "HAML") template-name)))
@@ -40,9 +42,14 @@
      :children children
      :subtitle (:subtitle props)
      :lastUpdated (:lastUpdated props)
-     :category (:category props)
-     :title_with_child_count (str title (when (seq children) (str " (" (count children) ")")))
-     :short_title_with_child_count (str short-title (when (seq children) (str " (" (count children) ")")))}))
+     :category (:category props)}))
+
+(defn update-child-counts [{:keys [children title ] short-title :sort_title :as info}]
+  (let [child-count (count children)
+        has-children (seq children)
+        title-with-count (if has-children (gstring/format "%s (%d)" title child-count) title)
+        short-title-with-count (if has-children (gstring/format "%s (%d)" short-title child-count) short-title)]
+    (assoc info :title_with_child_count title-with-count :short_title_with_child_count short-title-with-count)))
 
 (defn update-children [docs]
   (reduce (fn [acc [template-name article-info]]
@@ -60,7 +67,7 @@
   (let [docs (reduce (fn [acc [template-name template-fn]]
                        (if (article? template-fn)
                          (let [subpage (->template-kw template-name)]
-                           (assoc acc subpage (article-info template-name template-fn)))
+                           (assoc acc subpage (update-child-counts (article-info template-name template-fn))))
                          acc))
                      {} (js->clj (aget js/window "HAML")))]
     (update-children docs)))
