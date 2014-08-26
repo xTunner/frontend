@@ -40,7 +40,6 @@
      :title title
      :sort_title short-title
      :children children
-     :subtitle (:subtitle props)
      :lastUpdated (:lastUpdated props)
      :category (:category props)}))
 
