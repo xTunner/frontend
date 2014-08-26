@@ -141,7 +141,7 @@
         (om/build docs-title doc)
         (if-not (empty? (:children doc))
           (om/build article-list (:children doc))
-          (doc-utils/render-haml-template (:slug doc) (assoc doc :article doc)))]))))
+          (om/build markdown (:markdown doc)))]))))
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
