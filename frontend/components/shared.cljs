@@ -99,14 +99,8 @@
                                 :title "Sign up with GitHub"}
    [:i.fa.fa-github-alt]
    (if button_copy
-     [:span 
-      " Begin "
-      [:strong.white "Free Trial"]
-      ]
-     [:span 
-      " Sign up with "
-      [:strong.white "GitHub"]
-      ]
+     [:span " Begin " [:strong.white "Free Trial"]]
+     [:span " Sign up with " [:strong.white "GitHub"]]
      )])
 
 
