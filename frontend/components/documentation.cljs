@@ -94,6 +94,10 @@
       (dommy/set-html! heading
                        (goog.string/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
 
+(defn markdown [markdown]
+  (om/component
+   (om/build utils/dangerously-set-inner-html (doc-utils/render-markdown markdown))))
+
 (defn docs-subpage [doc owner]
   (reify
     om/IDidMount

@@ -10,6 +10,10 @@
          #js {"__html"  ((aget (aget js/window "HAML") template-name)
                          (clj->js (merge {"include_article" include-article} args)))}}])
 
+(defn render-markdown [input]
+  (when input
+    (js/marked input)))
+
 (defn new-context []
   (let [context (js/Object.)]
     (aset context "include_article" include-article)

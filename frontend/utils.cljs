@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [put!]]
+            [om.core :as om :include-macros true]
             [ajax.core :as ajax]
             [cljs-time.core :as time]
             [frontend.env :as env]
@@ -12,7 +13,7 @@
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing)])
+  (:require-macros [frontend.utils :refer (inspect timing defrender)])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
@@ -199,3 +200,8 @@
 
 (defn valid-email? [str]
   (.isValidAddrSpec EmailAddress str))
+
+(defrender dangerously-set-inner-html [html]
+  (frontend.utils/html
+   [:span {:dangerouslySetInnerHTML
+           #js {:__html html}}]))
