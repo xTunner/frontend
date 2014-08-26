@@ -12,4 +12,4 @@
     om/IRender
     (render [_]
       (html
-       [:code {:style {:width "450px"}} (om/build ankha/inspector app)]))))
+       [:code {:style {:flex "0 0 40%"}} (om/build ankha/inspector app)]))))
