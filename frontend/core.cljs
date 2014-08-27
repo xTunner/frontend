@@ -270,6 +270,14 @@
 (defn ^:export toggle-admin []
   (swap! debug-state update-in [:current-user :admin] not))
 
+(defn ^:export set-ab-test
+  "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
+  [test-name value]
+  (let [test-path [:ab-tests (keyword (name test-name))]]
+    (println "starting value for" test-name "was" (get-in @debug-state test-path))
+    (swap! debug-state assoc-in test-path value)
+    (println "value for" test-name "is now" (get-in @debug-state test-path))))
+
 (defn reinstall-om! []
   (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state)))
 

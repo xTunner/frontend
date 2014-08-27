@@ -80,41 +80,54 @@
   (when-not (ignore-build-channel? current-state channel-name)
     (frontend.favicon/set-color! (build-model/favicon-color (utils/js->clj-kw data)))))
 
+(defn maybe->vector
+  "Temporary function to handle the old map format while we wait for
+   the pusher changes on the backend to deploy."
+  [coll]
+  (if (sequential? coll)
+    coll
+    (vector coll)))
+
 
 (defmethod ws-event :build/new-action
   [pusher-imp message {:keys [data channel-name]} state]
   (with-swallow-ignored-build-channels state channel-name
-    (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
-      (-> state
-          (build-model/fill-containers container-index action-index)
-          (assoc-in (state/action-path container-index action-index) action-log)
-          (update-in (state/action-path container-index action-index) action-model/format-latest-output)))))
+    (reduce (fn [state {action-index :step container-index :index action-log :log}]
+              (-> state
+                  (build-model/fill-containers container-index action-index)
+                  (assoc-in (state/action-path container-index action-index) action-log)
+                  (update-in (state/action-path container-index action-index) action-model/format-latest-output)))
+            state (maybe->vector (utils/js->clj-kw data)))))
 
 
 (defmethod ws-event :build/update-action
   [pusher-imp message {:keys [data channel-name]} state]
   (with-swallow-ignored-build-channels state channel-name
-    (let [{action-index :step container-index :index action-log :log} (utils/js->clj-kw data)]
-      (-> state
-          (build-model/fill-containers container-index action-index)
-          (update-in (state/action-path container-index action-index) merge action-log)))))
+    (reduce (fn [state {action-index :step container-index :index action-log :log}]
+              (-> state
+                  (build-model/fill-containers container-index action-index)
+                  (update-in (state/action-path container-index action-index) merge action-log)))
+            state (maybe->vector (utils/js->clj-kw data)))))
 
 
 (defmethod ws-event :build/append-action
   [pusher-imp message {:keys [data channel-name]} state]
   (with-swallow-ignored-build-channels state channel-name
-    (let [container-index (aget data "index")
-          action-index (aget data "step")]
-      (if (not= container-index (get-in state state/current-container-path 0))
-        (do (mlog "Ignoring output for inactive container: " container-index)
-            (update-in state (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true))
+    (reduce (fn [state data]
+              (let [container-index (aget data "index")
+                    action-index (aget data "step")]
+                (if (not= container-index (get-in state state/current-container-path 0))
+                  (do (mlog "Ignoring output for inactive container: " container-index)
+                      (update-in state (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true))
 
-        (let [output (utils/js->clj-kw (aget data "out"))]
-          (-> state
-              (build-model/fill-containers container-index action-index)
-              (update-in (state/action-output-path container-index action-index) vec)
-              (update-in (state/action-output-path container-index action-index) conj output)
-              (update-in (state/action-path container-index action-index) action-model/format-latest-output)))))))
+                  (let [output (utils/js->clj-kw (aget data "out"))]
+                    (-> state
+                        (build-model/fill-containers container-index action-index)
+                        (update-in (state/action-output-path container-index action-index) vec)
+                        (update-in (state/action-output-path container-index action-index) conj output)
+                        (update-in (state/action-path container-index action-index) action-model/format-latest-output))))))
+            ;; TODO: can remove and replace with just data when backend change fully deploy
+            state (if (aget data "index") [data] data))))
 
 
 (defmethod ws-event :build/add-messages
