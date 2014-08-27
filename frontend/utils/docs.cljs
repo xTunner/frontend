@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
-            goog.string.format))
+            goog.string.format
+            [frontend.state :as state]))
 
 (defn include-article [template-name]
   ((aget (aget js/window "HAML") template-name)))
@@ -107,3 +108,6 @@
     "reference-api" "api"
     "reference-api#build" "api#build"
     token))
+
+(defn load-docs-manifest! [state]
+  (swap! state assoc-in state/docs-data-path (find-all-docs)))

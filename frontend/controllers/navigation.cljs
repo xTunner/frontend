@@ -417,3 +417,9 @@
     (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
+
+;; TODO: only do this for articles (not frontpage, categories)
+(defmethod post-navigated-to! :documentation
+  [_ _ {:keys [subpage]} _ current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (ajax/ajax :get (gstring/format "/assets/docs/%s.md" (name subpage)) :markdown api-ch :context {:subpage subpage} :format :raw)))

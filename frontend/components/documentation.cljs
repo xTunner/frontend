@@ -145,7 +145,7 @@
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
-        docs (doc-utils/find-all-docs)
+        docs (get-in app state/docs-data-path)
         categories ((juxt :gettingstarted :languages :how-to :troubleshooting
                           :reference :parallelism :privacy-security) docs)]
     (html
