@@ -7,14 +7,14 @@
   Near the upper right corner of each build page, you'll find an
   'enable ssh' button:
 
-![](asset:&#47;&#47;assets&#47;img&#47;outer&#47;docs&#47;ssh-build-button-e037e981ca5dde8b45fb757bb9819f14.png)</img>
+![](asset://img/outer/docs/ssh-build-button.png)
 
   Clicking this button will start a new build with remote SSH
   access enabled. After a few moments on the new build, you'll
   see a section labeled 'SSH Info'. Inside this section,
   you will find the host and port information:
 
-![](asset:&#47;&#47;assets&#47;img&#47;outer&#47;docs&#47;ssh-build-details-8690c89fc44d4c15646fa5b420e9f0b3.png)</img>
+![](asset://img/outer/docs/ssh-build-details.png)
 
   Now you can ssh to the running build (using the same ssh key
   that you use for GitHub) to perform whatever troubleshooting

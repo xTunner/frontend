@@ -68,7 +68,7 @@ end
   We will upload your coverage files, which will allow you view them from your build page.
   These are available via a dropdown in your build:
 
-![](asset:&#47;&#47;assets&#47;img&#47;outer&#47;docs&#47;artifacts_listing-f6ae76072837d9ffc931c5f56a952150.png)</img>
+![](asset://img/outer/docs/artifacts_listing.png)
 
   You can also get them via the
     [CircleCI API](https://circleci.com/docs/api#build-artifacts).
@@ -76,7 +76,7 @@ end
   And then of course, by viewing the generated HTML,
   you can see beautifully rendered HTML in the UI.
 
-![](asset:&#47;&#47;assets&#47;img&#47;outer&#47;docs&#47;coverage_example-102b814681593fb565f7520aeadbfb0e.png)</img>
+![](asset://img/outer/docs/coverage_example.png)
 
 ## Using a Code Coverage service
 

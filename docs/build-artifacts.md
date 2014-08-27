@@ -11,7 +11,7 @@
 
   After the build finishes, everything in these directories is saved and linked to the build.
 
-  ![](asset:&#47;&#47;assets&#47;img&#47;docs&#47;artifacts-ab4fe3251190239e56aa23e9d559db0e.png)</img>
+  ![](asset://img/docs/artifacts.png)
 
   You'll find links to the artifacts at the top of the build page. You can also consume them
   via our
