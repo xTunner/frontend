@@ -1,5 +1,6 @@
 (ns frontend.utils.docs
   (:require [clojure.string :as string]
+            [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format
@@ -13,9 +14,16 @@
          #js {"__html"  ((aget (aget js/window "HAML") template-name)
                          (clj->js (merge {"include_article" include-article} args)))}}])
 
+(defn replace-asset-paths [html]
+  (let [re (js/RegExp. "\"asset:/(.*?)\"" "g")]
+    (.replace html re (fn [s match]
+                        (stefon/asset-path match)))))
+
 (defn render-markdown [input]
   (when input
-    (js/marked input)))
+    (-> input
+        js/marked
+        replace-asset-paths)))
 
 (defn new-context []
   (let [context (js/Object.)]
