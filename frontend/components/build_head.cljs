@@ -267,7 +267,7 @@
         (if (and past-ms
                  (= (:status build) "running")
                  (< duration-ms (* 1.5 past-ms)))
-          (dom/span nil " / " (formatter past-ms))
+          (dom/span nil "/~" (formatter past-ms))
           (dom/span nil ""))))))
 
 (defn build-head [data owner]
