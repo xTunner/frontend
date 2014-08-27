@@ -1,6 +1,6 @@
 var intercomJQuery;
 
-intercomJquery.click;
-intercomJquery.is;
-intercomJquery.focus;
-intercomJquery.text;
+intercomJQuery.click;
+intercomJQuery.is;
+intercomJQuery.focus;
+intercomJQuery.text;

@@ -16,6 +16,12 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
+;; This is awful, can't we just pass build-head the whole app state?
+;; splitting it up this way means special purpose paths to find stuff
+;; in it depending on what sub-state with special keys we have, right?
+(defn has-scope [scope data]
+  (scope (:scopes data)))
+
 (defn build-queue [data owner]
   (reify
     om/IRender
@@ -236,6 +242,7 @@
             usage-queued? (build-model/in-usage-queue? build)
             plan (get-in data [:project-data :plan])
             user (:user data)
+            logged-in? (not (empty? user))
             config-data (:config-data build-data)]
         (html
          [:div.build-head-wrapper
@@ -292,14 +299,16 @@
                                                                    :stop (or (:queued_at build) (:stop_time build))})
                                " waiting for builds to finish"])
 
-                        [:a#queued_explanation
-                         {:on-click #(put! controls-ch [:usage-queue-why-toggled
-                                                        {:build-id build-id
-                                                         :username (:username @build)
-                                                         :reponame (:reponame @build)
-                                                         :build_num (:build_num @build)}])}
-                         " view "]
-                        [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]]))
+                        (if (has-scope :read-settings data)
+                          [:span
+                           [:a#queued_explanation
+                            {:on-click #(put! controls-ch [:usage-queue-why-toggled
+                                                           {:build-id build-id
+                                                            :username (:username @build)
+                                                            :reponame (:reponame @build)
+                                                            :build_num (:build_num @build)}])}
+                            " view "]
+                           [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]])]))
                (when (build-model/author-isnt-committer build)
                  [:th "Committer"]
                  [:td
@@ -310,9 +319,11 @@
               [:tr
                [:th "Parallelism"]
                [:td
-                [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                     :href (build-model/path-for-parallelism build)}
-                 (str (:parallel build) "x")]]]]]
+                (if (has-scope :write-settings data)
+                  [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                       :href (build-model/path-for-parallelism build)}
+                   (str (:parallel build) "x")]
+                  [:span (:parallel build) "x"])]]]]
             [:div.build-actions
              [:div.actions
               (forms/stateful-button
@@ -324,6 +335,7 @@
                                                                      :build-num build-num
                                                                      :clear-cache? false}])}
                 "Rebuild"])
+
               (forms/stateful-button
                [:button.clear_cache_retry
                 {:data-loading-text "Rebuilding",
@@ -334,19 +346,21 @@
                                                                      :clear-cache? true}])}
                 "& clear cache"])
 
-              (forms/stateful-button
-               [:button.ssh_build
-                {:data-loading-text "Rebuilding",
-                 :title "Retry with SSH in VM",
-                 :on-click #(put! controls-ch [:ssh-build-clicked {:build-id build-id
-                                                                   :vcs-url vcs-url
-                                                                   :build-num build-num}])}
-                "& enable ssh"])]
+              (if (has-scope :write-settings data)
+                (forms/stateful-button
+                 [:button.ssh_build
+                  {:data-loading-text "Rebuilding",
+                   :title "Retry with SSH in VM",
+                   :on-click #(put! controls-ch [:ssh-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num}])}
+                  "& enable ssh"]))]
              [:div.actions
-              [:button.report_build
-               {:title "Report error with build",
-                :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
-               "Report"]
+              (when logged-in? ;; no intercom for logged-out users
+                [:button.report_build
+                 {:title "Report error with build",
+                  :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
+                 "Report"])
               (when (build-model/can-cancel? build)
                 (forms/stateful-button
                  [:button.cancel_build
@@ -355,16 +369,17 @@
                    :on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
                                                                         :vcs-url vcs-url
                                                                         :build-num build-num}])}
-                  "Cancel"]))]]]
-           (when (:show-usage-queue usage-queue-data)
+                  "Cancel"]))]]
+            [:div.no-user-actions]]
+           (when (and logged-in? (:show-usage-queue usage-queue-data))
              (om/build build-queue {:build build
                                     :builds (:builds usage-queue-data)
                                     :plan plan}))
            (when (:subject build)
              (om/build build-commits build-data))
-           (when (build-model/ssh-enabled-now? build)
+           (when (and logged-in? (build-model/ssh-enabled-now? build))
              (om/build build-ssh (:node build)))
-           (when (:has_artifacts build)
+           (when (and logged-in? (:has_artifacts build))
              (om/build build-artifacts-list
                        {:artifacts-data (get build-data :artifacts-data) :user user}
                        {:opts {:show-node-indices? (< 1 (:parallel build))}}))

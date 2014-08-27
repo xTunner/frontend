@@ -106,19 +106,6 @@
           (when (and open? expanded?)
             (om/build instrumentation/line-items (:instrumentation app)))])))))
 
-(defn inner-header [app owner]
-  (reify
-    om/IDisplayName (display-name [_] "Inner Header")
-    om/IRender
-    (render [_]
-      (let [admin? (get-in app [:current-user :admin])]
-        (html
-         [:header.main-head
-          (when admin?
-            (om/build head-admin app))
-          (when (seq (get-in app state/crumbs-path))
-            (om/build head-user app))])))))
-
 (defn outer-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Outer Header")
@@ -136,26 +123,25 @@
            [:div.container
             [:div.row
              [:div.span8
-              [:div.row
-               [:a#logo.span2
-                {:href "/"}
-                [:img
-                 {:width "130",
-                  :src (utils/cdn-path "/img/logo-new.svg")
-                  :height "40"}]]
-               [:nav.span6
-                {:role "navigation"}
-                [:ul.nav.nav-pills
-                 [:li [:a {:href "/about"} "About"]]
-                 [:li [:a {:href "/pricing"} "Pricing"]]
-                 [:li [:a {:href "/docs"} "Documentation"]]
-                 [:li [:a {:href "/jobs"} "Jobs"]]
-                 [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]]
+              [:a#logo.span2
+               {:href "/"}
+               [:img
+                {:width "130",
+                 :src (utils/cdn-path "/img/logo-new.svg")
+                 :height "40"}]]
+              [:nav.span6
+               {:role "navigation"}
+               [:ul.nav.nav-pills
+                [:li [:a {:href "/about"} "About"]]
+                [:li [:a {:href "/pricing"} "Pricing"]]
+                [:li [:a {:href "/docs"} "Documentation"]]
+                [:li [:a {:href "/jobs"} "Jobs"]]
+                [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]
              (if logged-in?
-               [:div.controls.span4
+               [:div.controls.span2.offset2
                 [:a#login.login-link {:href "/"} "Return to App"]]
 
-               [:div.controls.span4
+               [:div.controls.span2.offset2
                 [:a#login.login-link {:href (auth-url)
                                       :on-click #(put! controls-ch [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                       :title "Sign in with Github"}
@@ -167,12 +153,31 @@
                  "Sign up "
                  [:i.fa.fa-github-alt]]])]]]])))))
 
+(defn inner-header [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Inner Header")
+    om/IRender
+    (render [_]
+      (let [admin? (get-in app [:current-user :admin])
+            logged-out? (not (get-in app state/user-path))]
+        (html
+         [:header.main-head (when logged-out? {:class "guest"})
+          (when admin?
+            (om/build head-admin app))
+          (when logged-out?
+            (om/build outer-header app))
+          (when (seq (get-in app state/crumbs-path))
+            (om/build head-user app))])))))
+
+
 (defn header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Header")
     om/IRender
     (render [_]
-      (let [inner? (get-in app state/inner?-path)]
+      (let [inner? (get-in app state/inner?-path)
+            logged-in? (get-in app state/user-path)
+            _ (utils/mlog "header render inner? " inner? " logged-in? " logged-in?)]
         (html
           (if inner?
             (om/build inner-header app)

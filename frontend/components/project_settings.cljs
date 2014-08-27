@@ -37,6 +37,7 @@
    [:li.side-title "Notifications"]
    [:li [:a {:href "#hooks"} "Chatrooms"]]
    [:li [:a {:href "#webhooks"} "Webhooks"]]
+   [:li [:a {:href "#badges"} "Status Badges"]]
    [:li.side-title "Permissions"]
    [:li [:a {:href "#checkout"} "Checkout SSH keys"]]
    [:li [:a {:href "#ssh"} "SSH keys"]]
@@ -47,6 +48,9 @@
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
+(defn branch-names [project-data]
+  (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
+
 (defn branch-picker [project-data owner opts]
   (reify
     om/IDidMount
@@ -54,7 +58,7 @@
       (let [controls-ch (om/get-shared owner [:comms :controls])]
         (utils/typeahead
          "#branch-picker-typeahead-hack"
-         {:source (map (comp gstring/urlDecode name) (keys (:branches (:project project-data))))
+         {:source (branch-names project-data)
           :updater (fn [branch]
                      (put! controls-ch [:edited-input {:path (conj state/inputs-path :settings-branch) :value branch}])
                      branch)})))
@@ -325,7 +329,6 @@
                                     {:type "checkbox"
                                      :checked (get feature-flags flag)
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value true}])}]
                                    " On"]]
@@ -335,7 +338,6 @@
                                     {:type "checkbox"
                                      :checked (not (get feature-flags flag))
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value false}])}]
                                    " Off"]]]]]))]
@@ -371,14 +373,14 @@
                                    "web UI and the API."]})
            (describe-flag {:flag :build-fork-prs
                            :title "Project fork pull requests"
-                           :blurb [:p
-                                   "CircleCI will automatically update the commit status shown on GitHub's "
-                                   "pull request page. Builds will will be run using the parent repository's plan "
-                                   "and will be able to access the parent project's environment settings."
-                                   :p
-                                   "If you have SSH keys or AWS credentials stored in your project settings and "
-                                   "untrusted forks can make pull requests against your repo, then this option "
-                                   "isn't for you!"]})]])))))
+                           :blurb '([:p
+                                     "CircleCI will automatically update the commit status shown on GitHub's "
+                                     "pull request page. Builds will will be run using the parent repository's plan "
+                                     "and will be able to access the parent project's environment settings."]
+                                    [:p
+                                     "If you have SSH keys or AWS credentials stored in your project settings and "
+                                     "untrusted forks can make pull requests against your repo, then this option "
+                                     "isn't for you!"])})]])))))
 
 (defn dependencies [project-data owner]
   (reify
@@ -584,7 +586,10 @@
               :data-loading-text "Saving",
               :value "Save notification hooks",
               :type "submit",
-              :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}])]])))))
+              :on-click #(do
+                          (let [event-data {:project-id project-id
+                                            :merge-paths (map vector project-model/notification-keys)}]
+                            (put! controls-ch [:saved-project-settings event-data])))}])]])))))
 
 (defn webhooks [project-data owner]
   (om/component
@@ -596,6 +601,110 @@
        "Circle also support webhooks, which run at the end of a build. They can be configured in your "
        [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
         "circle.yml file"] "."]]])))
+
+(def status-styles
+  {"badge" {:label "Badge" :string ".png?style=badge"}
+   "shield" {:label "Shield" :string ".svg?style=shield"}})
+
+(def status-formats
+  {"image" {:label "Image URL"
+            :template :image}
+   "markdown" {:label "Markdown"
+               :template #(str "[![Circle CI](" (:image %) ")](" (:target %) ")")}
+   "textile" {:label "Textile"
+              :template #(str "!" (:image %) "!:" (:target %))}
+   "rdoc" {:label "Rdoc"
+           :template #(str "{<img src=\"" (:image %) "\" alt=\"Circle CI\" />}[" (:target %) "]")}
+   "asciidoc" {:label "AsciiDoc"
+               :template #(str "image:" (:image %) "[\"Circle CI\", link=\"" (:target %) "\"]")}
+   "rst" {:label "reStructuredText"
+          :template #(str ".. image:: " (:image %) "\n    :target: " (:target %))}
+   "pod" {:label "pod"
+          :template #(str "=for HTML <a href=\"" (:target %) "\"><img src=\"" (:image %) "\"></a>")}})
+
+(defn status-badges [project-data owner]
+  (let [project (:project project-data)
+        controls-ch (om/get-shared owner [:comms :controls])
+        oss (get-in project [:feature_flags :oss])
+        ;; Get branch selection or the empty string for the default branch.
+        branches (branch-names project-data)
+        branch (get-in project-data [:status-badges :branch])
+        branch (or (some #{branch} branches) "")
+        ;; Get token selection, or the empty string for no token. Tokens must have "status" scope.
+        ;; OSS projects default to no token, private projects default to the first available.
+        ;; If a token is required, but unavailable, no token is selected and the UI shows a warning.
+        tokens (filter #(= (:scope %) "status") (:tokens project-data))
+        token (get-in project-data [:status-badges :token])
+        token (some #{token} (cons "" (map :token tokens)))
+        token (str (if (or oss (some? token)) token (-> tokens first :token)))
+        ;; Generate the status badge with current settings.
+        project-name (vcs-url/project-name (:vcs_url project))
+        gh-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
+        target (str (.. js/window -location -origin) "/gh/" gh-path)
+        style (get-in project-data [:status-badges :style] "badge")
+        image (str target (get-in status-styles [style :string]))
+        image (if (seq token) (str image "&circle-token=" token) image)
+        format (get-in project-data [:status-badges :format] "markdown")
+        code ((:template (status-formats format)) {:image image :target target})]
+    (om/component
+     (html
+      [:div.status-page
+       [:h2 "Status badges for " project-name]
+       [:div "Use this tool to easily create embeddable status badges. Perfect for your project's README or wiki!"]
+       [:div.status-page-inner
+        [:form
+
+         [:div.branch
+          [:h4 "Branch"]
+          [:div.styled-select
+           [:select {:value branch
+                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :branch) %)}
+            [:option {:value ""} "Default"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [branch branches]
+              [:option {:value branch} branch])]
+           [:i.fa.fa-chevron-down]]]
+
+         [:div.token
+          [:h4 "API Token"]
+          (when-not (or oss (seq token))
+            [:p [:span.warning "Warning: "] "Private projects require an " [:a {:href "#api"} "API token"] "."])
+          [:div.styled-select
+           [:select {:value token
+                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :token) %)}
+            [:option {:value ""} "None"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [{:keys [token label]} tokens]
+              [:option {:value token} label])]
+           [:i.fa.fa-chevron-down]]]
+
+         #_ ;; Hide style selector until "badge" style is improved. See PR #3140 discussion.
+         [:div.style
+          [:h4 "Style"]
+          [:fieldset
+           (for [[id {:keys [label]}] status-styles]
+             [:label.radio
+              [:input {:name "branch" :type "radio" :value id :checked (= style id)
+                       :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :style) %)}]
+              label])]]
+
+         [:div.preview
+          [:h4 "Preview"]
+          [:img {:src image}]]
+
+         [:div.embed
+          [:h4 "Embed Code"]
+          [:div.styled-select
+           [:select {:value format
+                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :format) %)}
+            (for [[id {:keys [label]}] status-formats]
+              [:option {:value id} label])]
+           [:i.fa.fa-chevron-down]]
+          [:textarea {:readonly true
+                      :value code
+                      :on-click #(.select (.-target %))}]]
+
+         ]]]))))
 
 (defn ssh-keys [project-data owner]
   (reify
@@ -1013,6 +1122,7 @@
                 :tests (om/build tests project-data)
                 :hooks (om/build chatrooms project-data)
                 :webhooks (om/build webhooks project-data)
+                :badges (om/build status-badges project-data)
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
                 :api (om/build api-tokens project-data)
