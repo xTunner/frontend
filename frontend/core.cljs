@@ -230,6 +230,7 @@
 
 (defn setup-browser-repl [repl-url]
   (when repl-url
+    (mlog "setup-browser-repl calling repl/connect with repl-url: " repl-url)
     (repl/connect repl-url))
   ;; this is harmless if it fails
   (ws-repl/connect "ws://localhost:9001" :verbose true)
