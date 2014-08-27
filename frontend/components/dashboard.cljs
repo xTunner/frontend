@@ -11,10 +11,12 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn show-trial-notice? [plan]
-  (and (plan-model/trial? plan)
-       ;; We probably gave them a special deal, better not to bug them
-       (> 20 (plan-model/days-left-in-trial plan))))
+(defn show-trial-notice? [projects plan]
+  (let [some-private-repos (some identity (map #(not (get-in % [:feature_flags :oss])) projects))]
+    (and some-private-repos
+         (plan-model/trial? plan)
+         ;; We probably gave them a special deal, better not to bug them
+         (> 20 (plan-model/days-left-in-trial plan)))))
 
 (defn dashboard [data owner]
   (reify
@@ -39,7 +41,7 @@
                                         [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
               :else
               [:div.dashboard
-               (when (and plan (show-trial-notice? plan))
+               (when (and plan (show-trial-notice? projects plan))
                  (om/build project-common/trial-notice plan))
                (om/build builds-table/builds-table builds {:opts {:show-actions? false
                                                                   :show-branch? (not (:branch nav-data))
