@@ -14,6 +14,14 @@
          #js {"__html"  ((aget (aget js/window "HAML") template-name)
                          (clj->js (merge {"include_article" include-article} args)))}}])
 
+(defn replace-variables [html]
+  (let [re (js/RegExp. "{{\\s*([\\S]*)\\s*}}" "g")]
+    (.replace html re (fn [s match]
+                        (let [[name & path] (string/split match #"\.")
+                              var (case name
+                                        "versions" (.-Versions js/CI))]
+                          (apply aget var path))))))
+
 (defn replace-asset-paths [html]
   (let [re (js/RegExp. "\"asset:/(.*?)\"" "g")]
     (.replace html re (fn [s match]
@@ -23,7 +31,8 @@
   (when input
     (-> input
         js/marked
-        replace-asset-paths)))
+        replace-asset-paths
+        replace-variables)))
 
 (defn new-context []
   (let [context (js/Object.)]
