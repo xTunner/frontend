@@ -25,7 +25,7 @@
   **Step 1:**
   Enter the API key (if not autofilled) and click **Save**.
 
-![](&#47;assets&#47;img&#47;docs&#47;heroku-step1-d3ff6cc3721da987a8608e3687310031.png)</img>
+![](asset:&#47;&#47;assets&#47;img&#47;docs&#47;heroku-step1-d3ff6cc3721da987a8608e3687310031.png)</img>
 
   If this key has already been added to your **Project Settings > Heroku settings** page,
   CircleCI maintains security by displaying a shorten version of the existing API key
@@ -38,77 +38,80 @@
   Click the button to set the registered person as the Heroku deploy user
   and to associate a Heroku SSH key with the deploy user's account.
 
-![](&#47;assets&#47;img&#47;docs&#47;heroku-step2-b75a2a8ce0ae4c31bd2801767be711e5.png)</img>
+![](asset:&#47;&#47;assets&#47;img&#47;docs&#47;heroku-step2-b75a2a8ce0ae4c31bd2801767be711e5.png)</img>
 
   **Step 3:**
   Specify the app using the
   `appname`
   key.
 
-    deployment:
-      staging:
-        branch: master
-        heroku:
-          appname: foo-bar-123`</pre>
+```
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: foo-bar-123```
 
-      You can now use the
-      `git push`
-      command.
-      Upon a successful build, we'll automatically deploy to the app in the section that matches the push, should there be one.
+  You can now use the
+  `git push`
+  command.
+  Upon a successful build, we'll automatically deploy to the app in the section that matches the push, should there be one.
 
-      **Note**: If you are deploying several projects from CircleCI consider
-      using different keys for each one. Heroku enforces a rate-limit of 75 git
-      requests per hour per key.
+  **Note**: If you are deploying several projects from CircleCI consider
+  using different keys for each one. Heroku enforces a rate-limit of 75 git
+  requests per hour per key.
 
-    ## Heroku with pre- or post-deployment steps
+## Heroku with pre- or post-deployment steps
 
-      If you'd like to run commands before or after deploying to Heroku, you'll have to use the 'normal'
-      `deployment`
-      syntax.
+  If you'd like to run commands before or after deploying to Heroku, you'll have to use the 'normal'
+  `deployment`
+  syntax.
 
-    <pre>`deployment:
-      production:
-        branch: production
-        commands:
-          - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
-          - heroku run rake db:migrate --app foo-bar-123:
-              timeout: 400 # if your deploys take a long time`</pre>
+```
+deployment:
+  production:
+    branch: production
+    commands:
+      - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
+      - heroku run rake db:migrate --app foo-bar-123:
+          timeout: 400 # if your deploys take a long time```
 
-    ## Heroku's maintenance mode
+## Heroku's maintenance mode
 
-      When you are pushing new code that requires a database migration, your app will not be available.
-      To be  polite, you might want to treat your users to more than an enigmatic error page.
+  When you are pushing new code that requires a database migration, your app will not be available.
+  To be  polite, you might want to treat your users to more than an enigmatic error page.
 
-      Heroku's offers a built-in maintenance mode when you need to disable an app for some period of time.
-      This mode blocks all HTTP requests and displays a generic HTML page telling users that service is unavailable because of maintenance (more about customizing this 503 error message page below).
+  Heroku's offers a built-in maintenance mode when you need to disable an app for some period of time.
+  This mode blocks all HTTP requests and displays a generic HTML page telling users that service is unavailable because of maintenance (more about customizing this 503 error message page below).
 
-      You enable maintenance mode with the
-      `heroku maintenance:on`
-      command.
-      Once your work is completed, you turn the mode off with the
-      `heroku maintenance:off`
-      command.
+  You enable maintenance mode with the
+  `heroku maintenance:on`
+  command.
+  Once your work is completed, you turn the mode off with the
+  `heroku maintenance:off`
+  command.
 
-      Enabling and disabling maintenance mode is sufficient for most simple updating work such as adding a new graphic or making wording changes,
-      however, when you are performing a database migration Heroku suggests that you use the
-      `heroku scale`
-      command to reduce the number of active Heroku's worker dynos.
-      To ensure that no background jobs are processed during migration, scale down all the workers.
-      Here is how to tweak the
-      `deployment`
-      section of your
-      `circle.yml`
-      file to employ these commands.
+  Enabling and disabling maintenance mode is sufficient for most simple updating work such as adding a new graphic or making wording changes,
+  however, when you are performing a database migration Heroku suggests that you use the
+  `heroku scale`
+  command to reduce the number of active Heroku's worker dynos.
+  To ensure that no background jobs are processed during migration, scale down all the workers.
+  Here is how to tweak the
+  `deployment`
+  section of your
+  `circle.yml`
+  file to employ these commands.
 
-    <pre>`deployment:
-      staging:
-        commands:
-          - heroku maintenance:on --app foo-bar-123
-          - heroku scale worker=0 --app foo-bar-123
-          - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
-          - heroku run rake db:migrate --app foo-bar-123
-          - heroku scale worker=x --app foo-bar-123
-          - heroku maintenance:off --app foo-bar-123
+```
+deployment:
+  staging:
+    commands:
+      - heroku maintenance:on --app foo-bar-123
+      - heroku scale worker=0 --app foo-bar-123
+      - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
+      - heroku run rake db:migrate --app foo-bar-123
+      - heroku scale worker=x --app foo-bar-123
+      - heroku maintenance:off --app foo-bar-123```
 
 ### Custom maintenance page
 
