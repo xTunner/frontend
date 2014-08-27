@@ -369,7 +369,7 @@
                            :blurb [:p
                                    "Be part of our F/OSS beta! Organizations now have three free containers"
                                    "reserved for F/OSS projects; enabling this will allow this project's "
-                                   "builds to use it and let others see your builds, both through the "
+                                   "builds to use them and let others see your builds, both through the "
                                    "web UI and the API."]})
            (describe-flag {:flag :build-fork-prs
                            :title "Project fork pull requests"
