@@ -1,23 +1,22 @@
-  Code Coverage tells you how much of your application is tested.
+Code Coverage tells you how much of your application is tested.
 
-  CircleCI provides a number of different options for code coverage reporting,
-  using built-in CircleCI features combined with open source libraries,
-  or using partners.
+CircleCI provides a number of different options for code coverage reporting,
+using built-in CircleCI features combined with open source libraries,
+or using partners.
 
 ## See coverage in CircleCI
 
-  It's straightforward to see simple coverage results from your build.
-  Simply add a coverage library to your project, and configure it to write the results out to CircleCI's
-    [artifacts directory](/docs/build-artifacts).
-  CircleCI will upload coverage results and make them visible as part of your build.
+It's straightforward to see simple coverage results from your build.
+Simply add a coverage library to your project, and configure it to write the results out to CircleCI's [artifacts directory](/docs/build-artifacts).
+CircleCI will upload coverage results and make them visible as part of your build.
 
 ### Adding and configuring a coverage library
 
 #### Ruby
 
-  In Ruby 1.9, you add the
-  [simplecov gem](https://github.com/colszowka/simplecov)
-  and configure your test suite to add code coverage.
+In Ruby 1.9, you add the
+[simplecov gem](https://github.com/colszowka/simplecov)
+and configure your test suite to add code coverage.
 
 In your Gemfile, add the `simplecov` gem:
 
@@ -25,9 +24,9 @@ In your Gemfile, add the `simplecov` gem:
 gem 'simplecov', :require => false, :group => :test
 ```
 
-  In `test/test_helper.rb`, `spec/spec_helper.rb`,
-  Cucumber's `env.rb`,
-  or in your test suite's startup hooks, initialize `SimpleCov`:
+In `test/test_helper.rb`, `spec/spec_helper.rb`,
+Cucumber's `env.rb`,
+or in your test suite's startup hooks, initialize `SimpleCov`:
 
 ```
 if ENV['CIRCLE_ARTIFACTS']
@@ -39,13 +38,13 @@ end
 
 #### Python, Node, Java, PHP, etc
 
-  We're working on a guide for other languages.
-  In the meantime, add your coverage library of choice. Options include:
+We're working on a guide for other languages.
+In the meantime, add your coverage library of choice. Options include:
 
 *   [coverage](https://pypi.python.org/pypi/coverage)
     for python
-*   [node-coverage,](https://github.com/piuccio/node-coverage)
-    [blanket.js,](https://github.com/alex-seville/blanket)
+*   [node-coverage](https://github.com/piuccio/node-coverage),
+    [blanket.js](https://github.com/alex-seville/blanket),
     [jscoverage](https://github.com/fishbar/jscoverage)
     or
     [istanbul](https://github.com/gotwarlost/istanbul)
@@ -57,24 +56,22 @@ end
 *   [gcc's `gcov`](http://gcc.gnu.org/onlinedocs/gcc/Gcov.html)
     for C or C++.
 
-  Configure your library to save results in the directory specified by the CIRCLE_ARTIFACTS environment variable.
-  Alternatively, add a
-  [test.post command](/docs/configuration#tests)
-  to copy your artifacts into the
-  [artifacts directory.](/docs/build-artifacts)
+Configure your library to save results in the directory specified by the CIRCLE_ARTIFACTS environment variable.
+Alternatively, add a [test.post command](/docs/configuration#tests)
+to copy your artifacts into the [artifacts directory](/docs/build-artifacts).
 
 ### Seeing the results in the CircleCI UI
 
-  We will upload your coverage files, which will allow you view them from your build page.
-  These are available via a dropdown in your build:
+We will upload your coverage files, which will allow you view them from your build page.
+These are available via a dropdown in your build:
 
 ![](asset://img/outer/docs/artifacts_listing.png)
 
-  You can also get them via the
-    [CircleCI API](https://circleci.com/docs/api#build-artifacts).
+You can also get them via the
+[CircleCI API](https://circleci.com/docs/api#build-artifacts).
 
-  And then of course, by viewing the generated HTML,
-  you can see beautifully rendered HTML in the UI.
+And then of course, by viewing the generated HTML,
+you can see beautifully rendered HTML in the UI.
 
 ![](asset://img/outer/docs/coverage_example.png)
 
@@ -82,34 +79,29 @@ end
 
 ### Using Code Coverage with CircleCI and Coveralls
 
-  If you're a Coveralls customer, follow
-  [their guide to set up your coverage stats.](https://coveralls.io/docs)
-  You'll need to add
-  `COVERALLS_REPO_TOKEN`
-  to your CircleCI
-  [environment variables.](https://circleci.com/docs/environment-variables)
+If you're a Coveralls customer, follow
+[their guide to set up your coverage stats.](https://coveralls.io/docs)
+You'll need to add `COVERALLS_REPO_TOKEN` to your CircleCI
+[environment variables.](https://circleci.com/docs/environment-variables)
 
-  Coveralls does not currently support CircleCI's parallelization.
-  [Contact us](mailto:sayhi@circleci.com)
-  if you'd like to use this.
+Coveralls does not currently support CircleCI's parallelization.
+[Contact us](mailto:sayhi@circleci.com)
+if you'd like to use this.
 
 ### Using Code Coverage with CircleCI and Code Climate
 
-  If you're a Code Climate customer, follow the instructions under
-  **Repo Settings -> Test Coverage**
-  from your repo on the Code Climate site.
-  You'll need to add your
-  `CODECLIMATE_REPO_TOKEN`
-  to your CircleCI
-  [environment variables.](https://circleci.com/docs/environment-variables)
+If you're a Code Climate customer, follow the instructions under
+**Repo Settings -> Test Coverage**
+from your repo on the Code Climate site.
+You'll need to add your `CODECLIMATE_REPO_TOKEN` to your CircleCI
+[environment variables.](https://circleci.com/docs/environment-variables)
 
-  Code Climate does not currently support CircleCI's parallelization.
-  [Contact us](mailto:sayhi@circleci.com)
-  if you'd like to use this.
+Code Climate does not currently support CircleCI's parallelization.
+[Contact us](mailto:sayhi@circleci.com) if you'd like to use this.
 
 ## Under construction
 
-  Code coverage is an area where our support is evolving.
-  We'd love to have your feedback about how we could support it better.
-  [Let us know](mailto:sayhi@circleci.com)
-  how you're using it, how you'd like to use it, and what we could do better!
+Code coverage is an area where our support is evolving.
+We'd love to have your feedback about how we could support it better.
+[Let us know](mailto:sayhi@circleci.com)
+how you're using it, how you'd like to use it, and what we could do better!
