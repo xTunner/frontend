@@ -419,11 +419,14 @@
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
 
-;; TODO: only do this for articles (not frontpage, categories)
 (defmethod post-navigated-to! :documentation
   [_ _ {:keys [subpage]} _ current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        url (-> "/docs/%s.md"
-                (gstring/format (name subpage))
-                stefon/asset-path)]
-    (ajax/ajax :get url :markdown api-ch :context {:subpage subpage} :format :raw)))
+  (let [doc (get-in current-state (conj state/docs-data-path subpage))]
+    (when (and subpage
+               (empty? (:children doc))
+               (not (:markdown doc)))
+      (let [api-ch (get-in current-state [:comms :api])
+            url (-> "/docs/%s.md"
+                    (gstring/format (name subpage))
+                    stefon/asset-path)]
+        (ajax/ajax :get url :markdown api-ch :context {:subpage subpage} :format :raw)))))
