@@ -9,6 +9,7 @@
             [frontend.favicon]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
+            [frontend.stefon :as stefon]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -421,5 +422,8 @@
 ;; TODO: only do this for articles (not frontpage, categories)
 (defmethod post-navigated-to! :documentation
   [_ _ {:keys [subpage]} _ current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :get (gstring/format "/assets/docs/%s.md" (name subpage)) :markdown api-ch :context {:subpage subpage} :format :raw)))
+  (let [api-ch (get-in current-state [:comms :api])
+        url (-> "/docs/%s.md"
+                (gstring/format (name subpage))
+                stefon/asset-path)]
+    (ajax/ajax :get url :markdown api-ch :context {:subpage subpage} :format :raw)))
