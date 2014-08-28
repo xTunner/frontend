@@ -27,7 +27,7 @@
     (.replace html re (fn [s m1 m2]
                         (let [[name & path] (string/split m1 #"\.")
                               var (case name
-                                    "versions" (.-Versions js/CI))
+                                    "versions" (aget js/window "CI" "Versions"))
                               val (apply aget var path)
                               filter (case m2
                                        "code-list" code-list-filter
