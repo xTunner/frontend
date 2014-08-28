@@ -420,7 +420,8 @@
     (set-page-title! "Account")))
 
 (defmethod post-navigated-to! :documentation
-  [_ _ {:keys [subpage]} _ current-state]
+  [history-imp navigation-point {:keys [subpage] :as args} previous-state current-state]
+  (post-default navigation-point args)
   (let [doc (get-in current-state (conj state/docs-data-path subpage))]
     (when (and subpage
                (empty? (:children doc))
