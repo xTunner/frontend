@@ -33,11 +33,11 @@
            :src (stefon/data-uri "/img/outer/home/deploy.png")}]
     [:h4 "Deploy green builds to your servers"]]])
 
-(defn home-cta [controls-ch]
+(defn home-cta [ab-tests controls-ch]
   [:div.ctabox {:class (if first "line")}
    [:div
     [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
-   (shared/home-button {:source "hero"} controls-ch)
+   (shared/home-button {:source "hero" :button_copy (:button_copy ab-tests)} controls-ch)
    [:div
     [:p
      [:i "CircleCI keeps your code safe. "
@@ -52,7 +52,7 @@
        hero-graphic]
     [:div.row-fluid
      [:div.hero-unit-cta
-      (home-cta controls-ch)]]]])
+      (home-cta ab-tests controls-ch)]]]])
 
 (defn customer-image [customer-name image]
   [:div.big-company
