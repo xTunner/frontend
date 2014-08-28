@@ -121,37 +121,9 @@
 We use RVM to give you access to a wide variety of Ruby
   versions. Below are the versions of Ruby that we pre-install; you can specify versions not listed here (supported by RVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly.
 
-  You can
-  [choose the exact version you need directly, from the following list:](/docs/configuration#ruby-version)
-
-*   `{`
-*   `{`
-*   ` `
-*   `v`
-*   `e`
-*   `r`
-*   `s`
-*   `i`
-*   `o`
-*   `n`
-*   `s`
-*   `.`
-*   `r`
-*   `u`
-*   `b`
-*   `y`
-*   `_`
-*   `v`
-*   `e`
-*   `r`
-*   `s`
-*   `i`
-*   `o`
-*   `n`
-*   `s`
-*   ` `
-*   `}`
-*   `}`
+You can [choose the exact version you need directly, from the following list:](/docs/configuration#ruby-version)
+  
+{{ versions.ruby_versions | code-list }}
 
   By default we use
   `Ruby
@@ -178,34 +150,7 @@ We use RVM to give you access to a wide variety of Ruby
 
   Below are the versions of Node.js that we pre-install; you can specify versions not listed here (supported by NVM) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly.
 
-*   `{`
-*   `{`
-*   ` `
-*   `v`
-*   `e`
-*   `r`
-*   `s`
-*   `i`
-*   `o`
-*   `n`
-*   `s`
-*   `.`
-*   `n`
-*   `o`
-*   `d`
-*   `e`
-*   `_`
-*   `v`
-*   `e`
-*   `r`
-*   `s`
-*   `i`
-*   `o`
-*   `n`
-*   `s`
-*   ` `
-*   `}`
-*   `}`
+{{ versions.node_versions | code-list }}
 
   If you do not specify a version, we use
     `{{ versions.default_node }}`.
@@ -222,111 +167,8 @@ We use RVM to give you access to a wide variety of Ruby
     `virtualenv {{ versions.virtualenv }}`.
 
   Below are the versions of Python that we pre-install; you can specify versions not listed here (supported by pyenv) in your circle.yml file and we will install them as part of the build - this will add to your build time, however, if you let us know the version you are using we will update the VM accordingly.
-  <div class='row'>
-    <div class='span2'>
 
-*   `
-            {
-          `
-*   `
-            {
-          `
-*   `
-          `
-*   `
-            v
-          `
-*   `
-            e
-          `
-*   `
-            r
-          `
-*   `
-            s
-          `
-*   `
-            i
-          `
-    </div>
-    <div class='span2'>
-
-*   `
-            o
-          `
-*   `
-            n
-          `
-*   `
-            s
-          `
-*   `
-            .
-          `
-*   `
-            p
-          `
-*   `
-            y
-          `
-*   `
-            t
-          `
-*   `
-            h
-          `
-    </div>
-    <div class='span2'>
-
-*   `
-            o
-          `
-*   `
-            n
-          `
-*   `
-            _
-          `
-*   `
-            v
-          `
-*   `
-            e
-          `
-*   `
-            r
-          `
-*   `
-            s
-          `
-*   `
-            i
-          `
-    </div>
-    <div class='span2'>
-
-*   `
-            o
-          `
-*   `
-            n
-          `
-*   `
-            s
-          `
-*   `
-          `
-*   `
-            }
-          `
-*   `
-            }
-          `
-    </div>
-    <div class='span2'>
-
-    </div>
-  </div>
+{{ versions.python_versions | code-list }}
 
   Please
   [contact us](mailto:sayhi@circleci.com)
@@ -342,102 +184,8 @@ We use RVM to give you access to a wide variety of Ruby
   `composer`, `pear`, and `pecl`.
 
   Supported versions are:
-  <div class='row'>
-    <div class='span2'>
 
-*   `
-            {
-          `
-*   `
-            {
-          `
-*   `
-          `
-*   `
-            v
-          `
-*   `
-            e
-          `
-*   `
-            r
-          `
-*   `
-            s
-          `
-    </div>
-    <div class='span2'>
-
-*   `
-            i
-          `
-*   `
-            o
-          `
-*   `
-            n
-          `
-*   `
-            s
-          `
-*   `
-            .
-          `
-*   `
-            p
-          `
-*   `
-            h
-          `
-    </div>
-    <div class='span2'>
-
-*   `
-            p
-          `
-*   `
-            _
-          `
-*   `
-            v
-          `
-*   `
-            e
-          `
-*   `
-            r
-          `
-*   `
-            s
-          `
-*   `
-            i
-          `
-    </div>
-    <div class='span2'>
-
-*   `
-            o
-          `
-*   `
-            n
-          `
-*   `
-            s
-          `
-*   `
-          `
-*   `
-            }
-          `
-*   `
-            }
-          `
-    </div>
-    <div class='span2'>
-
-    </div>
-  </div>
+{{ versions.php_versions | code-list}}
 
   Are you using a version of PHP that isn't included in this list?
   If so, please
@@ -447,103 +195,28 @@ We use RVM to give you access to a wide variety of Ruby
 
   CircleCI has the following languages and tools installed:
 
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
+{{ versions.java_packages | code-list }}
 *   `ant {{ versions.ant }}`
 *   `maven {{ versions.maven }}`
 *   `gradle {{ versions.gradle }}`
 *   `play {{ versions.play }}`
 
-  You can specify the following JVM versions in your `circle.yml` file:
+You can specify the following JVM versions in your `circle.yml` file:
 
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
-*   `undefined`
+<!-- TODO: Make a custom filter for this or something -->
+
+* `oraclejdk8`
+* `oraclejdk7` (default)
+* `oraclejdk6`
+* `openjdk7`
+* `openjdk6`
 
 #### Scala
 
 We track <a>http://typesafe.artifactoryonline.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/</a> for recent Scala releases:
 
-*   `{`
-*   `{`
-*   ` `
-*   `v`
-*   `e`
-*   `r`
-*   `s`
-*   `i`
-*   `o`
-*   `n`
-*   `s`
-*   `.`
-*   `s`
-*   `c`
-*   `a`
-*   `l`
-*   `a`
-*   `_`
-*   `v`
-*   `e`
-*   `r`
-*   `s`
-*   `i`
-*   `o`
-*   `n`
-*   `s`
-*   ` `
-*   `}`
-*   `}`
+{{ versions.scala_versions | code-list }}
+
 We also install some release candidate and beta versions (see the above URL for the complete list).
 
 ### Clojure
@@ -563,33 +236,7 @@ We also install some release candidate and beta versions (see the above URL for 
 
   We have the following tools installed:
 
-*   `ghc {`
-*   `ghc {`
-*   `ghc  `
-*   `ghc v`
-*   `ghc e`
-*   `ghc r`
-*   `ghc s`
-*   `ghc i`
-*   `ghc o`
-*   `ghc n`
-*   `ghc s`
-*   `ghc .`
-*   `ghc g`
-*   `ghc h`
-*   `ghc c`
-*   `ghc _`
-*   `ghc v`
-*   `ghc e`
-*   `ghc r`
-*   `ghc s`
-*   `ghc i`
-*   `ghc o`
-*   `ghc n`
-*   `ghc s`
-*   `ghc  `
-*   `ghc }`
-*   `ghc }`
+{{ versions.gch_versions | code-list }}
 *   `cabal-install-1.18`
 *   `happy-1.19.3`
 *   `alex-3.1.3`
