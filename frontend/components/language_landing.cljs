@@ -22,13 +22,13 @@
 (def templates {"ruby" {:language "Ruby"
                         :headline "CircleCI makes Continous Integration and Deployment for Ruby projects a breeze."
                         :logo-path "/img/outer/languages/ruby-logo.svg"
-                        :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
+                        :features [{:feature "CircleCI provides support for a wide variety of Ruby versions and gems, including Ruby on Rails. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
                                     :title "Built For Ruby"
                                     :icon "/img/outer/languages/gear-icon.svg"}
-                                   {:feature "Circle manages all your database requirements for your, such as running your rake commands for creating, loading, and migrating your database. We have pre-installed more than a dozen databases and queues, including PostgreSQL, MySQL, and MongoDB. You can also add custom database commands via your circle.yml."
+                                   {:feature "Circle manages all your database requirements for you, such as running your rake commands for creating, loading, and migrating your database. We have pre-installed more than a dozen databases and queues, including PostgreSQL, MySQL, and MongoDB as well as frameworks such as DataMapper, Mongoid, ActiveRecord. You can also add custom database commands via your circle.yml."
                                     :title "Database Management"
                                     :icon "/img/outer/languages/file-icon.svg"}
-                                   {:feature "For the majority of Ruby projects no configuration is required; you just run your builds on CircleCI and it works! CircleCI will automatically infer your test commands if you're using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha."
+                                   {:feature "For the majority of Ruby projects no configuration is required; you just run your builds on CircleCI and it works! CircleCI will automatically infer your test commands if you're using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha. Parallel builds can also be set up automatically for your Ruby projects to keep build times down."
                                     :title "Inference That Just Works"
                                     :icon "/img/outer/languages/book-icon.svg"}]
                         :docs-link "/docs/language-ruby-on-rails"
