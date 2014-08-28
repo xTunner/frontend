@@ -4,7 +4,8 @@
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format
-            [frontend.state :as state]))
+            [frontend.state :as state]
+            [om.core :as om :include-macros true]))
 
 (defn include-article [template-name]
   ((aget (aget js/window "HAML") template-name)))
@@ -14,13 +15,24 @@
          #js {"__html"  ((aget (aget js/window "HAML") template-name)
                          (clj->js (merge {"include_article" include-article} args)))}}])
 
+(defn code-list-filter [versions]
+  (let [component (fn [vs]
+                    (om/component
+                     (utils/html [:ul (for [v vs]
+                                        [:li [:code v]])])))]
+    (.renderComponentToString js/React (om/build component versions))))
+
 (defn replace-variables [html]
-  (let [re (js/RegExp. "{{\\s*([\\S]*)\\s*}}" "g")]
-    (.replace html re (fn [s match]
-                        (let [[name & path] (string/split match #"\.")
+  (let [re (js/RegExp. "{{\\s*([^\\s]*)\\s*(?:\\|\\s*([\\w-]*)\\s*)?}}" "g")]
+    (.replace html re (fn [s m1 m2]
+                        (let [[name & path] (string/split m1 #"\.")
                               var (case name
-                                        "versions" (.-Versions js/CI))]
-                          (apply aget var path))))))
+                                    "versions" (.-Versions js/CI))
+                              val (apply aget var path)
+                              filter (case m2
+                                       "code-list" code-list-filter
+                                       identity)]
+                          (filter val))))))
 
 (defn replace-asset-paths [html]
   (let [re (js/RegExp. "\"asset:/(.*?)\"" "g")]
