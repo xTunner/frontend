@@ -1,29 +1,17 @@
-  The
-    [
-      experimental Parameterized Build API
-    ](/docs/parameterized-builds)
-  allows you to trigger a build using the
-    [
-      CircleCI API
-    ](/docs/api#new-build)
-  and inject environment variables into the build environment.
+The [experimental Parameterized Build API](/docs/parameterized-builds)
+allows you to trigger a build using the [CircleCI API](/docs/api#new-build)
+and inject environment variables into the build environment.
 
-  You can customize your `circle.yml` to take different actions, such as running a much more extensive test suite, when certain build parameters are present.
+You can customize your `circle.yml` to take different actions, such as running a much more extensive test suite, when certain build parameters are present.
 
-  [
-    Parameterized builds
-  ](/docs/parameterized-builds)
-  are still an experimental feature.
-  We're very interested in what you create with build parameters and would love to get your
-    [
-      feedback
-    ](mailto:sayhi@circleci.com)
-  on using them.
+[Parameterized builds](/docs/parameterized-builds) are still an experimental feature.
+We're very interested in what you create with build parameters and would love to get your
+[feedback](mailto:sayhi@circleci.com) on using them.
 
 ## Example
 
-  You've a straight-forward `circle.yml` for your project `example-corp/project-foo`.
-  It just sets a Python version and deploys to your staging Heroku app.
+You've a straight-forward `circle.yml` for your project `example-corp/project-foo`.
+It just sets a Python version and deploys to your staging Heroku app.
 
 ```
 machine:
@@ -37,11 +25,11 @@ deployment:
       appname: staging-dawn-435
 ```
 
-  But sometimes you need to run a nightly build.
-  You have a large functional test suite that takes too long to run for a quick edit/test cycle during development.
-  These tests should be run once a day at least.
+But sometimes you need to run a nightly build.
+You have a large functional test suite that takes too long to run for a quick edit/test cycle during development.
+These tests should be run once a day at least.
 
-  Creating a conditional step is easy; `circle.yml` commands are just shell commands and build parameters are just environment variables:
+Creating a conditional step is easy; `circle.yml` commands are just shell commands and build parameters are just environment variables:
 
 ```
 machine:
@@ -62,10 +50,10 @@ deployment:
       appname: staging-dawn-435
 ```
 
-  `./bin/run-functional-tests.sh` is only run if `RUN_NIGHTLY_BUILD` is set (`-n` means non-zero length).
-  Rather than hard-code the target app we use another build-parameter to specify the target for the functional test script in `FUNCTIONAL_TEST_TARGET`.
+`./bin/run-functional-tests.sh` is only run if `RUN_NIGHTLY_BUILD` is set (`-n` means non-zero length).
+Rather than hard-code the target app we use another build-parameter to specify the target for the functional test script in `FUNCTIONAL_TEST_TARGET`.
 
-  Now, create a simple script to trigger a build:
+Now, create a simple script to trigger a build:
 
 ```
 #!/bin/bash
@@ -92,21 +80,21 @@ curl \
 --request POST ${trigger_build_url}
 ```
 
-  This triggers a new build of master, passing in the parameters `RUN_NIGHTLY_BUILD` and `FUNCTIONAL_TEST_TARGET`.
+This triggers a new build of master, passing in the parameters `RUN_NIGHTLY_BUILD` and `FUNCTIONAL_TEST_TARGET`.
 
-  The final step to make this a nightly build is to invoke this script in a scheduled job as:
+The final step to make this a nightly build is to invoke this script in a scheduled job as:
 
 ```
 trigger_nightly_build.sh example-corp/project-foo master ${CIRCLE_TOKEN}
 ```
 
-  E.g. if you use `cron` you can set a new job to run every night as your user by running `crontab -e` and adding:
+E.g. if you use `cron` you can set a new job to run every night as your user by running `crontab -e` and adding:
 
 ```
 30 0 * * * /bin/bash /home/ubuntu/bin/trigger_nightly_build.sh example-corp/project-foo master $(cat /home/ubuntu/.circle_token) 2>&1 | /usr/bin/logger
 ```
 
-  This runs the trigger_nightly_build.sh script at 30 minutes past midnight (check your server time!).
-  It reads the CircleCI API token from `/home/ubuntu/.circle_token` and sends any output from the script to syslog via `logger`.
+This runs the trigger_nightly_build.sh script at 30 minutes past midnight (check your server time!).
+It reads the CircleCI API token from `/home/ubuntu/.circle_token` and sends any output from the script to syslog via `logger`.
 
-  Note the use of full paths for all binaries, cronjobs aren't run with your normal environment so it's a good idea to always specify full paths.
+Note the use of full paths for all binaries, cronjobs aren't run with your normal environment so it's a good idea to always specify full paths.
