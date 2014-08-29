@@ -350,14 +350,25 @@
             "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
-           (describe-flag {:flag :junit
-                           :title "JUnit support"
-                           :blurb [:p
-                                   "We've been experimenting with better ways to display and manage "
-                                   "test result data, especially for large test suites. This adds flags "
-                                   "to some of our inferred commands, and collects data supplied by JUnit and "
-                                   "JUnit-compatabile test runners. It only works for a handful of test "
-                                   "runners for now, and the data is only available through our API, though!"]})
+           ;; Comment out while we wait for the backend to deploy
+           ;; (describe-flag {:flag :junit
+           ;;                 :title "JUnit support"
+           ;;                 :blurb [:p
+           ;;                         "We've been experimenting with better ways to display and manage "
+           ;;                         "test result data, especially for large test suites. This adds flags "
+           ;;                         "to some of our inferred commands to collect structured test output supplied by "
+           ;;                         "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
+           ;;                         "you're using our inferred test steps. For RSpec, we also require our fork of the "
+           ;;                         "rspec_junit_formatters gem (see the flag below). If you're using parallelism, we'll "
+           ;;                         "automatically use the timing data to give you better test splits. You'll also be able to "
+           ;;                         "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
+           ;; (describe-flag {:flag :inject-rspec-junit
+           ;;                 :title "Automatically inject the rspec_junit_formatters gem"
+           ;;                 :blurb (list [:p
+           ;;                               "Used with the JUnit support above, this will inject our rspec_junit_formatter "
+           ;;                               "gem into your Gemfile, which lets us capture test information for RSpec. Alternatively, "
+           ;;                               "you can include the gem in your gemfile:"]
+           ;;                              [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]])})
            (describe-flag {:flag :set-github-status
                            :title "GitHub Status updates"
                            :blurb [:p
