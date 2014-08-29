@@ -1,23 +1,19 @@
-  Setting up continuous deployment to Google App Engine is pretty straightforward. Here's
-  how you do it.
+Setting up continuous deployment to Google App Engine is pretty straightforward. Here's
+how you do it.
 
 ## Add Google App Engine SDK as a Dependency
 
-  First, you have to
-  **install the SDK on your build VM.**
-  We don't do this by default, because it's very fast (under 10 seconds) and there are many
-  supported SDK versions to choose from.
+First, you have to **install the SDK on your build VM.**
+We don't do this by default, because it's very fast (under 10 seconds) and there are many
+supported SDK versions to choose from.
 
-  You'll need to find the download URL for the SDK that you need. The official source for
-  SDK downloads is
-    [https://developers.google.com/appengine/downloads](https://developers.google.com/appengine/downloads).
+You'll need to find the download URL for the SDK that you need. The official source for
+SDK downloads is
+[https://developers.google.com/appengine/downloads](https://developers.google.com/appengine/downloads).
 
-  This example
-  [
-    circle.yml
-  ](/docs/configuration)
-  fragment installs version 1.5.1 of the Python Google App Engine SDK. Modify it to
-  download the SDK you need:
+This example [circle.yml](/docs/configuration)
+fragment installs version 1.5.1 of the Python Google App Engine SDK. Modify it to
+download the SDK you need:
 
 ```
 dependencies:
@@ -28,25 +24,19 @@ dependencies:
 
 ## Configure Deployment to Google App Engine
 
-  With the SDK installed, next you need to
-  **
-    configure continuous deployment.
-  **
-  You may want to read up on configuring
-  [
-    continuous deployment with circle.yml
-  ](/docs/configuration#deployment)
-  in general if your needs are more complex than what's shown in these examples.
+With the SDK installed, next you need to **configure continuous deployment.**
+You may want to read up on configuring
+[continuous deployment with circle.yml](/docs/configuration#deployment)
+in general if your needs are more complex than what's shown in these examples.
 
-  For the sake of this example, let's deploy the master branch to
-  Google App Engine every time the tests are green. The commands differ slightly
-  depending on which language you're using, but they're all doing basically
-  the same thing:
+For the sake of this example, let's deploy the master branch to
+Google App Engine every time the tests are green. The commands differ slightly
+depending on which language you're using, but they're all doing basically
+the same thing:
 
 ### Python
 
-  Using
-    [appcfg.py update](https://developers.google.com/appengine/docs/python/gettingstarted/uploading):
+Using [appcfg.py update](https://developers.google.com/appengine/docs/python/gettingstarted/uploading):
 
 ```
 deployment:
@@ -58,8 +48,7 @@ deployment:
 
 ### Java
 
-  Using
-    [appcfg.sh update](https://developers.google.com/appengine/docs/java/tools/uploadinganapp):
+Using [appcfg.sh update](https://developers.google.com/appengine/docs/java/tools/uploadinganapp):
 
 ```
 deployment:
@@ -71,8 +60,7 @@ deployment:
 
 ### Go
 
-  Using
-    [appcfg.py update](https://developers.google.com/appengine/docs/go/tools/uploadinganapp):
+Using [appcfg.py update](https://developers.google.com/appengine/docs/go/tools/uploadinganapp):
 
 ```
 deployment:
@@ -84,11 +72,11 @@ deployment:
 
 ### Credentials
 
-  In all three cases, the deployment command passes an email address and password to
-  the appcfg command. The credentials are stored in environment variables, which you can
-  manage through the web UI as described
-    [in this document](/docs/environment-variables#setting-environment-variables-for-all-commands-without-adding-them-to-git).
+In all three cases, the deployment command passes an email address and password to
+the appcfg command. The credentials are stored in environment variables, which you can
+manage through the web UI as described
+[in this document](/docs/environment-variables#setting-environment-variables-for-all-commands-without-adding-them-to-git).
 
-  Python and Go users can also configure it to use non-interactive
-  oauth2 authentication, instead (The Java SDK's appcfg.sh does not appear to support this
-  usage.)
+Python and Go users can also configure it to use non-interactive
+oauth2 authentication, instead (The Java SDK's appcfg.sh does not appear to support this
+usage.)
