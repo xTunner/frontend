@@ -12,7 +12,7 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-trial-notice? [projects plan]
-  (let [some-private-repos (some identity (map #(not (get-in % [:feature_flags :oss])) projects))]
+  (let [some-private-repos (some #(not (get-in % [:feature_flags :oss])) projects)]
     (and some-private-repos
          (plan-model/trial? plan)
          ;; We probably gave them a special deal, better not to bug them
