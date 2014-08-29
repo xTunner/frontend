@@ -1,6 +1,4 @@
-  When your tests run, during the
-  `bundle install`
-  step, you might see something like this:
+When your tests run, during the `bundle install` step, you might see something like this:
 
 ```
 Fetching git@github.com:rails/rails
@@ -9,23 +7,19 @@ Permission denied (publickey).
 fatal: The remote end hung up unexpectedly
 ```
 
-  This happens because you have a git repository listed as a dependency in your Gemfile:
+This happens because you have a git repository listed as a dependency in your Gemfile:
 
 ```
 gem "rails", :git => "git://github.com/rails/rails.git"
 ```
 
-  If the repository is public, just change the dependency to use a
-  `http`
-  url:
+If the repository is public, just change the dependency to use a
+`http` url:
 
 ```
 gem "rails", :git => "http://github.com/rails/rails"
 ```
 
-  If the repository is private, you will need to enable user keys
-  from your project's
-  **
-    Project Settings > Checkout SSH keys
-  **
-  page.
+If the repository is private, you will need to enable user keys
+from your project's **Project Settings > Checkout SSH keys**
+page.
