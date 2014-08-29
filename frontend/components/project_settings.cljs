@@ -367,15 +367,15 @@
            (describe-flag {:flag :oss
                            :title "Free and Open Source"
                            :blurb [:p
-                                   "Be part of our F/OSS beta! Organizations now have a free container "
+                                   "Be part of our F/OSS beta! Organizations now have three free containers"
                                    "reserved for F/OSS projects; enabling this will allow this project's "
-                                   "builds to use it and let others see your builds, both through the "
+                                   "builds to use them and let others see your builds, both through the "
                                    "web UI and the API."]})
            (describe-flag {:flag :build-fork-prs
                            :title "Project fork pull requests"
                            :blurb '([:p
                                      "CircleCI will automatically update the commit status shown on GitHub's "
-                                     "pull request page. Builds will will be run using the parent repository's plan "
+                                     "pull request page. Builds will be run using the parent repository's plan "
                                      "and will be able to access the parent project's environment settings."]
                                     [:p
                                      "If you have SSH keys or AWS credentials stored in your project settings and "

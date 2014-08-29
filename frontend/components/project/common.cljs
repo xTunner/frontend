@@ -24,7 +24,7 @@
          [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
           (cond (plan-model/trial-over? plan)
                 (list (gstring/format "%s's trial is over. " org-name)
-                      [:a {:href plan-path} "Add a plan to continue running your builds"]
+                      [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
                       ".")
 
                 (< 10 days)
