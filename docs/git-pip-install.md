@@ -1,6 +1,4 @@
-  When your tests run, during the
-  `pip install`
-  step, you might see something like this:
+When your tests run, during the `pip install` step, you might see something like this:
 
 ```
 Obtaining somerepo from git+ssh://git@github.com/someorg/somerepo.git#egg=somerepo (from -r requirements.txt (line 23))
@@ -14,23 +12,18 @@ ERROR: Repository not found.
 fatal: The remote end hung up unexpectedly
 ```
 
-  This happens because you have a git repository listed as a dependency in your requirement.txt file:
+This happens because you have a git repository listed as a dependency in your requirement.txt file:
 
 ```
 git+git://github.com/someorg/somerepo.git
 ```
 
-  If the repository is public, just change the dependency to use a
-  `http`
-  url:
+If the repository is public, just change the dependency to use a `http` url:
 
 ```
 git+http://github.com/someorg/somerepo.git
 ```
 
-  If the repository is private, you will need to enable user keys
-  from your project's
-  **
-    Project settings > Checkout SSH keys
-  **
-  page.
+If the repository is private, you will need to enable user keys
+from your project's ** Project settings > Checkout SSH keys**
+page.
