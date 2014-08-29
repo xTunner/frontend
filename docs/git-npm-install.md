@@ -1,6 +1,6 @@
-  When your tests run, during the
-  `npm install`
-  step, you might see something like this:
+When your tests run, during the
+`npm install`
+step, you might see something like this:
 
 ```
 npm ERR! git clone ssh://git@github.com/someuser/somerepo.git Cloning into bare repository '/home/ubuntu/.npm/_git-remotes/ssh-git-github-com-creativelive-shared-git-01234abc'...
@@ -26,23 +26,19 @@ npm ERR! or email it to:
 npm ERR!     <npm-@googlegroups.com>
 ```
 
-  This happens because you have a git repository listed as a dependency in your package.json file:
+This happens because you have a git repository listed as a dependency in your package.json file:
 
 ```
 "somepackage": "git://github.com/someorg/somerepo.git"
 ```
 
-  If the repository is public, just change the dependency to use a
-  `http`
-  url:
+If the repository is public, just change the dependency to use a
+`http` url:
 
 ```
 "somepackage": "https://github.com/someorg/somerepo"
 ```
 
-  If the repository is private, you will need to enable user keys
-  from your project's
-  **
-    Project settings > Checkout SSH keys
-  **
-  page.
+If the repository is private, you will need to enable user keys
+from your project's **Project settings > Checkout SSH keys**
+page.
