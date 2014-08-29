@@ -23,7 +23,6 @@
     "fixed"   :pass-light
 
     "failed"   :fail-light
-    "canceled" :fail-light
     "timedout" :fail-light
 
     "queued"      :hold-light
@@ -31,6 +30,7 @@
     "retried"     :hold-light
     "scheduled"   :hold-light
 
+    "canceled"            :stop-light
     "no_tests"            :stop-light
     "not_run"             :stop-light
     "infrastructure_fail" :stop-light
