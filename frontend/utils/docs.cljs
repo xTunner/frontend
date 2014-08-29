@@ -1,7 +1,7 @@
 (ns frontend.utils.docs
   (:require [clojure.string :as string]
             [frontend.stefon :as stefon]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :include-macros true :refer [defrender]]
             [goog.string :as gstring]
             goog.string.format
             [frontend.state :as state]
@@ -15,6 +15,47 @@
          #js {"__html"  ((aget (aget js/window "HAML") template-name)
                          (clj->js (merge {"include_article" include-article} args)))}}])
 
+(defn api-curl [endpoint]
+  (let [curl-args (if-not (= (:method endpoint) "GET")
+                    (str "-X " (:method endpoint))
+                    "")
+        curl-params (if-let [params (:params endpoint)]
+                      (->> params
+                           (map #(str (:name %) "=" (:example %)))
+                           (string/join "&")
+                           (str "&"))
+                      "")]
+    (gstring/format "curl %shttps://circle.com%s?circle-token=:token%s"
+                    curl-args (:url endpoint) curl-params)))
+
+(defrender api-endpoint-doc [endpoint]
+  (utils/html
+   [:div
+    [:p (:description endpoint)]
+    [:h4 "Method"]
+    [:p (:method endpoint)]
+    (when-let [params (:params endpoint)]
+      [:div [:h4 "Optional parameters"]
+       [:table.table
+        [:thead
+         [:tr
+          [:th "Parameter"] [:th "Description"]]]
+        [:tbody
+         (for [param params]
+           [:tr
+            [:td (:name param)]
+            [:td (:description param)]])]]])
+    [:h4 "Example call"]
+    [:pre [:code (api-curl endpoint)]]
+    [:h4 "Example response"]
+    [:pre [:code (:response endpoint)]]
+    (when (:try_it endpoint)
+      [:p [:a {:href (str "https://circleci.com" (:url endpoint)) :target "_blank"}
+           "Try it in your browser"]])]))
+
+(defn api-endpoint-filter [endpoint]
+  (.renderComponentToString js/React (om/build api-endpoint-doc endpoint)))
+
 (defn code-list-filter [versions]
   (let [component (fn [vs]
                     (om/component
@@ -27,12 +68,14 @@
     (.replace html re (fn [s m1 m2]
                         (let [[name & path] (string/split m1 #"\.")
                               var (case name
-                                    "versions" (aget js/window "CI" "Versions"))
+                                    "versions" (aget js/window "CI" "Versions")
+                                    "api_data" (aget js/window "api_data"))
                               val (apply aget var path)
                               filter (case m2
                                        "code-list" code-list-filter
+                                       "api-endpoint" api-endpoint-filter
                                        identity)]
-                          (filter val))))))
+                          (filter (js->clj val :keywordize-keys true)))))))
 
 (defn replace-asset-paths [html]
   (let [re (js/RegExp. "\"asset:/(.*?)\"" "g")]
