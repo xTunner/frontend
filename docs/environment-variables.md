@@ -1,10 +1,10 @@
-  We export a number of environment variables during each build, which you may find
-  useful for more complex testing or deployment.
+We export a number of environment variables during each build, which you may find
+useful for more complex testing or deployment.
 
 ### Basics
 
-  Ideally, you won't have code which behaves differently in CI. But for the cases
-  when it's necessary, we set two environment variables which you can test:
+Ideally, you won't have code which behaves differently in CI. But for the cases
+when it's necessary, we set two environment variables which you can test:
 
 <dl>
   <dt>
@@ -23,7 +23,7 @@
 
 ### Build Details
 
-  We publish the details of the currently running build in these variables:
+We publish the details of the currently running build in these variables:
 
 <dl>
   <dt>
@@ -66,15 +66,13 @@
     `CIRCLE_ARTIFACTS`
   </dt>
   <dd>
-    The directory whose contents are automatically saved as
-        [build artifacts](/docs/build-artifacts).
+    The directory whose contents are automatically saved as [build artifacts](/docs/build-artifacts).
   </dd>
 </dl>
 
 ### Parallelism
 
-  These variables are available for
-    [manually setting up parallelism](/docs/parallel-manual-setup):
+These variables are available for [manually setting up parallelism](/docs/parallel-manual-setup):
 
 <dl>
   <dt>
@@ -93,8 +91,8 @@
 
 ### Other
 
-  There are quite a few other environment variables set. Here are some of
-  the ones you might be looking for:
+There are quite a few other environment variables set. Here are some of
+the ones you might be looking for:
 
 <dl>
   <dt>
@@ -125,37 +123,33 @@
 
 ### Set your own!
 
-  You can of course set your own environment variables, too!
-  The only gotcha is that each command runs in its own shell, so just adding an
-  `export FOO=bar`
-  command won't work.
+You can of course set your own environment variables, too!
+The only gotcha is that each command runs in its own shell, so just adding an
+`export FOO=bar` command won't work.
 
 #### Setting environment variables for all commands using circle.yml
 
-  You can set environment variables in your
-  `circle.yml`
-  file, that
-    [will be set for every command](/docs/configuration#environment).
+You can set environment variables in your `circle.yml` file, that
+[will be set for every command](/docs/configuration#environment).
 
 #### Setting environment variables for all commands without adding them to git
 
-  Occasionally, you'll need to add an API key or some other secret as
-  an environment variable.  You might not want to add the value to your
-  git history.  Instead, you can add environment variables using the
-  **Project settings &gt; Environment Variables** page of your project.
+Occasionally, you'll need to add an API key or some other secret as
+an environment variable.  You might not want to add the value to your
+git history.  Instead, you can add environment variables using the
+**Project settings &gt; Environment Variables** page of your project.
 
-  All commands and data on CircleCI's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
-  Take this into account before adding important credentials that some colleagues do not have access to.
+All commands and data on CircleCI's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
+Take this into account before adding important credentials that some colleagues do not have access to.
 
 #### Per-command environment variables
 
-  You can set environment variables per-command as well.
-  You can use standard bash syntax in your commands:
+You can set environment variables per-command as well.
+You can use standard bash syntax in your commands:
 
 ```
 RAILS_ENV=test bundle exec rake test
 ```
 
-  You can also use [the environment modifier](/docs/configuration#modifiers) in your
-  `circle.yml`
-  file.
+You can also use [the environment modifier](/docs/configuration#modifiers) in your
+`circle.yml` file.
