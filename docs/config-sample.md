@@ -1,17 +1,9 @@
-  In our
-  [
-    configuration document
-  ](/docs/configuration)
-  we list everything that can go into a
-  `circle.yml`
-  file.
-  Here we provide one complete sample file.
+In our [configuration document](/docs/configuration) we list everything that can go into a
+`circle.yml` file. Here we provide one complete sample file.
 
-  **Note that you probably don't need to include every section or setting here.**
-  Most people need only one or two settings in their
-  `circle.yml`
-  file.
-  You don't have to include any section you don't need.
+**Note that you probably don't need to include every section or setting here.**
+Most people need only one or two settings in their `circle.yml` file.
+You don't have to include any section you don't need.
 
 ## The sample
 
