@@ -1,10 +1,10 @@
-  CircleCI is built on Ubuntu 12.04, and PHP's memcached module clashes with this. If you try to run
+CircleCI is built on Ubuntu 12.04, and PHP's memcached module clashes with this. If you try to run
 
 ```
 pecl install memcached-stable
 ```
 
-  you may come across this error:
+you may come across this error:
 
 ```
 In file included from /tmp/pear/temp/memcached/php_memcached.h:22:0,
@@ -15,12 +15,12 @@ make: *** [php_memcached.lo] Error 1
 ERROR: `make' failed
 ```
 
-  The solution is to install an older version of memcached:
+The solution is to install an older version of memcached:
 
 ```
 pecl install -f memcached-2.0.1
 ```
 
-  See
-  [https://github.com/php-memcached-dev/php-memcached/issues/33](https://github.com/php-memcached-dev/php-memcached/issues/33)
-  for more details.
+See
+[https://github.com/php-memcached-dev/php-memcached/issues/33](https://github.com/php-memcached-dev/php-memcached/issues/33)
+for more details.
