@@ -1,31 +1,23 @@
-  If your tests require a running solr instance, you will need to configure
-  and boot solr before they run in CircleCI.
+If your tests require a running solr instance, you will need to configure
+and boot solr before they run in CircleCI.
 
 ## The Easy Way
 
-  In some cases, we can start solr automatically. In particular, if you're
-  using ruby and the sunspot_solr gem, we'll run
-  `rake sunspot:solr:start`
-  by default, and it should Just Work.
+In some cases, we can start solr automatically. In particular, if you're
+using ruby and the sunspot_solr gem, we'll run
+`rake sunspot:solr:start` by default, and it should Just Work.
 
-  If you're using a library or module with similar functionality (i.e. one
-  that provides a bundled solr, and a wrapper for booting it), please
-  [contact us](mailto:sayhi@circleci.com)
-  so that we can extend our inference to make it work automatically!
+If you're using a library or module with similar functionality (i.e. one
+that provides a bundled solr, and a wrapper for booting it), please
+[contact us](mailto:sayhi@circleci.com)
+so that we can extend our inference to make it work automatically!
 
 ## The Hard Way
 
-  Even if we aren't able to do things automatically,
-  `
-    solr
-    {{ versions.solr }}
-  `
-  is installed on your build system. It will need to be configured with your
-  schema.xml, and booted via
-    [
-    circle.yml
-  ](/docs/configuration).
-  Here's an example of how to do so:
+Even if we aren't able to do things automatically, `solr {{ versions.solr }}`
+is installed on your build system. It will need to be configured with your
+schema.xml, and booted via [circle.yml](/docs/configuration).
+Here's an example of how to do so:
 
 ```
 database:
@@ -37,26 +29,19 @@ database:
         background: true
 ```
 
-  This configuration does three things. You may need to fine-tune the exact commands
-  to match your needs, but they should:
+This configuration does three things. You may need to fine-tune the exact commands
+to match your needs, but they should:
 
-1.  Copy a skeletal solr installation from
-      `/opt/solr-4.3.1`
-      into your home directory.
-2.  Copy your configuration (`schema.xml` at least, and
-      `solrconfig.xml`
-      if you need it)
-      into place.
-3.  Launch solr as a
-            [
-        background process
-      ](/docs/background-process).
+1.  Copy a skeletal solr installation from `/opt/solr-4.3.1` into your home directory.
 
-  Solr, when started this way, will be running under
-  `http://localhost:8983/solr/`,
-  and logging to `$HOME/solr.log`.
+2.  Copy your configuration (`schema.xml` at least, and `solrconfig.xml` if you need it)
+into place.
 
-  Please
-  [contact us](mailto:sayhi@circleci.com)
-  and let us know if you're using solr this way! Your feedback helps us keep our
-  documentation up to date, and our services as useable as possible.
+3.  Launch solr as a [background process](/docs/background-process).
+
+Solr, when started this way, will be running under `http://localhost:8983/solr/`,
+and logging to `$HOME/solr.log`.
+
+Please [contact us](mailto:sayhi@circleci.com)
+and let us know if you're using solr this way! Your feedback helps us keep our
+documentation up to date, and our services as useable as possible.
