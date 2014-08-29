@@ -375,7 +375,7 @@
                            :title "Project fork pull requests"
                            :blurb '([:p
                                      "CircleCI will automatically update the commit status shown on GitHub's "
-                                     "pull request page. Builds will will be run using the parent repository's plan "
+                                     "pull request page. Builds will be run using the parent repository's plan "
                                      "and will be able to access the parent project's environment settings."]
                                     [:p
                                      "If you have SSH keys or AWS credentials stored in your project settings and "
