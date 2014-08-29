@@ -24,6 +24,7 @@
   "../views/outer/docs/"
   "../views/shared/contact_us.hamlc"
   "outer/versions.coffee"
+  "outer/api_data.coffee"
 
   "ab_test_definitions.coffee" ;; TODO: necessary, convert to clojurescript
 
