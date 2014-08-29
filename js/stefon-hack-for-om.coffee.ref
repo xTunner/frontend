@@ -65,7 +65,6 @@ window.stefon_hack_for_om =
     "/docs/filesystem.md": '(asset-path "docs/filesystem.md")'
     "/docs/front-page.md": '(asset-path "docs/front-page.md")'
     "/docs/getting-started.md": '(asset-path "docs/getting-started.md")'
-    "/docs/gettingstarted.md": '(asset-path "docs/gettingstarted.md")'
     "/docs/git-bundle-install.md": '(asset-path "docs/git-bundle-install.md")'
     "/docs/git-npm-install.md": '(asset-path "docs/git-npm-install.md")'
     "/docs/git-pip-install.md": '(asset-path "docs/git-pip-install.md")'
