@@ -1,24 +1,19 @@
-  Circle supports building Java applications using most common JDKs and build tools.
-  Before each build, we look at your repository and infer commands to run, so most
-  setups should work automatically.
-  If your project has special requirements, you can augment or override inferred commands
-  with a
-  [circle.yml](/docs/configuration)
-  file.
+Circle supports building Java applications using most common JDKs and build tools.
+Before each build, we look at your repository and infer commands to run, so most
+setups should work automatically.
+If your project has special requirements, you can augment or override inferred commands
+with a [circle.yml](/docs/configuration) file.
 
 ### Version
 
-  Circle has
-  [several versions of the Oracle JDK](/docs/environment#java)
-  available. We use
-  `{{ versions.default_java_version }}`
-  as the default; if you'd like a particular version, you
-  can specify it in your `circle.yml`
+Circle has [several versions of the Oracle JDK](/docs/environment#java)
+available. We use `{{ versions.default_java_version }}`
+as the default; if you'd like a particular version, you can specify it in your `circle.yml`
 
 ### Dependencies & Tests
 
-  Circle supports ant, play, gradle, and maven out of the box.
-  Depending on your build tooling, we will infer different commands:
+Circle supports ant, play, gradle, and maven out of the box.
+Depending on your build tooling, we will infer different commands:
 
 <table class='table'>
   <thead>
@@ -66,9 +61,7 @@
   </tbody>
 </table>
 
-  You can easily customize inferred build commands in your `circle.yml`
-  by setting the `override`, `pre`, `post` in the
-  [dependencies](/docs/configuration#dependencies)
-  and
-  [test](/docs/configuration#test)
-  sections.
+You can easily customize inferred build commands in your `circle.yml`
+by setting the `override`, `pre`, `post` in the
+[dependencies](/docs/configuration#dependencies) and
+[test](/docs/configuration#test) sections.
