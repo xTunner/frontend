@@ -359,16 +359,11 @@
            ;;                         "to some of our inferred commands to collect structured test output supplied by "
            ;;                         "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
            ;;                         "you're using our inferred test steps. For RSpec, we also require our fork of the "
-           ;;                         "rspec_junit_formatters gem (see the flag below). If you're using parallelism, we'll "
+           ;;                         "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
+           ;;                         [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+           ;;                         "If you're using parallelism, we'll "
            ;;                         "automatically use the timing data to give you better test splits. You'll also be able to "
            ;;                         "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
-           ;; (describe-flag {:flag :inject-rspec-junit
-           ;;                 :title "Automatically inject the rspec_junit_formatters gem"
-           ;;                 :blurb (list [:p
-           ;;                               "Used with the JUnit support above, this will inject our rspec_junit_formatter "
-           ;;                               "gem into your Gemfile, which lets us capture test information for RSpec. Alternatively, "
-           ;;                               "you can include the gem in your gemfile:"]
-           ;;                              [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]])})
            (describe-flag {:flag :set-github-status
                            :title "GitHub Status updates"
                            :blurb [:p
