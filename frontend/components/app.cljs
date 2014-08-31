@@ -26,6 +26,7 @@
             [frontend.components.shared :as shared]
             [frontend.components.stories :as stories]
             [frontend.components.landing :as landing]
+            [frontend.components.landing-b :as landing-b]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
             [frontend.state :as state]
@@ -58,7 +59,8 @@
 
     :loading loading
 
-    :landing landing/home
+    ; :landing landing/home
+    :landing landing-b/home
     :about about/about
     :pricing pricing/pricing
     :jobs jobs/jobs

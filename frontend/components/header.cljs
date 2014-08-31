@@ -116,9 +116,8 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div
-          [:div
-           (when flash
-             [:div#flash flash])]
+          (when flash
+            [:div#flash flash])
           [:div#navbar
            [:div.container
             [:div.row
