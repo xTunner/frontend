@@ -154,17 +154,17 @@
              "How do I start using my " (:language template) " app with CircleCI?"]
             [:div.languages-cta-steps
              [:div.languages-cta-step
-              [:div.step-number "1"]
+              [:div.step-number]
               [:div
                "Start by signing up "
                [:br]
                "using GitHub"]]
              [:div.languages-cta-step
-              [:div.step-number "2"]
+              [:div.step-number]
               [:div
                "Run one of your Ruby projects on Circle"]]
              [:div.languages-cta-step
-              [:div.step-number "3"]
+              [:div.step-number]
               [:div
                [:strong "That's it!"]
                " Contact support if you run in to any issues. "]]]
