@@ -1,33 +1,15 @@
 //header style
-#navbar.ruby {
-  background: @rubyColor;
+#navbar {
   ul a {
-    color: @white;
+    color: fade(@white, 55);
     &:hover {
-      background: none;
-      font-weight: bold;
+      color: @white;
+      background: fade(@white, 13);
     }
   }
-}
-#navbar.python {
-  background: @pythonColor;
-  ul a {
-    color: @white;
-    &:hover {
-      background: none;
-      font-weight: bold;
-    }
-  }
-}
-#navbar.node {
-  background: @nodeColor;
-  ul a {
-    color: @white;
-    &:hover {
-      background: none;
-      font-weight: bold;
-    }
-  }
+  &.ruby   { background: @rubyColor;   }
+  &.python { background: @pythonColor; }
+  &.node   { background: @nodeColor;   }
 }
 .languages.page {
   @em: 18px;
