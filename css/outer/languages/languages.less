@@ -286,17 +286,24 @@
         color: lighten( desaturate( @blueTeal, 24 ), 2 );
         line-height: 22px;
         width: 30%;
+        counter-increment: language-steps;
         .step-number {
           margin-right: 14px;
-          display: block;
-          text-align: center;
-          padding: 14px 18px;
-          border-radius: 26px;
-          font-weight: bold;
           font-size: 18px;
-          line-height: 18px;
           color: @white;
           background: @blueTeal;
+          padding: 28px;
+          border-radius: 28px;
+          position: relative;
+          &:before {
+            .flexy(center, center);
+            content: counter(language-steps);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+          }
         }
       }
     }
