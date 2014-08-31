@@ -1,0 +1,105 @@
+#navbar,
+#sticky-help-link,
+.main-foot {
+  display: none !important;
+}
+#app {
+  min-width: inherit;
+}
+@em: @baseFontSize;
+@h1_font_size: 72px;
+@h1_line_height: @h1_font_size;
+@h3_font_size: 20px;
+@h3_line_height: 30px;
+.page {
+  &.home {
+    color: @white;
+    h1 {
+      font-size: @h1_font_size;
+      line-height: @h1_line_height;
+      font-weight: 300;
+      color: @grayBoxBorder;
+      margin: 0;
+    }
+    h3 {
+      font-size: @h3_font_size;
+      line-height: @h3_line_height;
+      font-weight: normal;
+      color: #aaa;
+      margin: 0;
+    }
+  }
+}
+
+
+.outer-navigation {
+  .box-sizing(border-box);
+  .flexy(center, center);
+  height: @tile;
+  margin-bottom: auto;
+  border: 1px solid fade(@black, 13);
+}
+.latest-link {
+  color: @gray;
+  margin-left: ((@tile / 2) - (@baseLineHeight / 2));
+  margin-right: auto;
+}
+.login-link {
+  color: @gray;
+  margin-left: auto;
+  margin-right: ((@tile / 2) - (@baseLineHeight / 2));
+}
+
+
+
+.home-intro {
+  .flexy(column);
+  .justify-content(center);
+  height: 100vh;
+  background: @grayDark;
+}
+.intro-brand {
+  .icon_style(@white, @tile);
+}
+.intro-slogan {
+  text-align: center;
+  margin: @tile 0;
+  padding: (((@tile * 2) - (@h1_line_height + (@h3_line_height * 2))) / 2) 0;
+}
+.intro-action {
+  .flexy(center, center);
+}
+.intro-action-btn {
+  .box-sizing(border-box);
+  .flexy(center, center);
+  color: @grayDark;
+  font-size: 20px;
+  background: @white;
+  width: (@tile * 3);
+  height: @tile;
+  border: 1px solid @white;
+  border-radius: (@tile / 2);
+
+  position: relative;
+  &:hover {
+    .signup-view {
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+  .signup-view {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+.intro-learn {
+  .flexy(center, center);
+  height: @tile;
+  margin-top: auto;
+  a {
+    color: @white;
+  }
+}
