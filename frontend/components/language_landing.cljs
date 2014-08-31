@@ -175,7 +175,6 @@
                :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
                                                                            :properties {:source (:language template)}
                                                                            :path (auth-url)}])}
-              [:i.fa.fa-github-alt]
-              " Sign Up With "
-              [:strong "GitHub"]]
+              [:i.fa.fa-github]
+              " Sign up with GitHub"]
              [:div.language-cta-trial "14-day free trial"]]]]])))))
