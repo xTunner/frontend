@@ -46,12 +46,13 @@
     (open-to-inner! nav-ch :admin {:admin true})))
 
 
-;; TODO: make this handle params
 ;; Creates a route that will ignore fragments and add them to params as {:_fragment "#fragment"}
 (defrecord FragmentRoute [route]
   sec/IRenderRoute
   (render-route [this]
-    route))
+    (sec/render-route route))
+  (render-route [this params]
+    (sec/render-route route params)))
 
 (extend-protocol sec/IRouteMatches
   FragmentRoute
