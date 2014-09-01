@@ -10,12 +10,12 @@
 
   "bootstrap.js.stefon" ;; TODO: replace with the om version
 
-  "../vendor/stickyMojo.js" ;; TODO: what do we use this for?
-
   "module_setup.coffee" ;; necessary, for now
   "libs/asset-path.coffee" ;; Used by docs
   "libs/github.coffee"
   "libs/terminal.coffee"
+  "libs/phantomjs-hack.js" ;; previously provided by ko, defines Function.prototype.bind
+                           ;; should be able to remove after upgrading om/react
   "inner/config_diagnostic.coffee"
 
   "../views/outer/docs/"
