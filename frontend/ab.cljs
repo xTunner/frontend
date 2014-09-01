@@ -6,7 +6,7 @@
 
 (def cookie-name "ab_test_user_seed")
 
-(defn get-user-seed []
+(defn ^:export get-user-seed []
   (.get (goog.net.Cookies. js/document) cookie-name))
 
 (defn set-user-seed! []
@@ -29,13 +29,17 @@
         md5-bytes (.digest container)]
     (get-int (take 4 md5-bytes))))
 
+(defn ^:export choose-option-index [seed test-name options]
+  (let [word (first-md5-word (str seed (name test-name)))]
+    (Math/abs (mod word (if (neg? word)
+                          (- (count options))
+                          (count options))))))
+
 (defn choose [seed test-definitions & {:keys [overrides] :or {overrides {}}}]
-  (reduce (fn [choices [test-name options]]
-            (let [word (first-md5-word (str seed (name test-name)))]
-              (assoc choices test-name (nth options (Math/abs (mod word (if (neg? word)
-                                                                          (- (count options))
-                                                                          (count options))))))))
-          {} (merge test-definitions overrides)))
+  (merge (reduce (fn [choices [test-name options]]
+                   (assoc choices test-name (nth options (choose-option-index seed test-name options))))
+                 {} test-definitions)
+          overrides))
 
 (defn notify-mixpanel [choices]
   (let [mixpanel-choices (reduce (fn [m-choices [key value]]
