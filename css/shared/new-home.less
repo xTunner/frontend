@@ -18,26 +18,33 @@
       font-size: @h1_font_size;
       line-height: @h1_line_height;
       font-weight: 300;
-      color: @grayBoxBorder;
+      // color: @grayBoxBorder;
       margin: 0;
     }
     h3 {
       font-size: @h3_font_size;
       line-height: @h3_line_height;
       font-weight: normal;
-      color: #aaa;
+      // color: #aaa;
       margin: 0;
     }
   }
 }
 
 
+@zindex_intro_top: 2;
+@zindex_intro_bottom: 1;
+
+
 .outer-navigation {
   .box-sizing(border-box);
   .flexy(center, center);
+  position: relative;
+  z-index: @zindex_intro_top;
   height: @tile;
   margin-bottom: auto;
   border: 1px solid fade(@black, 13);
+  order: 1;
 }
 .latest-link {
   color: @gray;
@@ -55,21 +62,61 @@
 .home-intro {
   .flexy(column);
   .justify-content(center);
+  position: relative;
   height: 100vh;
   background: @grayDark;
+  color: #aaa;
 }
 .intro-brand {
   .icon_style(@white, @tile);
+  position: relative;
+  z-index: @zindex_intro_top;
+  order: 2;
 }
 .intro-slogan {
+  position: relative;
+  z-index: @zindex_intro_top;
   text-align: center;
   margin: @tile 0;
   padding: (((@tile * 2) - (@h1_line_height + (@h3_line_height * 2))) / 2) 0;
+  order: 3;
+  h1 {
+    color: @grayBoxBorder;
+  }
 }
-.intro-action {
-  .flexy(center, center);
-}
+// .intro-action {
+//   .flexy(center, center);
+// }
 .intro-action-btn {
+  .box-sizing(border-box);
+  .flexy(center, center);
+  align-self: center;
+  position: relative;
+  z-index: @zindex_intro_top;
+  color: @grayDark;
+  font-size: 20px;
+  background: @white;
+  width: (@tile * 3);
+  height: @tile;
+  border: 1px solid @white;
+  border-radius: (@tile / 2);
+  order: 4;
+  &:hover {
+    ~ .intro-action-overlay {
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      border-radius: 0;
+    }
+    ~ .intro-slogan {
+      h1 {
+        color: red;
+      }
+    }
+  }
+}
+.intro-action-overlay {
   .box-sizing(border-box);
   .flexy(center, center);
   color: @grayDark;
@@ -80,25 +127,20 @@
   border: 1px solid @white;
   border-radius: (@tile / 2);
 
-  position: relative;
-  &:hover {
-    .signup-view {
-      width: 100vw;
-      height: 100vh;
-    }
-  }
-  .signup-view {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-  }
+  position: absolute;
+  z-index: @zindex_intro_bottom;
+  pointer-events: none;
+  left: ~"calc(50% - 105px)";
+  top: ~"calc(50% + 140px)";
+  transition: 400ms;
 }
 .intro-learn {
   .flexy(center, center);
+  position: relative;
+  z-index: @zindex_intro_top;
   height: @tile;
   margin-top: auto;
+  order: 5;
   a {
     color: @white;
   }
