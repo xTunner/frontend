@@ -9,6 +9,7 @@
             [goog.dom.DomHelper]
             [frontend.ab :as ab]
             [frontend.analytics :as analytics]
+            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
@@ -239,6 +240,7 @@
 
 (defn ^:export setup! []
   (apply-app-id-hack)
+  (mixpanel/set-existing-user)
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)]
