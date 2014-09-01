@@ -7,16 +7,15 @@
   "../../components/jquery-placeholder/jquery.placeholder.js" ;; TODO: necessary?
   "../../components/viewport-units-buggyfill/viewport-units-buggyfill.js" ;; temporary until apple releases a fix
   "../../components/uri.js/src/URI.min.js" ;; TODO: necessary?
-  "../../components/knockout/build/output/knockout-latest.js" ;; TODO: used by ab-tests
   "../../components/underscore/underscore.js" ;; TODO: used by CI.terminal
 
   "bootstrap.js.stefon" ;; TODO: replace with the om version
 
-  "../vendor/md5.js" ;; TODO: necessary? used by ab-tests
   "../vendor/stickyMojo.js" ;; TODO: what do we use this for?
 
   "module_setup.coffee" ;; necessary, for now
-  "libs/" ;; TODO: trim the libs we don't need
+  "libs/github.coffee"
+  "libs/terminal.coffee"
   "inner/_obj.coffee"
   "inner/config_diagnostic.coffee"
 
