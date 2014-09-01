@@ -13,6 +13,7 @@
   "../vendor/stickyMojo.js" ;; TODO: what do we use this for?
 
   "module_setup.coffee" ;; necessary, for now
+  "libs/asset-path.coffee" ;; Used by docs
   "libs/github.coffee"
   "libs/terminal.coffee"
   "inner/_obj.coffee"
