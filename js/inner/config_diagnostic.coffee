@@ -1,10 +1,7 @@
 # The collection of errors that will be displayed.
-CI.inner.Diagnostics = class Diagnostics extends CI.inner.Obj
-  observables: =>
-    selected: 0
-
+CI.inner.Diagnostics = class Diagnostics
   constructor: (@config, @errors, properties={}) ->
-    super properties
+    @selected = 0
     # Create an annotated representation of the configuration.
     @ann = new CI.inner.Annotated @config
     # Keep track of the first and the last lines that are parts of errors.
@@ -58,11 +55,11 @@ CI.inner.Diagnostics = class Diagnostics extends CI.inner.Obj
       ix >= @first - 3 and ix <= @last + 3
 
 # An individual error.
-CI.inner.ConfigError = class ConfigError extends CI.inner.Obj
+CI.inner.ConfigError = class ConfigError
   constructor: (error, @index, @diagnostics) ->
-    super error
-    # Whether this error is currently selected / expanded.
-    @selected = @komp => @diagnostics.selected() == @index
+    for k,v of error
+      @[k] = v
+
     # Render the path a la JS field / array member accessing.
     @path = @path?.map (part, index) =>
       if typeof part == 'string'
@@ -82,14 +79,18 @@ CI.inner.ConfigError = class ConfigError extends CI.inner.Obj
     @flag =
       error_flag: true
       number: @index
-      selected: @selected
+      get_selected: @get_selected
       select: @select
 
+  # Whether this error is currently selected / expanded.
+  get_selected: () =>
+    @diagnostics.selected is @index
+
   select: () =>
-    @diagnostics.selected @index
+    @diagnostics.selected = @index
 
   select_next: () =>
-    @diagnostics.selected (@index + 1) % @diagnostics.errors.length
+    @diagnostics.selected = (@index + 1) % @diagnostics.errors.length
 
 # A data structure for annotating text. Handles overlapping annotations
 # automatically.
