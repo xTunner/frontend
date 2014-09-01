@@ -23,18 +23,19 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
                [:section.home-intro
+                [:a.intro-action-btn "Sign Up Free"]
+                [:div.intro-action-overlay]
                 [:nav.outer-navigation
                  [:a.latest-link "What is Continuous Integration?"]
                  [:a.login-link "Log In"]]
                 [:div.intro-brand
                  (common/ico :logo)]
                 [:div.intro-slogan
-                 [:h1 "Your team needs a hero."]
-                 [:h3 "Testing is hard. Let your org focus on product, let us handle your "]
+                 [:h1 "Your org needs a hero."]
+                 [:h3 "Testing is hard. Help your team focus on product, we'll handle your "]
                  [:h3 "Continuous Integration & Deployment."]]
-                [:div.intro-action
-                 [:div.intro-action-btn ;; "Sign Up Free"
-                  [:div.signup-view]]]
+                ; [:a.intro-action-btn "Sign Up Free"]
+                ; [:div.intro-action-overlay]
                 [:div.intro-learn
                  [:a "Learn more"]]]
                [:section.home-why]
