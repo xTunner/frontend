@@ -22,7 +22,6 @@
 @intro_cover_fadeout: (@intro_cover_fadein / 2);
 @intro_cover_timing: ease-in-out;
 
-
 @zindex_intro_cover: 2;
 @zindex_intro_above: (@zindex_intro_cover + 1);
 @zindex_intro_below: (@zindex_intro_cover - 1);
@@ -75,7 +74,7 @@
 .intro-nav {
   .box-sizing(border-box);
   position: relative;
-  z-index: @zindex_intro_below;
+  z-index: @zindex_intro_above;
   height: @tile;
   margin-bottom: auto;
   border: 1px solid fade(@black, 13);
