@@ -370,7 +370,15 @@
                   [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                        :href (build-model/path-for-parallelism build)}
                    (str (:parallel build) "x")]
-                  [:span (:parallel build) "x"])]]]]
+                  [:span (:parallel build) "x"])]
+               [:th "PRs"]
+               [:td
+                (interpose
+                 ", "
+                 (map (fn [url] [:a {:href url} "#"
+                                 (let [n (re-find #"/\d+$" url)]
+                                   (if n (subs n 1) "?"))])
+                      (:pull_request_urls build)))]]]]
             [:div.build-actions
              [:div.actions
               (forms/stateful-button
