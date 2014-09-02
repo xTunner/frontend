@@ -371,14 +371,16 @@
                        :href (build-model/path-for-parallelism build)}
                    (str (:parallel build) "x")]
                   [:span (:parallel build) "x"])]
-               [:th "PRs"]
-               [:td
-                (interpose
-                 ", "
-                 (map (fn [url] [:a {:href url} "#"
-                                 (let [n (re-find #"/\d+$" url)]
-                                   (if n (subs n 1) "?"))])
-                      (:pull_request_urls build)))]]]]
+               (let [urls (:pull_request_urls build)]
+                 (when (seq urls)
+                   (list [:th "PRs"]
+                         [:td
+                          (interpose
+                           ", "
+                           (map (fn [url] [:a {:href url} "#"
+                                           (let [n (re-find #"/\d+$" url)]
+                                             (if n (subs n 1) "?"))])
+                                urls))])))]]]
             [:div.build-actions
              [:div.actions
               (forms/stateful-button
