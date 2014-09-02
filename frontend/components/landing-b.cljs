@@ -23,7 +23,8 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
                [:section.home-intro
-                [:a.intro-action "Sign Up Free"]
+                [:a.intro-action {:role "button"}
+                 "Sign Up Free"]
                 [:div.intro-cover]
                 [:nav.intro-nav
                  [:div.wrap
@@ -48,7 +49,9 @@
                 ; [:a.intro-action-btn "Sign Up Free"]
                 ; [:div.intro-action-overlay]
                 [:div.intro-learn
-                 [:a "Learn more"]]]
+                 [:a
+                  "Learn more"
+                  (common/ico :chevron-down)]]]
                [:section.home-why]
                [:section.home-how]
                [:section.home-what]
