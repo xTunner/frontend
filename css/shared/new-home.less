@@ -11,6 +11,8 @@
 
 @em: @baseFontSize;
 
+@intro_light_on_dark: #aaa;
+
 @intro_h1_font: 72px;
 @intro_h1_line: @intro_h1_font;
 @intro_h3_font: 20px;
@@ -67,7 +69,7 @@
   position: relative;
   height: 100vh;
   background: @grayDark;
-  color: #aaa;
+  color: @intro_light_on_dark;
 }
 .intro-nav {
   .box-sizing(border-box);
@@ -204,7 +206,7 @@
     height: @intro_h3_line;
     &:before,
     &:after {
-      color: #aaa;
+      color: @intro_light_on_dark;
     }
     &:after {
       top: @intro_h3_line;
