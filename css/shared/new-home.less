@@ -22,9 +22,10 @@
 @intro_cover_fadeout: (@intro_cover_fadein / 2);
 @intro_cover_timing: ease-in-out;
 
-@zindex_intro_above: 3;
+
 @zindex_intro_cover: 2;
-@zindex_intro_below: 1;
+@zindex_intro_above: (@zindex_intro_cover + 1);
+@zindex_intro_below: (@zindex_intro_cover - 1);
 
 .page {
   &.home {
