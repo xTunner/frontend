@@ -34,10 +34,10 @@
                        (when (aget piece "error_flag")
                          [:span [:a.error-flag {:on-click #(do ((aget piece "select"))
                                                                (om/refresh! owner))
-                                                :class (when ((aget piece "selected")) "selected")}
+                                                :class (when ((aget piece "get_selected")) "selected")}
                                  (inc (aget piece "number"))]])))]]
                   (for [error (aget line "errors")]
-                    [:tr.error-message {:class (when ((aget error "selected")) "opened")}
+                    [:tr.error-message {:class (when ((aget error "get_selected")) "opened")}
                      [:td.line-number]
                      [:td.error-message
                       (when (aget error "path")
