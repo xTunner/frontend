@@ -27,6 +27,27 @@
 .page {
   &.home {
     color: @white;
+    a:not([role="button"]) {
+      color: @gray;
+      transition: color 300ms;
+      i {
+        path {
+          stroke: @gray;
+          stroke-width: 8;
+          transition: stroke 300ms;
+        }
+      }
+      &:hover {
+        color: @white;
+        transition: color 200ms;
+        i {
+          path {
+            stroke: @white;
+            transition: stroke 200ms;
+          }
+        }
+      }
+    }
     h1 {
       font-size: @intro_h1_font;
       line-height: @intro_h1_line;
@@ -60,14 +81,6 @@
     .flexy(center, center);
     height: 100%;
     margin: 0 ((@tile - @baseLineHeight) / 2);
-  }
-  a {
-    color: @gray;
-    transition: color 300ms;
-    &:hover {
-      color: @white;
-      transition-duration: 200ms;
-    }
   }
 }
 .intro-nav-promote {
@@ -206,7 +219,10 @@
   margin-top: auto;
   order: 5;
   a {
-    color: @white;
+    .flexy();
+  }
+  i {
+    margin-left: 1ex;
   }
 }
 //
@@ -256,11 +272,9 @@
         transition: @intro_cover_fadein @intro_cover_fadeout;
       }
       i.ico {
-        svg {
-          path {
-            fill: @grayDark;
-            transition: @intro_cover_fadein;
-          }
+        path {
+          fill: @grayDark;
+          transition: @intro_cover_fadein;
         }
       }
     }
