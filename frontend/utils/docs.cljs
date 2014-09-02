@@ -69,7 +69,7 @@
                         (let [[name & path] (string/split m1 #"\.")
                               var (case name
                                     "versions" (aget js/window "CI" "Versions")
-                                    "api_data" (aget js/window "api_data"))
+                                    "api_data" (aget js/window "circle_api_data"))
                               val (apply aget var path)
                               filter (case m2
                                        "code-list" code-list-filter
