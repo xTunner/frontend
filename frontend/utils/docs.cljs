@@ -5,7 +5,8 @@
             [goog.string :as gstring]
             goog.string.format
             [frontend.state :as state]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true])
+  (:require-macros [dommy.macros :refer [node]]))
 
 (defn include-article [template-name]
   ((aget (aget js/window "HAML") template-name)))
@@ -28,8 +29,11 @@
     (gstring/format "curl %shttps://circle.com%s?circle-token=:token%s"
                     curl-args (:url endpoint) curl-params)))
 
-(defrender api-endpoint-doc [endpoint]
-  (utils/html
+(defn hiccup->str [hiccup]
+  (.-innerHTML (node [:div hiccup])))
+
+(defn api-endpoint-filter [endpoint]
+  (hiccup->str 
    [:div
     [:p (:description endpoint)]
     [:h4 "Method"]
@@ -53,15 +57,10 @@
       [:p [:a {:href (str "https://circleci.com" (:url endpoint)) :target "_blank"}
            "Try it in your browser"]])]))
 
-(defn api-endpoint-filter [endpoint]
-  (.renderComponentToString js/React (om/build api-endpoint-doc endpoint)))
-
 (defn code-list-filter [versions]
-  (let [component (fn [vs]
-                    (om/component
-                     (utils/html [:ul (for [v vs]
-                                        [:li [:code v]])])))]
-    (.renderComponentToString js/React (om/build component versions))))
+  (hiccup->str 
+   [:ul (for [version versions]
+          [:li [:code (if-let [name (:name version)] name version)]])]))
 
 (defn replace-variables [html]
   (let [re (js/RegExp. "{{\\s*([^\\s]*)\\s*(?:\\|\\s*([\\w-]*)\\s*)?}}" "g")]
