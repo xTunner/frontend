@@ -2,7 +2,7 @@
 CI.ExistingUserHeuristics = class ExistingUserHeuristics
   constructor: () ->
     if window.renderContext.current_user
-      @set_existing_user(true)
+      @register_existing_user(true)
     else
       try
         if mixpanel.get_property?
