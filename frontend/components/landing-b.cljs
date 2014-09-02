@@ -31,9 +31,15 @@
                 [:div.intro-brand
                  (common/ico :logo)]
                 [:div.intro-slogan
-                 [:h1 "Your org needs a hero."]
-                 [:h3 "Testing is hard. Help your team focus on product, we'll handle your "]
-                 [:h3 "Continuous Integration & Deployment."]]
+                 [:h1.slogan-tagline {:title "Your org needs a hero."
+                                     :alt "We just need authorization first."}
+                  "Your org needs a hero."]
+                 [:h3.slogan-subline {:title "Testing is hard. Help your team focus on product, we'll handle your"
+                                      :alt "Why? Because signing up with your GitHub account lets Circle start your tests really fast."}
+                  "Testing is hard. Help your team focus on product, we'll handle your"]
+                 [:h3.slogan-subline {:title "Continuous Integration & Deployment."
+                                      :alt "Note, without fine-grained scopes, GitHub requires us to request them in bulk."}
+                  "Continuous Integration & Deployment."]]
                 ; [:a.intro-action-btn "Sign Up Free"]
                 ; [:div.intro-action-overlay]
                 [:div.intro-learn
