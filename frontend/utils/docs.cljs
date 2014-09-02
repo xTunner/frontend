@@ -107,8 +107,7 @@
         children (map ->template-kw (or (:children props) []))
         title (:title props)
         short-title (or (:short_title props) title)]
-    {:template-fn template-fn
-     :url (str "/docs/" (string/replace template-name "_" "-"))
+    {:url (str "/docs/" (string/replace template-name "_" "-"))
      :slug template-name
      :title title
      :sort_title short-title
