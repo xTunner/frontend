@@ -1,6 +1,6 @@
 # TODO: Make these annotations on defapi
 
-window.api_data =
+window.circle_api_data =
     me:
       try_it: true
       url: "/api/v1/me"
