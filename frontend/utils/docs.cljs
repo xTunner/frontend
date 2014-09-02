@@ -63,23 +63,23 @@
           [:li [:code (if-let [name (:name version)] name version)]])]))
 
 (defn replace-variables [html]
-  (let [re (js/RegExp. "{{\\s*([^\\s]*)\\s*(?:\\|\\s*([\\w-]*)\\s*)?}}" "g")]
-    (.replace html re (fn [s m1 m2]
-                        (let [[name & path] (string/split m1 #"\.")
-                              var (case name
-                                    "versions" (aget js/window "CI" "Versions")
-                                    "api_data" (aget js/window "circle_api_data"))
-                              val (apply aget var path)
-                              filter (case m2
-                                       "code-list" code-list-filter
-                                       "api-endpoint" api-endpoint-filter
-                                       identity)]
-                          (filter (js->clj val :keywordize-keys true)))))))
+  (string/replace html #"\{\{\s*([^\s]*)\s*(?:\|\s*([\w-]*)\s*)?\}\}"
+                  (fn [s m1 m2]
+                    (let [[name & path] (string/split m1 #"\.")
+                          var (case name
+                                "versions" (aget js/window "CI" "Versions")
+                                "api_data" (aget js/window "circle_api_data"))
+                          val (apply aget var path)
+                          filter (case m2
+                                   "code-list" code-list-filter
+                                   "api-endpoint" api-endpoint-filter
+                                   identity)]
+                      (filter (utils/js->clj-kw val))))))
 
 (defn replace-asset-paths [html]
-  (let [re (js/RegExp. "\\(asset:/(/.*?)\\)" "g")]
-    (.replace html re (fn [s match]
-                        (str "(" (stefon/asset-path match) ")")))))
+  (string/replace html #"\(asset:/(/.*?)\)"
+                  (fn [s match]
+                    (str "(" (stefon/asset-path match) ")"))))
 
 (defn render-markdown [input]
   (when input
