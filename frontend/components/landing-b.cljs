@@ -23,11 +23,11 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
                [:section.home-intro
-                [:a.intro-action-btn "Sign Up Free"]
-                [:div.intro-action-overlay]
-                [:nav.outer-navigation
-                 [:a.latest-link "What is Continuous Integration?"]
-                 [:a.login-link "Log In"]]
+                [:a.intro-action "Sign Up Free"]
+                [:div.intro-overlay]
+                [:nav.intro-nav
+                 [:a.intro-nav-promote "What is Continuous Integration?"]
+                 [:a.intro-nav-login "Log In"]]
                 [:div.intro-brand
                  (common/ico :logo)]
                 [:div.intro-slogan
