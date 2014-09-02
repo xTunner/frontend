@@ -36,11 +36,11 @@
                    (common/ico :logo)]]]
                 [:div.intro-slogan
                  [:h1.slogan-tagline {:title "Your org needs a hero."
-                                     :alt "We just need authorization first."}
+                                      :alt "We just need authorization first."}
                   "Your org needs a hero."]
-                 [:h3.slogan-subline {:title "Testing is hard. Help your team focus on product, we'll handle your"
+                 [:h3.slogan-subline {:title "You have a product to focus on, let Circle handle your"
                                       :alt "Why? Because signing up with your GitHub account lets Circle start your tests really fast."}
-                  "Testing is hard. Help your team focus on product, we'll handle your"]
+                  "You have a product to focus on, let Circle handle your"]
                  [:h3.slogan-subline {:title "Continuous Integration & Deployment."
                                       :alt "Note, without fine-grained scopes, GitHub requires us to request them in bulk."}
                   "Continuous Integration & Deployment."]]
