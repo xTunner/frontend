@@ -46,12 +46,13 @@
     (open-to-inner! nav-ch :admin {:admin true})))
 
 
-;; TODO: make this handle params
 ;; Creates a route that will ignore fragments and add them to params as {:_fragment "#fragment"}
 (defrecord FragmentRoute [route]
   sec/IRenderRoute
   (render-route [this]
-    route))
+    (sec/render-route route))
+  (render-route [this params]
+    (sec/render-route route params)))
 
 (extend-protocol sec/IRouteMatches
   FragmentRoute
@@ -157,6 +158,9 @@
   ;; TODO: this should be stories/:company, but we'll wait for more stories
   (defroute v1-stories (FragmentRoute. "/stories/shopify") {:as params}
     (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
+
+  (defroute v1-languages (FragmentRoute. "/features/:language") {:as params}
+    (open-to-outer! nav-ch :language-landing (assoc params :_title (str "CircleCI for " (:language params)))))
 
   ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
   (defroute v1-integrations (FragmentRoute. "/integrations/docker") {:as params}

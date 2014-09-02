@@ -935,7 +935,7 @@
 
 
 
-(defmethod control-event :home-technology-tab-selected
+(defmethod control-event :home-technology-tab-selected 
   [target message {:keys [tab]} state]
   (assoc-in state state/selected-home-technology-tab-path tab))
 
@@ -950,6 +950,10 @@
          (mixpanel/managed-track event properties) ([v] (do (utils/mlog "tracked" v "... redirecting")
                                                             (redirect)))
          (async/timeout 1000) (redirect)))))
+
+(defmethod control-event :language-testimonial-tab-selected
+  [target message {:keys [index]} state]
+  (assoc-in state state/language-testimonial-tab-path index))
 
 (defmethod post-control-event! :enterprise-learn-more-clicked
   [target message {:keys [source]} previous-state current-state]

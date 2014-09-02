@@ -2,6 +2,13 @@
 
 (defn initial-state []
   {:error-message nil
+   ;; A/B test instructions:
+   ;; 1. Don't define a test with null as one of the options
+   ;; 2. If you change a test's options, you must also change the test's name
+   ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
+   :ab-test-definitions {:a_is_a [true false]
+                         :split_form [true false]
+                         :button_copy [true false]}
    :ab-tests {}
    :changelog nil
    :environment "development"
@@ -169,6 +176,8 @@
 (def error-data-path [:error-data])
 
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
+
+(def language-testimonial-tab-path [:selected-language-testimonial-tab])
 
 (def changelog-path [:changelog])
 
