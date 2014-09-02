@@ -28,18 +28,13 @@
   }
 }
 
-
 @zindex_intro_above: 3;
 @zindex_intro_cover: 2;
 @zindex_intro_below: 1;
 
-@intro_cover_fadein: 500ms;
+@intro_cover_fadein: 500ms; // original is 500ms
 @intro_cover_fadeout: (@intro_cover_fadein / 2);
-// @intro_cover_timing: cubic-bezier(0.7,0,0.3,1);
 @intro_cover_timing: ease-in-out;
-
-@intro_action_active: @blueLight;
-
 
 .home-intro {
   .flexy(column);
@@ -155,7 +150,8 @@
     &:before {
       content: attr(title);
       top: 0;
-      transition: opacity @intro_cover_fadeout, top (@intro_cover_fadeout * 1.5);
+      transition: opacity @intro_cover_fadeout (@intro_cover_fadeout / 2),
+                  top (@intro_cover_fadeout * 1.5) (@intro_cover_fadeout / 2);
     }
     &:after {
       content: attr(alt);
@@ -199,19 +195,24 @@
   border: 1px solid @white;
   border-radius: (@tile / 2);
   order: 4;
-  transition: @intro_cover_fadeout;
+  transition: color @intro_cover_fadeout,
+              background @intro_cover_fadeout,
+              border-color @intro_cover_fadeout @intro_cover_fadeout;
   &:hover {
     color: @white;
-    background: @intro_action_active;
-    border-color: @intro_action_active;
-    transition: @intro_cover_fadein @intro_cover_fadeout;
+    background: @grayDark;
+    border-color: @grayBoxBorder;
+    transition: color @intro_cover_fadein @intro_cover_fadeout,
+                background @intro_cover_fadein @intro_cover_fadeout,
+                border-color 0 0;
     ~ .intro-cover {
       width: 100%;
       height: 100%;
       left: 0;
       top: 0;
       border-radius: 0;
-      transition: all @intro_cover_fadein, border-radius (@intro_cover_fadein / 2);
+      transition: all @intro_cover_fadein,
+                  border-radius (@intro_cover_fadein / 2);
     }
     ~ .intro-branding {
       .circle-logo {
@@ -242,7 +243,8 @@
         &:after {
           top: 0;
           opacity: 1;
-          transition: top @intro_cover_fadein, opacity @intro_cover_fadein (@intro_cover_fadeout / 2);
+          transition: top @intro_cover_fadein,
+                      opacity @intro_cover_fadein (@intro_cover_fadeout / 2);
         }
       }
       .slogan-subline {
@@ -254,7 +256,8 @@
         &:after {
           top: 0;
           opacity: 1;
-          transition: top @intro_cover_fadein, opacity @intro_cover_fadein @intro_cover_fadeout;
+          transition: top @intro_cover_fadein,
+                      opacity @intro_cover_fadein @intro_cover_fadeout;
         }
       }
     }
