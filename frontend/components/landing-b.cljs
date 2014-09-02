@@ -28,8 +28,12 @@
                 [:nav.intro-nav
                  [:a.intro-nav-promote "What is Continuous Integration?"]
                  [:a.intro-nav-login "Log In"]]
-                [:div.intro-brand
-                 (common/ico :logo)]
+                [:div.intro-branding
+                 [:div.wrap
+                  [:div.github-logo
+                   (common/ico :github)]
+                  [:div.circle-logo
+                   (common/ico :logo)]]]
                 [:div.intro-slogan
                  [:h1.slogan-tagline {:title "Your org needs a hero."
                                      :alt "We just need authorization first."}
