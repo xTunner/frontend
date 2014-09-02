@@ -285,26 +285,26 @@
         &:before {
           top: -@intro_h1_font;
           opacity: 0;
-          transition: (@intro_cover_fadein / 2);
+          transition: (@intro_cover_fadein * .3);
         }
         &:after {
           top: 0;
           opacity: 1;
           transition: top @intro_cover_fadein,
-                      opacity @intro_cover_fadein (@intro_cover_fadeout / 2);
+                      opacity @intro_cover_fadein (@intro_cover_fadeout * .5);
         }
       }
       .slogan-subline {
         &:before {
           top: -@intro_h3_line;
           opacity: 0;
-          transition: (@intro_cover_fadein / 2);
+          transition: (@intro_cover_fadein * .3);
         }
         &:after {
           top: 0;
           opacity: 1;
           transition: top @intro_cover_fadein,
-                      opacity @intro_cover_fadein @intro_cover_fadeout;
+                      opacity @intro_cover_fadein (@intro_cover_fadeout * .5);
         }
       }
     }
