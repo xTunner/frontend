@@ -201,11 +201,6 @@
 (defn valid-email? [str]
   (.isValidAddrSpec EmailAddress str))
 
-(defrender dangerously-set-inner-html [html]
-  (frontend.utils/html
-   [:span {:dangerouslySetInnerHTML
-           #js {:__html html}}]))
-
 (defn deep-merge* [& maps]
   (let [f (fn [old new]
             (if (and (map? old) (map? new))

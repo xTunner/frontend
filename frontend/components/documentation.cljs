@@ -124,9 +124,10 @@
       (dommy/set-html! heading
                        (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
 
-(defn markdown [markdown]
-  (om/component
-   (om/build utils/dangerously-set-inner-html (doc-utils/render-markdown markdown))))
+(defrender markdown [markdown]
+  (html
+   [:span {:dangerouslySetInnerHTML
+           #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
 (defn docs-subpage [doc owner]
   (reify
