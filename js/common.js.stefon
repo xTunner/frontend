@@ -5,6 +5,7 @@
   "../../components/uri.js/src/URI.min.js" ;; TODO: necessary?
   "../../components/viewport-units-buggyfill/viewport-units-buggyfill.js" ;; temporary until apple releases a fix
   "../../components/underscore/underscore.js" ;; TODO: used by CI.terminal
+  "../../components/marked/lib/marked.js" ;; used by docs
 
   "bootstrap.js.stefon" ;; TODO: replace with the om version
 
