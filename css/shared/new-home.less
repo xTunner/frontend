@@ -18,7 +18,6 @@
       font-size: @h1_font_size;
       line-height: @h1_line_height;
       font-weight: 300;
-      margin: 0;
     }
     h3 {
       font-size: @h3_font_size;
@@ -30,8 +29,9 @@
 }
 
 
-@zindex_intro_top: 2;
-@zindex_intro_bottom: 1;
+@zindex_intro_above: 3;
+@zindex_intro_cover: 2;
+@zindex_intro_below: 1;
 
 @intro_overlay_fadein: 400ms;
 @intro_overlay_fadeout: 200ms;
@@ -49,7 +49,7 @@
   .box-sizing(border-box);
   .flexy(center, center);
   position: relative;
-  z-index: @zindex_intro_top;
+  z-index: @zindex_intro_below;
   height: @tile;
   margin-bottom: auto;
   border: 1px solid fade(@black, 13);
@@ -68,15 +68,14 @@
 .intro-brand {
   .icon_style(@white, @tile);
   position: relative;
-  z-index: @zindex_intro_top;
+  z-index: @zindex_intro_above;
   order: 2;
 }
 .intro-slogan {
   position: relative;
-  z-index: @zindex_intro_top;
+  z-index: @zindex_intro_above;
   text-align: center;
   margin: @tile 0;
-  padding: (((@tile * 2) - (@h1_line_height + (@h3_line_height * 2))) / 2) 0;
   order: 3;
   .slogan-tagline,
   .slogan-subline {
@@ -88,6 +87,7 @@
       left: 0;
       width: 100%;
       pointer-events: none;
+      transition-timing-function: cubic-bezier(0.7,0,0.3,1);
     }
     &:before {
       content: attr(title);
@@ -102,6 +102,7 @@
   }
   .slogan-tagline {
     height: @h1_font_size;
+    margin: 0 0 ((@tile * 2) - (@h1_line_height + (@h3_line_height * 2)));
     &:before {
       color: @grayBoxBorder;
     }
@@ -126,7 +127,7 @@
   .flexy(center, center);
   align-self: center;
   position: relative;
-  z-index: @zindex_intro_top;
+  z-index: @zindex_intro_above;
   color: @grayDark;
   font-size: 20px;
   background: @white;
@@ -136,13 +137,14 @@
   border-radius: (@tile / 2);
   order: 4;
   &:hover {
-    ~ .intro-overlay {
+    border-color: @blueLight;
+    ~ .intro-cover {
       width: 100%;
       height: 100%;
       left: 0;
       top: 0;
       border-radius: 0;
-      transition: @intro_overlay_fadein;
+      transition: all @intro_overlay_fadein, border-radius (@intro_overlay_fadein / 2);
     }
     ~ .intro-slogan {
       .slogan-tagline {
@@ -172,13 +174,13 @@
     }
   }
 }
-.intro-overlay {
+.intro-cover {
   background: @white;
   width: (@tile * 3);
   height: @tile;
   border-radius: (@tile / 2);
   position: absolute;
-  z-index: @zindex_intro_bottom;
+  z-index: @zindex_intro_cover;
   pointer-events: none;
   left: ~"calc(50% - 105px)";
   top: ~"calc(50% + 140px)";
@@ -187,7 +189,7 @@
 .intro-learn {
   .flexy(center, center);
   position: relative;
-  z-index: @zindex_intro_top;
+  z-index: @zindex_intro_above;
   height: @tile;
   margin-top: auto;
   order: 5;
