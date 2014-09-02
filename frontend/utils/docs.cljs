@@ -77,16 +77,16 @@
                           (filter (js->clj val :keywordize-keys true)))))))
 
 (defn replace-asset-paths [html]
-  (let [re (js/RegExp. "\"asset:/(.*?)\"" "g")]
+  (let [re (js/RegExp. "\\(asset:/(/.*?)\\)" "g")]
     (.replace html re (fn [s match]
-                        (stefon/asset-path match)))))
+                        (str "(" (stefon/asset-path match) ")")))))
 
 (defn render-markdown [input]
   (when input
     (-> input
-        js/marked
         replace-asset-paths
-        replace-variables)))
+        replace-variables
+        js/marked)))
 
 (defn new-context []
   (let [context (js/Object.)]
