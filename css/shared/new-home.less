@@ -37,7 +37,15 @@
 @intro_overlay_fadeout: 200ms;
 
 
-.outer-navigation {
+.home-intro {
+  .flexy(column);
+  .justify-content(center);
+  position: relative;
+  height: 100vh;
+  background: @grayDark;
+  color: #aaa;
+}
+.intro-nav {
   .box-sizing(border-box);
   .flexy(center, center);
   position: relative;
@@ -47,26 +55,15 @@
   border: 1px solid fade(@black, 13);
   order: 1;
 }
-.latest-link {
+.intro-nav-promote {
   color: @gray;
   margin-left: ((@tile / 2) - (@baseLineHeight / 2));
   margin-right: auto;
 }
-.login-link {
+.intro-nav-login {
   color: @gray;
   margin-left: auto;
   margin-right: ((@tile / 2) - (@baseLineHeight / 2));
-}
-
-
-
-.home-intro {
-  .flexy(column);
-  .justify-content(center);
-  position: relative;
-  height: 100vh;
-  background: @grayDark;
-  color: #aaa;
 }
 .intro-brand {
   .icon_style(@white, @tile);
@@ -124,7 +121,7 @@
     }
   }
 }
-.intro-action-btn {
+.intro-action {
   .box-sizing(border-box);
   .flexy(center, center);
   align-self: center;
@@ -139,7 +136,7 @@
   border-radius: (@tile / 2);
   order: 4;
   &:hover {
-    ~ .intro-action-overlay {
+    ~ .intro-overlay {
       width: 100%;
       height: 100%;
       left: 0;
@@ -175,17 +172,11 @@
     }
   }
 }
-.intro-action-overlay {
-  .box-sizing(border-box);
-  .flexy(center, center);
-  color: @grayDark;
-  font-size: 20px;
+.intro-overlay {
   background: @white;
   width: (@tile * 3);
   height: @tile;
-  border: 1px solid @white;
   border-radius: (@tile / 2);
-
   position: absolute;
   z-index: @zindex_intro_bottom;
   pointer-events: none;
