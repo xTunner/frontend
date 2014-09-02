@@ -18,14 +18,12 @@
       font-size: @h1_font_size;
       line-height: @h1_line_height;
       font-weight: 300;
-      // color: @grayBoxBorder;
       margin: 0;
     }
     h3 {
       font-size: @h3_font_size;
       line-height: @h3_line_height;
       font-weight: normal;
-      // color: #aaa;
       margin: 0;
     }
   }
@@ -34,6 +32,9 @@
 
 @zindex_intro_top: 2;
 @zindex_intro_bottom: 1;
+
+@intro_overlay_fadein: 400ms;
+@intro_overlay_fadeout: 200ms;
 
 
 .outer-navigation {
@@ -80,13 +81,49 @@
   margin: @tile 0;
   padding: (((@tile * 2) - (@h1_line_height + (@h3_line_height * 2))) / 2) 0;
   order: 3;
-  h1 {
-    color: @grayBoxBorder;
+  .slogan-tagline,
+  .slogan-subline {
+    position: relative;
+    color: transparent;
+    &:before,
+    &:after {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      pointer-events: none;
+    }
+    &:before {
+      content: attr(title);
+      top: 0;
+      transition: opacity @intro_overlay_fadeout, top (@intro_overlay_fadeout * 1.5);
+    }
+    &:after {
+      content: attr(alt);
+      opacity: 0;
+      transition: (@intro_overlay_fadeout / 2);
+    }
+  }
+  .slogan-tagline {
+    height: @h1_font_size;
+    &:before {
+      color: @grayBoxBorder;
+    }
+    &:after {
+      top: @h1_font_size;
+      color: @grayDark;
+    }
+  }
+  .slogan-subline {
+    height: @h3_line_height;
+    &:before,
+    &:after {
+      color: #aaa;
+    }
+    &:after {
+      top: @h3_line_height;
+    }
   }
 }
-// .intro-action {
-//   .flexy(center, center);
-// }
 .intro-action-btn {
   .box-sizing(border-box);
   .flexy(center, center);
@@ -108,10 +145,32 @@
       left: 0;
       top: 0;
       border-radius: 0;
+      transition: @intro_overlay_fadein;
     }
     ~ .intro-slogan {
-      h1 {
-        color: red;
+      .slogan-tagline {
+        &:before {
+          top: -@h1_font_size;
+          opacity: 0;
+          transition: (@intro_overlay_fadein / 2);
+        }
+        &:after {
+          top: 0;
+          opacity: 1;
+          transition: top @intro_overlay_fadein, opacity (@intro_overlay_fadein * 1.5);
+        }
+      }
+      .slogan-subline {
+        &:before {
+          top: -@h3_line_height;
+          opacity: 0;
+          transition: (@intro_overlay_fadein / 2);
+        }
+        &:after {
+          top: 0;
+          opacity: 1;
+          transition: top @intro_overlay_fadein, opacity (@intro_overlay_fadein * 1.5);
+        }
       }
     }
   }
@@ -132,7 +191,7 @@
   pointer-events: none;
   left: ~"calc(50% - 105px)";
   top: ~"calc(50% + 140px)";
-  transition: 400ms;
+  transition: @intro_overlay_fadeout;
 }
 .intro-learn {
   .flexy(center, center);
