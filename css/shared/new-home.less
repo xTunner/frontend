@@ -76,6 +76,19 @@
 .intro-nav-login {
   margin-left: auto;
 }
+.intro-cover {
+  background: @white;
+  width: (@tile * 3);
+  height: @tile;
+  border-radius: (@tile / 2);
+  position: absolute;
+  z-index: @zindex_intro_cover;
+  pointer-events: none;
+  left: ~"calc(50% - 105px)";
+  top: ~"calc(50% + 140px)";
+  transition: @intro_cover_fadeout;
+  transition-timing-function: @intro_cover_timing;
+}
 .intro-branding {
   .flexy(center, center);
   position: relative;
@@ -185,6 +198,20 @@
     }
   }
 }
+.intro-learn {
+  .flexy(center, center);
+  position: relative;
+  z-index: @zindex_intro_above;
+  height: @tile;
+  margin-top: auto;
+  order: 5;
+  a {
+    color: @white;
+  }
+}
+//
+// Where the magic happens.
+//
 .intro-action {
   .box-sizing(border-box);
   .flexy(center, center);
@@ -265,29 +292,5 @@
         }
       }
     }
-  }
-}
-.intro-cover {
-  background: @white;
-  width: (@tile * 3);
-  height: @tile;
-  border-radius: (@tile / 2);
-  position: absolute;
-  z-index: @zindex_intro_cover;
-  pointer-events: none;
-  left: ~"calc(50% - 105px)";
-  top: ~"calc(50% + 140px)";
-  transition: @intro_cover_fadeout;
-  transition-timing-function: @intro_cover_timing;
-}
-.intro-learn {
-  .flexy(center, center);
-  position: relative;
-  z-index: @zindex_intro_above;
-  height: @tile;
-  margin-top: auto;
-  order: 5;
-  a {
-    color: @white;
   }
 }
