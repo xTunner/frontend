@@ -51,23 +51,31 @@
 }
 .intro-nav {
   .box-sizing(border-box);
-  .flexy(center, center);
   position: relative;
   z-index: @zindex_intro_below;
   height: @tile;
   margin-bottom: auto;
   border: 1px solid fade(@black, 13);
   order: 1;
+  .wrap {
+    .flexy(center, center);
+    height: 100%;
+    margin: 0 ((@tile - @baseLineHeight) / 2);
+  }
+  a {
+    color: @gray;
+    transition: color 300ms;
+    &:hover {
+      color: @white;
+      transition-duration: 200ms;
+    }
+  }
 }
 .intro-nav-promote {
-  color: @gray;
-  margin-left: ((@tile / 2) - (@baseLineHeight / 2));
   margin-right: auto;
 }
 .intro-nav-login {
-  color: @gray;
   margin-left: auto;
-  margin-right: ((@tile / 2) - (@baseLineHeight / 2));
 }
 .intro-branding {
   .flexy(center, center);
