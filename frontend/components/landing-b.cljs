@@ -24,7 +24,7 @@
         (html [:div.home.page
                [:section.home-intro
                 [:a.intro-action "Sign Up Free"]
-                [:div.intro-overlay]
+                [:div.intro-cover]
                 [:nav.intro-nav
                  [:a.intro-nav-promote "What is Continuous Integration?"]
                  [:a.intro-nav-login "Log In"]]
