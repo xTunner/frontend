@@ -18,7 +18,7 @@
 
 (defn api-curl [endpoint]
   (let [curl-args (if-not (= (:method endpoint) "GET")
-                    (str "-X " (:method endpoint))
+                    (str "-X " (:method endpoint) " ")
                     "")
         curl-params (if-let [params (:params endpoint)]
                       (->> params
