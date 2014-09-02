@@ -26,8 +26,9 @@
                 [:a.intro-action "Sign Up Free"]
                 [:div.intro-cover]
                 [:nav.intro-nav
-                 [:a.intro-nav-promote "What is Continuous Integration?"]
-                 [:a.intro-nav-login "Log In"]]
+                 [:div.wrap
+                  [:a.intro-nav-promote "What is Continuous Integration?"]
+                  [:a.intro-nav-login "Log In"]]]
                 [:div.intro-branding
                  [:div.wrap
                   [:div.github-logo
