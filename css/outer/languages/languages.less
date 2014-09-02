@@ -1,33 +1,16 @@
+@blueTeal: lighten( desaturate( spin(@blue, 1.00), 63), 20); // #5094AC
 //header style
-#navbar.ruby {
-  background: @rubyColor;
+#navbar {
   ul a {
-    color: @white;
+    color: fade(@white, 55);
     &:hover {
-      background: none;
-      font-weight: bold;
+      color: @white;
+      background: fade(@white, 13);
     }
   }
-}
-#navbar.python {
-  background: @pythonColor;
-  ul a {
-    color: @white;
-    &:hover {
-      background: none;
-      font-weight: bold;
-    }
-  }
-}
-#navbar.node {
-  background: @nodeColor;
-  ul a {
-    color: @white;
-    &:hover {
-      background: none;
-      font-weight: bold;
-    }
-  }
+  &.ruby   { background: @rubyColor;   }
+  &.python { background: @pythonColor; }
+  &.node   { background: @nodeColor;   }
 }
 .languages.page {
   @em: 18px;
@@ -80,7 +63,7 @@
     &.Node {
       background: linear-gradient(to bottom, @nodeColor 0%, lighten(saturate(spin(@nodeColor, 1), 4), 32) 100%), @nodeColor;
     }
-    
+
     h1 {
       font-size: 40px;
       text-align: center;
@@ -173,9 +156,8 @@
   }
 
   .languages-testimonials {
-    background-image: -webkit-linear-gradient(-43deg, #D7E1E1 0%, #B9BEBF 100%);
-    background-image: linear-gradient(-133deg, #D7E1E1 0%, #B9BEBF 100%);
-    box-shadow:         inset 0px 1px 1px 0px rgba(0,0,0,0.14);
+    background: @grayLightest;
+    box-shadow: inset 0px 1px 1px 0px rgba(0,0,0,0.14);
     padding: 5em 0;
     .languages-body {
       background: none;
@@ -238,7 +220,7 @@
     }
     .testimonial-box {
       border-radius: 4px;
-      // Rectangle 95: 
+      // Rectangle 95:
       background: @white;
       box-shadow:         0px 0px 0px 1px rgba(0,0,0,0.05), 0px 1px 0px 0px rgba(0,0,0,0.10), 0px 1px 4px 0px rgba(0,0,0,0.20);
       padding: 2em;
@@ -246,17 +228,17 @@
       &:after {
         content:"";
         position:absolute;
-        bottom:-15px; // value = - border-top-width - border-bottom-width 
-        left:50px; // controls horizontal position 
-        border-width:15px 15px 0; // vary these values to change the angle of the vertex 
+        bottom:-15px; // value = - border-top-width - border-bottom-width
+        left:50px; // controls horizontal position
+        border-width:15px 15px 0; // vary these values to change the angle of the vertex
         border-style:solid;
         border-color: @white transparent;
-        // reduce the damage in FF3.0 
+        // reduce the damage in FF3.0
         display:block;
         width:0;
-        top:-15px; // value = - border-top-width - border-bottom-width 
+        top:-15px; // value = - border-top-width - border-bottom-width
         bottom:auto;
-        border-width:0 15px 15px; // vary these values to change the angle of the vertex 
+        border-width:0 15px 15px; // vary these values to change the angle of the vertex
         border-color: @white transparent;
       }
       .testimonial-text {
@@ -303,17 +285,24 @@
         color: lighten( desaturate( @blueTeal, 24 ), 2 );
         line-height: 22px;
         width: 30%;
+        counter-increment: language-steps;
         .step-number {
           margin-right: 14px;
-          display: block;
-          text-align: center;
-          padding: 14px 18px;
-          border-radius: 26px;
-          font-weight: bold;
           font-size: 18px;
-          line-height: 18px;
           color: @white;
           background: @blueTeal;
+          padding: 28px;
+          border-radius: 28px;
+          position: relative;
+          &:before {
+            .flexy(center, center);
+            content: counter(language-steps);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+          }
         }
       }
     }
@@ -329,9 +318,8 @@
       padding: 1em;
       border-radius: 4px;
       background: @white;
-      font-weight: bold;
       font-size: 18px;
-      color: @blueTeal;
+      color: @grayDark;
       line-height: 22px;
       &:hover {
        background: @blueTeal;
