@@ -1,3 +1,4 @@
+// temporary hacks for mocking up initial design
 #navbar,
 #sticky-help-link,
 .main-foot {
@@ -6,36 +7,39 @@
 #app {
   min-width: inherit;
 }
-@em: @baseFontSize;
-@h1_font_size: 72px;
-@h1_line_height: @h1_font_size;
-@h3_font_size: 20px;
-@h3_line_height: 30px;
-.page {
-  &.home {
-    color: @white;
-    h1 {
-      font-size: @h1_font_size;
-      line-height: @h1_line_height;
-      font-weight: 300;
-    }
-    h3 {
-      font-size: @h3_font_size;
-      line-height: @h3_line_height;
-      font-weight: normal;
-      margin: 0;
-    }
-  }
-}
+// temporary hacks for mocking up initial design
 
-@zindex_intro_above: 3;
-@zindex_intro_cover: 2;
-@zindex_intro_below: 1;
+@em: @baseFontSize;
+
+@intro_h1_font: 72px;
+@intro_h1_line: @intro_h1_font;
+@intro_h3_font: 20px;
+@intro_h3_line: (@intro_h3_font * 1.5); // 30px
 
 @intro_cover_fadein: 500ms; // original is 500ms
 @intro_cover_fadeout: (@intro_cover_fadein / 2);
 @intro_cover_timing: ease-in-out;
 
+@zindex_intro_above: 3;
+@zindex_intro_cover: 2;
+@zindex_intro_below: 1;
+
+.page {
+  &.home {
+    color: @white;
+    h1 {
+      font-size: @intro_h1_font;
+      line-height: @intro_h1_line;
+      font-weight: 300;
+    }
+    h3 {
+      font-size: @intro_h3_font;
+      line-height: @intro_h3_line;
+      font-weight: normal;
+      margin: 0;
+    }
+  }
+}
 .home-intro {
   .flexy(column);
   .justify-content(center);
@@ -160,24 +164,24 @@
     }
   }
   .slogan-tagline {
-    height: @h1_font_size;
-    margin: 0 0 ((@tile * 2) - (@h1_line_height + (@h3_line_height * 2)));
+    height: @intro_h1_font;
+    margin: 0 0 ((@tile * 2) - (@intro_h1_line + (@intro_h3_line * 2)));
     &:before {
       color: @grayBoxBorder;
     }
     &:after {
-      top: @h1_font_size;
+      top: @intro_h1_font;
       color: @grayDark;
     }
   }
   .slogan-subline {
-    height: @h3_line_height;
+    height: @intro_h3_line;
     &:before,
     &:after {
       color: #aaa;
     }
     &:after {
-      top: @h3_line_height;
+      top: @intro_h3_line;
     }
   }
 }
@@ -236,7 +240,7 @@
     ~ .intro-slogan {
       .slogan-tagline {
         &:before {
-          top: -@h1_font_size;
+          top: -@intro_h1_font;
           opacity: 0;
           transition: (@intro_cover_fadein / 2);
         }
@@ -249,7 +253,7 @@
       }
       .slogan-subline {
         &:before {
-          top: -@h3_line_height;
+          top: -@intro_h3_line;
           opacity: 0;
           transition: (@intro_cover_fadein / 2);
         }
