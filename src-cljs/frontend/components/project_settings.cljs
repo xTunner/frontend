@@ -559,7 +559,7 @@
                              :show-fixed-failed? false}
 
                             {:service "IRC"
-                             :icon "chat-i-flow"
+                             :icon "chat-i-irc"
                              :doc nil
                              :inputs [{:field :irc_server :placeholder "Hostname"}
                                       {:field :irc_channel :placeholder "Channel"}
