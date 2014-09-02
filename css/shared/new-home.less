@@ -66,10 +66,19 @@
   margin-right: ((@tile / 2) - (@baseLineHeight / 2));
 }
 .intro-brand {
-  .icon_style(@white, @tile);
   position: relative;
   z-index: @zindex_intro_above;
   order: 2;
+  i.ico {
+    svg {
+      width: @tile;
+      height: @tile;
+      path {
+        fill: @white;
+        transition: @intro_overlay_fadeout;
+      }
+    }
+  }
 }
 .intro-slogan {
   position: relative;
@@ -137,7 +146,8 @@
   border-radius: (@tile / 2);
   order: 4;
   &:hover {
-    border-color: @blueLight;
+    color: @green;
+    border-color: @green;
     ~ .intro-cover {
       width: 100%;
       height: 100%;
@@ -145,6 +155,16 @@
       top: 0;
       border-radius: 0;
       transition: all @intro_overlay_fadein, border-radius (@intro_overlay_fadein / 2);
+    }
+    ~ .intro-brand {
+      i.ico {
+        svg {
+          path {
+            fill: @grayDark;
+            transition: @intro_overlay_fadein;
+          }
+        }
+      }
     }
     ~ .intro-slogan {
       .slogan-tagline {
