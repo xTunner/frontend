@@ -62,9 +62,7 @@
 (defn ajax [method url message channel & {:keys [params keywords? context headers format]
                                           :or {keywords? true format :json}}]
   (let [uuid frontend.async/*uuid*
-        common-opts {:error-handler #(binding [frontend.async/*uuid* uuid]
-                                       (put! channel [message :failed (normalize-error-response % {:url url :context context})]))
-                     :finally #(binding [frontend.async/*uuid* uuid]
+        common-opts {:finally #(binding [frontend.async/*uuid* uuid]
                                  (put! channel [message :finished context]))}
         format-opts (case format
                       :json {:format (merge (clj-ajax/json-request-format)
@@ -77,10 +75,15 @@
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
                              :handler #(binding [frontend.async/*uuid* uuid]
-                                         (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))}
+                                         (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
+                             :error-handler #(binding [frontend.async/*uuid* uuid]
+                                       (put! channel [message :failed (normalize-error-response % {:url url :context context})]))}
+                      ;; TODO: use a custom reader or similar for raw to handle more like json
                       :raw {:format (clj-ajax/raw-format)
                             :handler #(binding [frontend.async/*uuid* uuid]
-                                        (put! channel [message :success {:response % :context context}]))})
+                                        (put! channel [message :success {:resp % :context context}]))
+                            :error-handler #(binding [frontend.async/*uuid* uuid]
+                                       (put! channel [message :failed {:resp % :url url :context context :status :failed}]))})
         opts (merge common-opts format-opts)]
     (put! channel [message :started context])
     (clj-ajax/ajax-request url method
