@@ -1,14 +1,8 @@
 # Hueristics for determining if a visitor to the website is a user
 CI.ExistingUserHeuristics = class ExistingUserHeuristics
   constructor: () ->
-    @is_existing_user = ko.observable()
-
-    @is_existing_user.subscribe (answer) =>
-      mixpanel.register
-        existing_user: answer
-
     if window.renderContext.current_user
-      @is_existing_user(true)
+      @set_existing_user(true)
     else
       try
         if mixpanel.get_property?
@@ -20,5 +14,9 @@ CI.ExistingUserHeuristics = class ExistingUserHeuristics
         console.error e.message
         _rollbar.push e
 
+  register_existing_user: (value) =>
+    mixpanel.register
+      existing_user: value
+
   set_from_mixpanel_cookie: () =>
-    @is_existing_user(!!mixpanel.get_property('mp_name_tag'))
+    @register_existing_user(!!mixpanel.get_property('mp_name_tag'))
