@@ -179,6 +179,3 @@
     "reference-api" "api"
     "reference-api#build" "api#build"
     token))
-
-(defn load-docs-manifest! [state]
-  (swap! state assoc-in state/docs-data-path (find-all-docs)))

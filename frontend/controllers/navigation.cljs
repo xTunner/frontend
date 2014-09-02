@@ -11,6 +11,7 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils.ajax :as ajax]
+            [frontend.utils.docs :as doc-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror]]
@@ -64,12 +65,15 @@
 
 ;; --- Navigation Multimethod Implementations ---
 
-(defmethod navigated-to :default
-  [history-imp navigation-point args state]
+(defn navigated-default [navigation-point args state]
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args)))
+
+(defmethod navigated-to :default
+  [history-imp navigation-point args state]
+  (navigated-default navigation-point args state))
 
 (defn post-default [navigation-point args]
   (set-page-title! (or (:_title args)
@@ -418,6 +422,13 @@
     (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
+
+(defmethod navigated-to :documentation
+  [history-imp navigation-point args state]
+  (let [new-state (navigated-default navigation-point args state)]
+    (if-not (get-in new-state state/docs-data-path)
+      (assoc-in new-state state/docs-data-path (doc-utils/find-all-docs))
+      new-state)))
 
 (defmethod post-navigated-to! :documentation
   [history-imp navigation-point {:keys [subpage] :as args} previous-state current-state]

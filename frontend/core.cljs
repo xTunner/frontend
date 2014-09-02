@@ -24,7 +24,6 @@
             [frontend.history :as history]
             [frontend.browser-settings :as browser-settings]
             [frontend.utils :as utils :refer [mlog merror third]]
-            [frontend.utils.docs :as doc-utils]
             [frontend.datetime :as datetime]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
@@ -206,7 +205,6 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (doc-utils/load-docs-manifest! state)
     (install-om state container comms)
 
     (async/tap (:controls-mult comms) controls-tap)
