@@ -22,33 +22,31 @@
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
-               [:section.home-intro
-                [:a.intro-action {:role "button"}
+               [:section.home-prolog
+                [:a.prolog-action {:role "button"}
                  "Sign Up Free"]
-                [:div.intro-cover]
-                [:nav.intro-nav
-                 [:div.wrap
-                  [:a.intro-nav-promote "What is Continuous Integration?"]
-                  [:a.intro-nav-login "Log In"]]]
-                [:div.intro-branding
-                 [:div.wrap
-                  [:div.github-logo
+                [:div.prolog-cover]
+                [:div.prolog-navigation
+                 [:nav
+                  [:a.promo "What is Continuous Integration?"]
+                  [:a.login "Log In"]]]
+                [:div.prolog-logos
+                 [:div.avatars
+                  [:div.avatar-github
                    (common/ico :github)]
-                  [:div.circle-logo
+                  [:div.avatar-circle
                    (common/ico :logo)]]]
-                [:div.intro-slogan
-                 [:h1.slogan-tagline {:title "Your org needs a hero."
+                [:div.prolog-slogans
+                 [:h1.slogan.proverb {:title "Your org needs a hero."
                                       :alt "We just need authorization first."}
                   "Your org needs a hero."]
-                 [:h3.slogan-subline {:title "You have a product to focus on, let Circle handle your"
+                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your"
                                       :alt "Why? Because signing up with your GitHub account lets Circle start your tests really fast."}
                   "You have a product to focus on, let Circle handle your"]
-                 [:h3.slogan-subline {:title "Continuous Integration & Deployment."
+                 [:h3.slogan.context {:title "Continuous Integration & Deployment."
                                       :alt "Note, without fine-grained scopes, GitHub requires us to request them in bulk."}
                   "Continuous Integration & Deployment."]]
-                ; [:a.intro-action-btn "Sign Up Free"]
-                ; [:div.intro-action-overlay]
-                [:div.intro-learn
+                [:div.prolog-learn
                  [:a
                   "Learn more"
                   (common/ico :chevron-down)]]]
