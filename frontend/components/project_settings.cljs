@@ -296,8 +296,8 @@
               [:tbody
                (for [{:keys [name value]} env-vars]
                  [:tr
-                  [:td name]
-                  [:td value]
+                  [:td {:title name} name]
+                  [:td {:title value} value]
                   [:td
                    [:a
                     {:title "Remove this variable?",
