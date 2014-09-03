@@ -1,6 +1,12 @@
 (ns frontend.utils.docs
   (:require [clojure.string :as string]
-            [frontend.utils :as utils :include-macros true]))
+            [frontend.stefon :as stefon]
+            [frontend.utils :as utils :include-macros true :refer [defrender]]
+            [goog.string :as gstring]
+            goog.string.format
+            [frontend.state :as state]
+            [om.core :as om :include-macros true])
+  (:require-macros [dommy.macros :refer [node]]))
 
 (defn include-article [template-name]
   ((aget (aget js/window "HAML") template-name)))
@@ -9,6 +15,78 @@
   [:div {:dangerouslySetInnerHTML
          #js {"__html"  ((aget (aget js/window "HAML") template-name)
                          (clj->js (merge {"include_article" include-article} args)))}}])
+
+(defn api-curl [endpoint]
+  (let [curl-args (if-not (= (:method endpoint) "GET")
+                    (str "-X " (:method endpoint) " ")
+                    "")
+        curl-params (if-let [params (:params endpoint)]
+                      (->> params
+                           (map #(str (:name %) "=" (:example %)))
+                           (string/join "&")
+                           (str "&"))
+                      "")]
+    (gstring/format "curl %shttps://circleci.com%s?circle-token=:token%s"
+                    curl-args (:url endpoint) curl-params)))
+
+(defn hiccup->str [hiccup]
+  (.-innerHTML (node [:div hiccup])))
+
+(defn api-endpoint-filter [endpoint]
+  (hiccup->str
+   [:div
+    [:p (:description endpoint)]
+    [:h4 "Method"]
+    [:p (:method endpoint)]
+    (when-let [params (:params endpoint)]
+      [:div [:h4 "Optional parameters"]
+       [:table.table
+        [:thead
+         [:tr
+          [:th "Parameter"] [:th "Description"]]]
+        [:tbody
+         (for [param params]
+           [:tr
+            [:td (:name param)]
+            [:td (:description param)]])]]])
+    [:h4 "Example call"]
+    [:pre [:code (api-curl endpoint)]]
+    [:h4 "Example response"]
+    [:pre [:code (:response endpoint)]]
+    (when (:try_it endpoint)
+      [:p [:a {:href (str "https://circleci.com" (:url endpoint)) :target "_blank"}
+           "Try it in your browser"]])]))
+
+(defn code-list-filter [versions]
+  (hiccup->str
+   [:ul (for [version versions]
+          [:li [:code (if-let [name (:name version)] name version)]])]))
+
+(defn replace-variables [html]
+  (string/replace html #"\{\{\s*([^\s]*)\s*(?:\|\s*([\w-]*)\s*)?\}\}"
+                  (fn [s m1 m2]
+                    (let [[name & path] (string/split m1 #"\.")
+                          var (case name
+                                "versions" (aget js/window "CI" "Versions")
+                                "api_data" (aget js/window "circle_api_data"))
+                          val (apply aget var path)
+                          filter (case m2
+                                   "code-list" code-list-filter
+                                   "api-endpoint" api-endpoint-filter
+                                   identity)]
+                      (filter (utils/js->clj-kw val))))))
+
+(defn replace-asset-paths [html]
+  (string/replace html #"\(asset:/(/.*?)\)"
+                  (fn [s match]
+                    (str "(" (stefon/asset-path match) ")"))))
+
+(defn render-markdown [input]
+  (when input
+    (-> input
+        replace-asset-paths
+        replace-variables
+        js/marked)))
 
 (defn new-context []
   (let [context (js/Object.)]
@@ -28,17 +106,20 @@
         children (map ->template-kw (or (:children props) []))
         title (:title props)
         short-title (or (:short_title props) title)]
-    {:template-fn template-fn
-     :url (str "/docs/" (string/replace template-name "_" "-"))
+    {:url (str "/docs/" (string/replace template-name "_" "-"))
      :slug template-name
      :title title
      :sort_title short-title
      :children children
-     :subtitle (:subtitle props)
      :lastUpdated (:lastUpdated props)
-     :category (:category props)
-     :title_with_child_count (str title (when (seq children) (str " (" (count children) ")")))
-     :short_title_with_child_count (str short-title (when (seq children) (str " (" (count children) ")")))}))
+     :category (:category props)}))
+
+(defn update-child-counts [{:keys [children title ] short-title :sort_title :as info}]
+  (let [child-count (count children)
+        has-children (seq children)
+        title-with-count (if has-children (gstring/format "%s (%d)" title child-count) title)
+        short-title-with-count (if has-children (gstring/format "%s (%d)" short-title child-count) short-title)]
+    (assoc info :title_with_child_count title-with-count :short_title_with_child_count short-title-with-count)))
 
 (defn update-children [docs]
   (reduce (fn [acc [template-name article-info]]
@@ -56,7 +137,7 @@
   (let [docs (reduce (fn [acc [template-name template-fn]]
                        (if (article? template-fn)
                          (let [subpage (->template-kw template-name)]
-                           (assoc acc subpage (article-info template-name template-fn)))
+                           (assoc acc subpage (update-child-counts (article-info template-name template-fn))))
                          acc))
                      {} (js->clj (aget js/window "HAML")))]
     (update-children docs)))

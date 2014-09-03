@@ -11,3 +11,5 @@ CI.github.authUrl;
 
 CI.inner;
 CI.inner.Diagnostics;
+
+CI.ExistingUserHeuristics;

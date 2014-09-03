@@ -76,8 +76,7 @@
 
 (defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
                                   :or {show-branch? true
-                                       show-project? true}
-                                  :as opts}]
+                                       show-project? true}}]
   (reify
     om/IDisplayName (display-name [_] "Builds Table")
     om/IRender
@@ -99,4 +98,7 @@
             (when show-actions?
               [:th.condense "Actions"])]]
           [:tbody
-           (map #(build-row % controls-ch opts) builds)]])))))
+           (map #(build-row % controls-ch {:show-actions? show-actions?
+                                           :show-branch? show-branch?
+                                           :show-project? show-project?})
+                builds)]])))))

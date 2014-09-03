@@ -7,7 +7,9 @@
             [dommy.core :as dommy]
             [goog.dom]
             [goog.dom.DomHelper]
+            [frontend.ab :as ab]
             [frontend.analytics :as analytics]
+            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.components.app :as app]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
@@ -62,48 +64,40 @@
   ws-ch
   (chan))
 
-(defn get-ab-tests []
-  (let [definitions (aget js/window "ab_test_definitions")
-        overrides (-> js/window
-                      (aget "renderContext")
-                      (aget "abOverrides"))
-        ABTests (-> js/window
-                    (aget "CI")
-                    (aget "ABTests"))
-        ko->js (-> js/window
-                   (aget "ko")
-                   (aget "toJS"))]
-    (-> (new ABTests definitions overrides)
-        (aget "ab_tests")
-        (ko->js)
-        (utils/js->clj-kw))))
+(defn get-ab-tests [ab-test-definitions]
+  (let [overrides (some-> js/window
+                          (aget "renderContext")
+                          (aget "abOverrides")
+                          (utils/js->clj-kw))]
+    (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
-  (atom (assoc (state/initial-state)
-          :ab-tests (get-ab-tests)
-          :current-user (-> js/window
-                            (aget "renderContext")
-                            (aget "current_user")
-                            utils/js->clj-kw)
-          :render-context (-> js/window
-                              (aget "renderContext")
-                              utils/js->clj-kw)
-          :comms {:controls  controls-ch
-                  :api       api-ch
-                  :errors    errors-ch
-                  :nav       navigation-ch
-                  :ws        ws-ch
-                  :controls-mult (async/mult controls-ch)
-                  :api-mult (async/mult api-ch)
-                  :errors-mult (async/mult errors-ch)
-                  :nav-mult (async/mult navigation-ch)
-                  :ws-mult (async/mult ws-ch)
-                  :mouse-move {:ch mouse-move-ch
-                               :mult (async/mult mouse-move-ch)}
-                  :mouse-down {:ch mouse-down-ch
-                               :mult (async/mult mouse-down-ch)}
-                  :mouse-up {:ch mouse-up-ch
-                             :mult (async/mult mouse-up-ch)}})))
+  (let [initial-state (state/initial-state)]
+    (atom (assoc initial-state
+              :ab-tests (get-ab-tests (:ab-test-definitions initial-state))
+              :current-user (-> js/window
+                                (aget "renderContext")
+                                (aget "current_user")
+                                utils/js->clj-kw)
+              :render-context (-> js/window
+                                  (aget "renderContext")
+                                  utils/js->clj-kw)
+              :comms {:controls  controls-ch
+                      :api       api-ch
+                      :errors    errors-ch
+                      :nav       navigation-ch
+                      :ws        ws-ch
+                      :controls-mult (async/mult controls-ch)
+                      :api-mult (async/mult api-ch)
+                      :errors-mult (async/mult errors-ch)
+                      :nav-mult (async/mult navigation-ch)
+                      :ws-mult (async/mult ws-ch)
+                      :mouse-move {:ch mouse-move-ch
+                                   :mult (async/mult mouse-move-ch)}
+                      :mouse-down {:ch mouse-down-ch
+                                   :mult (async/mult mouse-down-ch)}
+                      :mouse-up {:ch mouse-up-ch
+                                 :mult (async/mult mouse-up-ch)}}))))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
@@ -230,6 +224,7 @@
 
 (defn setup-browser-repl [repl-url]
   (when repl-url
+    (mlog "setup-browser-repl calling repl/connect with repl-url: " repl-url)
     (repl/connect repl-url))
   ;; this is harmless if it fails
   (ws-repl/connect "ws://localhost:9001" :verbose true)
@@ -245,6 +240,7 @@
 
 (defn ^:export setup! []
   (apply-app-id-hack)
+  (mixpanel/set-existing-user)
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)]
@@ -269,6 +265,14 @@
 
 (defn ^:export toggle-admin []
   (swap! debug-state update-in [:current-user :admin] not))
+
+(defn ^:export set-ab-test
+  "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
+  [test-name value]
+  (let [test-path [:ab-tests (keyword (name test-name))]]
+    (println "starting value for" test-name "was" (get-in @debug-state test-path))
+    (swap! debug-state assoc-in test-path value)
+    (println "value for" test-name "is now" (get-in @debug-state test-path))))
 
 (defn reinstall-om! []
   (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state)))

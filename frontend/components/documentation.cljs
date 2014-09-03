@@ -9,7 +9,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.docs :as doc-utils]
-            [goog.string :as gstring])
+            [goog.string :as gstring]
+            [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
                    [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -52,6 +53,35 @@
                     :type "submit"}
            [:i.fa.fa-search]]])))))
 
+(defrender article-list [articles]
+  (html
+   [:ul.article_list
+    (for [article articles]
+      [:li {:id (str "list_entry_" (:slug article))}
+       [:a {:href (:url article)} (:title_with_child_count article)]])]))
+
+(defrender docs-category [category]
+  (html
+   [:ul.articles
+    [:li {:id (str "category_header_" (:slug category))}
+     [:h4
+      [:a {:href (:url category)} (:title category)]]]
+   (for [child (:children category)]
+      [:li {:id (gstring/format "category_entry_%_%" (:slug category) (:slug child))}
+       [:a {:href (:url child)} (:short_title_with_child_count child)]])]))
+
+(defrender docs-categories [categories]
+  (html
+   [:div
+    (om/build-all docs-category categories)]))
+
+(defrender docs-title [doc]
+  (html
+   [:div
+    [:h1 (:title doc)]
+    (when-let [last-updated (:lastUpdated doc)]
+      [:p.meta [:strong "Last Updated "] last-updated])]))
+
 (defrender front-page [app owner]
   (let [query-results (get-in app state/docs-articles-results-path)
         query (get-in app state/docs-articles-results-query-path)
@@ -73,10 +103,10 @@
        [:h4 "Having problems? Check these sections"]
        [:ul.articles.span4
         [:h4 "Getting started"]
-        (doc-utils/render-haml-template "article_list" {:article (:gettingstarted docs) :slug true})]
+        (om/build article-list (get-in docs [:gettingstarted :children]))]
        [:ul.articles.span4
         [:h4 "Troubleshooting"]
-        (doc-utils/render-haml-template "article_list" {:article (:troubleshooting docs) :slug true})]]])))
+        (om/build article-list (get-in docs [:troubleshooting :children]))]]])))
 
 (defn add-link-targets [node]
   (doseq [heading (sel node
@@ -92,7 +122,12 @@
                    (string/replace #"^-" "") ; don't let first or last be dashes
                    (string/replace #"-$" "")))]
       (dommy/set-html! heading
-                       (goog.string/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
+                       (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
+
+(defrender markdown [markdown]
+  (html
+   [:span {:dangerouslySetInnerHTML
+           #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
 (defn docs-subpage [doc owner]
   (reify
@@ -104,14 +139,14 @@
     (render [_]
       (html
        [:div
-        (doc-utils/render-haml-template "docs_title" {:article doc})
-        (if (:category doc)
-          (doc-utils/render-haml-template "article_list" (assoc doc :article doc))
-          (doc-utils/render-haml-template (:slug doc) (assoc doc :article doc)))]))))
+        (om/build docs-title doc)
+        (if-not (empty? (:children doc))
+          (om/build article-list (:children doc))
+          (om/build markdown (:markdown doc)))]))))
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
-        docs (doc-utils/find-all-docs)
+        docs (get-in app state/docs-data-path)
         categories ((juxt :gettingstarted :languages :how-to :troubleshooting
                           :reference :parallelism :privacy-security) docs)]
     (html
@@ -120,7 +155,7 @@
       [:div.container.content
        [:div.row
         [:aside.span3
-         (doc-utils/render-haml-template "categories" {:categories categories})]
+        (om/build docs-categories categories)]
         [:div.offset1.span8
          (when subpage
            (om/build docs-search app))
