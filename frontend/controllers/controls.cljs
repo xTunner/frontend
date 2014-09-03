@@ -516,47 +516,53 @@
        (release-button! uuid (:status api-result))))))
 
 
-(defmethod post-control-event! :saved-project-settings
-  ;; Takes the state of project settings inputs and PUTs the new settings to
-  ;; /api/v1/project/:project/settings.
-  ;;
-  ;; `merge-path` is a path into the nested project data-structure. When
-  ;; merge-path is non-nil the part of the project data-structure at that path is
-  ;; used as the base values for the settings. The new settings from the inputs
-  ;; state are merged on top.
-  ;;
-  ;; This allows all the settings on a page to be submitted, even if the user only
-  ;; modifies one.
-  ;;
-  ;; E.g.
-  ;; project is
-  ;;   {:github-info { ... }
-  ;;    :aws {:keypair {:access_key_id "access key"
-  ;;                    :secret_access_key "secret key"}}}
-  ;;
-  ;; The user sets a new access key ID so inputs is
-  ;;   {:aws {:keypair {:access_key_id "new key id"}}}
-  ;;
-  ;; :merge-path is [:aws :keypair]
-  ;;
-  ;; The settings posted to the settings API will be:
-  ;;   {:aws {:keypair {:access_key_id "new key id"
-  ;;                    :secret_access_key "secret key"}}}
-  [target message {:keys [project-id merge-paths]} previous-state current-state]
+(defn save-project-settings
+  "Takes the state of project settings inputs and PUTs the new settings to
+  /api/v1/project/:project/settings.
+
+  `merge-path` is a path into the nested project data-structure. When
+  merge-path is non-nil the part of the project data-structure at that path is
+  used as the base values for the settings. The new settings from the inputs
+  state are merged on top.
+
+  This allows all the settings on a page to be submitted, even if the user only
+  modifies one.
+
+  E.g.
+  project is
+    {:github-info { ... }
+     :aws {:keypair {:access_key_id \"access key\"
+                     :secret_access_key \"secret key\"}}}
+
+  The user sets a new access key ID so inputs is
+    {:aws {:keypair {:access_key_id \"new key id\"}}}
+
+  :merge-path is [:aws :keypair]
+
+  The settings posted to the settings API will be:
+    {:aws {:keypair {:access_key_id \"new key id\"
+                     :secret_access_key \"secret key\"}}}"
+  [project-id merge-paths current-state]
   (let [project-name (vcs-url/project-name project-id)
         comms (get-in current-state [:comms])
-        uuid frontend.async/*uuid*
         inputs (get-in current-state state/inputs-path)
         project (get-in current-state state/project-path)
         settings (merge-settings merge-paths project inputs)]
     (go
-     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
-       (if (= :success (:status api-result))
-         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
-           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
-           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
-         (put! (:errors comms) [:api-error api-result]))
-       (release-button! uuid (:status api-result))))))
+      (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+        (if (= :success (:status api-result))
+          (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
+          (put! (:errors comms) [:api-error api-result]))
+        api-result))))
+
+(defmethod post-control-event! :saved-project-settings
+  [target message {:keys [project-id merge-paths]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*]
+    (go
+      (let [api-result (<! (save-project-settings project-id merge-paths current-state))]
+        (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-ssh-key
@@ -582,6 +588,23 @@
                :params {:fingerprint fingerprint}
                :context {:project-id project-id
                          :fingerprint fingerprint})))
+
+
+(defmethod post-control-event! :test-hook
+  [target message {:keys [project-id merge-paths service]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        project-name (vcs-url/project-name project-id)
+        comms (get-in current-state [:comms])]
+    (go
+      (let [save-result (<! (save-project-settings project-id merge-paths current-state))
+            test-result (if (= (:status save-result) :success)
+                          (let [test-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/hooks/%s/test" project-name service)
+                                                                   :params {:project-id project-id}))]
+                            (when (not= (:status test-result) :success)
+                              (put! (:errors comms) [:api-error test-result]))
+                            test-result)
+                          save-result)]
+        (release-button! uuid (:status test-result))))))
 
 
 (defmethod post-control-event! :saved-project-api-token
