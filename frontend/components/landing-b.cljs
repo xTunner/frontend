@@ -62,7 +62,11 @@
                    "Launches are dead,"
                    [:br]
                    " long live iteration."]
-                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum convallis varius porttitor. Mauris rhoncus tempor scelerisque. Donec in dignissim erat, a venenatis arcu. Mauris sagittis volutpat nulla."]]]]
+                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum convallis varius porttitor. Mauris rhoncus tempor scelerisque. Donec in dignissim erat, a venenatis arcu. Mauris sagittis volutpat nulla."]
+                  [:p
+                   "Wanna know more? "
+                   [:a "Learn about Shopify's process"]
+                   "."]]]]
                [:section.home-practice]
                [:section.home-potential]
                [:section.home-epilog]])))))
