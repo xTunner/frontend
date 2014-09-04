@@ -96,10 +96,8 @@
                 [:text.draw-th {:transform "matrix(1 0 0 1 1331.788 55)"} "Length"]
                 [:text.draw-th {:transform "matrix(1 0 0 1 1525.047 55)"} "Status"]]
                [:g.draw-tr
-                [:circle {:cx "1574.5" :cy "125" :r "12.5"}]
                 [:line {:x1 "350" :y1 "150" :x2 "1600" :y2 "150"}]
-                [:circle {:cx "1524.5" :cy "125" :r "12.5"}]
-                [:rect {:x "1524.5" :y "112.5" :width "50" :height "25"}]
+                [:path {:d "M1574.5,137.5h-50c-6.9,0-12.5-5.6-12.5-12.5v0c0-6.9,5.6-12.5,12.5-12.5h50 c6.9,0,12.5,5.6,12.5,12.5v0C1587,131.9,1581.4,137.5,1574.5,137.5z"}]
                 [:text {:transform "matrix(1 0 0 1 400 130.3062)"} "100273"]
                 [:text {:transform "matrix(1 0 0 1 637.1372 130.3062)"} "Paul Biggar"]
                 [:text {:transform "matrix(1 0 0 1 896.2832 130.3062)"} "Hide SDS settings behind a feature flag"]
@@ -148,11 +146,13 @@
                 [:text {:transform "matrix(1 0 0 1 1337.8501 430.3062)"} "21:54"]]
                [:g.draw-tr
                 [:line {:x1 "350" :y1 "500" :x2 "1600" :y2 "500"}]
-                [:path {:d "M1574.5,487.5h-50c-6.9,0-12.5-5.6-12.5-12.5l0,0c0-6.9,5.6-12.5,12.5-12.5h50c6.9,0,12.5,5.6,12.5,12.5 l0,0C1587,481.9,1581.4,487.5,1574.5,487.5z"}]
+                [:circle {:cx "1574.5" :cy "475" :r "12.5"}]
+                [:circle {:cx "1524.5" :cy "475" :r "12.5"}]
+                [:rect {:x "1524.5" :y "462.5" :width "50" :height "25"}]
                 [:text {:transform "matrix(1 0 0 1 400 480.3062)"} "99899"]
                 [:text {:transform "matrix(1 0 0 1 637.1372 480.3062)"} "Danny King"]
                 [:text {:transform "matrix(1 0 0 1 896.2832 480.3062)"} "remote-spit needs to know /where/ to spit"]
-                [:text {:transform "matrix(1 0 0 1 1337.8501 480.3062)"} "23:18"]]
+                [:text {:transform "matrix(1 0 0 1 1337.8501 480.3062)"} "21:34"]]
                [:g.draw-tr
                 [:line {:x1 "350" :y1 "550" :x2 "1600" :y2 "550"}]
                 [:path {:d "M1574.5,537.5h-50c-6.9,0-12.5-5.6-12.5-12.5l0,0c0-6.9,5.6-12.5,12.5-12.5h50c6.9,0,12.5,5.6,12.5,12.5 l0,0C1587,531.9,1581.4,537.5,1574.5,537.5z"}]

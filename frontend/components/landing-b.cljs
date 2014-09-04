@@ -78,12 +78,15 @@
                   (common/ico :chevron-down)]]]
                [:section.home-purpose
                 [:div.purpose-drawings
-                 ; (om/build screenshot-dashboard app)
+                 [:div.drawing]
+                 [:div.drawing]
                  (om/build drawings/drawing-dashboard app)]
                 [:div.purpose-articles
-                 ;; [:h1 "Releases are Dead"]
                  [:article
-                  [:h1 "Launches are dead, long live rapid iteration."]
+                  [:h1
+                   "Launches are dead,"
+                   [:br]
+                   " long live iteration."]
                   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum convallis varius porttitor. Mauris rhoncus tempor scelerisque. Donec in dignissim erat, a venenatis arcu. Mauris sagittis volutpat nulla."]]]]
                [:section.home-practice]
                [:section.home-potential]
