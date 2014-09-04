@@ -16,31 +16,6 @@
             [sablono.core :as html :refer-macros [html]])
   (:require-macros [frontend.utils :refer [defrender]]))
 
-; html version of dashboard screenshot, may not use, remaking in svg -> (frontend.components.drawings)
-; (defn screenshot-dashboard [app owner]
-;   (reify
-;     om/IRender
-;     (render [_]
-;       (let [ab-tests (:ab-tests app)
-;             controls-ch (om/get-shared owner [:comms :controls])]
-;         (html [:div.drawing
-;                [:div.draw-dashboard
-;                 [:div.draw-nav-links
-;                  (repeat 3 [:div.draw-nav-link])]
-;                 ; [:div.draw-menu]
-;                 [:div.draw-body
-;                  [:div.draw-header
-;                   (common/ico :settings-light)]
-;                  [:div.draw-recent-builds
-;                   [:ul
-;                    (repeat 13
-;                     [:li
-;                      [:div.draw-text]
-;                      [:div.draw-text]
-;                      [:div.draw-text]
-;                      [:div.draw-text]
-;                      [:div.draw-status]])]]]]])))))
-
 (defn home [app owner]
   (reify
     om/IRender
