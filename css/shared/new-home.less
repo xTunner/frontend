@@ -415,14 +415,6 @@
   }
 }
 
-// delete these
-.purpose-drawings {.flex(0, 0, 100%);}
-.purpose-articles {display: none}
-.home-prolog {display: none !important;}
-
-margin-right: -1592px;
-margin-bottom: -17px;
-
 // hold off, trying to recreate in svg
 // .drawing {
 //   @width: 1600px;
@@ -541,9 +533,33 @@ margin-bottom: -17px;
 //   }
 // }
 
-.drawing {
-  &.draw-dash {
-    width: 1600px;
-    height: 1000px;
+// .drawing {
+//   &.draw-dash {
+//     width: 1600px;
+//     height: 1000px;
+//   }
+// }
+
+
+// delete these
+.purpose-drawings {.flex(0, 0, 100%);}
+.purpose-articles {display: none}
+.home-prolog {display: none !important;}
+
+
+.purpose-drawings {
+  .drawing {
+    @width: 1600px;
+    @gray_outline: @prolog_light_on_dark;
+    .flex(0, 0, auto);
+    position: relative;
+    width: @width;
+    height: (@width / 1.6);
+    background: @appBackgroundColor;
+    border: 1px solid @grayBoxBorder;
+    border-radius: 5px;
+    overflow: hidden;
+    // pointer-events: none;      // turned off for dev
+    // -webkit-user-select: none; // turned off for dev
   }
 }

@@ -1,4 +1,11 @@
 .drawing {
+  text {
+    fill: @gray;
+  }
+  line {
+    fill: none;
+    stroke: @grayBoxBorder;
+  }
   .draw-nav {
     rect {
       fill: @grayDark;
@@ -11,47 +18,29 @@
     }
   }
   .draw-menu {
-    line {
-      fill: none;
-      stroke: @grayBoxBorder;
-      stroke-miterlimit: 10;
+    > text {
+      fill: @blacken;
     }
-    text {
-      font-family: @sansFontFamily;
-      font-size: 14;
-      fill: @grayLight;
-      &.draw-select {
-        font-size: 18;
-        fill: @grayDark;
-      }
+    path,
+    polyline {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
     }
     path {
-      fill: none;
+      stroke: @redLight;
+    }
+    polyline {
       stroke: @green;
-      stroke-width: 2;
-      stroke-miterlimit: 10;
-      stroke-linecap: round;
-      &.draw-times {
-        stroke: @redLight;
-      }
+      stroke-linejoin: round;
     }
   }
   .draw-main {
-    line {
-      fill: none;
-      stroke: @grayBoxBorder;
-      stroke-miterlimit: 10;
-    }
     path {
       fill: @green;
     }
-    text {
-      fill: @gray;
-    }
     .draw-th {
-      text {
-        fill: @grayDark;
-      }
+      fill: @blacken;
     }
   }
 }
