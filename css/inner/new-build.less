@@ -63,8 +63,8 @@
 // Creates the selectors that will keep the proper container in view
 // Generates #container_parent.selected_2 { #container_2 { position: relative; }}
 .selectedX (@index) when (@index > -1) {
-  (~"#container_parent.selected_@{index}") {
-    (~"#container_@{index}") {
+  #container_parent.selected_@{index} {
+    #container_@{index} {
       position: relative;
     }
   }
