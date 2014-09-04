@@ -383,27 +383,27 @@
 //     max-width: 66%;
 //   }
 // }
-.purpose-drawings {
-  .flex(0, 0, 34%);
-  .flexy(center, flex-end);
-  overflow: hidden;
-  // .screenshot {
-  //   // @width: 121%;
-  //   // width: @width;
-  //   // margin-left: (-@width + 100%);
-  //   // padding-top: (@width / 1.6);
-  //   .flex(0, 0, auto);
-  //   width: 1600px;
-  //   height: 1000px;
-  //   background-image: url("../../img/home-screenshot1a.png");
-  //   background-size: cover;
-  //   background-position: top center;
-  //   background-repeat: no-repeat;
-  //   border: 1px solid @grayBoxBorder;
-  //   border-radius: 5px;
-  //   // box-shadow: 0 2px 5px fade(@black, 5);
-  // }
-}
+// .purpose-drawings {
+//   .flex(0, 0, 34%);
+//   .flexy(center, flex-end);
+//   overflow: hidden;
+//   .screenshot {
+//     // @width: 121%;
+//     // width: @width;
+//     // margin-left: (-@width + 100%);
+//     // padding-top: (@width / 1.6);
+//     .flex(0, 0, auto);
+//     width: 1600px;
+//     height: 1000px;
+//     background-image: url("../../img/home-screenshot1a.png");
+//     background-size: cover;
+//     background-position: top center;
+//     background-repeat: no-repeat;
+//     border: 1px solid @grayBoxBorder;
+//     border-radius: 5px;
+//     // box-shadow: 0 2px 5px fade(@black, 5);
+//   }
+// }
 .purpose-articles {
   .box-sizing(border-box);
   .flex(0, 0, 66%);
@@ -542,15 +542,19 @@
 
 
 // delete these
-.purpose-drawings {.flex(0, 0, 100%);}
-.purpose-articles {display: none}
-.home-prolog {display: none !important;}
+// .purpose-drawings {.flex(0, 0, 100%);}
+// .purpose-articles {display: none}
+// .home-prolog {display: none !important;}
 
 
 .purpose-drawings {
+  .flex(0, 0, 34%);
+  .flexy(center, flex-end);
+  position: relative;
+  margin: auto 0;
   .drawing {
+    @offset: 5px;
     @width: 1600px;
-    @gray_outline: @prolog_light_on_dark;
     .flex(0, 0, auto);
     position: relative;
     width: @width;
@@ -561,5 +565,20 @@
     overflow: hidden;
     // pointer-events: none;      // turned off for dev
     // -webkit-user-select: none; // turned off for dev
+    &:nth-child(-n+2) {
+      position: absolute;
+      background-image: url("../../img/drawing-dashboard.svg");
+      background-size: cover;
+      background-position: top center;
+      background-repeat: no-repeat;
+    }
+    &:nth-child(1) {
+      right: (@offset * 2);
+      bottom: (-@offset * 2);
+    }
+    &:nth-child(2) {
+      right: @offset;
+      bottom: -@offset;
+    }
   }
 }
