@@ -4,6 +4,7 @@
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
+            [frontend.components.drawings :as drawings]
             [frontend.components.shared :as shared]
             [frontend.env :as env]
             [frontend.state :as state]
@@ -15,35 +16,30 @@
             [sablono.core :as html :refer-macros [html]])
   (:require-macros [frontend.utils :refer [defrender]]))
 
-(defn screenshot-dashboard [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [ab-tests (:ab-tests app)
-            controls-ch (om/get-shared owner [:comms :controls])]
-        (html [:div.drawing
-               [:div.draw-dashboard
-                [:div.draw-nav-links
-                 (repeat 3 [:div.draw-nav-link])]
-                ; [:div.draw-menu]
-                [:div.draw-body
-                 [:div.draw-header
-                  (common/ico :settings-light)]
-                 [:div.draw-recent-builds
-                  [:ul
-                   (repeat 13
-                    [:li
-                     [:div.draw-text]
-                     [:div.draw-text]
-                     [:div.draw-text]
-                     [:div.draw-text]
-                     [:div.draw-status]])]]]]])))))
-
-; (def ico-paths
-;   {:slim_circle "M49.5,50a0.5,0.5 0 1,0 1,0a0.5,0.5 0 1,0 -1,0"
-;    :slim_check "M35,80 L5,50 M95,20L35,80"
-;    :slim_times "M82.5,82.5l-65-65 M82.5,17.5l-65,65"
-;    :repo "M44.,55.6,5.64,50h-5.6v5.6h5.6V50z M44.4,38.8h-5.6v5.6h5.6V38.8z"})
+; html version of dashboard screenshot, may not use, remaking in svg -> (frontend.components.drawings)
+; (defn screenshot-dashboard [app owner]
+;   (reify
+;     om/IRender
+;     (render [_]
+;       (let [ab-tests (:ab-tests app)
+;             controls-ch (om/get-shared owner [:comms :controls])]
+;         (html [:div.drawing
+;                [:div.draw-dashboard
+;                 [:div.draw-nav-links
+;                  (repeat 3 [:div.draw-nav-link])]
+;                 ; [:div.draw-menu]
+;                 [:div.draw-body
+;                  [:div.draw-header
+;                   (common/ico :settings-light)]
+;                  [:div.draw-recent-builds
+;                   [:ul
+;                    (repeat 13
+;                     [:li
+;                      [:div.draw-text]
+;                      [:div.draw-text]
+;                      [:div.draw-text]
+;                      [:div.draw-text]
+;                      [:div.draw-status]])]]]]])))))
 
 (defn home [app owner]
   (reify
@@ -82,9 +78,8 @@
                   (common/ico :chevron-down)]]]
                [:section.home-purpose
                 [:div.purpose-drawings
-                 ; [:div.screenshot]
-                 ; (screenshot-dashboard)
-                 (om/build screenshot-dashboard app)]
+                 ; (om/build screenshot-dashboard app)
+                 (om/build drawings/drawing-dashboard app)]
                 [:div.purpose-articles
                  ;; [:h1 "Releases are Dead"]
                  [:article
