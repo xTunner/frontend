@@ -282,7 +282,7 @@
         old-link (->> (sel [:head :link])
                       (filter is-app-css?)
                       first)]
-        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href "/assets/css/app.css.less"}])
+        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href "/assets/css/app.css"}])
         (dommy/remove! old-link)))
 
 (defn update-ui! []
