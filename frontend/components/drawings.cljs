@@ -2,14 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
             [frontend.async :refer [put!]]
-            [frontend.components.common :as common]
-            [frontend.components.crumbs :as crumbs]
-            [frontend.components.shared :as shared]
-            [frontend.env :as env]
             [frontend.state :as state]
-            [frontend.stefon :as stefon]
-            [frontend.utils :as utils :include-macros true]
-            [frontend.utils.github :refer [auth-url]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
@@ -39,54 +32,54 @@
                [:line {:x1 "350" :y1 "0" :x2 "350" :y2 "1000"}]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 505)"} "whoops"]
-                [:path {:d "M321.4,505l-2.7-2.7 M329.4,497l-8,8"}]]
+                [:polyline {:points "318.6,502.3 321.4,505 329.4,497"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 480)"} "test-notifs"]
-                [:path {:d "M321.4,480l-2.7-2.7 M329.4,472l-8,8"}]]
+                [:polyline {:points "318.6,477.3 321.4,480 329.4,472"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 455)"} "stability-fixes"]
-                [:path {:d "M321.4,455l-2.7-2.7 M329.4,447l-8,8"}]]
+                [:polyline {:points "318.6,452.3 321.4,455 329.4,447"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 430)"} "simpler-gh-user"]
-                [:path {:d "M321.4,430l-2.7-2.7 M329.4,422l-8,8"}]]
+                [:polyline {:points "318.6,427.3 321.4,430 329.4,422"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 330)"} "om-simple-settings"]
-                [:path {:d "M321.4,330l-2.7-2.7 M329.4,322l-8,8"}]]
+                [:polyline {:points "318.6,402.3 321.4,405 329.4,397"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 405)"} "simple-sidebar-fixer"]
-                [:path {:d "M321.4,405l-2.7-2.7 M329.4,397l-8,8"}]]
+                [:polyline {:points "318.6,352.3 321.4,355 329.4,347"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 380)"} "simple-sidebar"]
-                [:path.draw-times {:d "M328,380l-8-8 M328,372l-8,8"}]]
+                [:path {:d "M328,380l-8-8 M328,372l-8,8"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 355)"} "simple-settings"]
-                [:path {:d "M321.4,355l-2.7-2.7 M329.4,347l-8,8"}]]
+                [:polyline {:points "318.6,327.3 321.4,330 329.4,322"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 305)"} "new-invite-modal"]
-                [:path.draw-times {:d "M328,305l-8-8 M328,297l-8,8"}]]
+                [:path {:d "M328,305l-8-8 M328,297l-8,8"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 280)"} "master"]
-                [:path {:d "M321.4,280l-2.7-2.7 M329.4,272l-8,8"}]]
+                [:polyline {:points "318.6,277.3 321.4,280 329.4,272"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 255)"} "design-listing-rewrite"]
-                [:path {:d "M321.4,255l-2.7-2.7 M329.4,247l-8,8"}]]
+                [:polyline {:points "318.6,252.3 321.4,255 329.4,247"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 230)"} "customer-story-styles"]
-                [:path {:d "M321.4,230l-2.7-2.7 M329.4,222l-8,8"}]]
+                [:polyline {:points "318.6,227.3 321.4,230 329.4,222"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 205)"} "build-top-queue-fixes"]
-                [:path {:d "M321.4,205l-2.7-2.7 M329.4,197l-8,8"}]]
+                [:polyline {:points "318.6,202.3 321.4,205 329.4,197"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 180)"} "build-switcher-styles"]
-                [:path.draw-times {:d "M328,180l-8-8 M328,172l-8,8"}]]
+                [:path {:d "M328,180l-8-8 M328,172l-8,8"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 155)"} "brand-new-nav"]
-                [:path {:d "M321.4,155l-2.7-2.7 M329.4,147l-8,8"}]]
+                [:polyline {:points "318.6,152.3 321.4,155 329.4,147"}]]
                [:g
                 [:text {:transform "matrix(1 0 0 1 125 130)"} "aside-nav-v2"]
-                [:path {:d "M321.4,130l-2.7-2.7 M329.4,122l-8,8"}]]
+                [:polyline {:points "318.6,127.3 321.4,130 329.4,122"}]]
                [:line {:x1 "100" :y1 "100" :x2 "350" :y2 "100"}]
-               [:text.draw-select {:transform "matrix(1 0 0 1 145.3517 55)"} "Your Branch Activity"]])))))
+               [:text {:transform "matrix(1 0 0 1 145.3517 55)"} "Your Branch Activity"]])))))
 
 (defn draw-main [app owner]
   (reify
@@ -95,13 +88,13 @@
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:g.draw-main
-               [:g.draw-th
+               [:g.draw-tr
                 [:line {:x1 "350" :y1 "100" :x2 "1600" :y2 "100"}]
-                [:text {:transform "matrix(1 0 0 1 400 55.0535)"} "Build"]
-                [:text {:transform "matrix(1 0 0 1 637.1372 55)"} "Author"]
-                [:text {:transform "matrix(1 0 0 1 896.2832 55)"} "Log"]
-                [:text {:transform "matrix(1 0 0 1 1331.788 55)"} "Length"]
-                [:text {:transform "matrix(1 0 0 1 1525.047 55)"} "Status"]]
+                [:text.draw-th {:transform "matrix(1 0 0 1 400 55.0535)"} "Build"]
+                [:text.draw-th {:transform "matrix(1 0 0 1 637.1372 55)"} "Author"]
+                [:text.draw-th {:transform "matrix(1 0 0 1 896.2832 55)"} "Log"]
+                [:text.draw-th {:transform "matrix(1 0 0 1 1331.788 55)"} "Length"]
+                [:text.draw-th {:transform "matrix(1 0 0 1 1525.047 55)"} "Status"]]
                [:g.draw-tr
                 [:circle {:cx "1574.5" :cy "125" :r "12.5"}]
                 [:line {:x1 "350" :y1 "150" :x2 "1600" :y2 "150"}]
