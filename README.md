@@ -29,10 +29,16 @@ Next, compile the frontend clojurescript assets:
 lein cljsbuild auto dev
 ```
 
-Download all of the 3rd-party javascript dependencies. Requires bower (`npm install -g bower`):
+Install node dependencies (requires a recent version of node):
 
 ```
-bower install
+npm install
+```
+
+Download all of the 3rd-party javascript dependencies:
+
+```
+node_modules/.bin/bower install
 ```
 
 To test that everything worked, visit [http://circlehost:8080/assets/css/app.css.less](http://circlehost:8080/assets/css/app.css.less) and [http://circlehost:8080/assets/js/om-dev.js.stefon](http://circlehost:8080/assets/js/om-whitespace.js.stefon) in your browser.
