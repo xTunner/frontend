@@ -26,11 +26,8 @@ That will let you use your locally compiled assets on https://circleci.com.
 Next, compile the frontend clojurescript assets:
 
 ```
-lein cljsbuild auto whitespace
+lein cljsbuild auto dev
 ```
-
-We'll use the whitespace profile so that it produces a single javascript file.
-
 
 Download all of the 3rd-party javascript dependencies. Requires bower (`npm install -g bower`):
 
@@ -38,11 +35,11 @@ Download all of the 3rd-party javascript dependencies. Requires bower (`npm inst
 bower install
 ```
 
-To test that everything worked, visit [http://circlehost:8080/assets/css/app.css.less](http://circlehost:8080/assets/css/app.css.less) and [http://circlehost:8080/assets/js/om-whitespace.js.stefon](http://circlehost:8080/assets/js/om-whitespace.js.stefon) in your browser.
+To test that everything worked, visit [http://circlehost:8080/assets/css/app.css.less](http://circlehost:8080/assets/css/app.css.less) and [http://circlehost:8080/assets/js/om-dev.js.stefon](http://circlehost:8080/assets/js/om-whitespace.js.stefon) in your browser.
 
 Now you should have everything you need to start hacking on Circle's frontend!
 
-Visit [https://circleci.com?use-local-assets=true&om-build-id=whitespace](https://circleci.com?use-local-assets=true&om-build-id=whitespace) in Chrome. You'll see a page with the text "Help". You'll need to click the shield in the URL bar and click "Load unsafe script".
+Visit [https://circleci.com?use-local-assets=true&om-build-id=dev](https://circleci.com?use-local-assets=true&om-build-id=dev) in Chrome. You'll see a page with the text "Help". You'll need to click the shield in the URL bar and click "Load unsafe script".
 
 If everything worked properly, you should see the normal CircleCI website. If things didn't work properly, please open an issue.
 
