@@ -1,0 +1,57 @@
+.drawing {
+  .draw-nav {
+    rect {
+      fill: @grayDark;
+    }
+    circle {
+      fill: @gray;
+    }
+    path {
+      fill: @white;
+    }
+  }
+  .draw-menu {
+    line {
+      fill: none;
+      stroke: @grayBoxBorder;
+      stroke-miterlimit: 10;
+    }
+    text {
+      font-family: @sansFontFamily;
+      font-size: 14;
+      fill: @grayLight;
+      &.draw-select {
+        font-size: 18;
+        fill: @grayDark;
+      }
+    }
+    path {
+      fill: none;
+      stroke: @green;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke-linecap: round;
+      &.draw-times {
+        stroke: @redLight;
+      }
+    }
+  }
+  .draw-main {
+    line {
+      fill: none;
+      stroke: @grayBoxBorder;
+      stroke-miterlimit: 10;
+    }
+    path {
+      fill: @green;
+    }
+    text {
+      fill: @gray;
+    }
+    .draw-th {
+      text {
+        fill: @grayDark;
+      }
+    }
+  }
+}
