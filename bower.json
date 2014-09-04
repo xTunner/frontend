@@ -2,7 +2,7 @@
   "name": "circle",
   "version": "0.0.0",
   "dependencies": {
-    "bootstrap": "git://github.com/twbs/bootstrap/#2.2.2",
+    "bootstrap": "git://github.com/dannykingme/bootstrap.git#bb557105b70736b87a7cb748b64619375b8ab0a6",
     "moment": "2.1.0",
     "knockout": "2.2.0",
     "jquery.cookie": "1.2.0",

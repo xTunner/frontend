@@ -2,6 +2,7 @@
   (:require [compojure.core :refer (defroutes GET ANY)]
             [compojure.handler :refer (site)]
             [compojure.route]
+            [frontend.less :as less]
             [stefon.core :as stefon]
             [org.httpkit.server :as httpkit]))
 
@@ -17,5 +18,7 @@
 (defn -main
   "Starts the server that will serve the assets when visiting circle with ?use-local-assets=true"
   []
+  (println "Starting less compiler.")
+  (less/init)
   (println "starting server on port 8080")
   (httpkit/run-server (stefon/asset-pipeline (site #'routes) stefon-options) {:port 8080}))

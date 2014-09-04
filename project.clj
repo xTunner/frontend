@@ -10,6 +10,7 @@
                  [compojure "1.1.8"]
                  [ring/ring "1.2.2"]
                  [http-kit "2.1.18"]
+                 [fs "0.11.1"]
 
                  [ankha "0.1.2"]
                  [org.clojure/clojurescript "0.0-2280"]
