@@ -10,3 +10,4 @@ pom.xml.asc
 /node_modules
 /resources/public/cljs
 /resources/components
+/resources/assets/css/app.css
