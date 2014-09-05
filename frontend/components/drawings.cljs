@@ -16,11 +16,11 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
           [:div.customer-logo
-           [:svg.spotify-logo {:xmlns "http://www.w3.org/2000/svg"
-                                :x "0px"
-                                :y "0px"
-                                :viewBox "0 0 321.1 100"
-                                :enableBackground "new 0 0 321.1 100"}
+           [:svg.logo-spotify {:xmlns "http://www.w3.org/2000/svg"
+                               :x "0px"
+                               :y "0px"
+                               :viewBox "0 0 321.1 100"
+                               :enableBackground "new 0 0 321.1 100"}
             [:path {:d "M115.3,66.7c-0.5-0.4-0.3-0.8,0-1.2l4.5-5.3c0.4-0.4,0.7-0.4,1.1,0c4,3.5,7.7,5.5,13.4,5.5c3.7,0,7.4-1.4,7.4-5.1 c0-1.2-0.4-2.3-1.1-3c-4.7-4.7-23.9-2.3-23.9-17.2c0-6.5,4.7-13.7,16-13.7c6.9,0,12.1,2.4,16.2,5.6c0.6,0.5,0.5,0.8,0.2,1.2l-4,5.6 c-0.4,0.5-0.6,0.5-1.4,0c-2.3-1.8-6.3-4.2-11.3-4.2c-4.1,0-6.8,1.9-6.8,4.9c0,8.9,25,3.2,25,20.2c0,8.2-6.4,13.9-16.5,13.9 C127,73.9,120.8,71.4,115.3,66.7z"}]
             [:path {:d "M173.6,37.6c-5.5,0-8.6,2.5-10.6,5.1v-3.7c0-0.5-0.6-1.2-1-1.2h-7.3c-0.8,0-0.6,0.7-0.6,1.3v43.5c0,0.5,0,1.1,0.5,1.1h7.3 c0.6,0,1.2-0.6,1.2-1.2V69c2,2.4,5.5,4.9,10.6,4.9c8.1,0,16.3-6,16.3-18.1C189.9,42.9,180.9,37.6,173.6,37.6z M171.6,66 c-5.5,0-9.2-4.9-9.2-10.2c0-5.3,3.5-10.3,9.2-10.3c4.6,0,9.1,3.6,9.1,10.4C180.7,61.9,176.7,66,171.6,66z"}]
             [:path {:d "M227.7,48.6c-0.9-2.2-2.2-4.1-3.8-5.7c-1.6-1.6-3.6-2.9-5.8-3.9c-2.3-0.9-4.7-1.4-7.3-1.4c-2.7,0-5.2,0.5-7.4,1.4 c-2.3,1-4.2,2.3-5.9,3.9c-1.7,1.7-3,3.6-4,5.8c-0.9,2.2-1.5,4.6-1.5,7.1V56c0,2.5,0.5,4.9,1.5,7.1c0.9,2.2,2.3,4.1,3.9,5.7 c1.6,1.6,3.6,2.9,5.9,3.9c2.3,0.9,4.7,1.4,7.4,1.4c2.7,0,5.2-0.5,7.4-1.4c2.3-1,4.2-2.3,5.9-3.9c1.7-1.7,2.8-3.6,3.8-5.8 c0.9-2.2,1.3-4.6,1.3-7.1v-0.1C228.9,53.2,228.6,50.8,227.7,48.6z M210.7,66.1c-6.4,0-9.8-5.6-9.8-10.4c0-5.9,4.1-10.2,9.6-10.2 c4.8,0,9.8,3.8,9.8,10.4C220.3,62.3,215.7,66.1,210.7,66.1z"}]
@@ -38,7 +38,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
           [:div.customer-logo
-           [:svg.newrelic-logo {:xmlns "http://www.w3.org/2000/svg"
+           [:svg.logo-newrelic {:xmlns "http://www.w3.org/2000/svg"
                                 :x "0px"
                                 :y "0px"
                                 :viewBox "0 0 528 100"
@@ -63,7 +63,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
           [:div.customer-logo
-           [:svg.square-logo {:xmlns "http://www.w3.org/2000/svg"
+           [:svg.logo-square {:xmlns "http://www.w3.org/2000/svg"
                               :x "0px"
                               :y "0px"
                               :viewBox "0 0 410.2 100"
@@ -85,7 +85,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
           [:div.customer-logo
-           [:svg.dropbox-logo {:xmlns "http://www.w3.org/2000/svg"
+           [:svg.logo-dropbox {:xmlns "http://www.w3.org/2000/svg"
                                :x "0px"
                                :y "0px"
                                :viewBox "0 0 367.1 100"
@@ -111,7 +111,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
           [:div.customer-logo
-           [:svg.shopify-logo {:xmlns "http://www.w3.org/2000/svg"
+           [:svg.logo-shopify {:xmlns "http://www.w3.org/2000/svg"
                                :x "0px"
                                :y "0px"
                                :viewBox "0 0 351.6 100"

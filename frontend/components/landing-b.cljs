@@ -72,8 +72,8 @@
                  [:article
                   [:div.upper-tools
                    (common/ico :slim-rails)
-                   (common/ico :slim-node)
-                   (common/ico :slim-django)]
+                   (common/ico :slim-django)
+                   (common/ico :slim-node)]
                   [:div.lower-tools
                    (common/ico :slim-ruby)
                    (common/ico :slim-python)
@@ -89,7 +89,7 @@
                   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]]]
                 [:div.practice-customers
                  [:article
-                  [:h3 "Already trusted by"]
+                  [:h3 "Trusted by"]
                   [:div.customers-logos
                    (om/build drawings/customer-logo-shopify app)
                    (om/build drawings/customer-logo-dropbox app)
