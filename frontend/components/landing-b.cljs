@@ -90,6 +90,11 @@
                 [:div.practice-customers
                  [:article
                   [:h3 "Already trusted by"]
-                  [:div.customers-logos]]]]
+                  [:div.customers-logos
+                   (om/build drawings/customer-logo-shopify app)
+                   (om/build drawings/customer-logo-dropbox app)
+                   (om/build drawings/customer-logo-square app)
+                   (om/build drawings/customer-logo-newrelic app)
+                   (om/build drawings/customer-logo-spotify app)]]]]
                [:section.home-potential]
                [:section.home-epilog]])))))
