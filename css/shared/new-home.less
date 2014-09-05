@@ -444,13 +444,19 @@
 .practice-articles {
   .flex(0, 0, 34%);
   .flexy();
-  article {
-  }
 }
 .practice-customers {
   .flex(1, 1, 0);
   .flexy();
   h3 {
     color: @grayLighter;
+  }
+  .customers-logos {
+    .flexy();
+    width: 100%;
+  }
+  .customer-logo {
+    .flex(1, 1, auto);
+    max-width: 100px;
   }
 }
