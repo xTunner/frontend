@@ -18,12 +18,14 @@
 @prolog_h3_font: 20px;
 @prolog_h3_line: (@prolog_h3_font * 1.5); // 30px
 
-@prolog_cover_fadein: 500ms; // original is 500ms
+@prolog_cover_fadein: 500ms; // default 500ms
 @prolog_cover_fadeout: (@prolog_cover_fadein / 2);
 @prolog_cover_timing: ease-in-out;
 
 @purpose_font: 16px;
 @purpose_line: 24px;
+
+@purpose_drawings_width: 34%; // default 34%
 
 @zindex_prolog_cover: 2; // These should move to a less file in charge of managing z-indexes
 @zindex_prolog_above: (@zindex_prolog_cover + 1);
@@ -331,13 +333,13 @@
   background: @whiten;
 }
 .purpose-drawings {
-  .flex(0, 0, 34%);
+  .flex(0, 0, @purpose_drawings_width);
   .flexy(center, flex-end);
   position: relative;
   margin: auto 0;
   .drawing {
     @offset: 5px;
-    @width: 1600px;
+    @width: 1600px; // default 1600px
     .flex(0, 0, auto);
     position: relative;
     width: @width;
@@ -367,7 +369,7 @@
 }
 .purpose-articles {
   .box-sizing(border-box);
-  .flex(0, 0, 66%);
+  .flex(0, 0, (100% - @purpose_drawings_width));
   .flexy(center, center, column);
   padding: 0 @tile;
   article {
