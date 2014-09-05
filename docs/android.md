@@ -7,7 +7,8 @@ you use:
 ```
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --filter "android-18"```
+    - echo y | android update sdk --no-ui --filter "android-18"
+```
 
 Note that if you need extended SDK components, such as build-tools, you'll
 also need to install those separately. For example:
