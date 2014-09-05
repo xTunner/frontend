@@ -64,9 +64,9 @@
                    " long live iteration."]
                   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum convallis varius porttitor. Mauris rhoncus tempor scelerisque. Donec in dignissim erat, a venenatis arcu. Mauris sagittis volutpat nulla."]
                   [:p
-                   "Wanna know more? "
-                   [:a "Learn about Shopify's process"]
-                   "."]]]]
+                   [:a.shopify-link
+                    "See how Shopify does it"
+                    (common/ico :slim-arrow-right)]]]]]
                [:section.home-practice]
                [:section.home-potential]
                [:section.home-epilog]])))))
