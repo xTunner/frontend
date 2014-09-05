@@ -331,11 +331,13 @@
   line-height: @purpose_line;
   height: 100vh;
   background: @whiten;
+  overflow: hidden;
 }
 .purpose-drawings {
   .flex(0, 0, @purpose_drawings_width);
   .flexy(center, flex-end);
   position: relative;
+  max-height: 100%;
   margin: auto 0;
   .drawing {
     @offset: 5px;
