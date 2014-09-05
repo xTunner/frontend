@@ -33,7 +33,6 @@
 
 .page {
   &.home {
-    // color: @white;
     h1 {
       font-size: @prolog_h1_font;
       line-height: @prolog_h1_line;
@@ -43,7 +42,6 @@
       font-size: @prolog_h3_font;
       line-height: @prolog_h3_line;
       font-weight: normal;
-      margin: 0;
     }
   }
 }
@@ -74,6 +72,9 @@
         }
       }
     }
+  }
+  h3 {
+    margin: 0;
   }
 }
 .prolog-navigation {
@@ -409,7 +410,7 @@
   overflow: hidden;
   article {
     .flex(1, 1, 1000px);
-    .flexy(flex-start, center, column);
+    .flexy(column);
     max-width: 1000px;
     margin: 0 auto;
   }
@@ -423,20 +424,20 @@
   i.ico {
     margin-right: @purpose_font;
     svg {
-      width: 99px;
-      height: 99px;
-      stroke: @gray;
-      stroke-width: 1;
+      width: 50px;
+      height: 50px;
+      stroke: @grayLighter;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: bevel;
     }
   }
   .upper-tools {
-    .flex(0, 0, 100px);
     .flexy();
     width: 100%;
     margin-bottom: @purpose_font;
   }
   .lower-tools {
-    .flex(0, 0, 100px);
     .flexy();
     width: 100%;
   }
@@ -444,10 +445,16 @@
 .practice-articles {
   .flex(0, 0, 34%);
   .flexy();
+  article {
+    .justify-content(center);
+  }
 }
 .practice-customers {
   .flex(1, 1, 0);
   .flexy();
+  article {
+    .justify-content(flex-start);
+  }
   h3 {
     color: @grayLighter;
   }
@@ -456,7 +463,11 @@
     width: 100%;
   }
   .customer-logo {
-    .flex(1, 1, auto);
-    max-width: 100px;
+    .flexy();
+    margin-right: @purpose_font;
+  }
+  svg {
+    height: @purpose_line;
+    fill: @grayLighter;
   }
 }
