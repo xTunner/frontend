@@ -62,7 +62,7 @@
                    "Launches are dead,"
                    [:br]
                    " long live iteration."]
-                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum convallis varius porttitor. Mauris rhoncus tempor scelerisque. Donec in dignissim erat, a venenatis arcu. Mauris sagittis volutpat nulla."]
+                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]
                   [:p
                    [:a.shopify-link
                     "See how Shopify does it"
