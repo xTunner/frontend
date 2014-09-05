@@ -39,13 +39,13 @@
                    (common/ico :logo)]]]
                 [:div.prolog-slogans
                  [:h1.slogan.proverb {:title "Your org needs a hero."
-                                      :alt "We just need authorization first."}
+                                      :alt   "Just gotta authorize first."}
                   "Your org needs a hero."]
-                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your"
-                                      :alt "Why? Because signing up with your GitHub account lets Circle start your tests really fast."}
+                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your "
+                                      :alt   "Signing up using your GitHub login lets us start really fast."}
                   "You have a product to focus on, let Circle handle your"]
                  [:h3.slogan.context {:title "Continuous Integration & Deployment."
-                                      :alt "Note, without fine-grained scopes, GitHub requires us to request them in bulk."}
+                                      :alt   "Currently, we must request permissions in bulk."}
                   "Continuous Integration & Deployment."]]
                 [:div.prolog-learn
                  [:a
