@@ -67,6 +67,29 @@
                    [:a.shopify-link
                     "See how Shopify does it"
                     (common/ico :slim-arrow-right)]]]]]
-               [:section.home-practice]
+               [:section.home-practice
+                [:div.practice-tools
+                 [:article
+                  [:div.upper-tools
+                   (common/ico :slim-rails)
+                   (common/ico :slim-node)
+                   (common/ico :slim-django)]
+                  [:div.lower-tools
+                   (common/ico :slim-ruby)
+                   (common/ico :slim-python)
+                   (common/ico :slim-js)
+                   (common/ico :slim-java)
+                   (common/ico :slim-php)]]]
+                [:div.practice-articles
+                 [:article
+                  [:h1
+                   "We support your tools &"
+                   [:br]
+                   "devs trust us to just work."]
+                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]]]
+                [:div.practice-customers
+                 [:article
+                  [:h3 "Already trusted by"]
+                  [:div.customers-logos]]]]
                [:section.home-potential]
                [:section.home-epilog]])))))
