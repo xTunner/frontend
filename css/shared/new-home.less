@@ -331,6 +331,7 @@
   line-height: @purpose_line;
   height: 100vh;
   background: @whiten;
+  box-shadow: 0 1px 3px fade(@black, 5) inset;
   overflow: hidden;
 }
 .purpose-drawings {
@@ -391,5 +392,65 @@
       margin-left: .5ex;
       transition: margin 100ms ease-in-out;
     }
+  }
+}
+
+
+
+
+.home-practice {
+  .flexy(column);
+  font-size: @purpose_font;
+  line-height: @purpose_line;
+  height: 100vh;
+  padding: 0 (@tile / 2);
+  background: @white;
+  box-shadow: 0 -1px 3px fade(@black, 5);
+  overflow: hidden;
+  article {
+    .flex(1, 1, 1000px);
+    .flexy(flex-start, center, column);
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+}
+.practice-tools {
+  .flex(1, 1, 0);
+  .flexy();
+  article {
+    .justify-content(flex-end);
+  }
+  i.ico {
+    margin-right: @purpose_font;
+    svg {
+      width: 99px;
+      height: 99px;
+      stroke: @gray;
+      stroke-width: 1;
+    }
+  }
+  .upper-tools {
+    .flex(0, 0, 100px);
+    .flexy();
+    width: 100%;
+    margin-bottom: @purpose_font;
+  }
+  .lower-tools {
+    .flex(0, 0, 100px);
+    .flexy();
+    width: 100%;
+  }
+}
+.practice-articles {
+  .flex(0, 0, 34%);
+  .flexy();
+  article {
+  }
+}
+.practice-customers {
+  .flex(1, 1, 0);
+  .flexy();
+  h3 {
+    color: @grayLighter;
   }
 }
