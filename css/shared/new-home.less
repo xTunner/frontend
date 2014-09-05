@@ -375,4 +375,19 @@
   article {
     max-width: 1000px;
   }
+  .shopify-link {
+    .flexy();
+    &:hover {
+      svg {
+        stroke: @blueLight;
+        margin-left: 1ex;
+      }
+    }
+    svg {
+      stroke: @blue;
+      stroke-width: 8;
+      margin-left: .5ex;
+      transition: margin 100ms ease-in-out;
+    }
+  }
 }
