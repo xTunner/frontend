@@ -13,6 +13,8 @@
 
 @prolog_light_on_dark: #aaa;
 
+@home_drawing_offset: 5px;
+
 @prolog_h1_font: 72px;
 @prolog_h1_line: @prolog_h1_font;
 @prolog_h3_font: 20px;
@@ -327,8 +329,8 @@
 }
 
 // delete these
-// .purpose-drawings {.flex(0, 0, 100%);}
-// .purpose-articles {display: none}
+// .home-drawings {.flex(0, 0, 100%);}
+// .home-articles {display: none}
 // .home-prolog {display: none !important;}
 
 .home-purpose {
@@ -340,14 +342,13 @@
   box-shadow: 0 1px 3px fade(@black, 5) inset;
   overflow: hidden;
 }
-.purpose-drawings {
+.home-drawings {
   .flex(0, 0, @purpose_drawings_width);
   .flexy(center, flex-end);
   position: relative;
   max-height: 100%;
   margin: auto 0;
   .drawing {
-    @offset: 5px;
     @width: 1600px; // default 1600px
     .flex(0, 0, auto);
     position: relative;
@@ -367,16 +368,16 @@
       background-repeat: no-repeat;
     }
     &:nth-child(1) {
-      right: (@offset * 2);
-      bottom: (-@offset * 2);
+      right: (@home_drawing_offset * 2);
+      bottom: (-@home_drawing_offset * 2);
     }
     &:nth-child(2) {
-      right: @offset;
-      bottom: -@offset;
+      right: @home_drawing_offset;
+      bottom: -@home_drawing_offset;
     }
   }
 }
-.purpose-articles {
+.home-articles {
   .box-sizing(border-box);
   .flex(0, 0, (100% - @purpose_drawings_width));
   .flexy(center, center, column);
@@ -507,16 +508,35 @@
       }
       .logo-shopify  { fill: #96bf48; }
       .logo-dropbox  { fill: #007ee5; }
-      .logo-square   { fill: #2996cc; }
+      .logo-square   { fill: #000000; }
       .logo-newrelic { fill: #338799; }
       .logo-spotify  { fill: #81b71a; }
     }
     svg {
+      height: @practice_logo_height;
+      fill: @practice_subtle;
       transition: @practice_tool_speed @practice_tool_timing;
     }
   }
-  svg {
-    height: @practice_logo_height;
-    fill: @practice_subtle;
+}
+
+
+
+
+
+.home-potential {
+  .flexy();
+  font-size: @purpose_font;
+  line-height: @purpose_line;
+  height: 100vh;
+  background: @whiten;
+  box-shadow: 0 1px 3px fade(@black, 5) inset;
+  overflow: hidden;
+  .home-drawings {
+    .justify-content(flex-start);
+  }
+  .drawing {
+    &:nth-child(1) { left: (@home_drawing_offset * 2); }
+    &:nth-child(2) { left: @home_drawing_offset; }
   }
 }
