@@ -39,7 +39,7 @@
                    (common/ico :logo)]]]
                 [:div.prolog-slogans
                  [:h1.slogan.proverb {:title "Your org needs a hero."
-                                      :alt   "Just gotta authorize first."}
+                                      :alt   "Let's just authorize first."}
                   "Your org needs a hero."]
                  [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your "
                                       :alt   "Signing up using your GitHub login lets us start really fast."}
@@ -52,11 +52,11 @@
                   "Learn more"
                   (common/ico :chevron-down)]]]
                [:section.home-purpose
-                [:div.purpose-drawings
+                [:div.home-drawings
                  [:div.drawing]
                  [:div.drawing]
                  (om/build drawings/drawing-dashboard app)]
-                [:div.purpose-articles
+                [:div.home-articles
                  [:article
                   [:h1
                    "Launches are dead,"
@@ -96,5 +96,20 @@
                    (om/build drawings/customer-logo-square app)
                    (om/build drawings/customer-logo-newrelic app)
                    (om/build drawings/customer-logo-spotify app)]]]]
-               [:section.home-potential]
+               [:section.home-potential
+                [:div.home-articles
+                 [:article
+                  [:h1
+                   "Look under the hood & you'll"
+                   [:br]
+                   " find our best bullet points."]
+                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]
+                  [:p
+                   [:a.shopify-link
+                    "See how Shopify does it"
+                    (common/ico :slim-arrow-right)]]]]
+                [:div.home-drawings
+                 [:div.drawing]
+                 [:div.drawing]
+                 (om/build drawings/drawing-dashboard app)]]
                [:section.home-epilog]])))))
