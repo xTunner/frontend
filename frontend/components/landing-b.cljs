@@ -111,5 +111,5 @@
                 [:div.home-drawings
                  [:div.drawing]
                  [:div.drawing]
-                 (om/build drawings/drawing-dashboard app)]]
                [:section.home-epilog]])))))
+                 (om/build drawings/drawing-build app)]]

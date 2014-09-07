@@ -342,6 +342,119 @@
                 [:text {:transform "matrix(1 0 0 1 896.2832 980.3062)"} "delete nested subvolumes"]
                 [:text {:transform "matrix(1 0 0 1 1337.8501 980.3062)"} "21:54"]]])))))
 
+(defn draw-build [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [ab-tests (:ab-tests app)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:g.draw-build
+            [:g.draw-crumbs
+              [:line {:x1 "350" :y1 "100" :x2 "1600" :y2 "100"}]
+              [:text {:transform "matrix(1 0 0 1 375.0002 55.0532)"} "circleci / circle / oss-feature-flag-ui / 100812"]
+              [:path {:d "M1562.4,48.8c-0.1-0.6-0.5-1-1.1-1.1 c-0.7-0.1-2.1-0.3-2.1-0.3c-0.6-0.2-1.1-0.7-1.1-1.4c0-0.3,0.1-0.5,0.2-0.7c0,0,1.3-1.7,1.3-1.7c0.4-0.4,0.3-1.1,0-1.5 c-0.5-0.6-1.1-1.2-1.7-1.7c-0.4-0.4-1.1-0.4-1.5,0c-0.6,0.4-1.7,1.3-1.7,1.3c-0.2,0.1-0.5,0.2-0.8,0.2c-0.7,0-1.2-0.5-1.4-1.1 l-0.3-2.1c-0.1-0.6-0.5-1-1.1-1.1c-0.8-0.1-1.6-0.1-2.4,0c-0.6,0.1-1,0.5-1.1,1.1l-0.3,2.1c-0.1,0.7-0.7,1.1-1.4,1.1 c-0.3,0-0.6-0.1-0.8-0.3l-1.6-1.3c-0.4-0.4-1.1-0.3-1.5,0c-0.6,0.5-1.2,1.1-1.7,1.7c-0.4,0.4-0.4,1.1,0,1.5 c0.4,0.5,1.2,1.6,1.2,1.6c0.2,0.2,0.3,0.5,0.3,0.8c0,0.7-0.5,1.3-1.2,1.4l-2,0.3c-0.6,0.1-1,0.5-1.1,1.1c-0.1,0.8-0.1,1.6,0,2.4 c0.1,0.6,0.5,1,1.1,1.1l2,0.3c0.7,0.1,1.2,0.7,1.2,1.4c0,0.3-0.1,0.6-0.3,0.8l-1.2,1.6c-0.4,0.4-0.3,1.1,0,1.5 c0.5,0.6,1.1,1.2,1.7,1.7c0.2,0.2,0.5,0.3,0.8,0.3c0.3,0,0.5-0.1,0.8-0.3l1.6-1.3c0.2-0.2,0.5-0.3,0.8-0.3c0.7,0,1.2,0.5,1.4,1.1 c0,0,0.3,2.1,0.3,2.1c0.1,0.6,0.5,1,1.1,1.1c0.4,0,0.8,0.1,1.2,0.1c0.4,0,0.8,0,1.2-0.1c0.6-0.1,1-0.5,1.1-1.1l0.3-2.1 c0.1-0.7,0.7-1.1,1.4-1.1c0.3,0,0.6,0.1,0.8,0.2l1.7,1.3c0.2,0.2,0.5,0.3,0.8,0.3c0.3,0,0.5-0.1,0.8-0.3c0.6-0.5,1.2-1.1,1.7-1.7 c0.4-0.4,0.4-1.1,0-1.5c-0.4-0.6-1.3-1.7-1.3-1.7c-0.2-0.2-0.2-0.5-0.2-0.8c0-0.7,0.5-1.2,1.1-1.4c0,0,1.4-0.2,2.1-0.3 c0.6-0.1,1-0.5,1.1-1.1C1562.5,50.4,1562.5,49.6,1562.4,48.8z"}]
+              ; [:circle {:cx "1550" :cy "50" :r "0.1"}]]
+              [:path {:d "M1550.1,50 c0,0.1-0.1,0.1-0.1,0.1s-0.1-0.1-0.1-0.1s0.1-0.1,0.1-0.1S1550.1,49.9,1550.1,50"}]]
+            [:g.draw-stats
+              [:text {:transform "matrix(1 0 0 1 375.0002 130.0532)"} "Author"]
+              [:text {:transform "matrix(1 0 0 1 500.0002 130.0532)"} "Yukihiro Matsumoto"]
+              [:text {:transform "matrix(1 0 0 1 375.0002 155.0529)"} "Duration"]
+              [:text {:transform "matrix(1 0 0 1 500.0002 155.0529)"} "21:34"]
+              [:text {:transform "matrix(1 0 0 1 375.0002 180.0528)"} "Pull Request"]
+              [:text {:transform "matrix(1 0 0 1 500.0002 180.0528)"} "#3254"]
+              [:text {:transform "matrix(1 0 0 1 375.0002 205.0531)"} "Commit Log"]
+              [:text {:transform "matrix(1 0 0 1 500.0002 205.0531)"} "Refactoring some old components."]
+              [:text {:transform "matrix(1 0 0 1 375.0002 230.0529)"} "Build Artifacts"]
+              [:text {:transform "matrix(1 0 0 1 500.0002 230.0528)"} "View All"]]
+            [:g.draw-buttons
+              [:text {:transform "matrix(1 0 0 1 1280.2092 180.0529)"} "rebuild"]
+              [:path {:d "M1342.9,194.4H1279c-10.4,0-18.8-8.4-18.8-18.8v0 c0-10.4,8.4-18.8,18.8-18.8h63.9V194.4z"}]
+              [:text {:transform "matrix(1 0 0 1 1464.7092 180.0529)"} "& enable ssh"]
+              [:path {:d "M1556.2,194.4h-101.4v-37.7h101.4c10.4,0,18.8,8.4,18.8,18.8v0 C1575,186,1566.6,194.4,1556.2,194.4z"}]
+              [:text {:transform "matrix(1 0 0 1 1352.9592 180.0529)"} "& clear cache"]
+              [:line {:x1 "1342.9" :y1 "156.7" :x2 "1454.7" :y2 "156.7"}]
+              [:line {:x1 "1342.9" :y1 "194.4" :x2 "1454.7" :y2 "194.4"}]]
+            [:line {:x1 "375" :y1 "250" :x2 "375" :y2 "700"}]
+            [:line {:x1 "1575" :y1 "250" :x2 "1575" :y2 "700"}]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 885.3306 254.4905)"} "INFRASTRUCTURE ACTIONS"]
+              [:text {:transform "matrix(1 0 0 1 400.0002 280.0541)"} "starting the build"]
+              [:text {:transform "matrix(1 0 0 1 1397.9369 280.054)"} "config"]
+              [:text {:transform "matrix(1 0 0 1 1466.1526 280.0543)"} "00:00"]
+              [:line {:x1 "375" :y1 "250" :x2 "883.7" :y2 "250"}]
+              [:line {:x1 "1066.3" :y1 "250" :x2 "1575" :y2 "250"}]
+              [:polyline {:points "1534,271 1542,279 1550,271"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 400.0002 330.0543)"} "start container"]
+              [:text {:transform "matrix(1 0 0 1 1397.9369 330.0543)"} "config"]
+              [:text {:transform "matrix(1 0 0 1 1468.3386 330.0545)"} "00:01"]
+              [:line {:x1 "375" :y1 "300" :x2 "1575" :y2 "300"}]
+              [:polyline {:points "1534,321 1542,329 1550,321"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 906.897 354.4902)"} "CHECKOUT ACTIONS"]
+              [:text {:transform "matrix(1 0 0 1 400.0002 380.0543)"} "restore source cache"]
+              [:text {:transform "matrix(1 0 0 1 1399.0409 380.0545)"} "cache"]
+              [:text {:transform "matrix(1 0 0 1 1470.3561 380.0543)"} "00:11"]
+              [:line {:x1 "375" :y1 "350" :x2 "905.5" :y2 "350"}]
+              [:line {:x1 "1044.5" :y1 "350" :x2 "1575" :y2 "350"}]
+              [:polyline {:points "1534,371 1542,379 1550,371"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 400.0002 430.0545)"} "checkout using deploy key"]
+              [:text {:transform "matrix(1 0 0 1 1397.9369 430.0543)"} "config"]
+              [:text {:transform "matrix(1 0 0 1 1466.5947 430.0545)"} "00:03"]
+              [:line {:x1 "375" :y1 "400" :x2 "1575" :y2 "400"}]
+              [:polyline {:points "1534,421 1542,429 1550,421"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 913.1832 454.4904)"} "MACHINE ACTIONS"]
+              [:text {:transform "matrix(1 0 0 1 400.0002 480.054)"} "configure the build"]
+              [:text {:transform "matrix(1 0 0 1 1399.0409 480.0543)"} "cache"]
+              [:text {:transform "matrix(1 0 0 1 1466.3464 480.0543)"} "00:02"]
+              [:line {:x1 "375" :y1 "450" :x2 "911.7" :y2 "450"}]
+              [:line {:x1 "1038.2" :y1 "450" :x2 "1574.9" :y2 "450"}]
+              [:polyline {:points "1534,471 1542,479 1550,471"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 400.0002 530.0543)"} "restore cache"]
+              [:text {:transform "matrix(1 0 0 1 1399.0409 530.0541)"} "cache"]
+              [:text {:transform "matrix(1 0 0 1 1466.4031 530.0546)"} "00:08"]
+              [:line {:x1 "375" :y1 "500" :x2 "1575" :y2 "500"}]
+              [:polyline {:points "1534,521 1542,529 1550,521"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 898.8965 554.4904)"} "DEPENDENCY ACTIONS"]
+              [:text {:transform "matrix(1 0 0 1 400.0002 580.0543)"} "exporting RAILS_ENV, RACK_ENV"]
+              [:text {:transform "matrix(1 0 0 1 1375.1698 580.0543)"} "inference"]
+              [:text {:transform "matrix(1 0 0 1 1466.1545 580.0543)"} "00:00"]
+              [:line {:x1 "375" :y1 "550" :x2 "897.3" :y2 "550"}]
+              [:line {:x1 "1052.7" :y1 "550" :x2 "1575" :y2 "550"}]
+              [:polyline {:points "1534,571 1542,579 1550,571"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 400.0002 630.0546)"} "bundle install"]
+              [:text {:transform "matrix(1 0 0 1 1375.1698 630.0541)"} "inference"]
+              [:text {:transform "matrix(1 0 0 1 1468.3394 630.0546)"} "00:01"]
+              [:line {:x1 "375" :y1 "600" :x2 "1575" :y2 "600"}]
+              [:polyline {:points "1534,621 1542,629 1550,621"}]]
+            [:g.draw-action
+              [:text {:transform "matrix(1 0 0 1 927.7149 654.4903)"} "TEST ACTIONS"]
+              [:text {:transform "matrix(1 0 0 1 400.0002 680.0541)"} "parallel rspec"]
+              [:text {:transform "matrix(1 0 0 1 1375.1698 680.0546)"} "inference"]
+              [:text {:transform "matrix(1 0 0 1 1466.7795 680.0546)"} "02:40"]
+              [:line {:x1 "375" :y1 "650" :x2 "926" :y2 "650"}]
+              [:line {:x1 "1024" :y1 "650" :x2 "1575" :y2 "650"}]
+              [:polyline {:points "1550,679 1542,671 1534,679"}]]
+            [:g.draw-output
+              [:rect {:x "375" :y "700" :width "1200" :height "300"}]
+              [:text {:transform "matrix(1 0 0 1 400.0002 730.0546)"} "bundle exec rspec --color"]
+              [:text {:transform "matrix(1 0 0 1 400.0002 755.0544)"} "........................................................................................................................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 780.0542)"} "........................................................................................................................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 805.0540)"} "........................................................................................................................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 830.0538)"} "........................................................................................................................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 855.0538)"} "........................................................................................................................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 880.0536)"} "........................................................................................................................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 905.0540)"} "........................................................................................................................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 930.0549)"} "............................................."]
+              [:text {:transform "matrix(1 0 0 1 400.0002 955.0545)"} "Finished in 2 minutes 30.1 seconds"]
+              [:text {:transform "matrix(1 0 0 1 400.0002 980.0548)"} "884 examples, 0 failures"]]])))))
+
 (defn drawing-dashboard [app owner]
   (reify
     om/IRender
@@ -357,3 +470,19 @@
            (om/build draw-nav app)
            (om/build draw-menu app)
            (om/build draw-main app)])))))
+
+(defn drawing-build [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [ab-tests (:ab-tests app)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:svg.drawing.draw-dash {:xmlns "http://www.w3.org/2000/svg"
+                                   :x "0px"
+                                   :y "0px"
+                                   :viewBox "0 0 1600 1000"
+                                   :enableBackground "new 0 0 1600 1000"}
+           (om/build draw-nav app)
+           (om/build draw-menu app)
+           (om/build draw-build app)])))))
