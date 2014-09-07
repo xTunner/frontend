@@ -1,25 +1,33 @@
 .drawing {
+  @color_subtle: @grayBoxBorder;
+  @color_normal: @grayLight;
+  @color_heroic: @grayDark;
+
+  @font_subtle: 14px;
+  @font_normal: 16px;
+
   text {
-    fill: @gray;
+    fill: @color_normal;
+    font-size: @font_normal;
   }
   line {
     fill: none;
-    stroke: @grayBoxBorder;
+    stroke: @color_subtle;
   }
   .draw-nav {
     rect {
-      fill: @grayDark;
+      fill: @color_heroic;
     }
     circle {
-      fill: @gray;
+      fill: lighten(@color_heroic, 5);
     }
     path {
-      fill: @white;
+      fill: @color_subtle;
     }
   }
   .draw-menu {
     > text {
-      fill: @blacken;
+      fill: @color_heroic;
     }
     path,
     polyline {
@@ -37,10 +45,63 @@
   }
   .draw-main {
     path {
-      fill: @grayBoxBorder;
+      fill: @color_subtle;
     }
     .draw-th {
-      fill: @blacken;
+      fill: @color_heroic;
+    }
+  }
+  .draw-build {
+    .draw-crumbs {
+      path {
+        fill: none;
+        stroke: @color_normal;
+        &:last-of-type {
+          stroke-width: 5;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+      }
+    }
+    .draw-stats {
+      text {
+        &:nth-child(4n+6) {
+          fill: @blueLight; // link color
+        }
+      }
+    }
+    .draw-buttons {
+      path {
+        fill: none;
+        stroke: @color_subtle;
+      }
+      text {
+        fill: @color_heroic;
+      }
+    }
+    .draw-action {
+      text {
+        &:nth-last-of-type(4) {
+          font-size: @font_subtle;
+          fill: @color_subtle;
+        }
+      }
+      polyline {
+        fill: none;
+        stroke: @color_normal;
+      }
+    }
+    .draw-output {
+      rect {
+        fill: @color_heroic;
+      }
+      text {
+        font-size: @font_subtle;
+        font-family: @codeFontFamily;
+        &:not(:nth-of-type(9n+1)) {
+          fill: @green;
+        }
+      }
     }
   }
 }
