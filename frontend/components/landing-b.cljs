@@ -100,9 +100,9 @@
                 [:div.home-articles
                  [:article
                   [:h1
-                   "Look under the hood & you'll"
+                   "Look under the hood &"
                    [:br]
-                   " find our best bullet points."]
+                   " check the bullet points."]
                   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]
                   [:p
                    [:a.shopify-link
