@@ -111,5 +111,32 @@
                 [:div.home-drawings
                  [:div.drawing]
                  [:div.drawing]
-               [:section.home-epilog]])))))
                  (om/build drawings/drawing-build app)]]
+               [:section.home-prolog
+                [:a.prolog-action {:role "button"}
+                 "Sign Up Free"]
+                [:div.prolog-cover]
+                [:div.prolog-navigation
+                 [:nav
+                  [:a.promo "What is Continuous Integration?"]
+                  [:a.login "Log In"]]]
+                [:div.prolog-logos
+                 [:div.avatars
+                  [:div.avatar-github
+                   (common/ico :github)]
+                  [:div.avatar-circle
+                   (common/ico :logo)]]]
+                [:div.prolog-slogans
+                 [:h1.slogan.proverb {:title "Ready to start testing?"
+                                      :alt   "Let's just authorize first."}
+                  "Your org needs a hero."]
+                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your "
+                                      :alt   "Signing up using your GitHub login lets us start really fast."}
+                  "You have a product to focus on, let Circle handle your"]
+                 [:h3.slogan.context {:title "Continuous Integration & Deployment."
+                                      :alt   "Currently, we must request permissions in bulk."}
+                  "Continuous Integration & Deployment."]]
+                [:div.prolog-learn
+                 [:a
+                  "Learn more"
+                  (common/ico :chevron-down)]]]])))))
