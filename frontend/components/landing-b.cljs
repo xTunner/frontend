@@ -24,24 +24,24 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
                [:section.home-prolog
-                [:a.prolog-action {:role "button"}
+                [:a.home-action {:role "button"}
                  "Sign Up Free"]
-                [:div.prolog-cover]
+                [:div.home-cover]
                 [:div.prolog-navigation
                  [:nav
                   [:a.promo "What is Continuous Integration?"]
                   [:a.login "Log In"]]]
-                [:div.prolog-logos
+                [:div.home-avatars
                  [:div.avatars
                   [:div.avatar-github
                    (common/ico :github)]
                   [:div.avatar-circle
                    (common/ico :logo)]]]
-                [:div.prolog-slogans
+                [:div.home-slogans
                  [:h1.slogan.proverb {:title "Your org needs a hero."
                                       :alt   "Let's just authorize first."}
                   "Your org needs a hero."]
-                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your "
+                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your"
                                       :alt   "Signing up using your GitHub login lets us start really fast."}
                   "You have a product to focus on, let Circle handle your"]
                  [:h3.slogan.context {:title "Continuous Integration & Deployment."
@@ -113,29 +113,29 @@
                  [:div.drawing]
                  (om/build drawings/drawing-build app)]]
                [:section.home-prolog
-                [:a.prolog-action {:role "button"}
+                [:a.home-action {:role "button"}
                  "Sign Up Free"]
-                [:div.prolog-cover]
+                [:div.home-cover]
                 [:div.prolog-navigation
                  [:nav
                   [:a.promo "What is Continuous Integration?"]
                   [:a.login "Log In"]]]
-                [:div.prolog-logos
+                [:div.home-avatars
                  [:div.avatars
                   [:div.avatar-github
                    (common/ico :github)]
                   [:div.avatar-circle
                    (common/ico :logo)]]]
-                [:div.prolog-slogans
+                [:div.home-slogans
                  [:h1.slogan.proverb {:title "Ready to start testing?"
                                       :alt   "Let's just authorize first."}
-                  "Your org needs a hero."]
-                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your "
+                  "Ready to start testing?"]
+                 [:h3.slogan.context {:title "Next you'll just need to sign in using your GitHub account."
                                       :alt   "Signing up using your GitHub login lets us start really fast."}
-                  "You have a product to focus on, let Circle handle your"]
-                 [:h3.slogan.context {:title "Continuous Integration & Deployment."
+                  "Next you'll just need to sign in using your GitHub account."]
+                 [:h3.slogan.context {:title "Not convinced just yet? Try taking the full tour."
                                       :alt   "Currently, we must request permissions in bulk."}
-                  "Continuous Integration & Deployment."]]
+                  "Not convinced just yet? Try taking the full tour."]]
                 [:div.prolog-learn
                  [:a
                   "Learn more"
