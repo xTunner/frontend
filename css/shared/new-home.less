@@ -9,8 +9,6 @@
 }
 // temporary hacks for mocking up initial design
 
-@em: @baseFontSize;
-
 @prolog_light_on_dark: #aaa;
 
 @home_drawing_offset: 5px;
@@ -33,8 +31,12 @@
 @zindex_prolog_above: (@zindex_prolog_cover + 1);
 @zindex_prolog_below: (@zindex_prolog_cover - 1);
 
+@em: @purpose_font;
+
 .page {
   &.home {
+    font-size: @purpose_font;
+    line-height: @purpose_line;
     h1 {
       font-size: @prolog_h1_font;
       line-height: @prolog_h1_line;
@@ -91,7 +93,6 @@
   // }
 }
 .home-top-shelf {
-  .box-sizing(border-box);
   .order(1);
   position: relative;
   z-index: @zindex_prolog_above;
@@ -100,10 +101,11 @@
   // border: 1px solid fade(@black, 13);
   // order: 1;
   nav {
+    .box-sizing(border-box);
     .flexy(center, center);
     height: 100%;
     padding: 0 ((@tile - @baseLineHeight) / 2);
-    border: 1px solid fade(@black, 13);
+    border-bottom: 1px solid fade(@black, 13);
   }
   .promo {
     margin-right: auto;
@@ -122,7 +124,16 @@
   pointer-events: none;
   left: ~"calc(50% - 105px)";
   top: ~"calc(50% + 140px)";
-  transition: @prolog_cover_fadeout;
+  // transition: @prolog_cover_fadeout;
+  opacity: 0;
+  // transition: all @prolog_cover_fadeout,
+  //             opacity 0 @prolog_cover_fadeout;
+  transition: width @prolog_cover_fadeout,
+              height @prolog_cover_fadeout,
+              left @prolog_cover_fadeout,
+              top @prolog_cover_fadeout,
+              border-radius @prolog_cover_fadeout,
+              opacity 0 @prolog_cover_fadeout;
   transition-timing-function: @prolog_cover_timing;
 }
 .home-avatars {
@@ -245,13 +256,18 @@
   // order: 5;
   a {
     .flexy();
+    // i {
+    //   margin-left: 1ex;
+    // }
+    // svg {
+    //   width: round(@em * .89);
+    //   height: round(@em * .89);
+    // }
   }
-  i {
-    margin-left: 1ex;
-    svg {
-      width: round(@em * .89);
-      height: round(@em * .89);
-    }
+  .chevron-down {
+    width: round(@em * .89);
+    height: round(@em * .89);
+    margin: 0 1ex;
   }
 }
 //
@@ -290,9 +306,14 @@
       height: 100%;
       left: 0;
       top: 0;
+      opacity: 1;
       border-radius: 0;
-      transition: all @prolog_cover_fadein,
-                  border-radius (@prolog_cover_fadein / 2);
+      transition: width @prolog_cover_fadein,
+                  height @prolog_cover_fadein,
+                  left @prolog_cover_fadein,
+                  top @prolog_cover_fadein,
+                  border-radius (@prolog_cover_fadein / 2),
+                  opacity 0;
     }
 // Logos
     ~ .home-avatars {
@@ -557,12 +578,17 @@
   }
 }
 
+
+
+
+@home_color_last_cta: @blue;
+@home_margin_footer: (@tile / 2);
 .home-epilog {
   background-image: linear-gradient(to bottom, @blueDarkest 0%, @blueDarker 100%);
   background-attachment: fixed;
   .home-action {
     &:hover       {
-      background: @blue;
+      background: @home_color_last_cta;
       ~ .home-slogans {
         a {
           opacity: 0;
@@ -579,14 +605,14 @@
     .context:before { color: fade(@white, 50); }
     a {
       color: transparent;
-      border-bottom: 1px solid @blueLight;
+      border-bottom: 1px solid @home_color_last_cta;
       transition: border 200ms,
                   background 200ms,
                   opacity @prolog_cover_fadeout @prolog_cover_fadein ease-in-out;
       &:hover,
       &:focus {
-        background: @blue;
-        border: 2px solid @blue;
+        background: @home_color_last_cta;
+        border: 2px solid @home_color_last_cta;
         outline: none;
       }
       &:active {
@@ -595,5 +621,64 @@
         transition: 0;
       }
     }
+  }
+  .home-bottom-shelf {
+    .box-sizing(border-box);
+    .flex-direction(column);
+    height: auto;
+    border-top: 1px solid fade(@black, 13);
+    &:hover {
+      .home-footer-bait {
+        height: 0;
+      }
+      .home-footer {
+        max-height: (@tile * 5);
+      }
+    }
+    a {
+      &:not(:hover) {
+        color: @grayLight;
+      }
+    }
+    h5 {
+      color: @grayDark;
+    }
+  }
+  .home-footer-logo {
+    .flexy(flex-end);
+    margin: @home_margin_footer @home_margin_footer @home_margin_footer auto;
+    svg {
+      width: (@tile / 2);
+      height: (@tile / 2);
+    }
+    path {
+      fill: @grayLight;
+    }
+  }
+}
+.home-footer-bait {
+  .flexy(center);
+  height: @tile;
+  overflow: hidden;
+  transition: 200ms;
+  color: @home_color_last_cta;
+  i.ico {
+    .rotate(180);
+  }
+  .chevron-down {
+    fill: none;
+    stroke: @home_color_last_cta;
+    stroke-width: 8;
+  }
+}
+.home-footer {
+  .flexy();
+  width: 100%;
+  max-height: 0;
+  background: @white;
+  transition: 200ms;
+  overflow: hidden;
+  nav {
+    margin: @home_margin_footer (@home_margin_footer * 2);
   }
 }
