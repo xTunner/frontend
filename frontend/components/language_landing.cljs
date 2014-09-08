@@ -46,18 +46,18 @@
                            :author "Aaron Suggs"
                            :title "Operations Engineer @Kickstarter"}]}
    "python" {:language "Python"
-             :headline "CircleCI makes Continous Integration and Deployment for Python projects a breeze."
+             :headline "CircleCI makes continuous Integration and Deployment for Python projects a breeze."
              :logo-path (utils/cdn-path "/img/outer/languages/python-logo.svg")
-             :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
-                         :title "Built For Ruby"
+             :features [{:feature "When CircleCI detects a Python project, it automatically uses 'virtualenv' and 'pip' to create an isolated Python environment with all of the dependencies specified in your requirements.txt file. This helps ensure that your CircleCI enviroment replicates your production enviroment and that your projects can be setup quickly."
+                         :title "Built For Python"
                          :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
-                        {:feature "Circle manages all your database requirements for your, such as running your rake commands for creating, loading, and migrating your database. We have pre-installed more than a dozen databases and queues, including PostgreSQL, MySQL, and MongoDB. You can also add custom database commands via your circle.yml."
-                         :title "Database Management"
+                        {:feature "CircleCI intelligently determines the best way to run your tests using 'nosetests', 'tox', or Django. We also provide complete flexibility to override our inferred commands with your own custom commands via the circle.yml."
+                         :title "Intelligent Test Running"  
                          :icon (utils/cdn-path "/img/outer/languages/file-icon.svg")}
-                        {:feature "For the majority of Ruby projects no configuration is required; you just run your builds on CircleCI and it works! CircleCI will automatically infer your test commands if you're using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha."
-                         :title "Inference That Just Works"
+                        {:feature "CircleCI makes setting up continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like with Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
+                         :title "Easy continuous Delivery"
                          :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}]
-             :docs-link "/docs/language-ruby-on-rails"
+             :docs-link "/docs/language-python"
              :testimonials [{:text "The speed is really impressive, the rspec suite alone takes 6 minutes to run on my Macbook Air, but only 2 minutes on Circle."
                              :img (utils/cdn-path "/img/outer/languages/olivier.jpg")
                              :author "Olivier Melcher"
@@ -162,7 +162,7 @@
              [:div.languages-cta-step
               [:div.step-number]
               [:div
-               "Run one of your Ruby projects on Circle"]]
+               "Run one of your " (:language template) " projects on Circle"]]
              [:div.languages-cta-step
               [:div.step-number]
               [:div
