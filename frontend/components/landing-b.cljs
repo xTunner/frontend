@@ -136,6 +136,32 @@
                   [:a {:href "#"} "full tour"]
                   "."]]
                 [:div.home-bottom-shelf
-                 [:a
-                  "Want to know more about CircleCI?"
-                  (common/ico :chevron-down)]]]])))))
+                 [:span.home-footer-bait
+                  "About Us"
+                  (common/ico :chevron-down)]
+                 [:div.home-footer
+                  [:nav.home-footer-about
+                   [:h5 "CircleCI"]
+                   [:a "Tour"]
+                   [:a "About"]
+                   [:a "Support"]
+                   [:a "Press"]
+                   [:a "Jobs"]
+                   [:a "Blog"]]
+                  [:nav.home-footer-product
+                   [:h5 "Product"]
+                   [:a "Documentation"]
+                   [:a "Privacy"]
+                   [:a "Security"]
+                   [:a "Enterprise"]
+                   [:a "Changelog"]
+                   [:a "Pricing"]]
+                  [:nav.home-footer-contact
+                   [:h5 "Contact"]
+                   [:a "Twitter"]
+                   [:a "Email"]
+                   [:a "Support Chat"]
+                   [:a "Phone"]
+                   [:a "San Francisco, CA"]]
+                  [:div.home-footer-logo
+                   (common/ico :logo)]]]]])))))
