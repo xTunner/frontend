@@ -1,80 +1,82 @@
 html {
-  overflow: hidden;
+  // overflow: hidden;
 }
 body {
   -webkit-font-smoothing: antialiased;
 }
 #app {
-  .flexy();
-  min-width: @minimumContentWidth;
-  min-height: 100vh;
-  &:empty {
-    display: none;
-  }
-  .app-main {
-    .flex(1, 1);
-    outline: none; // Appears when auto-focused
-    // width: ~"calc(100% - @{aside_nav_width})";
-    height: 100vh;
-    padding: 0;
-    overflow-y: auto;
-  }
-  .main-head {
-    .flexy(column);
-    .head-user {
-      .flexy(center, space-between);
-      height: @tile;
-      box-shadow: 0 -1px @grayBoxBorder inset;
-      .settings {
-        .flexy(center, center);
-        .tip(left);
-        width: @tile;
+  &.inner {
+    .flexy();
+    min-width: @minimumContentWidth;
+    min-height: 100vh;
+    &:empty {
+      display: none;
+    }
+    .app-main {
+      .flex(1, 1);
+      outline: none; // Appears when auto-focused
+      // width: ~"calc(100% - @{aside_nav_width})";
+      height: 100vh;
+      padding: 0;
+      overflow-y: auto;
+    }
+    .main-head {
+      .flexy(column);
+      .head-user {
+        .flexy(center, space-between);
         height: @tile;
-        &:hover {
-          path {
-            stroke: @blueLight;
-          }
-        }
-        svg {
-          width: (@baseFontSize * 1.5);
-          height: (@baseFontSize * 1.5);
-          path {
-            stroke: @grayLight;
-            &:first-child {
-              stroke-width: 5;
+        box-shadow: 0 -1px @grayBoxBorder inset;
+        .settings {
+          .flexy(center, center);
+          .tip(left);
+          width: @tile;
+          height: @tile;
+          &:hover {
+            path {
+              stroke: @blueLight;
             }
           }
-        }
-        &:after {
-          font-size: @baseFontSize;
+          svg {
+            width: (@baseFontSize * 1.5);
+            height: (@baseFontSize * 1.5);
+            path {
+              stroke: @grayLight;
+              &:first-child {
+                stroke-width: 5;
+              }
+            }
+          }
+          &:after {
+            font-size: @baseFontSize;
+          }
         }
       }
     }
-  }
-  .main-body {
-    @body_padding: @innerContentPadding;
-    .box-sizing(border-box);
-    min-height: ~"calc(100% - @{tile})";
-    // padding: @innerContentPadding 0;
-    padding: @body_padding 0;
-    > .loading-spinner {
-      @reserved_height: (@body_padding * 2) + (@tile * 2);
-      .flexy(center, center);
-      height: ~"calc(100vh - @{reserved_height})";
+    .main-body {
+      @body_padding: @innerContentPadding;
+      .box-sizing(border-box);
+      min-height: ~"calc(100% - @{tile})";
+      // padding: @innerContentPadding 0;
+      padding: @body_padding 0;
+      > .loading-spinner {
+        @reserved_height: (@body_padding * 2) + (@tile * 2);
+        .flexy(center, center);
+        height: ~"calc(100vh - @{reserved_height})";
+      }
     }
-  }
-  .main-foot {
-    padding: @footerItemSize 0;
-    box-shadow: 0 1px @grayLightest inset;
-    margin-top: auto;
-    .logo {
-      display: block;
-      height: @footerItemSize;
-      width: @footerItemSize;
-      background-image: url("@{imgPath}/logomark.svg");
-      background-size: @footerItemSize;
-      background-position: center left;
-      background-repeat: no-repeat;
+    .main-foot {
+      padding: @footerItemSize 0;
+      box-shadow: 0 1px @grayLightest inset;
+      margin-top: auto;
+      .logo {
+        display: block;
+        height: @footerItemSize;
+        width: @footerItemSize;
+        background-image: url("@{imgPath}/logomark.svg");
+        background-size: @footerItemSize;
+        background-position: center left;
+        background-repeat: no-repeat;
+      }
     }
   }
 }
