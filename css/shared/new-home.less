@@ -578,15 +578,23 @@
   }
   .home-slogans {
     .proverb:before { color: @white; }
-    .context:before { color: @blue; }
+    .context:before { color: fade(@white, 50); }
     a {
       color: transparent;
       border-bottom: 1px solid @blueLight;
       transition: border 200ms,
                   background 200ms,
                   opacity @prolog_cover_fadeout @prolog_cover_fadein ease-in-out;
-      &:hover {
-        background: @white;
+      &:hover,
+      &:focus {
+        background: @blue;
+        border: 2px solid @blue;
+        outline: none;
+      }
+      &:active {
+        background: @blueDark;
+        border: 2px solid @blueDark;
+        transition: 0;
       }
     }
   }
