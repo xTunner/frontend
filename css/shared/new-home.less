@@ -54,7 +54,7 @@
 }
 .home-prolog {
   .flexy(column);
-  .justify-content(center);
+  // .justify-content(center);
   position: relative;
   height: 100vh;
   background: @grayDark;
@@ -86,12 +86,13 @@
 }
 .prolog-navigation {
   .box-sizing(border-box);
+  .order(1);
   position: relative;
   z-index: @zindex_prolog_above;
   height: @tile;
   margin-bottom: auto;
   border: 1px solid fade(@black, 13);
-  order: 1;
+  // order: 1;
   nav {
     .flexy(center, center);
     height: 100%;
@@ -104,7 +105,7 @@
     margin-left: auto;
   }
 }
-.prolog-cover {
+.home-cover {
   background: @white;
   width: (@tile * 3);
   height: @tile;
@@ -117,11 +118,12 @@
   transition: @prolog_cover_fadeout;
   transition-timing-function: @prolog_cover_timing;
 }
-.prolog-logos {
+.home-avatars {
   .flexy(center, center);
+  .order(2);
   position: relative;
   z-index: @zindex_prolog_above;
-  order: 2;
+  // order: 2;
   .avatars {
     position: relative;
     width: @tile;
@@ -171,12 +173,13 @@
     }
   }
 }
-.prolog-slogans {
+.home-slogans {
+  .order(3);
   position: relative;
   z-index: @zindex_prolog_above;
   text-align: center;
   margin: @tile 0;
-  order: 3;
+  // order: 3;
   .slogan {
     position: relative;
     color: transparent;
@@ -224,11 +227,12 @@
 }
 .prolog-learn {
   .flexy(center, center);
+  .order(5);
   position: relative;
   z-index: @zindex_prolog_above;
   height: @tile;
   margin-top: auto;
-  order: 5;
+  // order: 5;
   a {
     .flexy();
   }
@@ -243,10 +247,11 @@
 //
 // Where the magic happens.
 //
-.prolog-action {
+.home-action {
   .box-sizing(border-box);
   .flexy(center, center);
-  align-self: center;
+  .order(4);
+  // align-self: center;
   position: relative;
   z-index: @zindex_prolog_above;
   color: @grayDark;
@@ -254,9 +259,10 @@
   background: @white;
   width: (@tile * 3);
   height: @tile;
+  margin: 0 auto;
   border: 1px solid @white;
   border-radius: (@tile / 2);
-  order: 4;
+  // order: 4;
   transition: color @prolog_cover_fadeout,
               background @prolog_cover_fadeout,
               border-color @prolog_cover_fadeout @prolog_cover_fadeout;
@@ -269,7 +275,7 @@
                 background @prolog_cover_fadein @prolog_cover_fadeout,
                 border-color 0 0;
 // Cover
-    ~ .prolog-cover {
+    ~ .home-cover {
       width: 100%;
       height: 100%;
       left: 0;
@@ -279,7 +285,7 @@
                   border-radius (@prolog_cover_fadein / 2);
     }
 // Logos
-    ~ .prolog-logos {
+    ~ .home-avatars {
       i.ico {
         path {
           fill: @grayDark;
@@ -297,7 +303,7 @@
       }
     }
 // Taglines
-    ~ .prolog-slogans {
+    ~ .home-slogans {
       .proverb {
         &:before {
           top: -@prolog_h1_font;
