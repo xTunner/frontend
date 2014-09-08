@@ -27,7 +27,7 @@
                 [:a.home-action {:role "button"}
                  "Sign Up Free"]
                 [:div.home-cover]
-                [:div.prolog-navigation
+                [:div.home-top-shelf
                  [:nav
                   [:a.promo "What is Continuous Integration?"]
                   [:a.login "Log In"]]]
@@ -47,7 +47,7 @@
                  [:h3.slogan.context {:title "Continuous Integration & Deployment."
                                       :alt   "Currently, we must request permissions in bulk."}
                   "Continuous Integration & Deployment."]]
-                [:div.prolog-learn
+                [:div.home-bottom-shelf
                  [:a
                   "Learn more"
                   (common/ico :chevron-down)]]]
@@ -112,14 +112,11 @@
                  [:div.drawing]
                  [:div.drawing]
                  (om/build drawings/drawing-build app)]]
-               [:section.home-prolog
+               [:section.home-epilog
                 [:a.home-action {:role "button"}
                  "Sign Up Free"]
                 [:div.home-cover]
-                [:div.prolog-navigation
-                 [:nav
-                  [:a.promo "What is Continuous Integration?"]
-                  [:a.login "Log In"]]]
+                [:div.home-top-shelf]
                 [:div.home-avatars
                  [:div.avatars
                   [:div.avatar-github
@@ -127,16 +124,18 @@
                   [:div.avatar-circle
                    (common/ico :logo)]]]
                 [:div.home-slogans
-                 [:h1.slogan.proverb {:title "Ready to start testing?"
+                 [:h1.slogan.proverb {:title "So, ready to be a hero?"
                                       :alt   "Let's just authorize first."}
-                  "Ready to start testing?"]
+                  "So, ready to be a hero?"]
                  [:h3.slogan.context {:title "Next you'll just need to sign in using your GitHub account."
                                       :alt   "Signing up using your GitHub login lets us start really fast."}
                   "Next you'll just need to sign in using your GitHub account."]
-                 [:h3.slogan.context {:title "Not convinced just yet? Try taking the full tour."
+                 [:h3.slogan.context {:title "Still not convinced yet? Try taking the full tour."
                                       :alt   "Currently, we must request permissions in bulk."}
-                  "Not convinced just yet? Try taking the full tour."]]
-                [:div.prolog-learn
+                  "Still not convinced yet? Try taking the "
+                  [:a {:href "#"} "full tour"]
+                  "."]]
+                [:div.home-bottom-shelf
                  [:a
-                  "Learn more"
+                  "Want to know more about CircleCI?"
                   (common/ico :chevron-down)]]]])))))
