@@ -52,11 +52,17 @@
     }
   }
 }
-.home-prolog {
+.home-prolog,
+.home-epilog {
   .flexy(column);
-  // .justify-content(center);
   position: relative;
   height: 100vh;
+}
+.home-prolog {
+  // .flexy(column);
+  // .justify-content(center);
+  // position: relative;
+  // height: 100vh;
   background: @grayDark;
   color: @prolog_light_on_dark;
   a:not([role="button"]) {
@@ -80,23 +86,24 @@
       }
     }
   }
-  h3 {
-    margin: 0;
-  }
+  // h3 {
+  //   margin: 0;
+  // }
 }
-.prolog-navigation {
+.home-top-shelf {
   .box-sizing(border-box);
   .order(1);
   position: relative;
   z-index: @zindex_prolog_above;
   height: @tile;
   margin-bottom: auto;
-  border: 1px solid fade(@black, 13);
+  // border: 1px solid fade(@black, 13);
   // order: 1;
   nav {
     .flexy(center, center);
     height: 100%;
     padding: 0 ((@tile - @baseLineHeight) / 2);
+    border: 1px solid fade(@black, 13);
   }
   .promo {
     margin-right: auto;
@@ -180,6 +187,9 @@
   text-align: center;
   margin: @tile 0;
   // order: 3;
+  h3 {
+    margin: 0;
+  }
   .slogan {
     position: relative;
     color: transparent;
@@ -225,7 +235,7 @@
     }
   }
 }
-.prolog-learn {
+.home-bottom-shelf {
   .flexy(center, center);
   .order(5);
   position: relative;
@@ -544,5 +554,40 @@
   .drawing {
     &:nth-child(1) { left: (@home_drawing_offset * 2); }
     &:nth-child(2) { left: @home_drawing_offset; }
+  }
+}
+
+.home-epilog {
+  background-image: linear-gradient(to bottom, @blueDarkest 0%, @blueDarker 100%);
+  background-attachment: fixed;
+
+  .home-action {
+    &:hover       {
+      background: @blue;
+      ~ .home-slogans {
+        a {
+          opacity: 0;
+          transition: opacity 0;
+        }
+      }
+    }
+    &:not(:hover) { color: @blue; }
+  }
+  .home-avatars {
+    i.ico path { fill: fade(@grayDark, 0); }
+  }
+  .home-slogans {
+    .proverb:before { color: @white; }
+    .context:before { color: @blue; }
+    a {
+      color: transparent;
+      border-bottom: 1px solid @blueLight;
+      transition: border 200ms,
+                  background 200ms,
+                  opacity @prolog_cover_fadeout @prolog_cover_fadein ease-in-out;
+      &:hover {
+        background: @white;
+      }
+    }
   }
 }
