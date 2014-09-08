@@ -10,6 +10,13 @@
   -webkit-flex: @grow @shrink @basis;
           flex: @grow @shrink @basis;
 }
+.order(...) {
+  -webkit-box-ordinal-group: @arguments;
+     -moz-box-ordinal-group: @arguments;
+             -ms-flex-order: @arguments;
+              -webkit-order: @arguments;
+                      order: @arguments;
+}
 .justify-content(@arg) {
   -webkit-box-pack: ~`"@{arg}".replace("flex-", "").replace("space-between", "justify")`; // Old Syntax
           box-pack: ~`"@{arg}".replace("flex-", "").replace("space-between", "justify")`; // Old Syntax
