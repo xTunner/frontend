@@ -442,3 +442,8 @@
                     (gstring/format (name subpage))
                     stefon/asset-path)]
         (ajax/ajax :get url :doc-markdown api-ch :context {:subpage subpage} :format :raw)))))
+
+(defmethod post-navigated-to! :language-landing
+  [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
+  (post-default navigation-point args)
+  (analytics/track-page "View Language Landing" {:language language}))
