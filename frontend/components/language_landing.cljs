@@ -21,7 +21,7 @@
 
 (def templates
   {"ruby" {:language "Ruby"
-           :headline "CircleCI makes Continous Integration and Deployment for Ruby projects a breeze."
+           :headline "CircleCI makes Continuous Integration and Deployment for Ruby projects a breeze."
            :logo-path (utils/cdn-path "/img/outer/languages/ruby-logo.svg")
            :features [{:feature "CircleCI provides support for a wide variety of Ruby versions and gems, including Ruby on Rails. It is trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
                        :title "Built For Ruby"
