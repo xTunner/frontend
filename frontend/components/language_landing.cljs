@@ -48,13 +48,13 @@
    "python" {:language "Python"
              :headline "CircleCI makes continuous Integration and Deployment for Python projects a breeze."
              :logo-path (utils/cdn-path "/img/outer/languages/python-logo.svg")
-             :features [{:feature "When CircleCI detects a Python project, it automatically uses 'virtualenv' and 'pip' to create an isolated Python environment with all of the dependencies specified in your requirements.txt file. This helps ensure that your CircleCI enviroment replicates your production enviroment and that your projects can be setup quickly."
+             :features [{:feature "When CircleCI detects a Python project, it automatically uses 'virtualenv' and 'pip' to create an isolated Python environment with all of the dependencies specified in your requirements.txt file. This helps ensure that your Python projects can be set up quickly and easily and that your CircleCI enviroment is configured correctly."
                          :title "Built For Python"
                          :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
                         {:feature "CircleCI intelligently determines the best way to run your tests using 'nosetests', 'tox', or Django. We also provide complete flexibility to override our inferred commands with your own custom commands via the circle.yml."
                          :title "Intelligent Test Running"  
                          :icon (utils/cdn-path "/img/outer/languages/file-icon.svg")}
-                        {:feature "CircleCI makes setting up continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like with Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
+                        {:feature "CircleCI makes setting up Continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like with Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
                          :title "Easy continuous Delivery"
                          :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}]
              :docs-link "/docs/language-python"
