@@ -10,5 +10,5 @@
     (if (aget js/window "_fbq")
       (track-conversion)
       (-> (goog.net.jsloader.load "//connect.facebook.net/en_US/fbds.js")
-          (.addCallback track-conversion))))
+          (.addCallback track-conversion)))))
   
