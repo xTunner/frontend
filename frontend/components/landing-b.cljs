@@ -140,6 +140,8 @@
                   "About Us"
                   (common/ico :chevron-down)]
                  [:div.home-footer
+                  [:div.home-footer-logo
+                   (common/ico :logo)]
                   [:nav.home-footer-about
                    [:h5 "CircleCI"]
                    [:a "Tour"]
@@ -162,6 +164,4 @@
                    [:a "Email"]
                    [:a "Support Chat"]
                    [:a "Phone"]
-                   [:a "San Francisco, CA"]]
-                  [:div.home-footer-logo
-                   (common/ico :logo)]]]]])))))
+                   [:a "San Francisco, CA"]]]]]])))))
