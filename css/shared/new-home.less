@@ -642,9 +642,11 @@
     &:hover {
       .home-footer-bait {
         height: 0;
+        transition: (@prolog_cover_fadein * 0.4);
       }
       .home-footer {
         max-height: (@tile * 5);
+        transition: (@prolog_cover_fadein * 0.6);
       }
     }
     a {
@@ -676,7 +678,7 @@
   .flexy(center);
   height: @tile;
   overflow: hidden;
-  transition: 200ms;
+  transition: (@prolog_cover_fadein * 0.6);
   color: @home_color_last_cta;
   i.ico {
     .rotate(180);
@@ -693,7 +695,8 @@
   width: 100%;
   max-height: 0;
   background: @white;
-  transition: 200ms;
+  transition: (@prolog_cover_fadein * 0.8);
+  // transition-timing-function: cubic-bezier(0, -0.5, 0.5, 2);
   overflow: hidden;
   nav {
     margin: @home_margin_footer (@home_margin_footer * 2);
