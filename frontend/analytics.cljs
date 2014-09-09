@@ -44,8 +44,8 @@
   (mixpanel/track-pageview path)
   (google/push path))
 
-(defn track-page [page]
-  (mixpanel/track page))
+(defn track-page [page & [props]]
+  (mixpanel/track page props))
 
 (defn track-pricing []
   (mixpanel/register-once {:view-pricing true}))
