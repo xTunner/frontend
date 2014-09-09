@@ -579,6 +579,14 @@
     &:nth-child(2) { left: @home_drawing_offset; }
   }
 }
+.home-potential-bullets {
+  .flexy();
+  .justify-content(space-between);
+  margin: @em 0;
+  li {
+    margin-bottom: @em;
+  }
+}
 
 
 
@@ -700,5 +708,54 @@
   overflow: hidden;
   nav {
     margin: @home_margin_footer (@home_margin_footer * 2);
+  }
+}
+
+
+
+
+
+@quote_avatar_size: (@tile / 2);
+
+.quote-card {
+  .box-sizing(border-box);
+  .flexy(flex-start, center, column);
+  position: relative;
+  color: @grayLight;
+  width: (@tile * 8);
+  height: (@tile * 2);
+  // margin-top: @quote_avatar_size;
+  margin: @quote_avatar_size 0 (-@tile * 2) auto;
+  border: 1px solid @grayBoxBorder;
+  border-radius: 5px;
+  p {
+    margin: (@em / 2) @em;
+  }
+  footer {
+    .box-sizing(border-box);
+    .flexy();
+    .justify-content(space-between);
+    font-size: round(@em * .75);
+    line-height: round(@purpose_line * .66);
+    width: 100%;
+    // margin-left: @em;
+    padding: 0 @em;
+  }
+  .avatar {
+    .box-sizing(border-box);
+    position: absolute;
+    left: (@quote_avatar_size / 2);
+    top: (-@quote_avatar_size / 2);
+    width: @quote_avatar_size;
+    height: @quote_avatar_size;
+    border: 1px solid @grayBoxBorder;
+    border-radius: (@quote_avatar_size / 2);
+    background-image: url("http://placehold.it/35/fbfbfb");
+  }
+  .brand {
+    // background: red;
+    width: @tile;
+    height: (@tile / 2);
+    background-image: url("http://placehold.it/70x35/fff");
   }
 }
