@@ -56,6 +56,30 @@
     }
   }
 }
+.home-nav {
+  .box-sizing(border-box);
+  .flexy(center, center);
+  position: fixed;
+  z-index: (@zindex_prolog_above + 1);
+  left: 0;
+  top: 0;
+  height: @tile;
+  width: 100%;
+  // padding: 0 @em;
+  padding: 0 ((@tile - @baseLineHeight) / 2);
+  border-bottom: 1px solid fade(@black, 13);
+  a {
+    &:not(:hover) {
+      color: @gray;
+    }
+  }
+  .promo {
+    margin-right: auto;
+  }
+  .login {
+    margin-left: auto;
+  }
+}
 .home-prolog,
 .home-epilog {
   .flexy(column);
@@ -102,19 +126,19 @@
   margin-bottom: auto;
   // border: 1px solid fade(@black, 13);
   // order: 1;
-  nav {
-    .box-sizing(border-box);
-    .flexy(center, center);
-    height: 100%;
-    padding: 0 ((@tile - @baseLineHeight) / 2);
-    border-bottom: 1px solid fade(@black, 13);
-  }
-  .promo {
-    margin-right: auto;
-  }
-  .login {
-    margin-left: auto;
-  }
+  // nav {
+  //   .box-sizing(border-box);
+  //   .flexy(center, center);
+  //   height: 100%;
+  //   padding: 0 ((@tile - @baseLineHeight) / 2);
+  //   border-bottom: 1px solid fade(@black, 13);
+  // }
+  // .promo {
+  //   margin-right: auto;
+  // }
+  // .login {
+  //   margin-left: auto;
+  // }
 }
 .home-cover {
   background: @white;
