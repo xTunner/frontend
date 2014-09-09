@@ -98,6 +98,23 @@ j.describe "ansiToHtml", ->
   j.it "shouldn't blow up if the first line is empty", ->
     @expect(t.ansiToHtml "\r\nfirst\n").toEqual "<span class='brblue'>\r\n</span><span class='brblue'>first\n</span>"
 
+  j.it "should try to cope with 'D' (cursor back) escapes", ->
+    # simple cases
+    @expect(t.ansiToHtml "foo\u001b[1Dx").toEqual "<span class='brblue'>fox</span>"
+    @expect(t.ansiToHtml "foo\u001b[3Dbar").toEqual "<span class='brblue'>bar</span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[1Dx").toEqual "<span class='brblue'><span class='green'>fo</span><span class='green'>x</span></span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[3Dbar").toEqual "<span class='brblue'><span class='green'>bar</span></span>"
+    # backing up too far: noop. This is actually correct!
+    @expect(t.ansiToHtml "\u001b[20Dfoo").toEqual "<span class='brblue'>foo</span>"
+    @expect(t.ansiToHtml "foo\u001b[20Dbar").toEqual "<span class='brblue'>bar</span>"
+    @expect(t.ansiToHtml "\u001b[32m\u001b[20Dfoo").toEqual "<span class='brblue'><span class='green'>foo</span></span>"
+    @expect(t.ansiToHtml "\u001b[32mfoo\u001b[20Dbar").toEqual "<span class='brblue'><span class='green'>bar</span></span>"
+    # backing up over another escape would be hard, given the current implementation. This
+    # test is to demonstrate known but incorrect behavior. In a real terminal, escapes have
+    # no width, but their behavior is persistent, so the *correct* output here would be:
+    # <span class='brblue'>fo</span><span class='green'>baz</span>.
+    @expect(t.ansiToHtml "foo\u001b[32mbar\u001b[4Dbaz").toEqual "<span class='brblue'>foo</span><span class='green'>baz</span>"
+
 j.describe "githubAuthURL", ->
   j.it "should be the expect values", ->
     @expect(CI.github.authUrl()).toEqual "https://github.com/login/oauth/authorize?client_id=586bf699b48f69a09d8c&redirect_uri=http%3A%2F%2Fcirclehost%3A8080%2Fauth%2Fgithub%3Freturn-to%3D%252Ftests%252Finner%26CSRFToken%3D#{encodeURIComponent(encodeURIComponent(window.CSRFToken))}&scope=user%3Aemail%2Crepo"
