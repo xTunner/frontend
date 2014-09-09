@@ -66,7 +66,16 @@
                   [:p
                    [:a.shopify-link
                     "See how Shopify does it"
-                    (common/ico :slim-arrow-right)]]]]]
+                    (common/ico :slim-arrow-right)]]
+                  [:div.quote-card
+                   [:div.avatar]
+                   [:p "\"CircleCI has significantly improved our testing infrastructure. We add new projects rapidly and continuous integration happens from the get-go.\""]
+                   [:footer
+                    [:cite
+                     "John Collison"
+                     [:br]
+                     "Founder at Stripe"]
+                    [:div.brand]]]]]]
                [:section.home-practice
                 [:div.practice-tools
                  [:article
@@ -83,9 +92,9 @@
                 [:div.practice-articles
                  [:article
                   [:h1
-                   "We support your tools &"
+                   "Devs rely on us to just work,"
                    [:br]
-                   "devs trust us to just work."]
+                   "we support the right tools."]
                   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]]]
                 [:div.practice-customers
                  [:article
@@ -103,11 +112,31 @@
                    "Look under the hood &"
                    [:br]
                    " check the bullet points."]
-                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]
-                  [:p
-                   [:a.shopify-link
-                    "See how Shopify does it"
-                    (common/ico :slim-arrow-right)]]]]
+                  [:div.home-potential-bullets
+                   [:ul
+                    [:li "Quick & easy setup"]
+                    [:li "Lightning fast builds"]
+                    [:li "Deep Customization"]
+                    [:li "Easy debugging"]]
+                   [:ul
+                    [:li "Smart notifications"]
+                    [:li "Loving support"]
+                    [:li "Automatic parallelization"]
+                    [:li "Continuous Deployment"]]
+                   [:ul
+                    [:li "Build artifacts"]
+                    [:li "Clean build environments"]
+                    [:li "GitHub Integration"]
+                    [:li "Open Source Support"]]]
+                  [:div.quote-card
+                   [:div.avatar]
+                   [:p "\"CircleCI has significantly improved our testing infrastructure. We add new projects rapidly and continuous integration happens from the get-go.\""]
+                   [:footer
+                    [:cite
+                     "John Collison"
+                     [:br]
+                     "Founder at Stripe"]
+                    [:div.brand]]]]]
                 [:div.home-drawings
                  [:div.drawing]
                  [:div.drawing]
