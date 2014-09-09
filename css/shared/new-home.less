@@ -24,6 +24,7 @@
 
 @purpose_font: 16px;
 @purpose_line: 24px;
+@purpose_line_margin: @purpose_line - @purpose_font;
 
 @purpose_drawings_width: 34%; // default 34%
 
@@ -51,6 +52,7 @@
       font-size: @purpose_font;
       line-height: @purpose_line;
       font-weight: normal;
+      margin: @purpose_line_margin 0;
     }
   }
 }
@@ -595,6 +597,16 @@
           transition: opacity 0;
         }
       }
+      ~ .home-bottom-shelf {
+        .home-footer-bait {
+          color: @gray;
+          transition: color @prolog_cover_fadeout (@prolog_cover_fadein * 0.5) ease-in-out;
+        }
+        .chevron-down {
+          stroke: @gray;
+          transition: stroke @prolog_cover_fadeout (@prolog_cover_fadein * 0.5) ease-in-out;
+        }
+      }
     }
   }
   .home-avatars {
@@ -645,14 +657,18 @@
     }
   }
   .home-footer-logo {
-    .flexy(flex-end);
-    margin: @home_margin_footer @home_margin_footer @home_margin_footer auto;
+    // .flexy(flex-end);
+    .flexy(flex-start);
+    // margin: @home_margin_footer @home_margin_footer @home_margin_footer auto;
+    // margin: @home_margin_footer (@home_margin_footer * 2);
+    margin: @home_margin_footer @home_margin_footer @home_margin_footer (@home_margin_footer * 2);
     svg {
-      width: (@tile / 2);
-      height: (@tile / 2);
+      width: @em;
+      height: @em;
+      margin: ((@purpose_line_margin / 2) + @purpose_line_margin) 0; // i.e. line-height + h5 margin
     }
     path {
-      fill: @grayLight;
+      fill: @gray;
     }
   }
 }
@@ -673,6 +689,7 @@
 }
 .home-footer {
   .flexy();
+  .justify-content(center);
   width: 100%;
   max-height: 0;
   background: @white;
