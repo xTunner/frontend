@@ -23,14 +23,12 @@
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [gravatar_id email login index]} user
+      (let [{:keys [avatar_url email login index]} user
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:li
           [:div.invite-gravatar
-           [:img {:src (gh-utils/gravatar-url {:gravatar_id gravatar_id
-                                               :login login
-                                               :size 200})}]]
+           [:img {:src avatar_url}]]
           [:div.invite-profile
            login
            [:input {:on-change #(utils/edit-input controls-ch (conj (state/build-github-user-path index) :email) %)
