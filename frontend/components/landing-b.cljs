@@ -23,14 +23,14 @@
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
+               [:nav.home-nav
+                [:a.promo "What is Continuous Integration?"]
+                [:a.login "Log In"]]
                [:section.home-prolog
                 [:a.home-action {:role "button"}
                  "Sign Up Free"]
                 [:div.home-cover]
-                [:div.home-top-shelf
-                 [:nav
-                  [:a.promo "What is Continuous Integration?"]
-                  [:a.login "Log In"]]]
+                [:div.home-top-shelf]
                 [:div.home-avatars
                  [:div.avatars
                   [:div.avatar-github
