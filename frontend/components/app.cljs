@@ -106,7 +106,8 @@
                 (om/build inspector/inspector app))
               (when (and inner? logged-in?)
                 (om/build aside/aside app-without-container-data))
-              [:main.app-main {:tab-index 1}
+              [:main.app-main {:tab-index 1
+                               :ref "app-main"}
                (om/build header/header app-without-container-data)
                [:div.main-body
                 (om/build dom-com app)]

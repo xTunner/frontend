@@ -11,23 +11,48 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
+            [goog.events]
+            [goog.dom]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
-  (:require-macros [frontend.utils :refer [defrender]]))
+  (:require-macros [frontend.utils :refer [defrender]]
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]
+                   [dommy.macros :refer [sel1]]))
+
+(defn mount-header-logo-scroll [owner]
+  (let [logo (om/get-node owner "center-logo")
+        cta (om/get-node owner "cta")
+        scroll-callback #(do
+                           (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
+                           (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta)))))]
+    (om/set-state! owner [:browser-resize-key]
+                   (goog.events/listen
+                    (sel1 (om/get-shared owner [:target]) ".app-main")
+                    "scroll"
+                    scroll-callback))))
 
 (defn home [app owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IDidMount (did-mount [_] (mount-header-logo-scroll owner))
+    om/IInitState
+    (init-state [_]
+      {:header-logo-visible false
+       :header-cta-visible false
+       :scroll-ch (chan (sliding-buffer 1))})
+    om/IRenderState
+    (render-state [_ state]
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
-               [:nav.home-nav
+               [:nav.home-nav {:class (concat
+                                       (when (:header-logo-visible state) ["logo-visible"])
+                                       (when (:header-cta-visible state) ["cta-visible"]))}
                 [:a.promo "What is Continuous Integration?"]
                 [:a.login "Log In"]]
                [:section.home-prolog
-                [:a.home-action {:role "button"}
+                [:a.home-action {:role "button"
+                                 :ref "cta"}
                  "Sign Up Free"]
                 [:div.home-cover]
                 [:div.home-top-shelf]
@@ -35,7 +60,7 @@
                  [:div.avatars
                   [:div.avatar-github
                    (common/ico :github)]
-                  [:div.avatar-circle
+                  [:div.avatar-circle {:ref "center-logo"}
                    (common/ico :logo)]]]
                 [:div.home-slogans
                  [:h1.slogan.proverb {:title "Your org needs a hero."

@@ -185,6 +185,7 @@
      {:target container
       :shared {:comms comms
                :timer-atom (setup-timer-atom)
+               :target container
                :_app-state-do-not-use state}}))
 
 (defn find-top-level-node []
