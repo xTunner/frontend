@@ -939,3 +939,12 @@
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
           (when (= (:success (:status api-result)))
             (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
+
+(defmethod post-control-event! :home-scroll-one-clicked
+  [target message _ previous-state current-state]
+  (let [main (utils/inspect (sel1 target ".app-main"))
+        vh (.-height (goog.style/getSize main))]
+    (.play (goog.fx.dom.Scroll. main
+                         #js [(.-scrollLeft main) (.-scrollTop main)]
+                         #js [(.-scrollLeft main) vh]
+                         200))))

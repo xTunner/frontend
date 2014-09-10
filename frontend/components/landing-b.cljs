@@ -48,7 +48,7 @@
                                       :alt   "Currently, we must request permissions in bulk."}
                   "Continuous Integration & Deployment."]]
                 [:div.home-bottom-shelf
-                 [:a
+                 [:a {:on-click #(put! controls-ch [:home-scroll-one-clicked])}
                   "Learn more"
                   (common/ico :chevron-down)]]]
                [:section.home-purpose
