@@ -26,7 +26,11 @@
           [:div.container
            (condp = status
              401 [:p
-                  [:b [:a {:href (gh-utils/auth-url)}
+                  [:b [:a {:href (gh-utils/auth-url)
+             :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                         :properties {:source "401"
+                                                                                      :url js/window.location.pathname}
+                                                                         :path (gh-utils/auth-url)}])}
                        "Login here"]]
                   " to view this page"]
              404 (if (and (not logged-in?) (or dashboard-page? build-page?))
