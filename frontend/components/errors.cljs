@@ -1,5 +1,6 @@
 (ns frontend.components.errors
-  (:require [frontend.utils :as utils :include-macros true]
+  (:require [frontend.state :as state]
+            [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -8,7 +9,10 @@
   (reify
     om/IRender
     (render [_]
-      (let [status (get-in app [:navigation-data :status])]
+      (let [status (get-in app [:navigation-data :status])
+            logged-in? (get-in app state/user-path)
+            build-page? (get-in app [:navigation-data :build-page?])
+            dashboard-page? (get-in app [:navigation-data :dashboard-page?])]
         (html
          [:div.page.error
           [:div.banner
@@ -25,6 +29,10 @@
                   [:b [:a {:href (gh-utils/auth-url)}
                        "Login here"]]
                   " to view this page"]
-             404 [:p "We're sorry, but that page doesn't exist"]
+             404 (if (and (not logged-in?) (or dashboard-page? build-page?))
+                   [:div
+                    [:p "We're sorry; either that page doesn't exist or you need to be logged in to view it."]
+                    [:p [:b [:a {:href (gh-utils/auth-url)} "Login here"] " to view this page with your GitHub permissions."]]]
+                   [:p "We're sorry, but that page doesn't exist."])
              500 [:p "We're sorry, but something broke"]
              "Something completely unexpected happened")]])))))

@@ -130,7 +130,7 @@
               comms (get-in current-state [:comms])]
           (condp = (:status api-resp)
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
-            :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
+            :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false :dashboard-page? true}])
             (put! (:errors comms) [:api-error api-resp]))
           (when (and (:repo args) (:read-settings scopes))
             (ajax/ajax :get
@@ -200,7 +200,7 @@
           ;; where the build info would be. Thoughts?
           (condp = (:status api-result)
             :success (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
-            :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
+            :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false :build-page? true}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
             (analytics/track-build (:resp api-result)))
