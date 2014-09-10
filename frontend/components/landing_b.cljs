@@ -23,9 +23,11 @@
 (defn mount-header-logo-scroll [owner]
   (let [logo (om/get-node owner "center-logo")
         cta (om/get-node owner "cta")
+        nav-bkg (om/get-node owner "nav-bkg")
         scroll-callback #(do
                            (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
-                           (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta)))))]
+                           (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta))))
+                           (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) 70)))]
     (om/set-state! owner [:browser-resize-key]
                    (goog.events/listen
                     (sel1 (om/get-shared owner [:target]) ".app-main")
@@ -39,6 +41,7 @@
     (init-state [_]
       {:header-logo-visible false
        :header-cta-visible false
+       :header-bkg-visible false
        :scroll-ch (chan (sliding-buffer 1))})
     om/IRenderState
     (render-state [_ state]
@@ -47,12 +50,13 @@
         (html [:div.home.page
                [:nav.home-nav {:class (concat
                                        (when (:header-logo-visible state) ["logo-visible"])
-                                       (when (:header-cta-visible state) ["cta-visible"]))}
+                                       (when (:header-cta-visible state) ["cta-visible"])
+                                       (when (:header-bkg-visible state) ["bkg-visible"]))}
                 [:a.promo "What is Continuous Integration?"]
                 [:a.login "Log In"]
                 (om/build drawings/logo-circleci app)
                 [:a.action "Sign Up Free"]]
-               [:section.home-prolog
+               [:section.home-prolog {:ref "nav-bkg"}
                 [:a.home-action {:role "button"
                                  :ref "cta"}
                  "Sign Up Free"]
