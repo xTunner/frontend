@@ -68,17 +68,22 @@
   left: 0;
   top: 0;
   height: @tile;
-  width: ~"calc(100% - 15px)"; // 15px = scrollbar width
+  // width: ~"calc(100% - 15px)"; // 15px = scrollbar width
+  width: 100vw;
+  background: fade(@grayDark, 0);
   border-bottom: 1px solid fade(@black, 13);
   overflow: hidden;
+  transition: @prolog_cover_fadeout;
   &.logo-visible {
     .promo {
       top: (((@tile - @purpose_line) / 2) * -1);
       opacity: 0;
     }
     .logo-circleci {
-      top: ((@tile - @home_nav_logo) / 2);
+      left: ((@tile - @baseLineHeight) / 2);
       opacity: 1;
+      transition: left @prolog_cover_fadein,
+                  opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
     }
   }
   &.cta-visible {
@@ -87,29 +92,39 @@
       opacity: 0;
     }
     .action {
-      top: ((@tile - (@home_action_height / 2)) / 2);
+      right: ((@tile - @baseLineHeight) / 2);
       opacity: 1;
+      transition: right @prolog_cover_fadein,
+                  opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
     }
+  }
+  &.bkg-visible {
+    background: fade(@grayDark, 66);
   }
   a {
     position: absolute;
     top: ((@tile - @purpose_line) / 2);
-    transition: @prolog_cover_fadeout;
+    transition: top @prolog_cover_fadeout,
+                left @prolog_cover_fadeout,
+                right @prolog_cover_fadeout,
+                opacity @prolog_cover_fadeout;
+  }
+  .promo,
+  .login {
+    opacity: 1;
     &:not(:hover) {
-      color: @gray;
+      color: @grayLight;
     }
   }
   .promo {
     left: ((@tile - @baseLineHeight) / 2);
-    opacity: 1;
   }
   .login {
     right: ((@tile - @baseLineHeight) / 2);
-    opacity: 1;
   }
   .logo-circleci {
-    left: ((@tile - @baseLineHeight) / 2);
-    top: @tile;
+    left: @tile;
+    top: ((@tile - @home_nav_logo) / 2);
     width: (@home_nav_logo * 4.5);
     height: @home_nav_logo;
     opacity: 0;
@@ -120,14 +135,15 @@
   .action {
     .box-sizing(border-box);
     .flexy(center, center);
-    right: ((@tile - @baseLineHeight) / 2);
-    top: @tile;
+    right: @tile;
+    top: ((@tile - (@home_action_height / 2)) / 2);
     width: (@home_action_width / 2);
     height: (@home_action_height / 2);
     font-size: round(@em * .89);
+    color: @grayDark;
     background: @white;
-    // border: 1px solid @grayBoxBorder;
     border-radius: (@home_action_height / 2);
+    opacity: 0;
   }
 }
 .home-prolog,
