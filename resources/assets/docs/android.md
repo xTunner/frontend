@@ -32,12 +32,12 @@ To accomplish this, put something like the following in your `circle.yml`:
 machine:
   environment:
     ANDROID_HOME: /home/ubuntu/android
-  dependencies:
-    cache_directories:
-      - ~/.android
-      - ~/android
-    override:
-      - ./install-dependencies.sh
+dependencies:
+  cache_directories:
+    - ~/.android
+    - ~/android
+  override:
+    - ./install-dependencies.sh
 ```
 
 This references the `install-dependencies.sh`
