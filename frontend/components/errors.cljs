@@ -1,5 +1,7 @@
 (ns frontend.components.errors
   (:require [frontend.state :as state]
+            [frontend.async :refer [put!]]
+            [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true])
@@ -12,7 +14,8 @@
       (let [status (get-in app [:navigation-data :status])
             logged-in? (get-in app state/user-path)
             build-page? (get-in app [:navigation-data :build-page?])
-            dashboard-page? (get-in app [:navigation-data :dashboard-page?])]
+            dashboard-page? (get-in app [:navigation-data :dashboard-page?])
+            controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.page.error
           [:div.banner
