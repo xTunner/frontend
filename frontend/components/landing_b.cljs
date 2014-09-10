@@ -49,7 +49,9 @@
                                        (when (:header-logo-visible state) ["logo-visible"])
                                        (when (:header-cta-visible state) ["cta-visible"]))}
                 [:a.promo "What is Continuous Integration?"]
-                [:a.login "Log In"]]
+                [:a.login "Log In"]
+                (om/build drawings/logo-circleci app)
+                [:a.action "Sign Up Free"]]
                [:section.home-prolog
                 [:a.home-action {:role "button"
                                  :ref "cta"}
