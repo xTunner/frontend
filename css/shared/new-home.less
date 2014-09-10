@@ -56,29 +56,78 @@
     }
   }
 }
+
+@home_nav_logo: @purpose_line;
+@home_action_width: (@tile * 3);
+@home_action_height: @tile;
+
 .home-nav {
   .box-sizing(border-box);
-  .flexy(center, center);
   position: fixed;
   z-index: (@zindex_prolog_above + 1);
   left: 0;
   top: 0;
   height: @tile;
-  // width: 100%;
   width: ~"calc(100% - 15px)"; // 15px = scrollbar width
-  // padding: 0 @em;
-  padding: 0 ((@tile - @baseLineHeight) / 2);
   border-bottom: 1px solid fade(@black, 13);
+  overflow: hidden;
+  &.logo-visible {
+    .promo {
+      top: (((@tile - @purpose_line) / 2) * -1);
+      opacity: 0;
+    }
+    .logo-circleci {
+      top: ((@tile - @home_nav_logo) / 2);
+      opacity: 1;
+    }
+  }
+  &.cta-visible {
+    .login {
+      top: (((@tile - @purpose_line) / 2) * -1);
+      opacity: 0;
+    }
+    .action {
+      top: ((@tile - (@home_action_height / 2)) / 2);
+      opacity: 1;
+    }
+  }
   a {
+    position: absolute;
+    top: ((@tile - @purpose_line) / 2);
+    transition: @prolog_cover_fadeout;
     &:not(:hover) {
       color: @gray;
     }
   }
   .promo {
-    margin-right: auto;
+    left: ((@tile - @baseLineHeight) / 2);
+    opacity: 1;
   }
   .login {
-    margin-left: auto;
+    right: ((@tile - @baseLineHeight) / 2);
+    opacity: 1;
+  }
+  .logo-circleci {
+    left: ((@tile - @baseLineHeight) / 2);
+    top: @tile;
+    width: (@home_nav_logo * 4.5);
+    height: @home_nav_logo;
+    opacity: 0;
+    svg {
+      fill: @white;
+    }
+  }
+  .action {
+    .box-sizing(border-box);
+    .flexy(center, center);
+    right: ((@tile - @baseLineHeight) / 2);
+    top: @tile;
+    width: (@home_action_width / 2);
+    height: (@home_action_height / 2);
+    font-size: round(@em * .89);
+    background: @white;
+    // border: 1px solid @grayBoxBorder;
+    border-radius: (@home_action_height / 2);
   }
 }
 .home-prolog,
@@ -310,11 +359,11 @@
   color: @grayDark;
   font-size: 20px;
   background: @white;
-  width: (@tile * 3);
-  height: @tile;
+  width: @home_action_width;
+  height: @home_action_height;
   margin: 0 auto;
   border: 1px solid @white;
-  border-radius: (@tile / 2);
+  border-radius: (@home_action_height / 2);
   // order: 4;
   transition: color @prolog_cover_fadeout,
               background @prolog_cover_fadeout,
