@@ -118,7 +118,7 @@
   }
   .project-settings-inner {
     .flex(1, 1);
-    margin: 0 2em;
+    padding: 0 2em;
     min-height: 89vh;
     overflow: auto;
   }
@@ -365,6 +365,10 @@
       .tableLight();
       td {
         &:not(:last-child) {
+          max-width: 150px;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
           padding: 1em;
         }
       }
@@ -389,6 +393,10 @@
         margin-bottom: 2em;
       }
     }
+
+    textarea {
+      font-family: @codeFontFamily;
+    }
   }
   .dependencies-inner {
     margin: 2em 0;
@@ -402,6 +410,10 @@
     }
     .try-out-build {
       margin-left: 2em;
+    }
+    
+    textarea {
+      font-family: @codeFontFamily;
     }
   }
   .tests-inner {
