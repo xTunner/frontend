@@ -9,6 +9,10 @@
 }
 // temporary hacks for mocking up initial design
 
+@prolog_open_duration: 1000ms;
+@prolog_open_timing: cubic-bezier(0.445, 0.05, 0.55, 0.95);
+@prolog_open_delay: (@prolog_open_duration / 10);
+
 @prolog_light_on_dark: #aaa;
 
 @home_drawing_offset: 5px;
@@ -20,7 +24,7 @@
 
 @prolog_cover_fadein: 500ms; // default 500ms
 @prolog_cover_fadeout: (@prolog_cover_fadein / 2);
-@prolog_cover_timing: ease-in-out;
+@prolog_cover_timing: cubic-bezier(0.39, 0.575, 0.565, 1);
 
 @purpose_font: 16px;
 @purpose_line: 24px;
@@ -62,6 +66,7 @@
 @home_action_height: @tile;
 
 .home-nav {
+  .animation(prolog-down @prolog_open_duration @prolog_open_timing @prolog_open_duration both);
   .box-sizing(border-box);
   position: fixed;
   z-index: (@zindex_prolog_above + 1);
@@ -250,6 +255,7 @@
     }
   }
   .avatar-circle {
+    .animation(prolog-logo @prolog_open_duration @prolog_open_timing (@prolog_open_delay * 1) both);
     position: absolute;
     top: 0;
     left: 0;
@@ -317,6 +323,7 @@
     }
   }
   .proverb {
+    .animation(prolog-up @prolog_open_duration @prolog_open_timing (@prolog_open_delay * 1) both);
     height: @prolog_h1_font;
     margin: 0 0 ((@tile * 2) - (@prolog_h1_line + (@prolog_h3_line * 2)));
     &:before {
@@ -329,6 +336,8 @@
   }
   .context {
     height: @prolog_h3_line;
+    &:nth-of-type(1) { .animation(prolog-up @prolog_open_duration @prolog_open_timing (@prolog_open_delay * 2) both); }
+    &:nth-of-type(2) { .animation(prolog-up @prolog_open_duration @prolog_open_timing (@prolog_open_delay * 3) both); }
     &:before,
     &:after {
       color: @prolog_light_on_dark;
@@ -339,6 +348,7 @@
   }
 }
 .home-bottom-shelf {
+  .animation(prolog-up @prolog_open_duration @prolog_open_timing @prolog_open_duration both);
   .flexy(center, center);
   .order(5);
   position: relative;
@@ -366,6 +376,7 @@
 // Where the magic happens.
 //
 .home-action {
+  .animation(prolog-action @prolog_open_duration @prolog_open_timing (@prolog_open_delay * 1) both);
   .box-sizing(border-box);
   .flexy(center, center);
   .order(4);
