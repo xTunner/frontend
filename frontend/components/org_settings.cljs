@@ -104,7 +104,7 @@
                          "fail"
                          "success")}
 
-               [:img.gravatar {:src (str (:avatar_url user) "&s=45")}]
+               [:img.gravatar {:src (gh-utils/make-avatar-url (:avatar_url user) :size 45)}]
                [:div.om-org-user-projects-container
                 [:h4
                  (if (seq followed-projects)
@@ -146,7 +146,7 @@
            [:span.follower-container
             {:style {:display "inline-block"}}
             [:img.gravatar
-             {:src (str (:avatar_url follower) "&s=30")}]
+             {:src (gh-utils/make-avatar-url (:avatar_url follower) :size 30)}]
             " "
             [:span (:login follower)]])]]))))
 

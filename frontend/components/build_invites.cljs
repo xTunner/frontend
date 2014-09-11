@@ -28,7 +28,7 @@
         (html
          [:li
           [:div.invite-gravatar
-           [:img {:src avatar_url}]]
+           [:img {:src (gh-utils/make-avatar-url avatar_url)}]]
           [:div.invite-profile
            login
            [:input {:on-change #(utils/edit-input controls-ch (conj (state/build-github-user-path index) :email) %)

@@ -40,11 +40,7 @@
              (fn [org]
                (let [org-url    (routes/v1-org-settings-subpage {:org     (:login org)
                                                                  :subpage "plan"})
-                     avatar-url (if-let [avatar-url (:avatar_url org)]
-                                  (str avatar-url "&s=25")
-                                  (gh-utils/gravatar-url {:gravatar_id (:gravatar_id org)
-                                                          :login       (:login org)
-                                                          :size        25}))]
+                     avatar-url (gh-utils/make-avatar-url (:avatar_url org) :size 25)]
                  [:div
                   [:a
                    {:href org-url}

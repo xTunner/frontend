@@ -188,7 +188,7 @@
                           :title "Account"
                           :class (when (get-in app state/user-options-shown-path)
                                   "open")}
-           [:img {:src (:avatar-url opts)}]
+           [:img {:src (gh-utils/make-avatar-url (:avatar-url opts))}]
            (:login opts)]
 
           [:a.aside-item {:title "Documentation"
@@ -248,7 +248,7 @@
       (let [data (select-in app [state/projects-path state/settings-path state/user-options-shown-path])
             user (get-in app state/user-path)
             login (:login user)
-            avatar-url (:avatar_url user)]
+            avatar-url (gh-utils/make-avatar-url (:avatar_url user))]
         (html
          [:aside.app-aside-left
           shared/invite-form ;; modal trigger is in aside-nav
