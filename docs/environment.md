@@ -163,6 +163,7 @@ If so, please [contact us](mailto:sayhi@circleci.com).
 CircleCI has the following languages and tools installed:
 
 {{ versions.java_packages | code-list }}
+
 *   `ant {{ versions.ant }}`
 *   `maven {{ versions.maven }}`
 *   `gradle {{ versions.gradle }}`
@@ -179,7 +180,7 @@ You can specify the following JVM versions in your `circle.yml` file:
 * `openjdk6`
 
 
-#### Scala
+### Scala
 
 We track <a>http://typesafe.artifactoryonline.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/</a> for recent Scala releases:
 
