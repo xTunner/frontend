@@ -291,4 +291,16 @@ If we did take such a copy, then restoring it becomes the big challenge.
 We would be missing all the COW information, so we couldn't re-create the sharing
 of data across the different filesystems.
 
-We're working to find a solution to the problem.
+We're working to find a solution to the problem. In the meantime, one workaround
+is to use docker load/save. Here is a minimal example to get your started:
+
+```
+dependencies:
+  cache_directories:
+    - "~/docker"
+
+  override:
+    - if [[ -e ~/docker ]]; then docker load -i ~/docker/image.tar; fi
+    - docker build -t circleci/elasticsearch .
+    - mkdir -p ~/docker; docker save circleci/elasticsearch > ~/docker/image.tar
+```
