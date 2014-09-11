@@ -270,3 +270,25 @@ integration tests against the built Docker image.
 Please don't hesitate to [contact us](mailto:sayhi@circleci.com)
 if you have any questions at all about how to best utilize Docker on
 CircleCI.
+
+### Caching Docker layers
+
+Docker images aren't cached automatically. At the moment, we have no good
+method to cache them although we are trying to find a technical solution.
+
+Docker layers are built on top of copy-on-write filesystems so each layer
+only contains the differences from the layer below. This lets them be quite
+lightweight and also lets base layers be shared by many different images.
+What makes them hard to cache is that the COW linking and structure sharing
+is all maintained in kernel-space.
+
+User-space is completely unaware that a filesystem is really a copy-on-write
+filesystem. If you were to try to back up docker images you would
+end up with each layer as an entirely separate complete copy of the layer
+with all the COW structure sharing lost.
+
+If we did take such a copy, then restoring it becomes the big challenge.
+We would be missing all the COW information, so we couldn't re-create the sharing
+of data across the different filesystems.
+
+We're working to find a solution to the problem.
