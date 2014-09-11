@@ -1,3 +1,10 @@
+<!--
+
+title: Configuring CircleCI
+last_updated: August 1, 2014
+
+-->
+
 CircleCI automatically infers your settings from your code, so CircleCI's normal processing works just fine in most circumstances.
 When it doesn't, the `circle.yml` file makes it easy to tell CircleCI what you need.
 This is a simple YAML file where you spell out any tweaks required for your web app.

@@ -1,3 +1,10 @@
+<!--
+
+title: Polling project status using CCMenu, CCTray, etc.
+last_updated: Feb 2, 2013
+
+-->
+
 If you would prefer to poll the status of your projects' builds, rather than rely on
 notifications, CircleCI offers an implementation of the
 [Multiple Project Summary Reporting Standard](http://confluence.public.thoughtworks.org/display/CI/Multiple+Project+Summary+Reporting+Standard),

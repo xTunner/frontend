@@ -1,3 +1,10 @@
+<!--
+
+title: OOM killer ran
+last_updated: Feb 2, 2013
+
+-->
+
 Your build contains a message that says the Linux Out-of-Memory (OOM)
 killer ran.
 

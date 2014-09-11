@@ -1,3 +1,10 @@
+<!--
+
+title: CircleCI REST API
+last_updated: Aug 23, 2012
+
+-->
+
 ## [The CircleCI API](#intro)
 
 The CircleCI API is a RESTy, fully-featured API that allows you to do almost anything in CircleCI.

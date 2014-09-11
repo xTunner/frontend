@@ -1,3 +1,10 @@
+<!--
+
+title: Unexpected Timeouts During `cabal test`
+last_updated: 
+
+-->
+
 By default, Circle times out tests if they have not produced output for 180
 seconds. `cabal test`, even with `--show-details=always`,
 only produces output as each test suite completes, so it may be necessary

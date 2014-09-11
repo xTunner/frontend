@@ -1,3 +1,17 @@
+<!--
+
+title: Test Android applications
+last_updated: July 29, 2014
+
+-->
+
+<!--
+
+title: Test Android applications
+last_updated: July 29, 2014
+
+-->
+
 CircleCI supports testing Android applications. The SDK is
 already installed on the VM at `/usr/local/android-sdk-linux`
 

@@ -1,3 +1,10 @@
+<!--
+
+title: Continuous Deployment to Google App Engine
+last_updated: July 19, 2013
+
+-->
+
 Setting up continuous deployment to Google App Engine is pretty straightforward. Here's
 how you do it.
 

@@ -1,3 +1,10 @@
+<!--
+
+title: Start background processes from circle.yml
+last_updated: Feb 5, 2014
+
+-->
+
 Starting a background process from [circle.yml](/docs/configuration)
 is entirely possible, but it is not done by adding `&`
 to the end of your command line. Instead, you set the background flag on the command.  For example:

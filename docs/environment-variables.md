@@ -1,3 +1,10 @@
+<!--
+
+title: Environment variables
+last_updated: Feb 2, 2013
+
+-->
+
 We export a number of environment variables during each build, which you may find
 useful for more complex testing or deployment.
 

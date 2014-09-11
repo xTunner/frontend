@@ -1,3 +1,10 @@
+<!--
+
+title: CircleCI is running the wrong Ruby commands
+last_updated: Feb 3, 2013
+
+-->
+
 CircleCI infers your test settings from the code in your repository, typically looking at the packages you use.
 Most problems occur when there is some error in how the packages are specified.
 

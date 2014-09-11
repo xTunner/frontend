@@ -1,3 +1,10 @@
+<!--
+
+title: Nightly Builds
+last_updated: May 22, 2014
+
+-->
+
 The [experimental Parameterized Build API](/docs/parameterized-builds)
 allows you to trigger a build using the [CircleCI API](/docs/api#new-build)
 and inject environment variables into the build environment.

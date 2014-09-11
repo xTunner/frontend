@@ -1,3 +1,10 @@
+<!--
+
+title: Use resources which are not in your repository
+last_updated: Feb 2, 2012
+
+-->
+
 There are a number of techniques to do this:
 
 *   CircleCI supports `git submodule`, and has advanced SSH key management to let you access multiple repositories from a single test suite.

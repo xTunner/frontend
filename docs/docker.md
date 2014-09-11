@@ -1,3 +1,10 @@
+<!--
+
+title: Continous Integration and Delivery with Docker
+last_updated: August 4, 2014
+
+-->
+
 CircleCI currently offers beta support for running Docker within build containers.
 Docker is an extremely flexible tool that supports many different use cases. This
 article attempts to address several of the most popular uses for Docker on CircleCI,

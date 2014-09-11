@@ -1,3 +1,10 @@
+<!--
+
+title: An important file is missing from your repository
+last_updated: Feb 3, 2013
+
+-->
+
 Developers commonly omit certain files from their repositories, especially files containing application settings, passwords and API keys.
 However, these files can be essential for the proper running of their programs, and often contain settings which can't be reasonably inferred by CircleCI.
 

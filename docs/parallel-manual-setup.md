@@ -1,3 +1,10 @@
+<!--
+
+title: Manually setting up parallelism
+last_updated: Feb 2, 2013
+
+-->
+
 If you want the benefits of parallel testing, and you're not
 using one of our automatically supported test runners, or if
 you've overridden our test commands, you'll still be able to set up parallelism and reduce your test run-times.

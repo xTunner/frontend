@@ -1,3 +1,10 @@
+<!--
+
+title: Git errors during npm install
+last_updated: Sep 16, 2013
+
+-->
+
 When your tests run, during the
 `npm install`
 step, you might see something like this:
