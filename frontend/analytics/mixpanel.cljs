@@ -34,3 +34,7 @@
 (defn track-message [message]
   (when-not (contains? ignored-control-messages message)
     (track (name message))))
+
+(defn set-existing-user []
+  (utils/swallow-errors
+   (js/CI.ExistingUserHeuristics.)))

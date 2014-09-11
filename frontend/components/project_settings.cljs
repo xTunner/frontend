@@ -296,8 +296,8 @@
               [:tbody
                (for [{:keys [name value]} env-vars]
                  [:tr
-                  [:td name]
-                  [:td value]
+                  [:td {:title name} name]
+                  [:td {:title value} value]
                   [:td
                    [:a
                     {:title "Remove this variable?",
@@ -329,7 +329,6 @@
                                     {:type "checkbox"
                                      :checked (get feature-flags flag)
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value true}])}]
                                    " On"]]
@@ -339,7 +338,6 @@
                                     {:type "checkbox"
                                      :checked (not (get feature-flags flag))
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value false}])}]
                                    " Off"]]]]]))]
@@ -352,14 +350,20 @@
             "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
-           (describe-flag {:flag :junit
-                           :title "JUnit support"
-                           :blurb [:p
-                                   "We've been experimenting with better ways to display and manage "
-                                   "test result data, especially for large test suites. This adds flags "
-                                   "to some of our inferred commands, and collects data supplied by JUnit and "
-                                   "JUnit-compatabile test runners. It only works for a handful of test "
-                                   "runners for now, and the data is only available through our API, though!"]})
+           ;; Comment out while we wait for the backend to deploy
+           ;; (describe-flag {:flag :junit
+           ;;                 :title "JUnit support"
+           ;;                 :blurb [:p
+           ;;                         "We've been experimenting with better ways to display and manage "
+           ;;                         "test result data, especially for large test suites. This adds flags "
+           ;;                         "to some of our inferred commands to collect structured test output supplied by "
+           ;;                         "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
+           ;;                         "you're using our inferred test steps. For RSpec, we also require our fork of the "
+           ;;                         "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
+           ;;                         [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+           ;;                         "If you're using parallelism, we'll "
+           ;;                         "automatically use the timing data to give you better test splits. You'll also be able to "
+           ;;                         "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
            (describe-flag {:flag :set-github-status
                            :title "GitHub Status updates"
                            :blurb [:p
@@ -369,15 +373,15 @@
            (describe-flag {:flag :oss
                            :title "Free and Open Source"
                            :blurb [:p
-                                   "Be part of our F/OSS beta! Organizations now have a free container "
+                                   "Be part of our F/OSS beta! Organizations now have three free containers"
                                    "reserved for F/OSS projects; enabling this will allow this project's "
-                                   "builds to use it and let others see your builds, both through the "
+                                   "builds to use them and let others see your builds, both through the "
                                    "web UI and the API."]})
            (describe-flag {:flag :build-fork-prs
                            :title "Project fork pull requests"
                            :blurb '([:p
                                      "CircleCI will automatically update the commit status shown on GitHub's "
-                                     "pull request page. Builds will will be run using the parent repository's plan "
+                                     "pull request page. Builds will be run using the parent repository's plan "
                                      "and will be able to access the parent project's environment settings."]
                                     [:p
                                      "If you have SSH keys or AWS credentials stored in your project settings and "
@@ -555,7 +559,7 @@
                              :show-fixed-failed? false}
 
                             {:service "IRC"
-                             :icon "chat-i-flow"
+                             :icon "chat-i-irc"
                              :doc nil
                              :inputs [{:field :irc_server :placeholder "Hostname"}
                                       {:field :irc_channel :placeholder "Channel"}
@@ -588,7 +592,10 @@
               :data-loading-text "Saving",
               :value "Save notification hooks",
               :type "submit",
-              :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}])]])))))
+              :on-click #(do
+                          (let [event-data {:project-id project-id
+                                            :merge-paths (map vector project-model/notification-keys)}]
+                            (put! controls-ch [:saved-project-settings event-data])))}])]])))))
 
 (defn webhooks [project-data owner]
   (om/component

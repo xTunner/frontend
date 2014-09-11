@@ -553,3 +553,7 @@
     (-> state
         (assoc-in state/docs-articles-results-path (:results resp))
         (assoc-in state/docs-articles-results-query-path (:query resp)))))
+
+(defmethod api-event [:doc-markdown :success]
+  [target message status {:keys [resp context] :as data} state]
+  (assoc-in state (concat state/docs-data-path [(:subpage context) :markdown]) resp))
