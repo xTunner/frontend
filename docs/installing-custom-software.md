@@ -4,9 +4,22 @@ However, if you need to install a particular version of software&mdash;to match 
 
 ## Installing via circle.yml
 
-You can use your [circle.yml](/docs/configuration) file to run arbitrary commands against your build environment. You have root access to your environment via `sudo`, so you should be able to customize it to your heart's content!
+You can use your [circle.yml](/docs/configuration) file to run
+arbitrary commands against your build environment. You have root
+access to your environment via `sudo`, so you should be able to
+customize it to your heart's content!
 
-For example, if you need to use a specific version of Redis, you would download and compile the needed version as part of your build.
+For example, to install smalltalk, add this to your `circle.yml`:
+
+```
+dependencies:
+  pre:
+    - sudo apt-get install gnu-smalltalk
+```
+
+If you need to use a specific version of Redis that isn't provided by
+`apt-get`, you can download and compile the needed version into your
+home directory:
 
 ```
 dependencies:
