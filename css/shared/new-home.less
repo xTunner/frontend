@@ -184,10 +184,6 @@
   height: 100vh;
 }
 .home-prolog {
-  // .flexy(column);
-  // .justify-content(center);
-  // position: relative;
-  // height: 100vh;
   background: @grayDark;
   color: @prolog_light_on_dark;
   a:not([role="button"]) {
@@ -211,9 +207,6 @@
       }
     }
   }
-  // h3 {
-  //   margin: 0;
-  // }
 }
 .home-top-shelf {
   .order(1);
@@ -221,21 +214,6 @@
   z-index: @zindex_home_top_shelf;
   height: @tile;
   margin-bottom: auto;
-  // border: 1px solid fade(@black, 13);
-  // order: 1;
-  // nav {
-  //   .box-sizing(border-box);
-  //   .flexy(center, center);
-  //   height: 100%;
-  //   padding: 0 ((@tile - @baseLineHeight) / 2);
-  //   border-bottom: 1px solid fade(@black, 13);
-  // }
-  // .promo {
-  //   margin-right: auto;
-  // }
-  // .login {
-  //   margin-left: auto;
-  // }
 }
 .home-cover {
   background: @white;
@@ -247,7 +225,6 @@
   pointer-events: none;
   left: ~"calc(50% - 105px)";
   top: ~"calc(50% + 140px)";
-  // transition: @prolog_cover_fadeout;
   opacity: 0;
   // transition: all @prolog_cover_fadeout,
   //             opacity 0 @prolog_cover_fadeout;
@@ -264,7 +241,6 @@
   .order(2);
   position: relative;
   z-index: @zindex_home_avatars;
-  // order: 2;
   .avatars {
     position: relative;
     width: @tile;
@@ -321,7 +297,6 @@
   z-index: @zindex_home_slogans;
   text-align: center;
   margin: @tile 0;
-  // order: 3;
   h3 {
     margin: 0;
   }
@@ -381,16 +356,8 @@
   z-index: @zindex_home_bottom_shelf;
   height: @tile;
   margin-top: auto;
-  // order: 5;
   a {
     .flexy();
-    // i {
-    //   margin-left: 1ex;
-    // }
-    // svg {
-    //   width: round(@em * .89);
-    //   height: round(@em * .89);
-    // }
   }
   .chevron-down {
     width: round(@em * .89);
@@ -406,7 +373,6 @@
   .box-sizing(border-box);
   .flexy(center, center);
   .order(4);
-  // align-self: center;
   position: relative;
   z-index: @zindex_home_action;
   color: @grayDark;
@@ -417,7 +383,6 @@
   margin: 0 auto;
   border: 1px solid @white;
   border-radius: (@home_action_height / 2);
-  // order: 4;
   transition: color @prolog_cover_fadeout,
               background @prolog_cover_fadeout,
               border-color @prolog_cover_fadeout @prolog_cover_fadeout;
@@ -493,12 +458,6 @@
     }
   }
 }
-
-// delete these
-// .home-drawings {.flex(0, 0, 100%);}
-// .home-articles {display: none}
-// .home-prolog {display: none !important;}
-
 .home-purpose {
   .flexy();
   font-size: @purpose_font;
@@ -804,10 +763,7 @@
     }
   }
   .home-footer-logo {
-    // .flexy(flex-end);
     .flexy(flex-start);
-    // margin: @home_margin_footer @home_margin_footer @home_margin_footer auto;
-    // margin: @home_margin_footer (@home_margin_footer * 2);
     margin: @home_margin_footer @home_margin_footer @home_margin_footer (@home_margin_footer * 2);
     svg {
       width: @em;
@@ -861,7 +817,6 @@
   color: @grayLight;
   width: (@tile * 8);
   height: (@tile * 2);
-  // margin-top: @quote_avatar_size;
   margin: @tile 0 (-@tile * 3) auto;
   border: 1px solid @grayBoxBorder;
   border-radius: 5px;
@@ -875,7 +830,6 @@
     font-size: round(@em * .75);
     line-height: round(@purpose_line * .66);
     width: 100%;
-    // margin-left: @em;
     padding: 0 @em;
   }
   .avatar {
@@ -890,7 +844,6 @@
     background-image: url("http://placehold.it/35/fbfbfb");
   }
   .brand {
-    // background: red;
     width: @tile;
     height: (@tile / 2);
     background-image: url("http://placehold.it/70x35/fff");
