@@ -2,28 +2,24 @@ The CircleCI environment provides the libraries, languages, and databases needed
 (check out the [comprehensive list)](/docs/environment).
 However, if you need to install a particular version of software&mdash;to match your production systems or to test backward compatibility, for example&mdash;or add custom code, CircleCI makes it easy to set up your environment to meet your testing needs.
 
-## Root commands and packages
+## Installing via circle.yml
 
-[Contact us](mailto:sayhi@circleci.com) to add any packages we don't currently have.
-We'll add them to your project, and you'll be able to start using them immediately.
-We'll add common packages to our VM image too.
+You can use your [circle.yml](/docs/configuration) file to run
+arbitrary commands against your build environment. You have root
+access to your environment via `sudo`, so you should be able to
+customize it to your heart's content!
 
-We can run any arbitrary command for you in the same way, not just package management.
-This means we can tweak our VM in any way you need.
-Let us know what commands you need when you [contact us](mailto:sayhi@circleci.com).
+For example, to install smalltalk, add this to your `circle.yml`:
 
-In case you're curious, the reason we require this is that our virtualization does not support providing `sudo` to arbitrary users.
-We use LXC (the same technology used by Heroku, Docker, and other PaaSes).
-LXC is one of the many technologies we use to make your builds run so fast, especially compared to alternatives such as VirtualBox or OpenVZ.
-The tradeoff is you need to [contact us](mailto:sayhi@circleci.com) for `sudo` commands. We plan to address this in the future.
+```
+dependencies:
+  pre:
+    - sudo apt-get install gnu-smalltalk
+```
 
-## Installing via the circle.yml
-
-If you don't need root to install your custom software, you can do it manually.
-You do this by adding extra commands within the dependencies section in your
-`circle.yml` file.
-
-For example, if you need to use a specific version of Redis, you would download and compile the needed version as part of your build.
+If you need to use a specific version of Redis that isn't provided by
+`apt-get`, you can download and compile the needed version into your
+home directory:
 
 ```
 dependencies:
