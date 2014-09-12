@@ -32,7 +32,9 @@
                            (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta))))
                            (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) 70))
                            (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
-                           (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70)))]
+                           (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70))
+                           (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
+                                                                            (js/Math.abs (- 70 (.-bottom (.getBoundingClientRect nav-bkg)))))))]
     (om/set-state! owner [:browser-resize-key]
                    (goog.events/listen
                     (sel1 (om/get-shared owner [:target]) ".app-main")
@@ -55,12 +57,15 @@
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
-               [:nav.home-nav {:class (concat
+               [:nav.home-nav {:style (merge {}
+                                             (when (> 70 (:header-bkg-scroller state))
+                                               {:background-size (str "100% " (:header-bkg-scroller state) "px")}))
+                               :class (concat
                                        (when (:header-logo-visible state) ["logo-visible"])
                                        (when (:header-cta-visible state) ["cta-visible"])
                                        (when (:header-bkg-visible state) ["bkg-visible"])
-                                       (when (:header-cta-invisible state) ["cta-invisible"])
-                                       (when (:header-bkg-invisible state) ["bkg-invisible"]))}
+                                       (when (:header-bkg-invisible state) ["bkg-invisible"])
+                                       (when (:header-cta-invisible state) ["cta-invisible"]))}
                 [:a.promo "What is Continuous Integration?"]
                 [:a.login "Log In"]
                 (om/build drawings/logo-circleci app)
