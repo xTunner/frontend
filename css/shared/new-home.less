@@ -32,9 +32,13 @@
 
 @purpose_drawings_width: 34%; // default 34%
 
-@zindex_prolog_cover: 2; // These should move to a less file in charge of managing z-indexes
-@zindex_prolog_above: (@zindex_prolog_cover + 1);
-@zindex_prolog_below: (@zindex_prolog_cover - 1);
+@zindex_home_cover: 10; // These should move to a less file in charge of managing z-indexes
+@zindex_home_nav:          (@zindex_home_cover + 2);
+@zindex_home_top_shelf:    (@zindex_home_cover + 1);
+@zindex_home_avatars:      (@zindex_home_cover + 2);
+@zindex_home_slogans:      (@zindex_home_cover + 2);
+@zindex_home_bottom_shelf: (@zindex_home_cover + 2);
+@zindex_home_action:       (@zindex_home_cover + 2);
 
 @em: @purpose_font;
 
@@ -69,7 +73,7 @@
   .animation(prolog-down @prolog_open_duration @prolog_open_timing @prolog_open_duration both);
   .box-sizing(border-box);
   position: fixed;
-  z-index: @zindex_prolog_above; // ducks under prolog content intentionally
+  z-index: @zindex_home_nav; // ducks under prolog content intentionally
   left: 0;
   top: 0;
   height: @tile;
@@ -89,6 +93,7 @@
     .logo-circleci {
       left: ((@tile - @baseLineHeight) / 2);
       opacity: 1;
+      pointer-events: auto;
       transition: left @prolog_cover_fadein,
                   opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
     }
@@ -102,6 +107,7 @@
       .action {
         right: ((@tile - @baseLineHeight) / 2);
         opacity: 1;
+        pointer-events: auto;
         transition: right @prolog_cover_fadein,
                     opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
       }
@@ -145,6 +151,7 @@
     width: (@home_nav_logo * 4.5);
     height: @home_nav_logo;
     opacity: 0;
+    pointer-events: none;
     svg {
       fill: @grayLighter;
     }
@@ -161,6 +168,7 @@
     background: @white;
     border: 1px solid @gray;
     border-radius: (@home_action_height / 2);
+    pointer-events: none;
     opacity: 0;
     &:hover {
       color: @white;
@@ -210,7 +218,7 @@
 .home-top-shelf {
   .order(1);
   position: relative;
-  z-index: @zindex_prolog_above;
+  z-index: @zindex_home_top_shelf;
   height: @tile;
   margin-bottom: auto;
   // border: 1px solid fade(@black, 13);
@@ -235,7 +243,7 @@
   height: @tile;
   border-radius: (@tile / 2);
   position: absolute;
-  z-index: @zindex_prolog_cover;
+  z-index: @zindex_home_cover;
   pointer-events: none;
   left: ~"calc(50% - 105px)";
   top: ~"calc(50% + 140px)";
@@ -255,7 +263,7 @@
   .flexy(center, center);
   .order(2);
   position: relative;
-  z-index: @zindex_prolog_above;
+  z-index: @zindex_home_avatars;
   // order: 2;
   .avatars {
     position: relative;
@@ -310,7 +318,7 @@
 .home-slogans {
   .order(3);
   position: relative;
-  z-index: @zindex_prolog_above;
+  z-index: @zindex_home_slogans;
   text-align: center;
   margin: @tile 0;
   // order: 3;
@@ -370,7 +378,7 @@
   .flexy(center, center);
   .order(5);
   position: relative;
-  z-index: @zindex_prolog_cover; // should still be above cover, just shares same value
+  z-index: @zindex_home_bottom_shelf;
   height: @tile;
   margin-top: auto;
   // order: 5;
@@ -400,7 +408,7 @@
   .order(4);
   // align-self: center;
   position: relative;
-  z-index: @zindex_prolog_above;
+  z-index: @zindex_home_action;
   color: @grayDark;
   font-size: 20px;
   background: @white;
