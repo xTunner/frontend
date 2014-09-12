@@ -71,12 +71,6 @@
                  "Sign Up Free"]
                 [:div.home-cover]
                 [:div.home-top-shelf]
-                [:div.home-avatars
-                 [:div.avatars
-                  [:div.avatar-github
-                   (common/ico :github)]
-                  [:div.avatar-circle {:ref "center-logo"}
-                   (common/ico :logo)]]]
                 [:div.home-slogans
                  [:h1.slogan.proverb {:title "Your org needs a hero."
                                       :alt   "Let's just authorize first."}
@@ -87,6 +81,12 @@
                  [:h3.slogan.context {:title "Continuous Integration & Deployment."
                                       :alt   "Currently, we must request permissions in bulk."}
                   "Continuous Integration & Deployment."]]
+                [:div.home-avatars
+                 [:div.avatars
+                  [:div.avatar-github
+                   (common/ico :github)]
+                  [:div.avatar-circle {:ref "center-logo"}
+                   (common/ico :logo)]]]
                 [:div.home-bottom-shelf
                  [:a {:on-click #(put! controls-ch [:home-scroll-one-clicked])}
                   "Learn more"
@@ -187,12 +187,6 @@
                  "Sign Up Free"]
                 [:div.home-cover]
                 [:div.home-top-shelf]
-                [:div.home-avatars
-                 [:div.avatars
-                  [:div.avatar-github
-                   (common/ico :github)]
-                  [:div.avatar-circle
-                   (common/ico :logo)]]]
                 [:div.home-slogans
                  [:h1.slogan.proverb {:title "So, ready to be a hero?"
                                       :alt   "Let's just authorize first."}
@@ -205,6 +199,12 @@
                   "Still not convinced yet? Try taking the "
                   [:a {:href "#"} "full tour"]
                   "."]]
+                [:div.home-avatars
+                 [:div.avatars
+                  [:div.avatar-github
+                   (common/ico :github)]
+                  [:div.avatar-circle
+                   (common/ico :logo)]]]
                 [:div.home-bottom-shelf
                  [:span.home-footer-bait
                   "About Us"
