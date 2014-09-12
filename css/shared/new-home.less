@@ -157,11 +157,16 @@
     width: (@home_action_width / 2);
     height: (@home_action_height / 2);
     font-size: round(@em * .89);
-    color: @grayDark;
+    color: @black;
     background: @white;
-    border: 1px solid @grayBoxBorder;
+    border: 1px solid @gray;
     border-radius: (@home_action_height / 2);
     opacity: 0;
+    &:hover {
+      color: @white;
+      background: @gray;
+      transition: 100ms;
+    }
   }
 }
 .home-prolog,
