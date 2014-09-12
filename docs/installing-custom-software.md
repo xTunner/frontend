@@ -35,7 +35,7 @@ dependencies:
 
 ### Caching
 
-Natually, downloading and compiling this custom software can take time, making your build longer.
+Naturally, downloading and compiling this custom software can take time, making your build longer.
 To reduce the time spent installing dependencies, CircleCI will cache them between builds.
 You can add arbitrary directories to this cache, allowing you to avoid the overhead of building your custom software during the build.
 
