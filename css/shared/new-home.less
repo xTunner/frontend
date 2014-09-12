@@ -75,12 +75,12 @@
   height: @tile;
   width: ~"calc(100% - 15px)"; // 15px = scrollbar width
   // width: 100vw;
-  // background: fade(@grayDark, 0);
-  background: fade(@white, 0);
+  .vertGradient(fade(@white, 0), fade(@white, 0));
+  background-size: 100% 0;
+  background-position: bottom center;
+  background-repeat: no-repeat;
   border-bottom: 1px solid fade(@black, 13);
   overflow: hidden;
-  transition: 100ms;
-  transition-timing-function: @prolog_open_timing;
   &.logo-visible {
     .promo {
       top: (((@tile - @purpose_line) / 2) * -1);
@@ -108,20 +108,15 @@
     }
   }
   &.bkg-visible {
+    .vertGradient(@white, @white);
+    background-size: 100% 100%;
     &:not(.bkg-invisible) {
-      background: @white;
-      border-color: transparent;
       box-shadow: 1px 2px fade(@black, 08);
-      .logo-circleci {
-        svg {
-          fill: @grayDark;
-        }
-      }
+      border-color: @white;
     }
-    &.bkg-invisible {
-      background: @blueDarkest;
-      transition: background 100ms;
-    }
+  }
+  &.bkg-invisible {
+    background-position: top center;
   }
   a {
     position: absolute;
@@ -151,7 +146,7 @@
     height: @home_nav_logo;
     opacity: 0;
     svg {
-      fill: @white;
+      fill: @grayLighter;
     }
   }
   .action {
