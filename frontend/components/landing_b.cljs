@@ -26,6 +26,7 @@
         nav-bkg (om/get-node owner "nav-bkg")
         no-cta (om/get-node owner "no-cta")
         nav-no-bkg (om/get-node owner "nav-no-bkg")
+        first-fig (om/get-node owner "first-fig")
         vh (.-height (goog.style/getSize nav-bkg))
         scroll-callback #(do
                            (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
@@ -33,6 +34,7 @@
                            (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) 70))
                            (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
                            (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70))
+                           (om/set-state! owner [:first-fig-visible] (< (.-top (.getBoundingClientRect first-fig)) vh))
                            (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
                                                                             (js/Math.abs (- 70 (.-bottom (.getBoundingClientRect nav-bkg)))))))]
     (om/set-state! owner [:browser-resize-key]
@@ -51,6 +53,7 @@
        :header-bkg-visible false
        :header-cta-invisible false
        :header-bkg-invisible false
+       :first-fig-visible false
        :scroll-ch (chan (sliding-buffer 1))})
     om/IRenderState
     (render-state [_ state]
@@ -97,13 +100,13 @@
                   "Learn more"
                   (common/ico :chevron-down)]]]
                [:section.home-purpose
-                [:div.home-drawings
+                [:div.home-drawings {:class (when (:first-fig-visible state) ["fig-visible"])}
                  [:div.drawing]
                  [:div.drawing]
                  (om/build drawings/drawing-dashboard app)]
                 [:div.home-articles
                  [:article
-                  [:h1
+                  [:h1 {:ref "first-fig"}
                    "Launches are dead,"
                    [:br]
                    " long live iteration."]
