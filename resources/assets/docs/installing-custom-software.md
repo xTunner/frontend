@@ -14,7 +14,7 @@ For example, to install smalltalk, add this to your `circle.yml`:
 ```
 dependencies:
   pre:
-    - sudo apt-get install gnu-smalltalk
+    - sudo apt-get update; sudo apt-get install gnu-smalltalk
 ```
 
 If you need to use a specific version of Redis that isn't provided by
