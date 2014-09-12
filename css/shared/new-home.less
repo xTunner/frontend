@@ -69,16 +69,18 @@
   .animation(prolog-down @prolog_open_duration @prolog_open_timing @prolog_open_duration both);
   .box-sizing(border-box);
   position: fixed;
-  z-index: (@zindex_prolog_above + 1);
+  z-index: @zindex_prolog_above; // ducks under prolog content intentionally
   left: 0;
   top: 0;
   height: @tile;
-  // width: ~"calc(100% - 15px)"; // 15px = scrollbar width
-  width: 100vw;
-  background: fade(@grayDark, 0);
+  width: ~"calc(100% - 15px)"; // 15px = scrollbar width
+  // width: 100vw;
+  // background: fade(@grayDark, 0);
+  background: fade(@white, 0);
   border-bottom: 1px solid fade(@black, 13);
   overflow: hidden;
-  transition: @prolog_cover_fadeout;
+  transition: 100ms;
+  transition-timing-function: @prolog_open_timing;
   &.logo-visible {
     .promo {
       top: (((@tile - @purpose_line) / 2) * -1);
@@ -92,19 +94,34 @@
     }
   }
   &.cta-visible {
-    .login {
-      top: (((@tile - @purpose_line) / 2) * -1);
-      opacity: 0;
-    }
-    .action {
-      right: ((@tile - @baseLineHeight) / 2);
-      opacity: 1;
-      transition: right @prolog_cover_fadein,
-                  opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
+    &:not(.cta-invisible) {
+      .login {
+        top: (((@tile - @purpose_line) / 2) * -1);
+        opacity: 0;
+      }
+      .action {
+        right: ((@tile - @baseLineHeight) / 2);
+        opacity: 1;
+        transition: right @prolog_cover_fadein,
+                    opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
+      }
     }
   }
   &.bkg-visible {
-    background: fade(@grayDark, 66);
+    &:not(.bkg-invisible) {
+      background: @white;
+      border-color: transparent;
+      box-shadow: 1px 2px fade(@black, 08);
+      .logo-circleci {
+        svg {
+          fill: @grayDark;
+        }
+      }
+    }
+    &.bkg-invisible {
+      background: @blueDarkest;
+      transition: background 100ms;
+    }
   }
   a {
     position: absolute;
@@ -147,6 +164,7 @@
     font-size: round(@em * .89);
     color: @grayDark;
     background: @white;
+    border: 1px solid @grayBoxBorder;
     border-radius: (@home_action_height / 2);
     opacity: 0;
   }
@@ -323,7 +341,7 @@
     }
   }
   .proverb {
-    .animation(prolog-up @prolog_open_duration @prolog_open_timing (@prolog_open_delay * 1) both);
+    .animation(prolog-up @prolog_open_duration @prolog_open_timing (@prolog_open_delay * 1));
     height: @prolog_h1_font;
     margin: 0 0 ((@tile * 2) - (@prolog_h1_line + (@prolog_h3_line * 2)));
     &:before {
@@ -352,7 +370,7 @@
   .flexy(center, center);
   .order(5);
   position: relative;
-  z-index: @zindex_prolog_above;
+  z-index: @zindex_prolog_cover; // should still be above cover, just shares same value
   height: @tile;
   margin-top: auto;
   // order: 5;
@@ -705,7 +723,7 @@
 @home_color_last_cta: @blue;
 @home_margin_footer: (@tile / 2);
 .home-epilog {
-  background-image: linear-gradient(to bottom, @blueDarkest 0%, @blueDarker 100%);
+  background-image: linear-gradient(to bottom, @blueDarkest 34%, @blueDarker 100%);
   // background-attachment: fixed;
   .home-action {
     &:hover       {
