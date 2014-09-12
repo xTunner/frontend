@@ -24,10 +24,15 @@
   (let [logo (om/get-node owner "center-logo")
         cta (om/get-node owner "cta")
         nav-bkg (om/get-node owner "nav-bkg")
+        no-cta (om/get-node owner "no-cta")
+        nav-no-bkg (om/get-node owner "nav-no-bkg")
+        vh (.-height (goog.style/getSize nav-bkg))
         scroll-callback #(do
                            (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
                            (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta))))
-                           (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) 70)))]
+                           (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) 70))
+                           (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
+                           (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70)))]
     (om/set-state! owner [:browser-resize-key]
                    (goog.events/listen
                     (sel1 (om/get-shared owner [:target]) ".app-main")
@@ -42,6 +47,8 @@
       {:header-logo-visible false
        :header-cta-visible false
        :header-bkg-visible false
+       :header-cta-invisible false
+       :header-bkg-invisible false
        :scroll-ch (chan (sliding-buffer 1))})
     om/IRenderState
     (render-state [_ state]
@@ -51,7 +58,9 @@
                [:nav.home-nav {:class (concat
                                        (when (:header-logo-visible state) ["logo-visible"])
                                        (when (:header-cta-visible state) ["cta-visible"])
-                                       (when (:header-bkg-visible state) ["bkg-visible"]))}
+                                       (when (:header-bkg-visible state) ["bkg-visible"])
+                                       (when (:header-cta-invisible state) ["cta-invisible"])
+                                       (when (:header-bkg-invisible state) ["bkg-invisible"]))}
                 [:a.promo "What is Continuous Integration?"]
                 [:a.login "Log In"]
                 (om/build drawings/logo-circleci app)
@@ -172,8 +181,9 @@
                  [:div.drawing]
                  [:div.drawing]
                  (om/build drawings/drawing-build app)]]
-               [:section.home-epilog
-                [:a.home-action {:role "button"}
+               [:section.home-epilog {:ref "nav-no-bkg"}
+                [:a.home-action {:ref "no-cta"
+                                 :role "button"}
                  "Sign Up Free"]
                 [:div.home-cover]
                 [:div.home-top-shelf]
