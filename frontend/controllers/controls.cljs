@@ -935,7 +935,7 @@
 
 
 
-(defmethod control-event :home-technology-tab-selected 
+(defmethod control-event :home-technology-tab-selected
   [target message {:keys [tab]} state]
   (assoc-in state state/selected-home-technology-tab-path tab))
 
@@ -1010,4 +1010,4 @@
     (.play (goog.fx.dom.Scroll. main
                          #js [(.-scrollLeft main) (.-scrollTop main)]
                          #js [(.-scrollLeft main) vh]
-                         200))))
+                         250))))
