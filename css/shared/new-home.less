@@ -387,6 +387,7 @@
   transition: color @prolog_cover_fadeout,
               background @prolog_cover_fadeout,
               border-color @prolog_cover_fadeout @prolog_cover_fadeout;
+  transition-timing-function: @bezier_fadein;
   &:hover {
 // Button
     color: @white;
@@ -695,7 +696,7 @@
   // background-attachment: fixed;
   .home-action {
     &:hover       {
-      background: @home_color_last_cta;
+      // background: @home_color_last_cta;
       ~ .home-slogans {
         a {
           opacity: 0;
