@@ -73,14 +73,13 @@
 .home-nav {
   .animation(prolog-down @prolog_open_duration @bezier_fadein @prolog_open_duration both);
   .box-sizing(border-box);
+  .vertGradient(fade(@white, 0), fade(@white, 0));
   position: fixed;
   z-index: @zindex_home_nav; // ducks under prolog content intentionally
   left: 0;
   top: 0;
+  width: 100%;
   height: @tile;
-  width: ~"calc(100% - 15px)"; // 15px = scrollbar width
-  // width: 100vw;
-  .vertGradient(fade(@white, 0), fade(@white, 0));
   background-size: 100% 0;
   background-position: bottom center;
   background-repeat: no-repeat;
