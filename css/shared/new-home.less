@@ -31,7 +31,7 @@
 @purpose_line: 24px;
 @purpose_line_margin: @purpose_line - @purpose_font;
 
-@purpose_drawings_width: 34%; // default 34%
+@purpose_drawings_width: 40%; // default 34%
 
 @zindex_home_cover: 10; // These should move to a less file in charge of managing z-indexes
 @zindex_home_nav:          (@zindex_home_cover + 2);
@@ -476,15 +476,25 @@
   box-shadow: 0 1px 3px fade(@black, 5) inset;
   overflow: hidden;
 //
-// Before visible
+// Purpose Animation
 //
+  article {
+    .translate(0, @tile);
+    opacity: 0;
+    transition: @home_drawings_speed;
+    transition-timing-function: @bezier_fadein;
+  }
   .home-drawings {
-    .translate(-10px, 10px);
+    .translate((-@home_drawing_offset * 2), (@home_drawing_offset * 2));
     opacity: 0;
     transition: 0;
     transition-timing-function: @bezier_fadein;
   }
-  .drawing {
+  .draw-new {
+    text {
+      transition: (@home_drawings_speed / 2) (@home_drawings_speed / 2);
+      transition-timing-function: @bezier_fadein;
+    }
     g,
     rect,
     path,
@@ -492,35 +502,27 @@
       .transform-origin(center);
     }
   }
-  .draw-new {
-    text {
-      stroke: transparent;
-      transition: (@home_drawings_speed / 2) (@home_drawings_speed / 2);
-      transition-timing-function: @bezier_fadein;
-    }
-  }
   .draw-status-background {
     rect,
     circle {
-      // .transform-origin(center);
       fill: @blueLight;
       transition: @home_drawings_speed;
       transition-timing-function: @home_drawings_bounce;
     }
-    .background-left {
-      transform: translate(25px, 0) scale(1, 1);
+    .background-left   {
+      .translate(25px, 0);
     }
     .background-center {
       transform: translate(0, 0) scale(0, 1);
     }
-    .background-right {
-      transform: translate(-25px, 0) scale(1, 1);
+    .background-right  {
+      .translate(-25px, 0);
     }
   }
   .draw-status-icon {
+    .translate(25px, 0);
     transition: @home_drawings_speed;
     transition-timing-function: @home_drawings_bounce;
-    transform: translate(25px, 0) scale(1, 1);
     .draw-status-turn {
       .rotate(0deg);
     }
@@ -544,31 +546,26 @@
       transition-timing-function: @home_drawings_bounce;
     }
   }
-//
-// When visible
-//
   &.visible {
     .home-drawings {
       .translate(0, 0);
       opacity: 1;
       transition: (@home_drawings_speed * 2) @home_drawings_speed;
     }
+    article {
+      .translate(0, 0);
+      opacity: 1;
+      transition: (@home_drawings_speed * 2) @home_drawings_speed;
+    }
   }
-//
-// Before animation
-//
   &:not(.animate) {
     .draw-status-turn {
       .animation(clockwise @home_drawings_speed infinite linear);
     }
   }
-//
-// When animated
-//
   &.animate {
     .draw-new {
       text {
-        stroke: @green;
         fill: @green;
         transition: (@home_drawings_speed * 2) @home_drawings_speed;
       }
@@ -578,19 +575,11 @@
       circle {
         fill: @green;
         transition-delay: (@home_drawings_speed / 2);
-      }
-      .background-left {
-        transform: translate(0, 0) scale(1, 1);
-      }
-      .background-center {
-        transform: translate(0, 0) scale(1, 1);
-      }
-      .background-right {
         transform: translate(0, 0) scale(1, 1);
       }
     }
     .draw-status-icon {
-      transform: translate(0, 0) scale(1, 1);
+      .translate(0, 0);
       transition-delay: ((@home_drawings_speed / 2) + @home_drawings_cascade);
       .draw-status-circle {
         .scale(0, 0);
@@ -658,6 +647,14 @@
   article {
     max-width: 1000px;
   }
+  p {
+    color: @gray;
+  }
+  a {
+    &:not(:hover) {
+      color: @grayDark;
+    }
+  }
   .shopify-link {
     .flexy();
     &:hover {
@@ -667,7 +664,7 @@
       }
     }
     svg {
-      stroke: @blue;
+      stroke: @grayDark;
       stroke-width: 8;
       margin-left: .5ex;
       transition: margin 100ms ease-in-out;
