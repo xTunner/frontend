@@ -121,16 +121,7 @@
                   [:p
                    [:a.shopify-link
                     "See how Shopify does it"
-                    (common/ico :slim-arrow-right)]]
-                  [:div.quote-card
-                   [:div.avatar]
-                   [:p "\"CircleCI has significantly improved our testing infrastructure. We add new projects rapidly and continuous integration happens from the get-go.\""]
-                   [:footer
-                    [:cite
-                     "John Collison"
-                     [:br]
-                     "Founder at Stripe"]
-                    [:div.brand]]]]]]
+                    (common/ico :slim-arrow-right)]]]]]
                [:section.home-practice
                 [:div.practice-tools
                  [:article
