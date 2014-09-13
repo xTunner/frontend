@@ -26,7 +26,8 @@
         nav-bkg (om/get-node owner "nav-bkg")
         no-cta (om/get-node owner "no-cta")
         nav-no-bkg (om/get-node owner "nav-no-bkg")
-        first-fig (om/get-node owner "first-fig")
+        first-fig-animate (om/get-node owner "first-fig-animate")
+        first-fig-visible (om/get-node owner "first-fig-visible")
         vh (.-height (goog.style/getSize nav-bkg))
         scroll-callback #(do
                            (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
@@ -34,7 +35,8 @@
                            (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) 70))
                            (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
                            (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70))
-                           (om/set-state! owner [:first-fig-visible] (< (.-top (.getBoundingClientRect first-fig)) vh))
+                           (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect first-fig-animate)) vh))
+                           (om/set-state! owner [:first-fig-visible] (< (.-top (.getBoundingClientRect first-fig-visible)) vh))
                            (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
                                                                             (js/Math.abs (- 70 (.-bottom (.getBoundingClientRect nav-bkg)))))))]
     (om/set-state! owner [:browser-resize-key]
@@ -53,6 +55,7 @@
        :header-bkg-visible false
        :header-cta-invisible false
        :header-bkg-invisible false
+       :first-fig-animate false
        :first-fig-visible false
        :scroll-ch (chan (sliding-buffer 1))})
     om/IRenderState
@@ -99,14 +102,17 @@
                  [:a {:on-click #(put! controls-ch [:home-scroll-one-clicked])}
                   "Learn more"
                   (common/ico :chevron-down)]]]
-               [:section.home-purpose
-                [:div.home-drawings {:class (when (:first-fig-visible state) ["fig-visible"])}
-                 [:div.drawing]
-                 [:div.drawing]
-                 (om/build drawings/drawing-dashboard app)]
+               [:section.home-purpose {:ref "first-fig-visible"}
+                [:div.home-drawings {:class (concat
+                                              (when (:first-fig-animate state) ["animate"])
+                                              (when (:first-fig-visible state) ["visible"]))}
+                 [:figure]
+                 [:figure]
+                 [:figure
+                  (om/build drawings/drawing-dashboard app)]]
                 [:div.home-articles
-                 [:article
-                  [:h1 {:ref "first-fig"}
+                 [:article {:ref "first-fig-animate"}
+                  [:h1
                    "Launches are dead,"
                    [:br]
                    " long live iteration."]
@@ -186,9 +192,10 @@
                      "Founder at Stripe"]
                     [:div.brand]]]]]
                 [:div.home-drawings
-                 [:div.drawing]
-                 [:div.drawing]
-                 (om/build drawings/drawing-build app)]]
+                 [:figure]
+                 [:figure]
+                 [:figure
+                  (om/build drawings/drawing-build app)]]]
                [:section.home-epilog {:ref "nav-no-bkg"}
                 [:a.home-action {:ref "no-cta"
                                  :role "button"}
