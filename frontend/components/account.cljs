@@ -40,7 +40,7 @@
              (fn [org]
                (let [org-url    (routes/v1-org-settings-subpage {:org     (:login org)
                                                                  :subpage "plan"})
-                     avatar-url (gh-utils/make-avatar-url (:avatar_url org) :size 25)]
+                     avatar-url (gh-utils/make-avatar-url org :size 25)]
                  [:div
                   [:a
                    {:href org-url}

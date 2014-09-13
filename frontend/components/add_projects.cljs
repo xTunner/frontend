@@ -32,7 +32,7 @@
         type (if (:org org) :org :user)]
     [:li.side-item {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
      [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
-      [:img {:src (gh-utils/make-avatar-url (:avatar_url org) :size 25)
+      [:img {:src (gh-utils/make-avatar-url org :size 25)
              :height 25}]
       [:div.orgname {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
        login]]]))
