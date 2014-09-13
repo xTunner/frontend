@@ -104,4 +104,28 @@
       }
     }
   }
+  .draw-status-background {
+    rect,
+    circle {
+      fill: @green;
+    }
+  }
+  .draw-status-icon {
+    path {
+      fill: @white;
+    }
+    .draw-status-turn {
+      circle {
+        fill: none;
+      }
+    }
+    .draw-status-check {
+      fill: fade(@white, 0);
+    }
+  }
+  .draw-status-text {
+    path {
+      fill: @white;
+    }
+  }
 }
