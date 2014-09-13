@@ -1,6 +1,7 @@
 (ns frontend.components.landing-b
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [dommy.core :as dommy]
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
@@ -13,12 +14,13 @@
             [frontend.utils.github :refer [auth-url]]
             [goog.events]
             [goog.dom]
+            [goog.style]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
   (:require-macros [frontend.utils :refer [defrender]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [sel1]]))
+                   [dommy.macros :refer [sel1 node]]))
 
 (defn mount-header-logo-scroll [owner]
   (let [logo (om/get-node owner "center-logo")
@@ -45,9 +47,20 @@
                     "scroll"
                     scroll-callback))))
 
+(defn calculate-scrollbar-width
+  "Inserts and removes an out-of-view element to let us calculate the width of the scrollbar"
+  [owner]
+  (let [el (node [:div {:style "width: 100px; height: 100px; overflow: scroll; position: fixed; top: -200px"}])]
+    (dommy/append! (om/get-node owner) el)
+    (om/set-state! owner [:scrollbar-width] (utils/inspect (- (.-offsetWidth el) (.-clientWidth el))))
+    (dommy/remove! el)))
+
 (defn home [app owner]
   (reify
-    om/IDidMount (did-mount [_] (mount-header-logo-scroll owner))
+    om/IDidMount
+    (did-mount [_]
+      (mount-header-logo-scroll owner)
+      (calculate-scrollbar-width owner))
     om/IInitState
     (init-state [_]
       {:header-logo-visible false
@@ -57,13 +70,16 @@
        :header-bkg-invisible false
        :first-fig-animate false
        :first-fig-visible false
+       :scrollbar-width 0
        :scroll-ch (chan (sliding-buffer 1))})
     om/IRenderState
     (render-state [_ state]
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div.home.page
-               [:nav.home-nav {:style (merge {}
+               [:nav.home-nav {:style (merge {:width (if (< 0 (:scrollbar-width state))
+                                                       (str "calc(100% - " (:scrollbar-width state) "px)")
+                                                       "100%")}
                                              (when (> 70 (:header-bkg-scroller state))
                                                {:background-size (str "100% " (:header-bkg-scroller state) "px")}))
                                :class (concat
