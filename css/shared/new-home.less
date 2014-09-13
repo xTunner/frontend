@@ -478,18 +478,6 @@
 //
 // Purpose Animation
 //
-  article {
-    .translate(0, @tile);
-    opacity: 0;
-    transition: @home_drawings_speed;
-    transition-timing-function: @bezier_fadein;
-  }
-  .home-drawings {
-    .translate((-@home_drawing_offset * 2), (@home_drawing_offset * 2));
-    opacity: 0;
-    transition: 0;
-    transition-timing-function: @bezier_fadein;
-  }
   .draw-new {
     text {
       transition: (@home_drawings_speed / 2) (@home_drawings_speed / 2);
@@ -502,10 +490,13 @@
       .transform-origin(center);
     }
   }
+  .draw-filler {
+    fill: @grayBoxBorder;
+  }
   .draw-status-background {
     rect,
     circle {
-      fill: @blueLight;
+      fill: @grayBoxBorder;
       transition: @home_drawings_speed;
       transition-timing-function: @home_drawings_bounce;
     }
@@ -521,6 +512,7 @@
   }
   .draw-status-icon {
     .translate(25px, 0);
+    opacity: 0;
     transition: @home_drawings_speed;
     transition-timing-function: @home_drawings_bounce;
     .draw-status-turn {
@@ -546,23 +538,6 @@
       transition-timing-function: @home_drawings_bounce;
     }
   }
-  &.visible {
-    .home-drawings {
-      .translate(0, 0);
-      opacity: 1;
-      transition: (@home_drawings_speed * 2) @home_drawings_speed;
-    }
-    article {
-      .translate(0, 0);
-      opacity: 1;
-      transition: (@home_drawings_speed * 2) @home_drawings_speed;
-    }
-  }
-  &:not(.animate) {
-    .draw-status-turn {
-      .animation(clockwise @home_drawings_speed infinite linear);
-    }
-  }
   &.animate {
     .draw-new {
       text {
@@ -581,6 +556,7 @@
     .draw-status-icon {
       .translate(0, 0);
       transition-delay: ((@home_drawings_speed / 2) + @home_drawings_cascade);
+      opacity: 1;
       .draw-status-circle {
         .scale(0, 0);
         transition-delay: @home_drawings_speed;
