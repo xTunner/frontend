@@ -288,6 +288,9 @@
                 [:text {:transform "matrix(1 0 0 1 896.2832 430.3062)"} "TEMP: some debugging action-log output"]
                 [:text {:transform "matrix(1 0 0 1 1337.8501 430.3062)"} "21:54"]]
                [:g.draw-tr.draw-new
+                [:circle.draw-filler {:cx "1574.5" :cy "475" :r "12.5"}]
+                [:circle.draw-filler {:cx "1524.5" :cy "475" :r "12.5"}]
+                [:rect.draw-filler {:x "1524.5" :y "462.5" :width "50" :height "25"}]
                 [:g.draw-status
                  [:g.draw-status-background
                   [:circle.background-left  {:cx "1524.5" :cy "475" :r "12.5"}]

@@ -36,7 +36,7 @@
                            (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
                            (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70))
                            (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect first-fig-animate)) vh))
-                           (om/set-state! owner [:first-fig-visible] (< (.-top (.getBoundingClientRect first-fig-visible)) vh))
+                           (om/set-state! owner [:first-fig-visible] (< (.-top (.getBoundingClientRect first-fig-visible)) vh)) ; not using this anymore -dk
                            (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
                                                                             (js/Math.abs (- 70 (.-bottom (.getBoundingClientRect nav-bkg)))))))]
     (om/set-state! owner [:browser-resize-key]
