@@ -475,127 +475,123 @@
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
   overflow: hidden;
-
-
-
-
-
+//
+// Before visible
+//
   .home-drawings {
-
-
     .translate(-10px, 10px);
     opacity: 0;
     transition: 0;
     transition-timing-function: @bezier_fadein;
-
-
-
-    .draw-new {
-      text {
-        stroke: transparent;
-        transition: (@home_drawings_speed / 2) (@home_drawings_speed / 2);
-        transition-timing-function: @bezier_fadein;
-      }
-    }
-    .draw-status-background {
-      rect,
-      circle {
-        .transform-origin(center);
-        fill: @blueLight;
-        transition: @home_drawings_speed;
-        transition-timing-function: cubic-bezier(.55,-0.55,.55,1.55);
-      }
-      .background-left {
-        transform: translate(25px, 0) scale(1, 1);
-      }
-      .background-center {
-        transform: translate(0, 0) scale(0, 1);
-      }
-      .background-right {
-        transform: translate(-25px, 0) scale(1, 1);
-      }
-    }
-    .draw-status-icon {
+  }
+  .drawing {
+    g,
+    rect,
+    path,
+    circle {
       .transform-origin(center);
+    }
+  }
+  .draw-new {
+    text {
+      stroke: transparent;
+      transition: (@home_drawings_speed / 2) (@home_drawings_speed / 2);
+      transition-timing-function: @bezier_fadein;
+    }
+  }
+  .draw-status-background {
+    rect,
+    circle {
+      // .transform-origin(center);
+      fill: @blueLight;
       transition: @home_drawings_speed;
-      transition-timing-function: cubic-bezier(.55,-0.55,.55,1.55);
+      transition-timing-function: @home_drawings_bounce;
+    }
+    .background-left {
       transform: translate(25px, 0) scale(1, 1);
     }
+    .background-center {
+      transform: translate(0, 0) scale(0, 1);
+    }
+    .background-right {
+      transform: translate(-25px, 0) scale(1, 1);
+    }
+  }
+  .draw-status-icon {
+    transition: @home_drawings_speed;
+    transition-timing-function: @home_drawings_bounce;
+    transform: translate(25px, 0) scale(1, 1);
     .draw-status-turn {
-      .transform-origin(center);
       .rotate(0deg);
     }
     .draw-status-circle {
-      .transform-origin(center);
       .scale(1, 1);
       transition: @home_drawings_speed;
       transition-timing-function: @home_drawings_bounce;
     }
     .draw-status-check {
-      .transform-origin(center);
       .scale(0, 0);
       transition: @home_drawings_speed;
       transition-timing-function: @home_drawings_bounce;
       fill: @white;
     }
-    .draw-status-text {
-      path {
-        .transform-origin(center);
-        .scale(0, 0);
-        opacity: 0;
-        transition: @home_drawings_speed;
-        transition-timing-function: @home_drawings_bounce;
-      }
+  }
+  .draw-status-text {
+    path {
+      .scale(0, 0);
+      opacity: 0;
+      transition: @home_drawings_speed;
+      transition-timing-function: @home_drawings_bounce;
     }
-
-
-
-
-
-
-    &.visible {
+  }
+//
+// When visible
+//
+  &.visible {
+    .home-drawings {
       .translate(0, 0);
       opacity: 1;
       transition: (@home_drawings_speed * 2) @home_drawings_speed;
     }
-
-
-
-
-
-    &:not(.animate) {
-      .draw-status-turn {
-        .animation(clockwise @home_drawings_speed infinite linear);
+  }
+//
+// Before animation
+//
+  &:not(.animate) {
+    .draw-status-turn {
+      .animation(clockwise @home_drawings_speed infinite linear);
+    }
+  }
+//
+// When animated
+//
+  &.animate {
+    .draw-new {
+      text {
+        stroke: @green;
+        fill: @green;
+        transition: (@home_drawings_speed * 2) @home_drawings_speed;
       }
     }
-    &.animate{
-      .draw-new {
-        text {
-          stroke: @green;
-          fill: @green;
-          transition: (@home_drawings_speed * 2) @home_drawings_speed;
-        }
+    .draw-status-background {
+      rect,
+      circle {
+        fill: @green;
+        transition-delay: (@home_drawings_speed / 2);
       }
-      .draw-status-background {
-        rect,
-        circle {
-          fill: @green;
-          transition-delay: (@home_drawings_speed / 2);
-        }
-        .background-left {
-          transform: translate(0, 0) scale(1, 1);
-        }
-        .background-center {
-          transform: translate(0, 0) scale(1, 1);
-        }
-        .background-right {
-          transform: translate(0, 0) scale(1, 1);
-        }
-      }
-      .draw-status-icon {
+      .background-left {
         transform: translate(0, 0) scale(1, 1);
-        transition-delay: ((@home_drawings_speed / 2) + @home_drawings_cascade);
       }
+      .background-center {
+        transform: translate(0, 0) scale(1, 1);
+      }
+      .background-right {
+        transform: translate(0, 0) scale(1, 1);
+      }
+    }
+    .draw-status-icon {
+      transform: translate(0, 0) scale(1, 1);
+      transition-delay: ((@home_drawings_speed / 2) + @home_drawings_cascade);
       .draw-status-circle {
         .scale(0, 0);
         transition-delay: @home_drawings_speed;
@@ -604,26 +600,20 @@
         .scale(1, 1);
         transition-delay: (@home_drawings_speed + @home_drawings_cascade);
       }
-      .draw-status-text {
-        path {
-          .scale(1, 1);
-          opacity: 1;
-          &:nth-child(6) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 1)); }
-          &:nth-child(5) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 2)); }
-          &:nth-child(4) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 3)); }
-          &:nth-child(3) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 4)); }
-          &:nth-child(2) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 5)); }
-          &:nth-child(1) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 6)); }
-        }
+    }
+    .draw-status-text {
+      path {
+        .scale(1, 1);
+        opacity: 1;
+        &:nth-child(6) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 1)); }
+        &:nth-child(5) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 2)); }
+        &:nth-child(4) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 3)); }
+        &:nth-child(3) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 4)); }
+        &:nth-child(2) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 5)); }
+        &:nth-child(1) { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 6)); }
       }
     }
   }
-
-
-
-
-
-
 }
 .home-drawings {
   .flex(0, 0, @purpose_drawings_width);
