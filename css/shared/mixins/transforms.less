@@ -27,3 +27,9 @@
   -webkit-transform-origin: @arguments;
           transform-origin: @arguments;
 }
+.transform(...) {
+    .for(@arguments); .-each(@argument) {
+        -webkit-transform+_: @argument;
+                transform+_: @argument;
+    }
+}
