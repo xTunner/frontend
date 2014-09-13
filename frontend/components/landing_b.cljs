@@ -102,10 +102,11 @@
                  [:a {:on-click #(put! controls-ch [:home-scroll-one-clicked])}
                   "Learn more"
                   (common/ico :chevron-down)]]]
-               [:section.home-purpose {:ref "first-fig-visible"}
-                [:div.home-drawings {:class (concat
-                                              (when (:first-fig-animate state) ["animate"])
-                                              (when (:first-fig-visible state) ["visible"]))}
+               [:section.home-purpose {:ref "first-fig-visible"
+                                       :class (concat
+                                                (when (:first-fig-animate state) ["animate"])
+                                                (when (:first-fig-visible state) ["visible"]))}
+                [:div.home-drawings
                  [:figure]
                  [:figure]
                  [:figure
