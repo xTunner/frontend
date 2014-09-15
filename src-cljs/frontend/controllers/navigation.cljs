@@ -400,7 +400,8 @@
   (go (let [comms (get-in current-state [:comms])
             api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
         (if (= :success (:status api-result))
-          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))}])
+          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))
+                                                       :context {:show-id (:id args)}}])
               ;; might need to scroll to the fragment
               (utils/rAF #(scroll! args)))
           (put! (:errors comms) [:api-error api-result])))))

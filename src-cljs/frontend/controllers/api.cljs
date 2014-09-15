@@ -540,7 +540,7 @@
 
 (defmethod api-event [:changelog :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state state/changelog-path resp))
+  (assoc-in state state/changelog-path {:entries resp :show-id (:show-id context)}))
 
 (defmethod api-event [:build-state :success]
   [target message status {:keys [resp]} state]
