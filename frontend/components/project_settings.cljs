@@ -495,24 +495,36 @@
           [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
                                      :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
 
-(defn chatroom-item [settings controls-ch {:keys [service icon doc inputs show-fixed-failed?
-                                                  top-section-content]}]
-  [:div.chat-room-item
-   [:div.chat-room-head [:h4 {:class icon} service]]
-   [:div.chat-room-body
-    [:section
-     doc
-     top-section-content]
-    [:section
-     (for [{:keys [field placeholder]} inputs]
-       (list
-        [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
-                 :value (str (get settings field))
-                 :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
-        [:label {:placeholder placeholder}]))]]
-   [:div.chat-room-foot
-    (when show-fixed-failed?
-      (om/build fixed-failed-input {:settings settings :field (keyword (str (string/lower-case service) "_notify_prefs"))}))]])
+(defn chatroom-item [project-id settings controls-ch
+                     {:keys [service doc inputs show-fixed-failed? top-section-content settings-keys]}]
+  (let [service-id (string/lower-case service)]
+    [:div {:class (str "chat-room-item " service-id)}
+     [:div.chat-room-head [:h4 {:class (str "chat-i-" service-id)} service]]
+     [:div.chat-room-body
+      [:section
+       doc
+       top-section-content
+       (when show-fixed-failed?
+         (om/build fixed-failed-input {:settings settings :field (keyword (str service-id "_notify_prefs"))}))]
+      [:section
+       (for [{:keys [field placeholder]} inputs]
+         (list
+          [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
+                   :value (str (get settings field))
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
+          [:label {:placeholder placeholder}]))
+       (let [event-data {:project-id project-id :merge-paths (map vector settings-keys)}]
+         [:div.chat-room-buttons
+          (forms/managed-button
+            [:button.save {:on-click #(put! controls-ch [:saved-project-settings event-data])
+                           :data-loading-text "Saving"
+                           :data-success-text "Saved"}
+             "Save"])
+          (forms/managed-button
+            [:button.test {:on-click #(put! controls-ch [:test-hook (assoc event-data :service service-id)])
+                           :data-loading-text "Testing"
+                           :data-success-text "Tested"}
+             "& Test Hook"])])]]]))
 
 (defn chatrooms [project-data owner]
   (reify
@@ -528,7 +540,6 @@
           [:h2 "Chatroom setup for " (vcs-url/project-name (:vcs_url project))]
           [:div.chat-rooms
            (for [chat-spec [{:service "Hipchat"
-                             :icon "chat-i-hip"
                              :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                          [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
                                         [:label ;; hipchat is a special flower
@@ -542,60 +553,50 @@
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hipchat-keys}
 
                             {:service "Campfire"
-                             :icon "chat-i-camp"
                              :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
                              :inputs [{:field :campfire_room :placeholder "Room"}
                                       {:field :campfire_subdomain :placeholder "Subdomain"}
                                       {:field :campfire_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/campfire-keys}
 
                             {:service "Flowdock"
-                             :icon "chat-i-flow"
                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
-                             :show-fixed-failed? false}
+                             :show-fixed-failed? false
+                             :settings-keys project-model/flowdock-keys}
 
                             {:service "IRC"
-                             :icon "chat-i-irc"
                              :doc nil
                              :inputs [{:field :irc_server :placeholder "Hostname"}
                                       {:field :irc_channel :placeholder "Channel"}
                                       {:field :irc_keyword :placeholder "Private Keyword"}
                                       {:field :irc_username :placeholder "Username"}
                                       {:field :irc_password :placeholder "Password (optional)"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/irc-keys}
 
                             {:service "Slack"
-                             :icon "chat-i-slack"
                              :doc [:p "To get your Webhook URL, visit Slack's "
                                    [:a {:href "https://my.slack.com/services/new/circleci"}
                                     "CircleCI Integration"]
                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/slack-keys}
 
                             {:service "Hall"
-                             :icon "chat-i-hall"
                              :doc [:p "To get your Room / Group API token, go to "
                                    [:strong "Settings > Integrations > CircleCI"]
                                    " from within your Hall Group."]
                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}]]
-             (chatroom-item settings controls-ch chat-spec))]
-          [:div.chat-room-save
-           (forms/managed-button
-            [:input
-             {:data-success-text "Saved",
-              :data-loading-text "Saving",
-              :value "Save notification hooks",
-              :type "submit",
-              :on-click #(do
-                          (let [event-data {:project-id project-id
-                                            :merge-paths (map vector project-model/notification-keys)}]
-                            (put! controls-ch [:saved-project-settings event-data])))}])]])))))
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hall-keys}]]
+             (chatroom-item project-id settings controls-ch chat-spec))]])))))
 
 (defn webhooks [project-data owner]
   (om/component
