@@ -787,6 +787,57 @@
     margin-left: 0;
     margin-right: auto;
   }
+  .draw-menu {
+    polyline {
+      .transform-origin(center);
+      .scale(.5, .5);
+      opacity: 0;
+      transition+: transform @home_drawings_speed @home_drawings_bounce;
+      transition+: -webkit-transform @home_drawings_speed @home_drawings_bounce;
+      transition+: opacity (@home_drawings_speed / 2) @bezier_fadein;
+    }
+  }
+  .draw-output {
+    text {
+      opacity: 0;
+      transition+: transform @home_drawings_speed @home_drawings_bounce;
+      transition+: -webkit-transform @home_drawings_speed @home_drawings_bounce;
+      transition+: opacity (@home_drawings_speed / 2) @bezier_fadein;
+    }
+  }
+  &.animate {
+    .draw-menu {
+      g {
+        &:nth-of-type(1) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 1))}}
+        &:nth-of-type(2) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 2))}}
+        &:nth-of-type(3) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 3))}}
+        &:nth-of-type(4) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 4))}}
+        &:nth-of-type(5) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 5))}}
+        &:nth-of-type(6) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 6))}}
+        &:nth-of-type(7) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 7))}}
+      }
+      polyline {
+        .scale(1, 1);
+        opacity: 1;
+      }
+    }
+    .draw-output {
+      text {
+        opacity: 1;
+        &:nth-of-type(1)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 1));}
+        &:nth-of-type(2)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 2));}
+        &:nth-of-type(3)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 3));}
+        &:nth-of-type(4)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 4));}
+        &:nth-of-type(5)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 5));}
+        &:nth-of-type(6)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 6));}
+        &:nth-of-type(7)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 7));}
+        &:nth-of-type(8)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 8));}
+        &:nth-of-type(9)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 9));}
+        &:nth-of-type(10) { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 10));}
+        &:nth-of-type(11) { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 11));}
+      }
+    }
+  }
 }
 .home-potential-bullets {
   .flexy();
