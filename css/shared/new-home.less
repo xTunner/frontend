@@ -31,7 +31,7 @@
 @purpose_line: 24px;
 @purpose_line_margin: @purpose_line - @purpose_font;
 
-@purpose_drawings_width: 40%; // default 34%
+@purpose_drawings_width: 34%; // default 34%
 
 @zindex_home_cover: 10; // These should move to a less file in charge of managing z-indexes
 @zindex_home_nav:          (@zindex_home_cover + 2);
@@ -324,7 +324,6 @@
     }
   }
   .proverb {
-    .animation(prolog-up @prolog_open_duration @bezier_fadein);
     height: @prolog_h1_font;
     margin: 0 0 ((@tile * 2) - (@prolog_h1_line + (@prolog_h3_line * 2)));
     &:before {
@@ -810,11 +809,10 @@
 @home_color_last_cta: @blue;
 @home_margin_footer: (@tile / 2);
 .home-epilog {
-  background-image: linear-gradient(to bottom, @blueDarkest 34%, @blueDarker 100%);
-  // background-attachment: fixed;
+  .vertGradient(@blueDarkest, @blueDarker);
+  background-attachment: fixed;
   .home-action {
-    &:hover       {
-      // background: @home_color_last_cta;
+    &:hover {
       ~ .home-slogans {
         a {
           opacity: 0;
