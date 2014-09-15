@@ -29,7 +29,7 @@
         no-cta (om/get-node owner "no-cta")
         nav-no-bkg (om/get-node owner "nav-no-bkg")
         first-fig-animate (om/get-node owner "first-fig-animate")
-        first-fig-visible (om/get-node owner "first-fig-visible")
+        second-fig-animate (om/get-node owner "second-fig-animate")
         vh (.-height (goog.style/getSize nav-bkg))
         scroll-callback #(do
                            (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
@@ -38,7 +38,7 @@
                            (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
                            (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70))
                            (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect first-fig-animate)) vh))
-                           (om/set-state! owner [:first-fig-visible] (< (.-top (.getBoundingClientRect first-fig-visible)) vh)) ; not using this anymore -dk
+                           (om/set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect second-fig-animate)) vh))
                            (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
                                                                             (js/Math.abs (- 70 (.-bottom (.getBoundingClientRect nav-bkg)))))))]
     (om/set-state! owner [:browser-resize-key]
@@ -69,7 +69,7 @@
        :header-cta-invisible false
        :header-bkg-invisible false
        :first-fig-animate false
-       :first-fig-visible false
+       :second-fig-animate false
        :scrollbar-width 0
        :scroll-ch (chan (sliding-buffer 1))})
     om/IRenderState
@@ -118,10 +118,7 @@
                  [:a {:on-click #(put! controls-ch [:home-scroll-one-clicked])}
                   "Learn more"
                   (common/ico :chevron-down)]]]
-               [:section.home-purpose {:ref "first-fig-visible"
-                                       :class (concat
-                                                (when (:first-fig-animate state) ["animate"])
-                                                (when (:first-fig-visible state) ["visible"]))}
+               [:section.home-purpose {:class (when (:first-fig-animate state) ["animate"])}
                 [:div.home-drawings
                  [:figure]
                  [:figure]
@@ -167,9 +164,9 @@
                    (om/build drawings/customer-logo-square app)
                    (om/build drawings/customer-logo-newrelic app)
                    (om/build drawings/customer-logo-spotify app)]]]]
-               [:section.home-potential
+               [:section.home-potential {:class (when (:second-fig-animate state) ["animate"])}
                 [:div.home-articles
-                 [:article
+                 [:article {:ref "second-fig-animate"}
                   [:h1
                    "Look under the hood &"
                    [:br]
