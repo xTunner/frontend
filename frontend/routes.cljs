@@ -167,6 +167,9 @@
   (defroute v1-integrations (FragmentRoute. "/integrations/docker") {:as params}
     (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
 
+  (defroute v1-changelog (FragmentRoute. "/changelog/:id") {:as params}
+    (open-to-outer! nav-ch :changelog params))
+
   (defroute v1-changelog (FragmentRoute. "/changelog") {:as params}
     (open-to-outer! nav-ch :changelog params))
 
