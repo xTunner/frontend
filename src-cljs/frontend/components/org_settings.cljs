@@ -104,9 +104,7 @@
                          "fail"
                          "success")}
 
-               [:img.gravatar {:src (gh-utils/gravatar-url {:size 45 :login login
-                                                            :github-id (:github_id user)
-                                                            :gravatar_id (:gravatar_id user)})}]
+               [:img.gravatar {:src (gh-utils/make-avatar-url user :size 45)}]
                [:div.om-org-user-projects-container
                 [:h4
                  (if (seq followed-projects)
@@ -148,8 +146,7 @@
            [:span.follower-container
             {:style {:display "inline-block"}}
             [:img.gravatar
-             {:src (gh-utils/gravatar-url {:size 30 :login (:login follower)
-                                           :gravatar_id (:gravatar_id follower)})}]
+             {:src (gh-utils/make-avatar-url follower :size 30)}]
             " "
             [:span (:login follower)]])]]))))
 
