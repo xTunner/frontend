@@ -562,6 +562,48 @@
                        :type "submit"}
                       "Change credit card"])]]]]]]))))))
 
+;; Render a friendly human-readable version of a Stripe discount coupon.
+;; Stripe has a convention for this that does not seem to be documented, so we
+;; reverse engineer it here.
+;; Examples from Stripe are:
+;;     100% off for 1 month
+;;     100% off for 6 months
+;;  $100.00 off for 6 months
+;;   $19.00 off for 12 months
+;;      25% off forever
+(defn format-discount
+  [plan]
+  (let [{ duration-in-months :duration_in_months
+          percent-off        :percent_off
+          amount-off         :amount_off
+          duration           :duration
+          id                 :id}  (get-in plan [:discount :coupon])
+        discount-amount (if percent-off
+                          (str percent-off "%")
+                          (gstring/format "$%.2f" (/ amount-off 100)))
+        discount-period (cond (= duration "forever") "forever"
+                              (= duration-in-months 1) "for 1 month"
+                              :else (gstring/format "for %d months" duration-in-months))]
+    [:p "Your plan includes " discount-amount " off " discount-period
+        " from coupon code " [:strong id]]))
+
+;; Show a 'Discount' section showing any Stripe discounts that are being appied
+;; the current plan.
+;; Important: If there are no discounts, we don't want to show anything;
+;; we do not want to tempt happy, paying customers to search online for discount
+;; codes.
+(defn- billing-discounts [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [plan (get-in app state/org-plan-path)]
+          [:div.row-fluid
+            (when (plan-model/has-active-discount? plan)
+              [:fieldset
+                [:legend.span8 "Discounts"]
+                [:div.span8 (format-discount plan)]])])))))
+
 (defn- billing-invoice-data [app owner]
   (reify
     om/IRender
@@ -728,6 +770,7 @@
         [:div.plans
           (om/build billing-card app)
           (om/build billing-invoice-data app)
+          (om/build billing-discounts app)
           (om/build billing-invoices app)]))))
 
 (defn cancel [app owner]
