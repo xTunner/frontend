@@ -158,12 +158,20 @@
                 [:div.practice-customers
                  [:article
                   [:h5 "Trusted by"]
-                  [:div.customers-logos
-                   (om/build drawings/customer-logo-shopify app)
-                   (om/build drawings/customer-logo-dropbox app)
-                   (om/build drawings/customer-logo-square app)
-                   (om/build drawings/customer-logo-newrelic app)
-                   (om/build drawings/customer-logo-spotify app)]]]]
+                  [:div.customers-brands
+                   [:a.customers-brand (om/build drawings/customer-logo-shopify app)]
+                   [:a.customers-brand (om/build drawings/customer-logo-dropbox app)]
+                   [:a.customers-brand (om/build drawings/customer-logo-square app)]
+                   [:a.customers-brand (om/build drawings/customer-logo-newrelic app)]
+                   [:a.customers-brand (om/build drawings/customer-logo-spotify app)]]
+                  [:div.quote-card
+                   [:p "\"CircleCI has significantly improved our testing infrastructure. We add new projects rapidly and continuous integration happens from the get-go.\""]
+                   [:footer
+                    [:div.avatar]
+                    [:cite
+                     "John Collison"
+                     [:br]
+                     "Founder at Stripe"]]]]]]
                [:section.home-potential {:class (when (:second-fig-animate state) ["animate"])}
                 [:div.home-articles
                  [:article {:ref "second-fig-animate"}
@@ -186,16 +194,7 @@
                     [:li "Build artifacts"]
                     [:li "Clean build environments"]
                     [:li "GitHub Integration"]
-                    [:li "Open Source Support"]]]
-                  [:div.quote-card
-                   [:div.avatar]
-                   [:p "\"CircleCI has significantly improved our testing infrastructure. We add new projects rapidly and continuous integration happens from the get-go.\""]
-                   [:footer
-                    [:cite
-                     "John Collison"
-                     [:br]
-                     "Founder at Stripe"]
-                    [:div.brand]]]]]
+                    [:li "Open Source Support"]]]]]
                 [:div.home-drawings
                  [:figure]
                  [:figure]
