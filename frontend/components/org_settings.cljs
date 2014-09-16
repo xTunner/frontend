@@ -562,6 +562,55 @@
                        :type "submit"}
                       "Change credit card"])]]]]]]))))))
 
+;; TODO: Where is the best place for utility functions like this
+;; true if the plan has an active Stripe discount coupon.
+;; false if the plan is nil (not loaded yet) or has no discount applied
+(defn plan-has-active-discount?
+  [plan]
+  (get-in plan [:discount :coupon :valid]))
+
+;; TODO: Where is the best place for utility functions like this
+;; Render a friendly human-readable version of a Stripe discount coupon.
+;; Stripe has a concention for this that does not seem to be documented, so we
+;; reverse engineer it here.
+;; Examples from Stripe are:
+;;   100% off for 6 months
+;;   $100.00 off for 6 months
+;;   $19.00 off for 12 months
+;;   25% off forever
+;;   100% off for 1 month
+(defn format-discount
+  [plan]
+  (let [{ duration-in-months :duration_in_months
+          percent-off        :percent_off
+          amount-off         :amount_off
+          duration           :duration
+          id                 :id}  (get-in plan [:discount :coupon])
+        discount-amount (if percent-off
+                          (str percent-off "%")
+                          (gstring/format "$%.2f" amount-off))
+        discount-period (cond (= duration "forever") "forever"
+                              (= duration-in-months 1) "for 1 month"
+                              :else (gstring/format "for %d months" duration-in-months))]
+    [:p "Your plan includes " discount-amount " off " discount-period
+        " (coupon code '" [:strong id] "')"]))
+
+;; Show a 'Discount' section showing the any Stripe discounts that are being
+;; appied the current plan.
+;; Important: If there are no discounts, we don't want to show anything. We do
+;; not want to temp happy, paying customers to search for discount codes.
+(defn- billing-discounts [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [plan (get-in app state/org-plan-path)]
+          [:div.row-fluid
+            (when (plan-has-active-discount? plan)
+              [:fieldset
+                [:legend.span8 "Discounts"]
+                [:div.span8 (format-discount plan)]])])))))
+
 (defn- billing-invoice-data [app owner]
   (reify
     om/IRender
@@ -728,6 +777,7 @@
         [:div.plans
           (om/build billing-card app)
           (om/build billing-invoice-data app)
+          (om/build billing-discounts app)
           (om/build billing-invoices app)]))))
 
 (defn cancel [app owner]
