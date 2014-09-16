@@ -562,23 +562,15 @@
                        :type "submit"}
                       "Change credit card"])]]]]]]))))))
 
-;; TODO: Where is the best place for utility functions like this
-;; true if the plan has an active Stripe discount coupon.
-;; false if the plan is nil (not loaded yet) or has no discount applied
-(defn plan-has-active-discount?
-  [plan]
-  (get-in plan [:discount :coupon :valid]))
-
-;; TODO: Where is the best place for utility functions like this
 ;; Render a friendly human-readable version of a Stripe discount coupon.
-;; Stripe has a concention for this that does not seem to be documented, so we
+;; Stripe has a convention for this that does not seem to be documented, so we
 ;; reverse engineer it here.
 ;; Examples from Stripe are:
-;;   100% off for 6 months
-;;   $100.00 off for 6 months
+;;     100% off for 1 month
+;;     100% off for 6 months
+;;  $100.00 off for 6 months
 ;;   $19.00 off for 12 months
-;;   25% off forever
-;;   100% off for 1 month
+;;      25% off forever
 (defn format-discount
   [plan]
   (let [{ duration-in-months :duration_in_months
@@ -593,12 +585,13 @@
                               (= duration-in-months 1) "for 1 month"
                               :else (gstring/format "for %d months" duration-in-months))]
     [:p "Your plan includes " discount-amount " off " discount-period
-        " (coupon code '" [:strong id] "')"]))
+        " from coupon code " [:strong id]]))
 
-;; Show a 'Discount' section showing the any Stripe discounts that are being
-;; appied the current plan.
-;; Important: If there are no discounts, we don't want to show anything. We do
-;; not want to temp happy, paying customers to search for discount codes.
+;; Show a 'Discount' section showing any Stripe discounts that are being appied
+;; the current plan.
+;; Important: If there are no discounts, we don't want to show anything;
+;; we do not want to tempt happy, paying customers to search online for discount
+;; codes.
 (defn- billing-discounts [app owner]
   (reify
     om/IRender
@@ -606,7 +599,7 @@
       (html
         (let [plan (get-in app state/org-plan-path)]
           [:div.row-fluid
-            (when (plan-has-active-discount? plan)
+            (when (plan-model/has-active-discount? plan)
               [:fieldset
                 [:legend.span8 "Discounts"]
                 [:div.span8 (format-discount plan)]])])))))
