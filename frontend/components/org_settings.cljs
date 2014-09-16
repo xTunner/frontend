@@ -580,7 +580,7 @@
           id                 :id}  (get-in plan [:discount :coupon])
         discount-amount (if percent-off
                           (str percent-off "%")
-                          (gstring/format "$%.2f" amount-off))
+                          (gstring/format "$%.2f" (/ amount-off 100)))
         discount-period (cond (= duration "forever") "forever"
                               (= duration-in-months 1) "for 1 month"
                               :else (gstring/format "for %d months" duration-in-months))]
