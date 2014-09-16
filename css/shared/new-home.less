@@ -736,31 +736,61 @@
   article {
     .justify-content(flex-start);
   }
-  .customers-logos {
-    .flexy();
-    width: 100%;
+}
+.customers-brands {
+  .flexy();
+  width: 100%;
+  figure {
+    margin: 0;
   }
-  .customer-logo {
-    .flexy();
-    padding-right: (@practice_logo_height * @practice_tool_grow);
-    height: (@practice_logo_height * @practice_tool_grow);
-    &:hover {
-      svg {
-        -webkit-transform: scale(@practice_tool_grow, @practice_tool_grow);
-        -webkit-filter: drop-shadow(0 13px 3px fade(@black, 13));
-        transition: (@practice_tool_speed / 2) @practice_tool_timing;
-      }
-      .logo-shopify  { fill: #96bf48; }
-      .logo-dropbox  { fill: #007ee5; }
-      .logo-square   { fill: #000000; }
-      .logo-newrelic { fill: #338799; }
-      .logo-spotify  { fill: #81b71a; }
+}
+.customers-brand {
+  .flexy();
+  position: relative;
+  height: (@practice_logo_height * @practice_tool_grow);
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    height: 0;
+    width: 0;
+    border: solid transparent;
+    pointer-events: none;
+  }
+  &:before {
+    border-bottom-color: @grayBoxBorder;
+    border-width: (@em / 2);
+    margin-left: (-@em / 2);
+  }
+  &:after {
+    border-bottom-color: @white;
+    border-width: (@em / 2);
+    margin-left: (-@em / 2);
+    margin-top: 1px;
+  }
+  &:not(:first-child) {
+    &:not(:last-child) {
+      padding: 0 @em;
     }
+  }
+  &:hover {
     svg {
-      height: @practice_logo_height;
-      fill: @practice_subtle;
-      transition: @practice_tool_speed @practice_tool_timing;
+      -webkit-transform: scale(@practice_tool_grow, @practice_tool_grow);
+      -webkit-filter: drop-shadow(0 13px 3px fade(@black, 13));
+      transition: (@practice_tool_speed / 2) @practice_tool_timing;
     }
+    .logo-shopify  { fill: #96bf48; }
+    .logo-dropbox  { fill: #007ee5; }
+    .logo-square   { fill: #000000; }
+    .logo-newrelic { fill: #338799; }
+    .logo-spotify  { fill: #81b71a; }
+  }
+  svg {
+    height: @practice_logo_height;
+    fill: @practice_subtle;
+    transition: @practice_tool_speed @practice_tool_timing;
   }
 }
 
@@ -783,10 +813,10 @@
     &:nth-child(1) { left: (@home_drawing_offset * 2); }
     &:nth-child(2) { left: @home_drawing_offset; }
   }
-  .quote-card {
-    margin-left: 0;
-    margin-right: auto;
-  }
+  // .quote-card {
+  //   margin-left: 0;
+  //   margin-right: auto;
+  // }
   .draw-menu {
     polyline {
       .transform-origin(center);
@@ -982,20 +1012,26 @@
 .quote-card {
   .box-sizing(border-box);
   .flexy(flex-start, center, column);
-  position: relative;
+  // position: relative;
   color: @grayLight;
   width: (@tile * 8);
   height: (@tile * 2);
-  margin: @tile 0 (-@tile * 3) auto;
+  // margin: @tile 0 (-@tile * 3) auto;
+  margin-top: @em;
+  margin-left: 0;
   border: 1px solid @grayBoxBorder;
   border-radius: 5px;
+  &.position-1 { margin-left: (@tile * 1);}
+  &.position-2 { margin-left: (@tile * 2);}
+  &.position-3 { margin-left: (@tile * 3);}
+  &.position-4 { margin-left: (@tile * 4);}
   p {
     margin: (@em / 2) @em;
   }
   footer {
     .box-sizing(border-box);
     .flexy();
-    .justify-content(space-between);
+    .justify-content(flex-end);
     font-size: round(@em * .75);
     line-height: round(@purpose_line * .66);
     width: 100%;
@@ -1003,18 +1039,19 @@
   }
   .avatar {
     .box-sizing(border-box);
-    position: absolute;
-    left: (@quote_avatar_size / 2);
-    top: (-@quote_avatar_size / 2);
+    // position: absolute;
+    // left: (@quote_avatar_size / 2);
+    // top: (-@quote_avatar_size / 2);
     width: @quote_avatar_size;
     height: @quote_avatar_size;
+    margin-right: @em;
     border: 1px solid @grayBoxBorder;
     border-radius: (@quote_avatar_size / 2);
     background-image: url("http://placehold.it/35/fbfbfb");
   }
-  .brand {
-    width: @tile;
-    height: (@tile / 2);
-    background-image: url("http://placehold.it/70x35/fff");
-  }
+  // .brand {
+  //   width: @tile;
+  //   height: (@tile / 2);
+  //   background-image: url("http://placehold.it/70x35/fff");
+  // }
 }
