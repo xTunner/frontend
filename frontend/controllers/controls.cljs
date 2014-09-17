@@ -1011,3 +1011,7 @@
                          #js [(.-scrollLeft main) (.-scrollTop main)]
                          #js [(.-scrollLeft main) vh]
                          250))))
+
+(defmethod control-event :customer-logo-clicked
+  [target message {:keys [position]} state]
+  (assoc-in state state/customer-logo-position-path position))

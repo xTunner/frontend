@@ -193,3 +193,5 @@
 (def docs-articles-results-query-path [:docs-articles-results-query])
 
 (def user-options-shown-path [:user-options-shown])
+
+(def customer-logo-position-path [:customer-logo-position])

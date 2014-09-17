@@ -158,12 +158,17 @@
                 [:div.practice-customers
                  [:article
                   [:h5 "Trusted by"]
-                  [:div.customers-brands
-                   [:a.customers-brand (om/build drawings/customer-logo-shopify app)]
-                   [:a.customers-brand (om/build drawings/customer-logo-dropbox app)]
-                   [:a.customers-brand (om/build drawings/customer-logo-square app)]
-                   [:a.customers-brand (om/build drawings/customer-logo-newrelic app)]
-                   [:a.customers-brand (om/build drawings/customer-logo-spotify app)]]
+                  [:div.customers-brands {:class (str "selected-" (get-in app state/customer-logo-position-path 0))}
+                   [:a.customers-brand {:on-click #(put! controls-ch [:customer-logo-clicked {:position 0}])}
+                    (om/build drawings/customer-logo-shopify app)]
+                   [:a.customers-brand {:on-click #(put! controls-ch [:customer-logo-clicked {:position 1}])}
+                    (om/build drawings/customer-logo-dropbox app)]
+                   [:a.customers-brand {:on-click #(put! controls-ch [:customer-logo-clicked {:position 2}])}
+                    (om/build drawings/customer-logo-square app)]
+                   [:a.customers-brand {:on-click #(put! controls-ch [:customer-logo-clicked {:position 3}])}
+                    (om/build drawings/customer-logo-newrelic app)]
+                   [:a.customers-brand {:on-click #(put! controls-ch [:customer-logo-clicked {:position 4}])}
+                    (om/build drawings/customer-logo-spotify app)]]
                   [:div.quote-card
                    [:p "\"CircleCI has significantly improved our testing infrastructure. We add new projects rapidly and continuous integration happens from the get-go.\""]
                    [:footer
