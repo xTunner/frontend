@@ -746,35 +746,16 @@
   figure {
     margin: 0;
   }
-  &.selected-0 {
-    .customers-brand:nth-of-type(1) {
-      &:before, &:after { opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2); }
+  .loop_quotes(@counter) when (@counter > 0) {
+    .loop_quotes((@counter - 1));
+    @i: (@counter - 1);
+    &.selected-@{i} {
+      .customers-brand:nth-of-type(@{counter}) {&:before, &:after {opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2);}}
+      .margin(@counter) when (@counter > 1) {& + .quote-card { margin-left: (@tile * @i);}}
+      .margin(@counter);
     }
   }
-  &.selected-1 {
-    .customers-brand:nth-of-type(2) {
-      &:before, &:after { opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2); }
-    }
-    & + .quote-card { margin-left: (@tile * 1); }
-  }
-  &.selected-2 {
-    .customers-brand:nth-of-type(3) {
-      &:before, &:after { opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2); }
-    }
-    & + .quote-card { margin-left: (@tile * 2); }
-  }
-  &.selected-3 {
-    .customers-brand:nth-of-type(4) {
-      &:before, &:after { opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2); }
-    }
-    & + .quote-card { margin-left: (@tile * 3); }
-  }
-  &.selected-4 {
-    .customers-brand:nth-of-type(5) {
-      &:before, &:after { opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2); }
-    }
-    & + .quote-card { margin-left: (@tile * 4); }
-  }
+  .loop_quotes(5);
 }
 .customers-brand {
   .flexy();
