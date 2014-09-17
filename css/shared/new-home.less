@@ -756,9 +756,7 @@
     @i: (@counter - 1);
     &.selected-@{i} {
       .customers-brand:nth-of-type(@{counter}) {
-        svg {
-          fill: extract(@customers_brands_colors, @counter);
-        }
+        svg { fill: extract(@customers_brands_colors, @counter); }
         &:before, &:after {opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2);}
       }
       .margin(@counter) when (@counter > 1) {& + .quote-card { margin-left: (@tile * @i);}}
