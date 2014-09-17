@@ -43,6 +43,11 @@
 
 @em: @purpose_font;
 
+@customers_brands_titles: shopify, dropbox, square,  newrelic, spotify;
+@customers_brands_colors: #96bf48, #007ee5, #000000, #338799,  #81b71a;
+
+
+
 .page {
   &.home {
     font-size: @purpose_font;
@@ -750,7 +755,12 @@
     .loop_quotes((@counter - 1));
     @i: (@counter - 1);
     &.selected-@{i} {
-      .customers-brand:nth-of-type(@{counter}) {&:before, &:after {opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2);}}
+      .customers-brand:nth-of-type(@{counter}) {
+        svg {
+          fill: extract(@customers_brands_colors, @counter);
+        }
+        &:before, &:after {opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2);}
+      }
       .margin(@counter) when (@counter > 1) {& + .quote-card { margin-left: (@tile * @i);}}
       .margin(@counter);
     }
@@ -796,11 +806,11 @@
       -webkit-filter: drop-shadow(0 13px 3px fade(@black, 13));
       transition: (@practice_tool_speed / 2) @practice_tool_timing;
     }
-    .logo-shopify  { fill: #96bf48; }
-    .logo-dropbox  { fill: #007ee5; }
-    .logo-square   { fill: #000000; }
-    .logo-newrelic { fill: #338799; }
-    .logo-spotify  { fill: #81b71a; }
+    @p1: extract(@customers_brands_titles, 1); .logo-@{p1} { fill: extract(@customers_brands_colors, 1);}
+    @p2: extract(@customers_brands_titles, 2); .logo-@{p2} { fill: extract(@customers_brands_colors, 2);}
+    @p3: extract(@customers_brands_titles, 3); .logo-@{p3} { fill: extract(@customers_brands_colors, 3);}
+    @p4: extract(@customers_brands_titles, 4); .logo-@{p4} { fill: extract(@customers_brands_colors, 4);}
+    @p5: extract(@customers_brands_titles, 5); .logo-@{p5} { fill: extract(@customers_brands_colors, 5);}
   }
   svg {
     height: @practice_logo_height;
