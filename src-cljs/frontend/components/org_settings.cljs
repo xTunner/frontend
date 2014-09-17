@@ -695,7 +695,7 @@
             [:td (str (stripe-ts->date (:period_start invoice)))
                       " - "
                       (stripe-ts->date (:period_end invoice))]
-            [:td (str "$" (invoice-total invoice))]
+            [:td.numeric (gstring/format "$%.2f" (invoice-total invoice))]
             [:td
               [:span
                 (forms/managed-button
