@@ -876,6 +876,10 @@
     }
   }
   .draw-output {
+    rect {
+      opacity: 0;
+      transition: opacity @home_drawings_speed @bezier_fadein;
+    }
     text {
       opacity: 0;
       transition+: transform @home_drawings_speed @home_drawings_bounce;
@@ -900,6 +904,9 @@
       }
     }
     .draw-output {
+      rect {
+        opacity: 1;
+      }
       text {
         opacity: 1;
         &:nth-of-type(1)  { transition-delay: (@home_drawings_speed + (@home_drawings_cascade * 1));}
