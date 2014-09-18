@@ -89,12 +89,25 @@
                                        (when (:header-bkg-invisible state) ["bkg-invisible"])
                                        (when (:header-cta-invisible state) ["cta-invisible"]))}
                 [:a.promo "What is Continuous Integration?"]
-                [:a.login "Log In"]
+                [:a.login {:href (auth-url)
+                           :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                       :properties {:source "header-log-in"}
+                                                                                       :path (auth-url)}])}
+                 "Log In"]
                 (om/build drawings/logo-circleci app)
-                [:a.action "Sign Up Free"]]
+                [:a.action {:href (auth-url)
+                            :role "button"
+                            :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                        :properties {:source "header-cta"}
+                                                                                        :path (auth-url)}])}
+                 "Sign Up Free"]]
                [:section.home-prolog {:ref "nav-bkg"}
-                [:a.home-action {:role "button"
-                                 :ref "cta"}
+                [:a.home-action {:href (auth-url)
+                                 :role "button"
+                                 :ref "cta"
+                                 :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                             :properties {:source "prolog-cta"}
+                                                                                             :path (auth-url)}])}
                  "Sign Up Free"]
                 [:div.home-cover]
                 [:div.home-top-shelf]
@@ -206,8 +219,12 @@
                  [:figure
                   (om/build drawings/drawing-build app)]]]
                [:section.home-epilog {:ref "nav-no-bkg"}
-                [:a.home-action {:ref "no-cta"
-                                 :role "button"}
+                [:a.home-action {:href (auth-url)
+                                 :ref "no-cta"
+                                 :role "button"
+                                 :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                             :properties {:source "epilog-cta"}
+                                                                                             :path (auth-url)}])}
                  "Sign Up Free"]
                 [:div.home-cover]
                 [:div.home-top-shelf]

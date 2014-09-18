@@ -238,7 +238,7 @@
                 [:line {:x1 "350" :y1 "350" :x2 "1600" :y2 "350"}]
                 [:path {:d "M1574.5,337.5h-50c-6.9,0-12.5-5.6-12.5-12.5l0,0c0-6.9,5.6-12.5,12.5-12.5h50c6.9,0,12.5,5.6,12.5,12.5 l0,0C1587,331.9,1581.4,337.5,1574.5,337.5z"}]
                 [:text {:transform "matrix(1 0 0 1 400 330.3062)"} "100032"]
-                [:text {:transform "matrix(1 0 0 1 637.1372 330.3062)"} "Daniel Woelfel"]
+                [:text {:transform "matrix(1 0 0 1 637.1372 330.3062)"} "Gordon Syme"]
                 [:text {:transform "matrix(1 0 0 1 896.2832 330.3062)"} "Fight the good fight against auto-keywordisation"]
                 [:text {:transform "matrix(1 0 0 1 1337.8501 330.3062)"} "2:46"]]
                [:g.draw-tr
@@ -328,8 +328,8 @@
                 [:line {:x1 "350" :y1 "850" :x2 "1600" :y2 "850"}]
                 [:path {:d "M1574.5,837.5h-50c-6.9,0-12.5-5.6-12.5-12.5l0,0c0-6.9,5.6-12.5,12.5-12.5h50c6.9,0,12.5,5.6,12.5,12.5 l0,0C1587,831.9,1581.4,837.5,1574.5,837.5z"}]
                 [:text {:transform "matrix(1 0 0 1 400 830.3062)"} "99528"]
-                [:text {:transform "matrix(1 0 0 1 637.1372 830.3062)"} "Danny King"]
-                [:text {:transform "matrix(1 0 0 1 896.2832 830.3062)"} "fix safari bug, accordion not opening up"]
+                [:text {:transform "matrix(1 0 0 1 637.1372 830.3062)"} "David Lowe"]
+                [:text {:transform "matrix(1 0 0 1 896.2832 830.3062)"} "remove dubious branch linkifying"]
                 [:text {:transform "matrix(1 0 0 1 1337.8501 830.3062)"} "2:39"]]
                [:g.draw-tr
                 [:line {:x1 "350" :y1 "900" :x2 "1600" :y2 "900"}]
