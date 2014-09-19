@@ -215,11 +215,7 @@
                   [:p
                    [:a.shopify-link
                     "See how Shopify does it"
-                    (common/ico :slim-arrow-right)]]]]
-                [:div.home-bottom-shelf
-                 [:a {:on-click #(put! controls-ch [:home-scroll-one-clicked])}
-                  "Learn more"
-                  (common/ico :chevron-down)]]]
+                    (common/ico :slim-arrow-right)]]]]]
                [:section.home-practice
                 [:div.practice-tools
                  [:article
