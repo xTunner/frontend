@@ -661,6 +661,8 @@
 @practice_tool_timing: ease-in-out;
 @practice_tool_weight: 3;
 
+@practice_hover_shadow: drop-shadow(0 13px 3px fade(@black, 13));
+
 @practice_logo_height: @purpose_line;
 
 @quote_avatar_size: (@tile / 2);
@@ -695,11 +697,10 @@
     height: (@practice_tool_size * @practice_tool_grow);
     &:hover {
       svg {
+        .filter(@practice_hover_shadow);
         stroke-width: (@practice_tool_weight + 1);
         width: (@practice_tool_size * @practice_tool_grow);
         height: (@practice_tool_size * @practice_tool_grow);
-        -webkit-filter: drop-shadow(0 13px 3px fade(@black, 13));
-        filter: drop-shadow(0 13px 3px fade(@black, 13));
         transition: (@practice_tool_speed / 2) @practice_tool_timing;
       }
       .slim-ruby,
@@ -768,7 +769,6 @@
 .customers-brand {
   .flexy();
   position: relative;
-  height: (@practice_logo_height * @practice_tool_grow);
   &:before,
   &:after {
     content: "";
@@ -793,15 +793,13 @@
     margin-left: (-@em / 2);
     margin-top: 1px;
   }
-  &:not(:first-child) {
-    &:not(:last-child) {
-      padding: 0 @em;
-    }
+  &:not(:last-child) {
+    margin-right: @em;
   }
   &:hover {
     svg {
-      -webkit-transform: scale(@practice_tool_grow, @practice_tool_grow);
-      -webkit-filter: drop-shadow(0 13px 3px fade(@black, 13));
+      .scale(@practice_tool_grow, @practice_tool_grow);
+      .filter(@practice_hover_shadow);
       transition: (@practice_tool_speed / 2) @practice_tool_timing;
     }
     @p1: extract(@customers_brands_titles, 1); .logo-@{p1} { fill: extract(@customers_brands_colors, 1);}

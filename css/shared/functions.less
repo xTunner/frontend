@@ -288,6 +288,13 @@
   }
 }
 
+.filter(...) {
+    .for(@arguments); .-each(@argument) {
+        -webkit-filter+_: @argument;
+                filter+_: @argument;
+    }
+}
+
 @import "mixins/transforms.less";
 @import "mixins/skins.less";
 @import "mixins/buttons.less";
