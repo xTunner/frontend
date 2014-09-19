@@ -187,7 +187,7 @@
 }
 .home-prolog,
 .home-epilog {
-  .flexy(column);
+  .flexy(center, center, column);
   position: relative;
   height: 100vh;
 }
@@ -276,6 +276,8 @@
     position: absolute;
     top: (-@tile / 4);
     left: (-@tile / 4);
+    background: @white;
+    border-radius: (@tile / 2);
     opacity: 0;
     transition: (@prolog_cover_fadeout / 2);
     &:before,
@@ -305,6 +307,10 @@
   z-index: @zindex_home_slogans;
   text-align: center;
   margin: @tile 0;
+  h1,
+  h3 {
+    white-space: nowrap;
+  }
   h3 {
     margin: 0;
   }
@@ -387,7 +393,6 @@
   background: @white;
   width: @home_action_width;
   height: @home_action_height;
-  margin: 0 auto;
   border: 1px solid @white;
   border-radius: (@home_action_height / 2);
   transition: color @prolog_cover_fadeout,
@@ -998,6 +1003,7 @@
   .home-bottom-shelf {
     .box-sizing(border-box);
     .flex-direction(column);
+    width: 100%;
     height: auto;
     border-top: 1px solid fade(@black, 13);
     &:hover {
