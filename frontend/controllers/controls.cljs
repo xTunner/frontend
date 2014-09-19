@@ -1036,5 +1036,5 @@
                          250))))
 
 (defmethod control-event :customer-logo-clicked
-  [target message {:keys [position]} state]
-  (assoc-in state state/customer-logo-position-path position))
+  [target message {:keys [customer]} state]
+  (assoc-in state state/customer-logo-customer-path customer))

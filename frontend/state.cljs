@@ -194,4 +194,4 @@
 
 (def user-options-shown-path [:user-options-shown])
 
-(def customer-logo-position-path [:customer-logo-position])
+(def customer-logo-customer-path [:customer-logo-customer])
