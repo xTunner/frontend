@@ -23,13 +23,11 @@
 @prolog_h1_line: @prolog_h1_font;
 @prolog_h3_font: 20px;
 @prolog_h3_line: (@prolog_h3_font * 1.5); // 30px
+@prolog_h5_font: 16px;
+@prolog_h5_line: (@prolog_h5_font * 1.5); // 24px
 
 @prolog_cover_fadein: 500ms; // default 500ms
 @prolog_cover_fadeout: (@prolog_cover_fadein / 2);
-
-@purpose_font: 16px;
-@purpose_line: 24px;
-@purpose_line_margin: @purpose_line - @purpose_font;
 
 @purpose_drawings_width: 34%; // default 34%
 
@@ -41,7 +39,8 @@
 @zindex_home_bottom_shelf: (@zindex_home_cover + 2);
 @zindex_home_action:       (@zindex_home_cover + 2);
 
-@em: @purpose_font;
+@empx: 16px;
+@lipx: 24px;
 
 @tools_brands_titles: ruby,    rails,   python,  js,      java,    php,     django,  node;
 @tools_brands_colors: #CC342D, #CC342D, #3776ab, #FFCD0A, #E76F00, #6A9AD1, #092e20, #8CC84B;
@@ -53,8 +52,8 @@
 
 .page {
   &.home {
-    font-size: @purpose_font;
-    line-height: @purpose_line;
+    font-size: 1.1428572em; // 16px
+    line-height: 1.5em; // 24px
     h1 {
       font-size: @prolog_h1_font;
       line-height: @prolog_h1_line;
@@ -66,15 +65,15 @@
       font-weight: normal;
     }
     h5 {
-      font-size: @purpose_font;
-      line-height: @purpose_line;
+      font-size: @prolog_h5_font;
+      line-height: @prolog_h5_line;
       font-weight: normal;
-      margin: @purpose_line_margin 0;
+      margin: 1em 0;
     }
   }
 }
 
-@home_nav_logo: @purpose_line;
+@home_nav_logo: @lipx;
 @home_action_width: (@tile * 3);
 @home_action_height: @tile;
 
@@ -95,11 +94,11 @@
   overflow: hidden;
   &.logo-visible {
     .promo {
-      top: (((@tile - @purpose_line) / 2) * -1);
+      top: -100%;
       opacity: 0;
     }
     .logo-circleci {
-      left: ((@tile - @baseLineHeight) / 2);
+      left: 0;
       opacity: 1;
       pointer-events: auto;
       transition: left @prolog_cover_fadein,
@@ -109,11 +108,11 @@
   &.cta-visible {
     &:not(.cta-invisible) {
       .login {
-        top: (((@tile - @purpose_line) / 2) * -1);
+        top: -100%;
         opacity: 0;
       }
       .action {
-        right: ((@tile - @baseLineHeight) / 2);
+        right: 0;
         opacity: 1;
         pointer-events: auto;
         transition: right @prolog_cover_fadein,
@@ -133,8 +132,10 @@
     background-position: top center;
   }
   a {
+    .flexy(center);
     position: absolute;
-    top: ((@tile - @purpose_line) / 2);
+    top: 0;
+    height: 100%;
     transition: top @prolog_cover_fadeout,
                 left @prolog_cover_fadeout,
                 right @prolog_cover_fadeout,
@@ -148,36 +149,42 @@
     }
   }
   .promo {
-    left: ((@tile - @baseLineHeight) / 2);
+    left: 0;
+    padding: 0 1.5em;
   }
   .login {
-    right: ((@tile - @baseLineHeight) / 2);
+    right: 0;
+    padding: 0 1.5em;
   }
   .logo-circleci {
     left: @tile;
-    top: ((@tile - @home_nav_logo) / 2);
-    width: (@home_nav_logo * 4.5);
-    height: @home_nav_logo;
+    padding: 0 1.5em;
     opacity: 0;
     pointer-events: none;
+    figure {
+      margin: 0;
+      height: 1.5em;
+    }
     svg {
+      height: 100%;
       fill: @grayLighter;
     }
   }
   .action {
-    .box-sizing(border-box);
     .flexy(center, center);
     right: @tile;
-    top: ((@tile - (@home_action_height / 2)) / 2);
-    width: (@home_action_width / 2);
-    height: (@home_action_height / 2);
-    font-size: round(@em * .89);
+    top: ~"calc(50% - 1.5em)";
+    height: auto;
+    font-size: .875em;
     color: @black;
+    margin: 0 1.5em;
+    padding: .5em 1em;
     background: @white;
     border: 1px solid @gray;
     border-radius: (@home_action_height / 2);
     pointer-events: none;
     opacity: 0;
+    white-space: nowrap;
     &:hover {
       color: @white;
       background: @gray;
@@ -375,8 +382,8 @@
     .flexy();
   }
   .chevron-down {
-    width: round(@em * .89);
-    height: round(@em * .89);
+    width: .89em;
+    height: .89em;
     margin: 0 1ex;
   }
 }
@@ -482,8 +489,6 @@
 
 .home-purpose {
   .flexy();
-  font-size: @purpose_font;
-  line-height: @purpose_line;
   height: 100vh;
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
@@ -673,15 +678,13 @@
 
 @practice_hover_shadow: drop-shadow(0 13px 3px fade(@black, 13));
 
-@practice_logo_height: @purpose_line;
+@practice_logo_height: @lipx;
 
 @quote_avatar_size: (@tile / 2);
 @quote_animation_speed: 500ms;
 
 .home-practice {
   .flexy(column);
-  font-size: @purpose_font;
-  line-height: @purpose_line;
   height: 100vh;
   padding: 0 (@tile / 2);
   background: @white;
@@ -702,7 +705,7 @@
   }
   i.ico {
     display: block;
-    padding-right: @purpose_font;
+    padding-right: 1em;
     width: (@practice_tool_size * @practice_tool_grow);
     height: (@practice_tool_size * @practice_tool_grow);
     &:hover {
@@ -732,7 +735,7 @@
 .practice-tools-high {
   .flexy();
   width: 100%;
-  margin-bottom: @purpose_font;
+  margin-bottom: 1em;
 }
 .practice-tools-low {
   .flexy();
@@ -790,17 +793,17 @@
   }
   &:before {
     border-bottom-color: @grayBoxBorder;
-    border-width: (@em / 2);
-    margin-left: (-@em / 2);
+    border-width: .5em;
+    margin-left: -.5em;
   }
   &:after {
     border-bottom-color: @white;
-    border-width: (@em / 2);
-    margin-left: (-@em / 2);
+    border-width: .5em;
+    margin-left: -.5em;
     margin-top: 1px;
   }
   &:not(:last-child) {
-    margin-right: @em;
+    margin-right: 1em;
   }
   &:hover {
     svg {
@@ -825,28 +828,28 @@
   color: @grayLight;
   width: (@tile * 8);
   height: (@tile * 2);
-  margin-top: @em;
+  margin-top: 1em;
   margin-left: 0;
   border: 1px solid @grayBoxBorder;
   border-radius: 5px;
   transition: 500ms;
   p {
-    margin: (@em / 2) @em;
+    margin: .5em 1em;
   }
   footer {
     .box-sizing(border-box);
     .flexy();
     .justify-content(flex-end);
-    font-size: round(@em * .75);
-    line-height: round(@purpose_line * .66);
+    font-size: .75em;
+    line-height: 1.5em;
     width: 100%;
-    padding: 0 @em;
+    padding: 0 1em;
   }
   .avatar {
     .box-sizing(border-box);
     width: @quote_avatar_size;
     height: @quote_avatar_size;
-    margin-right: @em;
+    margin-right: 1em;
     border: 1px solid @grayBoxBorder;
     border-radius: (@quote_avatar_size / 2);
     background-image: url("http://placehold.it/35/fbfbfb");
@@ -859,8 +862,6 @@
 
 .home-potential {
   .flexy();
-  font-size: @purpose_font;
-  line-height: @purpose_line;
   height: 100vh;
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
@@ -938,15 +939,15 @@
 .home-potential-bullets {
   .flexy();
   .justify-content(space-between);
-  margin: @em 0;
+  margin: 1em 0;
   ul {
-    margin: 0 0 0 (@em * 2);
+    margin: 0 0 0 2em;
     &:first-of-type {
-      margin-left: @em;
+      margin-left: 1em;
     }
   }
   li {
-    margin-bottom: @em;
+    margin-bottom: 1em;
   }
 }
 
@@ -1031,9 +1032,9 @@
     .flexy(flex-start);
     margin: @home_margin_footer @home_margin_footer @home_margin_footer (@home_margin_footer * 2);
     svg {
-      width: @em;
-      height: @em;
-      margin: ((@purpose_line_margin / 2) + @purpose_line_margin) 0; // i.e. line-height + h5 margin
+      width: 1em;
+      height: 1em;
+      margin: 1em 0;
     }
     path {
       fill: @gray;
