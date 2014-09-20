@@ -218,10 +218,7 @@
                   (om/build drawings/drawing-dashboard app)]]
                 [:div.home-articles
                  [:article {:ref "first-fig-animate"}
-                  [:h1
-                   "Launches are dead,"
-                   [:br]
-                   " long live iteration."]
+                  [:h1 "Launches are dead, long live iteration."]
                   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]
                   [:p
                    [:a.shopify-link
@@ -246,10 +243,7 @@
                        [:path {:d (get tools-logos tool)}]]])]]])
                 [:div.practice-articles
                  [:article
-                  [:h1
-                   "Devs rely on us to just work,"
-                   [:br]
-                   "we support the right tools."]
+                  [:h1 "Devs rely on us to just work, we support the right tools."]
                   [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]]]
                 [:div.practice-customers
                  [:article
@@ -273,10 +267,7 @@
                [:section.home-potential {:class (when (:second-fig-animate state) ["animate"])}
                 [:div.home-articles
                  [:article {:ref "second-fig-animate"}
-                  [:h1
-                   "Look under the hood &"
-                   [:br]
-                   " check the bullet points."]
+                  [:h1 "Look under the hood & check the bullet points."]
                   [:div.home-potential-bullets
                    [:ul
                     [:li "Quick & easy setup"]
