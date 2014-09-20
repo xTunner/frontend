@@ -48,6 +48,11 @@
 @customers_brands_titles: shopify, dropbox, square,  newrelic, spotify;
 @customers_brands_colors: #96bf48, #007ee5, #000000, #338799,  #81b71a;
 
+@home_article_width: 1000px;
+@purpose_h1_width: 700px;
+@practice_h1_width: 900px;
+@potential_h1_width: 800px;
+
 
 
 .page {
@@ -197,6 +202,7 @@
   .flexy(center, center, column);
   position: relative;
   height: 100vh;
+  overflow: hidden;
 }
 .home-prolog {
   background: @grayDark;
@@ -492,9 +498,9 @@
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
   overflow: hidden;
-//
-// Purpose Animation
-//
+  h1 {
+    max-width: @purpose_h1_width;
+  }
   .draw-new {
     text {
       transition: (@home_drawings_speed / 2) (@home_drawings_speed / 2);
@@ -632,9 +638,9 @@
   .box-sizing(border-box);
   .flex(0, 0, (100% - @purpose_drawings_width));
   .flexy(center, center, column);
-  padding: 0 @tile;
+  padding: 0 1em;
   article {
-    max-width: 1000px;
+    max-width: @home_article_width;
   }
   p {
     color: @gray;
@@ -686,10 +692,13 @@
   box-shadow: 0 -1px 3px fade(@black, 5);
   overflow: hidden;
   article {
-    .flex(1, 1, 1000px);
+    .flex(1, 1, @home_article_width);
     .flexy(column);
-    max-width: 1000px;
+    max-width: @home_article_width;
     margin: 0 auto;
+  }
+  h1 {
+    max-width: @practice_h1_width;
   }
 }
 .practice-tools {
@@ -867,6 +876,9 @@
   .home-drawings {
     .justify-content(flex-start);
   }
+  h1 {
+    max-width: @potential_h1_width;
+  }
   figure {
     &:nth-child(1) { left: (@home_drawing_offset * 2); }
     &:nth-child(2) { left: @home_drawing_offset; }
@@ -936,10 +948,9 @@
 }
 .home-potential-bullets {
   .flexy();
-  .justify-content(space-between);
   margin: 1em 0;
   ul {
-    margin: 0 0 0 2em;
+    margin: 0 0 0 3em;
     &:first-of-type {
       margin-left: 1em;
     }
