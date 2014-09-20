@@ -162,7 +162,7 @@
                                                                                        :path (auth-url)}])}
                  "Log In"]
                 [:a.logo-circleci {:href "/"}
-                 circle-logo]
+                 [:figure circle-logo]]
                 [:a.action {:href (auth-url)
                             :role "button"
                             :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
