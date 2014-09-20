@@ -618,10 +618,6 @@
     // -webkit-user-select: none; // turned off for dev
     &:nth-child(-n+2) {
       position: absolute;
-      background-image: url("../../img/drawing-dashboard.svg");
-      background-size: cover;
-      background-position: top center;
-      background-repeat: no-repeat;
     }
     &:nth-child(1) {
       right: (@home_drawing_offset * 2);
@@ -703,12 +699,15 @@
   article {
     .justify-content(flex-end);
   }
-  i.ico {
+  figure {
+    margin: 0;
+    fill: none;
     display: block;
     padding-right: 1em;
     width: (@practice_tool_size * @practice_tool_grow);
     height: (@practice_tool_size * @practice_tool_grow);
-    &:hover {
+    &:hover,
+    &.hover {
       svg {
         .filter(@practice_hover_shadow);
         stroke-width: (@practice_tool_weight + 1);
@@ -718,7 +717,7 @@
       }
       .color_stroke(@a1, @a2, @c: length(@a1)) when (@c > 0) {
         .color_stroke(@a1, @a2, (@c - 1));
-        @n: extract(@a1, @c); .slim-@{n} {stroke: extract(@a2, @c);}
+        @n: extract(@a1, @c); .tool-logo-@{n} {stroke: extract(@a2, @c);}
       } .color_stroke(@tools_brands_titles, @tools_brands_colors);
     }
     svg {
