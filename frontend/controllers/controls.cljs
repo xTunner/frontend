@@ -1035,6 +1035,15 @@
                          #js [(.-scrollLeft main) vh]
                          250))))
 
+(defmethod post-control-event! :home-scroll-logo-clicked
+  [target message _ previous-state current-state]
+  (let [main (utils/inspect (sel1 target ".app-main"))
+        vh (.-height (goog.style/getSize main))]
+    (.play (goog.fx.dom.Scroll. main
+                         #js [(.-scrollLeft main) (.-scrollTop main)]
+                         #js [(.-scrollLeft main) 0]
+                         0))))
+
 (defmethod control-event :customer-logo-clicked
   [target message {:keys [customer]} state]
   (assoc-in state state/customer-logo-customer-path customer))

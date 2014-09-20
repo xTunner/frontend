@@ -161,7 +161,7 @@
                                                                                        :properties {:source "header-log-in"}
                                                                                        :path (auth-url)}])}
                  "Log In"]
-                [:a.logo-circleci {:href "/"}
+                [:a.logo-circleci {:on-click #(put! controls-ch [:home-scroll-logo-clicked])}
                  [:figure circle-logo]]
                 [:a.action {:href (auth-url)
                             :role "button"
