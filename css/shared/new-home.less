@@ -883,20 +883,6 @@
     &:nth-child(1) { left: (@home_drawing_offset * 2); }
     &:nth-child(2) { left: @home_drawing_offset; }
   }
-  // .quote-card {
-  //   margin-left: 0;
-  //   margin-right: auto;
-  // }
-  .draw-menu {
-    polyline {
-      .transform-origin(center);
-      .scale(.5, .5);
-      opacity: 0;
-      transition+: transform @home_drawings_speed @home_drawings_bounce;
-      transition+: -webkit-transform @home_drawings_speed @home_drawings_bounce;
-      transition+: opacity (@home_drawings_speed / 2) @bezier_fadein;
-    }
-  }
   .draw-output {
     rect {
       opacity: 0;
@@ -910,21 +896,6 @@
     }
   }
   &.animate {
-    .draw-menu {
-      g {
-        &:nth-of-type(1) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 1))}}
-        &:nth-of-type(2) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 2))}}
-        &:nth-of-type(3) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 3))}}
-        &:nth-of-type(4) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 4))}}
-        &:nth-of-type(5) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 5))}}
-        &:nth-of-type(6) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 6))}}
-        &:nth-of-type(7) { polyline { transition-delay: ((@home_drawings_speed / 2) + (@home_drawings_cascade * 7))}}
-      }
-      polyline {
-        .scale(1, 1);
-        opacity: 1;
-      }
-    }
     .draw-output {
       rect {
         opacity: 1;
