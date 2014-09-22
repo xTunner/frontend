@@ -95,12 +95,16 @@
       rect {
         fill: @color_heroic;
       }
+      g {
+        &:not(:nth-of-type(7n+1)) {
+          text {
+            fill: @green;
+          }
+        }
+      }
       text {
         font-size: @font_subtle;
         font-family: @codeFontFamily;
-        &:not(:nth-of-type(7n+1)) {
-          fill: @green;
-        }
       }
     }
   }
