@@ -226,7 +226,6 @@
               [:line {:x1 "350" :y1 "100" :x2 "1600" :y2 "100"}]
               [:text {:transform "matrix(1 0 0 1 375.0002 55.0532)"} "circleci / circle / oss-feature-flag-ui / 100812"]
               [:path {:d "M1562.4,48.8c-0.1-0.6-0.5-1-1.1-1.1 c-0.7-0.1-2.1-0.3-2.1-0.3c-0.6-0.2-1.1-0.7-1.1-1.4c0-0.3,0.1-0.5,0.2-0.7c0,0,1.3-1.7,1.3-1.7c0.4-0.4,0.3-1.1,0-1.5 c-0.5-0.6-1.1-1.2-1.7-1.7c-0.4-0.4-1.1-0.4-1.5,0c-0.6,0.4-1.7,1.3-1.7,1.3c-0.2,0.1-0.5,0.2-0.8,0.2c-0.7,0-1.2-0.5-1.4-1.1 l-0.3-2.1c-0.1-0.6-0.5-1-1.1-1.1c-0.8-0.1-1.6-0.1-2.4,0c-0.6,0.1-1,0.5-1.1,1.1l-0.3,2.1c-0.1,0.7-0.7,1.1-1.4,1.1 c-0.3,0-0.6-0.1-0.8-0.3l-1.6-1.3c-0.4-0.4-1.1-0.3-1.5,0c-0.6,0.5-1.2,1.1-1.7,1.7c-0.4,0.4-0.4,1.1,0,1.5 c0.4,0.5,1.2,1.6,1.2,1.6c0.2,0.2,0.3,0.5,0.3,0.8c0,0.7-0.5,1.3-1.2,1.4l-2,0.3c-0.6,0.1-1,0.5-1.1,1.1c-0.1,0.8-0.1,1.6,0,2.4 c0.1,0.6,0.5,1,1.1,1.1l2,0.3c0.7,0.1,1.2,0.7,1.2,1.4c0,0.3-0.1,0.6-0.3,0.8l-1.2,1.6c-0.4,0.4-0.3,1.1,0,1.5 c0.5,0.6,1.1,1.2,1.7,1.7c0.2,0.2,0.5,0.3,0.8,0.3c0.3,0,0.5-0.1,0.8-0.3l1.6-1.3c0.2-0.2,0.5-0.3,0.8-0.3c0.7,0,1.2,0.5,1.4,1.1 c0,0,0.3,2.1,0.3,2.1c0.1,0.6,0.5,1,1.1,1.1c0.4,0,0.8,0.1,1.2,0.1c0.4,0,0.8,0,1.2-0.1c0.6-0.1,1-0.5,1.1-1.1l0.3-2.1 c0.1-0.7,0.7-1.1,1.4-1.1c0.3,0,0.6,0.1,0.8,0.2l1.7,1.3c0.2,0.2,0.5,0.3,0.8,0.3c0.3,0,0.5-0.1,0.8-0.3c0.6-0.5,1.2-1.1,1.7-1.7 c0.4-0.4,0.4-1.1,0-1.5c-0.4-0.6-1.3-1.7-1.3-1.7c-0.2-0.2-0.2-0.5-0.2-0.8c0-0.7,0.5-1.2,1.1-1.4c0,0,1.4-0.2,2.1-0.3 c0.6-0.1,1-0.5,1.1-1.1C1562.5,50.4,1562.5,49.6,1562.4,48.8z"}]
-              ; [:circle {:cx "1550" :cy "50" :r "0.1"}]]
               [:path {:d "M1550.1,50 c0,0.1-0.1,0.1-0.1,0.1s-0.1-0.1-0.1-0.1s0.1-0.1,0.1-0.1S1550.1,49.9,1550.1,50"}]]
             [:g.draw-stats
               [:text {:transform "matrix(1 0 0 1 375.0002 130.0532)"} "Author"]
@@ -327,6 +326,109 @@
               [:text {:transform "matrix(1 0 0 1 400.0002 955.0545)"} "Finished in 2 minutes 30.1 seconds"]
               [:text {:transform "matrix(1 0 0 1 400.0002 980.0548)"} "884 examples, 0 failures"]]])))))
 
+(defn draw-build-large [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [ab-tests (:ab-tests app)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:svg.drawing {:version "1.1" :x "0px" :y "0px" :viewBox "0 0 1600 1000" :enableBackground "new 0 0 1600 1000"}
+           [:g.draw-build
+            [:g.draw-crumbs
+             [:text {:transform "matrix(1 0 0 1 50 55.0532)"} "circleci / circle / oss-feature-flag-ui / 100812"]
+             [:path {:d "M1549.9,48.8c-0.1-0.6-0.5-1-1.1-1.1c-0.7-0.1-2.1-0.3-2.1-0.3 c-0.6-0.2-1.1-0.7-1.1-1.4c0-0.3,0.1-0.5,0.2-0.7c0,0,1.3-1.7,1.3-1.7c0.4-0.4,0.3-1.1,0-1.5c-0.5-0.6-1.1-1.2-1.7-1.7 c-0.4-0.4-1.1-0.4-1.5,0c-0.6,0.4-1.7,1.3-1.7,1.3c-0.2,0.1-0.5,0.2-0.8,0.2c-0.7,0-1.2-0.5-1.4-1.1l-0.3-2.1 c-0.1-0.6-0.5-1-1.1-1.1c-0.8-0.1-1.6-0.1-2.4,0c-0.6,0.1-1,0.5-1.1,1.1l-0.3,2.1c-0.1,0.7-0.7,1.1-1.4,1.1c-0.3,0-0.6-0.1-0.8-0.3 l-1.6-1.3c-0.4-0.4-1.1-0.3-1.5,0c-0.6,0.5-1.2,1.1-1.7,1.7c-0.4,0.4-0.4,1.1,0,1.5c0.4,0.5,1.2,1.6,1.2,1.6 c0.2,0.2,0.3,0.5,0.3,0.8c0,0.7-0.5,1.3-1.2,1.4l-2,0.3c-0.6,0.1-1,0.5-1.1,1.1c-0.1,0.8-0.1,1.6,0,2.4c0.1,0.6,0.5,1,1.1,1.1 l2,0.3c0.7,0.1,1.2,0.7,1.2,1.4c0,0.3-0.1,0.6-0.3,0.8l-1.2,1.6c-0.4,0.4-0.3,1.1,0,1.5c0.5,0.6,1.1,1.2,1.7,1.7 c0.2,0.2,0.5,0.3,0.8,0.3c0.3,0,0.5-0.1,0.8-0.3l1.6-1.3c0.2-0.2,0.5-0.3,0.8-0.3c0.7,0,1.2,0.5,1.4,1.1c0,0,0.3,2.1,0.3,2.1 c0.1,0.6,0.5,1,1.1,1.1c0.4,0,0.8,0.1,1.2,0.1c0.4,0,0.8,0,1.2-0.1c0.6-0.1,1-0.5,1.1-1.1l0.3-2.1c0.1-0.7,0.7-1.1,1.4-1.1 c0.3,0,0.6,0.1,0.8,0.2l1.7,1.3c0.2,0.2,0.5,0.3,0.8,0.3c0.3,0,0.5-0.1,0.8-0.3c0.6-0.5,1.2-1.1,1.7-1.7c0.4-0.4,0.4-1.1,0-1.5 c-0.4-0.6-1.3-1.7-1.3-1.7c-0.2-0.2-0.2-0.5-0.2-0.8c0-0.7,0.5-1.2,1.1-1.4c0,0,1.4-0.2,2.1-0.3c0.6-0.1,1-0.5,1.1-1.1 C1550,50.4,1550,49.6,1549.9,48.8z"}]
+             [:path {:d "M1537.6,50c0,0.1-0.1,0.1-0.1,0.1s-0.1-0.1-0.1-0.1 s0.1-0.1,0.1-0.1S1537.6,49.9,1537.6,50z"}]
+             [:line {:x1 "0" :y1 "100" :x2 "1600" :y2 "100"}]]
+            [:g.draw-stats
+             [:text {:transform "matrix(1 0 0 1 50 129.364)"} "Author"]
+             [:text {:transform "matrix(1 0 0 1 175 129.5)"} "Yukihiro Matsumoto"]
+             [:text {:transform "matrix(1 0 0 1 50 154.5)"} "Duration"]
+             [:text {:transform "matrix(1 0 0 1 175 154.5)"} "21:34"]
+             [:text {:transform "matrix(1 0 0 1 50 179.5)"} "Pull Request"]
+             [:text {:transform "matrix(1 0 0 1 175 179.5)"} "#3254"]
+             [:text {:transform "matrix(1 0 0 1 50 204.5)"} "Commit Log"]
+             [:text {:transform "matrix(1 0 0 1 175 204.5)"} "Refactoring some old components."]
+             [:text {:transform "matrix(1 0 0 1 50 229.5)"} "Build Artifacts"]
+             [:text {:transform "matrix(1 0 0 1 175 229.492)"} "View All"]]
+            [:g.draw-buttons
+             [:text {:transform "matrix(1 0 0 1 1254.2971 179.52)"} "rebuild"]
+             [:path {:d "M1316,194h-64.2c-10.4,0-18.8-8.4-18.8-18.8v-0.3 c0-10.4,8.4-18.8,18.8-18.8h64.2V194z"}]
+             [:text {:transform "matrix(1 0 0 1 1438.7131 179.52)"} "& enable ssh"]
+             [:path {:d "M1531.2,194H1429v-38h102.2c10.4,0,18.8,8.4,18.8,18.8v0.3 C1550,185.6,1541.6,194,1531.2,194z"}]
+             [:text {:transform "matrix(1 0 0 1 1327.1379 179.52)"} "& clear cache"]
+             [:line {:x1 "1316" :y1 "156" :x2 "1429" :y2 "156"}]
+             [:line {:x1 "1316" :y1 "194" :x2 "1429" :y2 "194"}]]
+            [:line.draw-border {:x1 "50" :y1 "300" :x2 "50" :y2 "700"}]
+            [:line.draw-border {:x1 "1550" :y1 "300" :x2 "1550" :y2 "700"}]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 75 329.492)"} "start container"]
+             [:text {:transform "matrix(1 0 0 1 1372.937 329.4918)"} "config"]
+             [:text {:transform "matrix(1 0 0 1 1443.3387 329.492)"} "00:01"]
+             [:line {:x1 "50" :y1 "300" :x2 "1550" :y2 "300"}]
+             [:polyline.chevron-down {:points "1509,321 1517,329 1525,321  "}]]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 731.897 353.9304)"} "CHECKOUT ACTIONS"]
+             [:text {:transform "matrix(1 0 0 1 75 379.5)"} "restore source cache"]
+             [:text {:transform "matrix(1 0 0 1 1374.041 379.5)"} "cache"]
+             [:text {:transform "matrix(1 0 0 1 1445.3562 379.4918)"} "00:11"]
+             [:line {:x1 "50" :y1 "350" :x2 "730.5" :y2 "350"}]
+             [:line {:x1 "869.5" :y1 "350" :x2 "1550" :y2 "350"}]
+             [:polyline.chevron-down {:points "1509,371 1517,379 1525,371  "}]]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 75 429.4918)"} "checkout using deploy key"]
+             [:text {:transform "matrix(1 0 0 1 1372.937 429.4918)"} "config"]
+             [:text {:transform "matrix(1 0 0 1 1441.5948 429.492)"} "00:03"]
+             [:line {:x1 "50" :y1 "400" :x2 "1550" :y2 "400"}]
+             [:polyline.chevron-down {:points "1509,421 1517,429 1525,421  "}]]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 738.1831 453.9306)"} "MACHINE ACTIONS"]
+             [:text {:transform "matrix(1 0 0 1 75 479.4918)"} "configure the build"]
+             [:text {:transform "matrix(1 0 0 1 1374.041 479.5)"} "cache"]
+             [:text {:transform "matrix(1 0 0 1 1441.3466 479.5)"} "00:02"]
+             [:line {:x1 "50" :y1 "450" :x2 "736.7" :y2 "450"}]
+             [:line {:x1 "863.2" :y1 "450" :x2 "1549.9" :y2 "450"}]
+             [:polyline.chevron-down {:points "1509,471 1517,479 1525,471  "}]]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 75 529.4918)"} "restore cache"]
+             [:text {:transform "matrix(1 0 0 1 1374.041 529.5)"} "cache"]
+             [:text {:transform "matrix(1 0 0 1 1441.4032 529.4926)"} "00:08"]
+             [:line {:x1 "50" :y1 "500" :x2 "1550" :y2 "500"}]
+             [:polyline.chevron-down {:points "1509,521 1517,529 1525,521  "}]]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 723.8965 553.9303)"} "DEPENDENCY ACTIONS"]
+             [:text {:transform "matrix(1 0 0 1 75 579.4918)"} "exporting RAILS_ENV, RACK_ENV"]
+             [:text {:transform "matrix(1 0 0 1 1350.1699 579.4918)"} "inference"]
+             [:text {:transform "matrix(1 0 0 1 1441.1547 579.4918)"} "00:00"]
+             [:line {:x1 "50" :y1 "550" :x2 "722.3" :y2 "550"}]
+             [:line {:x1 "877.7" :y1 "550" :x2 "1550" :y2 "550"}]
+             [:polyline.chevron-down {:points "1509,571 1517,579 1525,571  "}]]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 75 629.5)"} "bundle install"]
+             [:text {:transform "matrix(1 0 0 1 1350.1699 629.5)"} "inference"]
+             [:text {:transform "matrix(1 0 0 1 1443.3395 629.4926)"} "00:01"]
+             [:line {:x1 "50" :y1 "600" :x2 "1550" :y2 "600"}]
+             [:polyline.chevron-down {:points "1509,621 1517,629 1525,621  "}]]
+            [:g.draw-action
+             [:text {:transform "matrix(1 0 0 1 752.7148 653.9302)"} "TEST ACTIONS"]
+             [:text {:transform "matrix(1 0 0 1 75 679.51)"} "parallel rspec"]
+             [:text {:transform "matrix(1 0 0 1 1350.1699 679.51)"} "inference"]
+             [:text {:transform "matrix(1 0 0 1 1441.7797 679.51)"} "02:40"]
+             [:line {:x1 "50" :y1 "650" :x2 "751" :y2 "650"}]
+             [:line {:x1 "849" :y1 "650" :x2 "1550" :y2 "650"}]
+             [:polyline.chevron-down {:points "1525,679 1517,671 1509,679  "}]]
+            [:g.draw-output
+             [:rect {:x "50" :y "700" :width "1500" :height "250"}]
+             [:text {:transform "matrix(1 0 0 1 75 728.2069)"} "bundle exec rspec --color"]
+             [:text {:transform "matrix(1 0 0 1 75 753.2067)"} "............................................................................................................................................................................."]
+             [:text {:transform "matrix(1 0 0 1 75 778.2065)"} "............................................................................................................................................................................."]
+             [:text {:transform "matrix(1 0 0 1 75 803.2068)"} "............................................................................................................................................................................."]
+             [:text {:transform "matrix(1 0 0 1 75 828.2067)"} "............................................................................................................................................................................."]
+             [:text {:transform "matrix(1 0 0 1 75 853.2067)"} "............................................................................................................................................................................."]
+             [:text {:transform "matrix(1 0 0 1 75 878.207)"} "..............."]
+             [:text {:transform "matrix(1 0 0 1 75 903.2067)"} "Finished in 2 minutes 30.1 seconds"]
+             [:text {:transform "matrix(1 0 0 1 75 928.207)"} "884 examples, 0 failures"]]]])))))
+
 (defn drawing-dashboard [app owner]
   (reify
     om/IRender
@@ -334,11 +436,7 @@
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-          [:svg.drawing.draw-dash {:xmlns "http://www.w3.org/2000/svg"
-                                   :x "0px"
-                                   :y "0px"
-                                   :viewBox "0 0 1600 1000"
-                                   :enableBackground "new 0 0 1600 1000"}
+          [:svg.drawing {:xmlns "http://www.w3.org/2000/svg" :x "0px" :y "0px" :viewBox "0 0 1600 1000" :enableBackground "new 0 0 1600 1000"}
            (om/build draw-nav app)
            (om/build draw-menu app)
            (om/build draw-main app)])))))
@@ -350,11 +448,7 @@
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-          [:svg.drawing.draw-dash {:xmlns "http://www.w3.org/2000/svg"
-                                   :x "0px"
-                                   :y "0px"
-                                   :viewBox "0 0 1600 1000"
-                                   :enableBackground "new 0 0 1600 1000"}
+          [:svg.drawing {:xmlns "http://www.w3.org/2000/svg" :x "0px" :y "0px" :viewBox "0 0 1600 1000" :enableBackground "new 0 0 1600 1000"}
            (om/build draw-nav app)
            (om/build draw-menu app)
            (om/build draw-build app)])))))

@@ -288,7 +288,7 @@
                  [:figure]
                  [:figure]
                  [:figure
-                  (om/build drawings/drawing-build app)]]]
+                  (om/build drawings/draw-build-large app)]]]
                [:section.home-epilog {:ref "nav-no-bkg"}
                 [:a.home-action {:href (auth-url)
                                  :ref "no-cta"
