@@ -275,7 +275,6 @@
                    We're built for teams."]]]
                 [:div.practice-customers
                  [:article
-                  [:h5 "Trusted by"]
                   [:div.customers-brands {:class (str "selected-" (get-in customer-brands [selected-customer :position]))}
                    (for [[customer template] customer-brands]
                      [:a.customers-brand {:on-click #(put! controls-ch [:customer-logo-clicked {:customer customer}])
