@@ -91,43 +91,44 @@
   (array-map
     :shopify {:name "Shopify"
               :logo ""
-              :quote "test1a"
-              :cite "test1b"
-              :cite-title "test1c"
-              :cite-avatar ""
+              :quote "CircleCI lets us be more agile and ship product faster.
+                     We can focus on delivering value to our customers, not maintaining CI/CD infrastructure."
+              :cite "John Duff"
+              :cite-title "Director of Engineering"
+              :cite-avatar "/img/outer/stories/john.jpg"
               :tools #{:rails :ruby}
               ;; TODO get position from index rather than specifying manually
               :position 0}
     :dropbox {:name "Dropbox"
               :logo ""
-              :quote "test2a"
-              :cite "test2b"
-              :cite-title "test2c"
-              :cite-avatar ""
+              :quote "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dapibus ipsum finibus ligula consequat, at malesuada dolor consequat."
+              :cite "Charles Xavier"
+              :cite-title "Quality Assurance"
+              :cite-avatar "/img/outer/stories/john.jpg"
               :tools #{:django :python}
               :position 1}
     :square {:name "Square"
              :logo ""
-             :quote "test3a"
-             :cite "test3b"
-             :cite-title "test3c"
-             :cite-avatar ""
+             :quote "Sed dolor dolor, accumsan et lacinia bibendum, molestie eget est. Ut et aliquet quam, a molestie felis. Donec dignissim mi eget nibh iaculis convallis."
+             :cite "Tony Stark"
+             :cite-title "Engineer"
+             :cite-avatar "/img/outer/stories/john.jpg"
              :tools #{:node :js}
              :position 2}
-    :autodesk {:name "New Relic"
+    :autodesk {:name "Autodesk"
                :logo ""
-               :quote "test4a"
-               :cite "test4b"
-               :cite-title "test4c"
-               :cite-avatar ""
+               :quote "Nunc sollicitudin nunc sed diam elementum, ac condimentum velit venenatis. Donec laoreet tincidunt finibus."
+               :cite "Peter Parker"
+               :cite-title "Code Slinger"
+               :cite-avatar "/img/outer/stories/john.jpg"
                :tools #{:java}
                :position 3}
     :spotify {:name "Spotify"
               :logo ""
-              :quote "test5a"
-              :cite "test5b"
-              :cite-title "test5c"
-              :cite-avatar ""
+              :quote "Donec molestie scelerisque libero sed pellentesque. Integer cursus sem arcu, nec sagittis orci fermentum facilisis. Donec sit amet felis non leo interdum placerat."
+              :cite "Bruce Banner"
+              :cite-title "Brute Force Hacker"
+              :cite-avatar "/img/outer/stories/john.jpg"
               :tools #{:php}
               :position 4}))
 
@@ -219,7 +220,10 @@
                 [:div.home-articles
                  [:article {:ref "first-fig-animate"}
                   [:h1 "Launches are dead, long live iteration."]
-                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]
+                  [:p "We believe that rapid iteration, tight feedback loops, and team communication are the keys to a great product workflow.
+                      That's why we designed the world's leading continuous integration and delivery solution.
+                      Continuous integration and delivery is revolutionizing the way development teams operate by reducing barriers between your ideas and your production code.
+                      Remember, it doesn't count until it ships."]
                   [:p
                    [:a.shopify-link
                     "See how Shopify does it"
@@ -243,8 +247,18 @@
                        [:path {:d (get tools-logos tool)}]]])]]])
                 [:div.practice-articles
                  [:article
-                  [:h1 "Devs rely on us to just work, we support the right tools."]
-                  [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus felis quis dictum mollis. Vivamus non tempor diam. Maecenas sagittis condimentum sapien. Ut sed gravida augue. Proin elementum molestie feugiat. Etiam finibus, neque a consectetur ultrices, tortor ligula blandit mi, ac ornare nisi felis ac dui. Fusce porta vel nunc sed commodo. Praesent bibendum ex hendrerit, bibendum elit et, egestas arcu."]]]
+                  [:h1 "Devs rely on us to just work; we support the right tools."]
+                  [:p
+                   [:a "Languages"] ", "
+                   [:a "databases"] ", "
+                   [:a "queues"] ", "
+                   [:a "browsers"] ", "
+                   [:a "libraries"] ", "
+                   [:a "deployment"] ", "
+                   "we support all of your tools.
+                   Anything you can run on Linux, we can support, including your own customer tools.
+                   The best development teams in the world trust us as their continuous integration and delivery solution because of our unmatched support and our ability to scale with them.
+                   We're built for teams."]]]
                 [:div.practice-customers
                  [:article
                   [:h5 "Trusted by"]
@@ -257,7 +271,7 @@
                   [:div.quote-card
                    [:p (get-in customer-brands [selected-customer :quote])]
                    [:footer
-                    [:div.avatar]
+                    [:img {:src (stefon/asset-path (get-in customer-brands [selected-customer :cite-avatar]))}]
                     [:cite
                      (get-in customer-brands [selected-customer :cite])
                      [:br]
