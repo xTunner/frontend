@@ -771,6 +771,31 @@
       display: none;
     }
   }
+
+  // AWS Page
+  .aws-page-inner {
+    margin-top: 2em;
+    form {
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+
+      .buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        flex-wrap: wrap;
+      }
+    }
+    input[type=submit] {
+      margin-top: .75em;
+      .circleButton();
+
+      &.remove {
+        .circleButton(@grayLightest, @redLight);
+      }
+    }
+  }
 }
 
 input.radio[type="checkbox"] {
