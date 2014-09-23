@@ -195,3 +195,5 @@
 (def user-options-shown-path [:user-options-shown])
 
 (def customer-logo-customer-path [:customer-logo-customer])
+
+(def selected-toolset-path [:selected-toolset])

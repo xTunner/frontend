@@ -1047,3 +1047,7 @@
 (defmethod control-event :customer-logo-clicked
   [target message {:keys [customer]} state]
   (assoc-in state state/customer-logo-customer-path customer))
+
+(defmethod control-event :toolset-clicked
+  [target message {:keys [toolset]} state]
+  (assoc-in state state/selected-toolset-path toolset))

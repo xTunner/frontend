@@ -87,6 +87,17 @@
   :django "M46.8,5h14.7v68.1c-7.5,1.4-13.1,2-19.1,2 c-18,0-27.3-8.1-27.3-23.7c0-15,9.9-24.7,25.3-24.7c2.4,0,4.2,0.2,6.4,0.8L46.8,5L46.8,5z M46.8,39.3c-1.7-0.6-3.2-0.8-5-0.8 c-7.5,0-11.8,4.6-11.8,12.6c0,7.8,4.1,12.1,11.7,12.1c1.6,0,3-0.1,5.1-0.4C46.8,62.9,46.8,39.3,46.8,39.3z M84.9,27.7v34.1 c0,11.8-0.9,17.4-3.4,22.3c-2.4,4.7-5.5,7.6-12,10.9l-13.7-6.5c6.5-3.1,9.7-5.7,11.7-9.8c2.1-4.2,2.8-9.1,2.8-21.9V27.7H84.9z M70.2,5.1h14.7v15.1H70.2V5.1z"
   :node "M36.2,34.4v35.4c0,6.5-3.6,10.3-9.8,10.3 c-1.9,0-3.4,0-7.6-2.1l-5.3-3c-2.1-1.2-3.5-3.5-3.5-6V31c0-2.5,1.3-4.8,3.5-6l33-19.1c2.1-1.2,4.9-1.2,6.9,0l33,19.1 c2.1,1.2,3.5,3.5,3.5,6V69c0,2.5-1.3,4.8-3.5,6l-33,19C52.4,94.7,51.2,95,50,95c-1.2,0-2.4-0.3-3.5-0.9l-11-6.5 M45.8,55.6 c0,6.5,4.5,10.3,13,10.3c11,0,14.5-3,14.5-8.3C73.3,53,68,50,60.1,50c-7.2,0-12.9-1.9-12.9-7.2c0-4.5,2.6-7.6,11.7-7.6 c11.9,0,13.4,5.6,13.4,9.7"})
 
+(def supported-tools {:languages  {:upper [:rails :django :node]
+                                   :lower [:ruby :python :js :java :php]}
+                      :databases  {:upper [:rails :django :node]
+                                   :lower [:ruby :python :js :java :php]}
+                      :queues     {:upper [:rails :ruby]
+                                   :lower [:rails :ruby]}
+                      :browsers   {:upper [:rails :ruby]
+                                   :lower [:rails :ruby]}
+                      :deployment {:upper [:rails :ruby]
+                                   :lower [:rails :ruby]}})
+
 (def customer-brands
   (array-map
     :shopify {:name "Shopify"
@@ -104,7 +115,7 @@
               :quote "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dapibus ipsum finibus ligula consequat, at malesuada dolor consequat."
               :cite "Charles Xavier"
               :cite-title "Quality Assurance"
-              :cite-avatar "/img/outer/stories/john.jpg"
+              :cite-avatar "/img/outer/stories/arthur.jpg"
               :tools #{:django :python}
               :position 1}
     :square {:name "Square"
@@ -120,7 +131,7 @@
                :quote "Nunc sollicitudin nunc sed diam elementum, ac condimentum velit venenatis. Donec laoreet tincidunt finibus."
                :cite "Peter Parker"
                :cite-title "Code Slinger"
-               :cite-avatar "/img/outer/stories/john.jpg"
+               :cite-avatar "/img/outer/stories/arthur.jpg"
                :tools #{:java}
                :position 3}
     :spotify {:name "Spotify"
@@ -154,7 +165,8 @@
     (render-state [_ state]
       (let [ab-tests (:ab-tests app)
             controls-ch (om/get-shared owner [:comms :controls])
-            selected-customer (get-in app state/customer-logo-customer-path :shopify)]
+            selected-customer (get-in app state/customer-logo-customer-path :shopify)
+            selected-toolset (get-in app state/selected-toolset-path :languages)]
         (html [:div.home.page
                [:nav.home-nav {:style (merge {:width (if (< 0 (:scrollbar-width state))
                                                        (str "calc(100% - " (:scrollbar-width state) "px)")
@@ -233,28 +245,30 @@
                       tools (get-in customer-brands [hovered-customer :tools] #{})]
                  [:div.practice-tools
                   [:article
-                   [:div.practice-tools-high
-                    (for [tool [:rails :django :node]]
-                     [:figure {:class (when (contains? tools tool) "hover")}
-                      [:svg {:class (str "tool-logo-" (name tool))
-                            :x "0" :y "0" :view-box "0 0 100 100"}
-                       [:path {:d (get tools-logos tool)}]]])]
-                   [:div.practice-tools-low
-                    (for [tool [:ruby :python :js :java :php]]
-                     [:figure {:class (when (contains? tools tool) "hover")}
-                      [:svg {:class (str "tool-logo-" (name tool))
-                            :x "0" :y "0" :view-box "0 0 100 100"}
-                       [:path {:d (get tools-logos tool)}]]])]]])
+                   (for [[toolset template] supported-tools]
+                    [:div.supported-tools {:class (when (= selected-toolset toolset) "active")}
+                     [:div.supported-tools-upper
+                      (for [tool (:upper template)]
+                       [:div.supported-tool {:class (when (contains? tools tool) "hover")}
+                        [:figure
+                         [:svg {:class (str "tool-logo-" (name tool))
+                               :x "0" :y "0" :view-box "0 0 100 100"}
+                          [:path {:d (get tools-logos tool)}]]]])]
+                     [:div.supported-tools-lower
+                      (for [tool (:lower template)]
+                       [:div.supported-tool {:class (when (contains? tools tool) "hover")}
+                        [:figure
+                         [:svg {:class (str "tool-logo-" (name tool))
+                               :x "0" :y "0" :view-box "0 0 100 100"}
+                          [:path {:d (get tools-logos tool)}]]]])]])]])
+
                 [:div.practice-articles
                  [:article
                   [:h1 "Devs rely on us to just work; we support the right tools."]
                   [:p
-                   [:a "Languages"] ", "
-                   [:a "databases"] ", "
-                   [:a "queues"] ", "
-                   [:a "browsers"] ", "
-                   [:a "libraries"] ", "
-                   [:a "deployment"] ", "
+                   (for [toolset ["Languages" "databases" "queues" "browsers" "deployment"]]
+                     (list
+                      [:a {:on-click #(put! controls-ch [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "))
                    "we support all of your tools.
                    Anything you can run on Linux, we can support, including your own customer tools.
                    The best development teams in the world trust us as their continuous integration and delivery solution because of our unmatched support and our ability to scale with them.
