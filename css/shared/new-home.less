@@ -645,10 +645,8 @@
   p {
     color: @gray;
   }
-  a {
-    &:not(:hover) {
-      color: @grayDark;
-    }
+  a:not(:hover) {
+    color: @black;
   }
   .shopify-link {
     .flexy();
@@ -669,7 +667,6 @@
 
 
 
-@practice_subtle: @grayLighter;
 
 @practice_tool_size: 50px;
 @practice_tool_grow: 1.2;
@@ -731,7 +728,7 @@
     svg {
       width: @practice_tool_size;
       height: @practice_tool_size;
-      stroke: @practice_subtle;
+      stroke: @grayBoxBorder;
       stroke-width: @practice_tool_weight;
       stroke-linecap: round;
       stroke-linejoin: bevel;
@@ -753,6 +750,12 @@
   .flexy();
   article {
     .justify-content(center);
+  }
+  p {
+    color: @gray;
+  }
+  a:not(:hover) {
+    color: @black;
   }
 }
 .practice-customers {
@@ -825,7 +828,7 @@
   }
   svg {
     height: @practice_logo_height;
-    fill: @practice_subtle;
+    fill: @grayBoxBorder;
     transition: @practice_tool_speed @practice_tool_timing;
   }
 }
@@ -837,11 +840,26 @@
   height: (@tile * 2);
   margin-top: 1em;
   margin-left: 0;
+  padding: 1em;
   border: 1px solid @grayBoxBorder;
   border-radius: 5px;
   transition: 500ms;
   p {
-    margin: .5em 1em;
+    position: relative;
+    margin: auto 0 auto 1em;
+    &:before {
+      content: "\201C";
+      left: -.8ex;
+    }
+    &:after {
+      content: "\201D";
+    }
+    &:before,
+    &:after {
+      font-size: 2em;
+      position: absolute;
+      color: @grayBoxBorder;
+    }
   }
   footer {
     .box-sizing(border-box);
@@ -852,14 +870,11 @@
     width: 100%;
     padding: 0 1em;
   }
-  .avatar {
-    .box-sizing(border-box);
+  img {
     width: @quote_avatar_size;
     height: @quote_avatar_size;
     margin-right: 1em;
-    border: 1px solid @grayBoxBorder;
-    border-radius: (@quote_avatar_size / 2);
-    background-image: url("http://placehold.it/35/fbfbfb");
+    border-radius: @quote_avatar_size;
   }
 }
 
@@ -999,10 +1014,8 @@
         transition-duration: (@prolog_cover_fadein * 0.6);
       }
     }
-    a {
-      &:not(:hover) {
-        color: @grayLight;
-      }
+    a:not(:hover) {
+      color: @grayLight;
     }
     h5 {
       color: @grayDark;
