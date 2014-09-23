@@ -66,7 +66,7 @@
                                     (when (action-model/failed? action)
                                       ["failed"]))]
         (html
-         [:div {:class (str "type-" (:type action))}
+         [:div {:class (str "type-" (or (:type action) "none"))}
           [:div.type-divider
            [:span (:type action)]]
           [:div.build-output

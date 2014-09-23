@@ -104,9 +104,7 @@
                          "fail"
                          "success")}
 
-               [:img.gravatar {:src (gh-utils/gravatar-url {:size 45 :login login
-                                                            :github-id (:github_id user)
-                                                            :gravatar_id (:gravatar_id user)})}]
+               [:img.gravatar {:src (gh-utils/make-avatar-url user :size 45)}]
                [:div.om-org-user-projects-container
                 [:h4
                  (if (seq followed-projects)
@@ -148,8 +146,7 @@
            [:span.follower-container
             {:style {:display "inline-block"}}
             [:img.gravatar
-             {:src (gh-utils/gravatar-url {:size 30 :login (:login follower)
-                                           :gravatar_id (:gravatar_id follower)})}]
+             {:src (gh-utils/make-avatar-url follower :size 30)}]
             " "
             [:span (:login follower)]])]]))))
 
@@ -565,6 +562,48 @@
                        :type "submit"}
                       "Change credit card"])]]]]]]))))))
 
+;; Render a friendly human-readable version of a Stripe discount coupon.
+;; Stripe has a convention for this that does not seem to be documented, so we
+;; reverse engineer it here.
+;; Examples from Stripe are:
+;;     100% off for 1 month
+;;     100% off for 6 months
+;;  $100.00 off for 6 months
+;;   $19.00 off for 12 months
+;;      25% off forever
+(defn format-discount
+  [plan]
+  (let [{ duration-in-months :duration_in_months
+          percent-off        :percent_off
+          amount-off         :amount_off
+          duration           :duration
+          id                 :id}  (get-in plan [:discount :coupon])
+        discount-amount (if percent-off
+                          (str percent-off "%")
+                          (gstring/format "$%.2f" (/ amount-off 100)))
+        discount-period (cond (= duration "forever") "forever"
+                              (= duration-in-months 1) "for 1 month"
+                              :else (gstring/format "for %d months" duration-in-months))]
+    [:p "Your plan includes " discount-amount " off " discount-period
+        " from coupon code " [:strong id]]))
+
+;; Show a 'Discount' section showing any Stripe discounts that are being appied
+;; the current plan.
+;; Important: If there are no discounts, we don't want to show anything;
+;; we do not want to tempt happy, paying customers to search online for discount
+;; codes.
+(defn- billing-discounts [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [plan (get-in app state/org-plan-path)]
+          [:div.row-fluid
+            (when (plan-model/has-active-discount? plan)
+              [:fieldset
+                [:legend.span8 "Discounts"]
+                [:div.span8 (format-discount plan)]])])))))
+
 (defn- billing-invoice-data [app owner]
   (reify
     om/IRender
@@ -656,7 +695,7 @@
             [:td (str (stripe-ts->date (:period_start invoice)))
                       " - "
                       (stripe-ts->date (:period_end invoice))]
-            [:td (str "$" (invoice-total invoice))]
+            [:td.numeric (gstring/format "$%.2f" (invoice-total invoice))]
             [:td
               [:span
                 (forms/managed-button
@@ -731,6 +770,7 @@
         [:div.plans
           (om/build billing-card app)
           (om/build billing-invoice-data app)
+          (om/build billing-discounts app)
           (om/build billing-invoices app)]))))
 
 (defn cancel [app owner]

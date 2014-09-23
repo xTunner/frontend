@@ -350,20 +350,19 @@
             "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
-           ;; Comment out while we wait for the backend to deploy
-           ;; (describe-flag {:flag :junit
-           ;;                 :title "JUnit support"
-           ;;                 :blurb [:p
-           ;;                         "We've been experimenting with better ways to display and manage "
-           ;;                         "test result data, especially for large test suites. This adds flags "
-           ;;                         "to some of our inferred commands to collect structured test output supplied by "
-           ;;                         "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
-           ;;                         "you're using our inferred test steps. For RSpec, we also require our fork of the "
-           ;;                         "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
-           ;;                         [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
-           ;;                         "If you're using parallelism, we'll "
-           ;;                         "automatically use the timing data to give you better test splits. You'll also be able to "
-           ;;                         "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
+           (describe-flag {:flag :junit
+                           :title "JUnit support"
+                           :blurb [:p
+                                   "We've been experimenting with better ways to display and manage "
+                                   "test result data, especially for large test suites. This adds flags "
+                                   "to some of our inferred commands to collect structured test output supplied by "
+                                   "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
+                                   "you're using our inferred test steps. For RSpec, we also require our fork of the "
+                                   "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
+                                   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+                                   "If you're using parallelism, we'll "
+                                   "automatically use the timing data to give you better test splits. You'll also be able to "
+                                   "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
            (describe-flag {:flag :set-github-status
                            :title "GitHub Status updates"
                            :blurb [:p
@@ -400,7 +399,13 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p [:i "You can also set your dependencies commands from your " [:a {:href "/docs/configuration#dependencies"} "circle.yml"] "."]]
+          [:p 
+           "You can also set your dependencies commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.dependencies-inner
            [:form.spec_form
             [:fieldset
@@ -442,7 +447,13 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p [:i "You can also set your test commands from your " [:a {:href "/docs/configuration#test"} "circle.yml"] "."]]
+          [:p 
+           "You can also set your test commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.tests-inner
            [:fieldset.spec_form
             [:textarea {:name "test",
@@ -495,24 +506,36 @@
           [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
                                      :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
 
-(defn chatroom-item [settings controls-ch {:keys [service icon doc inputs show-fixed-failed?
-                                                  top-section-content]}]
-  [:div.chat-room-item
-   [:div.chat-room-head [:h4 {:class icon} service]]
-   [:div.chat-room-body
-    [:section
-     doc
-     top-section-content]
-    [:section
-     (for [{:keys [field placeholder]} inputs]
-       (list
-        [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
-                 :value (str (get settings field))
-                 :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
-        [:label {:placeholder placeholder}]))]]
-   [:div.chat-room-foot
-    (when show-fixed-failed?
-      (om/build fixed-failed-input {:settings settings :field (keyword (str (string/lower-case service) "_notify_prefs"))}))]])
+(defn chatroom-item [project-id settings controls-ch
+                     {:keys [service doc inputs show-fixed-failed? top-section-content settings-keys]}]
+  (let [service-id (string/lower-case service)]
+    [:div {:class (str "chat-room-item " service-id)}
+     [:div.chat-room-head [:h4 {:class (str "chat-i-" service-id)} service]]
+     [:div.chat-room-body
+      [:section
+       doc
+       top-section-content
+       (when show-fixed-failed?
+         (om/build fixed-failed-input {:settings settings :field (keyword (str service-id "_notify_prefs"))}))]
+      [:section
+       (for [{:keys [field placeholder]} inputs]
+         (list
+          [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
+                   :value (str (get settings field))
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
+          [:label {:placeholder placeholder}]))
+       (let [event-data {:project-id project-id :merge-paths (map vector settings-keys)}]
+         [:div.chat-room-buttons
+          (forms/managed-button
+            [:button.save {:on-click #(put! controls-ch [:saved-project-settings event-data])
+                           :data-loading-text "Saving"
+                           :data-success-text "Saved"}
+             "Save"])
+          (forms/managed-button
+            [:button.test {:on-click #(put! controls-ch [:test-hook (assoc event-data :service service-id)])
+                           :data-loading-text "Testing"
+                           :data-success-text "Tested"}
+             "& Test Hook"])])]]]))
 
 (defn chatrooms [project-data owner]
   (reify
@@ -528,7 +551,6 @@
           [:h2 "Chatroom setup for " (vcs-url/project-name (:vcs_url project))]
           [:div.chat-rooms
            (for [chat-spec [{:service "Hipchat"
-                             :icon "chat-i-hip"
                              :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                          [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
                                         [:label ;; hipchat is a special flower
@@ -542,60 +564,50 @@
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hipchat-keys}
 
                             {:service "Campfire"
-                             :icon "chat-i-camp"
                              :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
                              :inputs [{:field :campfire_room :placeholder "Room"}
                                       {:field :campfire_subdomain :placeholder "Subdomain"}
                                       {:field :campfire_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/campfire-keys}
 
                             {:service "Flowdock"
-                             :icon "chat-i-flow"
                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
-                             :show-fixed-failed? false}
+                             :show-fixed-failed? false
+                             :settings-keys project-model/flowdock-keys}
 
                             {:service "IRC"
-                             :icon "chat-i-irc"
                              :doc nil
                              :inputs [{:field :irc_server :placeholder "Hostname"}
                                       {:field :irc_channel :placeholder "Channel"}
                                       {:field :irc_keyword :placeholder "Private Keyword"}
                                       {:field :irc_username :placeholder "Username"}
                                       {:field :irc_password :placeholder "Password (optional)"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/irc-keys}
 
                             {:service "Slack"
-                             :icon "chat-i-slack"
                              :doc [:p "To get your Webhook URL, visit Slack's "
                                    [:a {:href "https://my.slack.com/services/new/circleci"}
                                     "CircleCI Integration"]
                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/slack-keys}
 
                             {:service "Hall"
-                             :icon "chat-i-hall"
                              :doc [:p "To get your Room / Group API token, go to "
                                    [:strong "Settings > Integrations > CircleCI"]
                                    " from within your Hall Group."]
                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}]]
-             (chatroom-item settings controls-ch chat-spec))]
-          [:div.chat-room-save
-           (forms/managed-button
-            [:input
-             {:data-success-text "Saved",
-              :data-loading-text "Saving",
-              :value "Save notification hooks",
-              :type "submit",
-              :on-click #(do
-                          (let [event-data {:project-id project-id
-                                            :merge-paths (map vector project-model/notification-keys)}]
-                            (put! controls-ch [:saved-project-settings event-data])))}])]])))))
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hall-keys}]]
+             (chatroom-item project-id settings controls-ch chat-spec))]])))))
 
 (defn webhooks [project-data owner]
   (om/component

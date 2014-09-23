@@ -400,7 +400,8 @@
   (go (let [comms (get-in current-state [:comms])
             api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
         (if (= :success (:status api-result))
-          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))}])
+          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))
+                                                       :context {:show-id (:id args)}}])
               ;; might need to scroll to the fragment
               (utils/rAF #(scroll! args)))
           (put! (:errors comms) [:api-error api-result])))))
@@ -442,3 +443,8 @@
                     (gstring/format (name subpage))
                     stefon/asset-path)]
         (ajax/ajax :get url :doc-markdown api-ch :context {:subpage subpage} :format :raw)))))
+
+(defmethod post-navigated-to! :language-landing
+  [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
+  (post-default navigation-point args)
+  (analytics/track-page "View Language Landing" {:language language}))
