@@ -216,7 +216,7 @@
            [:i.fa.fa-comments]
            [:span "Live Support"]]
 
-          [:a#add-projects.aside-item {:href "/add-projects",
+          [:a.aside-item {:href "/add-projects",
                                        :data-placement "right"
                                        :data-trigger "hover"
                                        :title "Add Projects"}
