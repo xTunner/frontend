@@ -130,7 +130,7 @@
               comms (get-in current-state [:comms])]
           (condp = (:status api-resp)
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
-            :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false :dashboard-page? true}])
+            :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
             (put! (:errors comms) [:api-error api-resp]))
           (when (and (:repo args) (:read-settings scopes))
             (ajax/ajax :get
@@ -200,7 +200,7 @@
           ;; where the build info would be. Thoughts?
           (condp = (:status api-result)
             :success (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
-            :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false :build-page? true}])
+            :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
             (analytics/track-build (:resp api-result)))
@@ -381,10 +381,13 @@
 
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
+  (let [orig-nav-point (get-in state [:navigation-point])]
+    (mlog "navigated-to :error with (:navigation-point state) of " orig-nav-point)
+    (-> state
+        state-utils/clear-page-state
+        (assoc :navigation-point navigation-point
+               :navigation-data args
+               :original-navigation-point orig-nav-point))))
 
 (defmethod post-navigated-to! :error
   [history-imp navigation-point {:keys [status] :as args} previous-state current-state]

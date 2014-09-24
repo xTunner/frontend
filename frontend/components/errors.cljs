@@ -13,8 +13,9 @@
     (render [_]
       (let [status (get-in app [:navigation-data :status])
             logged-in? (get-in app state/user-path)
-            build-page? (get-in app [:navigation-data :build-page?])
-            dashboard-page? (get-in app [:navigation-data :dashboard-page?])
+            orig-nav-point (get-in app [:original-navigation-point])
+            _ (utils/mlog "error-page render with orig-nav-point " orig-nav-point " and logged-in? " (boolean logged-in?))
+            maybe-login-page? (some #{orig-nav-point} [:dashboard :build])
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.page.error
@@ -30,13 +31,14 @@
            (condp = status
              401 [:p
                   [:b [:a {:href (gh-utils/auth-url)
-             :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                         :properties {:source "401"
-                                                                                      :url js/window.location.pathname}
-                                                                         :path (gh-utils/auth-url)}])}
+                           :on-click #(put! controls-ch [:track-external-link-clicked
+                                                         {:event "Auth GitHub"
+                                                          :properties {:source "401"
+                                                                       :url js/window.location.pathname}
+                                                          :path (gh-utils/auth-url)}])}
                        "Login here"]]
                   " to view this page"]
-             404 (if (and (not logged-in?) (or dashboard-page? build-page?))
+             404 (if (and (not logged-in?) maybe-login-page?)
                    [:div
                     [:p "We're sorry; either that page doesn't exist or you need to be logged in to view it."]
                     [:p [:b [:a {:href (gh-utils/auth-url)} "Login here"] " to view this page with your GitHub permissions."]]]
