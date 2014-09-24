@@ -173,7 +173,7 @@
             settings (get-in app state/settings-path)
             slim-aside? (get-in app state/slim-aside-path)]
         (html
-         [:nav.aside-left-nav {:class (when slim-aside? "slim")}
+         [:nav.aside-left-nav
 
           [:a.aside-item.logo  {:title "Home"
                                 :data-placement "right"

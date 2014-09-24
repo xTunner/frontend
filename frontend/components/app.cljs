@@ -90,13 +90,15 @@
               show-inspector? (get-in app state/show-inspector-path)
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
-              app-without-container-data (dissoc-in app state/container-data-path)]
+              app-without-container-data (dissoc-in app state/container-data-path)
+              slim-aside? (get-in app state/slim-aside-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
            (let [inner? (get-in app state/inner?-path)]
 
-             [:div#app {:class (if inner? "inner" "outer")}
+             [:div#app {:class (concat [(if inner? "inner" "outer")]
+                                       (when slim-aside? ["aside-slim"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
@@ -106,7 +108,7 @@
                 (om/build inspector/inspector app))
               (when (and inner? logged-in?)
                 (om/build aside/aside app-without-container-data))
-              [:main.app-main {:tab-index 1}
+              [:main.app-main
                (om/build header/header app-without-container-data)
                [:div.main-body
                 (om/build dom-com app)]
