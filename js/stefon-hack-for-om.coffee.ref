@@ -55,6 +55,7 @@ window.stefon_hack_for_om =
     "/docs/continuous-deployment-with-heroku.md": '(asset-path "docs/continuous-deployment-with-heroku.md")'
     "/docs/continuous-deployment.md": '(asset-path "docs/continuous-deployment.md")'
     "/docs/deploy-google-app-engine.md": '(asset-path "docs/deploy-google-app-engine.md")'
+    "/docs/deploy-bluemix.md": '(asset-path "docs/deploy-bluemix.md")'
     "/docs/docker.md": '(asset-path "docs/docker.md")'
     "/docs/docs-search-form.md": '(asset-path "docs/docs-search-form.md")'
     "/docs/dont-run.md": '(asset-path "docs/dont-run.md")'

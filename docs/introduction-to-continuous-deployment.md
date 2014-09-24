@@ -1,6 +1,6 @@
 Circle enables you to automatically deploy after green builds.
 We have customers deploying to PaaSes such as Heroku, Engine Yard,
-and Google App Engine, hosted cloud servers (like EC2 and Rackspace),
+Google App Engine and Bluemix, hosted cloud servers (like EC2 and Rackspace),
 and to private and colo servers&mdash;even behind firewalls.
 Some use tools like Capistrano, Fabric, and Paver.
 
@@ -65,9 +65,10 @@ deployment:
 
 ### Deploy to a PaaS
 
-Circle has customers deploying to Heroku, Engine Yard, Google App Engine, Elastic Beanstalk, Dot Cloud, Nodejistu and other PaaSes. We have detailed instructions on
-[deployment to Heroku](/docs/continuous-deployment-with-heroku)
-and [deployment to Google App Engine](/docs/deploy-google-app-engine).
+Circle has customers deploying to Heroku, Engine Yard, Google App Engine, Elastic Beanstalk, Dot Cloud, Nodejistu and other PaaSes. We have detailed instructions on deployment to
+[Heroku](/docs/continuous-deployment-with-heroku),
+[Google App Engine](/docs/deploy-google-app-engine)
+and [Bluemix](/docs/deploy-bluemix).
 If you'd like help setting up your deployment, please
 [contact us](mailto:sayhi@circleci.com).
 
