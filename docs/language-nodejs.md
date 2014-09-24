@@ -24,7 +24,7 @@ as our default version. If you'd like a specific version, then you can specify i
 ```
 machine:
   node:
-    version: }
+    version: 0.10.22
 ```
 
 ### Dependencies

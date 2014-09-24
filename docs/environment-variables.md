@@ -70,11 +70,24 @@ We publish the details of the currently running build in these variables:
     The build number, same as in circleci.com/gh/foo/bar/123
   </dd>
   <dt>
+    `CIRCLE_PREVIOUS_BUILD_NUM`
+  </dt>
+  <dd>
+    The build number of the previous build, same as in circleci.com/gh/foo/bar/123
+  </dd>
+  <dt>
     `CIRCLE_ARTIFACTS`
   </dt>
   <dd>
     The directory whose contents are automatically saved as [build artifacts](/docs/build-artifacts).
   </dd>
+  <dt>
+    `CIRCLE_USERNAME`
+  </dt>
+  <dd>
+    The GitHub login of the user who either pushed the code to GitHub or triggered the build from the UI/API.
+  </dd>
+
 </dl>
 
 ### Parallelism

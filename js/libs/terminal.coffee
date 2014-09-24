@@ -134,12 +134,17 @@ CI.terminal =
 
         # loop over escape sequences within the line
         while (escape_start = input_line.indexOf('\u001B[')) != -1
+          # append everything up to the start of the escape sequence to the output
+          output_line += style.applyTo(input_line.slice(0, escape_start))
+
           # find the end of the escape sequence -- a single letter
           rest = input_line.slice(escape_start + 2)
           escape_end = rest.search(/[A-Za-z]/)
-          backspaces = 0
 
-          # actually deal with 'm' escapes
+          # point "input_line" at first character after the end of the escape sequence
+          input_line = rest.slice(escape_end + 1)
+
+          # only actually deal with 'm' escapes
           if rest.charAt(escape_end) == 'm'
             escape_sequence = rest.slice(0, escape_end)
             if escape_sequence == ''
@@ -148,16 +153,6 @@ CI.terminal =
             else
               escape_codes = escape_sequence.split(';')
               style.add esc for esc in escape_codes
-          # actually deal with 'D' escapes (cursor back)
-          else if rest.charAt(escape_end) == 'D'
-            backspaces = rest.slice(0, escape_end)
-
-          # append everything up to the start of the escape sequence to the output, minus
-          # any backspaces
-          output_line += style.applyTo(input_line.slice(0, Math.max 0, escape_start - backspaces))
-
-          # point "input_line" at first character after the end of the escape sequence
-          input_line = rest.slice(escape_end + 1)
 
         current = current.slice(line_end + terminator.length)
         output_line += style.applyTo(input_line)
