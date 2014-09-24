@@ -381,10 +381,13 @@
 
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
+  (let [orig-nav-point (get-in state [:navigation-point])]
+    (mlog "navigated-to :error with (:navigation-point state) of " orig-nav-point)
+    (-> state
+        state-utils/clear-page-state
+        (assoc :navigation-point navigation-point
+               :navigation-data args
+               :original-navigation-point orig-nav-point))))
 
 (defmethod post-navigated-to! :error
   [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
