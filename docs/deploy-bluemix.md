@@ -1,4 +1,4 @@
-Bluemix is a PAAS offering from IBM. It is pretty straightforward
+Bluemix is a PaaS offering from IBM. It is pretty straightforward
 to use the [Cloud Foundry command line tool 'cf'](https://github.com/cloudfoundry/cli) to deploy to it from CircleCI.
 
 ## Add Cloud Foundry 'cf' utility in as a Dependency
