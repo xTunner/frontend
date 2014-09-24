@@ -751,19 +751,20 @@
   padding-right: 1em;
   width: (@practice_tool_size * @practice_tool_grow);
   height: (@practice_tool_size * @practice_tool_grow);
-  &:hover,
-  &.hover {
-    svg {
-      .filter(@practice_hover_shadow);
-      stroke-width: (@practice_tool_weight + 1);
-      width: (@practice_tool_size * @practice_tool_grow);
-      height: (@practice_tool_size * @practice_tool_grow);
-      transition: (@practice_tool_speed / 2) @practice_tool_timing;
+  .color_stroke(@a1, @a2, @c: length(@a1)) when (@c > 0) {
+    .color_stroke(@a1, @a2, (@c - 1));
+    @n: extract(@a1, @c); .tool-logo-@{n} {stroke: extract(@a2, @c);}
+  } .color_stroke(@tools_brands_titles, @tools_brands_colors);
+  &:not(:hover) {
+    &:not(.hover) {
+      svg {
+        .filter(none);
+        width: @practice_tool_size;
+        height: @practice_tool_size;
+        stroke: @grayBoxBorder;
+        stroke-width: @practice_tool_weight;
+      }
     }
-    .color_stroke(@a1, @a2, @c: length(@a1)) when (@c > 0) {
-      .color_stroke(@a1, @a2, (@c - 1));
-      @n: extract(@a1, @c); .tool-logo-@{n} {stroke: extract(@a2, @c);}
-    } .color_stroke(@tools_brands_titles, @tools_brands_colors);
   }
   figure {
     margin: 0;
@@ -771,10 +772,10 @@
     transition+: margin @practice_tool_speed @bezier_transform;
   }
   svg {
-    width: @practice_tool_size;
-    height: @practice_tool_size;
-    stroke: @grayBoxBorder;
-    stroke-width: @practice_tool_weight;
+    .filter(@practice_hover_shadow);
+    width: (@practice_tool_size * @practice_tool_grow);
+    height: (@practice_tool_size * @practice_tool_grow);
+    stroke-width: (@practice_tool_weight + 1);
     stroke-linecap: round;
     stroke-linejoin: bevel;
     transition: @practice_tool_speed @practice_tool_timing;
