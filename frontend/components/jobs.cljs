@@ -148,11 +148,11 @@
              [:li "Someone who considers the user's experience from start to finish."]
              [:li "An aptitude in many skill sets and a hunger for learning."]
              [:li "The ability to communicate effeciently in a developer-centric environment."]
-             [:li "A strong personality with a equally strong sense of taste."]
+             [:li "A keen eye and a very strong sense of taste."]
              [:li "A deep understanding of web design and development best practices."]
              [:li "Work you've done for other web-based developer tools."]
              [:li "Any other interesting work you wish to share, finished or not."]
-             [:li "A willingness to approach sophisticated problems with an incredibly talented team at your side."]]
+             [:li "A willingness to approach sophisticated problems."]]
            [:a
             {:role "button", :href "/jobs#apply"}
             [:span "Apply for Design roles"]]]
