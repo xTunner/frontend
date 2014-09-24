@@ -62,3 +62,11 @@
 
 (defn id [project]
   (:vcs_url project))
+
+;; TODO: this is annoying; it's replicating code in
+;; circle.model.project/oss? ... is there some easy way around that?
+(defn oss? [project]
+  (let [feature-flag (get-in project [:feature_flags :oss])
+        gh-private (get-in project [:github-info :private])]
+    (and (or (nil? feature-flag) (true? feature-flag))
+         (not gh-private))))

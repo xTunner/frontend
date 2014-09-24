@@ -5,6 +5,7 @@
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
             [frontend.models.plan :as plan-model]
+            [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -12,7 +13,7 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-trial-notice? [projects plan]
-  (let [some-private-repos (some #(not (get-in % [:feature_flags :oss])) projects)]
+  (let [some-private-repos (some #(not (project-model/oss? %)) projects)]
     (and some-private-repos
          (plan-model/trial? plan)
          ;; We probably gave them a special deal, better not to bug them

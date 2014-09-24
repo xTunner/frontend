@@ -90,7 +90,7 @@
                        {:react-key (:index container)}))]])))))
 
 (defn show-trial-notice? [project plan]
-  (and (not (get-in project [:feature_flags :oss]))
+  (and (not (project-model/oss? project))
        (plan-model/trial? plan)
        (plan-model/trial-over? plan)
        (> 4 (plan-model/days-left-in-trial plan))))
