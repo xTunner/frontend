@@ -1103,8 +1103,14 @@
             input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
         (html
          [:div.aws-page
-          [:h2 "AWS settings for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
           [:div.aws-page-inner
+           [:p "Set your AWS keypair to be used for authenticating against AWS services during your build. "
+            "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
+            [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
+            [:a {:href "http://aws.amazon.com/documentation/sdk-for-java/"} "the Java SDK"] ", "
+            [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
+            [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
            [:form
             [:input#access-key-id
              {:required true, :type "text", :value (or access_key_id "")
