@@ -45,6 +45,32 @@
 @tools_brands_titles:    ruby,   rails,  python,      js,    java,     php,  django,    node,  safari,  chrome, firefox,  casper, selenium, phantom,  rabbit, beanstalkd,  resque, capistrano,     aws, rackspace,  joyent,  heroku, engineyard, nodejitsu,  fabric;
 @tools_brands_colors: #CC342D, #CC342D, #3776ab, #FFCD0A, #E76F00, #6A9AD1, #092e20, #8CC84B, #1280f3, #db4437, #E66000, #000000,  #2bb033, #4ad5db, #ff6600,    #000000, #CE1211,    #52C1DB, #FCB034,   #CE1330, #FF6600, #430098,    #E92429,   #333333, #FECB4A;
 
+@tools_brands: ruby,       #CC342D,
+               rails,      #CC342D,
+               python,     #3776ab,
+               js,         #FFCD0A,
+               java,       #E76F00,
+               php,        #6A9AD1,
+               django,     #092e20,
+               node,       #8CC84B,
+               safari,     #1280f3,
+               chrome,     #db4437,
+               firefox,    #E66000,
+               casper,     #000000,
+               selenium,   #2bb033,
+               phantom,    #4ad5db,
+               rabbit,     #ff6600,
+               beanstalkd, #000000,
+               resque,     #CE1211,
+               capistrano, #52C1DB,
+               aws,        #FCB034,
+               rackspace,  #CE1330,
+               joyent,     #FF6600,
+               heroku,     #430098,
+               engineyard, #E92429,
+               nodejitsu,  #333333,
+               fabric,     #FECB4A;
+
 @customers_brands_titles: shopify, dropbox, square,  autodesk, spotify;
 @customers_brands_colors: #96bf48, #007ee5, #000000, #4bd3c8,  #81b71a;
 
@@ -751,10 +777,24 @@
   padding-right: 1em;
   width: (@practice_tool_size * @practice_tool_grow);
   height: (@practice_tool_size * @practice_tool_grow);
-  .color_stroke(@a1, @a2, @c: length(@a1)) when (@c > 0) {
-    .color_stroke(@a1, @a2, (@c - 1));
-    @n: extract(@a1, @c); .tool-logo-@{n} {stroke: extract(@a2, @c);}
-  } .color_stroke(@tools_brands_titles, @tools_brands_colors);
+  // .color_stroke(@a1, @a2, @c: length(@a1)) when (@c > 0) {
+  //   .color_stroke(@a1, @a2, (@c - 1));
+  //   @n: extract(@a1, @c); .tool-logo-@{n} {stroke: extract(@a2, @c);}
+  // } .color_stroke(@tools_brands_titles, @tools_brands_colors);
+
+  .color_stroke(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
+    .color_stroke(@a; (@c - 1); (@x - 1); (@y - 1));
+    @cx: (@c + @x);
+    @cy: (@c + @y);
+    @tool: extract(@a, @cx);
+    @color: extract(@a, @cy);
+    .tool-logo-@{tool} {
+      stroke: @color;
+    }
+  }
+  .color_stroke(@tools_brands);
+
+
   &:not(:hover) {
     &:not(.hover) {
       svg {
