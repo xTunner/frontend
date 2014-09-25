@@ -161,30 +161,34 @@
                          [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
                                                :animate? false}]))))
 
-(defn mount-autoscroll [owner]
-  (let [container (om/get-node owner)
-        ;; autoscroll when the container_parent's tail-end is showing
-        scroll-listener #(let [new-autoscroll? (> (goog.dom/getDocumentHeight)
-                                                  (.-bottom (.getBoundingClientRect container)))]
-                           (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
-                             (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
-    (om/set-state! owner [:scroll-listener-key] (goog.events/listen
-                                                 (sel1 "main.app-main")
-                                                 "scroll"
-                                                 scroll-listener))))
+(defn check-autoscroll [owner deltaY]
+  (cond
+
+   ;; autoscrolling and scroll up? That means stop autoscrolling.
+   (and (neg? deltaY)
+        (om/get-state owner [:autoscroll?]))
+   (om/set-state! owner [:autoscroll?] false)
+
+   ;; not autoscrolling and scroll down? If they scrolled all of the way down, better autoscroll
+   (and (pos? deltaY)
+        (not (om/get-state owner [:autoscroll?])))
+   (let [container (om/get-node owner)]
+     (when (> (.-height (goog.dom/getViewportSize))
+              (.-bottom (.getBoundingClientRect container)))
+       (om/set-state! owner [:autoscroll?] true)))
+
+   :else nil))
 
 (defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:autoscroll? false})
+      {:autoscroll? true})
     om/IDidMount
     (did-mount [_]
-      (mount-autoscroll owner)
       (mount-browser-resize owner))
     om/IWillUnmount
     (will-unmount [_]
-      (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key]))
       (goog.events/unlistenByKey (om/get-state owner [:browser-resize-key])))
     om/IDidUpdate
     (did-update [_ _ _]
@@ -205,6 +209,7 @@
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
+                                              (check-autoscroll owner (aget e "deltaY"))
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
                                                 (let [body (sel1 "body")]
