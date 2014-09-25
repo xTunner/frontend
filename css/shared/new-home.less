@@ -278,7 +278,7 @@
               left @prolog_cover_fadeout,
               top @prolog_cover_fadeout,
               border-radius @prolog_cover_fadeout,
-              opacity 0 @prolog_cover_fadeout;
+              opacity 0ms @prolog_cover_fadeout;
   transition-timing-function: @bezier_transform;
 }
 .home-avatars {
@@ -444,7 +444,7 @@
     border-color: @grayBoxBorder;
     transition: color @prolog_cover_fadein @prolog_cover_fadeout,
                 background @prolog_cover_fadein @prolog_cover_fadeout,
-                border-color 0 0;
+                border-color 0ms 0ms;
 // Cover
     ~ .home-cover {
       width: 100%;
@@ -458,7 +458,7 @@
                   left @prolog_cover_fadein,
                   top @prolog_cover_fadein,
                   border-radius (@prolog_cover_fadein / 2),
-                  opacity 0;
+                  opacity 0ms;
     }
 // Logos
     ~ .home-avatars {
@@ -865,7 +865,7 @@
     width: 0;
     border: solid transparent;
     pointer-events: none;
-    transition: opacity 0;
+    transition: opacity 0ms;
   }
   &:before {
     border-bottom-color: @grayBoxBorder;
@@ -1024,7 +1024,7 @@
       ~ .home-slogans {
         a {
           opacity: 0;
-          transition: opacity 0;
+          transition: opacity 0ms;
         }
       }
       ~ .home-bottom-shelf {
@@ -1060,7 +1060,7 @@
       &:active {
         background: @blueDark;
         border: 2px solid @blueDark;
-        transition: 0;
+        transition: 0ms;
       }
     }
   }
