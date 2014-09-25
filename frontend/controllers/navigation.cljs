@@ -437,7 +437,7 @@
                        man-mult (mult man-ch)]
                    (tap man-mult api-ch false)
                    (tap man-mult result-ch)
-                   (ajax/ajax :get (stefon/asset-path "/docs/manifest.json")
+                   (ajax/ajax :get (aget js/window "renderContext" "doc_manifest_url")
                               :doc-manifest man-ch
                               :format :json)
                    (-> (<! (filter-ch #(= :success (second %)) result-ch))
