@@ -771,30 +771,17 @@
   }
 }
 .supported-tool {
+  .color_stroke(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
+    .color_stroke(@a; (@c - 1); (@x - 1); (@y - 1));
+    @n: extract(@a, (@c + @x));
+    .tool-logo-@{n} {stroke: extract(@a, (@c + @y));}
+  }.color_stroke(@tools_brands);
   margin: 0;
   fill: none;
   display: block;
   padding-right: 1em;
   width: (@practice_tool_size * @practice_tool_grow);
   height: (@practice_tool_size * @practice_tool_grow);
-  // .color_stroke(@a1, @a2, @c: length(@a1)) when (@c > 0) {
-  //   .color_stroke(@a1, @a2, (@c - 1));
-  //   @n: extract(@a1, @c); .tool-logo-@{n} {stroke: extract(@a2, @c);}
-  // } .color_stroke(@tools_brands_titles, @tools_brands_colors);
-
-  .color_stroke(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
-    .color_stroke(@a; (@c - 1); (@x - 1); (@y - 1));
-    @cx: (@c + @x);
-    @cy: (@c + @y);
-    @tool: extract(@a, @cx);
-    @color: extract(@a, @cy);
-    .tool-logo-@{tool} {
-      stroke: @color;
-    }
-  }
-  .color_stroke(@tools_brands);
-
-
   &:not(:hover) {
     &:not(.hover) {
       svg {
