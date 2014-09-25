@@ -85,7 +85,7 @@
 (defrender front-page [app owner]
   (let [query-results (get-in app state/docs-articles-results-path)
         query (get-in app state/docs-articles-results-query-path)
-        docs (doc-utils/find-all-docs)]
+        docs (get-in app state/docs-data-path)]
     (html
      [:div
       [:h1 "What can we help you with?"]
