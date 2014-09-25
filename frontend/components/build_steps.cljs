@@ -183,7 +183,7 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:autoscroll? true})
+      {:autoscroll? false})
     om/IDidMount
     (did-mount [_]
       (mount-browser-resize owner))
