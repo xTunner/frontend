@@ -208,8 +208,8 @@
           [:div#container_parent {:on-wheel (fn [e]
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (let [main (sel1 "main.app-main")]
-                                                  (set! (.-scrollTop main) (+ (.-scrollTop main) (aget e "deltaY"))))))
+                                                (let [body (sel1 "body")]
+                                                  (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container
