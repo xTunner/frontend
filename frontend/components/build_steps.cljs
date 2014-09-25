@@ -190,9 +190,9 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (let [main (sel1 "main.app-main")
+        (let [body (sel1 "body")
               very-large-numer 10000000]
-          (set! (.-scrollTop main) very-large-numer))))
+          (set! (.-scrollTop body) very-large-numer))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
