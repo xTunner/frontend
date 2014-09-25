@@ -730,12 +730,15 @@
   }
 }
 .supported-tools {
+  position: relative;
   padding: (@tile / 2) 0;
   overflow: hidden;
+  z-index: 2;
   &:not(:last-child) {
     margin-bottom: (-@tile * 3);
   }
   &:not(.active) {
+    z-index: 1;
     figure {
       margin-top: (@tile * 3);
       opacity: 0;
