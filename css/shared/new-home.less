@@ -192,6 +192,7 @@
     pointer-events: none;
     figure {
       margin: 0;
+      width: 6em;
       height: 1.5em;
     }
     svg {
@@ -303,6 +304,8 @@
   }
   .avatar-circle {
     .animation(prolog-logo @prolog_open_duration @bezier_fadein);
+    width: @tile;
+    height: @tile;
     position: absolute;
     top: 0;
     left: 0;
@@ -909,7 +912,7 @@
   padding: 1em;
   border: 1px solid @grayBoxBorder;
   border-radius: 5px;
-  transition: 500ms;
+  transition: @quote_animation_speed;
   p {
     position: relative;
     margin: auto 0 auto 1em;
