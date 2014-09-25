@@ -288,7 +288,8 @@
                      (list
                       [:a {:on-click #(put! controls-ch [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "))
                    "we support all of your tools.
-                   Anything you can run on Linux, we can support, including your own customer tools.
+                   If it runs on Linux, then it will work on CircleCI.
+                   We'll even be around to help you install your own tools.
                    The best development teams in the world trust us as their continuous integration and delivery solution because of our unmatched support and our ability to scale with them.
                    We're built for teams."]]]
                 [:div.practice-customers
