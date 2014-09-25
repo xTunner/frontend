@@ -790,6 +790,7 @@
         height: @practice_tool_size;
         stroke: @grayBoxBorder;
         stroke-width: @practice_tool_weight;
+        transition: @practice_tool_speed @practice_tool_timing;
       }
     }
   }
@@ -805,7 +806,7 @@
     stroke-width: (@practice_tool_weight + 1);
     stroke-linecap: round;
     stroke-linejoin: bevel;
-    transition: @practice_tool_speed @practice_tool_timing;
+    transition: (@practice_tool_speed / 2) @practice_tool_timing;
   }
 }
 .practice-articles {
