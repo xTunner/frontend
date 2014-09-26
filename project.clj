@@ -24,6 +24,7 @@
                  [sablono "0.2.16"]
                  [secretary "1.2.0"]
                  [com.andrewmcveigh/cljs-time "0.1.5"]
+                 [com.cemerick/url "0.1.1"]
                  [weasel "0.3.0"] ;; repl
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]]
