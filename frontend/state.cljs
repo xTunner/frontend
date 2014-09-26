@@ -2,6 +2,12 @@
 
 (defn initial-state []
   {:error-message nil
+   ;; A/B test instructions:
+   ;; 1. Don't define a test with null as one of the options
+   ;; 2. If you change a test's options, you must also change the test's name
+   ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
+   :ab-test-definitions {:a_is_a [true false]
+                         :split_form [true false]}
    :ab-tests {}
    :changelog nil
    :environment "development"
@@ -10,6 +16,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}}}
+   :user-options-shown false
    :selected-home-technology-tab nil
    :builds-per-page 30
    :navigation-point nil
@@ -39,6 +46,7 @@
                                            :show-usage-queue false}
                         :artifact-data {:artifacts nil
                                         :show-artifacts false}
+                        :config-data {:show-config false}
                         :current-container-id 0
                         :container-data {:current-container-id 0
                                          :containers nil}
@@ -76,6 +84,8 @@
 (def artifacts-path [:current-build-data :artifacts-data :artifacts])
 (def show-artifacts-path [:current-build-data :artifacts-data :show-artifacts])
 
+(def show-config-path [:current-build-data :config-data :show-config])
+
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
 (def current-container-path [:current-build-data :container-data :current-container-id])
@@ -92,6 +102,8 @@
 (def project-envvars-path (conj project-data-path :envvars))
 (def project-settings-branch-path (conj project-data-path :settings-branch))
 (def project-path (conj project-data-path :project))
+(def project-scopes-path (conj project-data-path :project-scopes))
+(def page-scopes-path [:page-scopes])
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
@@ -145,8 +157,6 @@
 
 (def inner?-path [:navigation-data :inner?])
 
-(def show-nav-settings-link-path [:navigation-settings :show-settings-link])
-
 (def instrumentation-path [:instrumentation])
 
 (def browser-settings-path [:settings :browser-settings])
@@ -166,6 +176,8 @@
 
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
 
+(def language-testimonial-tab-path [:selected-language-testimonial-tab])
+
 (def changelog-path [:changelog])
 
 (def build-state-path [:build-state])
@@ -173,3 +185,10 @@
 (def error-message-path [:error-message])
 
 (def inputs-path [:inputs])
+
+(def docs-data-path [:docs-data])
+(def docs-search-path [:docs-query])
+(def docs-articles-results-path [:docs-articles-results])
+(def docs-articles-results-query-path [:docs-articles-results-query])
+
+(def user-options-shown-path [:user-options-shown])

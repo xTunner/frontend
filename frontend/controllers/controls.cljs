@@ -19,6 +19,7 @@
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
+            [goog.labs.userAgent.engine :as engine]
             goog.style)
   (:require-macros [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]])
@@ -28,6 +29,39 @@
 
 (defn container-id [container]
   (int (last (re-find #"container_(\d+)" (.-id container)))))
+
+
+(defn extract-from
+  "Extract data from a nested map. Returns a new nested map comprising only the
+  nested keys from `path`.
+
+  user=> (extract-from nil nil)
+  nil
+  user=> (extract-from nil [])
+  nil
+  user=> (extract-from nil [:a])
+  nil
+  user=> (extract-from {} [:a])
+  nil
+  user=> (extract-from {:a 1} [:a])
+  {:a 1}
+  user=> (extract-from {:a {:b {:c 1}}, :d 2} [:a :b])
+  {:a {:b {:c 1}}}"
+  [m path]
+  (when (seq path)
+    (let [sentinel (js-obj)
+          value (get-in m path sentinel)]
+      (when-not (identical? value sentinel)
+        (assoc-in {} path value)))))
+
+(defn merge-settings
+  "Merge new settings from inputs over a subset of project settings."
+  [paths project settings]
+  (letfn []
+    (if (not (seq paths))
+      settings
+      (utils/deep-merge (apply merge {} (map (partial extract-from project) paths))
+                        settings))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -93,6 +127,10 @@
   [target message _ state]
   (update-in state state/show-inspector-path not))
 
+(defmethod control-event :user-options-toggled
+  [target message _ state]
+  (update-in state state/user-options-shown-path not))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
@@ -151,6 +189,11 @@
                  :context (build-model/id build)))))
 
 
+(defmethod control-event :show-config-toggled
+  [target message build-id state]
+  (update-in state state/show-config-path not))
+
+
 (defmethod control-event :container-selected
   [target message {:keys [container-id]} state]
   (assoc-in state state/current-container-path container-id))
@@ -159,22 +202,29 @@
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
+          app-main (sel1 target ".app-main")
           current-scroll-top (.-scrollTop parent)
+          app-main-scroll-top (.-scrollTop app-main)
           current-scroll-left (.-scrollLeft parent)
           new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
-      (if-not animate?
-        (set! (.-scrollLeft parent) new-scroll-left)
-        (let [scroller (or (.-scroll_handler parent)
-                            (set! (.-scroll_handler parent)
-                                  ;; Store this on the parent so that we don't handle parent scroll while
-                                  ;; the animation is playing
-                                  (goog.fx.dom.Scroll. parent
-                                                       #js [0 0]
-                                                       #js [0 0]
-                                                       250)))]
-          (set! (.-startPoint scroller) #js [current-scroll-left current-scroll-top])
-          (set! (.-endPoint scroller) #js [new-scroll-left current-scroll-top])
-          (.play scroller)))))
+      (let [scroller (or (.-scroll_handler parent)
+                         (set! (.-scroll_handler parent)
+                               ;; Store this on the parent so that we don't handle parent scroll while
+                               ;; the animation is playing
+                               (goog.fx.dom.Scroll. parent
+                                                    #js [0 0]
+                                                    #js [0 0]
+                                                    (if animate? 250 0))))
+            onEnd (.-onEnd scroller)]
+        (set! (.-startPoint scroller) #js [current-scroll-left 0])
+        (set! (.-endPoint scroller) #js [new-scroll-left 0])
+        ;; Browser find can scroll an absolutely positioned container into view,
+        ;; causing the parent to scroll. But then we set it to relative and there
+        ;; is no longer any overflow, so we need to scroll app-main instead.
+        (set! (.-onEnd scroller) #(do (.call onEnd scroller)
+                                      (set! (.-scrollTop app-main)
+                                            (+ app-main-scroll-top current-scroll-top))))
+        (.play scroller))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
     (let [container (get-in current-state (state/container-path container-id))
@@ -366,13 +416,17 @@
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
                             (sel parent ".container-view"))
-        ;; if we're scrolling left, then we want the container whose rightmost portion is showing
-        ;; if we're scrolling right, then we want the container whose leftmost portion is showing
         new-scrolled-container-id (if (= parent-scroll-left current-container-scroll-left)
                                     current-container-id
-                                    (if (< parent-scroll-left current-container-scroll-left)
-                                      (apply min (map container-id (take 2 containers)))
-                                      (apply max (map container-id (take 2 containers)))))]
+                                    (if-not (engine/isGecko)
+                                      ;; Safari and Chrome scroll the found content to the center of the page
+                                      (container-id (first containers))
+                                      ;; Firefox scrolls the content just into view
+                                      ;; if we're scrolling left, then we want the container whose rightmost portion is showing
+                                      ;; if we're scrolling right, then we want the container whose leftmost portion is showing
+                                      (if (< parent-scroll-left current-container-scroll-left)
+                                        (apply min (map container-id (take 2 containers)))
+                                        (apply max (map container-id (take 2 containers))))))]
     ;; This is kind of dangerous, we could end up with an infinite loop. Might want to
     ;; do a swap here (or find a better way to structure this!)
     (when (not= current-container-id new-scrolled-container-id)
@@ -462,22 +516,53 @@
        (release-button! uuid (:status api-result))))))
 
 
-(defmethod post-control-event! :saved-notification-hooks
-  [target message {:keys [project-id]} previous-state current-state]
+(defn save-project-settings
+  "Takes the state of project settings inputs and PUTs the new settings to
+  /api/v1/project/:project/settings.
+
+  `merge-path` is a path into the nested project data-structure. When
+  merge-path is non-nil the part of the project data-structure at that path is
+  used as the base values for the settings. The new settings from the inputs
+  state are merged on top.
+
+  This allows all the settings on a page to be submitted, even if the user only
+  modifies one.
+
+  E.g.
+  project is
+    {:github-info { ... }
+     :aws {:keypair {:access_key_id \"access key\"
+                     :secret_access_key \"secret key\"}}}
+
+  The user sets a new access key ID so inputs is
+    {:aws {:keypair {:access_key_id \"new key id\"}}}
+
+  :merge-path is [:aws :keypair]
+
+  The settings posted to the settings API will be:
+    {:aws {:keypair {:access_key_id \"new key id\"
+                     :secret_access_key \"secret key\"}}}"
+  [project-id merge-paths current-state]
   (let [project-name (vcs-url/project-name project-id)
         comms (get-in current-state [:comms])
-        uuid frontend.async/*uuid*
-        project (get-in current-state state/project-path)
         inputs (get-in current-state state/inputs-path)
-        settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
+        project (get-in current-state state/project-path)
+        settings (merge-settings merge-paths project inputs)]
     (go
-     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
-       (if (= :success (:status api-result))
-         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
-           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
-           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
-         (put! (:errors comms) [:api-error api-result]))
-       (release-button! uuid (:status api-result))))))
+      (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+        (if (= :success (:status api-result))
+          (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
+          (put! (:errors comms) [:api-error api-result]))
+        api-result))))
+
+(defmethod post-control-event! :saved-project-settings
+  [target message {:keys [project-id merge-paths]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*]
+    (go
+      (let [api-result (<! (save-project-settings project-id merge-paths current-state))]
+        (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-ssh-key
@@ -503,6 +588,23 @@
                :params {:fingerprint fingerprint}
                :context {:project-id project-id
                          :fingerprint fingerprint})))
+
+
+(defmethod post-control-event! :test-hook
+  [target message {:keys [project-id merge-paths service]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        project-name (vcs-url/project-name project-id)
+        comms (get-in current-state [:comms])]
+    (go
+      (let [save-result (<! (save-project-settings project-id merge-paths current-state))
+            test-result (if (= (:status save-result) :success)
+                          (let [test-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/hooks/%s/test" project-name service)
+                                                                   :params {:project-id project-id}))]
+                            (when (not= (:status test-result) :success)
+                              (put! (:errors comms) [:api-error test-result]))
+                            test-result)
+                          save-result)]
+        (release-button! uuid (:status test-result))))))
 
 
 (defmethod post-control-event! :saved-project-api-token
@@ -856,7 +958,7 @@
 
 
 
-(defmethod control-event :home-technology-tab-selected
+(defmethod control-event :home-technology-tab-selected 
   [target message {:keys [tab]} state]
   (assoc-in state state/selected-home-technology-tab-path tab))
 
@@ -872,17 +974,22 @@
                                                             (redirect)))
          (async/timeout 1000) (redirect)))))
 
+(defmethod control-event :language-testimonial-tab-selected
+  [target message {:keys [index]} state]
+  (assoc-in state state/language-testimonial-tab-path index))
+
 (defmethod post-control-event! :enterprise-learn-more-clicked
   [target message {:keys [source]} previous-state current-state]
   (utils/open-modal "#enterpriseModal"))
 
 (defmethod control-event :project-feature-flag-checked
-  [target message {:keys [project-id project-name flag value]} state]
+  [target message {:keys [project-id flag value]} state]
   (assoc-in state (conj state/project-path :feature_flags flag) value))
 
 (defmethod post-control-event! :project-feature-flag-checked
-  [target message {:keys [project-id project-name flag value]} previous-state current-state]
-  (let [comms (get-in current-state [:comms])]
+  [target message {:keys [project-id flag value]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        comms (get-in current-state [:comms])]
     (go (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name)
                                                 :params {:feature_flags {flag value}}))]
           (when (not= :success (:status api-result))
@@ -910,3 +1017,11 @@
 (defmethod control-event :show-all-commits-toggled
   [target message _ state]
   (update-in state (conj state/build-data-path :show-all-commits) not))
+
+(defmethod post-control-event! :doc-search-submitted
+  [target message {:keys [query]} previous-state current-state]
+  (let [comms (get-in current-state [:comms])]
+    (go (let [api-result (<! (ajax/managed-ajax :get "/search-articles" :params {:query query}))]
+          (put! (:api comms) [:docs-articles (:status api-result) api-result])
+          (when (= (:success (:status api-result)))
+            (put! (:nav comms) [:navigate! {:path "/docs"}]))))))

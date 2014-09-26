@@ -6,6 +6,7 @@
             [frontend.analytics.perfect-audience :as pa]
             [frontend.analytics.rollbar :as rollbar]
             [frontend.analytics.twitter :as twitter]
+            [frontend.analytics.facebook :as facebook]         
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
@@ -33,6 +34,7 @@
   (mixpanel/track "View Build" (merge {:running (build-model/running? build)
                                        :build-num (:build_num build)
                                        :vcs-url (vcs-url/project-name (:vcs_url build))
+                                       :oss (boolean (:oss build))
                                        :outcome (:outcome build)}
                                       (when (:stop_time build)
                                         {:elapsed_hours (/ (- (.getTime (js/Date.))
@@ -43,8 +45,8 @@
   (mixpanel/track-pageview path)
   (google/push path))
 
-(defn track-page [page]
-  (mixpanel/track page))
+(defn track-page [page & [props]]
+  (mixpanel/track page props))
 
 (defn track-pricing []
   (mixpanel/register-once {:view-pricing true}))
@@ -70,6 +72,7 @@
 (defn track-signup []
   (utils/swallow-errors
    (twitter/track-signup)
+   (facebook/track-signup)
    ((aget js/window "track_signup_conversion"))))
 
 (defn track-payer [login]
@@ -95,3 +98,6 @@
 
 (defn track-unfollow-repo []
   (google/track-event "Repos" "Remove"))
+
+(defn track-message [message]
+  (mixpanel/track-message message))

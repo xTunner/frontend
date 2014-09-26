@@ -6,13 +6,16 @@
 
 (defn raise-dialog [ch & [message]]
   (if-let [jq (intercom-jquery)]
-    (do
+    (try
       (.click (jq "#IntercomTab"))
       (when-not (.is (jq "#IntercomNewMessageContainer") ":visible")
-        (.click (jq ".new_message")))
+        (.click (jq "[href=IntercomNewMessageContainer]")))
       (.focus (jq "#newMessageBody"))
       (when message
-        (.text (jq "#newMessageBody") (str message "\n\n"))))
+        (.text (jq "#newMessageBody") (str message "\n\n")))
+      (catch :default e
+        (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")
+        (utils/merror e)))
     (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")))
 
 (defn user-link []

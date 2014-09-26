@@ -16,22 +16,28 @@
   (reify
     om/IRender
     (render [_]
-      (let [changelog-entries (get-in app state/changelog-path)
-            team (about/team)]
+      (let [changelog (get-in app state/changelog-path)
+            team (about/team)
+            show-id (:show-id changelog)]
         (html
          [:div.changelog.page
           [:div.banner
            [:div.container
-            [:h1 "ChangeLog"]
+            [:h1 "Changelog"]
             [:h3 "What's changed in CircleCI recently"]]]
           [:div.container.content
            [:div.entries
-            (for [entry changelog-entries
-                  :let [team-member (first (filter #(= (:author entry) (:github %)) team))]]
-              [:div.entry {:id (-> (:pubDate entry) (str/replace ":" "") (str/replace "-" ""))}
+            (for [entry (:entries changelog)
+                  :let [team-member (first (filter #(= (:author entry) (:github %)) team))
+                        id (->> entry :guid (re-find #"/changelog/(.+)$") last)]
+                  :when (or (nil? show-id) (= show-id id))]
+              [:div.entry {:id id}
                [:div.entry-main
                 [:div.entry-content
-                 [:h3.title (:title entry)]
+                 [:h3.title
+                  (if show-id
+                    (:title entry)
+                    [:a {:href (str "/changelog/" id)} (:title entry)])]
                  [:p.description {:dangerouslySetInnerHTML #js {"__html" (:description entry)}}]]
                 [:div.entry-info {:class (:type entry)}
                  [:strong (:type entry)]
@@ -41,9 +47,11 @@
                                       (str "https://twitter.com/" (:twitter team-member))
                                       (str "https://github.com/" (:github team-member)))}
                           (:name team-member)]
-                         " on "))
+                         " on"))
                  [:a {:href (:link entry)}
-                  (datetime/as-time-since (:pubDate entry))]]]
+                  " " (datetime/as-time-since (:pubDate entry))]]]
                [:div.entry-avatar
                 (when team-member
-                  [:img {:src (:img-path team-member)}])]])]]])))))
+                  [:img {:src (:img-path team-member)}])]])]
+           (when show-id
+             [:a {:href "/changelog"} "View Full Changelog"])]])))))

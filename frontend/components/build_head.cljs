@@ -16,6 +16,12 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
+;; This is awful, can't we just pass build-head the whole app state?
+;; splitting it up this way means special purpose paths to find stuff
+;; in it depending on what sub-state with special keys we have, right?
+(defn has-scope [scope data]
+  (scope (:scopes data)))
+
 (defn build-queue [data owner]
   (reify
     om/IRender
@@ -203,6 +209,67 @@
                            [:a {:href (:url artifact) :target "_blank"} display-path])]))
                     artifacts)]))])))))
 
+(defn build-config [{:keys [build config-data]} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            config-string (get-in build [:circle_yml :string])
+            show-config (:show-config config-data)]
+        (html
+         [:section.build-config {:class (when show-config "active")}
+          [:div.build-config-title
+           [:strong "circle.yml"]
+           [:a {:role "button"
+                :on-click #(put! controls-ch [:show-config-toggled])}
+            [:span " view "]
+            [:i.fa.fa-caret-down {:class (when show-config "fa-rotate-180")}]]]
+          (when show-config
+            [:div.build-config-string [:pre config-string]])])))))
+
+(defn expected-duration
+  [{:keys [start stop build]} owner opts]
+  (reify
+    om/IDisplayName (display-name [_] "Expected Duration")
+    om/IInitState
+    (init-state [_]
+      {:watcher-uuid (utils/uuid)
+       :now (datetime/server-now)
+       :has-watcher? false})
+    om/IDidMount
+    (did-mount [_]
+      (when-not stop
+        (let [timer-atom (om/get-shared owner [:timer-atom])
+              uuid (om/get-state owner [:watcher-uuid])]
+          (add-watch timer-atom uuid (fn [_k _r _p t]
+                                       (om/set-state! owner [:now] t)))
+          (om/set-state! owner [:has-watcher?] true))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (when (om/get-state owner [:has-watcher?])
+        (remove-watch (om/get-shared owner [:timer-atom])
+                      (om/get-state owner [:watcher-uuid]))))
+
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (and stop (om/get-state owner [:has-watcher?]))
+        (remove-watch (om/get-shared owner [:timer-atom])
+                      (om/get-state owner [:watcher-uuid]))))
+    om/IRenderState
+    (render-state [_ {:keys [now]}]
+      (let [end-ms (if stop
+                     (.getTime (js/Date. stop))
+                     now)
+            formatter (get opts :formatter datetime/as-duration)
+            duration-ms (- end-ms (.getTime (js/Date. start)))
+            previous-build (:previous_successful_build build)
+            past-ms (:build_time_millis previous-build)]
+        (if (and past-ms
+                 (= (:status build) "running")
+                 (< duration-ms (* 1.5 past-ms)))
+          (dom/span nil "/~" (formatter past-ms))
+          (dom/span nil ""))))))
+
 (defn build-head [data owner]
   (reify
     om/IRender
@@ -217,7 +284,9 @@
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
             plan (get-in data [:project-data :plan])
-            user (:user data)]
+            user (:user data)
+            logged-in? (not (empty? user))
+            config-data (:config-data build-data)]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -232,16 +301,23 @@
                        (build-model/author build)])]
                [:th "Started"]
                [:td (when (:start_time build)
-                      (list
-                       (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}}) " ago"))]]
+                      {:title (datetime/full-datetime (:start_time build))})
+                (when (:start_time build)
+                  (list (om/build common/updating-duration
+                                  {:start (:start_time build)}
+                                  {:opts {:formatter datetime/time-ago}}) " ago"))]]
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
+               
                [:th "Duration"]
                [:td (if (build-model/running? build)
                       (om/build common/updating-duration {:start (:start_time build)
                                                           :stop (:stop_time build)})
-                      (build-model/duration build))]]
+                      (build-model/duration build))
+                    (om/build expected-duration {:start (:start_time build)
+                                                :stop (:stop_time build)
+                                                :build build})]]
               [:tr
                [:th "Previous"]
                (if-not (:previous build)
@@ -270,14 +346,16 @@
                                                                    :stop (or (:queued_at build) (:stop_time build))})
                                " waiting for builds to finish"])
 
-                        [:a#queued_explanation
-                         {:on-click #(put! controls-ch [:usage-queue-why-toggled
-                                                        {:build-id build-id
-                                                         :username (:username @build)
-                                                         :reponame (:reponame @build)
-                                                         :build_num (:build_num @build)}])}
-                         " view "]
-                        [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]]))
+                        (if (has-scope :read-settings data)
+                          [:span
+                           [:a#queued_explanation
+                            {:on-click #(put! controls-ch [:usage-queue-why-toggled
+                                                           {:build-id build-id
+                                                            :username (:username @build)
+                                                            :reponame (:reponame @build)
+                                                            :build_num (:build_num @build)}])}
+                            " view "]
+                           [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]])]))
                (when (build-model/author-isnt-committer build)
                  [:th "Committer"]
                  [:td
@@ -288,9 +366,21 @@
               [:tr
                [:th "Parallelism"]
                [:td
-                [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                     :href (build-model/path-for-parallelism build)}
-                 (str (:parallel build) "x")]]]]]
+                (if (has-scope :write-settings data)
+                  [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                       :href (build-model/path-for-parallelism build)}
+                   (str (:parallel build) "x")]
+                  [:span (:parallel build) "x"])]
+               (when-let [urls (seq (:pull_request_urls build))]
+                 ;; It's possible for a build to be part of multiple PRs, but it's rare
+                 (list [:th (str "PR" (when (< 1 (count urls)) "s"))]
+                       [:td
+                        (interpose
+                         ", "
+                         (map (fn [url] [:a {:href url} "#"
+                                         (let [n (re-find #"/\d+$" url)]
+                                           (if n (subs n 1) "?"))])
+                              urls))]))]]]
             [:div.build-actions
              [:div.actions
               (forms/stateful-button
@@ -302,6 +392,7 @@
                                                                      :build-num build-num
                                                                      :clear-cache? false}])}
                 "Rebuild"])
+
               (forms/stateful-button
                [:button.clear_cache_retry
                 {:data-loading-text "Rebuilding",
@@ -312,19 +403,21 @@
                                                                      :clear-cache? true}])}
                 "& clear cache"])
 
-              (forms/stateful-button
-               [:button.ssh_build
-                {:data-loading-text "Rebuilding",
-                 :title "Retry with SSH in VM",
-                 :on-click #(put! controls-ch [:ssh-build-clicked {:build-id build-id
-                                                                   :vcs-url vcs-url
-                                                                   :build-num build-num}])}
-                "& enable ssh"])]
+              (if (has-scope :write-settings data)
+                (forms/stateful-button
+                 [:button.ssh_build
+                  {:data-loading-text "Rebuilding",
+                   :title "Retry with SSH in VM",
+                   :on-click #(put! controls-ch [:ssh-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num}])}
+                  "& enable ssh"]))]
              [:div.actions
-              [:button.report_build
-               {:title "Report error with build",
-                :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
-               "Report"]
+              (when logged-in? ;; no intercom for logged-out users
+                [:button.report_build
+                 {:title "Report error with build",
+                  :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
+                 "Report"])
               (when (build-model/can-cancel? build)
                 (forms/stateful-button
                  [:button.cancel_build
@@ -333,16 +426,20 @@
                    :on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
                                                                         :vcs-url vcs-url
                                                                         :build-num build-num}])}
-                  "Cancel"]))]]]
-           (when (:show-usage-queue usage-queue-data)
+                  "Cancel"]))]]
+            [:div.no-user-actions]]
+           (when (and logged-in? (:show-usage-queue usage-queue-data))
              (om/build build-queue {:build build
                                     :builds (:builds usage-queue-data)
                                     :plan plan}))
            (when (:subject build)
              (om/build build-commits build-data))
-           (when (build-model/ssh-enabled-now? build)
+           (when (and logged-in? (build-model/ssh-enabled-now? build))
              (om/build build-ssh (:node build)))
-           (when (:has_artifacts build)
+           (when (and logged-in? (:has_artifacts build))
              (om/build build-artifacts-list
                        {:artifacts-data (get build-data :artifacts-data) :user user}
-                       {:opts {:show-node-indices? (< 1 (:parallel build))}}))]])))))
+                       {:opts {:show-node-indices? (< 1 (:parallel build))}}))
+           (when (build-model/config-string? build)
+             (om/build build-config
+                       {:build build :config-data config-data}))]])))))

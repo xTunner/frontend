@@ -3,10 +3,8 @@
             [goog.net.jsloader]))
 
 (defn track-pid [pid]
-  (let [twttr (aget js/window "twttr")
-        conversion (aget twttr "conversion")
-        track (aget conversion "trackPid")]
-    (track pid)))
+  (utils/swallow-errors
+   (js/twttr.conversion.trackPid pid)))
 
 (defn track-conversion
   "Twitter has a separate pid for each type of conversion. Loads
@@ -14,7 +12,7 @@
   [pid]
   (if (aget js/window "twttr")
     (track-pid pid)
-    (-> (goog.net.jsloader.load "https://checkout.stripe.com/v2/checkout.js")
+    (-> (goog.net.jsloader.load "//platform.twitter.com/oct.js")
         (.addCallback #(track-pid pid)))))
 
 (defn track-signup []

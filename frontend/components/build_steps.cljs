@@ -52,7 +52,7 @@
          [:span {:dangerouslySetInnerHTML
                  #js {"__html" trailing-out}}])))))
 
-(defn action [action owner]
+(defn action [action owner {:keys [uses-parallelism?] :as opts}]
   (reify
     om/IRender
     (render [_]
@@ -66,7 +66,7 @@
                                     (when (action-model/failed? action)
                                       ["failed"]))]
         (html
-         [:div {:class (str "type-" (:type action))}
+         [:div {:class (str "type-" (or (:type action) "none"))}
           [:div.type-divider
            [:span (:type action)]]
           [:div.build-output
@@ -89,7 +89,7 @@
                               (:name action))
                        "$ ")
                      (:name action)
-                     (when (:parallel action)
+                     (when (and uses-parallelism? (:parallel action))
                        (gstring/format " (%s)" (:index action))))]
                [:span.time {:title (str (:start_time action) " to "
                                         (:end_time action))}
@@ -107,15 +107,14 @@
                    [:div.loading-spinner common/spinner]
 
                    [:div#action-log-messages
+                    (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
                      {:on-click #(let [node (om/get-node owner)
                                        main (sel1 "main.app-main")]
                                    (set! (.-scrollTop main) (- (+ (.-scrollTop main)
                                                                   (.-y (goog.style/getRelativePosition node main))
                                                                   (.-height (goog.style/getSize node)))
-                                                               (goog.dom/getDocumentHeight))))}
-
-                     (common/messages (:messages action))]
+                                                               (goog.dom/getDocumentHeight))))}]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -134,7 +133,7 @@
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
 
-(defn container-view [{:keys [container non-parallel-actions]} owner]
+(defn container-view [{:keys [container non-parallel-actions]} owner {:keys [uses-parallelism?] :as opts}]
   (reify
     om/IRender
     (render [_]
@@ -147,7 +146,8 @@
         (html
          [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
                                :id (str "container_" (:index container))}
-          (om/build-all action actions {:key :step})])))))
+          (om/build-all action actions {:key :step
+                                        :opts opts})])))))
 
 (defn mount-browser-resize
   "Handles scrolling the container on the build page to the correct position when
@@ -216,11 +216,9 @@
                                                (let [scroller (.. e -target -scroll_handler)]
                                                  (when (or (not scroller) (.isStopped scroller))
                                                    (put! controls-ch [:container-parent-scroll]))))
-                                  :scroll "handle_browser_scroll"
-                                  :window-resize "realign_container_viewport"
-                                  :resize-sensor "height_changed"
                                   :class (str "selected_" current-container-id)}
            (for [container containers]
              (om/build container-view
                        {:container container
-                        :non-parallel-actions non-parallel-actions}))]])))))
+                        :non-parallel-actions non-parallel-actions}
+                       {:opts {:uses-parallelism? (< 1 (count containers))}}))]])))))

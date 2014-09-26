@@ -4,7 +4,26 @@
             [cljs-time.format :as time-format]
             [goog.string :as g-string]
             goog.string.format
+            [goog.date.DateTime]
             [goog.i18n.DateTimeFormat.Format :as date-formats]))
+
+(defn now []
+  (.getTime (js/Date.)))
+
+(def server-offset (atom nil))
+
+(defn update-server-offset [date-header]
+  (let [server-date (.fromRfc822String goog.date.DateTime date-header)
+        newval (- (.getTime server-date) (now))]
+    (swap! server-offset
+           (fn [oldval]
+             (if oldval
+               (min oldval newval)
+               newval)))))
+
+(defn server-now []
+  (+ (now) (or @server-offset 0)))
+
 
 (def full-date-format
   (goog.i18n.DateTimeFormat. date-formats/FULL_DATE))
@@ -99,6 +118,7 @@
 (def year-month-day-date
   (partial format-date year-month-day-date-format))
 
+
 (defn date-in-ms [date]
   (let [[y m d] (map js/parseInt (.split (name date) #"-"))]
     (.getTime (js/Date. (js/Date.UTC y (dec m) (dec d) 0 0 0)))))
@@ -123,7 +143,7 @@
   (* month 12))
 
 (defn time-ago [duration-ms]
-  (let [ago (.floor js/Math (/ duration-ms 1000))
+  (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
         interval (cond (< ago minute){:divisor 1      :unit "second" }
                        (< ago hour)  {:divisor minute :unit "minute" }
                        (< ago day)   {:divisor hour   :unit "hour"   }
@@ -148,7 +168,7 @@
 
 (defn as-time-since [date-string]
   (let [time (.getTime (js/Date. date-string))
-        now (.getTime (js/Date.))
+        now (server-now)
         ago (.floor js/Math (/ (- now time) 1000))]
     (cond (< ago minute) "just now"
           (< ago hour) (str ago "m ago")

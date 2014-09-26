@@ -103,7 +103,6 @@
   [target message status args state]
   (update-in state state/user-path merge (:resp args)))
 
-
 (defmethod api-event [:recent-builds :success]
   [target message status args state]
   (if-not (and (= (get-in state [:navigation-data :org])
@@ -115,12 +114,16 @@
                (= (get-in state [:navigation-data :query-params :page])
                   (get-in args [:context :query-params :page])))
     state
-    (assoc-in state [:recent-builds] (:resp args))))
+    (-> state
+        (assoc-in [:recent-builds] (:resp args))
+        (assoc-in state/project-scopes-path (:scopes args))
+        ;; Hack until we have organization scopes
+        (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
 
 (defmethod api-event [:build :success]
   [target message status args state]
-  (mlog "build success")
+  (mlog "build success: scopes " (:scopes args))
   (let [build (:resp args)
         {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))]
@@ -129,6 +132,8 @@
       state
       (-> state
           (assoc-in state/build-path build)
+          (assoc-in state/project-scopes-path (:scopes args))
+          (assoc-in state/page-scopes-path (:scopes args))
           (assoc-in (conj (state/project-branch-crumb-path state)
                           :branch)
                     (some-> build :branch utils/encode-branch))
@@ -398,18 +403,17 @@
     state
     (-> state
         (update-in state/org-data-path merge resp)
+        (assoc-in state/org-loaded-path true)
         (assoc-in state/org-authorized?-path true))))
 
 
-;; XXX: only show org-failure on 401s
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (-> state
-        (assoc-in [:current-organization :loaded] true)
-        (assoc-in [:current-organization :authorized] false))))
-
+        (assoc-in state/org-loaded-path true)
+        (assoc-in state/org-authorized?-path false))))
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
@@ -420,6 +424,7 @@
 
 (defmethod post-api-event! [:follow-repo :success]
   [target message status args previous-state current-state]
+  (api/get-projects (get-in current-state [:comms :api]))
   (if-let [first-build (get-in args [:resp :first_build])]
     (let [nav-ch (get-in current-state [:comms :nav])
           build-path (-> first-build
@@ -441,6 +446,11 @@
     (if-let [repo-index (state-utils/find-repo-index state login type (:name context))]
       (assoc-in state (conj (state/repo-path login type repo-index) :following) false)
       state)))
+
+
+(defmethod post-api-event! [:unfollow-repo :success]
+  [target message status args previous-state current-state]
+  (api/get-projects (get-in current-state [:comms :api])))
 
 
 (defmethod post-api-event! [:start-build :success]
@@ -480,7 +490,8 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
-    (assoc-in state state/stripe-card-path resp)))
+    (let [card (or resp {})] ; special case in case card gets deleted
+      (assoc-in state state/stripe-card-path card))))
 
 
 (defmethod api-event [:create-plan :success]
@@ -529,8 +540,20 @@
 
 (defmethod api-event [:changelog :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state state/changelog-path resp))
+  (assoc-in state state/changelog-path {:entries resp :show-id (:show-id context)}))
 
 (defmethod api-event [:build-state :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/build-state-path resp))
+
+(defmethod api-event [:docs-articles :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (get-in state state/docs-search-path) (:query resp))
+    state
+    (-> state
+        (assoc-in state/docs-articles-results-path (:results resp))
+        (assoc-in state/docs-articles-results-query-path (:query resp)))))
+
+(defmethod api-event [:doc-markdown :success]
+  [target message status {:keys [resp context] :as data} state]
+  (assoc-in state (concat state/docs-data-path [(:subpage context) :markdown]) resp))

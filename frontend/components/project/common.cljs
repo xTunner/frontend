@@ -7,7 +7,6 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
-            [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [goog.string :as gstring]
             [goog.string.format]
@@ -25,13 +24,13 @@
          [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
           (cond (plan-model/trial-over? plan)
                 (list (gstring/format "%s's trial is over. " org-name)
-                      [:a {:href plan-path} "Add a plan to continue running your builds"]
+                      [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
                       ".")
 
                 (< 10 days)
                 (list (gstring/format "%s is in a 2-week trial, enjoy! (or check out " org-name)
                       [:a {:href plan-path} "our plans"]
-                      ".")
+                      ").")
 
                 (< 7 days)
                 (list (gstring/format "%s's trial has %s days left. " org-name days)

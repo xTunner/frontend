@@ -2,6 +2,7 @@
   (:require [ajax.core :as clj-ajax]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
+            [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.utils :as utils :include-macros true]))
 
@@ -19,7 +20,7 @@
   ([{:keys [prefix keywords? url method start-time]
      :or {start-time (time/now)}}]
      {:read (fn read-json [xhrio]
-              (let [json (.getResponseJson xhrio prefix)
+              (let [json (js/JSON.parse (.getResponseText xhrio))
                     headers (js->clj (.getResponseHeaders xhrio))
                     request-time (try
                                    (time/in-millis (time/interval start-time (time/now)))
@@ -43,14 +44,28 @@
    :content-type "application/xml"
    :write identity})
 
-;; TODO only implementing JSON format and not implementing prefixes for now since we don't use either
-(defn ajax [method url message channel & {:keys [params keywords? context headers]
-                                          :or {keywords? true}}]
-  (let [uuid frontend.async/*uuid*]
-    (put! channel [message :started context])
-    (clj-ajax/ajax-request url method
-                           (clj-ajax/transform-opts
-                            {:format (merge (clj-ajax/json-request-format)
+(defn scopes-from-response [api-resp]
+  (if-let [scope-str (get-in api-resp [:response-headers "X-Circleci-Scopes"])]
+    (->> (str/split scope-str #"[,\s]+")
+         (map #(str/replace % #"^:" ""))
+         (map keyword)
+         (set))))
+
+(defn normalize-error-response [default-response props]
+  (-> default-response
+      (merge props)
+      (assoc :status-code (:status default-response))
+      (assoc :resp (get-in default-response [:response :resp]))
+      (assoc :status :failed)))
+
+;; TODO only implementing JSON/RAW format and not implementing prefixes for now since we don't anything else
+(defn ajax [method url message channel & {:keys [params keywords? context headers format]
+                                          :or {keywords? true format :json}}]
+  (let [uuid frontend.async/*uuid*
+        common-opts {:finally #(binding [frontend.async/*uuid* uuid]
+                                 (put! channel [message :finished context]))}
+        format-opts (case format
+                      :json {:format (merge (clj-ajax/json-request-format)
                                             (json-response-format {:keywords? keywords? :url url :method method}))
                              :response-format :json
                              :keywords? keywords?
@@ -60,11 +75,19 @@
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
                              :handler #(binding [frontend.async/*uuid* uuid]
-                                         (put! channel [message :success (assoc % :context context)]))
+                                         (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
                              :error-handler #(binding [frontend.async/*uuid* uuid]
-                                               (put! channel [message :failed (assoc % :context context :url url)]))
-                             :finally #(binding [frontend.async/*uuid* uuid]
-                                         (put! channel [message :finished context]))}))))
+                                       (put! channel [message :failed (normalize-error-response % {:url url :context context})]))}
+                      ;; TODO: use a custom reader or similar for raw to handle more like json
+                      :raw {:format (clj-ajax/raw-format)
+                            :handler #(binding [frontend.async/*uuid* uuid]
+                                        (put! channel [message :success {:resp % :context context}]))
+                            :error-handler #(binding [frontend.async/*uuid* uuid]
+                                       (put! channel [message :failed {:resp % :url url :context context :status :failed}]))})
+        opts (merge common-opts format-opts)]
+    (put! channel [message :started context])
+    (clj-ajax/ajax-request url method
+                           (clj-ajax/transform-opts opts))))
 
 ;; This is all very mess, it should be cleaned up at some point
 (defn managed-ajax [method url & {:keys [params keywords? headers format response-format]
@@ -90,13 +113,9 @@
                                              (when (re-find #"^/" url)
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
-                             :handler #(put! channel (assoc % :status :success))
+                             :handler #(put! channel (assoc % :status :success :scopes (scopes-from-response %)))
                              ;; TODO: clean this up
-                             :error-handler #(put! channel (-> %
-                                                               (assoc :status-code (:status %))
-                                                               (assoc :resp (get-in % [:response :resp]))
-                                                               (assoc :status :failed)
-                                                               (assoc :url url)))
+                             :error-handler #(put! channel (normalize-error-response % {:url url}))
                              :finally #(close! channel)}))
     channel))
 

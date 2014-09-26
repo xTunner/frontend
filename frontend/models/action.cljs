@@ -48,7 +48,8 @@
     (-> action
         (assoc-in [:output output-index :converted-message] (.append converter escaped-message))
         (assoc-in [:output output-index :react-key] (utils/uuid))
-        (assoc-in [:converters-state (keyword (:type output))] (utils/js->clj-kw (.currentState converter))))))
+        (assoc-in [:converters-state (keyword (:type output))] (merge (utils/js->clj-kw (.currentState converter))
+                                                                      {:converted-output (.get_trailing converter)})))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]
@@ -61,5 +62,5 @@
     action))
 
 (defn trailing-output [converters-state]
-  (str (get-in converters-state [:out :trailing_out])
-       (get-in converters-state [:err :trailing_out])))
+  (str (get-in converters-state [:out :converted-output])
+       (get-in converters-state [:err :converted-output])))

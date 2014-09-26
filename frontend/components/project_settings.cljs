@@ -37,6 +37,7 @@
    [:li.side-title "Notifications"]
    [:li [:a {:href "#hooks"} "Chatrooms"]]
    [:li [:a {:href "#webhooks"} "Webhooks"]]
+   [:li [:a {:href "#badges"} "Status Badges"]]
    [:li.side-title "Permissions"]
    [:li [:a {:href "#checkout"} "Checkout SSH keys"]]
    [:li [:a {:href "#ssh"} "SSH keys"]]
@@ -47,6 +48,9 @@
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
+(defn branch-names [project-data]
+  (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
+
 (defn branch-picker [project-data owner opts]
   (reify
     om/IDidMount
@@ -54,7 +58,7 @@
       (let [controls-ch (om/get-shared owner [:comms :controls])]
         (utils/typeahead
          "#branch-picker-typeahead-hack"
-         {:source (map (comp gstring/urlDecode name) (keys (:branches (:project project-data))))
+         {:source (branch-names project-data)
           :updater (fn [branch]
                      (put! controls-ch [:edited-input {:path (conj state/inputs-path :settings-branch) :value branch}])
                      branch)})))
@@ -264,10 +268,10 @@
             "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
             "The values can be any bash expression and can reference other variables, such as setting "
             [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."
-            "To disable string substitution you need to escape the " [:code "$"]
+            " To disable string substitution you need to escape the " [:code "$"]
             " characters by prefixing them with " [:code "\\"] "."
-            "For example a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
-            " you would enter " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
+            " For example, a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
+            " would be entered as " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
            [:form
             [:input#env-var-name
              {:required true, :type "text", :value new-env-var-name
@@ -292,8 +296,8 @@
               [:tbody
                (for [{:keys [name value]} env-vars]
                  [:tr
-                  [:td name]
-                  [:td value]
+                  [:td {:title name} name]
+                  [:td {:title value} value]
                   [:td
                    [:a
                     {:title "Remove this variable?",
@@ -325,7 +329,6 @@
                                     {:type "checkbox"
                                      :checked (get feature-flags flag)
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value true}])}]
                                    " On"]]
@@ -335,7 +338,6 @@
                                     {:type "checkbox"
                                      :checked (not (get feature-flags flag))
                                      :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :project-name project-name
                                                                                                    :flag flag
                                                                                                    :value false}])}]
                                    " Off"]]]]]))]
@@ -345,19 +347,24 @@
           [:p
            " We've got a few settings you can play with, to enable things we're working on. We'd love to "
            [:a {:on-click #(put! controls-ch [:project-experiments-feedback-clicked])}
-            "know what you think about them"]
+            "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
            (describe-flag {:flag :junit
-                           :title "JUnit Support"
+                           :title "JUnit support"
                            :blurb [:p
                                    "We've been experimenting with better ways to display and manage "
                                    "test result data, especially for large test suites. This adds flags "
-                                   "to some of our inferred commands, and collects data supplied by JUnit and "
-                                   "JUnit-compatabile test runners. It only works for a handful of test "
-                                   "runners for now, and the data is only available through our API, though!"]})
+                                   "to some of our inferred commands to collect structured test output supplied by "
+                                   "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
+                                   "you're using our inferred test steps. For RSpec, we also require our fork of the "
+                                   "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
+                                   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+                                   "If you're using parallelism, we'll "
+                                   "automatically use the timing data to give you better test splits. You'll also be able to "
+                                   "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
            (describe-flag {:flag :set-github-status
-                           :title "GitHub Status Updates"
+                           :title "GitHub Status updates"
                            :blurb [:p
                                    "By default, we update the status of every pushed commit with "
                                    "GitHub's status API. If you'd like to turn this off (if, for example, "
@@ -365,10 +372,20 @@
            (describe-flag {:flag :oss
                            :title "Free and Open Source"
                            :blurb [:p
-                                   "Be part of our F/OSS beta! Organizations now have a free container "
+                                   "Be part of our F/OSS beta! Organizations now have three free containers"
                                    "reserved for F/OSS projects; enabling this will allow this project's "
-                                   "builds to use it and let others see your builds, both through the "
-                                   "web UI and the API."]})]])))))
+                                   "builds to use them and let others see your builds, both through the "
+                                   "web UI and the API."]})
+           (describe-flag {:flag :build-fork-prs
+                           :title "Project fork pull requests"
+                           :blurb '([:p
+                                     "CircleCI will automatically update the commit status shown on GitHub's "
+                                     "pull request page. Builds will be run using the parent repository's plan "
+                                     "and will be able to access the parent project's environment settings."]
+                                    [:p
+                                     "If you have SSH keys or AWS credentials stored in your project settings and "
+                                     "untrusted forks can make pull requests against your repo, then this option "
+                                     "isn't for you!"])})]])))))
 
 (defn dependencies [project-data owner]
   (reify
@@ -382,6 +399,13 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
+          [:p 
+           "You can also set your dependencies commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.dependencies-inner
            [:form.spec_form
             [:fieldset
@@ -423,6 +447,13 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
+          [:p 
+           "You can also set your test commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.tests-inner
            [:fieldset.spec_form
             [:textarea {:name "test",
@@ -460,37 +491,51 @@
     (render [_]
       (html
        (let [controls-ch (om/get-shared owner [:comms :controls])
-             inputs (inputs/get-inputs-from-app-state owner)
              notify_pref (get settings field)
              id (string/replace (name field) "_" "-")]
          [:label {:for id}
           [:input {:id id
                    :checked (= "smart" notify_pref)
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) % :value (if (= "smart" notify_pref) nil "smart"))
+                   ;; note: can't use inputs-state here because react won't let us
+                   ;;       change checked state without rerendering
+                   :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
+                                                 :value (if (= "smart" notify_pref) nil "smart"))
                    :value "smart"
                    :type "checkbox"}]
           [:span "Fixed/Failed Only"]
           [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
                                      :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
 
-(defn chatroom-item [settings controls-ch {:keys [service icon doc inputs show-fixed-failed?
-                                                  top-section-content]}]
-  [:div.chat-room-item
-   [:div.chat-room-head [:h4 {:class icon} service]]
-   [:div.chat-room-body
-    [:section
-     doc
-     top-section-content]
-    [:section
-     (for [{:keys [field placeholder]} inputs]
-       (list
-        [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
-                 :value (str (get settings field))
-                 :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
-        [:label {:placeholder placeholder}]))]]
-   [:div.chat-room-foot
-    (when show-fixed-failed?
-      (om/build fixed-failed-input {:settings settings :field (keyword (str (string/lower-case service) "_notify_prefs"))}))]])
+(defn chatroom-item [project-id settings controls-ch
+                     {:keys [service doc inputs show-fixed-failed? top-section-content settings-keys]}]
+  (let [service-id (string/lower-case service)]
+    [:div {:class (str "chat-room-item " service-id)}
+     [:div.chat-room-head [:h4 {:class (str "chat-i-" service-id)} service]]
+     [:div.chat-room-body
+      [:section
+       doc
+       top-section-content
+       (when show-fixed-failed?
+         (om/build fixed-failed-input {:settings settings :field (keyword (str service-id "_notify_prefs"))}))]
+      [:section
+       (for [{:keys [field placeholder]} inputs]
+         (list
+          [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
+                   :value (str (get settings field))
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
+          [:label {:placeholder placeholder}]))
+       (let [event-data {:project-id project-id :merge-paths (map vector settings-keys)}]
+         [:div.chat-room-buttons
+          (forms/managed-button
+            [:button.save {:on-click #(put! controls-ch [:saved-project-settings event-data])
+                           :data-loading-text "Saving"
+                           :data-success-text "Saved"}
+             "Save"])
+          (forms/managed-button
+            [:button.test {:on-click #(put! controls-ch [:test-hook (assoc event-data :service service-id)])
+                           :data-loading-text "Testing"
+                           :data-success-text "Tested"}
+             "& Test Hook"])])]]]))
 
 (defn chatrooms [project-data owner]
   (reify
@@ -503,10 +548,9 @@
             settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
         (html
          [:div
-          [:h2 "Chatroom setup for" (vcs-url/project-name (:vcs_url project))]
+          [:h2 "Chatroom setup for " (vcs-url/project-name (:vcs_url project))]
           [:div.chat-rooms
            (for [chat-spec [{:service "Hipchat"
-                             :icon "chat-i-hip"
                              :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                          [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
                                         [:label ;; hipchat is a special flower
@@ -514,61 +558,56 @@
                                          [:input#hipchat-notify
                                           {:type "checkbox"
                                            :checked (:hipchat_notify settings)
-                                           :on-change #(utils/edit-input controls-ch (conj state/inputs-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
+                                           ;; n.b. can't use inputs-state b/c react won't changed
+                                           ;;      checked state without a rerender
+                                           :on-change #(utils/edit-input controls-ch (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hipchat-keys}
 
                             {:service "Campfire"
-                             :icon "chat-i-camp"
                              :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
                              :inputs [{:field :campfire_room :placeholder "Room"}
                                       {:field :campfire_subdomain :placeholder "Subdomain"}
                                       {:field :campfire_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/campfire-keys}
 
                             {:service "Flowdock"
-                             :icon "chat-i-flow"
                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
-                             :show-fixed-failed? false}
+                             :show-fixed-failed? false
+                             :settings-keys project-model/flowdock-keys}
 
                             {:service "IRC"
-                             :icon "chat-i-flow"
                              :doc nil
                              :inputs [{:field :irc_server :placeholder "Hostname"}
                                       {:field :irc_channel :placeholder "Channel"}
                                       {:field :irc_keyword :placeholder "Private Keyword"}
                                       {:field :irc_username :placeholder "Username"}
                                       {:field :irc_password :placeholder "Password (optional)"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/irc-keys}
 
                             {:service "Slack"
-                             :icon "chat-i-slack"
                              :doc [:p "To get your Webhook URL, visit Slack's "
                                    [:a {:href "https://my.slack.com/services/new/circleci"}
                                     "CircleCI Integration"]
                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/slack-keys}
 
                             {:service "Hall"
-                             :icon "chat-i-hall"
                              :doc [:p "To get your Room / Group API token, go to "
                                    [:strong "Settings > Integrations > CircleCI"]
                                    " from within your Hall Group."]
                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}]]
-             (chatroom-item settings controls-ch chat-spec))]
-          [:div.chat-room-save
-           (forms/managed-button
-            [:input
-             {:data-success-text "Saved",
-              :data-loading-text "Saving",
-              :value "Save notification hooks",
-              :type "submit",
-              :on-click #(do (put! controls-ch [:saved-notification-hooks {:project-id project-id}]))}])]])))))
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hall-keys}]]
+             (chatroom-item project-id settings controls-ch chat-spec))]])))))
 
 (defn webhooks [project-data owner]
   (om/component
@@ -580,6 +619,110 @@
        "Circle also support webhooks, which run at the end of a build. They can be configured in your "
        [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
         "circle.yml file"] "."]]])))
+
+(def status-styles
+  {"badge" {:label "Badge" :string ".png?style=badge"}
+   "shield" {:label "Shield" :string ".svg?style=shield"}})
+
+(def status-formats
+  {"image" {:label "Image URL"
+            :template :image}
+   "markdown" {:label "Markdown"
+               :template #(str "[![Circle CI](" (:image %) ")](" (:target %) ")")}
+   "textile" {:label "Textile"
+              :template #(str "!" (:image %) "!:" (:target %))}
+   "rdoc" {:label "Rdoc"
+           :template #(str "{<img src=\"" (:image %) "\" alt=\"Circle CI\" />}[" (:target %) "]")}
+   "asciidoc" {:label "AsciiDoc"
+               :template #(str "image:" (:image %) "[\"Circle CI\", link=\"" (:target %) "\"]")}
+   "rst" {:label "reStructuredText"
+          :template #(str ".. image:: " (:image %) "\n    :target: " (:target %))}
+   "pod" {:label "pod"
+          :template #(str "=for HTML <a href=\"" (:target %) "\"><img src=\"" (:image %) "\"></a>")}})
+
+(defn status-badges [project-data owner]
+  (let [project (:project project-data)
+        controls-ch (om/get-shared owner [:comms :controls])
+        oss (get-in project [:feature_flags :oss])
+        ;; Get branch selection or the empty string for the default branch.
+        branches (branch-names project-data)
+        branch (get-in project-data [:status-badges :branch])
+        branch (or (some #{branch} branches) "")
+        ;; Get token selection, or the empty string for no token. Tokens must have "status" scope.
+        ;; OSS projects default to no token, private projects default to the first available.
+        ;; If a token is required, but unavailable, no token is selected and the UI shows a warning.
+        tokens (filter #(= (:scope %) "status") (:tokens project-data))
+        token (get-in project-data [:status-badges :token])
+        token (some #{token} (cons "" (map :token tokens)))
+        token (str (if (or oss (some? token)) token (-> tokens first :token)))
+        ;; Generate the status badge with current settings.
+        project-name (vcs-url/project-name (:vcs_url project))
+        gh-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
+        target (str (.. js/window -location -origin) "/gh/" gh-path)
+        style (get-in project-data [:status-badges :style] "badge")
+        image (str target (get-in status-styles [style :string]))
+        image (if (seq token) (str image "&circle-token=" token) image)
+        format (get-in project-data [:status-badges :format] "markdown")
+        code ((:template (status-formats format)) {:image image :target target})]
+    (om/component
+     (html
+      [:div.status-page
+       [:h2 "Status badges for " project-name]
+       [:div "Use this tool to easily create embeddable status badges. Perfect for your project's README or wiki!"]
+       [:div.status-page-inner
+        [:form
+
+         [:div.branch
+          [:h4 "Branch"]
+          [:div.styled-select
+           [:select {:value branch
+                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :branch) %)}
+            [:option {:value ""} "Default"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [branch branches]
+              [:option {:value branch} branch])]
+           [:i.fa.fa-chevron-down]]]
+
+         [:div.token
+          [:h4 "API Token"]
+          (when-not (or oss (seq token))
+            [:p [:span.warning "Warning: "] "Private projects require an " [:a {:href "#api"} "API token"] "."])
+          [:div.styled-select
+           [:select {:value token
+                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :token) %)}
+            [:option {:value ""} "None"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [{:keys [token label]} tokens]
+              [:option {:value token} label])]
+           [:i.fa.fa-chevron-down]]]
+
+         #_ ;; Hide style selector until "badge" style is improved. See PR #3140 discussion.
+         [:div.style
+          [:h4 "Style"]
+          [:fieldset
+           (for [[id {:keys [label]}] status-styles]
+             [:label.radio
+              [:input {:name "branch" :type "radio" :value id :checked (= style id)
+                       :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :style) %)}]
+              label])]]
+
+         [:div.preview
+          [:h4 "Preview"]
+          [:img {:src image}]]
+
+         [:div.embed
+          [:h4 "Embed Code"]
+          [:div.styled-select
+           [:select {:value format
+                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :format) %)}
+            (for [[id {:keys [label]}] status-formats]
+              [:option {:value id} label])]
+           [:i.fa.fa-chevron-down]]
+          [:textarea {:readonly true
+                      :value code
+                      :on-click #(.select (.-target %))}]]
+
+         ]]]))))
 
 (defn ssh-keys [project-data owner]
   (reify
@@ -758,7 +901,9 @@
                [:h4 "Isn't there a middle ground between deploy keys and user keys?"]
                [:p "Not really :("]
                [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
-               [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls aGive this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]])))))
+               [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls a "
+                [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
+                ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
@@ -995,6 +1140,7 @@
                 :tests (om/build tests project-data)
                 :hooks (om/build chatrooms project-data)
                 :webhooks (om/build webhooks project-data)
+                :badges (om/build status-badges project-data)
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
                 :api (om/build api-tokens project-data)

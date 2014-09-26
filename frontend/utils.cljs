@@ -1,16 +1,20 @@
 (ns frontend.utils
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as string]
             [frontend.async :refer [put!]]
+            [om.core :as om :include-macros true]
             [ajax.core :as ajax]
             [cljs-time.core :as time]
             [frontend.env :as env]
+            [goog.async.AnimationDelay]
             [goog.crypt :as crypt]
             [goog.crypt.Md5 :as md5]
             [goog.Uri]
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing)]))
+  (:require-macros [frontend.utils :refer (inspect timing defrender)])
+  (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
   (aget js/window "CSRFToken"))
@@ -67,11 +71,6 @@
   (let [container (goog.crypt.Md5.)]
     (.update container content)
     (crypt/byteArrayToHex (.digest container))))
-
-(defn email->gravatar-url [email]
-  (let [email (or email "unknown-email@unknown-domain.com")
-        hash (md5 email)]
-    (str "https://secure.gravatar.com/avatar/" hash "?s=50")))
 
 (defn notify-error [ch message]
   (put! ch [:error-triggered message]))
@@ -182,3 +181,61 @@
         $node (jq selector)
         $typeahead (aget $node "typeahead")]
     (.call $typeahead $node (clj->js options))))
+
+(defn rAF
+  "Calls passed in function inside a requestAnimationFrame, falls back to timeouts for
+   browers without requestAnimationFrame"
+  [f]
+  (.start (goog.async.AnimationDelay. f)))
+
+(defn strip-html
+  "Strips all html characters from the string"
+  [str]
+  (string/replace str #"[&<>\"']" ""))
+
+(defn valid-email? [str]
+  (.isValidAddrSpec EmailAddress str))
+
+(defn deep-merge* [& maps]
+  (let [f (fn [old new]
+            (if (and (map? old) (map? new))
+              (merge-with deep-merge* old new)
+              new))]
+    (if (every? map? maps)
+      (apply merge-with f maps)
+      (last maps))))
+
+(defn deep-merge
+  "Merge nested maps. At each level maps are merged left to right. When all
+  maps have a common key whose value is also a map, those maps are merged
+  recursively. If any of the values are not a map then the value from the
+  right-most map is chosen.
+
+  E.g.:
+  user=> (deep-merge {:a {:b 1}} {:a {:c 3}})
+  {:a {:c 3, :b 1}}
+
+  user=> (deep-merge {:a {:b 1}} {:a {:b 2}})
+  {:a {:b 2}}
+
+  user=> (deep-merge {:a {:b 1}} {:a {:b {:c 4}}})
+  {:a {:b {:c 4}}}
+
+  user=> (deep-merge {:a {:b {:c 1}}} {:a {:b {:e 2 :c 15} :f 3}})
+  {:a {:f 3, :b {:e 2, :c 15}}}
+
+  Each of the arguments to this fn must be maps:
+
+  user=> (deep-merge {:a 1} [1 2])
+  AssertionError Assert failed: (and (map? m) (every? map? ms))
+
+  Like merge, a key that maps to nil will override the same key in an earlier
+  map that maps to a non-nil value:
+
+  user=> (deep-merge {:a {:b {:c 1}, :d {:e 2}}}
+                     {:a {:b nil, :d {:f 3}}})
+  {:a {:b nil, :d {:f 3, :e 2}}}"
+  [& maps]
+  (let [maps (filter identity maps)]
+    (assert (every? map? maps))
+    (apply merge-with deep-merge* maps)))
