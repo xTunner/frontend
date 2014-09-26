@@ -77,8 +77,12 @@
   elasticsearch, #84AC4F,
   cassandra, #1287B1;
 
-@customers_brands_titles: shopify, dropbox, square,  autodesk, spotify;
-@customers_brands_colors: #96bf48, #007ee5, #000000, #4bd3c8,  #81b71a;
+@customers_brands:
+  shopify, #96bf48,
+  dropbox, #007ee5,
+  square, #000000,
+  autodesk, #4bd3c8,
+  spotify, #81b71a;
 
 @home_article_width: 1000px;
 @purpose_h1_width: 700px;
@@ -714,7 +718,7 @@
 @practice_logo_height: @lipx;
 
 @quote_avatar_size: (@tile / 2);
-@quote_animation_speed: 500ms;
+@quote_speed: 500ms;
 
 .home-practice {
   .flexy(column);
@@ -842,27 +846,28 @@
   }
 }
 .customers-brands {
+  .selected_quote(@a; @c: length(@a); @y: 0; @c2: (@c / 2)) when (@c > (length(@a) / 2)) {
+    .selected_quote(@a; (@c - 1); (@y - 1); (@c2 - 1));
+    @i: (@c2 - 1);
+    &.selected-@{i} {
+      .customers-brand:nth-of-type(@{c2}) {
+        svg {fill: extract(@a, (@c + @y));} &:before, &:after {opacity: 1; transition: opacity (@quote_speed / 2) (@quote_speed / 2);}}
+      .margin(@c2) when (@c2 > 1) {& + .quote-card { margin-left: (@tile * @i);}} .margin(@c2);
+    }
+  } .selected_quote(@customers_brands);
   .flexy();
   width: 100%;
   margin-top: @tile;
   figure {
     margin: 0;
   }
-  .loop_quotes(@counter) when (@counter > 0) {
-    .loop_quotes((@counter - 1));
-    @i: (@counter - 1);
-    &.selected-@{i} {
-      .customers-brand:nth-of-type(@{counter}) {
-        svg { fill: extract(@customers_brands_colors, @counter); }
-        &:before, &:after {opacity: 1; transition: opacity (@quote_animation_speed / 2) (@quote_animation_speed / 2);}
-      }
-      .margin(@counter) when (@counter > 1) {& + .quote-card { margin-left: (@tile * @i);}}
-      .margin(@counter);
-    }
-  }
-  .loop_quotes(5);
 }
 .customers-brand {
+  .color_fill(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
+    .color_fill(@a; (@c - 1); (@x - 1); (@y - 1));
+    @n: extract(@a, (@c + @x));
+    .logo-@{n} {fill: extract(@a, (@c + @y));}
+  }.color_fill(@customers_brands);
   .flexy();
   position: relative;
   &:before,
@@ -892,22 +897,20 @@
   &:not(:last-child) {
     margin-right: 1em;
   }
-  &:hover {
+  &:not(:hover) {
     svg {
-      .scale(@practice_tool_grow, @practice_tool_grow);
-      .filter(@practice_hover_shadow);
-      transition: (@practice_tool_speed / 2) @practice_tool_timing;
+      .scale(1, 1);
+      .filter(none);
+      fill: @grayBoxBorder;
+      transition: @practice_tool_speed @practice_tool_timing;
     }
-    .color_fill(@a1, @a2, @c: length(@a1)) when (@c > 0) {
-      .color_fill(@a1, @a2, (@c - 1));
-      @n: extract(@a1, @c); .logo-@{n} {fill: extract(@a2, @c);}
-    } .color_fill(@customers_brands_titles, @customers_brands_colors);
   }
   svg {
+    .scale(@practice_tool_grow, @practice_tool_grow);
+    .filter(@practice_hover_shadow);
     max-width: (@tile * 2);
     height: @practice_logo_height;
-    fill: @grayBoxBorder;
-    transition: @practice_tool_speed @practice_tool_timing;
+    transition: (@practice_tool_speed / 2) @practice_tool_timing;
   }
 }
 .quote-card {
@@ -921,7 +924,7 @@
   padding: 1em;
   border: 1px solid @grayBoxBorder;
   border-radius: 5px;
-  transition: @quote_animation_speed;
+  transition: @quote_speed;
   p {
     position: relative;
     margin: auto 0 auto 1em;
