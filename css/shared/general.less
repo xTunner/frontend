@@ -38,6 +38,13 @@ body {
     }
   }
 }
+.main-body {
+  .loading-spinner-big {
+    @reserved_height: (@tile * 2);
+    .flexy(center, center);
+    height: ~"calc(100vh - @{reserved_height})";
+  }
+}
 .main-foot {
   padding: @footerItemSize 0;
   box-shadow: 0 1px @grayLightest inset;
@@ -74,7 +81,8 @@ input {
 textarea {
   .smart_label(13em, 3px);
 }
-.loading-spinner {
+.loading-spinner,
+.loading-spinner-big {
   svg {
     display: inherit;
     width: 1em;
