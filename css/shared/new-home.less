@@ -291,8 +291,6 @@
   left: ~"calc(50% - 105px)";
   top: ~"calc(50% + 140px)";
   opacity: 0;
-  // transition: all @prolog_cover_fadeout,
-  //             opacity 0 @prolog_cover_fadeout;
   transition: width @prolog_cover_fadeout,
               height @prolog_cover_fadeout,
               left @prolog_cover_fadeout,
@@ -660,8 +658,8 @@
     border: 1px solid @grayBoxBorder;
     border-radius: 5px;
     overflow: hidden;
-    // pointer-events: none;      // turned off for dev
-    // -webkit-user-select: none; // turned off for dev
+    pointer-events: none;
+    -webkit-user-select: none;
     &:nth-child(-n+2) {
       position: absolute;
     }
@@ -1146,32 +1144,3 @@
     margin: @home_margin_footer (@home_margin_footer * 2);
   }
 }
-
-
-// Large Devices, Wide Screens
-@media only screen and (max-width : 1200px) {
-
-}
-
-// Medium Devices, Desktops
-@media only screen and (max-width : 992px) {
-
-}
-
-// Small Devices, Tablets
-@media only screen and (max-width : 768px) {
-
-}
-
-// Extra Small Devices, Phones
-@media only screen and (max-width : 480px) {
-
-}
-
-// Custom, iPhone Retina
-@media only screen and (max-device-width : 320px) {
-
-}
-
-
-
