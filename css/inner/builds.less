@@ -3,7 +3,7 @@
   color: @gray;
   box-shadow: 0 1px @grayBorder;
   margin-bottom: 1.5em;
-  padding-bottom: @innerContentPadding;
+  padding: @innerContentPadding 0;
   dl {         //
     margin: 0; // try to eliminate
   }            //
@@ -205,7 +205,8 @@
 .zerothdivider(database);
 .zerothdivider(test);
 .zerothdivider(deploy);
-// .zerothdivider();
+.zerothdivider(teardown);
+.zerothdivider(none);
 
 
 .build-output-active {
