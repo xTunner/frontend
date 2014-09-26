@@ -24,25 +24,25 @@
 
 (defn mount-scroll-handler [owner]
   (let [logo (om/get-node owner "center-logo")
-        cta (om/get-node owner "cta")
-        nav-bkg (om/get-node owner "nav-bkg")
-        no-cta (om/get-node owner "no-cta")
-        nav-no-bkg (om/get-node owner "nav-no-bkg")
-        first-fig-animate (om/get-node owner "first-fig-animate")
-        second-fig-animate (om/get-node owner "second-fig-animate")
+        prolog-cta (om/get-node owner "prolog-cta")
+        home-prolog (om/get-node owner "home-prolog")
+        epilog-cta (om/get-node owner "epilog-cta")
+        home-epilog (om/get-node owner "home-epilog")
+        purpose-article (om/get-node owner "purpose-article")
+        potential-article (om/get-node owner "potential-article")
         scroll-ch (om/get-state owner [:scroll-ch])
         scroll-handler #(let [vh (.-height (goog.dom/getViewportSize))
                               nav-height 70]
                           ;; we could optimize these, but calculating this is surprisingly fast (less than 10 ms)
                           (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
-                          (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta))))
-                          (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) nav-height))
-                          (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
-                          (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) nav-height))
-                          (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect first-fig-animate)) vh))
-                          (om/set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect second-fig-animate)) vh))
-                          (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
-                                                                           (js/Math.abs (- nav-height (.-bottom (.getBoundingClientRect nav-bkg)))))))]
+                          (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect prolog-cta))))
+                          (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect home-prolog)) nav-height))
+                          (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect epilog-cta)) vh))
+                          (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect home-epilog)) nav-height))
+                          (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect purpose-article)) vh))
+                          (om/set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect potential-article)) vh))
+                          (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect home-epilog)))
+                                                                           (js/Math.abs (- nav-height (.-bottom (.getBoundingClientRect home-prolog)))))))]
     (om/set-state! owner [:scroll-key]
                    (goog.events/listen
                     js/window
@@ -218,10 +218,10 @@
                                                                                         :properties {:source "header-cta"}
                                                                                         :path (auth-url)}])}
                  "Sign Up Free"]]
-               [:section.home-prolog {:ref "nav-bkg"}
+               [:section.home-prolog {:ref "home-prolog"}
                 [:a.home-action {:href (auth-url)
                                  :role "button"
-                                 :ref "cta"
+                                 :ref "prolog-cta"
                                  :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
                                                                                              :properties {:source "prolog-cta"}
                                                                                              :path (auth-url)}])}
@@ -255,7 +255,7 @@
                  [:figure
                   (om/build drawings/drawing-dashboard app)]]
                 [:div.home-articles
-                 [:article {:ref "first-fig-animate"}
+                 [:article {:ref "purpose-article"}
                   [:h1 "Launches are dead, long live iteration."]
                   [:p "We believe that rapid iteration, tight feedback loops, and team communication are the keys to a great product workflow.
                       That's why we designed the world's leading continuous integration and delivery solution.
@@ -319,7 +319,7 @@
                      (get-in customer-brands [selected-customer :name])]]]]]]
                [:section.home-potential {:class (when (:second-fig-animate state) ["animate"])}
                 [:div.home-articles
-                 [:article {:ref "second-fig-animate"}
+                 [:article {:ref "potential-article"}
                   [:h1 "Look under the hood & check the bullet points."]
                   [:div.home-potential-bullets
                    [:ul
@@ -342,9 +342,9 @@
                  [:figure]
                  [:figure
                   (om/build drawings/draw-build-large app)]]]
-               [:section.home-epilog {:ref "nav-no-bkg"}
+               [:section.home-epilog {:ref "home-epilog"}
                 [:a.home-action {:href (auth-url)
-                                 :ref "no-cta"
+                                 :ref "epilog-cta"
                                  :role "button"
                                  :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
                                                                                              :properties {:source "epilog-cta"}
