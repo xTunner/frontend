@@ -3,8 +3,6 @@
   @cascade_delay: 30ms;
   @aside_items: 7;
   @aside_slim_speed: 200ms;
-  @slideup_items: 2;
-  @slideup_visible: 1;
   @activity_scroll: 3px;
   @activity_color: fade(@white, 55);
   @activity_ico: (@em - 2);
@@ -13,6 +11,12 @@
   .app-aside-left {
     .flex(0, 0);
     .flexy();
+    a {
+      outline: none;
+      &:not(:hover) {
+        color: inherit;
+      }
+    }
     .tooltip {                    //
       font-size: @baseFontSize;   //
       .tooltip-inner {            //
@@ -24,22 +28,40 @@
       }                           //
     }                             //
   }
-  .aside-left-nav {
+  .aside-left-nav,
+  .aside-left-menu {
     .flex(0, 0);
     .flexy(column);
-    color: fade(@white, 66);
     width: @aside_nav_width;
     height: 100vh;
-    background: @blueDarkest;
     transition: width @aside_slim_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
     overflow: hidden;
-    a {
-      outline: none;
-      &:not(:hover) {
-        color: inherit;
+  }
+  .aside-left-nav {
+    background: @blueDarkest;
+    color: fade(@white, 66);
+    &.slim {
+      width: @tile;
+      .aside-item {
+        .tip(right);
+        > i,
+        img {
+          margin-right: ((@tile - @baseFontSize) / 2);
+          transition-duration: (@aside_slim_speed * 1.5);
+        }
+        span {
+          opacity: 0;
+          visibility: hidden;
+          transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
+          pointer-events: none;
+        }
       }
     }
+  }
+  .aside-left-menu {
+    box-shadow: 1px 0 @grayBoxBorder;
+    position: relative;
     header {
       .box-sizing(border-box);
       .flex(0, 0);
@@ -81,63 +103,45 @@
         }
       }
     }
-    &.slim {
-      width: @tile;
-      .aside-item {
-        .tip(right);
-        i,
-        img {
-          margin-right: ((@tile - @baseFontSize) / 2);
-          transition-duration: (@aside_slim_speed * 1.5);
-        }
-        span {
-          opacity: 0;
-          visibility: hidden;
-          transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
-          pointer-events: none;
-        }
-      }
-    }
-    &.context {
-      @activity_color: @grayLight;
-      background: none;
-      box-shadow: 1px 0 @grayBoxBorder;
-      .aside-activity {
-        background: none;
-        box-shadow: none;
-        color: @activity_color;
-        position: relative;
-        .wrapper {
-          &:hover {
-            &::-webkit-scrollbar-thumb {
-              background: @grayLighter;
-            }
-          }
-        }
-        .project {
-          a {
-            &:not(:hover) {
-              color: @grayDark;
-            }
-            &.toggle {
-              .ico-repo {
-                fill: @grayDark;
-              }
-            }
-          }
-        }
-        .branch {
-          a {
-            &:before,
-            &:after {
-              border-color: @grayLighter;
-            }
+    .aside-activity {
+      color: @grayLight;
+      position: relative;
+      .wrapper {
+        &:hover {
+          &::-webkit-scrollbar-thumb {
+            background: @grayLighter;
           }
         }
       }
-    }
-    [role="button"] {
-      cursor: pointer;
+      .status {
+        .icon_style(transparent, @activity_ico);
+        i {
+          &.ico {
+            .busy-light {stroke: @blueLight;}
+            .pass-light {stroke: @green;}
+            .fail-light {stroke: @redLight;}
+            .hold-light {stroke: @gray;}
+            .stop-light {stroke: @orange;}
+            .none-light {stroke: @white;}
+            [class$="-light"] {stroke-width: 10;}
+          }
+        }
+      }
+      .project {
+        a {
+          &:not(:hover) {
+            color: @grayDark;
+          }
+        }
+      }
+      .branch {
+        a {
+          &:before,
+          &:after {
+            border-color: @grayLighter;
+          }
+        }
+      }
     }
   }
   .aside-item {
@@ -165,18 +169,22 @@
       background: @blueDarker;
       transition-duration: 0;
     }
-    &:active {
+    &:active,
+    &.open {
       .shadow_deboss(@blueDarkest);
       color: @white;
       background: fade(@black, 8);
       transition-duration: 0;
+    }
+    &:last-of-type {
+      margin-top: auto; // may want to make this more specific later
     }
     &.logo {
       .justify-content(center);
       .underline_deboss();
       .logomark {
         .flexy(center, center);
-        .icon_style(@white, 2em);
+        .icon_style(@white, (@em * 2));
         width: @tile;
         height: @tile;
       }
@@ -191,7 +199,7 @@
     &:nth-child(9)  > i {transition-delay: @cascade_delay *  8;}
     &:nth-child(10) > i {transition-delay: @cascade_delay *  9;}
     &:nth-child(11) > i {transition-delay: @cascade_delay * 10;}
-    i {
+    > i {
       min-width: @baseFontSize;
       margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
       transition: margin @aside_slim_speed;
@@ -214,23 +222,16 @@
   .aside-activity {
     .flexy(column);
     font-size: @em;
-    color: @activity_color;
     background: fade(@black, 0);
     opacity: 0;
     visibility: hidden;
     transition: opacity 400ms, background 400ms, visibility 0ms 1000ms, height 200ms ease-in-out;
     height: 0%;
     &.open {
-      .shadow_deboss(@blueDarkest);
-      background: fade(@black, 8);
       opacity: 1;
       visibility: visible;
       transition: opacity 400ms 100ms, background 200ms, visibility 0ms 0ms, height 200ms ease-in-out;
       height: 100vh;
-      + .aside-slideup {
-        box-shadow: 0 -8px 13px fade(@black, 21);
-        transition-delay: 100ms;
-      }
       .wrapper {
         overflow-y: auto;
         height: 100vh; // needed to fix safari bug preventing accordion from opening up
@@ -271,7 +272,7 @@
       width: (@aside_nav_width - @activity_scroll);
       line-height: @em; // BS RESET
       &:hover {
-        .status {
+        .statuses {
           a {
             &:not(:last-child) {
               transition-delay: 1000ms; // delay meant to give user time to hover over to branch name
@@ -296,18 +297,6 @@
               &:nth-last-of-type(3) path {opacity: .34}
               &:nth-last-of-type(4) path {opacity: .21}
               &:nth-last-of-type(5) path {opacity: .13}
-            }
-          }
-        }
-      }
-      &:not(:hover) {
-        &:not(.running) {
-          a {
-            &:not(:hover) {
-              path {
-                // opacity: .66;
-                // opacity isn't working above, will try something else, just commenting out for now to keep the selectors in place
-              }
             }
           }
         }
@@ -340,6 +329,7 @@
         &.toggle {
           .box-sizing(border-box);
           .flex(0, 0, auto);
+          .icon_style(@grayDark, 100%);
           width: @em * 2;
           height: @em *2;
           padding: 5px; // got this from trial and error
@@ -356,7 +346,6 @@
         }
         &.latest {
           .flex(0, 0, auto);
-          .icon_style(transparent, @activity_ico);
           display: none;
           width: @activity_line;
           height: @activity_line;
@@ -366,7 +355,7 @@
       }
     }
     .branch,
-    .status {
+    .statuses {
       a {
         height: @activity_line;
         line-height: @activity_line;
@@ -400,18 +389,19 @@
         }
       }
     }
-    .status {
+    .statuses {
       .flex(1, 0, auto);
       .flexy(center, flex-end);
       a {
         .flexy(center, center);
-        .icon_style(transparent, @activity_ico);
         width: @activity_line;
         &:first-child {
           .flex(1, 0, auto);
           .justify-content(flex-end);
-          svg {
-            padding-right: round((@activity_line - @activity_ico) / 2);
+          i {
+            &.ico {
+              padding-right: round((@activity_line - @activity_ico) / 2);
+            }
           }
         }
         &:not(:last-child) {
@@ -424,37 +414,75 @@
         }
       }
     }
-    path {
-      &[class$="-light"] {
-        &:first-child {
-          stroke-width: 10;
+  }
+  .aside-user {
+    position: absolute;
+    top: 0;
+    left: -@tile;
+    width: @tile;
+    height: 100%;
+    background: @appBackgroundColor;
+    z-index: @zindexTooltip;
+    color: @appBackgroundColor;
+    box-shadow: 1px 0 @grayBoxBorder;
+    transition: (@aside_slim_speed / 2);
+    transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+    overflow: hidden;
+    &.open {
+      left: 0;
+      width: 100%;
+      color: @gray;
+      h5 {
+        color: @black;
+      }
+      .aside-item {
+        padding: 0 (@em * 2);
+      }
+    }
+    header {
+      .justify-content(center);
+    }
+    h5 {
+      font-weight: normal;
+      color: @appBackgroundColor;
+      white-space: nowrap;
+      transition: (@aside_slim_speed / 2);
+      transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+    }
+    .close-menu {
+      .flexy(center);
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: @em;
+      height: @tile;
+      padding: 0 @em;
+      &:hover {
+        path {
+          stroke: @black;
         }
       }
-      &.ico-busy-light {stroke: @blueLight;}
-      &.ico-pass-light {stroke: @green;}
-      &.ico-fail-light {stroke: @redLight;}
-      &.ico-hold-light {stroke: @gray;}
-      &.ico-stop-light {stroke: @orange;}
-      &.ico-none-light {stroke: @white;}
+      path {
+        stroke: @grayLight;
+        stroke-width: 5;
+      }
     }
   }
-  .aside-slideup {
-    .flex(0, 0, auto);
+  .aside-user-options {
     .flexy(column);
-    margin-top: auto;
-    transition: box-shadow 300ms ease-in-out;
-    a {
-      &:last-child {
-        margin-bottom: ((@slideup_items - @slideup_visible) * -@tile);
-        transition: margin 400ms ease-in-out;
-      }
+    .aside-item {
+      transition: @aside_slim_speed ease-in-out;
+      padding: 0;
       &:hover,
       &:focus {
-        margin-bottom: 0;
-        ~ a:last-child {
-          margin-bottom: 0;
-          transition-delay: 1000ms;
-        }
+        color: @grayDarker;
+        box-shadow: none;
+        background: @grayLightest;
+      }
+      &:active {
+        .shadow_deboss(@white);
+        color: inherit;
+        background: @grayLightest;
       }
     }
   }

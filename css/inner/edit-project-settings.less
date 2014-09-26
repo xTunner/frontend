@@ -118,7 +118,7 @@
   }
   .project-settings-inner {
     .flex(1, 1);
-    margin: 0 2em;
+    padding: 0 2em;
     min-height: 89vh;
     overflow: auto;
   }
@@ -365,6 +365,10 @@
       .tableLight();
       td {
         &:not(:last-child) {
+          max-width: 150px;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
           padding: 1em;
         }
       }
@@ -389,6 +393,10 @@
         margin-bottom: 2em;
       }
     }
+
+    textarea {
+      font-family: @codeFontFamily;
+    }
   }
   .dependencies-inner {
     margin: 2em 0;
@@ -402,6 +410,10 @@
     }
     .try-out-build {
       margin-left: 2em;
+    }
+    
+    textarea {
+      font-family: @codeFontFamily;
     }
   }
   .tests-inner {
@@ -502,15 +514,15 @@
         opacity: 0;
       }
     }
-    .chat-i-hip {
+    .chat-i-hipchat {
       &:before { background-position: 0 @logoHeight;}
       &:after  { background-position: 0 0          ;}
     }
-    .chat-i-camp {
+    .chat-i-campfire {
       &:before { background-position: -@logoHeight -@logoHeight;}
       &:after  { background-position: -@logoHeight  0          ;}
     }
-    .chat-i-flow {
+    .chat-i-flowdock {
       &:before { background-position: (-@logoHeight * 2) -@logoHeight;}
       &:after  { background-position: (-@logoHeight * 2)  0          ;}
     }
@@ -534,31 +546,10 @@
     }
     section:last-of-type {
       position: absolute;
-      bottom: 3em;
+      bottom: 1em;
       width: 100%;
       padding: 0 1em;
       .box-sizing(border-box);
-    }
-  }
-  .chat-room-foot {
-    box-shadow: 0 -1px #ddd;
-    margin-top: auto;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    &:empty {
-      padding-top: 3em;
-    }
-    label {
-      padding: 1em;
-      span {
-        margin-left: 1.5em;
-      }
-    }
-    label {
-      margin: 0;
-      line-height: 1em;
-      height: 1em;
     }
     i {
       font-size: 10px;
@@ -569,14 +560,13 @@
       position: relative;
     }
   }
-  .chat-room-save {
-    display: block;
-    margin: 2em 0;
-    input {
-      &[type="submit"] {
-        .circleButton();
-        font-size: 1em;
-      }
+  .chat-room-buttons {
+    padding-top: 1em;
+    text-align: center;
+    button {
+      .subtleButton(@grayLight);
+      .aRowOfButtons(2em);
+      float: none;
     }
   }
   // SSH Keys Page
@@ -665,8 +655,8 @@
       white-space: nowrap;
     }
   }
-  // Circle API Page
-  .circle-api-page {
+  // Circle API & Status Badge pages
+  .circle-api-page, .status-page {
     table {
       .skin_table();
       overflow: visible;
@@ -689,7 +679,7 @@
       }
     }
   }
-  .circle-api-page-inner {
+  .circle-api-page-inner, .status-page-inner {
     margin: 2em 0;
     max-width: @gridRowWidth;
     .popover {
@@ -740,6 +730,18 @@
           transition: color .3s ease-in-out;
         }
       }
+    }
+  }
+  .status-page-inner {
+    .token .warning {
+      font-weight: bold;
+      color: @redLight;
+    }
+    .style, .preview {
+      margin-bottom: 1.5em;
+    }
+    .embed textarea {
+      height: 8em;
     }
   }
   // Heroku Page

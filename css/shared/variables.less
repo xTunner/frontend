@@ -1,13 +1,6 @@
 // Misc.
 
 @imgPath: "../../img";
-@standardBlockSize: 250px;
-@minimumContentWidth: 960px;
-@spinnerSize: 3em;
-@innerContentPadding: 1em;
-
-@tile: 70px;
-@aside_nav_width: (@tile * 3);
 
 // Colors
 
@@ -51,6 +44,12 @@
 
 @lightYellow:                  #fff3cf;
 
+//language landing colors
+@rubyColor:							#7C0B02;
+@pythonColor:						#3773a3;
+@nodeColor:							#58594e;
+
+
 // Text
 
 @successText:              @green;
@@ -58,7 +57,7 @@
 
 @sansFontFamily:           "ProximaNova", sans-serif;
 @serifFontFamily:          Georgia, serif;
-@monoFontFamily:           Monaco, monospace;
+@monoFontFamily:           Monaco, "Courier New", monospace;
 
 @baseFontSize:             14px;
 @baseFontFamily:           @sansFontFamily;
@@ -72,6 +71,15 @@
 @codeFontFamily:           @monoFontFamily;
 @codeFontSize:             @fontSizeSmall;
 @codeCharacterWidth:       round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
+
+// Spacing
+
+@standardBlockSize: 250px;
+@minimumContentWidth: 960px;
+@spinnerSize: (@baseFontSize * 3);
+@innerContentPadding: @baseFontSize;
+@tile: 70px;
+@aside_nav_width: (@tile * 3);
 
 // Links
 

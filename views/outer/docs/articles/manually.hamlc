@@ -178,7 +178,6 @@
           override:
             - mysql -u ubuntu circle_test < my-database-setup.sql
 
-
 %h2#tests Running your tests
 %p
   Now that everything is prepared, add your test commands to the

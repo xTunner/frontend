@@ -23,10 +23,6 @@
   -webkit-transform: translate3d(@x, @y, @z);
           transform: translate3d(@x, @y, @z);
 }
-.transition-transform (@duration: .1s, @timing-function: ease-in, @delay: 0) {
-  transition: -webkit-transform @duration @timing-function @delay;
-  transition:         transform @duration @timing-function @delay;
-}
 .transform-origin(...) {
   -webkit-transform-origin: @arguments;
           transform-origin: @arguments;

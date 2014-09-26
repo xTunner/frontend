@@ -17,8 +17,8 @@
   You'll need to find the download URL for the SDK that you need. The official source for
   SDK downloads is
   != succeed '.', ->
-    %a{href: "https://code.google.com/p/googleappengine/downloads/list"}
-      https://code.google.com/p/googleappengine/downloads/list
+    %a{href: "https://developers.google.com/appengine/downloads"}
+      https://developers.google.com/appengine/downloads
 
 %p
   This example
@@ -32,8 +32,8 @@
     :preserve
       dependencies:
         pre:
-          - curl -O https://googleappengine.googlecode.com/files/google_appengine_1.5.1.zip
-          - unzip -q -d $HOME google_appengine_1.5.1.zip
+          - curl -o $HOME/google_appengine_1.9.7.zip https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.7.zip
+          - unzip -q -d $HOME $HOME/google_appengine_1.9.7.zip
 
 %h2 Configure Deployment to Google App Engine
 
@@ -66,7 +66,7 @@
         appengine:
           branch: master
           commands:
-            - echo $APPENGINE_PASSWORD | $HOME/google-appengine/appcfg.py update --email=$APPENGINE_EMAIL --passin .
+            - echo $APPENGINE_PASSWORD | $HOME/google_appengine/appcfg.py update --email=$APPENGINE_EMAIL --passin .
 
 %h3 Java
 

@@ -2,4 +2,4 @@
 stefon doesn't like comments at the end of the previous file
 ###
 
-window.onload = frontend.core.setup_BANG_
+frontend.core.setup_BANG_()

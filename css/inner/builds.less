@@ -190,22 +190,23 @@
 }
 
 .zerothdivider(@type) {
-  (~".container-view > .type-@{type}") {
+  .container-view > .type-@{type} {
     .type-divider { display: block; }
   }
-  (~".container-view > .type-@{type} ~ .type-@{type}") {
+  .container-view > .type-@{type} ~ .type-@{type} {
     .type-divider { display: none; }
   }
 }
 
-.zerothdivider("infrastructure");
-.zerothdivider("checkout");
-.zerothdivider("machine");
-.zerothdivider("dependencies");
-.zerothdivider("database");
-.zerothdivider("test");
-.zerothdivider("deploy");
-.zerothdivider("");
+.zerothdivider(infrastructure);
+.zerothdivider(checkout);
+.zerothdivider(machine);
+.zerothdivider(dependencies);
+.zerothdivider(database);
+.zerothdivider(test);
+.zerothdivider(deploy);
+.zerothdivider(teardown);
+.zerothdivider(none);
 
 
 .build-output-active {
@@ -506,9 +507,9 @@
   header {
     .displayFlex();
     .head-left {
-      min-width: 10em;
       padding: 0 3em;
       height: @head_height;
+      width: 12em;
     }
     .first-green-icon {
       .turn {
