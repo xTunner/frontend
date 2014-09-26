@@ -47,14 +47,6 @@
                     "scroll"
                     scroll-callback))))
 
-(defn calculate-scrollbar-width
-  "Inserts and removes an out-of-view element to let us calculate the width of the scrollbar"
-  [owner]
-  (let [el (node [:div {:style "width: 100px; height: 100px; overflow: scroll; position: fixed; top: -200px"}])]
-    (dommy/append! (om/get-node owner) el)
-    (om/set-state! owner [:scrollbar-width] (utils/inspect (- (.-offsetWidth el) (.-clientWidth el))))
-    (dommy/remove! el)))
-
 (def circle-logo
   [:svg {:xmlns "http://www.w3.org/2000/svg" :x "0px" :y "0px" :viewBox "0 0 393 100" :enableBackground "new 0 0 393 100"}
    [:circle {:cx "48.5" :cy "50" :r "11.9"}]
@@ -173,8 +165,7 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (mount-header-logo-scroll owner)
-      (calculate-scrollbar-width owner))
+      (mount-header-logo-scroll owner))
     om/IInitState
     (init-state [_]
       {:header-logo-visible false
@@ -184,7 +175,6 @@
        :header-bkg-invisible false
        :first-fig-animate false
        :second-fig-animate false
-       :scrollbar-width 0
        :scroll-ch (chan (sliding-buffer 1))
        :hovered-customer nil})
     om/IRenderState
@@ -194,11 +184,9 @@
             selected-customer (get-in app state/customer-logo-customer-path :shopify)
             selected-toolset (get-in app state/selected-toolset-path :languages)]
         (html [:div.home.page
-               [:nav.home-nav {:style (merge {:width (if (< 0 (:scrollbar-width state))
-                                                       (str "calc(100% - " (:scrollbar-width state) "px)")
-                                                       "100%")}
-                                             (when (> 70 (:header-bkg-scroller state))
-                                               {:background-size (str "100% " (:header-bkg-scroller state) "px")}))
+               [:nav.home-nav {:style (if (> 70 (:header-bkg-scroller state))
+                                        {:background-size (str "100% " (:header-bkg-scroller state) "px")}
+                                        {})
                                :class (concat
                                        (when (:header-logo-visible state) ["logo-visible"])
                                        (when (:header-cta-visible state) ["cta-visible"])
