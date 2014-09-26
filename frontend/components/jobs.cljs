@@ -136,6 +136,8 @@
             "Our customers love great experiences, and so do we. We're looking for amazing designers who can provide them."]
            [:h5 "You will be responsible for"]
            [:ul
+             [:li "Create simple solutions for complex challenges."]
+             [:li "Considering the user's experience from the start of an idea to implementation."]
              [:li "Actively engaging with product strategy and development."]
              [:li "Collaborating between various teams with diverse skill sets."]
              [:li "Embracing an environment with increasingly tight feedback loops."]
@@ -144,8 +146,6 @@
              [:li "Upholding and improving upon existing brand standards and guidelines."]]
            [:h5 "We would love to see"]
            [:ul
-             [:li "An ability to create simple solutions for complex challenges."]
-             [:li "Someone who considers the user's experience from start to finish."]
              [:li "An aptitude in many skill sets and a hunger for learning."]
              [:li "The ability to communicate effeciently in a developer-centric environment."]
              [:li "A keen eye and a very strong sense of taste."]
