@@ -265,6 +265,12 @@
       }
     }
   }
+  // opening animations
+  .avatar-circle          { .animation(prolog-logo @prolog_open_duration @bezier_fadein); }
+  .context:nth-of-type(1) { .animation(prolog-up @prolog_open_duration @bezier_fadein (@prolog_open_delay * 1) both); }
+  .context:nth-of-type(2) { .animation(prolog-up @prolog_open_duration @bezier_fadein (@prolog_open_delay * 2) both); }
+  .home-bottom-shelf      { .animation(prolog-up @prolog_open_duration @bezier_fadein @prolog_open_duration both); }
+  .home-action            { .animation(prolog-action @prolog_open_duration @bezier_fadein); }
 }
 .home-top-shelf {
   .order(1);
@@ -315,7 +321,6 @@
     }
   }
   .avatar-circle {
-    .animation(prolog-logo @prolog_open_duration @bezier_fadein);
     width: @tile;
     height: @tile;
     position: absolute;
@@ -403,8 +408,6 @@
   }
   .context {
     height: @prolog_h3_line;
-    &:nth-of-type(1) { .animation(prolog-up @prolog_open_duration @bezier_fadein (@prolog_open_delay * 1) both); }
-    &:nth-of-type(2) { .animation(prolog-up @prolog_open_duration @bezier_fadein (@prolog_open_delay * 2) both); }
     &:before,
     &:after {
       color: @prolog_light_on_dark;
@@ -415,7 +418,6 @@
   }
 }
 .home-bottom-shelf {
-  .animation(prolog-up @prolog_open_duration @bezier_fadein @prolog_open_duration both);
   .flexy(center, center);
   .order(5);
   position: relative;
@@ -435,7 +437,6 @@
 // Where the magic happens.
 //
 .home-action {
-  .animation(prolog-action @prolog_open_duration @bezier_fadein);
   .box-sizing(border-box);
   .flexy(center, center);
   .order(4);
