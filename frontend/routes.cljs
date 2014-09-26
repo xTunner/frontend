@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [frontend.async :refer [put!]]
             [goog.events :as events]
+            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.models.project :as proj-mod]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :include-macros true]
@@ -14,6 +15,8 @@
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
 (defn open-to-outer! [nav-ch navigation-point args]
+  (when-let [join (-> args :query-params :join)]
+    (mixpanel/track "Has join code" {:join join}))
   (put! nav-ch [navigation-point (assoc args :inner? false)]))
 
 (defn logout! [nav-ch]
