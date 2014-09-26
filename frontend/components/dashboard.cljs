@@ -32,7 +32,7 @@
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)]
         (html
-         (cond (nil? builds) [:div.loading-spinner common/spinner]
+         (cond (nil? builds) [:div.loading-spinner-big common/spinner]
               (and (empty? builds)
                    projects
                    (empty? projects)) [:div

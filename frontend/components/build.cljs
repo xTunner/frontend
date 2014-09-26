@@ -145,7 +145,7 @@
           (if-not build
            [:div
              (om/build common/flashes (get-in data state/error-message-path))
-             [:div.loading-spinner common/spinner]]
+             [:div.loading-spinner-big common/spinner]]
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
