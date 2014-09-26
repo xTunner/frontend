@@ -1,30 +1,30 @@
-## Getting Started with AWS Code Deploy on CircleCI
+## Getting Started with AWS CodeDeploy on CircleCI
 
 ### AWS infrastructure
-The first step to continuous deployment with Code Deploy is setting up your EC2
+The first step to continuous deployment with CodeDeploy is setting up your EC2
 instances, tagging them so you can define deployment groups, installing the
-Code Deploy agent on your hosts and setting up trust-roles so that Code Deploy
-can communicate with the Code Deploy agents.
-AWS provide a good [getting started with Code Deploy guide][] for this part of
+CodeDeploy agent on your hosts and setting up trust-roles so that CodeDeploy
+can communicate with the CodeDeploy agents.
+AWS provide a good [getting started with CodeDeploy guide][] for this part of
 the process.
 
-[gettings started with Code Deploy guide]: http://alpha-docs-aws.amazon.com/en_us/console/sds/applications-tutorial
+[gettings started with CodeDeploy guide]: http://alpha-docs-aws.amazon.com/en_us/console/sds/applications-tutorial
 
 
-### Code Deploy application
-A Code Deploy application is a collection of settings about where your
+### CodeDeploy application
+A CodeDeploy application is a collection of settings about where your
 application can be deployed, how many instances can be deployed to at once,
 what should be considered a failed deploy, and information on the trust-role to
-use to allow Code Deploy to interact with your EC2 instances.
+use to allow CodeDeploy to interact with your EC2 instances.
 
-**Note**: A Code Deploy application does not specify what is to be deployed or what to
+**Note**: A CodeDeploy application does not specify what is to be deployed or what to
 do during the deployment.
 *What* to deploy is an archive of code/resources stored in S3 called an
 `application revision`.
 *How* to deploy is specified by the `AppSpec` file located inside the
 application revision.
 
-The [AppSpec][] file lives in your repo and tells Code Deploy which files from
+The [AppSpec][] file lives in your repo and tells CodeDeploy which files from
 your application to deploy, where to deploy them, and also allows you specify
 lifecyle scripts to be run at different stages during the deployment. You can
 use these lifecycle scripts to stop your service before a new version is
@@ -44,13 +44,13 @@ combination of a bucket name, key, eTag, and for versioned buckets, the
 object's version.
 
 The most straightforward way to configure a new application is to log on to the
-[Code Deploy console][] which can guide you through the process of [creating a new
+[CodeDeploy console][] which can guide you through the process of [creating a new
 application][].
 
 [AppSpec]: link to doc on appspecs
 [application revision]: link to doc on application revisions
 [S3]: http://aws.amazon.com/s3/
-[Code Deploy console]: https://razorbill-preview-console.aws.amazon.com/sds/home
+[CodeDeploy console]: https://razorbill-preview-console.aws.amazon.com/sds/home
 [creating a new application]: https://razorbill-preview-console.aws.amazon.com/sds/home#/applications/new
 
 
@@ -61,15 +61,15 @@ CircleCI will automatically create new application revisions, upload them to
 S3, and both trigger and watch deployments when you get a green build.
 
 ### Step 1: Create an IAM user for CircleCI to use
-You should create an [IAM][] user to use solely for builds on
+You should create an [IAM user][] to use solely for builds on
 CircleCI, that way you have control over exactly which of your resources can be
 accessed by code running as part of your build.
 
 Take note of the Access Key ID and Secret Access Key allocated to your new IAM
 user, you'll need these later.
 
-For deploying with Code Deploy your IAM user needs to be able to access S3 and
-Code Deploy at a minimum.
+For deploying with CodeDeploy your IAM user needs to be able to access S3 and
+CodeDeploy at a minimum.
 
 #### S3 IAM policy
 CircleCI needs to be able to upload application revisions to your S3 bucket.
@@ -97,7 +97,7 @@ key starts with `my-app`.
     }
 
 
-#### Code Deploy IAM policy
+#### CodeDeploy IAM policy
 CircleCI also needs to be able to create application revisions, trigger
 deployments and get deployment status. If your application is called `my-app`
 the following policy snippet gives us sufficient accesss:
@@ -119,7 +119,7 @@ the following policy snippet gives us sufficient accesss:
       ]
     }
 
-[IAM]: http://docs.aws.amazon.com/IAM/latest/UserGuide/IAM_Introduction.html
+[IAM user]: http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html
 
 
 ### Step 2: Configure CircleCI to use your new IAM user 
@@ -145,20 +145,20 @@ and register new revisions:
    in your key pattern to help generate a unique key for each application
    revision.
 3. Which AWS region your application lives in. Each application revision must
-   be registered in the same AWS region that the Code Deploy application was
+   be registered in the same AWS region that the CodeDeploy application was
    created in.
 
 If you want to be able to deploy this application from several different
 branches (e.g. deploy `development` to your staging instances and `master` to
 your production instances) you can configure these project-wide application
-settings in the CirclCI UI at **Project Settings > Amazon Code Deploy**. The
+settings in the CirclCI UI at **Project Settings > Amazon CodeDeploy**. The
 main benefit is that you will have a simpler [circle.yml][] file.
 
 You can also skip this step and configure everything in your [circle.yml][]
 
 
 ### Step 4: Configure deployment parameters
-Configure your Code Deploy deployment using the `code-deploy` block in
+Configure your CodeDeploy deployment using the `code-deploy` block in
 [circle.yml][]. At a minimum you need to tell CircleCI which application to
 deploy and which deployment group the selected branch should be deployed to.
 Any additional settings will override the project-wide configuration in the
@@ -203,7 +203,7 @@ information for your deployment in your [circle.yml][]:
 
 
 Breaking this down: there's one entry in the `code-deploy` block which is
-named with your Code Deploy application's name (in this example we're
+named with your CodeDeploy application's name (in this example we're
 deploying an application called `my-app`).
 
 The sub-entries of `my-app` tell CircleCI where and how to deploy the `my-app`
@@ -222,7 +222,7 @@ application.
 * `region` is the AWS region your application lives in
 * `deployment_group` [**TODO check if this is optional**] is the deployment group to deploy to
 * `deployment_config` [optional] names the deployment configuration. It can be
-  any of the standard three Code Deploy configurations (FOO, BAR, and BAZ) or
+  any of the standard three CodeDeploy configurations (FOO, BAR, and BAZ) or
   if you want to use a custom configuration you've created you can name it
   here.
 
@@ -250,7 +250,7 @@ pattern and we'll use the object's versioning info instead.
 Unlike other deployment options you don't need to specify pre- or
 post-deployment steps in your `circle.yml`.
 
-Code Deploy provides first class support for your application's lifecycle via
+CodeDeploy provides first class support for your application's lifecycle via
 lifecycle scripts. As a result you can consistently start/stop services, run
 database migrations, install dependencies etc. across all your instances in a
 consistent manner.
