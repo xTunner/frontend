@@ -294,7 +294,7 @@
                   [:p
                    (for [toolset ["Languages" "databases" "queues" "browsers" "deployment"]]
                      (list
-                      [:a {:on-click #(put! controls-ch [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "))
+                      [:a {:on-mouse-enter #(put! controls-ch [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "))
                    "we support all of your tools.
                    If it runs on Linux, then it will work on CircleCI.
                    We'll even be around to help you install your own tools.
