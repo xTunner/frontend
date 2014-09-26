@@ -22,7 +22,7 @@
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [dommy.macros :refer [sel1 node]]))
 
-(defn mount-header-logo-scroll [owner]
+(defn mount-scroll-handler [owner]
   (let [logo (om/get-node owner "center-logo")
         cta (om/get-node owner "cta")
         nav-bkg (om/get-node owner "nav-bkg")
@@ -30,22 +30,29 @@
         nav-no-bkg (om/get-node owner "nav-no-bkg")
         first-fig-animate (om/get-node owner "first-fig-animate")
         second-fig-animate (om/get-node owner "second-fig-animate")
-        vh (.-height (goog.dom/getViewportSize))
-        scroll-callback #(do
-                           (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
-                           (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta))))
-                           (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) 70))
-                           (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
-                           (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) 70))
-                           (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect first-fig-animate)) vh))
-                           (om/set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect second-fig-animate)) vh))
-                           (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
-                                                                            (js/Math.abs (- 70 (.-bottom (.getBoundingClientRect nav-bkg)))))))]
-    (om/set-state! owner [:browser-resize-key]
+        scroll-ch (om/get-state owner [:scroll-ch])
+        scroll-handler #(let [vh (.-height (goog.dom/getViewportSize))
+                              nav-height 70]
+                          ;; we could optimize these, but calculating this is surprisingly fast (less than 10 ms)
+                          (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
+                          (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta))))
+                          (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect nav-bkg)) nav-height))
+                          (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect no-cta)) vh))
+                          (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect nav-no-bkg)) nav-height))
+                          (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect first-fig-animate)) vh))
+                          (om/set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect second-fig-animate)) vh))
+                          (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect nav-no-bkg)))
+                                                                           (js/Math.abs (- nav-height (.-bottom (.getBoundingClientRect nav-bkg)))))))]
+    (om/set-state! owner [:scroll-key]
                    (goog.events/listen
                     js/window
                     "scroll"
-                    scroll-callback))))
+                    #(put! scroll-ch %)))
+    (go-loop []
+             (when-let [event (<! scroll-ch)]
+               (utils/swallow-errors (scroll-handler))
+               (recur)))
+    (scroll-handler)))
 
 (def circle-logo
   [:svg {:xmlns "http://www.w3.org/2000/svg" :x "0px" :y "0px" :viewBox "0 0 393 100" :enableBackground "new 0 0 393 100"}
@@ -165,7 +172,11 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (mount-header-logo-scroll owner))
+      (mount-scroll-handler owner))
+    om/IWillUnmount
+    (will-unmount [_]
+      (goog.events/unlistenByKey (om/get-state owner [:scroll-key]))
+      (close! (om/get-state owner [:scroll-ch])))
     om/IInitState
     (init-state [_]
       {:header-logo-visible false
