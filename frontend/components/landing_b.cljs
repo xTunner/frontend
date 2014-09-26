@@ -30,7 +30,7 @@
         nav-no-bkg (om/get-node owner "nav-no-bkg")
         first-fig-animate (om/get-node owner "first-fig-animate")
         second-fig-animate (om/get-node owner "second-fig-animate")
-        vh (.-height (goog.style/getSize nav-bkg))
+        vh (.-height (goog.dom/getViewportSize))
         scroll-callback #(do
                            (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
                            (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect cta))))
@@ -43,7 +43,7 @@
                                                                             (js/Math.abs (- 70 (.-bottom (.getBoundingClientRect nav-bkg)))))))]
     (om/set-state! owner [:browser-resize-key]
                    (goog.events/listen
-                    (sel1 (om/get-shared owner [:target]) ".app-main")
+                    js/window
                     "scroll"
                     scroll-callback))))
 

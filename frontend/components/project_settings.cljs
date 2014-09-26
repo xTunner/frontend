@@ -350,20 +350,19 @@
             "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
-           ;; Comment out while we wait for the backend to deploy
-           ;; (describe-flag {:flag :junit
-           ;;                 :title "JUnit support"
-           ;;                 :blurb [:p
-           ;;                         "We've been experimenting with better ways to display and manage "
-           ;;                         "test result data, especially for large test suites. This adds flags "
-           ;;                         "to some of our inferred commands to collect structured test output supplied by "
-           ;;                         "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
-           ;;                         "you're using our inferred test steps. For RSpec, we also require our fork of the "
-           ;;                         "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
-           ;;                         [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
-           ;;                         "If you're using parallelism, we'll "
-           ;;                         "automatically use the timing data to give you better test splits. You'll also be able to "
-           ;;                         "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
+           (describe-flag {:flag :junit
+                           :title "JUnit support"
+                           :blurb [:p
+                                   "We've been experimenting with better ways to display and manage "
+                                   "test result data, especially for large test suites. This adds flags "
+                                   "to some of our inferred commands to collect structured test output supplied by "
+                                   "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
+                                   "you're using our inferred test steps. For RSpec, we also require our fork of the "
+                                   "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
+                                   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+                                   "If you're using parallelism, we'll "
+                                   "automatically use the timing data to give you better test splits. You'll also be able to "
+                                   "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
            (describe-flag {:flag :set-github-status
                            :title "GitHub Status updates"
                            :blurb [:p
@@ -400,7 +399,13 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p [:i "You can also set your dependencies commands from your " [:a {:href "/docs/configuration#dependencies"} "circle.yml"] "."]]
+          [:p 
+           "You can also set your dependencies commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.dependencies-inner
            [:form.spec_form
             [:fieldset
@@ -442,7 +447,13 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p [:i "You can also set your test commands from your " [:a {:href "/docs/configuration#test"} "circle.yml"] "."]]
+          [:p 
+           "You can also set your test commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.tests-inner
            [:fieldset.spec_form
             [:textarea {:name "test",

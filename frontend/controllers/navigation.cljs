@@ -38,11 +38,10 @@
   "Scrolls to the element with id of fragment, if one exists"
   [fragment]
   (when-let [node (goog.dom.getElement fragment)]
-    (let [main (goog.dom.getElementByClass "app-main")
+    (let [body (sel1 "body")
           node-top (goog.style/getPageOffsetTop node)
-          main-top (goog.style/getPageOffsetTop main)
-          main-scroll (.-scrollTop main)]
-      (set! (.-scrollTop main) (+ main-scroll (- node-top main-top))))))
+          body-top (goog.style/getPageOffsetTop body)]
+      (set! (.-scrollTop body) (- node-top body-top)))))
 
 (defn scroll!
   "Scrolls to fragment if the url had one, or scrolls to the top of the page"
@@ -50,7 +49,7 @@
   (if (:_fragment args)
     ;; give the page time to render
     (utils/rAF #(scroll-to-fragment! (:_fragment args)))
-    (utils/rAF #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
+    (utils/rAF #(set! (.-scrollTop (sel1 "body")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -381,10 +380,13 @@
 
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
+  (let [orig-nav-point (get-in state [:navigation-point])]
+    (mlog "navigated-to :error with (:navigation-point state) of " orig-nav-point)
+    (-> state
+        state-utils/clear-page-state
+        (assoc :navigation-point navigation-point
+               :navigation-data args
+               :original-navigation-point orig-nav-point))))
 
 (defmethod post-navigated-to! :error
   [history-imp navigation-point {:keys [status] :as args} previous-state current-state]

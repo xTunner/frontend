@@ -37,7 +37,7 @@
   [:div.ctabox {:class (if first "line")}
    [:div
     [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
-   (shared/home-button {:source "hero" :button_copy (:button_copy ab-tests)} controls-ch)
+   (shared/home-button {:source "hero"} controls-ch)
    [:div
     [:p
      [:i "CircleCI keeps your code safe. "
