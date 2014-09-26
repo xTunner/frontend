@@ -29,7 +29,7 @@
            [:div.entries
             (for [entry (:entries changelog)
                   :let [team-member (first (filter #(= (:author entry) (:github %)) team))
-                        id (-> (:pubDate entry) (str/replace ":" "") (str/replace "-" ""))]
+                        id (->> entry :guid (re-find #"/changelog/(.+)$") last)]
                   :when (or (nil? show-id) (= show-id id))]
               [:div.entry {:id id}
                [:div.entry-main
