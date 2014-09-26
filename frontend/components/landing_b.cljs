@@ -230,9 +230,9 @@
                 [:div.home-cover]
                 [:div.home-top-shelf]
                 [:div.home-slogans
-                 [:h1.slogan.proverb {:title "Your org needs a hero."
+                 [:h1.slogan.proverb {:title "Ship better code, faster."
                                       :alt   "Let's just authorize first."}
-                  "Your org needs a hero."]
+                  "Ship better code, faster."]
                  [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your"
                                       :alt   "Signing up using your GitHub login lets us start really fast."}
                   "You have a product to focus on, let Circle handle your"]
@@ -354,9 +354,9 @@
                 [:div.home-cover]
                 [:div.home-top-shelf]
                 [:div.home-slogans
-                 [:h1.slogan.proverb {:title "So, ready to be a hero?"
+                 [:h1.slogan.proverb {:title "So, ready to ship faster?"
                                       :alt   "Let's just authorize first."}
-                  "So, ready to be a hero?"]
+                  "So, ready to ship faster?"]
                  [:h3.slogan.context {:title "Next you'll just need to sign in using your GitHub account."
                                       :alt   "Signing up using your GitHub login lets us start really fast."}
                   "Next you'll just need to sign in using your GitHub account."]
