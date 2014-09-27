@@ -115,7 +115,9 @@
                [:footer.main-foot
                 (footer/footer)]
                (when-not logged-in?
-                 (om/build shared/sticky-help-link app))]])))))))
+                 (om/build shared/sticky-help-link app))]
+              ;; modal trigger is in aside-nav
+              shared/invite-form])))))))
 
 
 (defn app [app owner]
