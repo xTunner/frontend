@@ -1,3 +1,10 @@
+<!--
+
+title: Getting started with CircleCI
+last_updated: April 29, 2013
+
+-->
+
 Setting up CircleCI usually takes only three mouse clicks:
 
 1.  Sign up with CircleCI.

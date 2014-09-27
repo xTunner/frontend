@@ -1,3 +1,10 @@
+<!--
+
+title: Continuous Deployment with Heroku
+last_updated: May 7, 2013
+
+-->
+
 ## Quick start videos
 
 Watch these videos for a step-by-step walkthrough of setting up a continuous delivery

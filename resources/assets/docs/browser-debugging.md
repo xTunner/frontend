@@ -1,3 +1,10 @@
+<!--
+
+title: Interacting with the browser on CircleCI's VM
+last_updated: May 30, 2014
+
+-->
+
 Integration tests can be hard to debug, especially when they're running on a remote machine.
 There are three good ways to debug browser tests on CircleCI.
 

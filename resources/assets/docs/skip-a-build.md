@@ -1,3 +1,10 @@
+<!--
+
+title: Skip a build
+last_updated: Feb 2, 2013
+
+-->
+
 CircleCI supports the `[ci skip]` standard for ignoring builds.
 
 CircleCI won't run the build if we find `[ci skip]` anywhere in the commit message of the head commit.

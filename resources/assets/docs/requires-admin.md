@@ -1,3 +1,10 @@
+<!--
+
+title: CircleCI requires Admin permissions
+last_updated: Feb 3, 2013
+
+-->
+
 On the Manage Projects screen, CircleCI won't allow you to add a
 project, because it requires admin permissions.
 

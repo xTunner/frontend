@@ -1,3 +1,10 @@
+<!--
+
+title: Install custom software
+last_updated: May 2, 2013
+
+-->
+
 The CircleCI environment provides the libraries, languages, and databases needed for most development work
 (check out the [comprehensive list)](/docs/environment).
 However, if you need to install a particular version of software&mdash;to match your production systems or to test backward compatibility, for example&mdash;or add custom code, CircleCI makes it easy to set up your environment to meet your testing needs.

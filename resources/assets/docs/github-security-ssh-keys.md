@@ -1,3 +1,10 @@
+<!--
+
+title: GitHub security and SSH keys
+last_updated: May 1, 2013
+
+-->
+
 GitHub has two different SSH keys&mdash;a _deploy_ key and a _user_ key.
 When you add a GitHub repository to CircleCI, we automatically add a deploy
 key that references this repository.

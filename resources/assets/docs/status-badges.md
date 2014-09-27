@@ -1,3 +1,10 @@
+<!--
+
+title: Embeddable status badges
+last_updated: July 30, 2014
+
+-->
+
 We provide project and branch status images, which you can embed anywhere you want: a GitHub
 README, a dashboard, or anywhere else you can imagine!
 

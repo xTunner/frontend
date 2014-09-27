@@ -1,3 +1,10 @@
+<!--
+
+title: Does Circle look at my code?
+last_updated: Feb 2, 2013
+
+-->
+
 Nobody from Circle manually looks at your code, without permission.
 We will occasionally ask permission to debug why your code isn't working, but we will never look at your code without this permission.
 Our [security policy](/security)

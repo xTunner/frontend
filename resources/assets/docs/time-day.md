@@ -1,3 +1,10 @@
+<!--
+
+title: Time-based results are one day off
+last_updated: Feb 3, 2013
+
+-->
+
 Time-zones are fickle masters, and time-based code frequently only works in the time-zone in which it was written.
 Your code is probably tested in local time on your development machine, while CircleCI is in UTC.
 If that's the case, you may end up with test failures looking like this:
