@@ -251,7 +251,6 @@
             avatar-url (gh-utils/make-avatar-url user)]
         (html
          [:aside.app-aside-left
-          shared/invite-form ;; modal trigger is in aside-nav
           (om/build aside-nav data {:opts user})
 
           (om/build activity data {:opts {:login login}})])))))
