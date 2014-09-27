@@ -1,3 +1,10 @@
+<!--
+
+title: "java.lang.NoSuchMethodError: clojure.lang.KeywordLookupSite"
+last_updated: Feb 2, 2013
+
+-->
+
 This is caused by using jars that were AOT compiled against
 1.2.1 or lower, with Clojure 1.3 or higher. The most frequent
 offender is clojure-contrib, which is not compatible with

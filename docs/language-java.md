@@ -1,3 +1,11 @@
+<!--
+
+title: Continuous Integration and Continuous Deployment with Java
+short_title: Java
+last_updated: April 21, 2014
+
+-->
+
 Circle supports building Java applications using most common JDKs and build tools.
 Before each build, we look at your repository and infer commands to run, so most
 setups should work automatically.

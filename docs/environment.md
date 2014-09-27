@@ -1,3 +1,10 @@
+<!--
+
+title: Test environment
+last_updated: Jul 8, 2014
+
+-->
+
 Occasionally, bugs in tests arise because CircleCI's environment differs slightly from your local environment.
 In the future, we plan to allow as much of this to be configurable as possible.
 Please [contact us](mailto:sayhi@circleci.com) if some part of our environment is not suitable for you, and we will try to come up with a workaround.

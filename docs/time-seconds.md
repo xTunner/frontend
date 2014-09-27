@@ -1,3 +1,10 @@
+<!--
+
+title: Time-based results are a few seconds off
+last_updated: Feb 3, 2013
+
+-->
+
 While one-day variations are your responsibility, differences of a second or so are probably bugs in your CI server, and should not happen on CircleCI.
 
 This sort of bugs happen on slow computers running time-sensitive tests.

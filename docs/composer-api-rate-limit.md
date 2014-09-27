@@ -1,3 +1,10 @@
+<!--
+
+title: Composer hitting GitHub API rate limits
+last_updated: May 23, 2013
+
+-->
+
 _Note that this only applies when setting up your composer step manually -
 CircleCI's built-in PHP support knows how to workaround this issue._
 

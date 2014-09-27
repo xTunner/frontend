@@ -1,3 +1,10 @@
+<!--
+
+title: Circle's EC2 IP addresses and AWS security group
+last_updated: Jun 19, 2013
+
+-->
+
 You may need Circle's AWS information if you have a firewalled server that you need to access as part of your builds.
 
 Circle is hosted in EC2's US East region, so our Amazon

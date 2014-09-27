@@ -1,3 +1,11 @@
+<!--
+
+title: Continuous Integration and Continuous Deployment with PHP
+short_title: PHP
+last_updated: March 12, 2014
+
+-->
+
 Circle works seamlessly with all the tools and package managersthat
 help PHP developers test and deploy their code. We can generally infer
 most of your dependencies and test commands, but we also provide custom

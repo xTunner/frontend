@@ -1,3 +1,10 @@
+<!--
+
+title: Build artifacts
+last_updated: August 1, 2014
+
+-->
+
 If your build produces persistent artifacts such as screenshots, coverage reports, or
 deployment tarballs, we can automatically save and link them for you.
 

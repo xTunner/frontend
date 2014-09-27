@@ -1,3 +1,10 @@
+<!--
+
+title: Introduction to Continuous Deployment
+last_updated: March 12, 2014
+
+-->
+
 Circle enables you to automatically deploy after green builds.
 We have customers deploying to PaaSes such as Heroku, Engine Yard,
 and Google App Engine, hosted cloud servers (like EC2 and Rackspace),

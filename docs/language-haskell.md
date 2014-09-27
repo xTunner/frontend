@@ -1,3 +1,11 @@
+<!--
+
+title: Continuous Integration and Continuous Deployment with Haskell
+short_title: Haskell
+last_updated: April 17, 2014
+
+-->
+
 Circle supports building Haskell applications with GHC and Cabal. Before each
 build we look at your repository and infer commands to run, so most
 setups should work automatically.

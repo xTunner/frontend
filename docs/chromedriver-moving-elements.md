@@ -1,3 +1,10 @@
+<!--
+
+title: ChromeDriver raises an 'Element is not clickable' exception
+last_updated: Aug 7, 2013
+
+-->
+
 This can be caused by the small delay between ChromeDriver determining the
 location of an element to click and actually clicking on the element. If the
 element is moving (for instance because another element has loaded and caused
