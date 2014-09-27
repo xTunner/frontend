@@ -131,6 +131,14 @@
   [target message _ state]
   (update-in state state/user-options-shown-path not))
 
+(defmethod control-event :invite-form-opened
+  [target message _ state]
+  (assoc-in state state/user-options-shown-path false))
+
+(defmethod post-control-event! :invite-form-opened
+  [_ _ _ _ _ _]
+  (utils/open-modal "#inviteForm"))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
