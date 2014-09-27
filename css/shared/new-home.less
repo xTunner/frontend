@@ -157,8 +157,8 @@
       left: 0;
       opacity: 1;
       pointer-events: auto;
-      transition: left @prolog_cover_fadein,
-                  opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
+      transition+: left @prolog_cover_fadein;
+      transition+: opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
     }
   }
   &.cta-visible {
@@ -171,8 +171,8 @@
         right: 0;
         opacity: 1;
         pointer-events: auto;
-        transition: right @prolog_cover_fadein,
-                    opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
+        transition+: right @prolog_cover_fadein;
+        transition+: opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
       }
     }
   }
@@ -192,10 +192,10 @@
     position: absolute;
     top: 0;
     height: 100%;
-    transition: top @prolog_cover_fadeout,
-                left @prolog_cover_fadeout,
-                right @prolog_cover_fadeout,
-                opacity @prolog_cover_fadeout;
+    transition+: top @prolog_cover_fadeout;
+    transition+: left @prolog_cover_fadeout;
+    transition+: right @prolog_cover_fadeout;
+    transition+: opacity @prolog_cover_fadeout;
   }
   .promo,
   .login {
@@ -305,12 +305,12 @@
   left: ~"calc(50% - 105px)";
   top: ~"calc(50% + 140px)";
   opacity: 0;
-  transition: width @prolog_cover_fadeout,
-              height @prolog_cover_fadeout,
-              left @prolog_cover_fadeout,
-              top @prolog_cover_fadeout,
-              border-radius @prolog_cover_fadeout,
-              opacity 0ms @prolog_cover_fadeout;
+  transition+: width @prolog_cover_fadeout;
+  transition+: height @prolog_cover_fadeout;
+  transition+: left @prolog_cover_fadeout;
+  transition+: top @prolog_cover_fadeout;
+  transition+: border-radius @prolog_cover_fadeout;
+  transition+: opacity 0ms @prolog_cover_fadeout;
   transition-timing-function: @bezier_transform;
 }
 .home-avatars {
@@ -399,8 +399,8 @@
     &:before {
       content: attr(title);
       top: 0;
-      transition: opacity @prolog_cover_fadeout (@prolog_cover_fadeout / 2),
-                  top (@prolog_cover_fadeout * 1.5) (@prolog_cover_fadeout / 2);
+      transition+: opacity @prolog_cover_fadeout (@prolog_cover_fadeout / 2);
+      transition+: top (@prolog_cover_fadeout * 1.5) (@prolog_cover_fadeout / 2);
     }
     &:after {
       content: attr(alt);
@@ -462,18 +462,18 @@
   height: @home_action_height;
   border: 1px solid @white;
   border-radius: (@home_action_height / 2);
-  transition: color @prolog_cover_fadeout,
-              background @prolog_cover_fadeout,
-              border-color @prolog_cover_fadeout @prolog_cover_fadeout;
+  transition+: color @prolog_cover_fadeout;
+  transition+: background @prolog_cover_fadeout;
+  transition+: border-color @prolog_cover_fadeout @prolog_cover_fadeout;
   transition-timing-function: @bezier_fadein;
   &:hover {
 // Button
     color: @white;
     background: @grayDark;
     border-color: @grayBoxBorder;
-    transition: color @prolog_cover_fadein @prolog_cover_fadeout,
-                background @prolog_cover_fadein @prolog_cover_fadeout,
-                border-color 0ms 0ms;
+    transition+: color @prolog_cover_fadein @prolog_cover_fadeout;
+    transition+: background @prolog_cover_fadein @prolog_cover_fadeout;
+    transition+: border-color 0ms 0ms;
 // Cover
     ~ .home-cover {
       width: 100%;
@@ -482,12 +482,12 @@
       top: 0;
       opacity: 1;
       border-radius: 0;
-      transition: width @prolog_cover_fadein,
-                  height @prolog_cover_fadein,
-                  left @prolog_cover_fadein,
-                  top @prolog_cover_fadein,
-                  border-radius (@prolog_cover_fadein / 2),
-                  opacity 0ms;
+      transition+: width @prolog_cover_fadein;
+      transition+: height @prolog_cover_fadein;
+      transition+: left @prolog_cover_fadein;
+      transition+: top @prolog_cover_fadein;
+      transition+: border-radius (@prolog_cover_fadein / 2);
+      transition+: opacity 0ms;
     }
 // Logos
     ~ .home-avatars {
@@ -1042,9 +1042,9 @@
     a {
       color: transparent;
       border-bottom: 1px solid @home_color_last_cta;
-      transition: border 200ms,
-                  background 200ms,
-                  opacity @prolog_cover_fadeout @prolog_cover_fadein ease-in-out;
+      transition+: border 200ms;
+      transition+: background 200ms;
+      transition+: opacity @prolog_cover_fadeout @prolog_cover_fadein ease-in-out;
       &:hover,
       &:focus {
         background: @home_color_last_cta;
