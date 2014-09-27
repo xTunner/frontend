@@ -13,6 +13,7 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-trial-notice? [projects plan]
+  (println "show-trial-notice? for [" (map :reponame projects) "] and plan-model/trial? " (plan-model/trial? plan) " oss statuses are [" (map project-model/oss? projects) "]")
   (let [some-private-repos (some #(not (project-model/oss? %)) projects)]
     (and some-private-repos
          (plan-model/trial? plan)
