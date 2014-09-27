@@ -38,11 +38,10 @@
   "Scrolls to the element with id of fragment, if one exists"
   [fragment]
   (when-let [node (goog.dom.getElement fragment)]
-    (let [main (goog.dom.getElementByClass "app-main")
+    (let [body (sel1 "body")
           node-top (goog.style/getPageOffsetTop node)
-          main-top (goog.style/getPageOffsetTop main)
-          main-scroll (.-scrollTop main)]
-      (set! (.-scrollTop main) (+ main-scroll (- node-top main-top))))))
+          body-top (goog.style/getPageOffsetTop body)]
+      (set! (.-scrollTop body) (- node-top body-top)))))
 
 (defn scroll!
   "Scrolls to fragment if the url had one, or scrolls to the top of the page"
@@ -50,7 +49,7 @@
   (if (:_fragment args)
     ;; give the page time to render
     (utils/rAF #(scroll-to-fragment! (:_fragment args)))
-    (utils/rAF #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
+    (utils/rAF #(set! (.-scrollTop (sel1 "body")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
