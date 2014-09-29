@@ -97,8 +97,8 @@
 
 (def email-prefs
   [["default" "Default"]
-   ["all" "All"]
-   ["smart" "Smart"]
+   ["all" "All builds"]
+   ["smart" "My breaks and fixes"]
    ["none" "None"]])
 
 (defn email-pref [{:keys [project user]} owner]
