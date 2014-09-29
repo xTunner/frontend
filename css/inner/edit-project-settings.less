@@ -778,14 +778,20 @@
     form {
       margin-top: 2em;
       max-width: 340px;
-      display: flex;
-      flex-direction: column;
+      display: -webkit-flex;
+      display:         flex;
+      -webkit-flex-direction: column;
+              flex-direction: column;
 
       .buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        flex-wrap: wrap;
+        display: -webkit-flex;
+        display:         flex;
+        -webkit-flex-direction: row;
+                flex-direction: row;
+        -webkit-justify-content: space-around;
+                justify-content: space-around;
+        -webkit-flex-wrap: wrap;
+                flex-wrap: wrap;
       }
     }
     input[type=submit] {
