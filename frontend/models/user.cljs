@@ -13,3 +13,12 @@
 
 (defn public-key-scope? [user]
   (some #{"admin:public_key"} (:github_oauth_scopes user)))
+
+(defn unkeyword
+  "Converts a keyword in to a string without the leading colon. See server-side function of the same name."
+  [kw]
+  (.substr (str kw) 1))
+
+(defn project-preferences [user]
+  (into {} (for [[vcs-url prefs] (:projects user)]
+             [(unkeyword vcs-url) prefs])))

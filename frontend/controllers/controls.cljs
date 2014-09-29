@@ -843,6 +843,23 @@
    :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
             :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
 
+(defmethod control-event :project-preferences-updated
+  [target message args state]
+  (update-in state (conj state/user-path :projects)
+             (partial merge-with merge)
+             ;; The keys of the projects map are unfortunately keywords, despite being URLs.
+             (into {} (for [[vcs-url prefs] args]
+                        [(keyword vcs-url) prefs]))))
+
+(defmethod post-control-event! :project-preferences-updated
+  [target message args previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:projects args}))
+
 (defmethod post-control-event! :heroku-key-add-attempted
   [target message args previous-state current-state]
   (let [uuid frontend.async/*uuid*

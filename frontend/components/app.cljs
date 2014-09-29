@@ -100,7 +100,8 @@
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
-                                       (when slim-aside? ["aside-slim"]))}
+                                       (when slim-aside? ["aside-slim"])
+                                       (when-not logged-in? ["aside-nil"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
@@ -117,7 +118,9 @@
                [:footer.main-foot
                 (footer/footer)]
                (when-not logged-in?
-                 (om/build shared/sticky-help-link app))]])))))))
+                 (om/build shared/sticky-help-link app))]
+              ;; modal trigger is in aside-nav
+              shared/invite-form])))))))
 
 
 (defn app [app owner]
