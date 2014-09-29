@@ -434,7 +434,6 @@
           docs (or (get-in current-state state/docs-data-path)
                    (let [api-result (<! (ajax/managed-ajax :get (get-in current-state [:render-context :doc_manifest_url])))]
                      (put! api-ch [:doc-manifest (:status api-result) api-result])
-                     (println "API RESULT:" api-result)
                      (doc-utils/format-doc-manifest (:resp api-result))))
           doc (get docs subpage)]
       (cond
