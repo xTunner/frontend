@@ -1,4 +1,4 @@
-## Getting Started with AWS CodeDeploy on CircleCI
+## Getting Started with CodeDeploy on CircleCI
 
 ### AWS infrastructure
 The first step to continuous deployment with CodeDeploy is setting up your EC2
@@ -100,9 +100,8 @@ key starts with `my-app`.
 #### CodeDeploy IAM policy
 CircleCI also needs to be able to create application revisions, trigger
 deployments and get deployment status. If your application is called `my-app`
-the following policy snippet gives us sufficient accesss:
-
-**TODO: Find the correct permissions and test them**
+and your account ID is `80398EXAMPLE` then the following policy snippet gives
+us sufficient accesss:
 
     {
       "Version": "2012-10-17",
@@ -110,16 +109,37 @@ the following policy snippet gives us sufficient accesss:
         {
           "Effect": "Allow",
           "Action": [
-            "code-deploy:??"
+            "codedeploy:RegisterApplicationRevision",
+            "codedeploy:GetApplicationRevision"
           ],
           "Resource": [
-            "arn:aws:code-deploy:...?"
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:application:my-app"
           ]
-        }
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "codedeploy:CreateDeployment",
+            "codedeploy:GetDeployment"
+          ],
+          "Resource": [
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentgroup:my-app/*"
+          ]
+        },
       ]
     }
 
+**Note:** This is the minimal policy necessary for creating deployments to
+`my-app`. You will need to add additional `Resource` statements for each
+additional CodeDeploy application, alternatively you can use wildcards in the
+resource specification.
+
+If you want to use custom deployment configurations then we will also need the
+`GetDeploymentConfig` permission for each of the custom deployment
+configurations, check out the [CodeDeploy IAM docs][] for more information.
+
 [IAM user]: http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html
+[CodeDeploy IAM docs]: link to CodeDeploy IAM docs
 
 
 ### Step 2: Configure CircleCI to use your new IAM user 
@@ -180,7 +200,7 @@ bucket name and key pattern if you override `s3_location`):
         branch: master
         code-deploy:
           my-app:
-            deployment_group: production-instance-group
+            deployment_group: production-instances
             s3_location:
               bucket_name: production-bucket
               key_pattern: apps/my-app-master-{SHORT_COMMIT}-{BUILD_NUM}
@@ -198,7 +218,7 @@ information for your deployment in your [circle.yml][]:
               bucket_name: staging-bucket
               key_pattern: apps/my-app-{SHORT_COMMIT}-{BUILD_NUM}
             region: us-east-1
-            deployment_group: code-deploy-test-project-instance-group
+            deployment_group: staging-instances
             deployment_config: **TODO find out the new symbols for AWSSDS:CHEETAH etc**
 
 
@@ -220,7 +240,7 @@ application.
   * `key_pattern` is used to generate the S3 key. You can use [substitution variables][]
     to generate unique keys for each build.
 * `region` is the AWS region your application lives in
-* `deployment_group` [**TODO check if this is optional**] is the deployment group to deploy to
+* `deployment_group` names the deployment group to deploy the new revision to.
 * `deployment_config` [optional] names the deployment configuration. It can be
   any of the standard three CodeDeploy configurations (FOO, BAR, and BAZ) or
   if you want to use a custom configuration you've created you can name it
