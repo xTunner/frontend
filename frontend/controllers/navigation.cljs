@@ -431,21 +431,11 @@
   (go
     (let [api-ch (get-in current-state [:comms :api])
           nav-ch (get-in current-state [:comms :nav])
-          docs (if-let [current-docs (get-in current-state state/docs-data-path)]
-                 current-docs
-                 ;; Use result of ajax call AND send to api-ch to swap into app state
-                 (let [man-ch (chan)
-                       result-ch (chan)
-                       man-mult (mult man-ch)]
-                   (tap man-mult api-ch false)
-                   (tap man-mult result-ch)
-                   (ajax/ajax :get (aget js/window "renderContext" "doc_manifest_url")
-                              :doc-manifest man-ch
-                              :format :json)
-                   (-> (<! (filter-ch #(= :success (second %)) result-ch))
-                       (get 2)
-                       :resp
-                       doc-utils/format-doc-manifest)))
+          docs (or (get-in current-state state/docs-data-path)
+                   (let [api-result (<! (ajax/managed-ajax :get (get-in current-state [:render-context :doc_manifest_url])))]
+                     (put! api-ch [:doc-manifest (:status api-result) api-result])
+                     (println "API RESULT:" api-result)
+                     (doc-utils/format-doc-manifest (:resp api-result))))
           doc (get docs subpage)]
       (cond
        (not subpage)
