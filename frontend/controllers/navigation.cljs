@@ -1,8 +1,8 @@
 (ns frontend.controllers.navigation
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close! tap mult]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
             [frontend.analytics :as analytics]
-            [frontend.async :refer [put! filter-ch]]
+            [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
