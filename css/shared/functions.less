@@ -133,11 +133,8 @@
     }
   }
 }
-.user-select(@arg) {
-  -webkit-user-select: @arg;
-     -moz-user-select: @arg;
-      -ms-user-select: @arg;
-          user-select: @arg;
+.user-select(...) {
+  .prefixer(user-select, @arguments, webkit moz);
 }
 
 // Outline
