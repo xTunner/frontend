@@ -1,3 +1,11 @@
+.prefixer(@property; @value; @rest...) {
+  .prefix(@property; @value; @rest; @counter: length(@rest)) when (@counter > 0) {
+    .prefix(@property; @value; @rest; (@counter - 1));
+    @prefix: extract(@rest, @counter);
+    -@{prefix}-@{property}: @value;
+  }.prefix(@property; @value; @rest);
+  @{property}: @value;
+}
 
 // old mixins
 // scheduled for demolition
