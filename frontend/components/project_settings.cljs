@@ -771,6 +771,7 @@
                   [:td fingerprint]
                   [:td [:a {:title "Remove this Key?",
                             :on-click #(put! controls-ch [:deleted-ssh-key {:project-id project-id
+                                                                            :hostname hostname
                                                                             :fingerprint fingerprint}])}
                         [:i.fa.fa-times-circle]
                         [:span " Remove"]]]])]])]])))))
