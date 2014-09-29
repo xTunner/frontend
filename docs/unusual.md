@@ -1,3 +1,10 @@
+<!--
+
+title: Can I test projects with unusual requirements?
+last_updated: April 29, 2013
+
+-->
+
 CircleCI is completely configurable.
 We have a simple setup for projects that follow established conventions, but we also support many variations on the theme.
 

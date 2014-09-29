@@ -1,3 +1,10 @@
+<!--
+
+title: The Ruby debugger gem won't build
+last_updated: Dec 20, 2013
+
+-->
+
 The Ruby debugger gem builds native extensions and uses the
 [debugger-ruby_core_source gem](https://github.com/cldwalker/debugger-ruby_core_source)
 to provide the Ruby headers it needs to compile them.

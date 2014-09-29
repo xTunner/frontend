@@ -1,3 +1,10 @@
+<!--
+
+title: Manual build setup
+last_updated: April 29, 2013
+
+-->
+
 CircleCI is designed to set up most tests automatically because we infer your settings from your code.
 However, if you have an unusual setup or work in a framework that has no idiomatic way to set up your project, you'll need to set it up manually.
 Fortunately, this is a pretty straightforward procedure.

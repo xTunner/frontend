@@ -1,3 +1,10 @@
+<!--
+
+title: Git errors during pip install
+last_updated: Feb 3, 2013
+
+-->
+
 When your tests run, during the `pip install` step, you might see something like this:
 
 ```

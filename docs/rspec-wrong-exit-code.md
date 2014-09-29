@@ -1,3 +1,10 @@
+<!--
+
+title: RSpec is failing but CircleCI reports my tests have passed
+last_updated: Dec 20, 2013
+
+-->
+
 CircleCI uses the exit code of each test command to determine success or
 failure. A combination of bugs in Ruby and RSpec can make RSpec return an
 exit code of 0 (indicating success) even when the specs have failed, tricking

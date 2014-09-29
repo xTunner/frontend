@@ -1,3 +1,10 @@
+<!--
+
+title: Why does CircleCI need all those permissions?
+last_updated: Feb 3, 2013
+
+-->
+
 We would love to ask for less permissions than we do, but
 [GitHub only provides very coarse grained permissions](http://developer.github.com/v3/oauth/#scopes)
 unfortunately.

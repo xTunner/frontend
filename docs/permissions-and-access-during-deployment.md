@@ -1,3 +1,10 @@
+<!--
+
+title: Permissions and access during deployment
+last_updated: Jun 4, 2013
+
+-->
+
 We designed our UI so that it is easy for you to upload the SSH keys we need
 to securely deploy your projects to your production servers.
 

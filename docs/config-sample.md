@@ -1,3 +1,10 @@
+<!--
+
+title: Sample circle.yml file
+last_updated: May 2, 2013
+
+-->
+
 In our [configuration document](/docs/configuration) we list everything that can go into a
 `circle.yml` file. Here we provide one complete sample file.
 
