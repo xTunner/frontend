@@ -1,11 +1,10 @@
 (ns frontend.analytics.mixpanel
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
-            [frontend.datetime :refer [unix-timestamp]]
             [frontend.utils :as utils :include-macros true]))
 
 (defn track [event & [props]]
-  (utils/swallow-errors (js/mixpanel.track event (clj->js (merge {:event_time (unix-timestamp)} props)))))
+  (utils/swallow-errors (js/mixpanel.track event (clj->js props))))
 
 (defn track-pageview [path]
   (utils/swallow-errors (js/mixpanel.track_pageview path)))

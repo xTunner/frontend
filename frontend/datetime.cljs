@@ -10,9 +10,6 @@
 (defn now []
   (.getTime (js/Date.)))
 
-(defn unix-timestamp []
-  (int (/ (now) 1000)))
-
 (def server-offset (atom nil))
 
 (defn update-server-offset [date-header]
