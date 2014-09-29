@@ -911,6 +911,7 @@
    (node
     [:div
      [:p "A token's scope limits what can be done with it."]
+
      [:h5 "Status"]
      [:p
       "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
@@ -918,8 +919,14 @@
       " and "
       [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
       " for private projects."]
+
+     [:h5 "Build Artifacts"]
+     [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
+
      [:h5 "All"]
-     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]])))
+     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
+
+     ])))
 
 (defn api-tokens [project-data owner]
   (reify
@@ -950,6 +957,7 @@
              [:select {:name "scope" :value scope
                        :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :scope) %)}
               [:option {:value "status"} "Status"]
+              [:option {:value "view-builds"} "Build Artifacts"]
               [:option {:value "all"} "All"]]
              [:i.fa.fa-chevron-down]]
             [:input
