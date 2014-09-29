@@ -31,7 +31,7 @@
           "Error! "
           [:a {:href "/docs/troubleshooting"}
            "Check out common problems "]
-          "or "
+          "or, if there's a problem in how CircleCI ran this build, "
           [:a {:title "Report an error in how Circle ran this build"
                :on-click #(put! controls-ch [:report-build-clicked {:build-url build-url}])}
            "report this issue"]
