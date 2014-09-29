@@ -202,9 +202,9 @@
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
-          app-main (sel1 target ".app-main")
+          body (sel1 target "body")
           current-scroll-top (.-scrollTop parent)
-          app-main-scroll-top (.-scrollTop app-main)
+          body-scroll-top (.-scrollTop body)
           current-scroll-left (.-scrollLeft parent)
           new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
       (let [scroller (or (.-scroll_handler parent)
@@ -222,8 +222,8 @@
         ;; causing the parent to scroll. But then we set it to relative and there
         ;; is no longer any overflow, so we need to scroll app-main instead.
         (set! (.-onEnd scroller) #(do (.call onEnd scroller)
-                                      (set! (.-scrollTop app-main)
-                                            (+ app-main-scroll-top current-scroll-top))))
+                                      (set! (.-scrollTop body)
+                                            (+ body-scroll-top current-scroll-top))))
         (.play scroller))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
