@@ -98,7 +98,8 @@
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
-                                       (when slim-aside? ["aside-slim"]))}
+                                       (when slim-aside? ["aside-slim"])
+                                       (when-not logged-in? ["aside-nil"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
