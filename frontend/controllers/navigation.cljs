@@ -432,7 +432,7 @@
     (let [api-ch (get-in current-state [:comms :api])
           nav-ch (get-in current-state [:comms :nav])
           docs (or (get-in current-state state/docs-data-path)
-                   (let [api-result (<! (ajax/managed-ajax :get (get-in current-state [:render-context :doc_manifest_url])))]
+                   (let [api-result (<! (ajax/managed-ajax "GET" (get-in current-state [:render-context :doc_manifest_url]) :csrf-token false))]
                      (put! api-ch [:doc-manifest (:status api-result) api-result])
                      (when (= :success (:status api-result))
                        (doc-utils/format-doc-manifest (:resp api-result)))))
