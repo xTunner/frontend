@@ -2,6 +2,15 @@
   .prefixer(box-flex; extract(@a, 1); webkit); // Old Syntax
   .prefixer(flex; @arguments; webkit);
 }
+.align-items(...) {
+  .infer_replace(@a) when (@a = flex-start), (@a = flex-end) {
+    .prefixer(box-align; replace(@a, "flex-", " "); webkit); // Old Syntax
+  }.infer_replace(@arguments);
+  .infer_replace(@a) when (default()) {
+    .prefixer(box-align; @a; webkit); // Old Syntax
+  }.infer_replace(@arguments);
+  .prefixer(align-items; @arguments; webkit);
+}
 .justify-content(...) {
   .infer_replace(@a) when (@a = flex-start), (@a = flex-end), (@a = space-between) {
     .prefixer(box-pack; replace(replace(@a, "flex-", " "), "space-between", " justify"); webkit);
@@ -18,14 +27,6 @@
   .prefixer(box-orient; replace(replace(replace(@arguments, "-reverse", " "), "column", " vertical"), "row", " horizontal"); webkit); // Old Syntax
   .prefixer(flex-direction; @arguments; webkit);
 }
-.align-items(...) {
-  .infer_replace(@a) when (@a = flex-start), (@a = flex-end) {
-    .prefixer(box-align; replace(@a, "flex-", " "); webkit); // Old Syntax
-  }.infer_replace(@arguments);
-  .infer_replace(@a) when (default()) {
-    .prefixer(box-align; @a; webkit); // Old Syntax
-  }.infer_replace(@arguments);
-  .prefixer(align-items; @arguments; webkit);
 }
 .flexy(...) {
   display: -webkit-box;
