@@ -278,14 +278,16 @@
                     [:div.supported-tools {:class (when (= selected-toolset toolset) "active")}
                      [:div.supported-tools-upper
                       (for [tool (:upper template)]
-                       [:div.supported-tool {:class (when (contains? tools tool) "hover")}
+                       [:div.supported-tool {:class (when (contains? tools tool) "hover")
+                                             :alt (name tool)}
                         [:figure
                          [:svg {:class (str "tool-logo-" (name tool))
                                :x "0" :y "0" :view-box "0 0 100 100"}
                           [:path {:d (get tools-logos tool)}]]]])]
                      [:div.supported-tools-lower
                       (for [tool (:lower template)]
-                       [:div.supported-tool {:class (when (contains? tools tool) "hover")}
+                       [:div.supported-tool {:class (when (contains? tools tool) "hover")
+                                             :alt (name tool)}
                         [:figure
                          [:svg {:class (str "tool-logo-" (name tool))
                                :x "0" :y "0" :view-box "0 0 100 100"}
