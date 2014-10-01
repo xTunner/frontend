@@ -42,7 +42,8 @@
                           (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect purpose-article)) vh))
                           (om/set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect potential-article)) vh))
                           (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect home-epilog)))
-                                                                           (js/Math.abs (- nav-height (.-bottom (.getBoundingClientRect home-prolog)))))))]
+                                                                           (js/Math.abs (- nav-height (.-bottom (.getBoundingClientRect home-prolog))))
+                                                                           nav-height)))]
     (om/set-state! owner [:scroll-key]
                    (goog.events/listen
                     js/window
