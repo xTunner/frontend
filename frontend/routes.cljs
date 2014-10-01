@@ -108,21 +108,9 @@
     (logout! nav-ch))
 
   (defroute v1-doc "/docs" []
-    (open-to-outer! nav-ch :documentation {:_title "What can we help you with?"}))
-  (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:as params}
-    (let [subpage (keyword (:subpage params))]
-      (if-let [doc (get (doc-utils/find-all-docs) subpage)]
-        (open-to-outer! nav-ch :documentation (assoc params
-                                                :subpage subpage
-                                                :_analytics-page "View Docs"
-                                                :_title (:title doc)))
-        (do
-          (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
-                rewrite-token (doc-utils/maybe-rewrite-token token)
-                path (if (= token rewrite-token)
-                       "/docs"
-                       (str "/docs" (when-not (str/blank? rewrite-token) (str "/" rewrite-token))))]
-            (put! nav-ch [:navigate! {:path path :replace-token? true}]))))))
+    (open-to-outer! nav-ch :documentation {}))
+  (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:keys [subpage] :as params}
+    (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))

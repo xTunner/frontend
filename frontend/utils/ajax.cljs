@@ -90,10 +90,11 @@
                            (clj-ajax/transform-opts opts))))
 
 ;; This is all very mess, it should be cleaned up at some point
-(defn managed-ajax [method url & {:keys [params keywords? headers format response-format]
+(defn managed-ajax [method url & {:keys [params keywords? headers format response-format csrf-token]
                                   :or {keywords? true
                                        response-format :json
-                                       format :json}}]
+                                       format :json
+                                       csrf-token true}}]
   (let [channel (chan)
         format (get {:xml (xml-request-response)
                      :json (merge (clj-ajax/json-request-format)
@@ -110,7 +111,7 @@
                              :params params
                              :headers (merge (when accept-header
                                                {:Accept accept-header})
-                                             (when (re-find #"^/" url)
+                                             (when (and csrf-token (re-find #"^/" url))
                                                {:X-CSRFToken (utils/csrf-token)})
                                              headers)
                              :handler #(put! channel (assoc % :status :success :scopes (scopes-from-response %)))

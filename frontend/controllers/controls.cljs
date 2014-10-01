@@ -202,9 +202,9 @@
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
-          app-main (sel1 target ".app-main")
+          body (sel1 target "body")
           current-scroll-top (.-scrollTop parent)
-          app-main-scroll-top (.-scrollTop app-main)
+          body-scroll-top (.-scrollTop body)
           current-scroll-left (.-scrollLeft parent)
           new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
       (let [scroller (or (.-scroll_handler parent)
@@ -222,8 +222,8 @@
         ;; causing the parent to scroll. But then we set it to relative and there
         ;; is no longer any overflow, so we need to scroll app-main instead.
         (set! (.-onEnd scroller) #(do (.call onEnd scroller)
-                                      (set! (.-scrollTop app-main)
-                                            (+ app-main-scroll-top current-scroll-top))))
+                                      (set! (.-scrollTop body)
+                                            (+ body-scroll-top current-scroll-top))))
         (.play scroller))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
@@ -841,6 +841,23 @@
    (get-in current-state [:comms :api])
    :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
             :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
+
+(defmethod control-event :project-preferences-updated
+  [target message args state]
+  (update-in state (conj state/user-path :projects)
+             (partial merge-with merge)
+             ;; The keys of the projects map are unfortunately keywords, despite being URLs.
+             (into {} (for [[vcs-url prefs] args]
+                        [(keyword vcs-url) prefs]))))
+
+(defmethod post-control-event! :project-preferences-updated
+  [target message args previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:projects args}))
 
 (defmethod post-control-event! :heroku-key-add-attempted
   [target message args previous-state current-state]

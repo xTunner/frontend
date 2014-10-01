@@ -4,6 +4,7 @@
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
             [frontend.models.plan :as plan-model]
+            [frontend.models.user :as user-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
@@ -93,3 +94,27 @@
                :on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
               "Follow"])
             " " project-name " to add " project-name " to your sidebar and get build notifications."]]])))))
+
+(def email-prefs
+  [["default" "Default"]
+   ["all" "All builds"]
+   ["smart" "My breaks and fixes"]
+   ["none" "None"]])
+
+(defn email-pref [{:keys [project user]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [vcs_url]} project
+            prefs (user-model/project-preferences user)
+            pref (get-in prefs [vcs_url :emails] "default")
+            ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:div
+           [:h3 (project-model/project-name project)]
+           [:select {:value pref
+                     :on-change #(let [value (.. % -target -value)
+                                       args {vcs_url {:emails value}}]
+                                   (put! ch [:project-preferences-updated args]))}
+            (for [[pref label] email-prefs]
+              [:option {:value pref} label])]])))))
