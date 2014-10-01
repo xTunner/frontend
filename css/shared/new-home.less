@@ -43,7 +43,7 @@
   ruby, #CC342D,
   rails, #CC342D,
   python, #3776ab,
-  js, #FFCD0A,
+  javascript, #FFCD0A,
   java, #E76F00,
   php, #6A9AD1,
   clojure, #91dc47,
@@ -59,7 +59,7 @@
   beanstalkd, #000000,
   resque, #CE1211,
   capistrano, #52C1DB,
-  aws, #FCB034,
+  amazon, #FCB034,
   rackspace, #CE1330,
   joyent, #FF6600,
   heroku, #430098,
@@ -803,9 +803,10 @@
     position: absolute;
     left: 50%;
     min-width: 100%;
-    padding-right: 1em;
-    text-align: center;
     color: @gray;
+    text-align: center;
+    text-transform: capitalize;
+    padding-right: 1em;
     transition: (@practice_tool_speed / 2) (@practice_tool_speed / 2) @practice_tool_timing;
   }
   &.hover {
