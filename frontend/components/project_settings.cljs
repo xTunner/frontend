@@ -1105,12 +1105,15 @@
          [:div.aws-page
           [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
           [:div.aws-page-inner
-           [:p "Set your AWS keypair to be used for authenticating against AWS services during your build. "
+           [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
             "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
             [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
             [:a {:href "http://aws.amazon.com/documentation/sdk-for-java/"} "the Java SDK"] ", "
             [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
             [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
+           [:p "We recommend that you create a unique "
+            [:a {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"} "IAM user"]
+            " for use by CircleCI."]
            [:form
             [:input#access-key-id
              {:required true, :type "text", :value (or access_key_id "")
