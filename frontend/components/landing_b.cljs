@@ -16,8 +16,9 @@
             [goog.dom]
             [goog.style]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]
+            [om.dom :as dom :include-macros true]
+            [sablono.core :as html :refer-macros [html]])
+  (:require-macros [frontend.utils :refer [defrender]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [dommy.macros :refer [sel1 node]]))
 
