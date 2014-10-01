@@ -778,18 +778,10 @@
     form {
       margin-top: 2em;
       max-width: 340px;
-      display: -webkit-flex;
-      display:         flex;
-      -webkit-flex-direction: column;
-              flex-direction: column;
+      .flexy(column);
 
       .buttons {
-        display: -webkit-flex;
-        display:         flex;
-        -webkit-flex-direction: row;
-                flex-direction: row;
-        -webkit-justify-content: space-around;
-                justify-content: space-around;
+        .flexy(inherit, space-around);
         -webkit-flex-wrap: wrap;
                 flex-wrap: wrap;
       }
