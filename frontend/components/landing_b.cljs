@@ -120,10 +120,10 @@
                       :databases  {:upper [:mysql :postgres :mongo :redis]
                                    :lower [:riak :sqlite :elasticsearch :cassandra]}
                       :queues     {:upper [:rabbit]
-                                   :lower [:beanstalkd :resque]}
+                                   :lower [:resque :beanstalkd]}
                       :browsers   {:upper [:chrome :safari :firefox]
-                                   :lower [:selenium :phantom :casper]}
-                      :deployment {:upper [:capistrano :aws :rackspace :joyent]
+                                   :lower [:casper :phantom :selenium]}
+                      :deployment {:upper [:joyent :aws :rackspace :capistrano]
                                    :lower [:heroku :docker :engineyard :nodejitsu :fabric]}})
 
 (def customer-brands
