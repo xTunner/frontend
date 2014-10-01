@@ -53,8 +53,8 @@ The most straightforward way to configure a new application is to log on to the
 [CodeDeploy console][] which can guide you through the process of [creating a new
 application][].
 
-[AppSpec]: link to doc on appspecs
-[application revision]: link to doc on application revisions
+[AppSpec]: TODO link to doc on appspecs
+[application revision]: TODO link to doc on application revisions
 [S3]: http://aws.amazon.com/s3/
 [CodeDeploy console]: https://razorbill-preview-console.aws.amazon.com/sds/home
 [creating a new application]: https://razorbill-preview-console.aws.amazon.com/sds/home#/applications/new
@@ -145,19 +145,17 @@ If you want to use custom deployment configurations then we will also need the
 configurations, check out the [CodeDeploy IAM docs][] for more information.
 
 [IAM user]: http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html
-[CodeDeploy IAM docs]: link to CodeDeploy IAM docs
+[CodeDeploy IAM docs]: TODO link to CodeDeploy IAM docs
 
 
 ### Step 2: Configure CircleCI to use your new IAM user 
 Go to your project's **Project Settings > AWS keys** page, enter your IAM
-user's Access Key ID and Secret Access Key and hit save.
+user's Access Key ID and Secret Access Key and hit "Save AWS keys".
 Your AWS keys are stored encrypted but it's important to note that they need to
 be made available to code inside your build containers, anyone who can commit
 code to your repo or trigger an ssh build will be able to read the AWS keys.
-This is another important reason to use IAM to limit the resources they keys
+This is another important reason to use IAM to limit the resources the keys
 can access.
-
-**TODO: insert images showing where to click**
 
 
 ### Step 3: (Optional) Configure packaging and revision storage
