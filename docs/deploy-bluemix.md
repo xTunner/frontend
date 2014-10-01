@@ -1,3 +1,10 @@
+<!--
+
+title: Continuous Deployment to IBM Bluemix
+last_updated: Oct 1, 2014
+
+-->
+
 Bluemix is a PaaS offering from IBM. It is pretty straightforward
 to use the [Cloud Foundry command line tool 'cf'](https://github.com/cloudfoundry/cli) to deploy to it from CircleCI.
 
