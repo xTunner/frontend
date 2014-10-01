@@ -42,6 +42,7 @@
    [:li [:a {:href "#checkout"} "Checkout SSH keys"]]
    [:li [:a {:href "#ssh"} "SSH keys"]]
    [:li [:a {:href "#api"} "API tokens"]]
+   [:li [:a {:href "#aws"} "AWS keys"]]
    [:li.side-title "Build Artifacts"]
    [:li [:a {:href "#artifacts"} "Artifacts"]]
    [:li.side-title "Continuous Deployment"]
@@ -1086,6 +1087,66 @@
         "our deployment documentation"]
        " to set it up."]]])))
 
+(defn aws [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+
+            settings (utils/deep-merge (get-in project [:aws :keypair])
+                                       (get-in inputs [:aws :keypair]))
+            {:keys [access_key_id secret_access_key]} settings
+
+            project-id (project-model/id project)
+            controls-ch (om/get-shared owner [:comms :controls])
+            input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
+        (html
+         [:div.aws-page
+          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+          [:div.aws-page-inner
+           [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
+            "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
+            [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
+            [:a {:href "http://aws.amazon.com/documentation/sdk-for-java/"} "the Java SDK"] ", "
+            [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
+            [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
+           [:p "We recommend that you create a unique "
+            [:a {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"} "IAM user"]
+            " for use by CircleCI."]
+           [:form
+            [:input#access-key-id
+             {:required true, :type "text", :value (or access_key_id "")
+              :on-change #(utils/edit-input controls-ch (input-path :access_key_id) %)}]
+            [:label {:placeholder "Access Key ID"}]
+
+            [:input#secret-access-key
+             {:required true, :type "text", :value (or secret_access_key "")
+              :on-change #(utils/edit-input controls-ch (input-path :secret_access_key) %)}]
+            [:label {:placeholder "Secret Access Key"}]
+
+            [:div.buttons
+              (forms/managed-button
+               [:input {:data-failed-text "Failed"
+                        :data-success-text "Saved"
+                        :data-loading-text "Saving..."
+                        :value "Save AWS keys"
+                        :type "submit"
+                        :on-click #(do
+                                     (put! controls-ch [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])
+                                     false)}])
+              (when (and access_key_id secret_access_key)
+               (forms/managed-button
+                [:input.remove {:data-failed-text "Failed"
+                                :data-success-text "Cleared"
+                                :data-loading-text "Clearing..."
+                                :value "Clear AWS keys"
+                                :type "submit"
+                                :on-click #(do
+                                           (put! controls-ch [:edited-input {:path (input-path) :value nil}])
+                                           (put! controls-ch [:saved-project-settings {:project-id project-id}])
+                                           false)}]))]]]])))))
+
 (defn follow-sidebar [project owner]
   (reify
     om/IRender
@@ -1155,5 +1216,6 @@
                 :artifacts (om/build artifacts project-data)
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
+                :aws (om/build aws project-data)
                 (om/build overview project-data))]]
             (om/build follow-sidebar (:project project-data))]))))))
