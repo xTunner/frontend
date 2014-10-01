@@ -1,3 +1,10 @@
+<!--
+
+title: File-ordering bugs on Linux systems
+last_updated: Feb 2, 2013
+
+-->
+
 If your tests work on your local machine, but fail randomly on CircleCI, the most likely culprit is the dreaded file-ordering bug.
 Fortunately, if you understand your code base and your tests, fixing your tests can be quite simple.
 

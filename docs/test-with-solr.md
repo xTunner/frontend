@@ -1,3 +1,10 @@
+<!--
+
+title: Test with Solr
+last_updated: Jul 23, 2013
+
+-->
+
 If your tests require a running solr instance, you will need to configure
 and boot solr before they run in CircleCI.
 

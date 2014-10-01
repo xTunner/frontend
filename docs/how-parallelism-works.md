@@ -1,3 +1,10 @@
+<!--
+
+title: Does parallelism really work?
+last_updated: Feb 2, 2013
+
+-->
+
 If you've ever tried a parallel testing solution, you've probably had a bad experience.
 Most attempt to run multiple tests within the same language runtime, or within multiple processes on the same system.
 

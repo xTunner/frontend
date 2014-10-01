@@ -1,3 +1,11 @@
+<!--
+
+title: Generating code coverage metrics
+short_title: Code Coverage
+last_updated: Sep 12, 2013
+
+-->
+
 Code Coverage tells you how much of your application is tested.
 
 CircleCI provides a number of different options for code coverage reporting,

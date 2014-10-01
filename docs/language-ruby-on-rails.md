@@ -1,3 +1,11 @@
+<!--
+
+title: Continuous Integration and Continuous Deployment with Ruby/Rails
+short_title: Ruby/Rails
+last_updated: March 12, 2014
+
+-->
+
 CircleCI makes Rails testing simple. During each build, Circle looks at your code,
 infers your build environment, and runs your tests.
 The majority of the time, this just works&mdash;and works well.

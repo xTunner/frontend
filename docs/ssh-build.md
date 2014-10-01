@@ -1,3 +1,10 @@
+<!--
+
+title: SSH access to builds
+last_updated: Feb 2, 2013
+
+-->
+
 Often the best way to troubleshoot problems is to ssh into a
 running or finished build to look at log files, running processes,
 and so on.

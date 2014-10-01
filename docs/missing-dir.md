@@ -1,3 +1,10 @@
+<!--
+
+title: A directory is missing from your repository
+last_updated: Feb 3, 2013
+
+-->
+
 Rails expects certain directories to be present in your app, including
 `log/`, `tmp/` and occasionally others.
 If they are not in your repository, your tests will fail (though they ran fine locally because you created the directory a long time ago).

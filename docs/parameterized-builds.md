@@ -1,3 +1,10 @@
+<!--
+
+title: Parameterized Builds
+last_updated: May 22, 2014
+
+-->
+
 The Parameterized Build API is currently available as an early-access preview.
 The API and functionality may change based on what we learn from your feedback.
 
@@ -56,7 +63,7 @@ export param2="500"
 ### Constraints
 
 The order that build parameters are loaded in isn't guaranteed so you shouldn't interpolate one build parameter into another.
-It's best to think of build parameters as an unordered list of independent environment variables. 
+It's best to think of build parameters as an unordered list of independent environment variables.
 
 Since build parameters are just environment variables their names have to meet the following restrictions:
 
@@ -71,9 +78,9 @@ E.g. if you passed the parameters:
 ```
 {
   "build_parameters": {
-    "foo": "bar"
-    "baz": 5
-    "qux": {"quux": 1}
+    "foo": "bar",
+    "baz": 5,
+    "qux": {"quux": 1},
     "list": ["a", "list", "of", "strings"]
   }
 }

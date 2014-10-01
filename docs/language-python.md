@@ -1,3 +1,11 @@
+<!--
+
+title: Continuous Integration and Continuous Deployment with Python
+short_title: Python
+last_updated: March 12, 2014
+
+-->
+
 CircleCI works well for Python projects.
 We run automatic inference on each build to determine your dependencies and test commands.
 If we don't infer all of your settings, you can also add custom configuration to a
