@@ -783,14 +783,29 @@
     @n: extract(@a, (@c + @x));
     .tool-logo-@{n} {stroke: extract(@a, (@c + @y));}
   }.color_stroke(@tools_brands);
+  position: relative;
   margin: 0;
   fill: none;
   display: block;
   padding-right: 1em;
   width: (@practice_tool_size * @practice_tool_grow);
   height: (@practice_tool_size * @practice_tool_grow);
+  &:before {
+    .box-sizing(border-box);
+    content: attr(alt);
+    position: absolute;
+    top: -1.5em;
+    left: 0;
+    width: 100%;
+    padding-right: 1em;
+    text-align: center;
+  }
   &:not(:hover) {
     &:not(.hover) {
+      &:before {
+        display: none;
+        opacity: 0;
+      }
       svg {
         .filter(none);
         width: @practice_tool_size;
