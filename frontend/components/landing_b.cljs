@@ -16,11 +16,14 @@
             [goog.dom]
             [goog.style]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]])
-  (:require-macros [frontend.utils :refer [defrender]]
+            [om.dom :as dom :include-macros true])
+  (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [dommy.macros :refer [sel1 node]]))
+
+(defn maybe-set-state! [owner korks value]
+  (when (not= (om/get-state owner korks) value)
+    (om/set-state! owner korks value)))
 
 (defn mount-scroll-handler [owner]
   (let [logo (om/get-node owner "center-logo")
@@ -34,16 +37,17 @@
         scroll-handler #(let [vh (.-height (goog.dom/getViewportSize))
                               nav-height 70]
                           ;; we could optimize these, but calculating this is surprisingly fast (less than 10 ms)
-                          (om/set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
-                          (om/set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect prolog-cta))))
-                          (om/set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect home-prolog)) nav-height))
-                          (om/set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect epilog-cta)) vh))
-                          (om/set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect home-epilog)) nav-height))
-                          (om/set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect purpose-article)) vh))
-                          (om/set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect potential-article)) vh))
-                          (om/set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect home-epilog)))
-                                                                           (js/Math.abs (- nav-height (.-bottom (.getBoundingClientRect home-prolog))))
-                                                                           nav-height)))]
+
+                          (maybe-set-state! owner [:header-logo-visible] (neg? (.-bottom (.getBoundingClientRect logo))))
+                          (maybe-set-state! owner [:header-cta-visible] (neg? (.-bottom (.getBoundingClientRect prolog-cta))))
+                          (maybe-set-state! owner [:header-bkg-visible] (< (.-bottom (.getBoundingClientRect home-prolog)) nav-height))
+                          (maybe-set-state! owner [:header-cta-invisible] (< (.-top (.getBoundingClientRect epilog-cta)) vh))
+                          (maybe-set-state! owner [:header-bkg-invisible] (< (.-top (.getBoundingClientRect home-epilog)) nav-height))
+                          (maybe-set-state! owner [:first-fig-animate] (< (.-bottom (.getBoundingClientRect purpose-article)) vh))
+                          (maybe-set-state! owner [:second-fig-animate] (< (.-bottom (.getBoundingClientRect potential-article)) vh))
+                          (maybe-set-state! owner [:header-bkg-scroller] (min (js/Math.abs (.-top (.getBoundingClientRect home-epilog)))
+                                                                              (js/Math.abs (- nav-height (.-bottom (.getBoundingClientRect home-prolog))))
+                                                                              nav-height)))]
     (om/set-state! owner [:scroll-key]
                    (goog.events/listen
                     js/window
