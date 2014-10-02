@@ -950,17 +950,17 @@
     position: relative;
     margin: auto 0 auto 1em;
     &:before {
-      content: "\201C";
+      content: open-quote;
       left: -.8ex;
     }
     &:after {
-      content: "\201D";
+      content: close-quote;
     }
     &:before,
     &:after {
-      font-size: 2em;
       position: absolute;
-      color: @grayBoxBorder;
+      quotes: '“' '”';
+      font-size: 1.25em;
     }
   }
   footer {
