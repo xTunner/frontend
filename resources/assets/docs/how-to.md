@@ -15,6 +15,7 @@ children:
   - browser-testing-with-sauce-labs
   - continuous-deployment-with-heroku
   - deploy-google-app-engine
+  - deploy-bluemix
 
 -->
 
