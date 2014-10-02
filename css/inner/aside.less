@@ -70,7 +70,7 @@
 }
 .aside-left-nav,
 .aside-left-menu {
-  .flex(0, 0);
+  .flex(0 0 auto);
   .flexy(column);
   height: 100vh;
   transition: width @aside_slim_speed;
@@ -83,7 +83,7 @@
   position: relative;
   header {
     .box-sizing(border-box);
-    .flex(0, 0);
+    .flex(0 0 auto);
     .flexy(center, space-between);
     height: @tile;
     box-shadow: 0 -1px @grayBoxBorder inset;
@@ -164,7 +164,7 @@
   }
 }
 .aside-item {
-  .flex(0, 0, @tile);
+  .flex(0 0 @tile);
   .flexy(center);
   .shadow_noboss();
   background: transparent;
@@ -347,7 +347,7 @@
       }
       &.toggle {
         .box-sizing(border-box);
-        .flex(0, 0, auto);
+        .flex(0 0 auto);
         .icon_style(@grayDark, 100%);
         width: @em * 2;
         height: @em *2;
@@ -361,10 +361,10 @@
         }
       }
       &.title {
-        .flex(1, 1, auto);
+        .flex(1 1 auto);
       }
       &.latest {
-        .flex(0, 0, auto);
+        .flex(0 0 auto);
         display: none;
         width: @activity_line;
         height: @activity_line;
@@ -409,13 +409,13 @@
     }
   }
   .statuses {
-    .flex(1, 0, auto);
+    .flex(1 0 auto);
     .flexy(center, flex-end);
     a {
       .flexy(center, center);
       width: @activity_line;
       &:first-child {
-        .flex(1, 0, auto);
+        .flex(1 0 auto);
         .justify-content(flex-end);
         i {
           &.ico {

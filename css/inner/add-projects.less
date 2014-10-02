@@ -1,5 +1,5 @@
 #add-projects {
-  .displayFlex();
+  .flexy();
   padding: 1em 0;
 
   .repo-filter {
@@ -28,7 +28,7 @@
   .sidebar {
     width: 25%;
     padding-left: 15px;
-    .flex(0, 0);
+    .flex(0 0 auto);
     .nav-header {
       background: #d7dce3;
       color: #455C78;
@@ -77,7 +77,7 @@
     }
   }
   .project-listing {
-    .flex();
+    .flex(0 1 auto);
   }
 
   .overview {
@@ -170,7 +170,7 @@
   }
   .proj-list {
     li {
-      .displayFlex();
+      .flexy();
       .align-items(center);
       box-shadow: 0 1px lighten(@grayLightest, .5) inset, 0 2px @white inset;
       line-height: 1.5em;
