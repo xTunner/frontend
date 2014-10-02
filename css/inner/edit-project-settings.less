@@ -4,7 +4,7 @@
   }
 }
 #project-settings {
-  .displayFlex();
+  .flexy();
   padding: 1em;
   a {
     color: @blueDark;
@@ -50,7 +50,7 @@
   aside {
     width: @aside_nav_width;
     min-width: 200px;
-    .flex(0, 1.1);
+    .flex(0 1.1 auto);
   }
   .try-out-build {
     @input_width: 7em;
@@ -117,7 +117,7 @@
     }
   }
   .project-settings-inner {
-    .flex(1, 1);
+    .flex(1 1 auto);
     padding: 0 2em;
     min-height: 89vh;
     overflow: auto;
@@ -125,7 +125,7 @@
   .follow-status {
     width: @aside_nav_width;
     min-width: 200px;
-    .flex(0, 1.1);
+    .flex(0 1.1 auto);
     i {
       font-size: 5em;
       line-height: 1.5em;
@@ -346,7 +346,7 @@
     margin-top: 2em;
     .mini-faq-item {
       padding-right: 4em;
-      .flex(1, 1, 30%);
+      .flex(1 1 30%);
       min-width: 300px;
       &:last-child {
         padding-right: 0;
@@ -769,6 +769,30 @@
   .heroku-item {
     > h2 {
       display: none;
+    }
+  }
+
+  // AWS Page
+  .aws-page-inner {
+    margin-top: 2em;
+    form {
+      margin-top: 2em;
+      max-width: 340px;
+      .flexy(column);
+
+      .buttons {
+        .flexy(inherit, space-around);
+        -webkit-flex-wrap: wrap;
+                flex-wrap: wrap;
+      }
+    }
+    input[type=submit] {
+      margin-top: .75em;
+      .circleButton();
+
+      &.remove {
+        .circleButton(@grayLightest, @redLight);
+      }
     }
   }
 }

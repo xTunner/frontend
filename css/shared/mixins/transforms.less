@@ -1,31 +1,26 @@
-.rotate (@arg) {
-  @deg: ~`"@{arg}".replace("deg", "")`;
-  -webkit-transform: rotate(~"@{deg}deg");
-          transform: rotate(~"@{deg}deg");
+.rotate(...) {
+  .prefixer(transform; ~"rotate(@{arguments}deg)"; webkit);
 }
-.rotate3d (@x, @y, @z, @deg) {
-  -webkit-transform: rotate3d(@x, @y, @z, @deg);
-          transform: rotate3d(@x, @y, @z, @deg);
+.scale(...) {
+  .prefixer(transform, scale(@arguments), webkit);
 }
-.scale (@x, @y: 0) {
-  -webkit-transform: scale(@x, @y);
-          transform: scale(@x, @y);
+.scale3d(@x; @y: @x; @z: 1) {
+  .prefixer(transform, scale3d(@x, @y, @z), webkit);
 }
-.scale3d (@x, @y: 0, @z: 0) {
-  -webkit-transform: scale3d(@x, @y, @z);
-          transform: scale3d(@x, @y, @z);
+.translate(...) {
+  .prefixer(transform, translate(@arguments), webkit);
 }
-.translate (@x, @y: 0) {
-  -webkit-transform: translate(@x, @y);
-          transform: translate(@x, @y);
-}
-.translate3d (@x, @y: 0, @z: 0) {
-  -webkit-transform: translate3d(@x, @y, @z);
-          transform: translate3d(@x, @y, @z);
+.translate3d(@x; @y: @x; @z: 1) {
+  .prefixer(transform, translate3d(@x, @y, @z), webkit);
 }
 .transform-origin(...) {
-  -webkit-transform-origin: @arguments;
-          transform-origin: @arguments;
+  .prefixer(transform-origin, @arguments, webkit);
+}
+.transform(...) {
+  .for(@arguments); .-each(@argument) {
+      -webkit-transform+_: @argument;
+              transform+_: @argument;
+  }
 }
 .transform(...) {
     .for(@arguments); .-each(@argument) {

@@ -1,3 +1,11 @@
+.prefixer(@property; @value; @rest...) {
+  .prefix(@property; @value; @rest; @counter: length(@rest)) when (@counter > 0) {
+    .prefix(@property; @value; @rest; (@counter - 1));
+    @prefix: extract(@rest, @counter);
+    -@{prefix}-@{property}: @value;
+  }.prefix(@property; @value; @rest);
+  @{property}: @value;
+}
 
 // old mixins
 // scheduled for demolition
@@ -125,11 +133,15 @@
     }
   }
 }
-.user-select(@arg) {
-  -webkit-user-select: @arg;
-     -moz-user-select: @arg;
-      -ms-user-select: @arg;
-          user-select: @arg;
+.box-sizing(...) {
+  .prefixer(box-sizing, @arguments, webkit moz);
+}
+.user-select(...) {
+  .prefixer(user-select, @arguments, webkit moz);
+}
+.to_em(@a) when (ispixel(@a)) {
+  @concat: (unit(@a) / unit(@font_size));
+  @to_em: ~"@{concat}em";
 }
 
 // .for
