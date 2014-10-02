@@ -1,3 +1,7 @@
+.order(...) {
+  .prefixer(box-ordinal-group, @arguments, webkit moz);
+  .prefixer(order, @arguments, webkit moz);
+}
 .flex(@a: 0; ...) {
   .prefixer(box-flex; extract(@a, 1); webkit); // Old Syntax
   .prefixer(flex; @arguments; webkit);
@@ -10,10 +14,6 @@
     .prefixer(box-align; @a; webkit); // Old Syntax
   }.infer_replace(@arguments);
   .prefixer(align-items; @arguments; webkit);
-}
-.order(...) {
-  .prefixer(box-ordinal-group, @arguments, webkit moz);
-  .prefixer(order, @arguments, webkit moz);
 }
 .justify-content(...) {
   .infer_replace(@a) when (@a = flex-start), (@a = flex-end), (@a = space-between) {
