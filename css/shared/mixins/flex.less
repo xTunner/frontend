@@ -12,11 +12,8 @@
   .prefixer(align-items; @arguments; webkit);
 }
 .order(...) {
-  -webkit-box-ordinal-group: @arguments;
-     -moz-box-ordinal-group: @arguments;
-             -ms-flex-order: @arguments;
-              -webkit-order: @arguments;
-                      order: @arguments;
+  .prefixer(box-ordinal-group, @arguments, webkit moz);
+  .prefixer(order, @arguments, webkit moz);
 }
 .justify-content(...) {
   .infer_replace(@a) when (@a = flex-start), (@a = flex-end), (@a = space-between) {
