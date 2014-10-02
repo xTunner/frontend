@@ -45,7 +45,8 @@
    [:li [:a {:href "#aws"} "AWS keys"]]
    [:li.side-title "Continuous Deployment"]
    [:li [:a {:href "#heroku"} "Heroku"]]
-   [:li [:a {:href "#deployment"} "Other Deployments"]]])
+   [:li [:a {:href "#deployment"} "Other Deployments"]]
+   [:li [:a {:href "#aws-codedeploy"} "Amazon CodeDeploy"]]])
 
 (defn branch-names [project-data]
   (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
@@ -1115,6 +1116,127 @@
                                            (raise! owner [:saved-project-settings {:project-id project-id}])
                                            false)}]))]]]])))))
 
+(defn aws-codedeploy [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+            applications (utils/deep-merge (get-in project [:aws :services :codedeploy])
+                                           (get-in inputs [:aws :services :codedeploy]))
+
+            [app-name settings] (first applications)
+            {:keys [bucket key_pattern]} (:s3_location settings)
+            application-root (:application_root settings)
+            aws-region (:region settings)
+
+            project-id (project-model/id project)
+            controls-ch (om/get-shared owner [:comms :controls])
+            input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
+        (utils/inspect project)
+        (utils/inspect applications)
+        (utils/inspect app-name)
+        (html
+         [:div.aws-codedeploy
+          [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
+          [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
+              "Check out our " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy"} "getting started with CodeDeploy"]
+              " guide for detailed information on getting set up."]
+          [:div.aws-page-inner
+            [:div.aws-codedeploy-step
+             [:h4 "Step 1: Add "
+               [:a {:href "#aws"} "AWS credentials"] " that can deploy to your Amazon CodeDeploy application."]
+             [:p "You can alternatively add AWS credentials as "
+               [:a {:href "#env-vars"} " secure environment variables"] "."]]
+            [:div.aws-codedeploy-step
+             [:h4 "Step 2: (Optional): configure application-wide settings."]
+             [:p "This is useful if you deploy the same app to multiple deployment groups "
+                 "(e.g. staging, production) depending on which branch was built. "
+                 "With application settings configured in the UI you only need to set the "
+                 "deployment group and, optionally, deployment configuration, in each deployment "
+                 "block in your " [:a {:href "/docs/configuration#deployment"} "circle.yml file"] ". "
+                 "If you skip this step you will need to add all deployment settings into your circle.yml file."]
+             (if (not (seq applications))
+               ;; No settings set, need to get the application name first
+               [:div
+                [:form
+                 [:input#application-name
+                   {:required true, :type "text"
+                    :on-change #(utils/edit-input controls-ch (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
+                 [:label {:placeholder "Application Name"}]
+                 [:input {:value "Add app settings",
+                          :type "submit"
+                          :on-click #(do
+                                      (put! controls-ch [:new-codedeploy-app-name-entered])
+                                      false)}]]]
+               ;; Once we have an application name we can accept the rest of the settings
+               [:form
+                [:legend (str "Application: " (name app-name))]
+
+                [:input#application-root
+                 {:required true, :type "text", :value (or application-root "")
+                  :on-change #(utils/edit-input controls-ch (input-path app-name :application_root) %)}]
+                [:label {:placeholder "Application Root"}]
+
+                [:input#region
+                  {:required true, :type "text", :value (or aws-region "")
+                   :on-change #(utils/edit-input controls-ch (input-path app-name :region) %)}]
+                [:label {:placeholder "AWS region"}]
+
+                [:fieldset
+                 [:legend "S3 Location"]
+                 [:input#s3-bucket
+                  {:required true, :type "text", :value (or bucket "")
+                   :on-change #(utils/edit-input controls-ch (input-path app-name :s3_location :bucket) %)}]
+                 [:label {:placeholder "Bucket Name"}]
+
+                 [:input#s3-key-prefix
+                  {:required true, :type "text", :value (or key_pattern "")
+                   :on-change #(utils/edit-input controls-ch (input-path app-name :s3_location :key_pattern) %)}]
+                 [:label {:placeholder "Key Pattern"}]]
+
+                [:div.buttons
+                  (forms/managed-button
+                   [:input {:data-failed-text "Failed",
+                            :data-success-text "Saved",
+                            :data-loading-text "Saving...",
+                            :value "Save app",
+                            :type "submit"
+                            :on-click #(do
+                                         (put! controls-ch [:saved-project-settings {:project-id project-id
+                                                                                     :merge-paths [[:aws :services :codedeploy]]}])
+                                         false)}])
+                  (forms/managed-button
+                   [:input.remove {:data-failed-text "Failed",
+                                   :data-success-text "Removed",
+                                   :data-loading-text "Removing...",
+                                   :value "Remove app",
+                                   :type "submit"
+                                   :on-click #(do
+                                                (put! controls-ch [:edited-input {:path (input-path) :value nil}])
+                                                (put! controls-ch [:saved-project-settings {:project-id project-id}])
+                                                false)}])]])]
+            [:div.aws-codedeploy-step
+             [:h4 "Step 3: Add deployment settings to your "
+                   [:a {:href "/docs/configuration#deployment"} "circle.yml file"]
+                   " (example below)."]
+             [:pre
+              [:code
+               "deployment:\n"
+               "  staging:\n"
+               "    branch: master\n"
+               "    codedeploy:\n"
+               (if app-name
+                 (str "      " (name app-name) ":\n"
+                      "        deployment_group: my-deployment-group\n")
+                 (str "      appname-1234:\n"
+                      "        application_root: /\n"
+                      "        region: us-east-1\n"
+                      "        s3_location:\n"
+                      "          bucket: my-bucket\n"
+                      "          key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
+                      "        deployment_group: my-deployment-group\n"))]]]]])))))
+
 (defn follow-sidebar [project owner]
   (reify
     om/IRender
@@ -1182,5 +1304,6 @@
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
+                :aws-codedeploy (om/build aws-codedeploy project-data)
                 (om/build overview project-data))]]
             (om/build follow-sidebar (:project project-data))]))))))

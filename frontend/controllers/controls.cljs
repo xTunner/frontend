@@ -594,6 +594,16 @@
         (release-button! uuid (:status api-result))))))
 
 
+(defmethod control-event :new-codedeploy-app-name-entered
+  [target message _ state]
+  (let [app-name (get-in state (conj state/inputs-path :project-settings-codedeploy-app-name))]
+    (if (seq app-name)
+      (-> state
+          (update-in (conj state/project-path :aws :services :codedeploy) assoc app-name {})
+          (assoc (conj state/inputs-path :project-settings-codedeploy-app-name) nil))
+      state)))
+
+
 (defmethod post-control-event! :saved-ssh-key
   [target message {:keys [project-id ssh-key]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
