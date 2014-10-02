@@ -202,9 +202,9 @@
   [:div.notification-item
    [:form
     [:fieldset
-     [:legend "Project Preferences"]
-     ;;TODO rewrite this blurb
-     [:p "Projects can be individually configured, from a project's 'Settings' page. Instant message settings are per-project; edit a project to set them."]
+     [:legend "Project Email Preferences"]
+     [:p "You can override your default email preferences for individual projects here."]
+     [:p "Other project settings can be configured via the project's 'Settings' page."]
      [:div
       (for [project projects]
         (om/build project/email-pref {:project project :user user}))]]]])

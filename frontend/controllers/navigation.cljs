@@ -426,25 +426,39 @@
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
 
-(defmethod navigated-to :documentation
-  [history-imp navigation-point args state]
-  (let [new-state (navigated-default navigation-point args state)]
-    (if-not (get-in new-state state/docs-data-path)
-      (assoc-in new-state state/docs-data-path (doc-utils/find-all-docs))
-      new-state)))
-
 (defmethod post-navigated-to! :documentation
-  [history-imp navigation-point {:keys [subpage] :as args} previous-state current-state]
-  (post-default navigation-point args)
-  (let [doc (get-in current-state (conj state/docs-data-path subpage))]
-    (when (and subpage
-               (empty? (:children doc))
-               (not (:markdown doc)))
-      (let [api-ch (get-in current-state [:comms :api])
-            url (-> "/docs/%s.md"
-                    (gstring/format (name subpage))
-                    stefon/asset-path)]
-        (ajax/ajax :get url :doc-markdown api-ch :context {:subpage subpage} :format :raw)))))
+  [history-imp navigation-point {:keys [subpage] :as params} previous-state current-state]
+  (go
+    (let [api-ch (get-in current-state [:comms :api])
+          nav-ch (get-in current-state [:comms :nav])
+          docs (or (get-in current-state state/docs-data-path)
+                   (let [api-result (<! (ajax/managed-ajax "GET" (get-in current-state [:render-context :doc_manifest_url]) :csrf-token false))]
+                     (put! api-ch [:doc-manifest (:status api-result) api-result])
+                     (when (= :success (:status api-result))
+                       (doc-utils/format-doc-manifest (:resp api-result)))))
+          doc (get docs subpage)]
+      (cond
+       (not subpage)
+       (do (set-page-title! "What can we help you with?")
+           (analytics/track-page "View Docs"))
+       doc
+       (do
+         (set-page-title! (:title doc))
+         (scroll! params)
+         (analytics/track-page "View Docs")
+         (when (and (empty? (:children doc))
+                    (not (:markdown doc)))
+           (let [url (-> "/docs/%s.md"
+                         (gstring/format (name subpage))
+                         stefon/asset-path)]
+             (ajax/ajax :get url :doc-markdown api-ch :context {:subpage subpage} :format :raw))))
+       :else
+       (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
+             rewrite-token (doc-utils/maybe-rewrite-token token)
+             path (if (= token rewrite-token)
+                    "/docs"
+                    (str "/docs" (when-not (str/blank? rewrite-token) (str "/" rewrite-token))))]
+         (put! nav-ch [:navigate! {:path path :replace-token? true}]))))))
 
 (defmethod post-navigated-to! :language-landing
   [history-imp navigation-point {:keys [language] :as args} previous-state current-state]

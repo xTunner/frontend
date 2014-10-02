@@ -15,6 +15,7 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]))
@@ -557,3 +558,7 @@
 (defmethod api-event [:doc-markdown :success]
   [target message status {:keys [resp context] :as data} state]
   (assoc-in state (concat state/docs-data-path [(:subpage context) :markdown]) resp))
+
+(defmethod api-event [:doc-manifest :success]
+  [target message status {:keys [resp] :as data} state]
+  (assoc-in state state/docs-data-path (doc-utils/format-doc-manifest resp)))

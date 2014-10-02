@@ -5,6 +5,7 @@
             [dommy.core :as dommy]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
+            [frontend.components.common :as common]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
@@ -85,7 +86,7 @@
 (defrender front-page [app owner]
   (let [query-results (get-in app state/docs-articles-results-path)
         query (get-in app state/docs-articles-results-query-path)
-        docs (doc-utils/find-all-docs)]
+        docs (get-in app state/docs-data-path)]
     (html
      [:div
       [:h1 "What can we help you with?"]
@@ -142,7 +143,9 @@
         (om/build docs-title doc)
         (if-not (empty? (:children doc))
           (om/build article-list (:children doc))
-          (om/build markdown (:markdown doc)))]))))
+          (if (:markdown doc)
+            (om/build markdown (:markdown doc))
+            [:div.loading-spinner common/spinner]))]))))
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
