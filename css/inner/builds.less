@@ -29,9 +29,9 @@
   }
 }
 .build-info {
-  .displayFlex();
+  .flexy();
   table {
-    .flex(0.5, 1, 50%);
+    .flex(0.5 1 50%);
     display: block;
     line-height: 1.5em;
   }
@@ -75,7 +75,7 @@
 }
 .build-actions {
   .flexy(column);
-  .flex(1, 0);
+  .flex(1 0 auto);
   padding-top: 4px; // to match space from line height in table
   .actions {
     .flexy(center, flex-end);
@@ -505,7 +505,7 @@
     }
   }
   header {
-    .displayFlex();
+    .flexy();
     .head-left {
       padding: 0 3em;
       height: @head_height;
@@ -523,7 +523,7 @@
       }
     }
     .head-right {
-      .displayFlex();
+      .flexy();
       .flex-direction(column);
       .justify-content(center);
     }
@@ -552,7 +552,7 @@
       }
     }
     li {
-      .displayFlex();
+      .flexy();
       .outlineInside(@grayBoxBorder);
       background: @whiten;
       float: left;
@@ -642,7 +642,7 @@
         }
       }
       .invite-profile{
-        .displayFlex();
+        .flexy();
         .flex-direction(column);
         .justify-content(center);
         .box-sizing(border-box);
@@ -650,7 +650,7 @@
         padding: @box_padding;
       }
       .invite-select {
-        .displayFlex();
+        .flexy();
         .align-items(center);
         .justify-content(center);
         width: @box_height;
@@ -660,7 +660,7 @@
     }
   }
   footer {
-    .displayFlex();
+    .flexy();
     .align-items(center);
     .justify-content(center);
     height: @foot_height;
@@ -708,13 +708,13 @@
     font-size: inherit;
   }
   header {
-    .displayFlex();
+    .flexy();
     height: 10em;
     margin-bottom: 1.5em;
     .head-left {
       min-width: 10em;
       padding: 0 3em;
-      .displayFlex();
+      .flexy();
       .align-items(center);
       .fa {
         font-size: 10em;
@@ -727,7 +727,7 @@
       }
     }
     .head-right {
-      .displayFlex();
+      .flexy();
       .justify-content(center);
       .flex-direction(column);
     }
