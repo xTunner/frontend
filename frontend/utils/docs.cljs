@@ -8,13 +8,6 @@
             [om.core :as om :include-macros true])
   (:require-macros [dommy.macros :refer [node]]))
 
-(defn include-article [template-name]
-  ((aget (aget js/window "HAML") template-name)))
-
-(defn render-haml-template [template-name & [args]]
-  [:div {:dangerouslySetInnerHTML
-         #js {"__html"  ((aget (aget js/window "HAML") template-name)
-                         (clj->js (merge {"include_article" include-article} args)))}}])
 
 (defn api-curl [endpoint]
   (let [curl-args (if-not (= (:method endpoint) "GET")
@@ -92,12 +85,6 @@
   (let [context (js/Object.)]
     (aset context "include_article" include-article)
     context))
-
-(defn ->template-kw [template-name]
-  (keyword (string/replace (name template-name) "_" "-")))
-
-(defn article? [template-fn]
-  (re-find #"this.title =" (str template-fn)))
 
 (defn article-info [doc-kw doc]
   (let [doc-name (name doc-kw)
