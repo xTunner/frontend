@@ -63,10 +63,9 @@
 (defn id [project]
   (:vcs_url project))
 
-;; TODO: this is annoying; it's replicating code in
-;; circle.model.project/oss? ... is there some easy way around that?
+;; I was confused, on the backend, we now default to oss if
+;; github-info shows it to be public and no one sets the flag
+;; explicitly to false. But the read-api always delivers the frontend
+;; a feature_flags oss set to true for those cases.
 (defn oss? [project]
-  (let [feature-flag (get-in project [:feature_flags :oss])
-        gh-private (get-in project [:github-info :private])]
-    (and (or (nil? feature-flag) (true? feature-flag))
-         (not gh-private))))
+  (get-in project [:feature_flags :oss]))
