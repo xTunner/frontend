@@ -1,5 +1,6 @@
 <!--
 
+title: Continuous Deployment with Amazon CodeDeploy
 last_updated: September 29, 2014
 
 -->
@@ -39,11 +40,11 @@ deployed, run database migrations, install dependencies etc.
 An [application revision][] is a zipfile or tarball containing the code/resources
 to be deployed, it's usually created by packaging up your entire repo but can
 be a sub-directory of the repo if desired. The `AppSpec` file must be stored
-in the application revision as
-`<revision-root>/SimpleDeployService/AppSpecs/default.yml`.
+in the application revision as `<application-root>/appspec.yml`.
+
 Generally speaking you'll have one application in your repo and so your
 application revision can be created by packaging up your whole repo (excluding
-`.git`).
+`.git`). In this case `appspec.yml` should be placed in your repo root directory.
 
 Application revisions are stored in [S3][] and are identified by the
 combination of a bucket name, key, eTag, and for versioned buckets, the
@@ -182,42 +183,58 @@ You can also skip this step and configure everything in your [circle.yml][]
 
 
 ### Step 4: Configure deployment parameters
-Configure your CodeDeploy deployment using the `code-deploy` block in
+Configure your CodeDeploy deployment using the `codedeploy` block in
 [circle.yml][]. At a minimum you need to tell CircleCI which application to
 deploy and which deployment group the selected branch should be deployed to.
 Any additional settings will override the project-wide configuration in the
-project settings UI.
+project settings UI:
 
     deployment:
       staging:
         branch: development
-        code-deploy:
+        codedeploy:
           my-app:
             deployment_group: staging-instance-group
 
-Or, if you wanted to override the S3 location for the application revisions
+The benefit of project-wide application settings comes when you want to deploy
+the same app to different deployment groups:
+
+    deployment:
+      staging:
+        branch: development
+        codedeploy:
+          my-app:
+            deployment_group: staging-instance-group
+      production:
+        branch: master
+        codedeploy:
+          my-app:
+            deployment_group: production-instance-group
+
+If you wanted to override the S3 location for the application revisions
 built for your production deployments (**Note:** you must specify both the
 bucket name and key pattern if you override `s3_location`):
 
     deployment:
       production:
         branch: master
-        code-deploy:
+        codedeploy:
           my-app:
             deployment_group: production-instances
             s3_location:
               bucket_name: production-bucket
               key_pattern: apps/my-app-master-{SHORT_COMMIT}-{BUILD_NUM}
 
-If you haven't provided [project-wide settings][] you need to provide all the
-information for your deployment in your [circle.yml][]:
+If you haven't provided [project-wide settings](#step-3-optional-configure-packaging-and-revision-storage)
+you need to provide all the information for your deployment in your
+[circle.yml][]:
 
     deployment:
       staging:
         branch: development
-        code-deploy:
+        codedeploy:
           my-app:
-            revision_root: /
+            application_root: /
             s3_location:
               bucket_name: staging-bucket
               key_pattern: apps/my-app-{SHORT_COMMIT}-{BUILD_NUM}
@@ -226,17 +243,17 @@ information for your deployment in your [circle.yml][]:
             deployment_config: **TODO find out the new symbols for AWSSDS:CHEETAH etc**
 
 
-Breaking this down: there's one entry in the `code-deploy` block which is
+Breaking this down: there's one entry in the `codedeploy` block which is
 named with your CodeDeploy application's name (in this example we're
 deploying an application called `my-app`).
 
 The sub-entries of `my-app` tell CircleCI where and how to deploy the `my-app`
 application.
 
-* `revision_root` is the directory to package up into an application revision. It
+* `application_root` is the directory to package up into an application revision. It
   is relative to your repo and must start with a `/`.
   `/` means the repo root directory.
-  The entire contents of `revision_root` will be packaged up into a zipfile and
+  The entire contents of `application_root` will be packaged up into a zipfile and
   uploaded to S3.
 * `s3_location` tells CircleCI where to upload application revisions to.
   * `bucket_name` is the name of the bucket that should store your application
@@ -249,8 +266,6 @@ application.
   any of the standard three CodeDeploy configurations (FOO, BAR, and BAZ) or
   if you want to use a custom configuration you've created you can name it
   here.
-
-[project wide settings]: #step-3-optional-configure-packaging-and-revision-storage
 
 
 ### Key Patterns
