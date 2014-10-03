@@ -36,9 +36,9 @@ We have provided a
 but you won't need that for now&mdash;
 we'll guide you through a simple setup and you can check out the comprehensive docs later.
 
-## Anatomy of testing a web app
+## The anatomy of a CircleCI build
 
-For testing purposes, most web applications require five to six standard phases that are run sequentially:
+For testing purposes, most applications and libraries require five to six standard phases that are run sequentially:
 
 *   Configure the test machine
 *   Check out your code
@@ -47,11 +47,9 @@ For testing purposes, most web applications require five to six standard phases 
 *   Run your tests
 *   (Optionally) deploy your code
 
-(Note that some of these phases may not apply if you are testing a project that is not a web app.)
-
 Each phase consists of a list of bash commands.
 Normally, these commands are inferred by CircleCI, but if you are reading this, you will likely be manually adding some commands to the
-`circle.yml`file.
+`circle.yml` file.
 You can modify which&mdash;and in what order&mdash;commands are run by adding `override`,
 `pre`, and/or `post` when needed.
 Take a look at the aforementioned [reference guide](/docs/configuration)
