@@ -12,14 +12,6 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn show-trial-notice? [projects plan]
-  (println "show-trial-notice? for [" (map :reponame projects) "] and plan-model/trial? " (plan-model/trial? plan) " oss statuses are [" (map project-model/oss? projects) "]")
-  (let [some-private-repos (some #(not (project-model/oss? %)) projects)]
-    (and some-private-repos
-         (plan-model/trial? plan)
-         ;; We probably gave them a special deal, better not to bug them
-         (> 20 (plan-model/days-left-in-trial plan)))))
-
 (defn dashboard [data owner]
   (reify
     om/IDisplayName (display-name [_] "Dashboard")
@@ -27,7 +19,9 @@
     (render [_]
       (let [builds (:recent-builds data)
             projects (get-in data state/projects-path)
-            plan (get-in data state/project-plan-path)
+            current-project (get-in data state/project-data-path)
+            plan (:plan current-project)
+            project (:project current-project)
             nav-ch (get-in data [:comms :nav])
             controls-ch (om/get-shared owner [:comms :controls])
             nav-data (:navigation-data data)
@@ -43,8 +37,8 @@
                                         [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
               :else
               [:div.dashboard
-               (when (and plan (show-trial-notice? projects plan))
-                 (om/build project-common/trial-notice plan))
+               (when (and plan (project-common/show-trial-notice? project plan))
+                 (om/build project-common/trial-notice current-project))
                (om/build builds-table/builds-table builds {:opts {:show-actions? false
                                                                   :show-branch? (not (:branch nav-data))
                                                                   :show-project? (not (:repo nav-data))}})

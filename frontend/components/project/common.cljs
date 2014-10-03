@@ -7,46 +7,66 @@
             [frontend.models.user :as user-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
+            [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [cljs-time.format :as time-format]
             [goog.string :as gstring]
             [goog.string.format]
+            [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn trial-notice [plan owner]
+(defn show-trial-notice? [project plan]
+  (let [conditions [(not (project-model/oss? project))
+                    (plan-model/trial? plan)
+                    ;; only bug them if < 20 days left in trial
+                    ;; note that this includes expired trials
+                    (< (plan-model/days-left-in-trial plan) 20)]]
+    (utils/mlog (gstring/format "show-trial-notice? has conditions %s days left %d"
+                                conditions (plan-model/days-left-in-trial plan)))
+    (every? identity conditions)))
+
+(defn trial-notice [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [days (plan-model/days-left-in-trial plan)
+      (let [plan (:plan data)
+            project (:project data)
+            project-name (gstring/format "%s/%s" (:username project) (:reponame project))
+            days (plan-model/days-left-in-trial plan)
             org-name (:org_name plan)
             plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})]
         (html
          [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
           (cond (plan-model/trial-over? plan)
-                (list (gstring/format "%s's trial is over. " org-name)
+                (list (gstring/format "The %s project is covered by %s's plan, whose trial ended %s ago. "
+                                      project-name org-name (pluralize (Math/abs days) "day"))
                       [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
                       ".")
 
-                (< 10 days)
-                (list (gstring/format "%s is in a 2-week trial, enjoy! (or check out " org-name)
+                (> days 10)
+                (list (gstring/format "The %s project is covered by %s's trial, enjoy! (or check out "
+                                      project-name org-name)
                       [:a {:href plan-path} "our plans"]
                       ").")
 
-                (< 7 days)
-                (list (gstring/format "%s's trial has %s days left. " org-name days)
+                (> days 7)
+                (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
+                                      project-name org-name (pluralize days "day"))
                       [:a {:href plan-path} "Check out our plans"]
                       ".")
 
-                (< 4 days)
-                (list (gstring/format "%s's trial has %s days left. " org-name days)
+                (> days 4)
+                (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
+                                      project-name org-name (pluralize days "day"))
                       [:a {:href plan-path} "Add a plan"]
-                      " to keep running your builds.")
+                      " to keep running builds.")
 
                 :else
-                (list (gstring/format "%s's trial expires in %s! " org-name (plan-model/pretty-trial-time plan))
+                (list (gstring/format "The %s project is covered by %s's trial which expires in %s! "
+                                      project-name org-name (plan-model/pretty-trial-time plan))
                       [:a {:href plan-path} "Add a plan"]
-                      " to keep running your builds."))])))))
+                      " to keep running builds."))])))))
 
 (defn show-enable-notice [project]
   (not (:has_usable_key project)))
