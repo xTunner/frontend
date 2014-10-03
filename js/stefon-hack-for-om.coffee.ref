@@ -65,7 +65,7 @@ window.stefon_hack_for_om =
     "/docs/configuration.md": '(asset-path "docs/configuration.md")'
     "/docs/continuous-deployment-with-ninefold.md": '(asset-path "docs/continuous-deployment-with-ninefold.md")'
     "/docs/continuous-deployment-with-heroku.md": '(asset-path "docs/continuous-deployment-with-heroku.md")'
-    "/docs/continuous-deployment-with-amazon-code-deploy.md": '(asset-path "docs/continuous-deployment-with-amazon-code-deploy.md")'
+    "/docs/continuous-deployment-with-amazon-codedeploy.md": '(asset-path "docs/continuous-deployment-with-amazon-codedeploy.md")'
     "/docs/continuous-deployment.md": '(asset-path "docs/continuous-deployment.md")'
     "/docs/deploy-google-app-engine.md": '(asset-path "docs/deploy-google-app-engine.md")'
     "/docs/deploy-bluemix.md": '(asset-path "docs/deploy-bluemix.md")'
