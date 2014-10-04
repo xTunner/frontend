@@ -18,8 +18,6 @@
                            ;; should be able to remove after upgrading om/react
   "inner/config_diagnostic.coffee"
 
-  "../views/outer/docs/"
-  "../views/shared/contact_us.hamlc"
   "outer/versions.coffee"
   "outer/api_data.coffee"
 
