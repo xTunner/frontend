@@ -1007,7 +1007,7 @@
 .home-potential {
   @number_of_actions: 8;
   @number_of_outputs: 9;
-  .flexy();
+  .flexy(column);
   height: 100vh;
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
@@ -1053,6 +1053,16 @@
       }
     }
   }
+  .home-bottom-shelf {
+    a {
+      margin: 0;
+      padding: 1em 3em;
+    }
+  }
+}
+.home-potential-content {
+  .order(1);
+  .flexy();
 }
 .home-potential-bullets {
   .flexy();
