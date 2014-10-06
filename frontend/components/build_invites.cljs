@@ -39,11 +39,15 @@
            [:label {:for (str login "-email")}
             [:i.fa.fa-exclamation-circle]
             " Fix Email"]]
-          [:label.invite-select {:id (str login "-checkbox")}
+          [:label.invite-select {:id (str login "-label")
+                                 :for (str login "-checkbox")}
            [:input {:type "checkbox"
+                    :id (str login "-checkbox")
                     :checked (boolean (:checked user))
                     :on-change #(utils/toggle-input
-                                 controls-ch (conj (state/build-github-user-path index) :checked) %)}]]])))))
+                                 controls-ch (conj (state/build-github-user-path index) :checked) %)}]
+           [:div.checked \uf046]
+           [:div.unchecked \uf096]]])))))
 
 (defn build-invites [invite-data owner opts]
   (reify
