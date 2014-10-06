@@ -308,10 +308,12 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state (conj state/project-path :ssh_keys)
-               (fn [keys]
-                 (remove #(= (:fingerprint context) (:fingerprint %))
-                         keys)))))
+    (let [{:keys [hostname fingerprint]} context]
+      (update-in state (conj state/project-path :ssh_keys)
+                 (fn [keys]
+                   (remove #(and (= (:hostname %) hostname)
+                                 (= (:fingerprint %) fingerprint))
+                           keys))))))
 
 
 (defmethod api-event [:save-project-api-token :success]
