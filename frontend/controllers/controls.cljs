@@ -578,15 +578,17 @@
 
 
 (defmethod post-control-event! :deleted-ssh-key
-  [target message {:keys [project-id fingerprint]} previous-state current-state]
+  [target message {:keys [project-id hostname fingerprint]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
                (gstring/format "/api/v1/project/%s/ssh-key" project-name)
                :delete-ssh-key
                api-ch
-               :params {:fingerprint fingerprint}
+               :params {:fingerprint fingerprint
+                        :hostname (str hostname)} ; coerce nil to ""
                :context {:project-id project-id
+                         :hostname hostname
                          :fingerprint fingerprint})))
 
 
