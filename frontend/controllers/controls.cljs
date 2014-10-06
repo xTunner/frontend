@@ -1044,7 +1044,7 @@
           (when (= (:success (:status api-result)))
             (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
 
-(defmethod post-control-event! :home-scroll-one-clicked
+(defmethod post-control-event! :home-scroll-1st-clicked
   [target message _ previous-state current-state]
   (let [body (sel1 "body")
         vh (.-height (goog.dom/getViewportSize))]
@@ -1053,13 +1053,22 @@
                          #js [(.-scrollLeft body) vh]
                          250))))
 
-(defmethod post-control-event! :home-scroll-two-clicked
+(defmethod post-control-event! :home-scroll-2nd-clicked
   [target message _ previous-state current-state]
   (let [body (sel1 "body")
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
                          #js [(.-scrollLeft body) (* 2 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-4th-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 4 vh)]
                          250))))
 
 (defmethod post-control-event! :home-scroll-logo-clicked

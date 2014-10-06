@@ -255,7 +255,7 @@
                   [:div.avatar-circle {:ref "center-logo"}
                    (common/ico :logo)]]]
                 [:div.home-bottom-shelf
-                 [:a {:on-click #(put! controls-ch [:home-scroll-one-clicked])}
+                 [:a {:on-click #(put! controls-ch [:home-scroll-1st-clicked])}
                   "Learn more"
                   (common/ico :chevron-down)]]]
                [:section.home-purpose {:class (when (:first-fig-animate state) ["animate"])}
@@ -278,7 +278,7 @@
                      "See how Shopify does it"
                      (common/ico :slim-arrow-right)]]]]]
                 [:div.home-bottom-shelf
-                 [:a {:on-click #(put! controls-ch [:home-scroll-two-clicked])}
+                 [:a {:on-click #(put! controls-ch [:home-scroll-2nd-clicked])}
                   ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
                   (common/ico :chevron-down)]]]
                [:section.home-practice
@@ -336,30 +336,36 @@
                      " at "
                      (get-in customer-brands [selected-customer :name])]]]]]]
                [:section.home-potential {:class (when (:second-fig-animate state) ["animate"])}
-                [:div.home-articles
-                 [:article {:ref "potential-article"}
-                  [:h1 "Look under the hood & check the bullet points."]
-                  [:div.home-potential-bullets
-                   [:ul
-                    [:li "Quick & easy setup"]
-                    [:li "Lightning fast builds"]
-                    [:li "Deep Customization"]
-                    [:li "Easy debugging"]]
-                   [:ul
-                    [:li "Smart notifications"]
-                    [:li "Loving support"]
-                    [:li "Automatic parallelization"]
-                    [:li "Continuous Deployment"]]
-                   [:ul
-                    [:li "Build artifacts"]
-                    [:li "Clean build environments"]
-                    [:li "GitHub Integration"]
-                    [:li "Open Source Support"]]]]]
-                [:div.home-drawings
-                 [:figure]
-                 [:figure]
-                 [:figure
-                  (om/build drawings/draw-build-large app)]]]
+                [:div.home-top-shelf]
+                [:div.home-potential-content
+                 [:div.home-articles
+                  [:article {:ref "potential-article"}
+                   [:h1 "Look under the hood & check the bullet points."]
+                   [:div.home-potential-bullets
+                    [:ul
+                     [:li "Quick & easy setup"]
+                     [:li "Lightning fast builds"]
+                     [:li "Deep Customization"]
+                     [:li "Easy debugging"]]
+                    [:ul
+                     [:li "Smart notifications"]
+                     [:li "Loving support"]
+                     [:li "Automatic parallelization"]
+                     [:li "Continuous Deployment"]]
+                    [:ul
+                     [:li "Build artifacts"]
+                     [:li "Clean build environments"]
+                     [:li "GitHub Integration"]
+                     [:li "Open Source Support"]]]]]
+                 [:div.home-drawings
+                  [:figure]
+                  [:figure]
+                  [:figure
+                   (om/build drawings/draw-build-large app)]]]
+                [:div.home-bottom-shelf
+                 [:a {:on-click #(put! controls-ch [:home-scroll-4th-clicked])}
+                  ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
+                  (common/ico :chevron-down)]]]
                [:section.home-epilog {:ref "home-epilog"}
                 [:a.home-action {:href (auth-url)
                                  :ref "epilog-cta"
