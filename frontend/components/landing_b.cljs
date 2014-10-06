@@ -214,7 +214,7 @@
                                        (when (:header-cta-invisible state) ["cta-invisible"]))}
                 [:a.promo {:href "http://blog.circleci.com/continuous-delivery-with-docker-containers/"}
                  ; "What is Continuous Integration?"
-                 "Learn about How We Support Docker"]
+                 "Learn how we support Docker."]
                 [:a.login {:href (auth-url)
                            :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
                                                                                        :properties {:source "header-log-in"}
@@ -259,22 +259,28 @@
                   "Learn more"
                   (common/ico :chevron-down)]]]
                [:section.home-purpose {:class (when (:first-fig-animate state) ["animate"])}
-                [:div.home-drawings
-                 [:figure]
-                 [:figure]
-                 [:figure
-                  (om/build drawings/drawing-dashboard app)]]
-                [:div.home-articles
-                 [:article {:ref "purpose-article"}
-                  [:h1 "Launches are dead, long live iteration."]
-                  [:p "We believe that rapid iteration, tight feedback loops, and team communication are the keys to a great product workflow.
-                      That's why we designed the world's leading continuous integration and delivery solution.
-                      Continuous integration and delivery is revolutionizing the way development teams operate by reducing barriers between your ideas and your production code.
-                      Remember, it doesn't count until it ships."]
-                  [:p
-                   [:a.shopify-link {:href "/stories/shopify"}
-                    "See how Shopify does it"
-                    (common/ico :slim-arrow-right)]]]]]
+                [:div.home-top-shelf]
+                [:div.home-purpose-content
+                 [:div.home-drawings
+                  [:figure]
+                  [:figure]
+                  [:figure
+                   (om/build drawings/drawing-dashboard app)]]
+                 [:div.home-articles
+                  [:article {:ref "purpose-article"}
+                   [:h1 "Launches are dead, long live iteration."]
+                   [:p "We believe that rapid iteration, tight feedback loops, and team communication are the keys to a great product workflow.
+                       That's why we designed the world's leading continuous integration and delivery solution.
+                       Continuous integration and delivery is revolutionizing the way development teams operate by reducing barriers between your ideas and your production code.
+                       Remember, it doesn't count until it ships."]
+                   [:p
+                    [:a.shopify-link {:href "/stories/shopify"}
+                     "See how Shopify does it"
+                     (common/ico :slim-arrow-right)]]]]]
+                [:div.home-bottom-shelf
+                 [:a {:on-click #(put! controls-ch [:home-scroll-two-clicked])}
+                  ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
+                  (common/ico :chevron-down)]]]
                [:section.home-practice
                 (let [hovered-customer (:hovered-customer state)
                       tools (get-in customer-brands [hovered-customer :tools] #{})]
