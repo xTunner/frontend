@@ -112,8 +112,8 @@
 @home_color_last_cta: @blue;
 @home_margin_footer: (@tile / 2);
 
-.page {
-  &.home {
+.home {
+  &.page {
     font-size: 1.1428572em; // 16px
     line-height: 1.5em; // 24px
     h1 {
@@ -131,6 +131,25 @@
       line-height: @prolog_h5_line;
       font-weight: normal;
       margin: 1em 0;
+    }
+  }
+  a {
+    &:hover {
+      i {
+        path {
+          stroke: @linkColorHover;
+          transition: stroke 200ms;
+        }
+      }
+    }
+    &:not(:hover) {
+      color: @black;
+    }
+    i {
+      path {
+        stroke: @grayDark;
+        stroke-width: 8;
+      }
     }
   }
 }
@@ -540,7 +559,7 @@
   }
 }
 .home-purpose {
-  .flexy();
+  .flexy(column);
   height: 100vh;
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
@@ -649,6 +668,16 @@
       }
     }
   }
+  .home-bottom-shelf {
+    a {
+      margin: 0;
+      padding: 1em 3em;
+    }
+  }
+}
+.home-purpose-content {
+  .order(1);
+  .flexy();
 }
 .home-drawings {
   .flex(0, 0, @purpose_drawings_width);
@@ -691,9 +720,6 @@
   }
   p {
     color: @gray;
-  }
-  a:not(:hover) {
-    color: @black;
   }
   .shopify-link {
     .flexy();
