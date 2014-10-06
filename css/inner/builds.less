@@ -617,17 +617,17 @@
           }
         }
         &[type="checkbox"] {
-          visibility: hidden;
-          &:before {
-            content: "\f096";
+          display: none;
+          ~ div {
             font-family: FontAwesome;
-            visibility: visible;
+            display: none;
           }
-          &:checked {
-            &:before {
-              content: "\f046";
-              color: @green;
-            }
+          &:not(:checked) ~ .unchecked {
+            display: block;
+          }
+          &:checked ~ .checked {
+            display: block;
+            color: @green;
           }
         }
       }
