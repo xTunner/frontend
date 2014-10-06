@@ -105,5 +105,5 @@
 (defn track-message [message]
   (mixpanel/track-message message))
 
-(defn track-view-page [zone]l
+(defn track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
