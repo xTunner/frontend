@@ -29,7 +29,7 @@
    [:li [:a {:href "edit"} "Overview"]]
    [:li.side-title "Tweaks"]
    [:li [:a {:href "#parallel-builds"} "Parallelism"]]
-   [:li [:a {:href "#env-vars"} "Environment variables"]]
+   [:li [:a {:href "#env-vars"} "Environment Variables"]]
    [:li [:a {:href "#experimental"} "Experimental Settings"]]
    [:li.side-title "Test Commands"]
    [:li [:a {:href "#setup"} "Dependencies"]]
@@ -39,10 +39,10 @@
    [:li [:a {:href "#webhooks"} "Webhooks"]]
    [:li [:a {:href "#badges"} "Status Badges"]]
    [:li.side-title "Permissions"]
-   [:li [:a {:href "#checkout"} "Checkout SSH keys"]]
-   [:li [:a {:href "#ssh"} "SSH keys"]]
-   [:li [:a {:href "#api"} "API tokens"]]
-   [:li [:a {:href "#aws"} "AWS keys"]]
+   [:li [:a {:href "#checkout"} "Checkout SSH Keys"]]
+   [:li [:a {:href "#ssh"} "SSH Keys"]]
+   [:li [:a {:href "#api"} "API Tokens"]]
+   [:li [:a {:href "#aws"} "AWS Keys"]]
    [:li.side-title "Build Artifacts"]
    [:li [:a {:href "#artifacts"} "Artifacts"]]
    [:li.side-title "Continuous Deployment"]
@@ -96,7 +96,8 @@
     (render [_]
       (html
        [:div.project-settings-block
-        [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
+        [:h2 "Overview for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
+        [:p "How to configure your project:"]
         [:ul.overview-options
          [:li.overview-item
           [:h4 "Option 1"]
@@ -245,7 +246,7 @@
       (let [controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div
-          [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
+          [:h2 (str "Change Parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
           (if-not (:plan project-data)
             [:div.loading-spinner common/spinner]
             (list (parallelism-picker project-data controls-ch)
@@ -263,7 +264,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.environment-variables
-          [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "Environment Variables for " (vcs-url/project-name (:vcs_url project))]
           [:div.environment-variables-inner
            [:p
             "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
@@ -399,7 +400,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.dependencies-page
-          [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "Install Dependencies for " (vcs-url/project-name (:vcs_url project))]
           [:p 
            "You can also set your dependencies commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
@@ -447,7 +448,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.tests-page
-          [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "Tests Setup for " (vcs-url/project-name (:vcs_url project))]
           [:p 
            "You can also set your test commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
@@ -549,7 +550,7 @@
             settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
         (html
          [:div
-          [:h2 "Chatroom setup for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "Chatroom Setup for " (vcs-url/project-name (:vcs_url project))]
           [:div.chat-rooms
            (for [chat-spec [{:service "Hipchat"
                              :doc (list [:p "To get your API token, create a \"notification\" token via the "
@@ -668,7 +669,7 @@
     (om/component
      (html
       [:div.status-page
-       [:h2 "Status badges for " project-name]
+       [:h2 "Status Badges for " project-name]
        [:div "Use this tool to easily create embeddable status badges. Perfect for your project's README or wiki!"]
        [:div.status-page-inner
         [:form
@@ -736,7 +737,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.sshkeys-page
-          [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "SSH Keys for " (vcs-url/project-name (:vcs_url project))]
           [:div.sshkeys-inner
            [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
            [:form
@@ -800,7 +801,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.checkout-page
-          [:h2 "Checkout keys for " project-name]
+          [:h2 "Checkout Keys for " project-name]
           [:div.checkout-page-inner
            (if (nil? checkout-keys)
              [:div.loading-spinner common/spinner]
@@ -945,7 +946,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.circle-api-page
-          [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "API Tokens for " (vcs-url/project-name (:vcs_url project))]
           [:div.circle-api-page-inner
            [:p "Create and revoke project-specific API tokens to access this project's details using our API. First choose a scope "
             [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
@@ -1000,7 +1001,7 @@
   (om/component
    (html
     [:div
-     [:h2 "Build artifacts for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
+     [:h2 "Build Artifacts for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
      [:div.doc
       [:p
        "Circle supports saving files from any build. See "
@@ -1020,7 +1021,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.heroku-api
-          [:h2 "Set personal Heroku API key for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "Personal Heroku API Key for " (vcs-url/project-name (:vcs_url project))]
           [:div.heroku-step
            [:h4 "Step 1: Heroku API key"]
            [:div (when (:heroku_api_key user)
@@ -1076,7 +1077,7 @@
    (html
     [:div
      [:h2
-      "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
+      "Other Deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
      [:div.doc
       [:p "Circle supports deploying to any server, using custom commands. See "
        [:a {:target "_blank",
@@ -1100,7 +1101,7 @@
             input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
         (html
          [:div.aws-page
-          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+          [:h2 "AWS Keys for " (vcs-url/project-name (:vcs_url project))]
           [:div.aws-page-inner
            [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
             "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
