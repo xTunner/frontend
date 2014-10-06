@@ -731,8 +731,8 @@
     (render [_]
       (let [project (:project project-data)
             project-id (project-model/id project)
-            {:keys [hostname public-key private-key]
-             :or {hostname "" public-key "" private-key ""}} (:new-ssh-key project-data)
+            {:keys [hostname private-key]
+             :or {hostname "" private-key ""}} (:new-ssh-key project-data)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.sshkeys-page
@@ -743,9 +743,6 @@
             [:input#hostname {:required true, :type "text" :value (str hostname)
                               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :hostname) %)}]
             [:label {:placeholder "Hostname"}]
-            [:input#publicKey {:required true, :type "text" :value (str public-key)
-                               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :public-key) %)}]
-            [:label {:placeholder "Public Key"}]
             [:textarea#privateKey {:required true :value (str private-key)
                                    :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
             [:label {:placeholder "Private Key"}]
@@ -758,7 +755,6 @@
                :type "submit"
                :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
                                                                  :ssh-key {:hostname hostname
-                                                                           :public_key public-key
                                                                            :private_key private-key}}])
                               false)}])]
            (when-let [ssh-keys (seq (:ssh_keys project))]
