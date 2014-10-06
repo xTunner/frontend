@@ -282,6 +282,7 @@
                   ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
                   (common/ico :chevron-down)]]]
                [:section.home-practice
+                [:div.home-top-shelf]
                 (let [hovered-customer (:hovered-customer state)
                       tools (get-in customer-brands [hovered-customer :tools] #{})]
                  [:div.practice-tools
@@ -334,7 +335,11 @@
                      [:br]
                      (get-in customer-brands [selected-customer :cite-title])
                      " at "
-                     (get-in customer-brands [selected-customer :name])]]]]]]
+                     (get-in customer-brands [selected-customer :name])]]]]]
+                [:div.home-bottom-shelf
+                 [:a {:on-click #(put! controls-ch [:home-scroll-3rd-clicked])}
+                  ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
+                  (common/ico :chevron-down)]]]
                [:section.home-potential {:class (when (:second-fig-animate state) ["animate"])}
                 [:div.home-top-shelf]
                 [:div.home-potential-content

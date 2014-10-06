@@ -1062,6 +1062,15 @@
                          #js [(.-scrollLeft body) (* 2 vh)]
                          250))))
 
+(defmethod post-control-event! :home-scroll-3rd-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 3 vh)]
+                         250))))
+
 (defmethod post-control-event! :home-scroll-4th-clicked
   [target message _ previous-state current-state]
   (let [body (sel1 "body")
