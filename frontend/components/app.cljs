@@ -46,7 +46,7 @@
     om/IRender
     (render [_] (html [:div.loading-spinner common/spinner]))))
 
-(defn dominant-component [app-state]
+(defn dominant-component [app-state new-homepage?]
   (condp = (get-in app-state [:navigation-point])
     :build build-com/build
     :dashboard dashboard/dashboard
@@ -60,8 +60,7 @@
 
     :loading loading
 
-    ; :landing landing/home
-    :landing landing-b/home
+    :landing (if new-homepage? landing-b/home landing/home)
     :about about/about
     :pricing pricing/pricing
     :jobs jobs/jobs
@@ -88,12 +87,13 @@
         (let [controls-ch (om/get-shared owner [:comms :controls])
               persist-state! #(put! controls-ch [:state-persisted])
               restore-state! #(put! controls-ch [:state-restored])
-              dom-com (dominant-component app)
               show-inspector? (get-in app state/show-inspector-path)
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
-              slim-aside? (get-in app state/slim-aside-path)]
+              slim-aside? (get-in app state/slim-aside-path)
+              new-homepage? (get-in app [:ab-tests :new-homepage])
+              dom-com (dominant-component app new-homepage?)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
