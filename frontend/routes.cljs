@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [frontend.async :refer [put!]]
             [goog.events :as events]
-            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.models.project :as proj-mod]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :include-macros true]
@@ -12,14 +11,9 @@
 
 
 (defn open-to-inner! [nav-ch navigation-point args]
-  (mixpanel/track "View page" {:zone :inner})
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
 (defn open-to-outer! [nav-ch navigation-point args]
-  (mixpanel/track "View page"
-                  (merge {:zone :outer}
-                         (when-let [join (-> args :query-params :join)]
-                           {:join-code join})))
   (put! nav-ch [navigation-point (assoc args :inner? false)]))
 
 (defn logout! [nav-ch]

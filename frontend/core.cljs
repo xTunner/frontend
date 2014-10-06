@@ -118,14 +118,16 @@
    (analytics/track-message (first value))))
 
 (defn nav-handler
-  [value state history]
+  [[navigation-point {:keys [inner?] {:keys [join]} :query-params :as args} :as value] state history]
   (when (log-channels?)
     (mlog "Navigation Verbose: " value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
-       (swap! state (partial nav-con/navigated-to history (first value) (second value)))
-       (nav-con/post-navigated-to! history (first value) (second value) previous-state @state)))))
+       (swap! state (partial nav-con/navigated-to history navigation-point args))
+       (nav-con/post-navigated-to! history navigation-point args previous-state @state)
+       (when join (analytics/track-join-code join))
+       (analytics/track-view-page (if inner? :inner :outer))))))
 
 (defn api-handler
   [value state container]

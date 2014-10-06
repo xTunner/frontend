@@ -6,7 +6,7 @@
             [frontend.analytics.perfect-audience :as pa]
             [frontend.analytics.rollbar :as rollbar]
             [frontend.analytics.twitter :as twitter]
-            [frontend.analytics.facebook :as facebook]         
+            [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
@@ -53,6 +53,9 @@
 
 (defn track-invited-by [invited-by]
   (mixpanel/register-once {:invited_by invited-by}))
+
+(defn track-join-code [join-code]
+  (when join-code (mixpanel/register-once {"join_code" join-code})))
 
 (defn track-save-containers []
   (mixpanel/track "Save Containers"))
@@ -101,3 +104,6 @@
 
 (defn track-message [message]
   (mixpanel/track-message message))
+
+(defn track-view-page [zone]l
+  (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
