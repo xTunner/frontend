@@ -110,6 +110,9 @@ deployments and get deployment status. If your application is called `my-app`
 and your account ID is `80398EXAMPLE` then the following policy snippet gives
 us sufficient accesss:
 
+**TODO** Replace TURTLE/GOAT/CHEETAH constants with new values once they're
+changed.
+
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -133,8 +136,20 @@ us sufficient accesss:
             "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentgroup:my-app/*"
           ]
         },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "codedeploy:GetDeploymentConfig"
+          ],
+          "Resource": [
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:AWSSDS:TURTLE",
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:AWSSDS:GOAT",
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:AWSSDS:CHEETAH"
+          ]
+        }
       ]
     }
+
 
 **Note:** This is the minimal policy necessary for creating deployments to
 `my-app`. You will need to add additional `Resource` statements for each
