@@ -81,11 +81,6 @@
         replace-variables
         js/marked)))
 
-(defn new-context []
-  (let [context (js/Object.)]
-    (aset context "include_article" include-article)
-    context))
-
 (defn article-info [doc-kw doc]
   (let [doc-name (name doc-kw)
         children (map keyword (or (:children doc) []))
