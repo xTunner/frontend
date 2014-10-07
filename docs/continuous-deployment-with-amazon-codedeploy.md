@@ -302,9 +302,9 @@ Unlike other deployment options you don't need to specify pre- or
 post-deployment steps in your `circle.yml`.
 
 CodeDeploy provides first class support for your application's lifecycle via
-lifecycle scripts. As a result you can consistently start/stop services, run
-database migrations, install dependencies etc. across all your instances in a
-consistent manner.
+lifecycle scripts. As a result you can start/stop services, run database
+migrations, install dependencies etc. across all your instances in a consistent
+manner.
 
 [substitution variables]: #key-patterns
 [circle.yml]: /docs/configuration#deployment
