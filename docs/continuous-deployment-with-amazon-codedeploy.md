@@ -225,7 +225,7 @@ the same app to different deployment groups:
 
 If you wanted to override the S3 location for the application revisions
 built for your production deployments (**Note:** you must specify both the
-bucket name and key pattern if you override `s3_location`):
+bucket name and key pattern if you override `revision_location`):
 
     deployment:
       production:
@@ -233,7 +233,7 @@ bucket name and key pattern if you override `s3_location`):
         codedeploy:
           my-app:
             deployment_group: production-instances
-            s3_location:
+            revision_location:
               bucket_name: production-bucket
               key_pattern: apps/my-app-master-{SHORT_COMMIT}-{BUILD_NUM}
 
@@ -247,7 +247,7 @@ you need to provide all the information for your deployment in your
         codedeploy:
           my-app:
             application_root: /
-            s3_location:
+            revision_location:
               bucket_name: staging-bucket
               key_pattern: apps/my-app-{SHORT_COMMIT}-{BUILD_NUM}
             region: us-east-1
@@ -267,7 +267,7 @@ application.
   `/` means the repo root directory.
   The entire contents of `application_root` will be packaged up into a zipfile and
   uploaded to S3.
-* `s3_location` tells CircleCI where to upload application revisions to.
+* `revision_location` tells CircleCI where to upload application revisions to.
   * `bucket_name` is the name of the bucket that should store your application
     revision bundles.
   * `key_pattern` is used to generate the S3 key. You can use [substitution variables][]
