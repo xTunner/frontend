@@ -45,8 +45,8 @@
    [:li [:a {:href "#aws"} "AWS keys"]]
    [:li.side-title "Continuous Deployment"]
    [:li [:a {:href "#heroku"} "Heroku"]]
-   [:li [:a {:href "#deployment"} "Other Deployments"]]
-   [:li [:a {:href "#aws-codedeploy"} "Amazon CodeDeploy"]]])
+   [:li [:a {:href "#aws-codedeploy"} "Amazon CodeDeploy"]]
+   [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
 (defn branch-names [project-data]
   (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
@@ -1133,9 +1133,6 @@
             project-id (project-model/id project)
             controls-ch (om/get-shared owner [:comms :controls])
             input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
-        (utils/inspect project)
-        (utils/inspect applications)
-        (utils/inspect app-name)
         (html
          [:div.aws-codedeploy
           [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
@@ -1171,20 +1168,33 @@
                                       false)}]]]
                ;; Once we have an application name we can accept the rest of the settings
                [:form
-                [:legend (str "Application: " (name app-name))]
+                [:legend (name app-name)]
 
+                [:p "The AWS region " (name app-name) " lives in."]
+                [:div.styled-select
+                  [:select {:class (when (not aws-region) "placeholder")
+                            :value (or aws-region "")
+                            ;; Updates the project cursor in order to trigger a re-render
+                            :on-change #(utils/edit-input controls-ch (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+                    [:option {:value ""} "AWS Region"]
+                    [:option {:disabled "disabled"} "-----"]
+                    [:option {:value "us-east-1"} "us-east-1"]
+                    [:option {:value "us-west-2"} "us-west-2"]]
+                  [:i.fa.fa-chevron-down]]
+
+                [:p "The directory in your repo to package up into an application revision. "
+                    "This is relative to your repo's root, " [:code "/"] " means the repo's root "
+                    "directory, " [:code "/app"] " means the app directory in your repo's root directory."]
                 [:input#application-root
                  {:required true, :type "text", :value (or application-root "")
                   :on-change #(utils/edit-input controls-ch (input-path app-name :application_root) %)}]
                 [:label {:placeholder "Application Root"}]
 
-                [:input#region
-                  {:required true, :type "text", :value (or aws-region "")
-                   :on-change #(utils/edit-input controls-ch (input-path app-name :region) %)}]
-                [:label {:placeholder "AWS region"}]
-
                 [:fieldset
-                 [:legend "Revision Location"]
+                 [:h5 "Revision Location"]
+                 [:p "The name of the bucket and key CircleCI should use to store application revisions for " (name app-name) ". "
+                     "You can use " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy#key-patterns"} "substitution variables"]
+                     " in the Key Pattern to generate a unique key for each build."]
                  [:input#s3-bucket
                   {:required true, :type "text", :value (or bucket "")
                    :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :bucket) %)}]
