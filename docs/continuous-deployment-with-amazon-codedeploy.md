@@ -110,9 +110,6 @@ deployments and get deployment status. If your application is called `my-app`
 and your account ID is `80398EXAMPLE` then the following policy snippet gives
 us sufficient accesss:
 
-**TODO** Replace TURTLE/GOAT/CHEETAH constants with new values once they're
-changed.
-
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -142,9 +139,9 @@ changed.
             "codedeploy:GetDeploymentConfig"
           ],
           "Resource": [
-            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:AWSSDS:TURTLE",
-            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:AWSSDS:GOAT",
-            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:AWSSDS:CHEETAH"
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:CodeDeployDefault.OneAtATime",
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:CodeDeployDefault.HalfAtATime",
+            "arn:aws:codedeploy:us-east-1:80398EXAMPLE:deploymentconfig:CodeDeployDefault.AllAtOnce"
           ]
         }
       ]
