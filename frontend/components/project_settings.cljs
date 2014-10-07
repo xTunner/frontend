@@ -1126,7 +1126,7 @@
                                            (get-in inputs [:aws :services :codedeploy]))
 
             [app-name settings] (first applications)
-            {:keys [bucket key_pattern]} (:s3_location settings)
+            {:keys [bucket key_pattern]} (:revision_location settings)
             application-root (:application_root settings)
             aws-region (:region settings)
 
@@ -1184,15 +1184,15 @@
                 [:label {:placeholder "AWS region"}]
 
                 [:fieldset
-                 [:legend "S3 Location"]
+                 [:legend "Revision Location"]
                  [:input#s3-bucket
                   {:required true, :type "text", :value (or bucket "")
-                   :on-change #(utils/edit-input controls-ch (input-path app-name :s3_location :bucket) %)}]
+                   :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :bucket) %)}]
                  [:label {:placeholder "Bucket Name"}]
 
                  [:input#s3-key-prefix
                   {:required true, :type "text", :value (or key_pattern "")
-                   :on-change #(utils/edit-input controls-ch (input-path app-name :s3_location :key_pattern) %)}]
+                   :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :key_pattern) %)}]
                  [:label {:placeholder "Key Pattern"}]]
 
                 [:div.buttons
@@ -1232,7 +1232,7 @@
                  (str "      appname-1234:\n"
                       "        application_root: /\n"
                       "        region: us-east-1\n"
-                      "        s3_location:\n"
+                      "        revision_location:\n"
                       "          bucket: my-bucket\n"
                       "          key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
                       "        deployment_group: my-deployment-group\n"))]]]]])))))
