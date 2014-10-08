@@ -103,13 +103,13 @@
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-              (when show-inspector?
-                ;; TODO inspector still needs lots of work. It's slow and it defaults to
-                ;;     expanding all datastructures.
-                (om/build inspector/inspector app))
               (when (and inner? logged-in?)
                 (om/build aside/aside app-without-container-data))
               [:main.app-main
+               (when show-inspector?
+                 ;; TODO inspector still needs lots of work. It's slow and it defaults to
+                 ;;     expanding all datastructures.
+                 (om/build inspector/inspector app))
                (om/build header/header app-without-container-data)
                [:div.main-body
                 (om/build dom-com app)]
