@@ -76,10 +76,12 @@
     height: 3em;
     border-radius: 4px 4px 0 0;
     z-index: 9001; // see intercom hack in shame.less
+    background: @orange;
     &.env-production  { background: @redLight;  }
     &.env-staging     { background: @orange;    }
     &.env-development { background: @blueLight; }
     &.env-test        { background: @green;     }
+    &.env-dwwoelfel   { background: #500000;  }
   }
   .options {
     margin-left: 1em;
