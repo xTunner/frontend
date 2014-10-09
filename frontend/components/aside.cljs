@@ -124,9 +124,7 @@
              (common/ico :fail-light)]]
            [:div.aside-user-options
             [:a.aside-item {:href "/account"} "Settings"]
-            [:a.aside-item {:on-click #(do
-                                        (utils/open-modal "#inviteForm")
-                                        (put! controls-ch [:user-options-toggled]))}
+            [:a.aside-item {:on-click #(put! controls-ch [:invite-form-opened])}
              "Invite a Teammate"]
             [:a.aside-item {:href "/logout"} "Logout"]]])))))
 

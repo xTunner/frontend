@@ -44,10 +44,11 @@
   [plan]
   (let [trial-end (time-format/parse (:trial_end plan))
         now (time/now)]
-    (if (time/after? trial-end now)
-      ;; count partial days as a full day
-      (inc (time/in-days (time/interval now trial-end)))
-      (- (time/in-days (time/interval trial-end now))))))
+    (when (not (nil? trial-end))
+      (if (time/after? trial-end now)
+        ;; count partial days as a full day
+        (inc (time/in-days (time/interval now trial-end)))
+        (- (time/in-days (time/interval trial-end now)))))))
 
 (defn pretty-trial-time [plan]
   (let [trial-interval (time/interval (time/now) (time-format/parse (:trial_end plan)))

@@ -89,12 +89,6 @@
                         :current-container-id current-container-id}
                        {:react-key (:index container)}))]])))))
 
-(defn show-trial-notice? [project plan]
-  (and (not (get-in project [:feature_flags :oss]))
-       (plan-model/trial? plan)
-       (plan-model/trial-over? plan)
-       (> 4 (plan-model/days-left-in-trial plan))))
-
 (defn notices [data owner]
   (reify
     om/IRender
@@ -112,8 +106,8 @@
            (when (empty? (:messages build))
              [:div (report-error build controls-ch)])
 
-           (when (and plan (show-trial-notice? project plan))
-             (om/build project-common/trial-notice plan))
+           (when (and plan (project-common/show-trial-notice? project plan))
+             (om/build project-common/trial-notice project-data))
 
            (when (and project (project-common/show-enable-notice project))
              (om/build project-common/enable-notice project))

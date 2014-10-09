@@ -62,3 +62,10 @@
 
 (defn id [project]
   (:vcs_url project))
+
+;; I was confused, on the backend, we now default to oss if
+;; github-info shows it to be public and no one sets the flag
+;; explicitly to false. But the read-api always delivers the frontend
+;; a feature_flags oss set to true for those cases.
+(defn oss? [project]
+  (get-in project [:feature_flags :oss]))

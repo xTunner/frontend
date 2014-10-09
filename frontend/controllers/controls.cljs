@@ -132,6 +132,14 @@
   [target message _ state]
   (update-in state state/user-options-shown-path not))
 
+(defmethod control-event :invite-form-opened
+  [target message _ state]
+  (assoc-in state state/user-options-shown-path false))
+
+(defmethod post-control-event! :invite-form-opened
+  [_ _ _ _ _ _]
+  (utils/open-modal "#inviteForm"))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
@@ -579,15 +587,17 @@
 
 
 (defmethod post-control-event! :deleted-ssh-key
-  [target message {:keys [project-id fingerprint]} previous-state current-state]
+  [target message {:keys [project-id hostname fingerprint]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
                (gstring/format "/api/v1/project/%s/ssh-key" project-name)
                :delete-ssh-key
                api-ch
-               :params {:fingerprint fingerprint}
+               :params {:fingerprint fingerprint
+                        :hostname (str hostname)} ; coerce nil to ""
                :context {:project-id project-id
+                         :hostname hostname
                          :fingerprint fingerprint})))
 
 

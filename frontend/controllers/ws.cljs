@@ -40,8 +40,9 @@
   "Returns true if we should ignore pusher updates for the given channel-name. This will be
   true if the channel is stale or if the build hasn't finished loading."
   [state channel-name]
-  (and (get-in state state/build-path)
-       (not= channel-name (pusher/build-channel (get-in state state/build-path)))))
+  (if-let [build (get-in state state/build-path)]
+    (not= channel-name (pusher/build-channel build))
+    true))
 
 (defn usage-queue-build-index-from-channel-name [state channel-name]
   "Returns index if there is a usage-queued build showing with the given channel name"
