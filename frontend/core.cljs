@@ -18,7 +18,7 @@
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
-            [frontend.instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -176,12 +176,14 @@
 
 (defn install-om [state container comms]
   (om/root
-     app/app
-     state
-     {:target container
-      :shared {:comms comms
-               :timer-atom (setup-timer-atom)
-               :_app-state-do-not-use state}}))
+   app/app
+   state
+   {:target container
+    :instrument (fn [f cursor m]
+                  (om/build* f cursor (assoc m :descriptor instrumentation/instrumentation-methods)))
+    :shared {:comms comms
+             :timer-atom (setup-timer-atom)
+             :_app-state-do-not-use state}}))
 
 (defn find-top-level-node []
   (sel1 :body))

@@ -1,6 +1,7 @@
 (ns frontend.instrumentation
   (:require [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]))
+            [frontend.utils :as utils :include-macros true]
+            [om.core :as om :include-macros true]))
 
 (defn wrap-api-instrumentation [handler api-data]
   (fn [state]
@@ -19,3 +20,11 @@
         (catch :default e
           (utils/merror e)
           state)))))
+
+(def instrumentation-methods
+  (om/specify-state-methods!
+   (clj->js (update-in om/pure-methods [:componentWillUpdate] (fn [f]
+                                                                (fn [next-props next-state]
+                                                                  (this-as this
+                                                                           (js/console.log "updating" (.getDisplayName this))
+                                                                           (.call f this next-props next-state))))))))
