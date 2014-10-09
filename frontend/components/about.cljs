@@ -115,7 +115,9 @@
     :role "Developer"
     :github "iand675"
     :twitter "iand675"
-    :email "ian@circleci.com"}
+    :email "ian@circleci.com"
+    :bio ["Ian joins the CircleCI team remotely from South Carolina. When he’s not busy coding away on CircleCI, he’s probably off hacking on his Haskell side projects or studying distributed systems with a quality microbrew in hand. He started learning Haskell in high school for some research projects, and has been hooked on functional programming ever since. Ian's always had more ideas for things to build than time on his hands, but managed to win runner up in a few entrepreneurship competitions in college for his work.",
+          "He’s particularly fond of travel, and has done two cross-country moves in 2 years. He loves getting to know foreign cultures, and has learned to speak some Japanese and French along the way. During the summer months, he spends his time bicycling, hiking, and running, and once the weather turns cold he hones his gaming skills on Dance Dance Revolution and Super Smash Bros, sits back and binge-watches television shows (currently: Castle and Brooklyn Nine-Nine), and chows down on pumpkin pie."]}
    {:name "Kevin Bell"
     :visible true
     :role "Developer Evangelist"
