@@ -11,20 +11,21 @@
                  [ring/ring "1.2.2"]
                  [http-kit "2.1.18"]
                  [fs "0.11.1"]
+                 [com.cemerick/url "0.1.1"]
 
-                 [ankha "0.1.2"]
-                 [org.clojure/clojurescript "0.0-2280"]
-                 [org.clojure/google-closure-library "0.0-20140226-71326067"]
+                 [ankha "0.1.4"]
+                 ;; 2356 is incompatible with core.typed: http://dev.clojure.org/jira/browse/CTYP-176
+                 [org.clojure/clojurescript "0.0-2342"]
+                 [org.clojure/google-closure-library "0.0-20140718-946a7d39"]
                  [com.google.javascript/closure-compiler "v20140625"]
-                 [org.clojure/core.async "0.1.303.0-886421-alpha"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.2.6"]
-                 [om "0.6.4"]
-                 [com.facebook/react "0.10.0"] ;; include for externs
-                 [prismatic/dommy "0.1.2"]
-                 [sablono "0.2.16"]
+                 [om "0.7.3"]
+                 [com.facebook/react "0.11.2"] ;; include for externs
+                 [prismatic/dommy "0.1.3"]
+                 [sablono "0.2.22"]
                  [secretary "1.2.0"]
                  [com.andrewmcveigh/cljs-time "0.1.5"]
-                 [com.cemerick/url "0.1.1"]
                  [weasel "0.3.0"] ;; repl
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]]
