@@ -72,11 +72,6 @@
     (.update container content)
     (crypt/byteArrayToHex (.digest container))))
 
-(defn email->gravatar-url [email]
-  (let [email (or email "unknown-email@unknown-domain.com")
-        hash (md5 email)]
-    (str "https://secure.gravatar.com/avatar/" hash "?s=50")))
-
 (defn notify-error [ch message]
   (put! ch [:error-triggered message]))
 

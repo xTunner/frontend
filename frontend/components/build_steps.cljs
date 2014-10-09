@@ -66,7 +66,7 @@
                                     (when (action-model/failed? action)
                                       ["failed"]))]
         (html
-         [:div {:class (str "type-" (:type action))}
+         [:div {:class (str "type-" (or (:type action) "none"))}
           [:div.type-divider
            [:span (:type action)]]
           [:div.build-output
@@ -110,11 +110,10 @@
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
                      {:on-click #(let [node (om/get-node owner)
-                                       main (sel1 "main.app-main")]
-                                   (set! (.-scrollTop main) (- (+ (.-scrollTop main)
-                                                                  (.-y (goog.style/getRelativePosition node main))
+                                       body (sel1 "body")]
+                                   (set! (.-scrollTop body) (- (+ (.-y (goog.style/getRelativePosition node body))
                                                                   (.-height (goog.style/getSize node)))
-                                                               (goog.dom/getDocumentHeight))))}]
+                                                               (.-height (goog.dom/getViewportSize)))))}]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -162,17 +161,23 @@
                          [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
                                                :animate? false}]))))
 
-(defn mount-autoscroll [owner]
-  (let [container (om/get-node owner)
-        ;; autoscroll when the container_parent's tail-end is showing
-        scroll-listener #(let [new-autoscroll? (> (goog.dom/getDocumentHeight)
-                                                  (.-bottom (.getBoundingClientRect container)))]
-                           (when (not= new-autoscroll? (om/get-state owner [:autoscroll?]))
-                             (om/set-state! owner [:autoscroll?] new-autoscroll?)))]
-    (om/set-state! owner [:scroll-listener-key] (goog.events/listen
-                                                 (sel1 "main.app-main")
-                                                 "scroll"
-                                                 scroll-listener))))
+(defn check-autoscroll [owner deltaY]
+  (cond
+
+   ;; autoscrolling and scroll up? That means stop autoscrolling.
+   (and (neg? deltaY)
+        (om/get-state owner [:autoscroll?]))
+   (om/set-state! owner [:autoscroll?] false)
+
+   ;; not autoscrolling and scroll down? If they scrolled all of the way down, better autoscroll
+   (and (pos? deltaY)
+        (not (om/get-state owner [:autoscroll?])))
+   (let [container (om/get-node owner)]
+     (when (> (.-height (goog.dom/getViewportSize))
+              (.-bottom (.getBoundingClientRect container)))
+       (om/set-state! owner [:autoscroll?] true)))
+
+   :else nil))
 
 (defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify
@@ -181,18 +186,16 @@
       {:autoscroll? false})
     om/IDidMount
     (did-mount [_]
-      (mount-autoscroll owner)
       (mount-browser-resize owner))
     om/IWillUnmount
     (will-unmount [_]
-      (goog.events/unlistenByKey (om/get-state owner [:scroll-listener-key]))
       (goog.events/unlistenByKey (om/get-state owner [:browser-resize-key])))
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (let [main (sel1 "main.app-main")
+        (let [body (sel1 "body")
               very-large-numer 10000000]
-          (set! (.-scrollTop main) very-large-numer))))
+          (set! (.-scrollTop body) very-large-numer))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
@@ -206,10 +209,11 @@
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
+                                              (check-autoscroll owner (aget e "deltaY"))
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (let [main (sel1 "main.app-main")]
-                                                  (set! (.-scrollTop main) (+ (.-scrollTop main) (aget e "deltaY"))))))
+                                                (let [body (sel1 "body")]
+                                                  (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the
                                                ;; transition to a new selected container

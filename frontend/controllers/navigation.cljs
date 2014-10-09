@@ -38,11 +38,10 @@
   "Scrolls to the element with id of fragment, if one exists"
   [fragment]
   (when-let [node (goog.dom.getElement fragment)]
-    (let [main (goog.dom.getElementByClass "app-main")
+    (let [body (sel1 "body")
           node-top (goog.style/getPageOffsetTop node)
-          main-top (goog.style/getPageOffsetTop main)
-          main-scroll (.-scrollTop main)]
-      (set! (.-scrollTop main) (+ main-scroll (- node-top main-top))))))
+          body-top (goog.style/getPageOffsetTop body)]
+      (set! (.-scrollTop body) (- node-top body-top)))))
 
 (defn scroll!
   "Scrolls to fragment if the url had one, or scrolls to the top of the page"
@@ -50,7 +49,7 @@
   (if (:_fragment args)
     ;; give the page time to render
     (utils/rAF #(scroll-to-fragment! (:_fragment args)))
-    (utils/rAF #(set! (.-scrollTop (sel1 "main.app-main")) 0))))
+    (utils/rAF #(set! (.-scrollTop (sel1 "body")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -381,10 +380,13 @@
 
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
+  (let [orig-nav-point (get-in state [:navigation-point])]
+    (mlog "navigated-to :error with (:navigation-point state) of " orig-nav-point)
+    (-> state
+        state-utils/clear-page-state
+        (assoc :navigation-point navigation-point
+               :navigation-data args
+               :original-navigation-point orig-nav-point))))
 
 (defmethod post-navigated-to! :error
   [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
@@ -400,7 +402,8 @@
   (go (let [comms (get-in current-state [:comms])
             api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
         (if (= :success (:status api-result))
-          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))}])
+          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))
+                                                       :context {:show-id (:id args)}}])
               ;; might need to scroll to the fragment
               (utils/rAF #(scroll! args)))
           (put! (:errors comms) [:api-error api-result])))))
@@ -423,22 +426,41 @@
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
 
-(defmethod navigated-to :documentation
-  [history-imp navigation-point args state]
-  (let [new-state (navigated-default navigation-point args state)]
-    (if-not (get-in new-state state/docs-data-path)
-      (assoc-in new-state state/docs-data-path (doc-utils/find-all-docs))
-      new-state)))
-
 (defmethod post-navigated-to! :documentation
-  [history-imp navigation-point {:keys [subpage] :as args} previous-state current-state]
+  [history-imp navigation-point {:keys [subpage] :as params} previous-state current-state]
+  (go
+    (let [api-ch (get-in current-state [:comms :api])
+          nav-ch (get-in current-state [:comms :nav])
+          docs (or (get-in current-state state/docs-data-path)
+                   (let [api-result (<! (ajax/managed-ajax "GET" (get-in current-state [:render-context :doc_manifest_url]) :csrf-token false))]
+                     (put! api-ch [:doc-manifest (:status api-result) api-result])
+                     (when (= :success (:status api-result))
+                       (doc-utils/format-doc-manifest (:resp api-result)))))
+          doc (get docs subpage)]
+      (cond
+       (not subpage)
+       (do (set-page-title! "What can we help you with?")
+           (analytics/track-page "View Docs"))
+       doc
+       (do
+         (set-page-title! (:title doc))
+         (scroll! params)
+         (analytics/track-page "View Docs")
+         (when (and (empty? (:children doc))
+                    (not (:markdown doc)))
+           (let [url (-> "/docs/%s.md"
+                         (gstring/format (name subpage))
+                         stefon/asset-path)]
+             (ajax/ajax :get url :doc-markdown api-ch :context {:subpage subpage} :format :raw))))
+       :else
+       (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
+             rewrite-token (doc-utils/maybe-rewrite-token token)
+             path (if (= token rewrite-token)
+                    "/docs"
+                    (str "/docs" (when-not (str/blank? rewrite-token) (str "/" rewrite-token))))]
+         (put! nav-ch [:navigate! {:path path :replace-token? true}]))))))
+
+(defmethod post-navigated-to! :language-landing
+  [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
   (post-default navigation-point args)
-  (let [doc (get-in current-state (conj state/docs-data-path subpage))]
-    (when (and subpage
-               (empty? (:children doc))
-               (not (:markdown doc)))
-      (let [api-ch (get-in current-state [:comms :api])
-            url (-> "/docs/%s.md"
-                    (gstring/format (name subpage))
-                    stefon/asset-path)]
-        (ajax/ajax :get url :doc-markdown api-ch :context {:subpage subpage} :format :raw)))))
+  (analytics/track-page "View Language Landing" {:language language}))

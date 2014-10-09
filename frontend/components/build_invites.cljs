@@ -23,14 +23,12 @@
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [gravatar_id email login index]} user
+      (let [{:keys [avatar_url email login index]} user
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:li
           [:div.invite-gravatar
-           [:img {:src (gh-utils/gravatar-url {:gravatar_id gravatar_id
-                                               :login login
-                                               :size 200})}]]
+           [:img {:src (gh-utils/make-avatar-url user)}]]
           [:div.invite-profile
            login
            [:input {:on-change #(utils/edit-input controls-ch (conj (state/build-github-user-path index) :email) %)
@@ -41,11 +39,15 @@
            [:label {:for (str login "-email")}
             [:i.fa.fa-exclamation-circle]
             " Fix Email"]]
-          [:label.invite-select {:id (str login "-checkbox")}
+          [:label.invite-select {:id (str login "-label")
+                                 :for (str login "-checkbox")}
            [:input {:type "checkbox"
+                    :id (str login "-checkbox")
                     :checked (boolean (:checked user))
                     :on-change #(utils/toggle-input
-                                 controls-ch (conj (state/build-github-user-path index) :checked) %)}]]])))))
+                                 controls-ch (conj (state/build-github-user-path index) :checked) %)}]
+           [:div.checked \uf046]
+           [:div.unchecked \uf096]]])))))
 
 (defn build-invites [invite-data owner opts]
   (reify

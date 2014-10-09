@@ -34,15 +34,21 @@
 (defn trial-over? [plan]
   (time/after? (time/now) (time-format/parse (:trial_end plan))))
 
+;; true  if the plan has an active Stripe discount coupon.
+;; false if the plan is nil (not loaded yet) or has no discount applied
+(defn has-active-discount? [plan]
+  (get-in plan [:discount :coupon :valid]))
+
 (defn days-left-in-trial
   "Returns number of days left in trial, can be negative."
   [plan]
   (let [trial-end (time-format/parse (:trial_end plan))
         now (time/now)]
-    (if (time/after? trial-end now)
-      ;; count partial days as a full day
-      (inc (time/in-days (time/interval now trial-end)))
-      (- (time/in-days (time/interval trial-end now))))))
+    (when (not (nil? trial-end))
+      (if (time/after? trial-end now)
+        ;; count partial days as a full day
+        (inc (time/in-days (time/interval now trial-end)))
+        (- (time/in-days (time/interval trial-end now)))))))
 
 (defn pretty-trial-time [plan]
   (let [trial-interval (time/interval (time/now) (time-format/parse (:trial_end plan)))

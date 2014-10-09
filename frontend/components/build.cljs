@@ -31,7 +31,7 @@
           "Error! "
           [:a {:href "/docs/troubleshooting"}
            "Check out common problems "]
-          "or "
+          "or, if there's a problem in how CircleCI ran this build, "
           [:a {:title "Report an error in how Circle ran this build"
                :on-click #(put! controls-ch [:report-build-clicked {:build-url build-url}])}
            "report this issue"]
@@ -89,12 +89,6 @@
                         :current-container-id current-container-id}
                        {:react-key (:index container)}))]])))))
 
-(defn show-trial-notice? [project plan]
-  (and (not (get-in project [:feature_flags :oss]))
-       (plan-model/trial? plan)
-       (plan-model/trial-over? plan)
-       (> 4 (plan-model/days-left-in-trial plan))))
-
 (defn notices [data owner]
   (reify
     om/IRender
@@ -112,8 +106,8 @@
            (when (empty? (:messages build))
              [:div (report-error build controls-ch)])
 
-           (when (and plan (show-trial-notice? project plan))
-             (om/build project-common/trial-notice plan))
+           (when (and plan (project-common/show-trial-notice? project plan))
+             (om/build project-common/trial-notice project-data))
 
            (when (and project (project-common/show-enable-notice project))
              (om/build project-common/enable-notice project))
@@ -145,7 +139,7 @@
           (if-not build
            [:div
              (om/build common/flashes (get-in data state/error-message-path))
-             [:div.loading-spinner common/spinner]]
+             [:div.loading-spinner-big common/spinner]]
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)

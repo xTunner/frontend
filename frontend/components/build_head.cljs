@@ -370,7 +370,17 @@
                   [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                        :href (build-model/path-for-parallelism build)}
                    (str (:parallel build) "x")]
-                  [:span (:parallel build) "x"])]]]]
+                  [:span (:parallel build) "x"])]
+               (when-let [urls (seq (:pull_request_urls build))]
+                 ;; It's possible for a build to be part of multiple PRs, but it's rare
+                 (list [:th (str "PR" (when (< 1 (count urls)) "s"))]
+                       [:td
+                        (interpose
+                         ", "
+                         (map (fn [url] [:a {:href url} "#"
+                                         (let [n (re-find #"/\d+$" url)]
+                                           (if n (subs n 1) "?"))])
+                              urls))]))]]]
             [:div.build-actions
              [:div.actions
               (forms/stateful-button

@@ -4,6 +4,7 @@
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.project.common :as project]
             [frontend.datetime :as datetime]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -40,11 +41,7 @@
              (fn [org]
                (let [org-url    (routes/v1-org-settings-subpage {:org     (:login org)
                                                                  :subpage "plan"})
-                     avatar-url (if-let [avatar-url (:avatar_url org)]
-                                  (str avatar-url "25")
-                                  (gh-utils/gravatar-url {:gravatar_id (:gravatar_id org)
-                                                          :login       (:login org)
-                                                          :size        25}))]
+                     avatar-url (gh-utils/make-avatar-url org :size 25)]
                  [:div
                   [:a
                    {:href org-url}
@@ -155,6 +152,63 @@
                        [:i.fa.fa-times-circle]
                        " Revoke"]]]]))]])]])))))
 
+(defn preferred-email-address [controls-ch user]
+  [:div.notification-item
+   [:form#email_address.form-horizontal
+    [:fieldset
+     [:legend
+      "Email Addresses"
+      [:i.fa.fa-info-circle#email-addresses-tooltip-hack
+       {:title "Addresses added to your GitHub account will be reflected here"}]]
+     [:div
+      (for [email (:all_emails user)]
+        [:label.radio
+         [:input
+          {:checked (= (:selected_email user) email)
+           :value email
+           :name "selected_email"
+           :type "radio"
+           :on-click #(put! controls-ch [:preferences-updated {:selected_email email}])}]
+         [:span email]])]]]])
+
+(defn default-email-pref [controls-ch email-pref]
+  [:div.notification-item
+   [:form
+    [:fieldset
+     [:legend "Default Email Notifications"]
+     [:label.radio
+      [:input
+       {:name "email_pref",
+        :type "radio"
+        :checked (= email-pref "all")
+        :on-change (partial handle-email-notification-change controls-ch "all")}]
+      "Send me a personalized email for every build in my projects."]
+     [:label.radio
+      [:input
+       {:name "email_pref",
+        :type "radio"
+        :checked (= email-pref "smart")
+        :on-change (partial handle-email-notification-change controls-ch "smart")}]
+      "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]
+     [:label.radio
+      [:input
+       {:name "email_pref",
+        :type "radio"
+        :checked (= email-pref "none")
+        :on-change (partial handle-email-notification-change controls-ch "none")}]
+      "Don't send me emails."]]]])
+
+(defn project-email-prefs [{:keys [projects user]}]
+  [:div.notification-item
+   [:form
+    [:fieldset
+     [:legend "Project Email Preferences"]
+     [:p "You can override your default email preferences for individual projects here."]
+     [:p "Other project settings can be configured via the project's 'Settings' page."]
+     [:div
+      (for [project projects]
+        (om/build project/email-pref {:project project :user user}))]]]])
+
 (defn notifications [app owner]
   (reify
     om/IDidMount
@@ -163,56 +217,13 @@
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
-            email-pref  (get-in app (conj state/user-path :basic_email_prefs))]
+            user (get-in app state/user-path)
+            projects (get-in app state/projects-path)]
         (html/html
          [:div#settings-notification
-          [:div.notification-item
-           [:form
-            [:fieldset
-             [:legend "Email notifications"]
-             [:label.radio
-              [:input
-               {:name "email_pref",
-                :type "radio"
-                :checked (= email-pref "all")
-                :on-change (partial handle-email-notification-change controls-ch "all")}]
-              "Send me a personalized email for every build in all of my projects."]
-             [:label.radio
-              [:input
-               {:name "email_pref",
-                :type "radio"
-                :checked (= email-pref "smart")
-                :on-change (partial handle-email-notification-change controls-ch "smart")}]
-              "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]
-             [:label.radio
-              [:input
-               {:name "email_pref",
-                :type "radio"
-                :checked (= email-pref "none")
-                :on-change (partial handle-email-notification-change controls-ch "none")}]
-              "Don't send me emails."]]]]
-          [:div.notification-item
-           [:form#email_address.form-horizontal
-            [:fieldset
-             [:legend
-              "Email Addresses"
-              [:i.fa.fa-info-circle#email-addresses-tooltip-hack
-               {:title "Addresses added to your GitHub account will be reflected here"}]]
-             [:div
-              (map (fn [email]
-                     [:label.radio
-                      [:input
-                       {:checked (= (get-in app (conj state/user-path :selected_email)) email)
-                        :value email
-                        :name "selected_email"
-                        :type "radio"
-                        :on-click #(put! controls-ch [:preferences-updated {:selected_email email}])}]
-                      [:span email]]) (get-in app (conj state/user-path :all_emails)))]]]]
-          [:div.notification-item
-           [:form
-            [:fieldset
-             [:legend "Project preferences"]
-             [:p "Projects can be individually configured, from a project's 'Settings' page. Instant message settings are per-project; edit a project to set them."]]]]])))))
+          (preferred-email-address controls-ch user)
+          (default-email-pref controls-ch (:basic_email_prefs user))
+          (project-email-prefs {:projects projects :user user})])))))
 
 (defn account [app owner]
   (reify
@@ -242,4 +253,4 @@
           [:div.settings-item
            [:div.settings-item-inner
             [:div#subpage
-             (om/build subpage-com (select-in app [state/user-path]))]]]])))))
+             (om/build subpage-com (select-in app [state/user-path state/projects-path]))]]]])))))

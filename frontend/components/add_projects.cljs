@@ -7,6 +7,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :refer [stateful-button]]
             [frontend.utils :as utils :refer-macros [inspect]]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -31,7 +32,7 @@
         type (if (:org org) :org :user)]
     [:li.side-item {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
      [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
-      [:img {:src (:avatar_url org)
+      [:img {:src (gh-utils/make-avatar-url org :size 25)
              :height 25}]
       [:div.orgname {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
        login]]]))

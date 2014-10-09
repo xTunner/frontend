@@ -42,6 +42,7 @@
    [:li [:a {:href "#checkout"} "Checkout SSH keys"]]
    [:li [:a {:href "#ssh"} "SSH keys"]]
    [:li [:a {:href "#api"} "API tokens"]]
+   [:li [:a {:href "#aws"} "AWS keys"]]
    [:li.side-title "Build Artifacts"]
    [:li [:a {:href "#artifacts"} "Artifacts"]]
    [:li.side-title "Continuous Deployment"]
@@ -296,8 +297,8 @@
               [:tbody
                (for [{:keys [name value]} env-vars]
                  [:tr
-                  [:td name]
-                  [:td value]
+                  [:td {:title name} name]
+                  [:td {:title value} value]
                   [:td
                    [:a
                     {:title "Remove this variable?",
@@ -350,20 +351,19 @@
             "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
-           ;; Comment out while we wait for the backend to deploy
-           ;; (describe-flag {:flag :junit
-           ;;                 :title "JUnit support"
-           ;;                 :blurb [:p
-           ;;                         "We've been experimenting with better ways to display and manage "
-           ;;                         "test result data, especially for large test suites. This adds flags "
-           ;;                         "to some of our inferred commands to collect structured test output supplied by "
-           ;;                         "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
-           ;;                         "you're using our inferred test steps. For RSpec, we also require our fork of the "
-           ;;                         "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
-           ;;                         [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
-           ;;                         "If you're using parallelism, we'll "
-           ;;                         "automatically use the timing data to give you better test splits. You'll also be able to "
-           ;;                         "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
+           (describe-flag {:flag :junit
+                           :title "JUnit support"
+                           :blurb [:p
+                                   "We've been experimenting with better ways to display and manage "
+                                   "test result data, especially for large test suites. This adds flags "
+                                   "to some of our inferred commands to collect structured test output supplied by "
+                                   "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
+                                   "you're using our inferred test steps. For RSpec, we also require our fork of the "
+                                   "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
+                                   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+                                   "If you're using parallelism, we'll "
+                                   "automatically use the timing data to give you better test splits. You'll also be able to "
+                                   "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
            (describe-flag {:flag :set-github-status
                            :title "GitHub Status updates"
                            :blurb [:p
@@ -400,7 +400,13 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p [:i "You can also set your dependencies commands from your " [:a {:href "/docs/configuration#dependencies"} "circle.yml"] "."]]
+          [:p 
+           "You can also set your dependencies commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.dependencies-inner
            [:form.spec_form
             [:fieldset
@@ -442,7 +448,13 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p [:i "You can also set your test commands from your " [:a {:href "/docs/configuration#test"} "circle.yml"] "."]]
+          [:p 
+           "You can also set your test commands from your "
+           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+           "Don't put any secrets here that you wouldn't check in! Use our "
+           [:a {:href "#env-vars"} "environment variables settings page"]
+           " instead."]
           [:div.tests-inner
            [:fieldset.spec_form
             [:textarea {:name "test",
@@ -495,24 +507,36 @@
           [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
                                      :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
 
-(defn chatroom-item [settings controls-ch {:keys [service icon doc inputs show-fixed-failed?
-                                                  top-section-content]}]
-  [:div.chat-room-item
-   [:div.chat-room-head [:h4 {:class icon} service]]
-   [:div.chat-room-body
-    [:section
-     doc
-     top-section-content]
-    [:section
-     (for [{:keys [field placeholder]} inputs]
-       (list
-        [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
-                 :value (str (get settings field))
-                 :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
-        [:label {:placeholder placeholder}]))]]
-   [:div.chat-room-foot
-    (when show-fixed-failed?
-      (om/build fixed-failed-input {:settings settings :field (keyword (str (string/lower-case service) "_notify_prefs"))}))]])
+(defn chatroom-item [project-id settings controls-ch
+                     {:keys [service doc inputs show-fixed-failed? top-section-content settings-keys]}]
+  (let [service-id (string/lower-case service)]
+    [:div {:class (str "chat-room-item " service-id)}
+     [:div.chat-room-head [:h4 {:class (str "chat-i-" service-id)} service]]
+     [:div.chat-room-body
+      [:section
+       doc
+       top-section-content
+       (when show-fixed-failed?
+         (om/build fixed-failed-input {:settings settings :field (keyword (str service-id "_notify_prefs"))}))]
+      [:section
+       (for [{:keys [field placeholder]} inputs]
+         (list
+          [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
+                   :value (str (get settings field))
+                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
+          [:label {:placeholder placeholder}]))
+       (let [event-data {:project-id project-id :merge-paths (map vector settings-keys)}]
+         [:div.chat-room-buttons
+          (forms/managed-button
+            [:button.save {:on-click #(put! controls-ch [:saved-project-settings event-data])
+                           :data-loading-text "Saving"
+                           :data-success-text "Saved"}
+             "Save"])
+          (forms/managed-button
+            [:button.test {:on-click #(put! controls-ch [:test-hook (assoc event-data :service service-id)])
+                           :data-loading-text "Testing"
+                           :data-success-text "Tested"}
+             "& Test Hook"])])]]]))
 
 (defn chatrooms [project-data owner]
   (reify
@@ -528,7 +552,6 @@
           [:h2 "Chatroom setup for " (vcs-url/project-name (:vcs_url project))]
           [:div.chat-rooms
            (for [chat-spec [{:service "Hipchat"
-                             :icon "chat-i-hip"
                              :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                          [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
                                         [:label ;; hipchat is a special flower
@@ -542,60 +565,50 @@
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hipchat-keys}
 
                             {:service "Campfire"
-                             :icon "chat-i-camp"
                              :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
                              :inputs [{:field :campfire_room :placeholder "Room"}
                                       {:field :campfire_subdomain :placeholder "Subdomain"}
                                       {:field :campfire_token :placeholder "API"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/campfire-keys}
 
                             {:service "Flowdock"
-                             :icon "chat-i-flow"
                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
-                             :show-fixed-failed? false}
+                             :show-fixed-failed? false
+                             :settings-keys project-model/flowdock-keys}
 
                             {:service "IRC"
-                             :icon "chat-i-irc"
                              :doc nil
                              :inputs [{:field :irc_server :placeholder "Hostname"}
                                       {:field :irc_channel :placeholder "Channel"}
                                       {:field :irc_keyword :placeholder "Private Keyword"}
                                       {:field :irc_username :placeholder "Username"}
                                       {:field :irc_password :placeholder "Password (optional)"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/irc-keys}
 
                             {:service "Slack"
-                             :icon "chat-i-slack"
                              :doc [:p "To get your Webhook URL, visit Slack's "
                                    [:a {:href "https://my.slack.com/services/new/circleci"}
                                     "CircleCI Integration"]
                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
-                             :show-fixed-failed? true}
+                             :show-fixed-failed? true
+                             :settings-keys project-model/slack-keys}
 
                             {:service "Hall"
-                             :icon "chat-i-hall"
                              :doc [:p "To get your Room / Group API token, go to "
                                    [:strong "Settings > Integrations > CircleCI"]
                                    " from within your Hall Group."]
                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                             :show-fixed-failed? true}]]
-             (chatroom-item settings controls-ch chat-spec))]
-          [:div.chat-room-save
-           (forms/managed-button
-            [:input
-             {:data-success-text "Saved",
-              :data-loading-text "Saving",
-              :value "Save notification hooks",
-              :type "submit",
-              :on-click #(do
-                          (let [event-data {:project-id project-id
-                                            :merge-paths (map vector project-model/notification-keys)}]
-                            (put! controls-ch [:saved-project-settings event-data])))}])]])))))
+                             :show-fixed-failed? true
+                             :settings-keys project-model/hall-keys}]]
+             (chatroom-item project-id settings controls-ch chat-spec))]])))))
 
 (defn webhooks [project-data owner]
   (om/component
@@ -718,8 +731,8 @@
     (render [_]
       (let [project (:project project-data)
             project-id (project-model/id project)
-            {:keys [hostname public-key private-key]
-             :or {hostname "" public-key "" private-key ""}} (:new-ssh-key project-data)
+            {:keys [hostname private-key]
+             :or {hostname "" private-key ""}} (:new-ssh-key project-data)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:div.sshkeys-page
@@ -730,9 +743,6 @@
             [:input#hostname {:required true, :type "text" :value (str hostname)
                               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :hostname) %)}]
             [:label {:placeholder "Hostname"}]
-            [:input#publicKey {:required true, :type "text" :value (str public-key)
-                               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :public-key) %)}]
-            [:label {:placeholder "Public Key"}]
             [:textarea#privateKey {:required true :value (str private-key)
                                    :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
             [:label {:placeholder "Private Key"}]
@@ -745,7 +755,6 @@
                :type "submit"
                :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
                                                                  :ssh-key {:hostname hostname
-                                                                           :public_key public-key
                                                                            :private_key private-key}}])
                               false)}])]
            (when-let [ssh-keys (seq (:ssh_keys project))]
@@ -758,6 +767,7 @@
                   [:td fingerprint]
                   [:td [:a {:title "Remove this Key?",
                             :on-click #(put! controls-ch [:deleted-ssh-key {:project-id project-id
+                                                                            :hostname hostname
                                                                             :fingerprint fingerprint}])}
                         [:i.fa.fa-times-circle]
                         [:span " Remove"]]]])]])]])))))
@@ -899,6 +909,7 @@
    (node
     [:div
      [:p "A token's scope limits what can be done with it."]
+
      [:h5 "Status"]
      [:p
       "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
@@ -906,8 +917,14 @@
       " and "
       [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
       " for private projects."]
+
+     [:h5 "Build Artifacts"]
+     [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
+
      [:h5 "All"]
-     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]])))
+     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
+
+     ])))
 
 (defn api-tokens [project-data owner]
   (reify
@@ -938,6 +955,7 @@
              [:select {:name "scope" :value scope
                        :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :scope) %)}
               [:option {:value "status"} "Status"]
+              [:option {:value "view-builds"} "Build Artifacts"]
               [:option {:value "all"} "All"]]
              [:i.fa.fa-chevron-down]]
             [:input
@@ -1066,6 +1084,66 @@
         "our deployment documentation"]
        " to set it up."]]])))
 
+(defn aws [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+
+            settings (utils/deep-merge (get-in project [:aws :keypair])
+                                       (get-in inputs [:aws :keypair]))
+            {:keys [access_key_id secret_access_key]} settings
+
+            project-id (project-model/id project)
+            controls-ch (om/get-shared owner [:comms :controls])
+            input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
+        (html
+         [:div.aws-page
+          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+          [:div.aws-page-inner
+           [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
+            "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
+            [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
+            [:a {:href "http://aws.amazon.com/documentation/sdk-for-java/"} "the Java SDK"] ", "
+            [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
+            [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
+           [:p "We recommend that you create a unique "
+            [:a {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"} "IAM user"]
+            " for use by CircleCI."]
+           [:form
+            [:input#access-key-id
+             {:required true, :type "text", :value (or access_key_id "")
+              :on-change #(utils/edit-input controls-ch (input-path :access_key_id) %)}]
+            [:label {:placeholder "Access Key ID"}]
+
+            [:input#secret-access-key
+             {:required true, :type "text", :value (or secret_access_key "")
+              :on-change #(utils/edit-input controls-ch (input-path :secret_access_key) %)}]
+            [:label {:placeholder "Secret Access Key"}]
+
+            [:div.buttons
+              (forms/managed-button
+               [:input {:data-failed-text "Failed"
+                        :data-success-text "Saved"
+                        :data-loading-text "Saving..."
+                        :value "Save AWS keys"
+                        :type "submit"
+                        :on-click #(do
+                                     (put! controls-ch [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])
+                                     false)}])
+              (when (and access_key_id secret_access_key)
+               (forms/managed-button
+                [:input.remove {:data-failed-text "Failed"
+                                :data-success-text "Cleared"
+                                :data-loading-text "Clearing..."
+                                :value "Clear AWS keys"
+                                :type "submit"
+                                :on-click #(do
+                                           (put! controls-ch [:edited-input {:path (input-path) :value nil}])
+                                           (put! controls-ch [:saved-project-settings {:project-id project-id}])
+                                           false)}]))]]]])))))
+
 (defn follow-sidebar [project owner]
   (reify
     om/IRender
@@ -1135,5 +1213,6 @@
                 :artifacts (om/build artifacts project-data)
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
+                :aws (om/build aws project-data)
                 (om/build overview project-data))]]
             (om/build follow-sidebar (:project project-data))]))))))
