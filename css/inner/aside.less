@@ -164,7 +164,7 @@
   }
 }
 .aside-item {
-  .flex(0 0 @tile);
+  .flex(0 1 @tile);
   .flexy(center);
   .shadow_noboss();
   background: transparent;
@@ -435,6 +435,7 @@
   }
 }
 .aside-user {
+  .flexy(column);
   position: absolute;
   top: 0;
   left: -@tile;
@@ -459,6 +460,7 @@
     }
   }
   header {
+    .flex(0 0 auto);
     .justify-content(center);
   }
   h5 {
@@ -488,6 +490,7 @@
   }
 }
 .aside-user-options {
+  .flex(1);
   .flexy(column);
   .aside-item {
     transition: @aside_slim_speed ease-in-out;
