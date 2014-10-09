@@ -128,6 +128,42 @@
              "Invite a Teammate"]
             [:a.aside-item {:href "/logout"} "Logout"]]])))))
 
+(defn project-settings-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:div.aside-user.open
+           [:header
+            [:h5 "Project Settings"]
+            [:a.close-menu
+             {:on-click #(put! controls-ch [:user-options-toggled])}
+             (common/ico :fail-light)]]
+           [:div.aside-user-options
+            ; [:li "Project Settings"]
+            [:a.aside-item {:href "edit"} "Overview"]
+            ; [:li "Tweaks"]
+            [:a.aside-item {:href "#parallel-builds"} "Parallelism"]
+            [:a.aside-item {:href "#env-vars"} "Environment variables"]
+            [:a.aside-item {:href "#experimental"} "Experimental Settings"]
+            ; [:li "Test Commands"]
+            [:a.aside-item {:href "#setup"} "Dependencies"]
+            [:a.aside-item {:href "#tests"} "Tests"]
+            ; [:li "Notifications"]
+            [:a.aside-item {:href "#hooks"} "Chatrooms"]
+            [:a.aside-item {:href "#webhooks"} "Webhooks"]
+            [:a.aside-item {:href "#badges"} "Status Badges"]
+            ; [:li "Permissions"]
+            [:a.aside-item {:href "#checkout"} "Checkout SSH keys"]
+            [:a.aside-item {:href "#ssh"} "SSH keys"]
+            [:a.aside-item {:href "#api"} "API tokens"]
+            [:a.aside-item {:href "#aws"} "AWS keys"]
+            ; [:li "Continuous Deployment"]
+            [:a.aside-item {:href "#heroku"} "Heroku"]
+            [:a.aside-item {:href "#deployment"} "Other Deployments"]
+            [:a.aside-item {:href "/"} "Back to Project"]]])))))
+
 (defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
@@ -141,6 +177,7 @@
         (html
          [:nav.aside-left-menu
           (om/build context-menu app)
+          (om/build project-settings-menu app)
           [:div.aside-activity.open
            [:div.wrapper
             [:header

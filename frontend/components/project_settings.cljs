@@ -400,7 +400,7 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your dependencies commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
@@ -448,7 +448,7 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your test commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
@@ -1194,7 +1194,7 @@
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner common/spinner]
            [:div#project-settings
-            [:aside sidebar]
+            ; [:aside sidebar]
             [:div.project-settings-inner
              (om/build common/flashes (get-in data state/error-message-path))
              [:div#subpage
@@ -1215,4 +1215,4 @@
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
                 (om/build overview project-data))]]
-            (om/build follow-sidebar (:project project-data))]))))))
+             ]))))))
