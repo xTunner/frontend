@@ -18,7 +18,7 @@
                                   :mime-types {:svg "image/svg"}})
   (GET "/docs/manifest-dev.json" []
        (-> (doc-utils/read-doc-manifest "resources/assets/docs")
-           (json/encode)
+           (json/encode {:pretty true})
            (response/response)
            (response/content-type "application/json")))
   (ANY "*" [] {:status 404 :body nil}))
