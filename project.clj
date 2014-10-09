@@ -10,8 +10,10 @@
                  [compojure "1.1.8"]
                  [ring/ring "1.2.2"]
                  [http-kit "2.1.18"]
+                 [circleci/clj-yaml "0.5.2"]
                  [fs "0.11.1"]
                  [com.cemerick/url "0.1.1"]
+                 [cheshire "5.3.1"]
 
                  [ankha "0.1.4"]
                  ;; 2356 is incompatible with core.typed: http://dev.clojure.org/jira/browse/CTYP-176
