@@ -239,14 +239,14 @@
                 [:div.home-cover]
                 [:div.home-top-shelf]
                 [:div.home-slogans
-                 [:h1.slogan.proverb {:title "Ship better code, faster."
-                                      :alt   "Let's just authorize first."}
+                 [:h1.slogan.proverb {:item-prop "Ship better code, faster."
+                                      :alt       "Let's just authorize first."}
                   "Ship better code, faster."]
-                 [:h3.slogan.context {:title "You have a product to focus on, let Circle handle your"
-                                      :alt   "Signing up using your GitHub login lets us start really fast."}
+                 [:h3.slogan.context {:item-prop "You have a product to focus on, let Circle handle your"
+                                      :alt       "Signing up using your GitHub login lets us start really fast."}
                   "You have a product to focus on, let Circle handle your"]
-                 [:h3.slogan.context {:title "Continuous Integration & Deployment."
-                                      :alt   "Currently, we must request permissions in bulk."}
+                 [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."
+                                      :alt       "Currently, we must request permissions in bulk."}
                   "Continuous Integration & Deployment."]]
                 [:div.home-avatars
                  [:div.avatars
@@ -382,14 +382,14 @@
                 [:div.home-cover]
                 [:div.home-top-shelf]
                 [:div.home-slogans
-                 [:h1.slogan.proverb {:title "So, ready to ship faster?"
-                                      :alt   "Let's just authorize first."}
+                 [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"
+                                      :alt       "Let's just authorize first."}
                   "So, ready to ship faster?"]
-                 [:h3.slogan.context {:title "Next you'll just need to sign in using your GitHub account."
-                                      :alt   "Signing up using your GitHub login lets us start really fast."}
+                 [:h3.slogan.context {:item-prop "Next you'll just need to sign in using your GitHub account."
+                                      :alt       "Signing up using your GitHub login lets us start really fast."}
                   "Next you'll just need to sign in using your GitHub account."]
-                 [:h3.slogan.context {:title "Still not convinced yet? Try taking the full tour."
-                                      :alt   "Currently, we must request permissions in bulk."}
+                 [:h3.slogan.context {:item-prop "Still not convinced yet? Try taking the full tour."
+                                      :alt       "Currently, we must request permissions in bulk."}
                   "Still not convinced yet? Try taking the "
                   [:a {:href "#"} "full tour"]
                   "."]]
