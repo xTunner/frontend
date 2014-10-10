@@ -157,7 +157,9 @@
         (html
           [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
            [:header
-            [:h5 "Project Settings"]]
+            [:h5 "Project Settings"]
+            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+             (common/ico :fail-light)]]
            [:div.aside-user-options
             (for [template project-settings-subpages]
               [:a.aside-item {:href (:href template)
