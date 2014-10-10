@@ -45,7 +45,7 @@
    [:li [:a {:href "#aws"} "AWS keys"]]
    [:li.side-title "Continuous Deployment"]
    [:li [:a {:href "#heroku"} "Heroku"]]
-   [:li [:a {:href "#aws-codedeploy"} "Amazon CodeDeploy"]]
+   [:li [:a {:href "#aws-codedeploy"} "AWS CodeDeploy"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
 (defn branch-names [project-data]
