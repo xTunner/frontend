@@ -138,7 +138,7 @@
            [:header
             [:h5 "Project Settings"]
             [:a.close-menu
-             {:on-click #(put! controls-ch [:user-options-toggled])}
+             {:href "/"}
              (common/ico :fail-light)]]
            [:div.aside-user-options
             ; [:li "Project Settings"]
@@ -161,8 +161,7 @@
             [:a.aside-item {:href "#aws"} "AWS keys"]
             ; [:li "Continuous Deployment"]
             [:a.aside-item {:href "#heroku"} "Heroku"]
-            [:a.aside-item {:href "#deployment"} "Other Deployments"]
-            [:a.aside-item {:href "/"} "Back to Project"]]])))))
+            [:a.aside-item {:href "#deployment"} "Other Deployments"]]])))))
 
 (defn activity [app owner opts]
   (reify
@@ -176,8 +175,8 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:nav.aside-left-menu
-          (om/build context-menu app)
           (om/build project-settings-menu app)
+          (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper
             [:header
@@ -265,10 +264,10 @@
            [:i.fa.fa-bell]
            [:span "Changelog"]]
 
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Expand"
-                          :on-click #(put! controls-ch [:slim-aside-toggled])}
+          [:a.aside-item.push-to-bottom {:data-placement "right"
+                                         :data-trigger "hover"
+                                         :title "Expand"
+                                         :on-click #(put! controls-ch [:slim-aside-toggled])}
            (if slim-aside?
              [:i.fa.fa-long-arrow-right]
              (list
