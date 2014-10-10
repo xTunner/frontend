@@ -1094,7 +1094,8 @@
 
             [:div.buttons
               (forms/managed-button
-               [:input {:data-failed-text "Failed"
+               [(if (and access_key_id secret_access_key) :input.save :input)
+                       {:data-failed-text "Failed"
                         :data-success-text "Saved"
                         :data-loading-text "Saving..."
                         :value "Save AWS keys"
@@ -1225,15 +1226,15 @@
 
           [:div.buttons
            (forms/managed-button
-            [:input {:data-failed-text "Failed",
-                     :data-success-text "Saved",
-                     :data-loading-text "Saving...",
-                     :value "Save app",
-                     :type "submit"
-                     :on-click #(do
-                                  (put! controls-ch [:saved-project-settings {:project-id project-id
-                                                                              :merge-paths [[:aws :services :codedeploy]]}])
-                                  false)}])
+            [:input.save {:data-failed-text "Failed",
+                          :data-success-text "Saved",
+                          :data-loading-text "Saving...",
+                          :value "Save app",
+                          :type "submit"
+                          :on-click #(do
+                                      (put! controls-ch [:saved-project-settings {:project-id project-id
+                                                                                  :merge-paths [[:aws :services :codedeploy]]}])
+                                      false)}])
            (forms/managed-button
             [:input.remove {:data-failed-text "Failed",
                             :data-success-text "Removed",
