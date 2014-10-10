@@ -134,7 +134,7 @@
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])]
         (html
-          [:div.aside-user.open
+          [:div.aside-user {:class (when (= :project-settings (utils/inspect (:navigation-point app))) "open")}
            [:header
             [:h5 "Project Settings"]
             [:a.close-menu
@@ -288,4 +288,4 @@
          [:aside.app-aside-left
           (om/build aside-nav data {:opts user})
 
-          (om/build activity data {:opts {:login login}})])))))
+          (om/build activity app {:opts {:login login}})])))))
