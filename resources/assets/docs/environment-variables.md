@@ -141,7 +141,7 @@ the ones you might be looking for:
   </dd>
 </dl>
 
-### Set your own!
+<h3 id="custom">Set your own!</h3>
 
 You can of course set your own environment variables, too!
 The only gotcha is that each command runs in its own shell, so just adding an

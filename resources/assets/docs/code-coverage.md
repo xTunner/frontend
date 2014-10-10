@@ -85,7 +85,7 @@ you can see beautifully rendered HTML in the UI.
 
 ## Using a Code Coverage service
 
-### Using Code Coverage with CircleCI and Coveralls
+<h3 id="coveralls">Using Code Coverage with CircleCI and Coveralls</h3>
 
 If you're a Coveralls customer, follow
 [their guide to set up your coverage stats.](https://coveralls.io/docs)
@@ -96,7 +96,7 @@ Coveralls does not currently support CircleCI's parallelization.
 [Contact us](mailto:sayhi@circleci.com)
 if you'd like to use this.
 
-### Using Code Coverage with CircleCI and Code Climate
+<h3 id="code-climate">Using Code Coverage with CircleCI and Code Climate</h3>
 
 If you're a Code Climate customer, follow the instructions under
 **Repo Settings -> Test Coverage**

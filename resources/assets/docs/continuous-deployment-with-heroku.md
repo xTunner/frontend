@@ -67,7 +67,7 @@ Upon a successful build, we'll automatically deploy to the app in the section th
 using different keys for each one. Heroku enforces a rate-limit of 75 git
 requests per hour per key.
 
-## Heroku with pre- or post-deployment steps
+<h2 id="pre-or-post">Heroku with pre- or post-deployment steps</h2>
 
 If you'd like to run commands before or after deploying to Heroku, you'll have to use the 'normal' `deployment` syntax.
 
@@ -81,7 +81,7 @@ deployment:
           timeout: 400 # if your deploys take a long time
 ```
 
-## Heroku's maintenance mode
+<h2 id="maintenance-mode">Heroku's maintenance mode</h2>
 
 When you are pushing new code that requires a database migration, your app will not be available.
 To be  polite, you might want to treat your users to more than an enigmatic error page.
@@ -119,7 +119,7 @@ Should you wish, you can create a
 [custom](http://devcenter.heroku.com/articles/error-pages#customize-pages)
 service unavailable page for your app.
 
-## Heroku and database migrations
+<h2 id="migrations">Heroku and database migrations</h2>
 
 After pushing new code, you may wish to run your database migration.
 **Migration times will vary between apps because of data size and structure.**
@@ -141,7 +141,7 @@ Here are migration-related articles that you might find useful.
 *   [node.js](http://github.com/nearinfinity/node-db-migrate#readme)
 *   [Django (Python web framework)](http://djangopro.com/2011/01/django-database-migration-tool-south-explained)
 
-## Clearing caches after a deployment
+<h2 id="caches">Clearing caches after a deployment</h2>
 
 If you are using a caching add-on,
 it is likely that you want to clear your caches after a deploy to avoid using out-of-date and possibly corrupt documents and/or data.
