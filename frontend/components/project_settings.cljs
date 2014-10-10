@@ -90,30 +90,61 @@
              :data-success-text "Started..."
              :type "submit"}])])))))
 
+(defn follow-sidebar [project owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project-id (project-model/id project)
+            vcs-url (:vcs_url project)
+            controls-ch (om/get-shared owner [:comms :controls])]
+        (html
+          [:article
+           [:div.project-setting-watch {:class (when-not (:followed project) "unwatched")}
+            (if (:followed project)
+              (list
+               [:h2 "You're following " (vcs-url/project-name vcs-url)]
+               [:p
+                "We'll keep an eye on this and update you with personalized build emails. "
+                "You can stop these any time from your "
+                [:a {:href "/account"} "account settings"]
+                "."]
+               (forms/stateful-button
+                [:button {:on-click #(put! controls-ch [:unfollowed-project {:vcs-url vcs-url
+                                                                             :project-id project-id}])
+                          :data-loading-text "Unfollowing..."}
+                 "Unfollow"]))
+              (list
+               [:h2 "You're not following this repo"]
+               [:p
+                "We can't update you with personalized build emails unless you follow this project. "
+                "Projects are only tested if they have a follower."]
+               (forms/stateful-button
+                [:button {:on-click #(put! controls-ch [:followed-project {:vcs-url vcs-url
+                                                                           :project-id project-id}])
+                          :data-loading-text "Following..."}
+                 "Follow"])))]])))))
+
 (defn overview [project-data owner]
   (reify
     om/IRender
     (render [_]
       (html
-       [:div.project-settings-block
-        [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
-        [:ul.overview-options
-         [:li.overview-item
-          [:h4 "Option 1"]
-          [:p
-           "Do nothing! Circle infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]]
-         [:li.overview-item
-          [:h4 "Option 2"]
-          [:p
-           "Override inferred settings and add new test commands "
-           [:a {:href "#setup"} "through the web UI"]
-           ". This works great for prototyping changes."]]
-         [:li.overview-item
-          [:h4 "Option 3"]
-          [:p
-           "Override all settings via a "
-           [:a {:href "/docs/configuration"} "circle.yml file"]
-           " in your repo. Very powerful."]]]]))))
+       [:section
+        (om/build follow-sidebar (:project project-data))
+        [:article
+         [:h2 "How to Configure Project"]
+         [:h4 "Option 1"]
+         [:p "Do nothing! Circle infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
+         [:h4 "Option 2"]
+         [:p
+          "Override inferred settings and add new test commands "
+          [:a {:href "#setup"} "through the web UI"]
+          ". This works great for prototyping changes."]
+         [:h4 "Option 3"]
+         [:p
+          "Override all settings via a "
+          [:a {:href "/docs/configuration"} "circle.yml file"]
+          " in your repo. Very powerful."]]]))))
 
 (defn mini-parallelism-faq [project-data]
   [:div.mini-faq
@@ -1143,44 +1174,6 @@
                                            (put! controls-ch [:edited-input {:path (input-path) :value nil}])
                                            (put! controls-ch [:saved-project-settings {:project-id project-id}])
                                            false)}]))]]]])))))
-
-(defn follow-sidebar [project owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [project-id (project-model/id project)
-            vcs-url (:vcs_url project)
-            controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:div.follow-status
-          [:div.followed
-           ;; this is weird, but it's what the css expectss
-           (when (:followed project)
-             (list
-              [:i.fa.fa-group]
-              [:h4 "You're following this repo"]
-              [:p
-               "We'll keep an eye on this and update you with personalized build emails. "
-               "You can stop these any time from your "
-               [:a {:href "/account"} "account settings"]
-               "."]
-              (forms/stateful-button
-               [:button {:on-click #(put! controls-ch [:unfollowed-project {:vcs-url vcs-url
-                                                                            :project-id project-id}])
-                         :data-loading-text "Unfollowing..."}
-                "Unfollow"])))]
-          [:div.not-followed
-           (when-not (:followed project)
-             (list
-              [:h4 "You're not following this repo"]
-              [:p
-               "We can't update you with personalized build emails unless you follow this project. "
-               "Projects are only tested if they have a follower."]
-              (forms/stateful-button
-               [:button {:on-click #(put! controls-ch [:followed-project {:vcs-url vcs-url
-                                                                          :project-id project-id}])
-                         :data-loading-text "Following..."}
-                "Follow"])))]])))))
 
 (defn project-settings [data owner]
   (reify
