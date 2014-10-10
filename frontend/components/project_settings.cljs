@@ -1126,8 +1126,49 @@
             (om/build aws-keys-form project-data)]])))))
 
 
-(defn aws-codedeploy-app-settings [project-data owner]
+(defn aws-codedeploy-app-name [project-data owner]
   (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
+        (html
+          [:div
+           [:form
+            [:input#application-name
+              {:required true, :type "text"
+               :on-change #(utils/edit-input controls-ch (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
+            [:label {:placeholder "Application Name"}]
+            [:input {:value "Add app settings",
+                     :type "submit"
+                     :on-click #(do
+                                 (put! controls-ch [:new-codedeploy-app-name-entered])
+                                 false)}]]])))))
+
+(defn aws-codedeploy-app-details [project-data owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [project (:project project-data)
+            applications (get-in project [:aws :services :codedeploy])
+            [app-name _] (first applications)]
+        (utils/popover "#app-root-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Application Root"
+                        :content (node [:p "The directory in your repo to package up into an application revision. "
+                                           "This is relative to your repo's root, " [:code "/"] " means the repo's root "
+                                           "directory, " [:code "/app"] " means the app directory in your repo's root "
+                                           "directory."])})
+        (utils/popover "#bucket-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Revision Location: Bucket Name"
+                        :content (node [:p "The name of the S3 bucket CircleCI should store application revisions for \"" (name app-name) "\" in."])})
+        (utils/popover "#key-pattern-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Revision Location: Key Pattern"
+                        :content (node [:p "A template used to construct S3 keys for storing application revisions."
+                                           "You can use " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy#key-patterns"} "substitution variables"]
+                                           " in the Key Pattern to generate a unique key for each build."])})))
     om/IRender
     (render [_]
       (let [project (:project project-data)
@@ -1144,78 +1185,65 @@
             controls-ch (om/get-shared owner [:comms :controls])
             input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
         (html
-          (if (not (seq applications))
-            ;; No settings set, need to get the application name first
-            [:div
-             [:form
-              [:input#application-name
-                {:required true, :type "text"
-                 :on-change #(utils/edit-input controls-ch (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
-              [:label {:placeholder "Application Name"}]
-              [:input {:value "Add app settings",
-                       :type "submit"
-                       :on-click #(do
-                                   (put! controls-ch [:new-codedeploy-app-name-entered])
-                                   false)}]]]
-            ;; Once we have an application name we can accept the rest of the settings
-            [:form
-             [:legend (name app-name)]
+         [:form
+          [:legend (name app-name)]
 
-             [:div.styled-select
-               [:select {:class (when (not aws-region) "placeholder")
-                         :value (or aws-region "")
-                         ;; Updates the project cursor in order to trigger a re-render
-                         :on-change #(utils/edit-input controls-ch (conj state/project-path :aws :services :codedeploy app-name :region) %)}
-                 [:option {:value ""} "Choose AWS Region..."]
-                 [:option {:disabled "disabled"} "-----"]
-                 [:option {:value "us-east-1"} "us-east-1"]
-                 [:option {:value "us-west-2"} "us-west-2"]]
-               [:i.fa.fa-chevron-down]]
+          [:fieldset
+           [:div.styled-select
+            [:select {:class (when (not aws-region) "placeholder")
+                      :value (or aws-region "")
+                      ;; Updates the project cursor in order to trigger a re-render
+                      :on-change #(utils/edit-input controls-ch (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+             [:option {:value ""} "Choose AWS Region..."]
+             [:option {:disabled "disabled"} "-----"]
+             [:option {:value "us-east-1"} "us-east-1"]
+             [:option {:value "us-west-2"} "us-west-2"]]
+            [:i.fa.fa-chevron-down]]
 
-             [:p "The directory in your repo to package up into an application revision. "
-                 "This is relative to your repo's root, " [:code "/"] " means the repo's root "
-                 "directory, " [:code "/app"] " means the app directory in your repo's root directory."]
-             [:input#application-root
-              {:required true, :type "text", :value (or application-root "")
-               :on-change #(utils/edit-input controls-ch (input-path app-name :application_root) %)}]
-             [:label {:placeholder "Application Root"}]
+           [:div.input-with-help
+            [:input#application-root
+             {:required true, :type "text", :value (or application-root "")
+              :on-change #(utils/edit-input controls-ch (input-path app-name :application_root) %)}]
+            [:label {:placeholder "Application Root"}]
+            [:i.fa.fa-question-circle#app-root-popover-hack {:title "Application Root"}]]]
 
-             [:fieldset
-              [:h5 "Revision Location"]
-              [:p "The name of the bucket and key CircleCI should use to store application revisions for " (name app-name) ". "
-                  "You can use " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy#key-patterns"} "substitution variables"]
-                  " in the Key Pattern to generate a unique key for each build."]
-              [:input#s3-bucket
-               {:required true, :type "text", :value (or bucket "")
-                :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :bucket) %)}]
-              [:label {:placeholder "Bucket Name"}]
+          [:fieldset
+           [:h5 "Revision Location"]
+           [:div.input-with-help
+            [:input#s3-bucket
+             {:required true, :type "text", :value (or bucket "")
+              :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :bucket) %)}]
+            [:label {:placeholder "Bucket Name"}]
+            [:i.fa.fa-question-circle#bucket-popover-hack {:title "S3 Bucket Name"}]]
 
-              [:input#s3-key-prefix
-               {:required true, :type "text", :value (or key_pattern "")
-                :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :key_pattern) %)}]
-              [:label {:placeholder "Key Pattern"}]]
+           [:div.input-with-help
+            [:input#s3-key-prefix
+             {:required true, :type "text", :value (or key_pattern "")
+              :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :key_pattern) %)}]
+            [:label {:placeholder "Key Pattern"}]
+            [:i.fa.fa-question-circle#key-pattern-popover-hack {:title "S3 Key Pattern"}]]]
 
-             [:div.buttons
-               (forms/managed-button
-                [:input {:data-failed-text "Failed",
-                         :data-success-text "Saved",
-                         :data-loading-text "Saving...",
-                         :value "Save app",
-                         :type "submit"
-                         :on-click #(do
-                                      (put! controls-ch [:saved-project-settings {:project-id project-id
-                                                                                  :merge-paths [[:aws :services :codedeploy]]}])
-                                      false)}])
-               (forms/managed-button
-                [:input.remove {:data-failed-text "Failed",
-                                :data-success-text "Removed",
-                                :data-loading-text "Removing...",
-                                :value "Remove app",
-                                :type "submit"
-                                :on-click #(do
-                                             (put! controls-ch [:edited-input {:path (input-path) :value nil}])
-                                             (put! controls-ch [:saved-project-settings {:project-id project-id}])
-                                             false)}])]]))))))
+          [:div.buttons
+           (forms/managed-button
+            [:input {:data-failed-text "Failed",
+                     :data-success-text "Saved",
+                     :data-loading-text "Saving...",
+                     :value "Save app",
+                     :type "submit"
+                     :on-click #(do
+                                  (put! controls-ch [:saved-project-settings {:project-id project-id
+                                                                              :merge-paths [[:aws :services :codedeploy]]}])
+                                  false)}])
+           (forms/managed-button
+            [:input.remove {:data-failed-text "Failed",
+                            :data-success-text "Removed",
+                            :data-loading-text "Removing...",
+                            :value "Remove app",
+                            :type "submit"
+                            :on-click #(do
+                                         (put! controls-ch [:edited-input {:path (input-path) :value nil}])
+                                         (put! controls-ch [:saved-project-settings {:project-id project-id}])
+                                         false)}])]])))))
 
 
 (defn aws-codedeploy [project-data owner]
@@ -1245,7 +1273,11 @@
                  "deployment group and, optionally, deployment configuration, in each deployment "
                  "block in your " [:a {:href "/docs/configuration#deployment"} "circle.yml file"] ". "
                  "If you skip this step you will need to add all deployment settings into your circle.yml file."]
-             (om/build aws-codedeploy-app-settings project-data)]
+             (if (not (seq applications))
+               ;; No settings set, need to get the application name first
+               (om/build aws-codedeploy-app-name project-data)
+               ;; Once we have an application name we can accept the rest of the settings
+               (om/build aws-codedeploy-app-details project-data))]
             [:div.aws-codedeploy-step
              [:h4 "Step 3"]
              [:p "Add deployment settings to your "
