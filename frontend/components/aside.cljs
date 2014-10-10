@@ -153,9 +153,9 @@
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
-            subpage (or (utils/inspect (:project-settings-subpage app)) :overview)]
+            subpage (or (:project-settings-subpage app) :overview)]
         (html
-          [:div.aside-user {:class (when (= :project-settings (utils/inspect (:navigation-point app))) "open")}
+          [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
            [:header
             [:h5 "Project Settings"]]
            [:div.aside-user-options
@@ -280,12 +280,11 @@
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
-      (let [data (select-in app [state/projects-path state/settings-path state/user-options-shown-path])
-            user (get-in app state/user-path)
+      (let [user (get-in app state/user-path)
             login (:login user)
             avatar-url (gh-utils/make-avatar-url user)]
         (html
          [:aside.app-aside-left
-          (om/build aside-nav data {:opts user})
+          (om/build aside-nav app {:opts user})
 
           (om/build activity app {:opts {:login login}})])))))
