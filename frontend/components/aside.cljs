@@ -96,7 +96,8 @@
                        :title (project-model/project-name project)}
              (project-model/project-name project)]
             (when-not collapse-branches?
-             [:a.project-settings-icon {:href (routes/v1-project-settings {:org org :repo repo})}
+             [:a.project-settings-icon {:href (routes/v1-project-settings {:org org :repo repo})
+                                        :title (str "Settings for " org "/" repo)}
               (common/ico :settings-light)])
             (when-let [latest-master-build (last (project-model/master-builds project))]
               (sidebar-build latest-master-build {:org org :repo repo :branch (name (:default_branch project)) :latest? true}))]]
