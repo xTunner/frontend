@@ -116,6 +116,13 @@
     }
   }
   #subpage {
+    label:not([placeholder]) {
+      display: inline-block;
+      [type="checkbox"] {
+        margin: 0;
+        height: @baseLineHeight;
+      }
+    }
     > section {
       > article {
         padding: 1em 0;
