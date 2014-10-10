@@ -128,33 +128,37 @@
              "Invite a Teammate"]
             [:a.aside-item {:href "/logout"} "Logout"]]])))))
 
+(def project-settings-subpages
+  [{:href "edit" :title "General" :subpage :general}
+   {:href "#parallel-builds" :title "Parallelism" :subpage :parallel-builds}
+   {:href "#env-vars" :title "Environment variables" :subpage :env-vars}
+   {:href "#experimental" :title "Experimental Settings" :subpage :experimental}
+   {:href "#setup" :title "Dependencies" :subpage :setup}
+   {:href "#tests" :title "Tests" :subpage :tests}
+   {:href "#hooks" :title "Notifications" :subpage :hooks}
+   {:href "#badges" :title "Status Badges" :subpage :badges}
+   {:href "#checkout" :title "Checkout SSH keys" :subpage :checkout}
+   {:href "#ssh" :title "SSH keys" :subpage :ssh}
+   {:href "#api" :title "API tokens" :subpage :api}
+   {:href "#aws" :title "AWS keys" :subpage :aws}
+   {:href "#heroku" :title "Heroku" :subpage :heroku}
+   {:href "#deployment" :title "Other Deployments" :subpage :deployment}])
+
 (defn project-settings-menu [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            subpage (or (utils/inspect (:project-settings-subpage app)) :general)]
         (html
           [:div.aside-user {:class (when (= :project-settings (utils/inspect (:navigation-point app))) "open")}
            [:header
-            [:h5 "Project Settings"]
-            [:a.close-menu
-             {:href "/"}
-             (common/ico :fail-light)]]
+            [:h5 "Project Settings"]]
            [:div.aside-user-options
-            [:a.aside-item {:href "edit"} "General"]
-            [:a.aside-item {:href "#parallel-builds"} "Parallelism"]
-            [:a.aside-item {:href "#env-vars"} "Environment variables"]
-            [:a.aside-item {:href "#experimental"} "Experimental Settings"]
-            [:a.aside-item {:href "#setup"} "Dependencies"]
-            [:a.aside-item {:href "#tests"} "Tests"]
-            [:a.aside-item {:href "#hooks"} "Notifications"]
-            [:a.aside-item {:href "#badges"} "Status Badges"]
-            [:a.aside-item {:href "#checkout"} "Checkout SSH keys"]
-            [:a.aside-item {:href "#ssh"} "SSH keys"]
-            [:a.aside-item {:href "#api"} "API tokens"]
-            [:a.aside-item {:href "#aws"} "AWS keys"]
-            [:a.aside-item {:href "#heroku"} "Heroku"]
-            [:a.aside-item {:href "#deployment"} "Other Deployments"]]])))))
+            (for [template project-settings-subpages]
+              [:a.aside-item {:href (:href template)
+                              :class (when (= subpage (:subpage template)) "active")}
+               (:title template)])]])))))
 
 (defn activity [app owner opts]
   (reify
