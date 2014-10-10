@@ -135,13 +135,6 @@
         }
       }
     }
-    .wrapper {
-      &:hover {
-        &::-webkit-scrollbar-thumb {
-          background: @grayLighter;
-        }
-      }
-    }
     .status {
       .icon_style(transparent, @activity_ico);
       i {
@@ -270,16 +263,7 @@
     height: 100%;
     overflow: hidden;
     &::-webkit-scrollbar {
-      width: @activity_scroll;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: transparent;
-      border-radius: @activity_scroll;
-    }
-    &:hover {
-      &::-webkit-scrollbar-thumb {
-        background: @blueDark;
-      }
+      width: 0;
     }
   }
   ul {
