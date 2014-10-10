@@ -27,7 +27,7 @@ We'll communicate any changes before rolling them out.
 
 Note: all the examples use `bash` and `curl` but there is nothing to stop you using your favourite HTTP library in your language of choice.
 
-### Triggering Parameterized Builds
+<h3 id="detail">Triggering Parameterized Builds</h3>
 
 Builds are triggered by POSTing to [the trigger new build API](/docs/api#new-build).
 
