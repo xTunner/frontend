@@ -125,6 +125,16 @@
   .aside-activity {
     color: @grayLight;
     position: relative;
+    &:hover {
+      .project-settings-icon {
+        svg {
+          stroke: @grayLight;
+          &:hover {
+            stroke: @linkColorHover;
+          }
+        }
+      }
+    }
     .wrapper {
       &:hover {
         &::-webkit-scrollbar-thumb {
@@ -362,6 +372,22 @@
       }
       &.title {
         .flex(1 1 auto);
+      }
+      &.project-settings-icon {
+        .flexy(center, center);
+        width: @activity_line;
+        height: @activity_line;
+        line-height: @activity_line;
+        padding-right: round(@em - ((@activity_line - @activity_ico) / 2) - @activity_scroll);
+        svg {
+          stroke: fade(@grayLight, 0);
+          transition: 200ms;
+          path {
+            &:first-child {
+              stroke-width: 8;
+            }
+          }
+        }
       }
       &.latest {
         .flex(0 0 auto);
