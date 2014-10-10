@@ -141,25 +141,18 @@
              {:href "/"}
              (common/ico :fail-light)]]
            [:div.aside-user-options
-            ; [:li "Project Settings"]
-            [:a.aside-item {:href "edit"} "Overview"]
-            ; [:li "Tweaks"]
+            [:a.aside-item {:href "edit"} "General"]
             [:a.aside-item {:href "#parallel-builds"} "Parallelism"]
             [:a.aside-item {:href "#env-vars"} "Environment variables"]
             [:a.aside-item {:href "#experimental"} "Experimental Settings"]
-            ; [:li "Test Commands"]
             [:a.aside-item {:href "#setup"} "Dependencies"]
             [:a.aside-item {:href "#tests"} "Tests"]
-            ; [:li "Notifications"]
-            [:a.aside-item {:href "#hooks"} "Chatrooms"]
-            [:a.aside-item {:href "#webhooks"} "Webhooks"]
+            [:a.aside-item {:href "#hooks"} "Notifications"]
             [:a.aside-item {:href "#badges"} "Status Badges"]
-            ; [:li "Permissions"]
             [:a.aside-item {:href "#checkout"} "Checkout SSH keys"]
             [:a.aside-item {:href "#ssh"} "SSH keys"]
             [:a.aside-item {:href "#api"} "API tokens"]
             [:a.aside-item {:href "#aws"} "AWS keys"]
-            ; [:li "Continuous Deployment"]
             [:a.aside-item {:href "#heroku"} "Heroku"]
             [:a.aside-item {:href "#deployment"} "Other Deployments"]]])))))
 
