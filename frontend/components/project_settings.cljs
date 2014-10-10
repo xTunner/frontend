@@ -1170,13 +1170,12 @@
                [:form
                 [:legend (name app-name)]
 
-                [:p "The AWS region " (name app-name) " lives in."]
                 [:div.styled-select
                   [:select {:class (when (not aws-region) "placeholder")
                             :value (or aws-region "")
                             ;; Updates the project cursor in order to trigger a re-render
                             :on-change #(utils/edit-input controls-ch (conj state/project-path :aws :services :codedeploy app-name :region) %)}
-                    [:option {:value ""} "AWS Region"]
+                    [:option {:value ""} "Choose AWS Region..."]
                     [:option {:disabled "disabled"} "-----"]
                     [:option {:value "us-east-1"} "us-east-1"]
                     [:option {:value "us-west-2"} "us-west-2"]]
