@@ -1057,7 +1057,7 @@
         "our deployment documentation"]
        " to set it up."]]])))
 
-(defn aws [project-data owner]
+(defn aws-keys-form [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -1071,9 +1071,7 @@
             project-id (project-model/id project)
             input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
         (html
-         [:div.aws-page
-          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
-          [:div.aws-page-inner
+          [:div
            [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
             "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
             [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
@@ -1114,9 +1112,21 @@
                                 :on-click #(do
                                            (raise! owner [:edited-input {:path (input-path) :value nil}])
                                            (raise! owner [:saved-project-settings {:project-id project-id}])
-                                           false)}]))]]]])))))
+                                           false)}]))]]])))))
 
-(defn aws-codedeploy [project-data owner]
+(defn aws [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)]
+        (html
+         [:div.aws-page
+          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+          [:div.aws-page-inner
+            (om/build aws-keys-form project-data)]])))))
+
+
+(defn aws-codedeploy-app-settings [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -1134,6 +1144,88 @@
             controls-ch (om/get-shared owner [:comms :controls])
             input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
         (html
+          (if (not (seq applications))
+            ;; No settings set, need to get the application name first
+            [:div
+             [:form
+              [:input#application-name
+                {:required true, :type "text"
+                 :on-change #(utils/edit-input controls-ch (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
+              [:label {:placeholder "Application Name"}]
+              [:input {:value "Add app settings",
+                       :type "submit"
+                       :on-click #(do
+                                   (put! controls-ch [:new-codedeploy-app-name-entered])
+                                   false)}]]]
+            ;; Once we have an application name we can accept the rest of the settings
+            [:form
+             [:legend (name app-name)]
+
+             [:div.styled-select
+               [:select {:class (when (not aws-region) "placeholder")
+                         :value (or aws-region "")
+                         ;; Updates the project cursor in order to trigger a re-render
+                         :on-change #(utils/edit-input controls-ch (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+                 [:option {:value ""} "Choose AWS Region..."]
+                 [:option {:disabled "disabled"} "-----"]
+                 [:option {:value "us-east-1"} "us-east-1"]
+                 [:option {:value "us-west-2"} "us-west-2"]]
+               [:i.fa.fa-chevron-down]]
+
+             [:p "The directory in your repo to package up into an application revision. "
+                 "This is relative to your repo's root, " [:code "/"] " means the repo's root "
+                 "directory, " [:code "/app"] " means the app directory in your repo's root directory."]
+             [:input#application-root
+              {:required true, :type "text", :value (or application-root "")
+               :on-change #(utils/edit-input controls-ch (input-path app-name :application_root) %)}]
+             [:label {:placeholder "Application Root"}]
+
+             [:fieldset
+              [:h5 "Revision Location"]
+              [:p "The name of the bucket and key CircleCI should use to store application revisions for " (name app-name) ". "
+                  "You can use " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy#key-patterns"} "substitution variables"]
+                  " in the Key Pattern to generate a unique key for each build."]
+              [:input#s3-bucket
+               {:required true, :type "text", :value (or bucket "")
+                :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :bucket) %)}]
+              [:label {:placeholder "Bucket Name"}]
+
+              [:input#s3-key-prefix
+               {:required true, :type "text", :value (or key_pattern "")
+                :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :key_pattern) %)}]
+              [:label {:placeholder "Key Pattern"}]]
+
+             [:div.buttons
+               (forms/managed-button
+                [:input {:data-failed-text "Failed",
+                         :data-success-text "Saved",
+                         :data-loading-text "Saving...",
+                         :value "Save app",
+                         :type "submit"
+                         :on-click #(do
+                                      (put! controls-ch [:saved-project-settings {:project-id project-id
+                                                                                  :merge-paths [[:aws :services :codedeploy]]}])
+                                      false)}])
+               (forms/managed-button
+                [:input.remove {:data-failed-text "Failed",
+                                :data-success-text "Removed",
+                                :data-loading-text "Removing...",
+                                :value "Remove app",
+                                :type "submit"
+                                :on-click #(do
+                                             (put! controls-ch [:edited-input {:path (input-path) :value nil}])
+                                             (put! controls-ch [:saved-project-settings {:project-id project-id}])
+                                             false)}])]]))))))
+
+
+(defn aws-codedeploy [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            applications (get-in project [:aws :services :codedeploy])
+            app-name (some-> applications first key)]
+        (html
          [:div.aws-codedeploy
           [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
           [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
@@ -1141,94 +1233,24 @@
               " guide for detailed information on getting set up."]
           [:div.aws-page-inner
             [:div.aws-codedeploy-step
-             [:h4 "Step 1: Add "
-               [:a {:href "#aws"} "AWS credentials"] " that can deploy to your Amazon CodeDeploy application."]
-             [:p "You can alternatively add AWS credentials as "
-               [:a {:href "#env-vars"} " secure environment variables"] "."]]
+             [:h4 "Step 1"]
+              (om/build aws-keys-form project-data)]
+
             [:div.aws-codedeploy-step
-             [:h4 "Step 2: (Optional): configure application-wide settings."]
+             [:h4 "Step 2"]
+             [:p "[Optional] Configure application-wide settings."]
              [:p "This is useful if you deploy the same app to multiple deployment groups "
                  "(e.g. staging, production) depending on which branch was built. "
                  "With application settings configured in the UI you only need to set the "
                  "deployment group and, optionally, deployment configuration, in each deployment "
                  "block in your " [:a {:href "/docs/configuration#deployment"} "circle.yml file"] ". "
                  "If you skip this step you will need to add all deployment settings into your circle.yml file."]
-             (if (not (seq applications))
-               ;; No settings set, need to get the application name first
-               [:div
-                [:form
-                 [:input#application-name
-                   {:required true, :type "text"
-                    :on-change #(utils/edit-input controls-ch (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
-                 [:label {:placeholder "Application Name"}]
-                 [:input {:value "Add app settings",
-                          :type "submit"
-                          :on-click #(do
-                                      (put! controls-ch [:new-codedeploy-app-name-entered])
-                                      false)}]]]
-               ;; Once we have an application name we can accept the rest of the settings
-               [:form
-                [:legend (name app-name)]
-
-                [:div.styled-select
-                  [:select {:class (when (not aws-region) "placeholder")
-                            :value (or aws-region "")
-                            ;; Updates the project cursor in order to trigger a re-render
-                            :on-change #(utils/edit-input controls-ch (conj state/project-path :aws :services :codedeploy app-name :region) %)}
-                    [:option {:value ""} "Choose AWS Region..."]
-                    [:option {:disabled "disabled"} "-----"]
-                    [:option {:value "us-east-1"} "us-east-1"]
-                    [:option {:value "us-west-2"} "us-west-2"]]
-                  [:i.fa.fa-chevron-down]]
-
-                [:p "The directory in your repo to package up into an application revision. "
-                    "This is relative to your repo's root, " [:code "/"] " means the repo's root "
-                    "directory, " [:code "/app"] " means the app directory in your repo's root directory."]
-                [:input#application-root
-                 {:required true, :type "text", :value (or application-root "")
-                  :on-change #(utils/edit-input controls-ch (input-path app-name :application_root) %)}]
-                [:label {:placeholder "Application Root"}]
-
-                [:fieldset
-                 [:h5 "Revision Location"]
-                 [:p "The name of the bucket and key CircleCI should use to store application revisions for " (name app-name) ". "
-                     "You can use " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy#key-patterns"} "substitution variables"]
-                     " in the Key Pattern to generate a unique key for each build."]
-                 [:input#s3-bucket
-                  {:required true, :type "text", :value (or bucket "")
-                   :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :bucket) %)}]
-                 [:label {:placeholder "Bucket Name"}]
-
-                 [:input#s3-key-prefix
-                  {:required true, :type "text", :value (or key_pattern "")
-                   :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :key_pattern) %)}]
-                 [:label {:placeholder "Key Pattern"}]]
-
-                [:div.buttons
-                  (forms/managed-button
-                   [:input {:data-failed-text "Failed",
-                            :data-success-text "Saved",
-                            :data-loading-text "Saving...",
-                            :value "Save app",
-                            :type "submit"
-                            :on-click #(do
-                                         (put! controls-ch [:saved-project-settings {:project-id project-id
-                                                                                     :merge-paths [[:aws :services :codedeploy]]}])
-                                         false)}])
-                  (forms/managed-button
-                   [:input.remove {:data-failed-text "Failed",
-                                   :data-success-text "Removed",
-                                   :data-loading-text "Removing...",
-                                   :value "Remove app",
-                                   :type "submit"
-                                   :on-click #(do
-                                                (put! controls-ch [:edited-input {:path (input-path) :value nil}])
-                                                (put! controls-ch [:saved-project-settings {:project-id project-id}])
-                                                false)}])]])]
+             (om/build aws-codedeploy-app-settings project-data)]
             [:div.aws-codedeploy-step
-             [:h4 "Step 3: Add deployment settings to your "
-                   [:a {:href "/docs/configuration#deployment"} "circle.yml file"]
-                   " (example below)."]
+             [:h4 "Step 3"]
+             [:p "Add deployment settings to your "
+                 [:a {:href "/docs/configuration#deployment"} "circle.yml file"]
+                 " (example below)."]
              [:pre
               [:code
                "deployment:\n"
