@@ -133,7 +133,7 @@
             [:a.aside-item {:href "/logout"} "Logout"]]])))))
 
 (def project-settings-subpages
-  [{:href "edit" :title "General" :subpage :general}
+  [{:href "edit" :title "Overview" :subpage :overview}
    {:href "#parallel-builds" :title "Parallelism" :subpage :parallel-builds}
    {:href "#env-vars" :title "Environment variables" :subpage :env-vars}
    {:href "#experimental" :title "Experimental Settings" :subpage :experimental}
@@ -153,7 +153,7 @@
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
-            subpage (or (utils/inspect (:project-settings-subpage app)) :general)]
+            subpage (or (utils/inspect (:project-settings-subpage app)) :overview)]
         (html
           [:div.aside-user {:class (when (= :project-settings (utils/inspect (:navigation-point app))) "open")}
            [:header

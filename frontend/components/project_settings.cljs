@@ -98,7 +98,7 @@
                           :data-loading-text "Following..."}
                  "Follow"])))]])))))
 
-(defn general [project-data owner]
+(defn overview [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -1196,5 +1196,5 @@
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
-                (om/build general project-data))]]
+                (om/build overview project-data))]]
              ]))))))
