@@ -106,7 +106,7 @@
        [:section
         (om/build follow-sidebar (:project project-data))
         [:article
-         [:h2 "How to Configure Project"]
+         [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
          [:h4 "Option 1"]
          [:p "Do nothing! Circle infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
          [:h4 "Option 2"]
@@ -1174,7 +1174,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
-           [:div.loading-spinner common/spinner]
+           [:div.loading-spinner-big common/spinner]
            [:div#project-settings
             [:div.project-settings-inner
              (om/build common/flashes (get-in data state/error-message-path))

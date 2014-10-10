@@ -137,8 +137,8 @@
    {:href "#parallel-builds" :title "Parallelism" :subpage :parallel-builds}
    {:href "#env-vars" :title "Environment variables" :subpage :env-vars}
    {:href "#experimental" :title "Experimental Settings" :subpage :experimental}
-   {:href "#setup" :title "Dependencies" :subpage :setup}
-   {:href "#tests" :title "Tests" :subpage :tests}
+   {:href "#setup" :title "Dependency Commands" :subpage :setup}
+   {:href "#tests" :title "Test Commands" :subpage :tests}
    {:href "#hooks" :title "Notifications" :subpage :hooks}
    {:href "#badges" :title "Status Badges" :subpage :badges}
    {:href "#checkout" :title "Checkout SSH keys" :subpage :checkout}
