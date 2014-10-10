@@ -23,32 +23,6 @@
   (:require-macros [frontend.utils :refer [html]]
                    [dommy.macros :refer [node]]))
 
-(def sidebar
-  [:ul.side-list
-   [:li.side-title "Project Settings"]
-   [:li [:a {:href "edit"} "Overview"]]
-   [:li.side-title "Tweaks"]
-   [:li [:a {:href "#parallel-builds"} "Parallelism"]]
-   [:li [:a {:href "#env-vars"} "Environment variables"]]
-   [:li [:a {:href "#experimental"} "Experimental Settings"]]
-   [:li.side-title "Test Commands"]
-   [:li [:a {:href "#setup"} "Dependencies"]]
-   [:li [:a {:href "#tests"} "Tests"]]
-   [:li.side-title "Notifications"]
-   [:li [:a {:href "#hooks"} "Chatrooms"]]
-   [:li [:a {:href "#webhooks"} "Webhooks"]]
-   [:li [:a {:href "#badges"} "Status Badges"]]
-   [:li.side-title "Permissions"]
-   [:li [:a {:href "#checkout"} "Checkout SSH keys"]]
-   [:li [:a {:href "#ssh"} "SSH keys"]]
-   [:li [:a {:href "#api"} "API tokens"]]
-   [:li [:a {:href "#aws"} "AWS keys"]]
-   [:li.side-title "Build Artifacts"]
-   [:li [:a {:href "#artifacts"} "Artifacts"]]
-   [:li.side-title "Continuous Deployment"]
-   [:li [:a {:href "#heroku"} "Heroku"]]
-   [:li [:a {:href "#deployment"} "Other Deployments"]]])
-
 (defn branch-names [project-data]
   (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
 
@@ -124,7 +98,7 @@
                           :data-loading-text "Following..."}
                  "Follow"])))]])))))
 
-(defn overview [project-data owner]
+(defn general [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -275,12 +249,13 @@
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div
-          [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
-          (if-not (:plan project-data)
-            [:div.loading-spinner common/spinner]
-            (list (parallelism-picker project-data controls-ch)
-                  (mini-parallelism-faq project-data)))])))))
+         [:section
+          [:article
+           [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
+           (if-not (:plan project-data)
+             [:div.loading-spinner common/spinner]
+             (list (parallelism-picker project-data controls-ch)
+                   (mini-parallelism-faq project-data)))]])))))
 
 (defn env-vars [project-data owner]
   (reify
@@ -293,50 +268,51 @@
             project-id (project-model/id project)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div.environment-variables
-          [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
-          [:div.environment-variables-inner
-           [:p
-            "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
-            "The values can be any bash expression and can reference other variables, such as setting "
-            [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."
-            " To disable string substitution you need to escape the " [:code "$"]
-            " characters by prefixing them with " [:code "\\"] "."
-            " For example, a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
-            " would be entered as " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
-           [:form
-            [:input#env-var-name
-             {:required true, :type "text", :value new-env-var-name
-              :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-name) %)}]
-            [:label {:placeholder "Name"}]
-            [:input#env-var-value
-             {:required true, :type "text", :value new-env-var-value
-              :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-value) %)}]
-            [:label {:placeholder "Value"}]
-            (forms/stateful-button
-             [:input {:data-failed-text "Failed",
-                      :data-success-text "Added",
-                      :data-loading-text "Adding...",
-                      :value "Save variables",
-                      :type "submit"
-                      :on-click #(do
-                                   (put! controls-ch [:created-env-var {:project-id project-id}])
-                                   false)}])]
-           (when-let [env-vars (seq (:envvars project-data))]
-             [:table
-              [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
-              [:tbody
-               (for [{:keys [name value]} env-vars]
-                 [:tr
-                  [:td {:title name} name]
-                  [:td {:title value} value]
-                  [:td
-                   [:a
-                    {:title "Remove this variable?",
-                     :on-click #(put! controls-ch [:deleted-env-var {:project-id project-id
-                                                                     :env-var-name name}])}
-                    [:i.fa.fa-times-circle]
-                    [:span " Remove"]]]])]])]])))))
+         [:section
+          [:article
+           [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
+           [:div.environment-variables-inner
+            [:p
+             "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
+             "The values can be any bash expression and can reference other variables, such as setting "
+             [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."
+             " To disable string substitution you need to escape the " [:code "$"]
+             " characters by prefixing them with " [:code "\\"] "."
+             " For example, a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
+             " would be entered as " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
+            [:form
+             [:input#env-var-name
+              {:required true, :type "text", :value new-env-var-name
+               :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-name) %)}]
+             [:label {:placeholder "Name"}]
+             [:input#env-var-value
+              {:required true, :type "text", :value new-env-var-value
+               :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-value) %)}]
+             [:label {:placeholder "Value"}]
+             (forms/stateful-button
+              [:input {:data-failed-text "Failed",
+                       :data-success-text "Added",
+                       :data-loading-text "Adding...",
+                       :value "Save variables",
+                       :type "submit"
+                       :on-click #(do
+                                    (put! controls-ch [:created-env-var {:project-id project-id}])
+                                    false)}])]
+            (when-let [env-vars (seq (:envvars project-data))]
+              [:table
+               [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
+               [:tbody
+                (for [{:keys [name value]} env-vars]
+                  [:tr
+                   [:td {:title name} name]
+                   [:td {:title value} value]
+                   [:td
+                    [:a
+                     {:title "Remove this variable?",
+                      :on-click #(put! controls-ch [:deleted-env-var {:project-id project-id
+                                                                      :env-var-name name}])}
+                     [:i.fa.fa-times-circle]
+                     [:span " Remove"]]]])]])]]])))))
 
 (defn experiments [project-data owner]
   (reify
@@ -374,50 +350,51 @@
                                                                                                    :value false}])}]
                                    " Off"]]]]]))]
         (html
-         [:div.project-settings-block
-          [:h2 "Experimental Settings"]
-          [:p
-           " We've got a few settings you can play with, to enable things we're working on. We'd love to "
-           [:a {:on-click #(put! controls-ch [:project-experiments-feedback-clicked])}
-            "know what you think about them"] "."
-           " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
-          [:ul
-           (describe-flag {:flag :junit
-                           :title "JUnit support"
-                           :blurb [:p
-                                   "We've been experimenting with better ways to display and manage "
-                                   "test result data, especially for large test suites. This adds flags "
-                                   "to some of our inferred commands to collect structured test output supplied by "
-                                   "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
-                                   "you're using our inferred test steps. For RSpec, we also require our fork of the "
-                                   "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
-                                   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
-                                   "If you're using parallelism, we'll "
-                                   "automatically use the timing data to give you better test splits. You'll also be able to "
-                                   "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
-           (describe-flag {:flag :set-github-status
-                           :title "GitHub Status updates"
-                           :blurb [:p
-                                   "By default, we update the status of every pushed commit with "
-                                   "GitHub's status API. If you'd like to turn this off (if, for example, "
-                                   "this is conflicting with another service), you can do so below."]})
-           (describe-flag {:flag :oss
-                           :title "Free and Open Source"
-                           :blurb [:p
-                                   "Be part of our F/OSS beta! Organizations now have three free containers"
-                                   "reserved for F/OSS projects; enabling this will allow this project's "
-                                   "builds to use them and let others see your builds, both through the "
-                                   "web UI and the API."]})
-           (describe-flag {:flag :build-fork-prs
-                           :title "Project fork pull requests"
-                           :blurb '([:p
-                                     "CircleCI will automatically update the commit status shown on GitHub's "
-                                     "pull request page. Builds will be run using the parent repository's plan "
-                                     "and will be able to access the parent project's environment settings."]
-                                    [:p
-                                     "If you have SSH keys or AWS credentials stored in your project settings and "
-                                     "untrusted forks can make pull requests against your repo, then this option "
-                                     "isn't for you!"])})]])))))
+         [:section
+          [:article
+           [:h2 "Experimental Settings"]
+           [:p
+            " We've got a few settings you can play with, to enable things we're working on. We'd love to "
+            [:a {:on-click #(put! controls-ch [:project-experiments-feedback-clicked])}
+             "know what you think about them"] "."
+            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
+           [:ul
+            (describe-flag {:flag :junit
+                            :title "JUnit support"
+                            :blurb [:p
+                                    "We've been experimenting with better ways to display and manage "
+                                    "test result data, especially for large test suites. This adds flags "
+                                    "to some of our inferred commands to collect structured test output supplied by "
+                                    "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
+                                    "you're using our inferred test steps. For RSpec, we also require our fork of the "
+                                    "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
+                                    [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+                                    "If you're using parallelism, we'll "
+                                    "automatically use the timing data to give you better test splits. You'll also be able to "
+                                    "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
+            (describe-flag {:flag :set-github-status
+                            :title "GitHub Status updates"
+                            :blurb [:p
+                                    "By default, we update the status of every pushed commit with "
+                                    "GitHub's status API. If you'd like to turn this off (if, for example, "
+                                    "this is conflicting with another service), you can do so below."]})
+            (describe-flag {:flag :oss
+                            :title "Free and Open Source"
+                            :blurb [:p
+                                    "Be part of our F/OSS beta! Organizations now have three free containers"
+                                    "reserved for F/OSS projects; enabling this will allow this project's "
+                                    "builds to use them and let others see your builds, both through the "
+                                    "web UI and the API."]})
+            (describe-flag {:flag :build-fork-prs
+                            :title "Project fork pull requests"
+                            :blurb '([:p
+                                      "CircleCI will automatically update the commit status shown on GitHub's "
+                                      "pull request page. Builds will be run using the parent repository's plan "
+                                      "and will be able to access the parent project's environment settings."]
+                                     [:p
+                                      "If you have SSH keys or AWS credentials stored in your project settings and "
+                                      "untrusted forks can make pull requests against your repo, then this option "
+                                      "isn't for you!"])})]]])))))
 
 (defn dependencies [project-data owner]
   (reify
@@ -429,43 +406,44 @@
             settings (state-utils/merge-inputs project inputs [:setup :dependencies :post_dependencies])
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div.dependencies-page
-          [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p
-           "You can also set your dependencies commands from your "
-           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
-           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
-           "Don't put any secrets here that you wouldn't check in! Use our "
-           [:a {:href "#env-vars"} "environment variables settings page"]
-           " instead."]
-          [:div.dependencies-inner
-           [:form.spec_form
-            [:fieldset
-             [:textarea {:name "setup",
-                         :required true
-                         :value (str (:setup settings))
-                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :setup) % owner)}]
-             [:label {:placeholder "Pre-dependency commands"}]
-             [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
-             [:textarea {:name "dependencies",
-                         :required true
-                         :value (str (:dependencies settings))
-                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :dependencies) %)}]
-             [:label {:placeholder "Dependency overrides"}]
-             [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
-              [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
-              [:code "configure"] ", " [:code "make"] ", etc."]
-             [:textarea {:required true
-                         :value (str (:post_dependencies settings))
-                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :post_dependencies) %)}]
-             [:label {:placeholder "Post-dependency commands"}]
-             [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
-             (forms/managed-button
-              [:input {:value "Next, setup your tests",
-                       :type "submit"
-                       :data-loading-text "Saving..."
-                       :on-click #(do (put! controls-ch [:saved-dependencies-commands {:project-id project-id}])
-                                      false)}])]]]])))))
+         [:section.dependencies-page
+          [:article
+           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
+           [:p
+            "You can also set your dependencies commands from your "
+            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+            "Don't put any secrets here that you wouldn't check in! Use our "
+            [:a {:href "#env-vars"} "environment variables settings page"]
+            " instead."]
+           [:div.dependencies-inner
+            [:form.spec_form
+             [:fieldset
+              [:textarea {:name "setup",
+                          :required true
+                          :value (str (:setup settings))
+                          :on-change #(utils/edit-input controls-ch (conj state/inputs-path :setup) % owner)}]
+              [:label {:placeholder "Pre-dependency commands"}]
+              [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
+              [:textarea {:name "dependencies",
+                          :required true
+                          :value (str (:dependencies settings))
+                          :on-change #(utils/edit-input controls-ch (conj state/inputs-path :dependencies) %)}]
+              [:label {:placeholder "Dependency overrides"}]
+              [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
+               [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
+               [:code "configure"] ", " [:code "make"] ", etc."]
+              [:textarea {:required true
+                          :value (str (:post_dependencies settings))
+                          :on-change #(utils/edit-input controls-ch (conj state/inputs-path :post_dependencies) %)}]
+              [:label {:placeholder "Post-dependency commands"}]
+              [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
+              (forms/managed-button
+               [:input {:value "Next, setup your tests",
+                        :type "submit"
+                        :data-loading-text "Saving..."
+                        :on-click #(do (put! controls-ch [:saved-dependencies-commands {:project-id project-id}])
+                                       false)}])]]]]])))))
 
 (defn tests [project-data owner]
   (reify
@@ -477,42 +455,43 @@
             settings (state-utils/merge-inputs project inputs [:test :extra])
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div.tests-page
-          [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p
-           "You can also set your test commands from your "
-           [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
-           "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
-           "Don't put any secrets here that you wouldn't check in! Use our "
-           [:a {:href "#env-vars"} "environment variables settings page"]
-           " instead."]
-          [:div.tests-inner
-           [:fieldset.spec_form
-            [:textarea {:name "test",
-                        :required true
-                        :value (str (:test settings))
-                        :on-change #(utils/edit-input controls-ch (conj state/inputs-path :test) %)}]
-            [:label {:placeholder "Test commands"}]
-            [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
-            [:textarea {:name "extra",
-                        :required true
-                        :value (str (:extra settings))
-                        :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra) %)}]
-            [:label {:placeholder "Post-test commands"}]
-            [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
-            (forms/managed-button
-             [:input {:name "save",
-                      :data-loading-text "Saving...",
-                      :value "Save commands",
-                      :type "submit"
-                      :on-click #(do (put! controls-ch [:saved-test-commands {:project-id project-id}])
-                                     false)}])
-            [:div.try-out-build
-             (om/build branch-picker
-                       project-data
-                       {:opts {:button-text "Save & Go!"
-                               :channel-message :saved-test-commands
-                               :channel-args {:project-id project-id :start-build? true}}})]]]])))))
+         [:section.tests-page
+          [:article
+           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
+           [:p
+            "You can also set your test commands from your "
+            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
+            "Don't put any secrets here that you wouldn't check in! Use our "
+            [:a {:href "#env-vars"} "environment variables settings page"]
+            " instead."]
+           [:div.tests-inner
+            [:fieldset.spec_form
+             [:textarea {:name "test",
+                         :required true
+                         :value (str (:test settings))
+                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :test) %)}]
+             [:label {:placeholder "Test commands"}]
+             [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
+             [:textarea {:name "extra",
+                         :required true
+                         :value (str (:extra settings))
+                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra) %)}]
+             [:label {:placeholder "Post-test commands"}]
+             [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
+             (forms/managed-button
+              [:input {:name "save",
+                       :data-loading-text "Saving...",
+                       :value "Save commands",
+                       :type "submit"
+                       :on-click #(do (put! controls-ch [:saved-test-commands {:project-id project-id}])
+                                      false)}])
+             [:div.try-out-build
+              (om/build branch-picker
+                        project-data
+                        {:opts {:button-text "Save & Go!"
+                                :channel-message :saved-test-commands
+                                :channel-args {:project-id project-id :start-build? true}}})]]]]])))))
 
 (defn fixed-failed-input [{:keys [settings field]} owner]
   (reify
@@ -569,7 +548,18 @@
                            :data-success-text "Tested"}
              "& Test Hook"])])]]]))
 
-(defn chatrooms [project-data owner]
+(defn webhooks [project-data owner]
+  (om/component
+   (html
+    [:div
+     [:h2 "Webhooks"]
+     [:div.doc
+      [:p
+       "Circle also support webhooks, which run at the end of a build. They can be configured in your "
+       [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
+        "circle.yml file"] "."]]])))
+
+(defn notifications [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -579,78 +569,70 @@
             inputs (inputs/get-inputs-from-app-state owner)
             settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
         (html
-         [:div
-          [:h2 "Chatroom setup for " (vcs-url/project-name (:vcs_url project))]
-          [:div.chat-rooms
-           (for [chat-spec [{:service "Hipchat"
-                             :doc (list [:p "To get your API token, create a \"notification\" token via the "
-                                         [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
-                                        [:label ;; hipchat is a special flower
-                                         {:for "hipchat-notify"}
-                                         [:input#hipchat-notify
-                                          {:type "checkbox"
-                                           :checked (:hipchat_notify settings)
-                                           ;; n.b. can't use inputs-state b/c react won't changed
-                                           ;;      checked state without a rerender
-                                           :on-change #(utils/edit-input controls-ch (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
-                                         [:span "Show popups"]])
-                             :inputs [{:field :hipchat_room :placeholder "Room"}
-                                      {:field :hipchat_api_token :placeholder "API"}]
-                             :show-fixed-failed? true
-                             :settings-keys project-model/hipchat-keys}
+          [:section
+           [:article
+            [:h2 "Chatroom Integrations"]
+            [:div.chat-rooms
+             (for [chat-spec [{:service "Hipchat"
+                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
+                                           [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
+                                          [:label ;; hipchat is a special flower
+                                           {:for "hipchat-notify"}
+                                           [:input#hipchat-notify
+                                            {:type "checkbox"
+                                             :checked (:hipchat_notify settings)
+                                             ;; n.b. can't use inputs-state b/c react won't changed
+                                             ;;      checked state without a rerender
+                                             :on-change #(utils/edit-input controls-ch (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
+                                           [:span "Show popups"]])
+                               :inputs [{:field :hipchat_room :placeholder "Room"}
+                                        {:field :hipchat_api_token :placeholder "API"}]
+                               :show-fixed-failed? true
+                               :settings-keys project-model/hipchat-keys}
 
-                            {:service "Campfire"
-                             :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
-                             :inputs [{:field :campfire_room :placeholder "Room"}
-                                      {:field :campfire_subdomain :placeholder "Subdomain"}
-                                      {:field :campfire_token :placeholder "API"}]
-                             :show-fixed-failed? true
-                             :settings-keys project-model/campfire-keys}
+                              {:service "Campfire"
+                               :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
+                               :inputs [{:field :campfire_room :placeholder "Room"}
+                                        {:field :campfire_subdomain :placeholder "Subdomain"}
+                                        {:field :campfire_token :placeholder "API"}]
+                               :show-fixed-failed? true
+                               :settings-keys project-model/campfire-keys}
 
-                            {:service "Flowdock"
-                             :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
-                             :inputs [{:field :flowdock_api_token :placeholder "API"}]
-                             :show-fixed-failed? false
-                             :settings-keys project-model/flowdock-keys}
+                              {:service "Flowdock"
+                               :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
+                               :inputs [{:field :flowdock_api_token :placeholder "API"}]
+                               :show-fixed-failed? false
+                               :settings-keys project-model/flowdock-keys}
 
-                            {:service "IRC"
-                             :doc nil
-                             :inputs [{:field :irc_server :placeholder "Hostname"}
-                                      {:field :irc_channel :placeholder "Channel"}
-                                      {:field :irc_keyword :placeholder "Private Keyword"}
-                                      {:field :irc_username :placeholder "Username"}
-                                      {:field :irc_password :placeholder "Password (optional)"}]
-                             :show-fixed-failed? true
-                             :settings-keys project-model/irc-keys}
+                              {:service "IRC"
+                               :doc nil
+                               :inputs [{:field :irc_server :placeholder "Hostname"}
+                                        {:field :irc_channel :placeholder "Channel"}
+                                        {:field :irc_keyword :placeholder "Private Keyword"}
+                                        {:field :irc_username :placeholder "Username"}
+                                        {:field :irc_password :placeholder "Password (optional)"}]
+                               :show-fixed-failed? true
+                               :settings-keys project-model/irc-keys}
 
-                            {:service "Slack"
-                             :doc [:p "To get your Webhook URL, visit Slack's "
-                                   [:a {:href "https://my.slack.com/services/new/circleci"}
-                                    "CircleCI Integration"]
-                                   " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
-                             :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
-                             :show-fixed-failed? true
-                             :settings-keys project-model/slack-keys}
+                              {:service "Slack"
+                               :doc [:p "To get your Webhook URL, visit Slack's "
+                                     [:a {:href "https://my.slack.com/services/new/circleci"}
+                                      "CircleCI Integration"]
+                                     " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
+                               :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
+                               :show-fixed-failed? true
+                               :settings-keys project-model/slack-keys}
 
-                            {:service "Hall"
-                             :doc [:p "To get your Room / Group API token, go to "
-                                   [:strong "Settings > Integrations > CircleCI"]
-                                   " from within your Hall Group."]
-                             :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                             :show-fixed-failed? true
-                             :settings-keys project-model/hall-keys}]]
-             (chatroom-item project-id settings controls-ch chat-spec))]])))))
-
-(defn webhooks [project-data owner]
-  (om/component
-   (html
-    [:div
-     [:h2 "Webhooks for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
-     [:div.doc
-      [:p
-       "Circle also support webhooks, which run at the end of a build. They can be configured in your "
-       [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
-        "circle.yml file"] "."]]])))
+                              {:service "Hall"
+                               :doc [:p "To get your Room / Group API token, go to "
+                                     [:strong "Settings > Integrations > CircleCI"]
+                                     " from within your Hall Group."]
+                               :inputs [{:field :hall_room_api_token :placeholder "API"}]
+                               :show-fixed-failed? true
+                               :settings-keys project-model/hall-keys}]]
+               (chatroom-item project-id settings controls-ch chat-spec))]]
+           [:article
+            (om/build webhooks project-data)]])))))
 
 (def status-styles
   {"badge" {:label "Badge" :string ".png?style=badge"}
@@ -698,63 +680,64 @@
         code ((:template (status-formats format)) {:image image :target target})]
     (om/component
      (html
-      [:div.status-page
-       [:h2 "Status badges for " project-name]
-       [:div "Use this tool to easily create embeddable status badges. Perfect for your project's README or wiki!"]
-       [:div.status-page-inner
-        [:form
+      [:section.status-page
+       [:article
+        [:h2 "Status badges for " project-name]
+        [:div "Use this tool to easily create embeddable status badges. Perfect for your project's README or wiki!"]
+        [:div.status-page-inner
+         [:form
 
-         [:div.branch
-          [:h4 "Branch"]
-          [:div.styled-select
-           [:select {:value branch
-                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :branch) %)}
-            [:option {:value ""} "Default"]
-            [:option {:disabled "disabled"} "-----"]
-            (for [branch branches]
-              [:option {:value branch} branch])]
-           [:i.fa.fa-chevron-down]]]
+          [:div.branch
+           [:h4 "Branch"]
+           [:div.styled-select
+            [:select {:value branch
+                      :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :branch) %)}
+             [:option {:value ""} "Default"]
+             [:option {:disabled "disabled"} "-----"]
+             (for [branch branches]
+               [:option {:value branch} branch])]
+            [:i.fa.fa-chevron-down]]]
 
-         [:div.token
-          [:h4 "API Token"]
-          (when-not (or oss (seq token))
-            [:p [:span.warning "Warning: "] "Private projects require an " [:a {:href "#api"} "API token"] "."])
-          [:div.styled-select
-           [:select {:value token
-                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :token) %)}
-            [:option {:value ""} "None"]
-            [:option {:disabled "disabled"} "-----"]
-            (for [{:keys [token label]} tokens]
-              [:option {:value token} label])]
-           [:i.fa.fa-chevron-down]]]
+          [:div.token
+           [:h4 "API Token"]
+           (when-not (or oss (seq token))
+             [:p [:span.warning "Warning: "] "Private projects require an " [:a {:href "#api"} "API token"] "."])
+           [:div.styled-select
+            [:select {:value token
+                      :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :token) %)}
+             [:option {:value ""} "None"]
+             [:option {:disabled "disabled"} "-----"]
+             (for [{:keys [token label]} tokens]
+               [:option {:value token} label])]
+            [:i.fa.fa-chevron-down]]]
 
-         #_ ;; Hide style selector until "badge" style is improved. See PR #3140 discussion.
-         [:div.style
-          [:h4 "Style"]
-          [:fieldset
-           (for [[id {:keys [label]}] status-styles]
-             [:label.radio
-              [:input {:name "branch" :type "radio" :value id :checked (= style id)
-                       :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :style) %)}]
-              label])]]
+          #_ ;; Hide style selector until "badge" style is improved. See PR #3140 discussion.
+          [:div.style
+           [:h4 "Style"]
+           [:fieldset
+            (for [[id {:keys [label]}] status-styles]
+              [:label.radio
+               [:input {:name "branch" :type "radio" :value id :checked (= style id)
+                        :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :style) %)}]
+               label])]]
 
-         [:div.preview
-          [:h4 "Preview"]
-          [:img {:src image}]]
+          [:div.preview
+           [:h4 "Preview"]
+           [:img {:src image}]]
 
-         [:div.embed
-          [:h4 "Embed Code"]
-          [:div.styled-select
-           [:select {:value format
-                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :format) %)}
-            (for [[id {:keys [label]}] status-formats]
-              [:option {:value id} label])]
-           [:i.fa.fa-chevron-down]]
-          [:textarea {:readonly true
-                      :value code
-                      :on-click #(.select (.-target %))}]]
+          [:div.embed
+           [:h4 "Embed Code"]
+           [:div.styled-select
+            [:select {:value format
+                      :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :format) %)}
+             (for [[id {:keys [label]}] status-formats]
+               [:option {:value id} label])]
+            [:i.fa.fa-chevron-down]]
+           [:textarea {:readonly true
+                       :value code
+                       :on-click #(.select (.-target %))}]]
 
-         ]]]))))
+          ]]]]))))
 
 (defn ssh-keys [project-data owner]
   (reify
@@ -766,42 +749,43 @@
              :or {hostname "" private-key ""}} (:new-ssh-key project-data)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div.sshkeys-page
-          [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
-          [:div.sshkeys-inner
-           [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
-           [:form
-            [:input#hostname {:required true, :type "text" :value (str hostname)
-                              :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :hostname) %)}]
-            [:label {:placeholder "Hostname"}]
-            [:textarea#privateKey {:required true :value (str private-key)
-                                   :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
-            [:label {:placeholder "Private Key"}]
-            (forms/stateful-button
-             [:input#submit.btn
-              {:data-failed-text "Failed",
-               :data-success-text "Saved",
-               :data-loading-text "Saving..",
-               :value "Submit",
-               :type "submit"
-               :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
-                                                                 :ssh-key {:hostname hostname
-                                                                           :private_key private-key}}])
-                              false)}])]
-           (when-let [ssh-keys (seq (:ssh_keys project))]
-             [:table
-              [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
-              [:tbody
-               (for [{:keys [hostname fingerprint]} ssh-keys]
-                 [:tr
-                  [:td hostname]
-                  [:td fingerprint]
-                  [:td [:a {:title "Remove this Key?",
-                            :on-click #(put! controls-ch [:deleted-ssh-key {:project-id project-id
-                                                                            :hostname hostname
-                                                                            :fingerprint fingerprint}])}
-                        [:i.fa.fa-times-circle]
-                        [:span " Remove"]]]])]])]])))))
+         [:section.sshkeys-page
+          [:article
+           [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
+           [:div.sshkeys-inner
+            [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
+            [:form
+             [:input#hostname {:required true, :type "text" :value (str hostname)
+                               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :hostname) %)}]
+             [:label {:placeholder "Hostname"}]
+             [:textarea#privateKey {:required true :value (str private-key)
+                                    :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
+             [:label {:placeholder "Private Key"}]
+             (forms/stateful-button
+              [:input#submit.btn
+               {:data-failed-text "Failed",
+                :data-success-text "Saved",
+                :data-loading-text "Saving..",
+                :value "Submit",
+                :type "submit"
+                :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
+                                                                  :ssh-key {:hostname hostname
+                                                                            :private_key private-key}}])
+                               false)}])]
+            (when-let [ssh-keys (seq (:ssh_keys project))]
+              [:table
+               [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
+               [:tbody
+                (for [{:keys [hostname fingerprint]} ssh-keys]
+                  [:tr
+                   [:td hostname]
+                   [:td fingerprint]
+                   [:td [:a {:title "Remove this Key?",
+                             :on-click #(put! controls-ch [:deleted-ssh-key {:project-id project-id
+                                                                             :hostname hostname
+                                                                             :fingerprint fingerprint}])}
+                         [:i.fa.fa-times-circle]
+                         [:span " Remove"]]]])]])]]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
@@ -830,109 +814,110 @@
             checkout-keys (:checkout-keys project-data)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div.checkout-page
-          [:h2 "Checkout keys for " project-name]
-          [:div.checkout-page-inner
-           (if (nil? checkout-keys)
-             [:div.loading-spinner common/spinner]
+         [:section.checkout-page
+          [:article
+           [:h2 "Checkout keys for " project-name]
+           [:div.checkout-page-inner
+            (if (nil? checkout-keys)
+              [:div.loading-spinner common/spinner]
 
-             [:div
-              (if-not (seq checkout-keys)
-                [:p "No checkout key is currently configured! We won't be able to check out your project for testing :("]
-                [:div
-                 [:p
-                  "Here are the keys we can currently use to check out your project, submodules, "
-                  "and private GitHub dependencies. The currently preferred key is highlighted, but "
-                  "we will automatically fall back to the other keys if the preferred key is revoked."]
-                 [:table
-                  [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
-                  [:tbody
-                   (for [checkout-key checkout-keys
-                         :let [fingerprint (:fingerprint checkout-key)
-                               github-link (checkout-key-link checkout-key project user)]]
-                     [:tr {:class (when (:preferred checkout-key) "preferred")}
-                      [:td
-                       (if github-link
-                         [:a.slideBtn {:href github-link :target "_blank"}
-                          (checkout-key-description checkout-key project) " " [:i.fa.fa-github]]
+              [:div
+               (if-not (seq checkout-keys)
+                 [:p "No checkout key is currently configured! We won't be able to check out your project for testing :("]
+                 [:div
+                  [:p
+                   "Here are the keys we can currently use to check out your project, submodules, "
+                   "and private GitHub dependencies. The currently preferred key is highlighted, but "
+                   "we will automatically fall back to the other keys if the preferred key is revoked."]
+                  [:table
+                   [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
+                   [:tbody
+                    (for [checkout-key checkout-keys
+                          :let [fingerprint (:fingerprint checkout-key)
+                                github-link (checkout-key-link checkout-key project user)]]
+                      [:tr {:class (when (:preferred checkout-key) "preferred")}
+                       [:td
+                        (if github-link
+                          [:a.slideBtn {:href github-link :target "_blank"}
+                           (checkout-key-description checkout-key project) " " [:i.fa.fa-github]]
 
-                         (checkout-key-description checkout-key project))]
-                      [:td fingerprint]
-                      [:td
-                       [:a.slideBtn
-                        {:title "Remove this key?",
-                         :on-click #(put! controls-ch [:delete-checkout-key-clicked {:project-id project-id
-                                                                                     :project-name project-name
-                                                                                     :fingerprint fingerprint}])}
-                        [:i.fa.fa-times-circle] " Remove"]]])]]])
-              (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
-                [:div.add-key
-                 [:h4 "Add deploy key"]
-                 [:p
-                  "Deploy keys are the best option for most projects: they only have access to a single GitHub repository."]
-                 [:div.request-user
-                  (forms/managed-button
-                   [:input.btn
-                    {:type "submit"
-                     :on-click #(do (put! controls-ch
-                                          [:new-checkout-key-clicked {:project-id project-id
-                                                                      :project-name project-name
-                                                                      :key-type "deploy-key"}])
-                                    false)
-                     :title "Create a new deploy key, with access only to this project."
-                     :value (str "Create and add " project-name " deploy key")
-                     :data-loading-text "Saving..."
-                     :data-success-text "Saved"}])]])
-              (when-not (some #{"github-user-key"} (map :type checkout-keys))
-                [:div.add-key
-                 [:h4 "Add user key"]
-                 [:p
-                  "If a deploy key can't access all of your project's private dependencies, we can configure it to use an SSH key with the same level of access to GitHub repositories that you have."]
-                 [:div.authorization
-                  (if-not (user-model/public-key-scope? user)
-                    (list
-                     [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account. (Feel free to drop this additional scope after we've added the key!)"]
-                     [:a.btn.ghu-authorize
-                      {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
-                       :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
-                      "Authorize w/ GitHub " [:i.fa.fa-github]])
+                          (checkout-key-description checkout-key project))]
+                       [:td fingerprint]
+                       [:td
+                        [:a.slideBtn
+                         {:title "Remove this key?",
+                          :on-click #(put! controls-ch [:delete-checkout-key-clicked {:project-id project-id
+                                                                                      :project-name project-name
+                                                                                      :fingerprint fingerprint}])}
+                         [:i.fa.fa-times-circle] " Remove"]]])]]])
+               (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
+                 [:div.add-key
+                  [:h4 "Add deploy key"]
+                  [:p
+                   "Deploy keys are the best option for most projects: they only have access to a single GitHub repository."]
+                  [:div.request-user
+                   (forms/managed-button
+                    [:input.btn
+                     {:type "submit"
+                      :on-click #(do (put! controls-ch
+                                           [:new-checkout-key-clicked {:project-id project-id
+                                                                       :project-name project-name
+                                                                       :key-type "deploy-key"}])
+                                     false)
+                      :title "Create a new deploy key, with access only to this project."
+                      :value (str "Create and add " project-name " deploy key")
+                      :data-loading-text "Saving..."
+                      :data-success-text "Saved"}])]])
+               (when-not (some #{"github-user-key"} (map :type checkout-keys))
+                 [:div.add-key
+                  [:h4 "Add user key"]
+                  [:p
+                   "If a deploy key can't access all of your project's private dependencies, we can configure it to use an SSH key with the same level of access to GitHub repositories that you have."]
+                  [:div.authorization
+                   (if-not (user-model/public-key-scope? user)
+                     (list
+                      [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account. (Feel free to drop this additional scope after we've added the key!)"]
+                      [:a.btn.ghu-authorize
+                       {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
+                        :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
+                       "Authorize w/ GitHub " [:i.fa.fa-github]])
 
-                    [:div.request-user
-                     (forms/managed-button
-                      [:input.btn
-                       {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false }"
-                        :type "submit"
-                        :on-click #(do (put! controls-ch [:new-checkout-key-clicked {:project-id project-id
-                                                                                     :project-name project-name
-                                                                                     :key-type "github-user-key"}])
-                                       false)
-                        :value (str "Create and add " (:login user) " user key" )
-                        :data-loading-text "Saving..."
-                        :data-success-text "Saved"}])])]])
+                     [:div.request-user
+                      (forms/managed-button
+                       [:input.btn
+                        {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false }"
+                         :type "submit"
+                         :on-click #(do (put! controls-ch [:new-checkout-key-clicked {:project-id project-id
+                                                                                      :project-name project-name
+                                                                                      :key-type "github-user-key"}])
+                                        false)
+                         :value (str "Create and add " (:login user) " user key" )
+                         :data-loading-text "Saving..."
+                         :data-success-text "Saved"}])])]])
 
-              [:div.help-block
-               [:h2 "About checkout keys"]
-               [:h4 "What is a deploy key?"]
-               [:p "A deploy key is a repo-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives read/write access to a single repository."]
-               [:h4 "What is a user key?"]
-               [:p "A user key is a user-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
-               [:h4 "How are these keys used?"]
-               [:p "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with 'github.com'. Therefore, it gets used for:"]
-               [:ul
-                [:li "checking out the main project"]
-                [:li "checking out any GitHub-hosted submodules"]
-                [:li "checking out any GitHub-hosted private dependencies"]
-                [:li "automatic git merging/tagging/etc."]]
-               [:p]
-               [:p "That's why a deploy key isn't sufficiently powerful for projects with additional private dependencies!"]
-               [:h4 "What about security?"]
-               [:p "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to GitHub), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in Circle can read them. You shouldn't push untrusted code to Circle!"]
-               [:h4 "Isn't there a middle ground between deploy keys and user keys?"]
-               [:p "Not really :("]
-               [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
-               [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls a "
-                [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
-                ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]])))))
+               [:div.help-block
+                [:h2 "About checkout keys"]
+                [:h4 "What is a deploy key?"]
+                [:p "A deploy key is a repo-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives read/write access to a single repository."]
+                [:h4 "What is a user key?"]
+                [:p "A user key is a user-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
+                [:h4 "How are these keys used?"]
+                [:p "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with 'github.com'. Therefore, it gets used for:"]
+                [:ul
+                 [:li "checking out the main project"]
+                 [:li "checking out any GitHub-hosted submodules"]
+                 [:li "checking out any GitHub-hosted private dependencies"]
+                 [:li "automatic git merging/tagging/etc."]]
+                [:p]
+                [:p "That's why a deploy key isn't sufficiently powerful for projects with additional private dependencies!"]
+                [:h4 "What about security?"]
+                [:p "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to GitHub), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in Circle can read them. You shouldn't push untrusted code to Circle!"]
+                [:h4 "Isn't there a middle ground between deploy keys and user keys?"]
+                [:p "Not really :("]
+                [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
+                [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls a "
+                 [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
+                 ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
@@ -975,57 +960,58 @@
              :or {scope "status" label ""}} (:new-api-token project-data)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div.circle-api-page
-          [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
-          [:div.circle-api-page-inner
-           [:p "Create and revoke project-specific API tokens to access this project's details using our API. First choose a scope "
-            [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
-            " and then create a label."]
-           [:form
-            [:div.styled-select
-             [:select {:name "scope" :value scope
-                       :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :scope) %)}
-              [:option {:value "status"} "Status"]
-              [:option {:value "view-builds"} "Build Artifacts"]
-              [:option {:value "all"} "All"]]
-             [:i.fa.fa-chevron-down]]
-            [:input
-             {:required true, :type "text" :value (str label)
-              :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
-            [:label {:placeholder "Token label"}]
-            (forms/stateful-button
+         [:section.circle-api-page
+          [:article
+           [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
+           [:div.circle-api-page-inner
+            [:p "Create and revoke project-specific API tokens to access this project's details using our API. First choose a scope "
+             [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
+             " and then create a label."]
+            [:form
+             [:div.styled-select
+              [:select {:name "scope" :value scope
+                        :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :scope) %)}
+               [:option {:value "status"} "Status"]
+               [:option {:value "view-builds"} "Build Artifacts"]
+               [:option {:value "all"} "All"]]
+              [:i.fa.fa-chevron-down]]
              [:input
-              {:data-failed-text "Failed",
-               :data-success-text "Created",
-               :data-loading-text "Creating...",
-               :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
-                                                                           :api-token {:scope scope
-                                                                                       :label label}}])
-                              false)
-               :value "Create token",
-               :type "submit"}])]
-           (when-let [tokens (seq (:tokens project-data))]
-             [:table
-              [:thead
-               [:th "Scope"]
-               [:th "Label"]
-               [:th "Token"]
-               [:th "Created"]
-               [:th]]
-              [:tbody
-               (for [{:keys [scope label token time]} tokens]
-                 [:tr
-                  [:td scope]
-                  [:td label]
-                  [:td [:span.code token]]
-                  [:td time]
-                  [:td
-                   [:a.slideBtn
-                    {:title "Remove this Key?",
-                     :on-click #(put! controls-ch [:deleted-project-api-token {:project-id project-id
-                                                                               :token token}])}
-                    [:i.fa.fa-times-circle]
-                    [:span " Remove"]]]])]])]])))))
+              {:required true, :type "text" :value (str label)
+               :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
+             [:label {:placeholder "Token label"}]
+             (forms/stateful-button
+              [:input
+               {:data-failed-text "Failed",
+                :data-success-text "Created",
+                :data-loading-text "Creating...",
+                :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
+                                                                            :api-token {:scope scope
+                                                                                        :label label}}])
+                               false)
+                :value "Create token",
+                :type "submit"}])]
+            (when-let [tokens (seq (:tokens project-data))]
+              [:table
+               [:thead
+                [:th "Scope"]
+                [:th "Label"]
+                [:th "Token"]
+                [:th "Created"]
+                [:th]]
+               [:tbody
+                (for [{:keys [scope label token time]} tokens]
+                  [:tr
+                   [:td scope]
+                   [:td label]
+                   [:td [:span.code token]]
+                   [:td time]
+                   [:td
+                    [:a.slideBtn
+                     {:title "Remove this Key?",
+                      :on-click #(put! controls-ch [:deleted-project-api-token {:project-id project-id
+                                                                                :token token}])}
+                     [:i.fa.fa-times-circle]
+                     [:span " Remove"]]]])]])]]])))))
 
 (defn artifacts [project-data owner]
   (om/component
@@ -1050,70 +1036,72 @@
             login (:login user)
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
-         [:div.heroku-api
-          [:h2 "Set personal Heroku API key for " (vcs-url/project-name (:vcs_url project))]
-          [:div.heroku-step
-           [:h4 "Step 1: Heroku API key"]
-           [:div (when (:heroku_api_key user)
-                   [:p "Your Heroku key is entered. Great!"])
-            [:p (:heroku_api_key user)]
-            [:div (when-not (:heroku_api_key user)
-                    (om/build account/heroku-key {:current-user user} {:opts {:project-page? true}}))]
+         [:section.heroku-api
+          [:article
+           [:h2 "Set personal Heroku API key for " (vcs-url/project-name (:vcs_url project))]
+           [:div.heroku-step
+            [:h4 "Step 1: Heroku API key"]
             [:div (when (:heroku_api_key user)
-                    [:p
-                     "You can edit your Heroku key from your "
-                     [:a {:href "/account/heroku"} "account page"] "."])]]]
-          [:div.heroku-step
-           [:h4 "Step 2: Associate a Heroku SSH key with your account"]
-           [:span "Current deploy user: "
-            [:strong (or (:heroku_deploy_user project) "none") " "]
-            [:i.fa.fa-question-circle
-             {:data-bind "tooltip: {}",
-              :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
-           [:form.api
-            (if (= (:heroku_deploy_user project) (:login user))
-              (forms/stateful-button
-               [:input.remove-user
-                {:data-success-text "Saved",
-                 :data-loading-text "Saving...",
-                 :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
-                                false)
-                 :value "Remove Heroku Deploy User",
-                 :type "submit"}])
+                    [:p "Your Heroku key is entered. Great!"])
+             [:p (:heroku_api_key user)]
+             [:div (when-not (:heroku_api_key user)
+                     (om/build account/heroku-key {:current-user user} {:opts {:project-page? true}}))]
+             [:div (when (:heroku_api_key user)
+                     [:p
+                      "You can edit your Heroku key from your "
+                      [:a {:href "/account/heroku"} "account page"] "."])]]]
+           [:div.heroku-step
+            [:h4 "Step 2: Associate a Heroku SSH key with your account"]
+            [:span "Current deploy user: "
+             [:strong (or (:heroku_deploy_user project) "none") " "]
+             [:i.fa.fa-question-circle
+              {:data-bind "tooltip: {}",
+               :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
+            [:form.api
+             (if (= (:heroku_deploy_user project) (:login user))
+               (forms/stateful-button
+                [:input.remove-user
+                 {:data-success-text "Saved",
+                  :data-loading-text "Saving...",
+                  :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
+                                 false)
+                  :value "Remove Heroku Deploy User",
+                  :type "submit"}])
 
-              (forms/stateful-button
-               [:input.set-user
-                {:data-success-text "Saved",
-                 :data-loading-text "Saving...",
-                 :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
-                                                                            :login login}])
-                                false)
-                 :value (str "Set user to " (:login user)),
-                 :type "submit"}]))]]
-          [:div.heroku-step
-           [:h4
-            "Step 3: Add deployment settings to your "
-            [:a {:href "/docs/configuration#deployment"} "circle.yml file"] " (example below)."]
-           [:pre
-            [:code
-             "deployment:\n"
-             "  staging:\n"
-             "    branch: master\n"
-             "    heroku:\n"
-             "      appname: foo-bar-123"]]]])))))
+               (forms/stateful-button
+                [:input.set-user
+                 {:data-success-text "Saved",
+                  :data-loading-text "Saving...",
+                  :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
+                                                                             :login login}])
+                                 false)
+                  :value (str "Set user to " (:login user)),
+                  :type "submit"}]))]]
+           [:div.heroku-step
+            [:h4
+             "Step 3: Add deployment settings to your "
+             [:a {:href "/docs/configuration#deployment"} "circle.yml file"] " (example below)."]
+            [:pre
+             [:code
+              "deployment:\n"
+              "  staging:\n"
+              "    branch: master\n"
+              "    heroku:\n"
+              "      appname: foo-bar-123"]]]]])))))
 
 (defn other-deployment [project-data owner]
   (om/component
    (html
-    [:div
-     [:h2
-      "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
-     [:div.doc
-      [:p "Circle supports deploying to any server, using custom commands. See "
-       [:a {:target "_blank",
-            :href "https://circleci.com/docs/configuration#deployment"}
-        "our deployment documentation"]
-       " to set it up."]]])))
+    [:section
+     [:article
+      [:h2
+       "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
+      [:div.doc
+       [:p "Circle supports deploying to any server, using custom commands. See "
+        [:a {:target "_blank",
+             :href "https://circleci.com/docs/configuration#deployment"}
+         "our deployment documentation"]
+        " to set it up."]]]])))
 
 (defn aws [project-data owner]
   (reify
@@ -1130,50 +1118,51 @@
             controls-ch (om/get-shared owner [:comms :controls])
             input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
         (html
-         [:div.aws-page
-          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
-          [:div.aws-page-inner
-           [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
-            "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
-            [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
-            [:a {:href "http://aws.amazon.com/documentation/sdk-for-java/"} "the Java SDK"] ", "
-            [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
-            [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
-           [:p "We recommend that you create a unique "
-            [:a {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"} "IAM user"]
-            " for use by CircleCI."]
-           [:form
-            [:input#access-key-id
-             {:required true, :type "text", :value (or access_key_id "")
-              :on-change #(utils/edit-input controls-ch (input-path :access_key_id) %)}]
-            [:label {:placeholder "Access Key ID"}]
+         [:section.aws-page
+          [:article
+           [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+           [:div.aws-page-inner
+            [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
+             "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
+             [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
+             [:a {:href "http://aws.amazon.com/documentation/sdk-for-java/"} "the Java SDK"] ", "
+             [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
+             [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
+            [:p "We recommend that you create a unique "
+             [:a {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"} "IAM user"]
+             " for use by CircleCI."]
+            [:form
+             [:input#access-key-id
+              {:required true, :type "text", :value (or access_key_id "")
+               :on-change #(utils/edit-input controls-ch (input-path :access_key_id) %)}]
+             [:label {:placeholder "Access Key ID"}]
 
-            [:input#secret-access-key
-             {:required true, :type "text", :value (or secret_access_key "")
-              :on-change #(utils/edit-input controls-ch (input-path :secret_access_key) %)}]
-            [:label {:placeholder "Secret Access Key"}]
+             [:input#secret-access-key
+              {:required true, :type "text", :value (or secret_access_key "")
+               :on-change #(utils/edit-input controls-ch (input-path :secret_access_key) %)}]
+             [:label {:placeholder "Secret Access Key"}]
 
-            [:div.buttons
-              (forms/managed-button
-               [:input {:data-failed-text "Failed"
-                        :data-success-text "Saved"
-                        :data-loading-text "Saving..."
-                        :value "Save AWS keys"
-                        :type "submit"
-                        :on-click #(do
-                                     (put! controls-ch [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])
-                                     false)}])
-              (when (and access_key_id secret_access_key)
+             [:div.buttons
                (forms/managed-button
-                [:input.remove {:data-failed-text "Failed"
-                                :data-success-text "Cleared"
-                                :data-loading-text "Clearing..."
-                                :value "Clear AWS keys"
-                                :type "submit"
-                                :on-click #(do
-                                           (put! controls-ch [:edited-input {:path (input-path) :value nil}])
-                                           (put! controls-ch [:saved-project-settings {:project-id project-id}])
-                                           false)}]))]]]])))))
+                [:input {:data-failed-text "Failed"
+                         :data-success-text "Saved"
+                         :data-loading-text "Saving..."
+                         :value "Save AWS keys"
+                         :type "submit"
+                         :on-click #(do
+                                      (put! controls-ch [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])
+                                      false)}])
+               (when (and access_key_id secret_access_key)
+                (forms/managed-button
+                 [:input.remove {:data-failed-text "Failed"
+                                 :data-success-text "Cleared"
+                                 :data-loading-text "Clearing..."
+                                 :value "Clear AWS keys"
+                                 :type "submit"
+                                 :on-click #(do
+                                            (put! controls-ch [:edited-input {:path (input-path) :value nil}])
+                                            (put! controls-ch [:saved-project-settings {:project-id project-id}])
+                                            false)}]))]]]]])))))
 
 (defn project-settings [data owner]
   (reify
@@ -1197,8 +1186,8 @@
                 :experimental (om/build experiments project-data)
                 :setup (om/build dependencies project-data)
                 :tests (om/build tests project-data)
-                :hooks (om/build chatrooms project-data)
-                :webhooks (om/build webhooks project-data)
+                :hooks (om/build notifications project-data)
+                ; :webhooks (om/build webhooks project-data)
                 :badges (om/build status-badges project-data)
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
@@ -1207,5 +1196,5 @@
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
-                (om/build overview project-data))]]
+                (om/build general project-data))]]
              ]))))))
