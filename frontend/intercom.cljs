@@ -14,20 +14,20 @@
   (when message
     (.text (jq "#newMessageBody") (str message "\n\n"))))
 
-(defn intercom-v2-new-message [jq message]
+(defn intercom-v2-new-message []
   (js/Intercom "show"))
 
 (defn raise-dialog [ch & [message]]
-  (if-let [jq (intercom-jquery)]
-    (try
-      (intercom-v1-new-message jq message)
-      (catch :default e
-        (try
-          (intercom-v2-new-message jq message)
-          (catch :default e
-            (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")
-            (utils/merror e)))))
-    (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")))
+  (try
+    (let [jq (intercom-jquery)]
+      (intercom-v1-new-message jq message))
+    (catch :default e
+      (try
+        (intercom-v2-new-message)
+        (catch :default e
+          (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")
+          (utils/merror e)))))
+  (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com"))
 
 (defn user-link []
   (let [path (.. js/window -location -pathname)
