@@ -501,9 +501,16 @@
       background: @grayLightest;
     }
     &:active {
-      .shadow_deboss(@white);
-      color: inherit;
+      &:not(.active) {
+        .shadow_deboss(@white);
+        color: inherit;
+        background: @grayLightest;
+      }
+    }
+    &.active {
+      color: @grayDark;
       background: @grayLightest;
+      cursor: default;
     }
   }
 }
