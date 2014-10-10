@@ -1176,7 +1176,6 @@
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner common/spinner]
            [:div#project-settings
-            ; [:aside sidebar]
             [:div.project-settings-inner
              (om/build common/flashes (get-in data state/error-message-path))
              [:div#subpage
@@ -1187,7 +1186,6 @@
                 :setup (om/build dependencies project-data)
                 :tests (om/build tests project-data)
                 :hooks (om/build notifications project-data)
-                ; :webhooks (om/build webhooks project-data)
                 :badges (om/build status-badges project-data)
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
@@ -1196,5 +1194,4 @@
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
-                (om/build overview project-data))]]
-             ]))))))
+                (om/build overview project-data))]]]))))))
