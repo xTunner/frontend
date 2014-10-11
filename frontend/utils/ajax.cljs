@@ -139,5 +139,6 @@
           :handler #(put! channel (assoc % :status :success))
           :error-handler #(put! channel %)
           :finally #(close! channel)})
-        (assoc :uri url :method :post))
+        (assoc :uri url :method :post)
+        clj-ajax/ajax-request)
     channel))
