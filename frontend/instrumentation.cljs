@@ -37,30 +37,40 @@
     (assert id)
     id))
 
+(defn wrap-will-update
+  "Tracks last call time of componentWillUpdate for each component, then calls
+   the original componentWillUpdate."
+  [f]
+  (fn [next-props next-state]
+    (this-as this
+      (swap! component-stats update-in [(react-id this)]
+             merge {:display-name ((aget this "getDisplayName"))
+                    :last-will-update (time/now)})
+      (.call f this next-props next-state))))
+
+(defn wrap-did-update
+  "Tracks last call time of componentDidUpdate for each component and updates
+   the render times (using start time provided by wrap-will-update), then
+   calls the original componentDidUpdate."
+  [f]
+  (fn [prev-props prev-state]
+    (this-as this
+      (swap! component-stats update-in [(react-id this)]
+             (fn [stats]
+               (let [now (time/now)]
+                 (-> stats
+                     (assoc :last-did-update now)
+                     (update-in [:render-ms] (fnil conj [])
+                                (if (time/after? now (:last-will-update stats))
+                                  (time/in-millis (time/interval (:last-will-update stats) now))
+                                  0))))))
+      (.call f this prev-props prev-state))))
+
 (def instrumentation-methods
   (om/specify-state-methods!
    (-> om/pure-methods
-       (update-in [:componentWillUpdate]
-                  (fn [f]
-                    (fn [next-props next-state]
-                      (this-as this
-                        (swap! component-stats update-in [(react-id this)] merge {:display-name ((aget this "getDisplayName"))
-                                                                                  :last-will-update (time/now)})
-                        (.call f this next-props next-state)))))
-       (update-in [:componentDidUpdate]
-                  (fn [f]
-                    (fn [prev-props prev-state]
-                      (this-as this
-                        (swap! component-stats update-in [(react-id this)]
-                               (fn [stats]
-                                 (let [now (time/now)]
-                                   (-> stats
-                                       (assoc :last-did-update now)
-                                       (update-in [:render-ms] (fnil conj [])
-                                                  (if (time/after? now (:last-will-update stats))
-                                                    (time/in-millis (time/interval (:last-will-update stats) now))
-                                                    0))))))
-                        (.call f this prev-props prev-state)))))
+       (update-in [:componentWillUpdate] wrap-will-update)
+       (update-in [:componentDidUpdate] wrap-did-update)
        (clj->js))))
 
 (defn avg [coll]
