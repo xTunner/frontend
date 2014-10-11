@@ -28,6 +28,8 @@
           (utils/merror e)
           state)))))
 
+;; map of react-id to component render stats, e.g.
+;; {"0.1.1" {:last-will-update <time 3pm> :display-name "App" :last-did-update <time 3pm> :render-ms [10 39 20 40]}}
 (def component-stats (atom {}))
 
 (defn react-id [x]
@@ -42,9 +44,8 @@
                   (fn [f]
                     (fn [next-props next-state]
                       (this-as this
-                        (let [dname ((aget this "getDisplayName"))]
-                          (swap! component-stats update-in [(react-id this)] merge {:display-name dname
-                                                                                    :last-will-update (time/now)}))
+                        (swap! component-stats update-in [(react-id this)] merge {:display-name ((aget this "getDisplayName"))
+                                                                                  :last-will-update (time/now)})
                         (.call f this next-props next-state)))))
        (update-in [:componentDidUpdate]
                   (fn [f]
