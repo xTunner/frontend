@@ -249,7 +249,7 @@
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)
-        instrument? (or (env/development?) (get-in @state [:current-user :admin]))]
+        instrument? (env/development?)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
     (when instrument? (instrumentation/setup-component-stats!))
