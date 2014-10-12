@@ -33,7 +33,7 @@
 (def component-stats (atom {}))
 
 (defn react-id [x]
-  (let [id (.-_rootNodeID x)]
+  (let [id (aget x "_rootNodeID")]
     (assert id)
     id))
 
