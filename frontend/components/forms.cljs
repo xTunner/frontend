@@ -3,6 +3,7 @@
             [frontend.async :refer [put!]]
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
+            [frontend.disposable :as disposable :refer [dispose]]
             [om.core :as om :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html]]))
@@ -177,14 +178,14 @@
 (defn cleanup
   "Cleans up api-tap channel and stops the idle timer from firing"
   [owner]
-  (close! (om/get-state owner [:api-tap]))
+  (dispose (om/get-state owner [:api-tap-id]))
   (js/clearTimeout (om/get-state owner [:idle-timer])))
 
 (defn wrap-handler
   "Wraps the on-click handler with a uuid binding to trace the channel passing, and taps
   the api channel so that we can wait for the api call to finish successfully."
   [handler owner api-count]
-  (let [api-tap (om/get-state owner [:api-tap])
+  (let [api-tap (disposable/from-id (om/get-state owner [:api-tap-id]))
         api-mult (om/get-shared owner [:comms :api-mult])]
     (fn [& args]
       (append-cycle owner :loading)
@@ -210,7 +211,7 @@
     (init-state [_]
       {:lifecycle [:idle]
        ;; use a sliding-buffer so that we don't block
-       :api-tap (chan (sliding-buffer 10))
+       :api-tap-id (disposable/register (chan (sliding-buffer 10)) close!)
        :idle-timer nil})
 
     om/IWillUnmount (will-unmount [_] (cleanup owner))
