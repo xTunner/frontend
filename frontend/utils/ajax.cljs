@@ -88,8 +88,7 @@
         clj-ajax/transform-opts)))
 
 ;; TODO prefixes not implemented
-(defn ajax [method url message channel & {:keys [params keywords? context headers format]
-                                          :or {keywords? true format :json}
+(defn ajax [method url message channel & {:keys [context]
                                           :as opts}]
   (let [uuid frontend.async/*uuid*
         base-opts {:method method
@@ -106,34 +105,21 @@
         ajax-opts
         clj-ajax/ajax-request)))
 
-;; This is all very mess, it should be cleaned up at some point
 (defn managed-ajax [method url & {:keys [params keywords? headers format response-format csrf-token]
                                   :or {keywords? true
                                        response-format :json
                                        format :json
-                                       csrf-token true}}]
+                                       csrf-token true}
+                                  :as opts}]
   (let [channel (chan)
-        accept (case format
-                 :json "application/json"
-                 :xml "applicatin/xml")]
-    (-> {:format (case format
-                   :json (clj-ajax/json-request-format)
-                   :xml (xml-request-format))
-         :response-format (case format
-                            :json (json-response-format {:keywords? keywords? :url url :method method})
-                            :xml (xml-response-format))
-         :keywords? keywords?
-         :params params
-         :headers (merge {:Accept accept}
-                         (when (and csrf-token (re-find #"^/" url))
-                           {:X-CSRFToken (utils/csrf-token)})
-                         headers)
-         :handler #(put! channel (assoc % :status :success :scopes (scopes-from-response %)))
-         ;; TODO: clean this up
-         :error-handler #(put! channel (normalize-error-response % {:url url}))
-         :finally #(close! channel)}
-        clj-ajax/transform-opts
-        (assoc :uri url :method method)
+        base-opts {:method method
+                   :uri url
+                   :handler #(put! channel (assoc % :status :success :scopes (scopes-from-response %)))
+                   :error-handler #(put! channel (normalize-error-response % {:url url}))
+                   :finally #(close! channel)}]
+    (-> base-opts
+        (merge opts)
+        ajax-opts
         clj-ajax/ajax-request)
     channel))
 
