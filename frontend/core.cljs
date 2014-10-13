@@ -19,6 +19,7 @@
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -181,10 +182,12 @@
    (merge {:target container
            :shared {:comms comms
                     :timer-atom (setup-timer-atom)
-                    :_app-state-do-not-use state}}
-          (when instrument?
-            {:instrument (fn [f cursor m]
-                           (om/build* f cursor (assoc m :descriptor instrumentation/instrumentation-methods)))}))))
+                    :_app-state-do-not-use state}
+           :instrument (if instrument?
+                         (fn [f cursor m]
+                           (om/build* f cursor (assoc m :descriptor instrumentation/instrumentation-methods)))
+                         (fn [f cursor m]
+                           (om/build* f cursor (assoc m :descriptor state-graft/no-local))))})))
 
 (defn find-top-level-node []
   (sel1 :body))
