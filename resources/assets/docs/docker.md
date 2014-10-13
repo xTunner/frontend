@@ -81,7 +81,7 @@ and technologies that can be deployed this way to a number of hosts that
 support Docker containers, but just a couple of examples are provided below
 for AWS Elastic Beanstalk and Google Compute Engine with Kubernetes.
 
-<h4 id="elastic-beanstalk">AWS Elastic Beanstalk</h3>
+<h4 id="elastic-beanstalk">AWS Elastic Beanstalk</h4>
 
 The example below demonstrates building and
 testing a Dockerized Rails app and deploying the built image to 
