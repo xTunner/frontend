@@ -137,6 +137,10 @@
       (add-link-targets (om/get-node owner))
       (when-let [fragment (:_fragment opts)]
         (utils/scroll-to-fragment! fragment)))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      ;; TODO: Move this to the markdown rendering process
+      (add-link-targets (om/get-node owner)))
     om/IRender
     (render [_]
       (html
