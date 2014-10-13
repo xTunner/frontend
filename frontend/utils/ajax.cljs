@@ -70,7 +70,7 @@
                       {:X-CSRFToken (utils/csrf-token)})
         format-opts (case format
                       :json {:format (clj-ajax/json-request-format)
-                             :response-format (json-response-format {:keywords? keywords? :url url :method method})
+                             :response-format (json-response-format {:keywords? keywords? :url uri :method method})
                              :keywords? keywords?
                              :headers (merge {:Accept "application/json"}
                                              csrf-header
