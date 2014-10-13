@@ -105,12 +105,7 @@
         ajax-opts
         clj-ajax/ajax-request)))
 
-(defn managed-ajax [method url & {:keys [params keywords? headers format response-format csrf-token]
-                                  :or {keywords? true
-                                       response-format :json
-                                       format :json
-                                       csrf-token true}
-                                  :as opts}]
+(defn managed-ajax [method url & {:as opts}]
   (let [channel (chan)
         base-opts {:method method
                    :uri url
