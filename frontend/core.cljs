@@ -183,10 +183,10 @@
     :shared {:comms comms
              :timer-atom (setup-timer-atom)
              :_app-state-do-not-use state}
-    :instrument (fn [f cursor m]
-                  (let [methods (cond-> state-graft/no-local-state-methods
-                                  instrument? instrumentation/instrument-methods)
-                        descriptor (state-graft/no-local-descriptor methods)]
+    :instrument (let [methods (cond-> state-graft/no-local-state-methods
+                                instrument? instrumentation/instrument-methods)
+                      descriptor (state-graft/no-local-descriptor methods)]
+                  (fn [f cursor m]
                     (om/build* f cursor (assoc m :descriptor descriptor))))}))
 
 (defn find-top-level-node []
