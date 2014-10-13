@@ -32,18 +32,13 @@
 ;; {"0.1.1" {:last-will-update <time 3pm> :display-name "App" :last-did-update <time 3pm> :render-ms [10 39 20 40]}}
 (def component-stats (atom {}))
 
-(defn react-id [x]
-  (let [id (aget x "_rootNodeID")]
-    (assert id)
-    id))
-
 (defn wrap-will-update
   "Tracks last call time of componentWillUpdate for each component, then calls
    the original componentWillUpdate."
   [f]
   (fn [next-props next-state]
     (this-as this
-      (swap! component-stats update-in [(react-id this)]
+      (swap! component-stats update-in [(utils/react-id this)]
              merge {:display-name ((aget this "getDisplayName"))
                     :last-will-update (time/now)})
       (.call f this next-props next-state))))
@@ -55,7 +50,7 @@
   [f]
   (fn [prev-props prev-state]
     (this-as this
-      (swap! component-stats update-in [(react-id this)]
+      (swap! component-stats update-in [(utils/react-id this)]
              (fn [stats]
                (let [now (time/now)]
                  (-> stats
@@ -66,12 +61,10 @@
                                   0))))))
       (.call f this prev-props prev-state))))
 
-(def instrumentation-methods
-  (om/specify-state-methods!
-   (-> om/pure-methods
-       (update-in [:componentWillUpdate] wrap-will-update)
-       (update-in [:componentDidUpdate] wrap-did-update)
-       (clj->js))))
+(defn instrument-methods [methods]
+  (-> methods
+      (update-in [:componentWillUpdate] wrap-will-update)
+      (update-in [:componentDidUpdate] wrap-did-update)))
 
 (defn avg [coll]
   (/ (reduce + coll)

@@ -1,6 +1,7 @@
 (ns frontend.state-graft
   (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [frontend.utils :as utils :include-macros true])
   (:import [goog.ui IdGenerator]))
 
 ;;; Modification of Om's "local state considered harmful" example:
@@ -8,17 +9,12 @@
 ;;; The primary departure from the original design is to use the internal
 ;;; React.js ID, which is component-stable, unlike counter-based fresh IDs.
 
-(defn react-id [x]
-  (let [id (.-_rootNodeID x)]
-    (assert id)
-    id))
-
 (defn get-gstate [owner]
   (aget (.-props owner) "__om_app_state"))
 
 (defn merge-pending-state [owner]
   (let [gstate (get-gstate owner)
-        spath  [:state-map (react-id owner)]
+        spath  [:state-map (utils/react-id owner)]
         states (get-in @gstate spath)]
     (when (:pending-state states)
       (swap! gstate update-in spath
@@ -28,7 +24,7 @@
               (merge (:render-state states) (:pending-state states)))
             (dissoc :pending-state)))))))
 
-(def no-local-state-meths
+(def no-local-state-methods
   (assoc om/pure-methods
     :getInitialState
     (fn []
@@ -41,7 +37,7 @@
               state  (merge (dissoc istate ::om/id)
                        (when (satisfies? om/IInitState c)
                          (om/allow-reads (om/init-state c))))
-              spath  [:state-map (react-id this) :render-state]]
+              spath  [:state-map (utils/react-id this) :render-state]]
           (aset props "__om_init_state" nil)
           (swap! (get-gstate this) assoc-in spath state)
           #js {:__om_id om-id})))
@@ -57,7 +53,7 @@
     (fn []
       (this-as this
         (let [c     (om/children this)
-              spath [:state-map (react-id this)]]
+              spath [:state-map (utils/react-id this)]]
           (when (satisfies? om/IWillUnmount c)
             (om/allow-reads (om/will-unmount c)))
           (swap! (get-gstate this) update-in spath dissoc))))
@@ -78,8 +74,8 @@
       (this-as this
         (let [c      (om/children this)
               gstate (get-gstate this)
-              states (get-in @gstate [:state-map (react-id this)])
-              spath  [:state-map (react-id this)]]
+              states (get-in @gstate [:state-map (utils/react-id this)])
+              spath  [:state-map (utils/react-id this)]]
           (when (satisfies? om/IDidUpdate c)
             (let [state (.-state this)]
               (om/allow-reads
@@ -90,15 +86,15 @@
           (when (:previous-state states)
             (swap! gstate update-in spath dissoc :previous-state)))))))
 
-(def no-local
-  (specify! (clj->js no-local-state-meths)
+(defn no-local-descriptor [methods]
+  (specify! (clj->js methods)
     om/ISetState
     (-set-state!
       ([this val render]
          (om/allow-reads
            (let [props     (.-props this)
                  app-state (aget props "__om_app_state")
-                 spath  [:state-map (react-id this) :pending-state]]
+                 spath  [:state-map (utils/react-id this) :pending-state]]
              (swap! (get-gstate this) assoc-in spath val)
              (when (and (not (nil? app-state)) render)
                (om/-queue-render! app-state this)))))
@@ -106,21 +102,21 @@
          (om/allow-reads
            (let [props     (.-props this)
                  app-state (aget props "__om_app_state")
-                 spath  [:state-map (react-id this) :pending-state]]
+                 spath  [:state-map (utils/react-id this) :pending-state]]
              (swap! (get-gstate this) update-in spath assoc-in ks val)
              (when (and (not (nil? app-state)) render)
                (om/-queue-render! app-state this))))))
     om/IGetRenderState
     (-get-render-state
       ([this]
-         (let [spath [:state-map (react-id this) :render-state]]
+         (let [spath [:state-map (utils/react-id this) :render-state]]
            (get-in @(get-gstate this) spath)))
       ([this ks]
          (get-in (om/-get-render-state this) ks)))
     om/IGetState
     (-get-state
       ([this]
-         (let [spath  [:state-map (react-id this)]
+         (let [spath  [:state-map (utils/react-id this)]
                states (get-in @(get-gstate this) spath)]
            (or (:pending-state states)
                (:render-state states))))
