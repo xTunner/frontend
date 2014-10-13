@@ -130,26 +130,26 @@
    [:span {:dangerouslySetInnerHTML
            #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
-(defn docs-subpage [doc owner]
+(defn subpage-content [doc owner]
   (reify
     om/IDidMount
     (did-mount [_]
       (add-link-targets (om/get-node owner))
       (utils/scroll-to-fragment! (-> owner om/get-state :_fragment)))
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (add-link-targets (om/get-node owner))
-      (utils/scroll-to-fragment! (-> owner om/get-state :_fragment)))
     om/IRender
     (render [_]
       (html
-       [:div
-        (om/build docs-title doc)
-        (if-not (empty? (:children doc))
-          (om/build article-list (:children doc))
-          (if (:markdown doc)
-            (om/build markdown (:markdown doc))
-            [:div.loading-spinner common/spinner]))]))))
+       (om/build markdown (:markdown doc))))))
+
+(defrender docs-subpage [doc owner]
+  (html
+   [:div
+    (om/build docs-title doc)
+    (if-not (empty? (:children doc))
+      (om/build article-list (:children doc))
+      (if (:markdown doc)
+        (om/build subpage-content doc {:init-state (om/get-state owner)})
+        [:div.loading-spinner common/spinner]))]))
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
