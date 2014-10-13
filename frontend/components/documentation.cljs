@@ -6,6 +6,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.components.common :as common]
+            [frontend.controllers.navigation :as navigation]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
@@ -133,9 +134,13 @@
 (defn docs-subpage [doc owner]
   (reify
     om/IDidMount
-    (did-mount [_] (add-link-targets (om/get-node owner)))
+    (did-mount [_]
+      (add-link-targets (om/get-node owner))
+      (navigation/scroll-to-fragment! (-> owner om/get-state :_fragment)))
     om/IDidUpdate
-    (did-update [_ _ _] (add-link-targets (om/get-node owner)))
+    (did-update [_ _ _]
+      (add-link-targets (om/get-node owner))
+      (navigation/scroll-to-fragment! (-> owner om/get-state :_fragment)))
     om/IRender
     (render [_]
       (html
@@ -149,6 +154,7 @@
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
+        fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
         categories ((juxt :gettingstarted :languages :how-to :troubleshooting
                           :reference :parallelism :privacy-security) docs)]
@@ -165,4 +171,4 @@
          [:article
           (if-not subpage
             (om/build front-page app)
-            (om/build docs-subpage (get docs subpage)))]]]]])))
+            (om/build docs-subpage (get docs subpage) {:init-state {:_fragment fragment}}))]]]]])))
