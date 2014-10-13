@@ -6,7 +6,6 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.components.common :as common]
-            [frontend.controllers.navigation :as navigation]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
@@ -136,11 +135,11 @@
     om/IDidMount
     (did-mount [_]
       (add-link-targets (om/get-node owner))
-      (navigation/scroll-to-fragment! (-> owner om/get-state :_fragment)))
+      (utils/scroll-to-fragment! (-> owner om/get-state :_fragment)))
     om/IDidUpdate
     (did-update [_ _ _]
       (add-link-targets (om/get-node owner))
-      (navigation/scroll-to-fragment! (-> owner om/get-state :_fragment)))
+      (utils/scroll-to-fragment! (-> owner om/get-state :_fragment)))
     om/IRender
     (render [_]
       (html
