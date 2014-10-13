@@ -63,48 +63,47 @@
       (assoc :resp (get-in default-response [:response :resp]))
       (assoc :status :failed)))
 
-(defn ajax-opts [method url {:keys [params keywords? context headers format csrf-token
-                                    handler error-handler finally]
-                             :or {keywords? true format :json csrf-token true}}]
-  (println "FORMAT" format)
-  (let [csrf-header (when (and csrf-token (re-find #"^/" url))
+(defn ajax-opts [{:keys [keywords? context headers format csrf-token uri method]
+                  :or {keywords? true format :json csrf-token true}
+                  :as opts}]
+  (let [csrf-header (when (and csrf-token (re-find #"^/" uri))
                       {:X-CSRFToken (utils/csrf-token)})
-        common-opts {:handler handler
-                     :error-handler error-handler
-                     :finally finally}
         format-opts (case format
                       :json {:format (clj-ajax/json-request-format)
                              :response-format (json-response-format {:keywords? keywords? :url url :method method})
                              :keywords? keywords?
-                             :params params
                              :headers (merge {:Accept "application/json"}
                                              csrf-header
                                              headers)}
                       :xml {:format (xml-request-format)
                             :response-format (xml-response-format)
-                            :params params
                             :headers (merge {:Accept "application/xml"}
                                             csrf-header
                                             headers)}
                       :raw {:format :raw
-                            :response-format (raw-response-format)})]
-    (-> (merge common-opts format-opts)
+                            :response-format (raw-response-format)
+                            :headers headers})]
+    (-> opts
+        (merge format-opts)
         clj-ajax/transform-opts)))
 
 ;; TODO prefixes not implemented
 (defn ajax [method url message channel & {:keys [params keywords? context headers format]
                                           :or {keywords? true format :json}
                                           :as opts}]
-  (let [uuid frontend.async/*uuid*]
+  (let [uuid frontend.async/*uuid*
+        base-opts {:method method
+                   :uri url
+                   :handler #(binding [frontend.async/*uuid* uuid]
+                               (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
+                   :error-handler #(binding [frontend.async/*uuid* uuid]
+                                     (put! channel [message :failed (normalize-error-response % {:url url :context context})]))
+                   :finally #(binding [frontend.async/*uuid* uuid]
+                               (put! channel [message :finished context]))}]
     (put! channel [message :started context])
-    (-> (ajax-opts method url (merge opts
-                                     {:handler #(binding [frontend.async/*uuid* uuid]
-                                                  (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
-                                      :error-handler #(binding [frontend.async/*uuid* uuid]
-                                                        (put! channel [message :failed (normalize-error-response % {:url url :context context})]))
-                                      :finally #(binding [frontend.async/*uuid* uuid]
-                                                  (put! channel [message :finished context]))}))
-        (assoc :uri url :method method)
+    (-> base-opts
+        (merge opts)
+        ajax-opts
         clj-ajax/ajax-request)))
 
 ;; This is all very mess, it should be cleaned up at some point
