@@ -9,6 +9,7 @@
             [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
+            [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.style]))
 
@@ -30,7 +31,7 @@
 (defn track-org-settings [org-name]
   (mixpanel/track "View Org" {:username org-name}))
 
-(defn track-build [build]
+(defn track-build [user build]
   (mixpanel/track "View Build" (merge {:running (build-model/running? build)
                                        :build-num (:build_num build)
                                        :vcs-url (vcs-url/project-name (:vcs_url build))
