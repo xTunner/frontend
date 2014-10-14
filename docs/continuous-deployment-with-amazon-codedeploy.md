@@ -19,7 +19,7 @@ can communicate with the CodeDeploy agents.
 AWS provide a good [getting started with CodeDeploy guide][] for this part of
 the process.
 
-[getting started with CodeDeploy guide]: http://alpha-docs-aws.amazon.com/en_us/console/sds/applications-tutorial
+[getting started with CodeDeploy guide]: http://docs.aws.amazon.com/en_us/console/codedeploy/applications-user-guide
 
 
 ### CodeDeploy application
