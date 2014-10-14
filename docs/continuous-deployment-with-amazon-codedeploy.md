@@ -254,7 +254,7 @@ you need to provide all the information for your deployment in your
               key_pattern: apps/my-app-{SHORT_COMMIT}-{BUILD_NUM}
             region: us-east-1
             deployment_group: staging-instances
-            deployment_config: **TODO find out the new symbols for AWSSDS:CHEETAH etc**
+            deployment_config: CodeDeployDefault.AllAtOnce
 
 
 Breaking this down: there's one entry in the `codedeploy` block which is
