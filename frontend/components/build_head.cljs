@@ -35,7 +35,7 @@
          (if-not builds
            [:div.loading-spinner common/spinner]
            [:div.build-queue.active
-            (when-not usage-queued?
+            (when (and (:queued_at build) (not usage-queued?))
               [:p "Circle " (when run-queued? "has") " spent "
                (om/build common/updating-duration {:start (:queued_at build)
                                                    :stop (or (:start_time build) (:stop_time build))})
