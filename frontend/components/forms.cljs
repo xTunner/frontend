@@ -32,7 +32,8 @@
     {:channel channel :uuid uuid}))
 
 (defn deregister-channel! [owner uuid]
-  (om/update-state! owner [:registered-channel-uuids] #(disj % uuid))
+  ;;XXX The `when is a hack to silently ignore updates to unmounted component state.
+  (om/update-state! owner [:registered-channel-uuids] #(when % (disj % uuid)))
   (when-let [channel (get @registered-channels uuid)]
     (swap! registered-channels dissoc uuid)
     (close! channel)))
@@ -57,6 +58,7 @@
     (append-cycle owner :loading)
     (let [{:keys [uuid channel]} (register-channel! owner)]
       (binding [frontend.async/*uuid* uuid]
+        ;;XXX Async mutation of state may execute after dismount!
         (go (append-cycle owner (<! channel))
             (deregister-channel! owner uuid))
         (apply handler args)))))
