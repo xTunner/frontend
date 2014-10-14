@@ -242,6 +242,7 @@
     (assert (every? map? maps))
     (apply merge-with deep-merge* maps)))
 
+
 (defn set-page-title! [& [title]]
   (set! (.-title js/document) (strip-html
                                (if title
@@ -264,3 +265,8 @@
     ;; give the page time to render
     (rAF #(scroll-to-fragment! (:_fragment args)))
     (rAF #(set! (.-scrollTop (sel1 "body")) 0))))
+
+(defn react-id [x]
+  (let [id (aget x "_rootNodeID")]
+    (assert id)
+    id))

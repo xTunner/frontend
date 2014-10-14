@@ -19,6 +19,7 @@
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -173,18 +174,22 @@
     (js/setInterval #(reset! mya (datetime/server-now)) 1000)
     mya))
 
+(declare reinstall-om!)
 
 (defn install-om [state container comms instrument?]
   (om/root
    app/app
    state
-   (merge {:target container
-           :shared {:comms comms
-                    :timer-atom (setup-timer-atom)
-                    :_app-state-do-not-use state}}
-          (when instrument?
-            {:instrument (fn [f cursor m]
-                           (om/build* f cursor (assoc m :descriptor instrumentation/instrumentation-methods)))}))))
+   {:target container
+    :shared {:comms comms
+             :timer-atom (setup-timer-atom)
+             :_app-state-do-not-use state}
+    :instrument (let [methods (cond-> state-graft/no-local-state-methods
+                                instrument? instrumentation/instrument-methods)
+                      descriptor (state-graft/no-local-descriptor methods)]
+                  (fn [f cursor m]
+                    (om/build* f cursor (assoc m :descriptor descriptor))))
+    :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
   (sel1 :body))

@@ -76,7 +76,7 @@
 
     :error errors/error-page))
 
-(defn app* [app owner]
+(defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
     om/IRender
@@ -86,7 +86,9 @@
 
         (let [controls-ch (om/get-shared owner [:comms :controls])
               persist-state! #(put! controls-ch [:state-persisted])
-              restore-state! #(put! controls-ch [:state-restored])
+              restore-state! #(do (put! controls-ch [:state-restored])
+                                  ;; Components are not aware of external state changes.
+                                  (reinstall-om!))
               dom-com (dominant-component app)
               show-inspector? (get-in app state/show-inspector-path)
               logged-in? (get-in app state/user-path)
@@ -122,5 +124,7 @@
               shared/invite-form])))))))
 
 
-(defn app [app owner]
-  (reify om/IRender (render [_] (om/build app* (dissoc app :inputs)))))
+(defn app [app owner opts]
+  (reify om/IRender
+    (render [_]
+      (om/build app* (dissoc app :inputs :state-map) {:opts opts}))))
