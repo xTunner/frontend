@@ -174,6 +174,7 @@
     (js/setInterval #(reset! mya (datetime/server-now)) 1000)
     mya))
 
+(declare reinstall-om!)
 
 (defn install-om [state container comms instrument?]
   (om/root
@@ -187,7 +188,8 @@
                                 instrument? instrumentation/instrument-methods)
                       descriptor (state-graft/no-local-descriptor methods)]
                   (fn [f cursor m]
-                    (om/build* f cursor (assoc m :descriptor descriptor))))}))
+                    (om/build* f cursor (assoc m :descriptor descriptor))))
+    :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
   (sel1 :body))
