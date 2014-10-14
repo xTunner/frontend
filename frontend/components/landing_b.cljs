@@ -143,14 +143,6 @@
               :tools #{:rails :ruby}
               ;; TODO get position from index rather than specifying manually
               :position 0}
-    :kickstarter {:name "Kickstarter"
-                  :logo ""
-                  :quote "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently."
-                  :cite "Aaron Suggs"
-                  :cite-title "Operations Engineer"
-                  :cite-avatar "/img/outer/home/aaron-suggs.jpg"
-                  :tools #{:django :python}
-                  :position 1}
     :intercom {:name "Intercom"
                :logo ""
                :quote "Sed dolor dolor, accumsan et lacinia bibendum, molestie eget est. Ut et aliquet quam, a molestie felis. Donec dignissim mi eget nibh iaculis convallis."
@@ -158,15 +150,7 @@
                :cite-title "Engineer"
                :cite-avatar "/img/outer/stories/john.jpg"
                :tools #{:node :javascript}
-               :position 2}
-    :gocardless {:name "GoCardless"
-                 :logo ""
-                 :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to test more thoroughly and deploy with confidence."
-                 :cite "Alan Kennedy"
-                 :cite-title "Engineer"
-                 :cite-avatar "/img/outer/stories/arthur.jpg"
-                 :tools #{:ruby :rails :postgres :javascript :node}
-                 :position 3}
+               :position 1}
     :spotify {:name "Spotify"
               :logo ""
               :quote "Donec molestie scelerisque libero sed pellentesque. Integer cursus sem arcu, nec sagittis orci fermentum facilisis. Donec sit amet felis non leo interdum placerat."
@@ -174,7 +158,23 @@
               :cite-title "Brute Force Hacker"
               :cite-avatar "/img/outer/stories/john.jpg"
               :tools #{:php}
-              :position 4}))
+              :position 2}
+    :kickstarter {:name "Kickstarter"
+                  :logo ""
+                  :quote "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently."
+                  :cite "Aaron Suggs"
+                  :cite-title "Operations Engineer"
+                  :cite-avatar "/img/outer/home/aaron-suggs.jpg"
+                  :tools #{:django :python}
+                  :position 3}
+    :gocardless {:name "GoCardless"
+                 :logo ""
+                 :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to test more thoroughly and deploy with confidence."
+                 :cite "Alan Kennedy"
+                 :cite-title "Engineer"
+                 :cite-avatar "/img/outer/stories/arthur.jpg"
+                 :tools #{:ruby :rails :postgres :javascript :node}
+                 :position 4}))
 
 (defn home [app owner]
   (reify
