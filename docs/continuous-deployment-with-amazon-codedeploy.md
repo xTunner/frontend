@@ -7,6 +7,10 @@ last_updated: September 29, 2014
 
 ## Getting Started with CodeDeploy on CircleCI
 
+AWS CodeDeploy is a deployment system that enables developers to automate the
+deployment of applications to EC2 instances, and to update the applications as
+required.
+
 ### AWS infrastructure
 The first step to continuous deployment with CodeDeploy is setting up your EC2
 instances, tagging them so you can define deployment groups, installing the
