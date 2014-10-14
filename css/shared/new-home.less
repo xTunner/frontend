@@ -909,9 +909,9 @@
       .margin(@c2) when (@c2 > 1) {& + .quote-card { margin-left: (@tile * @i);}} .margin(@c2);
     }
   } .selected_quote(@customers_brands);
-  .flexy();
+  .flex(0 3 (@practice_logo_height + @tile));
+  .flexy(flex-end);
   width: 100%;
-  margin-top: @tile;
   figure {
     margin: 0;
   }
