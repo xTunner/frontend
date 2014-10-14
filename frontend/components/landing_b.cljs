@@ -387,10 +387,10 @@
                  [:h3.slogan.context {:item-prop "Next you'll just need to sign in using your GitHub account."
                                       :alt       "Signing up using your GitHub login lets us start really fast."}
                   "Next you'll just need to sign in using your GitHub account."]
-                 [:h3.slogan.context {:item-prop "Still not convinced yet? Try taking the full tour."
+                 [:h3.slogan.context {:item-prop "Still not convinced yet? Check out our pricing."
                                       :alt       "Currently, we must request permissions in bulk."}
-                  "Still not convinced yet? Try taking the "
-                  [:a {:href "#"} "full tour"]
+                  "Still not convinced yet? Check out our "
+                  [:a {:href "pricing"} "pricing"]
                   "."]]
                 [:div.home-avatars
                  [:div.avatars
