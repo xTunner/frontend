@@ -782,6 +782,17 @@
   &:not(:last-child) {
     margin-bottom: (-@tile * 3);
   }
+  &.active {
+    .supported-tool {
+      &:hover,
+      &.hover {
+        &:before {
+          opacity: 1;
+          transition: (@practice_tool_speed / 2) (@practice_tool_speed / 2) @practice_tool_timing;
+        }
+      }
+    }
+  }
   &:not(.active) {
     z-index: 1;
     figure {
@@ -842,18 +853,15 @@
     position: absolute;
     left: 50%;
     min-width: 100%;
+    opacity: 0;
     color: @gray;
     text-align: center;
     text-transform: capitalize;
     padding-right: 1em;
-    transition: (@practice_tool_speed / 2) (@practice_tool_speed / 2) @practice_tool_timing;
+    transition: @practice_tool_speed @practice_tool_timing;
   }
   &:not(:hover) {
     &:not(.hover) {
-      &:before {
-        opacity: 0;
-        transition: @practice_tool_speed @practice_tool_timing;
-      }
       svg {
         .filter(none);
         width: @practice_tool_size;
