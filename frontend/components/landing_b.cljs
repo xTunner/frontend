@@ -282,7 +282,6 @@
                   ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
                   (common/ico :chevron-down)]]]
                [:section.home-practice
-                [:div.home-top-shelf]
                 (let [hovered-customer (:hovered-customer state)
                       tools (get-in customer-brands [hovered-customer :tools] #{})]
                  [:div.practice-tools
