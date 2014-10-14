@@ -130,25 +130,35 @@
    [:span {:dangerouslySetInnerHTML
            #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
-(defn docs-subpage [doc owner]
+(defn subpage-content [doc owner opts]
   (reify
     om/IDidMount
-    (did-mount [_] (add-link-targets (om/get-node owner)))
+    (did-mount [_]
+      (add-link-targets (om/get-node owner))
+      (when-let [fragment (:_fragment opts)]
+        (utils/scroll-to-fragment! fragment)))
     om/IDidUpdate
-    (did-update [_ _ _] (add-link-targets (om/get-node owner)))
+    (did-update [_ _ _]
+      ;; TODO: Move this to the markdown rendering process
+      (add-link-targets (om/get-node owner)))
     om/IRender
     (render [_]
       (html
-       [:div
-        (om/build docs-title doc)
-        (if-not (empty? (:children doc))
-          (om/build article-list (:children doc))
-          (if (:markdown doc)
-            (om/build markdown (:markdown doc))
-            [:div.loading-spinner common/spinner]))]))))
+       (om/build markdown (:markdown doc))))))
+
+(defrender docs-subpage [doc owner opts]
+  (html
+   [:div
+    (om/build docs-title doc)
+    (if-not (empty? (:children doc))
+      (om/build article-list (:children doc))
+      (if (:markdown doc)
+        (om/build subpage-content doc {:opts opts})
+        [:div.loading-spinner common/spinner]))]))
 
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
+        fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
         categories ((juxt :gettingstarted :languages :how-to :troubleshooting
                           :reference :parallelism :privacy-security) docs)]
@@ -165,4 +175,4 @@
          [:article
           (if-not subpage
             (om/build front-page app)
-            (om/build docs-subpage (get docs subpage)))]]]]])))
+            (om/build docs-subpage (get docs subpage) {:opts {:_fragment fragment}}))]]]]])))
