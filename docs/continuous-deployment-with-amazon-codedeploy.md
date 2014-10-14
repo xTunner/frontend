@@ -15,7 +15,7 @@ can communicate with the CodeDeploy agents.
 AWS provide a good [getting started with CodeDeploy guide][] for this part of
 the process.
 
-[gettings started with CodeDeploy guide]: http://alpha-docs-aws.amazon.com/en_us/console/sds/applications-tutorial
+[getting started with CodeDeploy guide]: http://alpha-docs-aws.amazon.com/en_us/console/sds/applications-tutorial
 
 
 ### CodeDeploy application
@@ -38,7 +38,7 @@ use these lifecycle scripts to stop your service before a new version is
 deployed, run database migrations, install dependencies etc.
 
 An [application revision][] is a zipfile or tarball containing the code/resources
-to be deployed, it's usually created by packaging up your entire repo but can
+to be deployed. It's usually created by packaging up your entire repo but can
 be a sub-directory of the repo if desired. The `AppSpec` file must be stored
 in the application revision as `<application-root>/appspec.yml`.
 
@@ -85,8 +85,6 @@ revision keys if you don't want to give access to the entire bucket.
 
 The following policy snippet allows us to upload to `my-bucket` as long as the
 key starts with `my-app`.
-
-**TODO: Validate this policy snippet**
 
     {
       "Version": "2012-10-17",
@@ -150,7 +148,7 @@ us sufficient accesss:
 
 **Note:** This is the minimal policy necessary for creating deployments to
 `my-app`. You will need to add additional `Resource` statements for each
-additional CodeDeploy application, alternatively you can use wildcards in the
+additional CodeDeploy application. Alternatively, you can use wildcards in the
 resource specification.
 
 If you want to use custom deployment configurations then we will also need the
@@ -165,10 +163,10 @@ configurations, check out the [CodeDeploy IAM docs][] for more information.
 Go to your project's **Project Settings > AWS keys** page, enter your IAM
 user's Access Key ID and Secret Access Key and hit "Save AWS keys".
 Your AWS keys are stored encrypted but it's important to note that they need to
-be made available to code inside your build containers, anyone who can commit
+be made available to code inside your build containers; anyone who can commit
 code to your repo or trigger an ssh build will be able to read the AWS keys.
 This is another important reason to use IAM to limit the resources the keys
-can access.
+can access!
 
 
 ### Step 3: (Optional) Configure packaging and revision storage
@@ -188,7 +186,7 @@ and register new revisions:
 If you want to be able to deploy this application from several different
 branches (e.g. deploy `development` to your staging instances and `master` to
 your production instances) you can configure these project-wide application
-settings in the CirclCI UI at **Project Settings > Amazon CodeDeploy**. The
+settings in the CircleCI UI at **Project Settings > Amazon CodeDeploy**. The
 main benefit is that you will have a simpler [circle.yml][] file.
 
 You can also skip this step and configure everything in your [circle.yml][]
