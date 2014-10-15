@@ -139,7 +139,7 @@
                      We can focus on delivering value to our customers, not maintaining CI/CD infrastructure."
               :cite "John Duff"
               :cite-title "Director of Engineering"
-              :cite-avatar "/img/outer/stories/john.jpg"
+              :cite-avatar "/img/outer/home/john-duff.png"
               :tools #{:rails :ruby}
               ;; TODO get position from index rather than specifying manually
               :position 0}
@@ -148,7 +148,7 @@
                :quote "We love Circle at Intercom. Having a record of the full test suite for every push makes it easy for the code reviewer."
                :cite "Ciaran Lee"
                :cite-title "CTO"
-               :cite-avatar "/img/outer/stories/john.jpg"
+               :cite-avatar "/img/outer/home/ciaran-lee.png"
                :tools #{:node :javascript}
                :position 1}
     :sincerely {:name "Sincerely"
@@ -156,7 +156,7 @@
                 :quote "We never merge until we get that green checkmark. A pull request without CircleCi is like skydiving without a parachute."
                 :cite "Justin Watt"
                 :cite-title "Director of Engineering"
-                :cite-avatar "/img/outer/stories/john.jpg"
+                :cite-avatar "/img/outer/home/justin-watt.png"
                 :tools #{:php :amazon :mysql}
                 :position 2}
     :kickstarter {:name "Kickstarter"
@@ -164,7 +164,7 @@
                   :quote "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently."
                   :cite "Aaron Suggs"
                   :cite-title "Operations Engineer"
-                  :cite-avatar "/img/outer/home/aaron-suggs.jpg"
+                  :cite-avatar "/img/outer/home/aaron-suggs.png"
                   :tools #{:django :python}
                   :position 3}
     :gocardless {:name "GoCardless"
@@ -172,7 +172,7 @@
                  :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to deploy with confidence."
                  :cite "Alan Kennedy"
                  :cite-title "Engineer"
-                 :cite-avatar "/img/outer/stories/arthur.jpg"
+                 :cite-avatar "/img/outer/home/alan-kennedy.png"
                  :tools #{:ruby :rails :postgres :javascript :node}
                  :position 4}))
 
