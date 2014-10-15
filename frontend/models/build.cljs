@@ -217,3 +217,9 @@
 
 (defn id [build]
   (:build_url build))
+
+(defn owners [build]
+  (:owners build))
+
+(defn owner? [build user]
+  (->> build (owners) (some #{(:login user)})))

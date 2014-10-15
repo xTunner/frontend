@@ -40,7 +40,11 @@
                                       (when (:stop_time build)
                                         {:elapsed_hours (/ (- (.getTime (js/Date.))
                                                               (.getTime (js/Date. (:stop_time build))))
-                                                           1000 60 60)}))))
+                                                           1000 60 60)})))
+  (when (and (:oss build) (build-model/owner? build user))
+    (intercom/track :viewed-self-triggered-oss-build
+                    {:vcs-url (vcs-url/project-name (:vcs_url build))
+                     :outcome (:outcome build)})))
 
 (defn track-path [path]
   (mixpanel/track-pageview path)
