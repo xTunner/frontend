@@ -18,7 +18,8 @@
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
-            [frontend.instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -173,16 +174,22 @@
     (js/setInterval #(reset! mya (datetime/server-now)) 1000)
     mya))
 
+(declare reinstall-om!)
 
-(defn install-om [state container comms]
+(defn install-om [state container comms instrument?]
   (om/root
-     app/app
-     state
-     {:target container
-      :shared {:comms comms
-               :timer-atom (setup-timer-atom)
-               :target container
-               :_app-state-do-not-use state}}))
+   app/app
+   state
+   {:target container
+    :shared {:comms comms
+             :timer-atom (setup-timer-atom)
+             :_app-state-do-not-use state}
+    :instrument (let [methods (cond-> state-graft/no-local-state-methods
+                                instrument? instrumentation/instrument-methods)
+                      descriptor (state-graft/no-local-descriptor methods)]
+                  (fn [f cursor m]
+                    (om/build* f cursor (assoc m :descriptor descriptor))))
+    :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
   (sel1 :body))
@@ -190,7 +197,7 @@
 (defn find-app-container [top-level-node]
   (sel1 top-level-node "#om-app"))
 
-(defn main [state top-level-node history-imp]
+(defn main [state top-level-node history-imp instrument?]
   (let [comms       (:comms @state)
         container   (find-app-container top-level-node)
         uri-path    (.getPath utils/parsed-uri)
@@ -202,7 +209,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state container comms)
+    (install-om state container comms instrument?)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -246,11 +253,13 @@
   (mixpanel/set-existing-user)
   (let [state (app-state)
         top-level-node (find-top-level-node)
-        history-imp (history/new-history-imp top-level-node)]
+        history-imp (history/new-history-imp top-level-node)
+        instrument? (env/development?)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
+    (when instrument? (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (main state top-level-node history-imp)
+    (main state top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
@@ -278,7 +287,7 @@
     (println "value for" test-name "is now" (get-in @debug-state test-path))))
 
 (defn reinstall-om! []
-  (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state)))
+  (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state) true))
 
 (defn refresh-css! []
   (let [is-app-css? #(re-matches #"/assets/css/app.*?\.css(?:\.less)?" (dommy/attr % :href))
