@@ -12,7 +12,7 @@ In our [configuration document](/docs/configuration) we list everything that can
 Most people need only one or two settings in their `circle.yml` file.
 You don't have to include any section you don't need.
 
-## The sample
+<h2 id="sample">The sample</h2>
 
 ```
 ## Customize the test machine

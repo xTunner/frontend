@@ -33,7 +33,7 @@ dependencies:
     - echo y | android update sdk --no-ui --filter "build-tools-20.0.0"
 ```
 
-### Caching Android SDK components
+<h3 id="caching">Caching Android SDK components</h3>
 
 Installing SDK components can be expensive if you do it every time, so to speed
 up your builds, it is wise to copy
@@ -86,6 +86,8 @@ if [ ! -e $DEPS ]; then
   touch $DEPS
 fi
 ```
+
+<h3 id="emulator">Starting the Android emulator</h3>
 
 For your actual tests, the first thing you should do is start up
 the emulator, as this usually takes several minutes, sadly.

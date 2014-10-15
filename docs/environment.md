@@ -27,7 +27,7 @@ Some specifics:
 *   `g++ {{ versions.g++ }}`
 *   `GNU make 3.81`
 
-## Environmental Variables
+<h2 id="env-vars">Environmental Variables</h2>
 
 See [this doc](/docs/environment-variables) for a thorough list of all available environment variables. Here are some of the most
 useful ones:
@@ -83,7 +83,7 @@ You can use the `CI` and `CIRCLECI`
 environment variables in your program, if you need to have CI-specific behavior in you application.
 Naturally, this is not recommended in principle, but it can occasionally be useful in practice.
 
-## Browsers and GUIs
+<h2 id="browsers">Browsers and GUIs</h2>
 
 CircleCI runs graphical programs in a virtual framebuffer, using xvfb.
 This means programs like Selenium, Capybara, Jasmine, and other testing tools which require a browser will work perfectly, just like they do when you use them locally.
@@ -165,7 +165,7 @@ Supported versions are:
 Are you using a version of PHP that isn't included in this list?
 If so, please [contact us](mailto:sayhi@circleci.com).
 
-### Java (and JVM based languages)
+<h3 id="java">Java (and JVM based languages)</h3>
 
 CircleCI has the following languages and tools installed:
 
@@ -216,7 +216,7 @@ We have the following tools installed:
 You can [specify which GHC version](/docs/configuration#ghc-version)
 you'd like in your `circle.yml`.
 
-### Other languages
+<h3 id="other">Other languages</h3>
 
 We currently have a number of packages installed to help you test your backend applications, including:
 
@@ -225,7 +225,7 @@ We currently have a number of packages installed to help you test your backend a
 *   `golang {{ versions.golang }}`
 *   `erlang {{ versions.erlang }}`
 
-## Databases and Services
+<h2 id="databases">Databases and Services</h2>
 
 We have the following services automatically set up for your tests:
 

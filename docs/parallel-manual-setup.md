@@ -12,7 +12,7 @@ you've overridden our test commands, you'll still be able to set up parallelism 
 To begin with, you'll need to turn on parallelism from your project's settings page.
 Go to **Project Settings > Parallelism** to adjust the settings.
 
-## Splitting your test suite
+<h2 id="files-splitting">Splitting your test suite</h2>
 
 When you use CircleCI's parallelization, we run your code on multiple separate VMs.
 To use parallelism, you make your test runner run only a subset of tests on each VM.
@@ -42,7 +42,7 @@ roughly `1/N` of the files on each VM.
 By default, the file arguments will be appended to the end of the command.
 Support for positional arguments is coming very soon.
 
-## Using environment variables
+<h2 id="env-splitting">Using environment variables</h2>
 
 For more control over parallelism, we use environment variables to denote the number of VMs and to identify each one, and you can access these from your test runner:
 
@@ -63,7 +63,7 @@ For more control over parallelism, we use environment variables to denote the nu
   </dd>
 </dl>
 
-### A simple example
+<h3 id="simple-example">A simple example</h3>
 
 If you want to run the two commands
 `rake spec`
@@ -87,7 +87,7 @@ Obviously, this is slightly limited because it's hard-coded to
 only work with two nodes, and the test time might not balance
 across all nodes equally.
 
-### Balancing
+<h3 id="balancing">Balancing</h3>
 
 A more powerful version evenly splits all test files across N nodes. We recommend you write a script that does something like:
 
