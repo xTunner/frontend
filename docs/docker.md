@@ -159,7 +159,7 @@ To see the complete source code for the application from this example,
 see [circleci/docker-hello](https://github.com/circleci/docker-hello)
 on GitHub.
 
-<h4 id="kubernetes">Google Compute Engine and Kubernetes</h4>
+####Google Compute Engine and Kubernetes
 
 This example shows how to build and deploy a Dockerized application
 to [Google Compute Engine](https://cloud.google.com/products/compute-engine/)
