@@ -145,9 +145,9 @@
               :position 0}
     :intercom {:name "Intercom"
                :logo ""
-               :quote "Sed dolor dolor, accumsan et lacinia bibendum, molestie eget est. Ut et aliquet quam, a molestie felis. Donec dignissim mi eget nibh iaculis convallis."
-               :cite "Tony Stark"
-               :cite-title "Engineer"
+               :quote "We love Circle at Intercom. Having a record of the full test suite for every push makes it easy for the code reviewer."
+               :cite "Ciaran Lee"
+               :cite-title "CTO"
                :cite-avatar "/img/outer/stories/john.jpg"
                :tools #{:node :javascript}
                :position 1}
@@ -169,7 +169,7 @@
                   :position 3}
     :gocardless {:name "GoCardless"
                  :logo ""
-                 :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to test more thoroughly and deploy with confidence."
+                 :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to deploy with confidence."
                  :cite "Alan Kennedy"
                  :cite-title "Engineer"
                  :cite-avatar "/img/outer/stories/arthur.jpg"
