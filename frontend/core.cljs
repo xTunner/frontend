@@ -66,10 +66,12 @@
   (chan))
 
 (defn get-ab-tests [ab-test-definitions]
-  (let [overrides (some-> js/window
-                          (aget "renderContext")
-                          (aget "abOverrides")
-                          (utils/js->clj-kw))]
+  (let [overrides (merge (some-> js/window
+                                 (aget "renderContext")
+                                 (aget "abOverrides")
+                                 (utils/js->clj-kw))
+                         (when (env/development?)
+                           {:new-homepage true}))]
     (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
