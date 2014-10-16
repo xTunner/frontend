@@ -639,7 +639,7 @@ Circle will run its inference as well as all build commands from that directory.
 <h2 id="artifacts">Specifying custom artifacts directories and files</h2>
 
 You can specify extra directories and files to be
-[saved as artifacts](/docs/build_artifacts):
+[saved as artifacts](/docs/build-artifacts):
 
 ```
 general:
