@@ -13,7 +13,7 @@
 
 (defn setup-scroll-handler []
   (go-loop []
-    (when-let [event (utils/inspect (<! scroller-ch))]
+    (when-let [event (<! scroller-ch)]
       (doseq [[key callback] (:callbacks @scroller-state)]
         (utils/swallow-errors (callback event)))
       (recur))))
