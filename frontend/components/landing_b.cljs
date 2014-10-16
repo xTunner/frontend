@@ -140,7 +140,7 @@
               :cite "John Duff"
               :cite-title "Director of Engineering"
               :cite-avatar "/img/outer/home/john-duff.png"
-              :tools #{:rails :ruby}
+              :tools #{:rails :ruby :javascript :redis}
               ;; TODO get position from index rather than specifying manually
               :position 0}
     :intercom {:name "Intercom"
@@ -149,7 +149,7 @@
                :cite "Ciaran Lee"
                :cite-title "CTO"
                :cite-avatar "/img/outer/home/ciaran-lee.png"
-               :tools #{:node :javascript}
+               :tools #{:ruby :rails :javascript}
                :position 1}
     :sincerely {:name "Sincerely"
                 :logo ""
@@ -157,7 +157,7 @@
                 :cite "Justin Watt"
                 :cite-title "Director of Engineering"
                 :cite-avatar "/img/outer/home/justin-watt.png"
-                :tools #{:php :amazon :mysql}
+                :tools #{:php :amazon :mysql :javascript}
                 :position 2}
     :kickstarter {:name "Kickstarter"
                   :logo ""
@@ -165,7 +165,7 @@
                   :cite "Aaron Suggs"
                   :cite-title "Operations Engineer"
                   :cite-avatar "/img/outer/home/aaron-suggs.png"
-                  :tools #{:django :python}
+                  :tools #{:ruby :rails :javascript :amazon}
                   :position 3}
     :gocardless {:name "GoCardless"
                  :logo ""
