@@ -130,6 +130,6 @@
 
 
 (defn app [app owner opts]
-  (reify om/IRender
-    (render [_]
-      (om/build app* (dissoc app :inputs :state-map) {:opts opts}))))
+  (reify
+    om/IDisplayName (display-name [_] "App Wrapper")
+    om/IRender (render [_] (om/build app* (dissoc app :inputs :state-map) {:opts opts}))))
