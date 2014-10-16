@@ -41,7 +41,7 @@ Download all of the 3rd-party javascript dependencies:
 node_modules/.bin/bower install
 ```
 
-To test that everything worked, visit [http://circlehost:8080/assets/css/app.css.less](http://circlehost:8080/assets/css/app.css.less) and [http://circlehost:8080/assets/js/om-dev.js.stefon](http://circlehost:8080/assets/js/om-dev.js.stefon) in your browser.
+To test that everything worked, visit [http://circlehost:8080/assets/css/app.css](http://circlehost:8080/assets/css/app.css) and [http://circlehost:8080/assets/js/om-dev.js.stefon](http://circlehost:8080/assets/js/om-dev.js.stefon) in your browser.
 
 Now you should have everything you need to start hacking on Circle's frontend!
 
