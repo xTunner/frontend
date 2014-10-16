@@ -23,7 +23,7 @@ You can provide CircleCI with a GitHub user key on your project's
 CircleCI creates and associates this new SSH key with your GitHub user account
 and then has access to all your repositories.
 
-## User key security
+<h2 id="security">User key security</h2>
 
 CircleCI is serious when it comes to security.
 We will never make your SSH keys public.
@@ -33,7 +33,7 @@ Anyone that is a GitHub collaborator on a project employing user keys
 can access your repositories as you.
 Beware of someone stealing your code.
 
-## User key access-related error messages
+<h2 id="error-messages">User key access-related error messages</h2>
 
 Here are common errors that indicate you need to add a user key.
 

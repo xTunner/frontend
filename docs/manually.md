@@ -10,7 +10,7 @@ However, if you have an unusual setup or work in a framework that has no idiomat
 Fortunately, this is a pretty straightforward procedure.
 If you follow this guide, you should be running your tests in 20 minutes or less.
 
-## Standard projects not inferred
+<h2 id="standard">Standard projects not inferred</h2>
 
 Before we get into the details of a manual setup, here is a quick fix to a common problem first-timers can experience.
 If you have a standard project and received a "no test" status, it is probably because the project is in a subdirectory.
@@ -23,7 +23,7 @@ general:
   build_dir: api
 ```
 
-## The circle.yml file
+<h2 id="yml">The circle.yml file</h2>
 
 From here, we'll assume that you're manually setting up your tests.
 
@@ -36,7 +36,7 @@ We have provided a
 but you won't need that for now&mdash;
 we'll guide you through a simple setup and you can check out the comprehensive docs later.
 
-## The anatomy of a CircleCI build
+<h2 id="overview">The anatomy of a CircleCI build</h2>
 
 For testing purposes, most applications and libraries require five to six standard phases that are run sequentially:
 
@@ -57,7 +57,7 @@ should you want to learn more details.
 
 Failing commands (those with a non-zero exit code) will cause the whole build to fail, and you'll receive a notification.
 
-## Configuring your test machine
+<h2 id="machine">Configuring your test machine</h2>
 
 For the most part, there is nothing that you have to add to configure the test machine.
 We have already installed the most common libraries, languages, browsers, and databases that you'll need.
@@ -70,7 +70,7 @@ The [machine section](/docs/configuration#machine)
 of the `circle.yml` file is the place where you can tweak common settings, such as timezone, language version used, and
 `/etc/hosts` contents.
 
-## Checking out code
+<h2 id="checkout">Checking out code</h2>
 
 CircleCI will check out your code from your GitHub repository.
 Currently, we don't check out submodules.
@@ -92,7 +92,7 @@ checkout:
     - cp ./ci-server/config.yml ./app-server/config.yml
 ```
 
-## Setting up your dependencies
+<h2 id="dependencies">Setting up your dependencies</h2>
 
 In all likelihood, you'll have a list of libraries and dependencies that your app requires.
 CircleCI automatically detects Ruby's Gemfile, Python's requirements.txt, Clojure's project.clj, and Node's package.json, and then runs the appropriate commands to install the dependencies.
@@ -106,7 +106,7 @@ dependencies:
     - python ./install-packages
 ```
 
-## Setting up your test databases
+<h2 id="databases">Setting up your test databases</h2>
 
 We have already installed [most databases that you'll need](/docs/environment#databases)
 on our virtual machine.
@@ -122,7 +122,7 @@ database:
     - mysql -u ubuntu circle_test < my-database-setup.sql
 ```
 
-## Running your tests
+<h2 id="tests">Running your tests</h2>
 
 Now that everything is prepared, add your test commands to the
 `circle.yml` file so that you can run your tests.
@@ -144,7 +144,7 @@ test:
 
 You should be good to go. Happy testing!
 
-## Next steps
+<h2 id="next">Next steps</h2>
 
 If your tests fail and you need to fix something, CircleCI has a
 [list of common problems and their solutions](/docs/troubleshooting)

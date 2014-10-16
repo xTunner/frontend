@@ -73,7 +73,7 @@ We have pre-installed more than a dozen
 including PostgreSQL and MySQL. If needed, you have the option of
 [manually setting up your test database](/docs/manually#dependencies).
 
-### Using the Apache Webserver
+<h3 id="php-apache">Using the Apache Webserver</h3>
 
 Apache2 is already installed on CircleCI containers but it needs to be
 configured to host your PHP application.
@@ -124,7 +124,7 @@ test:
     - ./my_testing_script.sh
 ```
 
-### Enable Xdebug
+<h3 id="xdebug">Enable Xdebug</h3>
 
 Xdebug is installed for all versions of PHP, but is disabled (for performance reasons) by
 default. It is simple to enable this tool by adding the following to your
