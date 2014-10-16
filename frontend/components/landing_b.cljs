@@ -436,7 +436,7 @@
               epilog (om/get-node owner "home-epilog")
               cta-visible? (< (.-top (.getBoundingClientRect cta)) vh)
               epilog-visible? (< (.-top (.getBoundingClientRect epilog)) nav-height)
-              header-overlap-px (Math/abs (.-top (.getBoundingClientRect epilog)))
+              header-overlap-px (.-top (.getBoundingClientRect epilog))
               ;; normalize the overlap
               header-overlap-px (utils/inspect (min nav-height (max 0 header-overlap-px)))]
           (when-not (= cta-visible? @(om/get-state owner :cta-visible?))
