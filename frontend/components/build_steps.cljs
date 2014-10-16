@@ -7,6 +7,7 @@
             [frontend.models.build :as build-model]
             [frontend.components.common :as common]
             [frontend.state :as state]
+            [frontend.disposable :as disposable :refer [dispose]]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [goog.events]
@@ -153,13 +154,15 @@
   the size of the browser window chagnes. Has to add an event listener at the top level."
   [owner]
   (om/set-state! owner [:browser-resize-key]
-                 (goog.events/listen
-                  js/window
-                  "resize"
-                  #(put! (om/get-shared owner [:comms :controls])
-                         ;; This is pretty hacky, it would be nice if we had a better way to do this
-                         [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
-                                               :animate? false}]))))
+                 (disposable/register
+                   (goog.events/listen
+                     js/window
+                     "resize"
+                     #(put! (om/get-shared owner [:comms :controls])
+                            ;; This is pretty hacky, it would be nice if we had a better way to do this
+                            [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
+                                                  :animate? false}]))
+                   goog.events/unlistenByKey)))
 
 (defn check-autoscroll [owner deltaY]
   (cond
@@ -189,7 +192,7 @@
       (mount-browser-resize owner))
     om/IWillUnmount
     (will-unmount [_]
-      (goog.events/unlistenByKey (om/get-state owner [:browser-resize-key])))
+      (dispose (om/get-state owner [:browser-resize-key])))
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
