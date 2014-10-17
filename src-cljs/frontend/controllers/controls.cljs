@@ -326,8 +326,8 @@
 
 
 (defmethod post-control-event! :intercom-dialog-raised
-  [target message dialog-message previous-state current-state]
-  (intercom/raise-dialog (get-in current-state [:comms :errors]) dialog-message))
+  [target message _ previous-state current-state]
+  (intercom/raise-dialog (get-in current-state [:comms :errors])))
 
 
 (defmethod post-control-event! :intercom-user-inspected
@@ -700,8 +700,7 @@
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
-  (intercom/raise-dialog (get-in current-state [:comms :errors])
-                         (gstring/format "I think I found a bug in Circle at %s" build-url)))
+  (intercom/raise-dialog (get-in current-state [:comms :errors])))
 
 (defmethod post-control-event! :cancel-build-clicked
   [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
@@ -985,7 +984,7 @@
 
 
 
-(defmethod control-event :home-technology-tab-selected 
+(defmethod control-event :home-technology-tab-selected
   [target message {:keys [tab]} state]
   (assoc-in state state/selected-home-technology-tab-path tab))
 
