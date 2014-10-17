@@ -6,7 +6,8 @@
 
 ;; We may want to add StripeCheckout to externs to avoid all of the aget noise.
 
-(def stripe-key
+(def ^{:doc "Publishable key to identify our account with Stripe: https://stripe.com/docs/tutorials/dashboard#api-keys"}
+  stripe-key
   (if (env/production?)
     "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
     "pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD"))
