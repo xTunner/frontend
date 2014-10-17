@@ -1,33 +1,12 @@
 (ns frontend.intercom
   (:require [frontend.utils :as utils :include-macros true]))
 
-(defn intercom-jquery []
-  (aget js/window "intercomJQuery"))
-
-(defn intercom-v1-new-message [jq message]
-  (.click (jq "#IntercomTab"))
-  (when-not (.is (jq "#IntercomNewMessageContainer") ":visible")
-    (.click (jq "[href=IntercomNewMessageContainer]")))
-  (when-not (.is (jq "#newMessageBody") ":visible")
-    (throw "didn't find intercom v1 widget"))
-  (.focus (jq "#newMessageBody"))
-  (when message
-    (.text (jq "#newMessageBody") (str message "\n\n"))))
-
-(defn intercom-v2-new-message []
-  (js/Intercom "show"))
-
 (defn raise-dialog [ch & [message]]
   (try
-    (let [jq (intercom-jquery)]
-      (intercom-v1-new-message jq message))
+    (js/Intercom "show")
     (catch :default e
-      (try
-        (intercom-v2-new-message)
-        (catch :default e
-          (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")
-          (utils/merror e)))))
-  (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com"))
+      (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")
+      (utils/merror e))))
 
 (defn user-link []
   (let [path (.. js/window -location -pathname)
