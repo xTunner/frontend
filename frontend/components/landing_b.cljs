@@ -351,8 +351,8 @@
             [:div.customers-brands {:class (str "selected-" (get-in customer-brands [selected-customer :position]))}
              (for [[customer template] customer-brands]
                (html
-                [:a.customers-brand {:on-click #(put! controls-ch [:customer-logo-clicked {:customer customer}])
-                                     :on-mouse-enter #(om/set-state! owner [:hovered-customer] customer)
+                [:a.customers-brand {:on-mouse-enter #(do (put! controls-ch [:customer-logo-clicked {:customer customer}])
+                                                          (om/set-state! owner [:hovered-customer] customer))
                                      :on-mouse-leave #(om/set-state! owner [:hovered-customer] nil)}
                  (get customer-logos customer)]))]
             [:div.quote-card
