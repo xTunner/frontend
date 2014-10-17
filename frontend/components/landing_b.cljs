@@ -166,7 +166,7 @@
                                  (when (:header-bkg-visible data) ["bkg-visible"])
                                  (when (:header-bkg-invisible data) ["bkg-invisible"])
                                  (when (:header-cta-invisible data) ["cta-invisible"]))}
-          [:a.promo {:href "http://blog.circleci.com/continuous-delivery-with-docker-containers/"}
+          [:a.promo {:href "integrations/docker"}
                                         ; "What is Continuous Integration?"
            "Learn how we support Docker."]
           [:a.login {:href (auth-url)
