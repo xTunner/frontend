@@ -38,3 +38,6 @@
            "&filters%5B0%5D%5Battr%5D=custom_data.pr-followed"
            "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D="
            (second path)))))
+
+(defn track [event & [metadata]]
+  (js/Intercom "trackEvent" (name event) metadata))

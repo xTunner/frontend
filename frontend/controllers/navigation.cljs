@@ -176,7 +176,7 @@
             :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
-            (analytics/track-build (:resp api-result)))
+            (analytics/track-build current-user (:resp api-result)))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
