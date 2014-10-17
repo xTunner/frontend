@@ -1,7 +1,7 @@
 (ns frontend.intercom
   (:require [frontend.utils :as utils :include-macros true]))
 
-(defn raise-dialog [ch & [message]]
+(defn raise-dialog [ch]
   (try
     (js/Intercom "show")
     (catch :default e
