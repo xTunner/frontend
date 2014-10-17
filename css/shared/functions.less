@@ -10,7 +10,7 @@
   .prefix(@property; @value; @rest; @counter: length(@rest)) when (@counter > 0) {
     .prefix(@property; @value; @rest; (@counter - 1));
     @prefix: extract(@rest, @counter);
-    @{property}: ~"@{prefix}-@{value}";
+    @{property}: ~"-@{prefix}-@{value}";
   }.prefix(@property; @value; @rest);
   @{property}: @value;
 }
