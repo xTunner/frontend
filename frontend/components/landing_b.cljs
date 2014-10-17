@@ -112,7 +112,7 @@
              :cite "John Duff"
              :cite-title "Director of Engineering"
              :cite-avatar "/img/outer/home/john-duff.png"
-             :tools #{:rails :ruby :javascript :redis}
+             :tools #{:rails :ruby :javascript :redis :capistrano}
              ;; TODO get position from index rather than specifying manually
              :position 0}
    :intercom {:name "Intercom"
