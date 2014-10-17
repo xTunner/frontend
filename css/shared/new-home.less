@@ -691,9 +691,10 @@
   position: relative;
   max-height: 100%;
   margin: auto 0;
+  overflow: hidden;
   figure {
     @width: 1600px; // default 1600px
-    .flex(0, 0, auto);
+    .flex(0, 0, @width);
     position: relative;
     width: @width;
     height: (@width / 1.6);
