@@ -482,7 +482,8 @@
             [:div.avatar-circle
              (common/ico :logo)]]]
           [:div.home-bottom-shelf
-           [:span.home-footer-bait]]])))))
+           [:span.home-footer-bait
+            (common/ico :chevron-down)]]])))))
 
 
 (def footer
