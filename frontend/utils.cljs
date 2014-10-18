@@ -12,8 +12,10 @@
             [goog.Uri]
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
+            [goog.style]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing defrender)])
+  (:require-macros [frontend.utils :refer (inspect timing defrender)]
+                   [dommy.macros :refer [sel1]])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
@@ -239,3 +241,32 @@
   (let [maps (filter identity maps)]
     (assert (every? map? maps))
     (apply merge-with deep-merge* maps)))
+
+
+(defn set-page-title! [& [title]]
+  (set! (.-title js/document) (strip-html
+                               (if title
+                                 (str title  " - CircleCI")
+                                 "CircleCI"))))
+
+(defn scroll-to-fragment!
+  "Scrolls to the element with id of fragment, if one exists"
+  [fragment]
+  (when-let [node (goog.dom.getElement fragment)]
+    (let [body (sel1 "body")
+          node-top (goog.style/getPageOffsetTop node)
+          body-top (goog.style/getPageOffsetTop body)]
+      (set! (.-scrollTop body) (- node-top body-top)))))
+
+(defn scroll!
+  "Scrolls to fragment if the url had one, or scrolls to the top of the page"
+  [args]
+  (if (:_fragment args)
+    ;; give the page time to render
+    (rAF #(scroll-to-fragment! (:_fragment args)))
+    (rAF #(set! (.-scrollTop (sel1 "body")) 0))))
+
+(defn react-id [x]
+  (let [id (aget x "_rootNodeID")]
+    (assert id)
+    id))
