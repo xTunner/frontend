@@ -492,7 +492,7 @@
           (common/ico :logo)]
          [:nav.home-footer-about
           [:h5 "CircleCI"]
-          [:a {:href "/tour"} "Tour"]
+          ; [:a {:href "/tour"} "Tour"]
           [:a {:href "/about"} "About"]
           [:a "Support"]
           [:a {:href "/about#contact"} "Press"]
@@ -510,7 +510,7 @@
           [:h5 "Contact"]
           [:a {:href "https://twitter.com/circleci"} "Twitter"]
           [:a {:href "mailto:sayhi@circleci.com"} "Email"]
-          [:a {:href ""} "Support Chat"]
+          [:a {:href "https://www.hipchat.com/gjwkHcrD5"} "Support Chat"]
           [:a {:href ""} "Phone"]
           [:a {:href "https://goo.gl/maps/uhkLn"} "San Francisco, CA"]]]))
 
