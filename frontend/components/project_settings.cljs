@@ -104,7 +104,6 @@
     (render [_]
       (html
        [:section
-        (om/build follow-sidebar (:project project-data))
         [:article
          [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
          [:h4 "Option 1"]
@@ -118,7 +117,8 @@
          [:p
           "Override all settings via a "
           [:a {:href "/docs/configuration"} "circle.yml file"]
-          " in your repo. Very powerful."]]]))))
+          " in your repo. Very powerful."]]
+        (om/build follow-sidebar (:project project-data))]))))
 
 (defn mini-parallelism-faq [project-data]
   [:div.mini-faq
