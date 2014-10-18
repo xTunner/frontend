@@ -408,7 +408,7 @@
                [:li "Build artifacts"]
                [:li "Clean build environments"]
                [:li "GitHub Integration"]
-               [:li "Open Source Support"]]]]]
+               [:li "Free Open Source Support"]]]]]
            [:div.home-drawings
             [:figure]
             [:figure]
