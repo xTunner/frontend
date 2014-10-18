@@ -241,9 +241,9 @@
            [:h1.slogan.proverb {:item-prop "Ship better code, faster."
                                 :alt       "Let's just authorize first."}
             "Ship better code, faster."]
-           [:h3.slogan.context {:item-prop "You have a product to focus on, let Circle handle your"
+           [:h3.slogan.context {:item-prop "You have a product to focus on, let CircleCI handle your"
                                 :alt       "Signing up using your GitHub login lets us start really fast."}
-            "You have a product to focus on, let Circle handle your"]
+            "You have a product to focus on, let CircleCI handle your"]
            [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."
                                 :alt       "Currently, we must request permissions in bulk."}
             "Continuous Integration & Deployment."]]
