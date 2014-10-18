@@ -5,13 +5,13 @@ last_updated: Aug 23, 2012
 
 -->
 
-## [The CircleCI API](#intro)
+<h2 id="intro">The CircleCI API</h2>
 
 The CircleCI API is a RESTy, fully-featured API that allows you to do almost anything in CircleCI.
 You can access all information and trigger all actions.
 The only thing we don't provide access to is billing functions, which must be done from the CircleCI web UI.
 
-## [Getting started](#getting-started)
+## Getting started
 
 1.  Add an API token from your [account dashboard](/account/api).
 2.  To test it,
@@ -35,12 +35,12 @@ $ curl https://circleci.com/api/v1/me?circle-token=:token
 }
 ```
 
-## [Making calls](#calling)
+<h2 id="calling">Making calls</h2>
 
 All API calls are made in the same way, by making standard HTTP calls, using JSON, a content-type, and your API token.
 All CircleCI API endpoints begin with `"https://circleci.com/api/v1/"`.
 
-## [Authentication](#authentication)
+## Authentication
 
 To authenticate, add an API token using your [account dashboard](/account/api). To use the API token, add it to the
 `circle-token` query param, like so:
@@ -49,7 +49,7 @@ To authenticate, add an API token using your [account dashboard](/account/api). 
 curl https://circleci.com/api/v1/me?circle-token=:token
 ```
 
-## [Accept header](#accept-header)
+## Accept header
 
 If you specify no accept header, we'll return human-readable JSON with comments.
 If you prefer to receive compact JSON with no whitespace or comments, add the `"application/json" Accept header`.
@@ -59,19 +59,19 @@ Using `curl`:
 curl https://circleci.com/api/v1/me?circle-token=:token -H "Accept: application/json"
 ```
 
-## [User](#user)
+## User
 
 {{ api_data.me | api-endpoint }}
 
-## [Projects](#projects)
+## Projects
 
 {{ api_data.projects | api-endpoint }}
 
-## [Recent Builds Across All Projects](#recent-builds)
+<h2 id="recent-builds">Recent Builds Across All Projects</h2>
 
 {{ api_data.recent_builds | api-endpoint }}
 
-## [Recent Builds For a Single Project](#recent-builds-project)
+<h2 id="recent-builds-project">Recent Builds For a Single Project</h2>
 
 {{ api_data.project | api-endpoint }}
 
@@ -80,40 +80,40 @@ You can narrow the builds to a single branch by appending /tree/:branch to the u
 
 The branch name should be url-encoded.
 
-## [Single Build](#build)
+<h2 id="build">Single Build</h2>
 
 <span class='label label-info'>Note:</span> This is also the payload for the [notification webhooks](/docs/configuration#notify), in which case this object is the value to a key named 'payload'.
 
 {{ api_data.build | api-endpoint }}
 
-## [Artifacts of a Build](#build-artifacts)
+<h2 id="build-artifacts">Artifacts of a Build</h2>
 
 {{ api_data.artifacts | api-endpoint }}
 
-## [Retry a Build](#retry-build)
+<h2 id="retry-build">Retry a Build</h2>
 
 {{ api_data.retry_build | api-endpoint }}
 
 You can retry a build with ssh by swapping "retry" with "ssh":
 `https://circleci.com/api/v1/project/:username/:project/:build_num/ssh`
 
-## [Cancel a Build](#cancel-build)
+<h2 id="cancel-build">Cancel a Build</h2>
 
 {{ api_data.cancel_build | api-endpoint }}
 
-## [Trigger a new Build](#new-build)
+<h2 id="new-build">Trigger a new Build</h2>
 
 <span class='label label-info'>Note:</span> [Optional build parameters can be set using an experimental API](/docs/parameterized-builds)
 
 {{ api_data.project_branch | api-endpoint }}
 
-## [Clear Cache](#clear-cache)
+<h2 id="clear-cache">Clear Cache</h2>
 
 {{ api_data.project_build_cache | api-endpoint}}
 
 <!-- TODO: Custom filter or something for this -->
 
-## [Summary](#summary)
+## Summary
 
 All Circle API endpoints begin with
     `"https://circleci.com/api/v1/"`.

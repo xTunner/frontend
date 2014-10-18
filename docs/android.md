@@ -1,14 +1,14 @@
 <!--
 
 title: Test Android applications
-last_updated: July 29, 2014
+last_updated: Oct 17, 2014
 
 -->
 
 <!--
 
 title: Test Android applications
-last_updated: July 29, 2014
+last_updated: Oct 17, 2014
 
 -->
 
@@ -30,10 +30,10 @@ also need to install those separately. For example:
 ```
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --filter "build-tools-20.0.0"
+    - echo y | android update sdk --no-ui --filter "build-tools-21.0.0"
 ```
 
-### Caching Android SDK components
+<h3 id="caching">Caching Android SDK components</h3>
 
 Installing SDK components can be expensive if you do it every time, so to speed
 up your builds, it is wise to copy
@@ -79,13 +79,15 @@ if [ ! -e $DEPS ]; then
   cp -r /usr/local/android-sdk-linux $ANDROID_HOME &&
   echo y | android update sdk -u -a -t android-18 &&
   echo y | android update sdk -u -a -t platform-tools &&
-  echo y | android update sdk -u -a -t build-tools-20.0.0 &&
+  echo y | android update sdk -u -a -t build-tools-21.0.0 &&
   echo y | android update sdk -u -a -t sys-img-x86-android-18 &&
   echo y | android update sdk -u -a -t addon-google_apis-google-18 &&
   echo n | android create avd -n testing -f -t android-18 &&
   touch $DEPS
 fi
 ```
+
+<h3 id="emulator">Starting the Android emulator</h3>
 
 For your actual tests, the first thing you should do is start up
 the emulator, as this usually takes several minutes, sadly.

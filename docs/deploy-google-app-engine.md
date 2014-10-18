@@ -25,8 +25,8 @@ download the SDK you need:
 ```
 dependencies:
   pre:
-    - curl -o $HOME/google_appengine_1.9.7.zip https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.7.zip
-    - unzip -q -d $HOME $HOME/google_appengine_1.9.7.zip
+    - curl -o $HOME/google_appengine_1.9.13.zip https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.13.zip
+    - unzip -q -d $HOME $HOME/google_appengine_1.9.13.zip
 ```
 
 ## Configure Deployment to Google App Engine
