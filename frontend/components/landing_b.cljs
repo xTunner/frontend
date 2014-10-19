@@ -494,7 +494,6 @@
           [:h5 "CircleCI"]
           ; [:a {:href "/tour"} "Tour"]
           [:a {:href "/about"} "About"]
-          [:a "Support"]
           [:a {:href "/about#contact"} "Press"]
           [:a {:href "/jobs"} "Jobs"]
           [:a {:href "http://blog.circleci.com"} "Blog"]]
