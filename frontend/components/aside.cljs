@@ -11,6 +11,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.seq :refer [select-in]]
+            [goog.style]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -169,6 +170,8 @@
 (defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
+    om/IInitState (init-state [_] {:scrollbar-width 0})
+    om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
       (let [slim-aside? (get-in app state/slim-aside-path)
@@ -181,7 +184,7 @@
           (om/build project-settings-menu app)
           (om/build context-menu app)
           [:div.aside-activity.open
-           [:div.wrapper
+           [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
             [:header
              [:select {:name "toggle-all-branches"
                        :on-change #(put! controls-ch [:show-all-branches-toggled
