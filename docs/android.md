@@ -30,7 +30,7 @@ also need to install those separately. For example:
 ```
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --filter "build-tools-21.0.0"
+    - echo y | android update sdk --no-ui --all --filter "build-tools-21.0.0"
 ```
 
 <h3 id="caching">Caching Android SDK components</h3>
