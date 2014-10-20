@@ -8,6 +8,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.routes :as routes]
+            [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
@@ -230,36 +231,27 @@
 (defn expected-duration
   [{:keys [start stop build]} owner opts]
   (reify
-    om/IDisplayName (display-name [_] "Expected Duration")
-    om/IInitState
-    (init-state [_]
-      {:watcher-uuid (utils/uuid)
-       :now (datetime/server-now)
-       :has-watcher? false})
+
+    om/IDisplayName
+    (display-name [_] "Expected Duration")
+
     om/IDidMount
     (did-mount [_]
-      (when-not stop
-        (let [timer-atom (om/get-shared owner [:timer-atom])
-              uuid (om/get-state owner [:watcher-uuid])]
-          (add-watch timer-atom uuid (fn [_k _r _p t]
-                                       (om/set-state! owner [:now] t)))
-          (om/set-state! owner [:has-watcher?] true))))
-    om/IWillUnmount
-    (will-unmount [_]
-      (when (om/get-state owner [:has-watcher?])
-        (remove-watch (om/get-shared owner [:timer-atom])
-                      (om/get-state owner [:watcher-uuid]))))
+      (timer/set-updating! owner (not stop)))
 
     om/IDidUpdate
     (did-update [_ _ _]
-      (when (and stop (om/get-state owner [:has-watcher?]))
-        (remove-watch (om/get-shared owner [:timer-atom])
-                      (om/get-state owner [:watcher-uuid]))))
-    om/IRenderState
-    (render-state [_ {:keys [now]}]
+      (timer/set-updating! owner (not stop)))
+
+    om/IWillUnmount
+    (will-unmount [_]
+      (timer/set-updating! owner false))
+
+    om/IRender
+    (render [_]
       (let [end-ms (if stop
                      (.getTime (js/Date. stop))
-                     now)
+                     (datetime/server-now))
             formatter (get opts :formatter datetime/as-duration)
             duration-ms (- end-ms (.getTime (js/Date. start)))
             previous-build (:previous_successful_build build)
@@ -268,7 +260,9 @@
                  (= (:status build) "running")
                  (< duration-ms (* 1.5 past-ms)))
           (dom/span nil "/~" (formatter past-ms))
-          (dom/span nil ""))))))
+          (dom/span nil ""))))
+
+    ))
 
 (defn build-head [data owner]
   (reify
@@ -309,7 +303,7 @@
               [:tr
                [:th "Trigger"]
                [:td (build-model/why-in-words build)]
-               
+
                [:th "Duration"]
                [:td (if (build-model/running? build)
                       (om/build common/updating-duration {:start (:start_time build)
@@ -381,6 +375,7 @@
                                          (let [n (re-find #"/\d+$" url)]
                                            (if n (subs n 1) "?"))])
                               urls))]))]]]
+
             [:div.build-actions
              [:div.actions
               (forms/stateful-button
