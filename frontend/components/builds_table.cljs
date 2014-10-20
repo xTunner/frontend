@@ -1,6 +1,6 @@
 (ns frontend.components.builds-table
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
@@ -10,7 +10,7 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn build-row [build controls-ch {:keys [show-actions? show-branch? show-project?]}]
+(defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:tr {:class (when (:dont_build build) "dont_build")}
      [:td
@@ -69,9 +69,9 @@
             ;;       Not a problem here, b/c the websocket will be updated, but something to think about
             (forms/stateful-button
              [:button.cancel_build
-              {:on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
-                                                                    :vcs-url vcs-url
-                                                                    :build-num build-num}])}
+              {:on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                :vcs-url vcs-url
+                                                                :build-num build-num}])}
               "Cancel"])))])]))
 
 (defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
@@ -81,24 +81,23 @@
     om/IDisplayName (display-name [_] "Builds Table")
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:table.recent-builds-table
-          [:thead
-           [:tr
-            [:th "Build"]
-            [:th "Revision"]
-            (when show-branch?
-              [:th "Branch"])
-            [:th "Author"]
-            [:th "Log"]
-            [:th.condense "Started at"]
-            [:th.condense "Length"]
-            [:th.condense "Status"]
-            (when show-actions?
-              [:th.condense "Actions"])]]
-          [:tbody
-           (map #(build-row % controls-ch {:show-actions? show-actions?
-                                           :show-branch? show-branch?
-                                           :show-project? show-project?})
-                builds)]])))))
+      (html
+       [:table.recent-builds-table
+        [:thead
+         [:tr
+          [:th "Build"]
+          [:th "Revision"]
+          (when show-branch?
+            [:th "Branch"])
+          [:th "Author"]
+          [:th "Log"]
+          [:th.condense "Started at"]
+          [:th.condense "Length"]
+          [:th.condense "Status"]
+          (when show-actions?
+            [:th.condense "Actions"])]]
+        [:tbody
+         (map #(build-row % owner {:show-actions? show-actions?
+                                   :show-branch? show-branch?
+                                   :show-project? show-project?})
+              builds)]]))))

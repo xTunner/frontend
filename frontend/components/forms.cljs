@@ -13,7 +13,7 @@
 ;; Example usage:
 
 ;; component html:
-;; [:form (forms/managed-button [:input {:type "submit" :on-click #(put! controls-ch [:my-control])}])]
+;; [:form (forms/managed-button [:input {:type "submit" :on-click #(raise! owner [:my-control])}])]
 
 ;; controls handler:
 ;; (defmethod post-control-event! :my-control

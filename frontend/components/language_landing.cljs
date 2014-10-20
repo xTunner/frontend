@@ -1,7 +1,7 @@
 (ns frontend.components.language-landing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
@@ -102,8 +102,7 @@
     (render [_]
       (let [subpage (get-in app [:navigation-data :language])
             template (get templates subpage)
-            selected-testimonial (get-in app state/language-testimonial-tab-path 0)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            selected-testimonial (get-in app state/language-testimonial-tab-path 0)]
         (html
          [:div.languages.page
           [:div.languages-head {:class (:language template)}
@@ -139,7 +138,7 @@
             [:div.center-text
              [:h3 "TESTIMONIALS"]]
             [:div.testimonial-authors
-             (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(put! controls-ch [:language-testimonial-tab-selected {:index i}])}])
+             (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(raise! owner [:language-testimonial-tab-selected {:index i}])}])
                           (:testimonials template))]
             [:div.testimonial-box
              [:div.testimonial
@@ -172,9 +171,9 @@
             [:div.center-text
              [:a.languages-cta-button
               {:href (auth-url)
-               :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                           :properties {:source (:language template)}
-                                                                           :path (auth-url)}])}
+               :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                       :properties {:source (:language template)}
+                                                                       :path (auth-url)}])}
               [:i.fa.fa-github]
               " Sign up with GitHub"]
              [:div.language-cta-trial "14-day free trial"]]]]])))))

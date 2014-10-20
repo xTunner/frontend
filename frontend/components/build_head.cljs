@@ -1,7 +1,7 @@
 (ns frontend.components.build-head
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.components.builds-table :as builds-table]
@@ -28,7 +28,6 @@
     om/IRender
     (render [_]
       (let [{:keys [build builds]} data
-            controls-ch (om/get-shared owner [:comms :controls])
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
             plan (:plan data)]
@@ -108,8 +107,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            build (:build build-data)
+      (let [build (:build build-data)
             build-id (build-model/id build)]
         (html
          [:section.build-commits {:class (when (:show-all-commits build-data) "active")}
@@ -122,7 +120,7 @@
               " "])
            (when (< 3 (count (:all_commit_details build)))
              [:a {:role "button"
-                  :on-click #(put! controls-ch [:show-all-commits-toggled {:build-id build-id}])}
+                  :on-click #(raise! owner [:show-all-commits-toggled {:build-id build-id}])}
               (str (- (count (:all_commit_details build)) 3) " more ")
               (if (:show-all-commits build-data)
                 [:i.fa.fa-caret-up]
@@ -181,8 +179,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            artifacts-data (:artifacts-data data)
+      (let [artifacts-data (:artifacts-data data)
             artifacts (:artifacts artifacts-data)
             show-artifacts (:show-artifacts artifacts-data)
             admin? (:admin (:user data))]
@@ -191,7 +188,7 @@
           [:div.build-artifacts-title
            [:strong "Build Artifacts"]
            [:a {:role "button"
-                :on-click #(put! controls-ch [:show-artifacts-toggled])}
+                :on-click #(raise! owner [:show-artifacts-toggled])}
             [:span " view "]
             [:i.fa.fa-caret-down {:class (when show-artifacts "fa-rotate-180")}]]]
           (when show-artifacts
@@ -214,15 +211,14 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            config-string (get-in build [:circle_yml :string])
+      (let [config-string (get-in build [:circle_yml :string])
             show-config (:show-config config-data)]
         (html
          [:section.build-config {:class (when show-config "active")}
           [:div.build-config-title
            [:strong "circle.yml"]
            [:a {:role "button"
-                :on-click #(put! controls-ch [:show-config-toggled])}
+                :on-click #(raise! owner [:show-config-toggled])}
             [:span " view "]
             [:i.fa.fa-caret-down {:class (when show-config "fa-rotate-180")}]]]
           (when show-config
@@ -264,8 +260,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            build-data (:build-data data)
+      (let [build-data (:build-data data)
             build (:build build-data)
             build-id (build-model/id build)
             build-num (:build_num build)
@@ -339,11 +334,11 @@
                         (if (has-scope :read-settings data)
                           [:span
                            [:a#queued_explanation
-                            {:on-click #(put! controls-ch [:usage-queue-why-toggled
-                                                           {:build-id build-id
-                                                            :username (:username @build)
-                                                            :reponame (:reponame @build)
-                                                            :build_num (:build_num @build)}])}
+                            {:on-click #(raise! owner [:usage-queue-why-toggled
+                                                       {:build-id build-id
+                                                        :username (:username @build)
+                                                        :reponame (:reponame @build)
+                                                        :build_num (:build_num @build)}])}
                             " view "]
                            [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]])]))
                (when (build-model/author-isnt-committer build)
@@ -378,20 +373,20 @@
                [:button.retry_build
                 {:data-loading-text "Rebuilding",
                  :title "Retry the same tests",
-                 :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
-                                                                     :vcs-url vcs-url
-                                                                     :build-num build-num
-                                                                     :clear-cache? false}])}
+                 :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                 :vcs-url vcs-url
+                                                                 :build-num build-num
+                                                                 :clear-cache? false}])}
                 "Rebuild"])
 
               (forms/stateful-button
                [:button.clear_cache_retry
                 {:data-loading-text "Rebuilding",
                  :title "Clear cache and retry",
-                 :on-click #(put! controls-ch [:retry-build-clicked {:build-id build-id
-                                                                     :vcs-url vcs-url
-                                                                     :build-num build-num
-                                                                     :clear-cache? true}])}
+                 :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                 :vcs-url vcs-url
+                                                                 :build-num build-num
+                                                                 :clear-cache? true}])}
                 "& clear cache"])
 
               (if (has-scope :write-settings data)
@@ -399,24 +394,24 @@
                  [:button.ssh_build
                   {:data-loading-text "Rebuilding",
                    :title "Retry with SSH in VM",
-                   :on-click #(put! controls-ch [:ssh-build-clicked {:build-id build-id
-                                                                     :vcs-url vcs-url
-                                                                     :build-num build-num}])}
+                   :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                                 :vcs-url vcs-url
+                                                                 :build-num build-num}])}
                   "& enable ssh"]))]
              [:div.actions
               (when logged-in? ;; no intercom for logged-out users
                 [:button.report_build
                  {:title "Report error with build",
-                  :on-click #(put! controls-ch [:report-build-clicked {:build-url (:build_url @build)}])}
+                  :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}
                  "Report"])
               (when (build-model/can-cancel? build)
                 (forms/stateful-button
                  [:button.cancel_build
                   {:data-loading-text "Canceling",
                    :title "Cancel this build",
-                   :on-click #(put! controls-ch [:cancel-build-clicked {:build-id build-id
-                                                                        :vcs-url vcs-url
-                                                                        :build-num build-num}])}
+                   :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                    :vcs-url vcs-url
+                                                                    :build-num build-num}])}
                   "Cancel"]))]]
             [:div.no-user-actions]]
            (when (and logged-in? (:show-usage-queue usage-queue-data))

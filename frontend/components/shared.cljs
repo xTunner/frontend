@@ -1,7 +1,7 @@
 (ns frontend.components.shared
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [dommy.attrs :as attrs]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.stefon :refer (data-uri)]
             [frontend.utils.ajax :as ajax]
             [frontend.utils :as utils :include-macros true]
@@ -91,10 +91,10 @@
 
 
 
-(defn home-button [{:keys [source]} controls-ch]
-  [:a.btn.btn-primary.bold-btn {:on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                                            :properties {:source "hero"}
-                                                                                            :path (gh-utils/auth-url)}])
+(defn home-button [{:keys [source]} owner]
+  [:a.btn.btn-primary.bold-btn {:on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                        :properties {:source "hero"}
+                                                                                        :path (gh-utils/auth-url)}])
                                 :href (gh-utils/auth-url)
                                 :title "Sign up with GitHub"}
    [:i.fa.fa-github-alt]
@@ -130,8 +130,7 @@
        :notice nil})
     om/IRenderState
     (render-state [_ {:keys [email name message notice loading?]}]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            clear-notice! #(om/set-state! owner [:notice] nil)
+      (let [clear-notice! #(om/set-state! owner [:notice] nil)
             enterprise? (:enterprise? opts)]
         (html
          [:form.contact-us

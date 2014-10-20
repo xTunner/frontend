@@ -1,6 +1,6 @@
 (ns frontend.components.plans
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.models.plan :as plan-model]
             [frontend.state :as state]
@@ -21,7 +21,6 @@
   (om/component
    (let [{:keys [containers plan-name recommended]} opts
          logged-in? (get-in app state/user-path)
-         controls-ch (om/get-shared owner [:comms :controls])
          price (plan-model/cost plan-model/default-template-properties containers)]
      (html
       [:div.span3.plan {:class (when recommended "recommended")}
@@ -41,16 +40,16 @@
            [:a {:data-loading-text "Paying...",
                 :data-failed-text "Failed!",
                 :data-success-text "Paid!",
-                :on-click #(put! controls-ch [:new-plan-clicked {:containers containers
-                                                                 :base-template-id (:id plan-model/default-template-properties)
-                                                                 :price price
-                                                                 :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
+                :on-click #(raise! owner [:new-plan-clicked {:containers containers
+                                                             :base-template-id (:id plan-model/default-template-properties)
+                                                             :price price
+                                                             :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])
 
           [:a {:href (gh-utils/auth-url)
-               :on-click #(put! controls-ch [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                           :event "Auth GitHub"
-                                                                           :properties {:source "pricing-business"}}])}
+               :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
+                                                                       :event "Auth GitHub"
+                                                                       :properties {:source "pricing-business"}}])}
            [:span "Start 14-day Free Trial"]])]]))))
 
 (def pricing-enterprise

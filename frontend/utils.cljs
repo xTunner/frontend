@@ -1,7 +1,7 @@
 (ns frontend.utils
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
             [ajax.core :as ajax]
             [cljs-time.core :as time]
@@ -74,8 +74,8 @@
     (.update container content)
     (crypt/byteArrayToHex (.digest container))))
 
-(defn notify-error [ch message]
-  (put! ch [:error-triggered message]))
+(defn notify-error [owner message]
+  (raise! owner [:error-triggered message]))
 
 (defn trim-middle [s length]
   (let [str-len (count s)]
@@ -128,16 +128,16 @@
   Path is the vector of keys you would pass to assoc-in to change the value in state,
   event is the Synthetic React event. Pulls the value out of the event.
   Optionally takes :value as a keyword arg to override the event's value"
-  [controls-ch path event & {:keys [value]
-                             :or {value (.. event -target -value)}}]
-  (put! controls-ch [:edited-input {:path path :value value}]))
+  [owner path event & {:keys [value]
+                       :or {value (.. event -target -value)}}]
+  (raise! owner [:edited-input {:path path :value value}]))
 
 (defn toggle-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.
   Path is the vector of keys you would pass to update-in to toggle the value in state,
   event is the Synthetic React event."
-  [controls-ch path event]
-  (put! controls-ch [:toggled-input {:path path}]))
+  [owner path event]
+  (raise! owner [:toggled-input {:path path}]))
 
 ;; TODO: get rid of bootstrap modals
 (defn open-modal

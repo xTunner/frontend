@@ -1,6 +1,6 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -10,8 +10,8 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn contact-us-inner [controls-ch]
-  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
+(defn contact-us-inner [owner]
+  [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
    "contact us"])
 
 (defn flashes
@@ -20,10 +20,11 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            ;; use error messages that have html without passing html around
-            display-message (condp = error-message
-                              :logged-out [:span "You've been logged out, " [:a {:href (gh-utils/auth-url)} "log back in"] " to continue."]
+      ;; use error messages that have html without passing html around
+      (let [display-message (condp = error-message
+                              :logged-out [:span "You've been logged out, "
+                                                 [:a {:href (gh-utils/auth-url)} "log back in"]
+                                                 " to continue."]
                               error-message)]
         (html
          (if-not error-message
@@ -32,9 +33,9 @@
            [:div.flash-error-wrapper.row-fluid
             [:div.offset1.span10
              [:div.alert.alert-block.alert-danger
-              [:a.close {:on-click #(put! controls-ch [:clear-error-message-clicked])} "×"]
+              [:a.close {:on-click #(raise! owner [:clear-error-message-clicked])} "×"]
               "Error: " display-message
-              " If we can help, " (contact-us-inner controls-ch) "."]]]))))))
+              " If we can help, " (contact-us-inner owner) "."]]]))))))
 
 (defn normalize-html
   "Creates a valid html string given a (possibly) invalid html string."

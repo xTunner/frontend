@@ -1,6 +1,6 @@
 (ns frontend.components.build
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
@@ -21,7 +21,7 @@
             [sablono.core :as html :refer-macros [html]])
     (:require-macros [frontend.utils :refer [html]]))
 
-(defn report-error [build controls-ch]
+(defn report-error [build owner]
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
     (when (:failed build)
@@ -33,7 +33,7 @@
            "Check out common problems "]
           "or, if there's a problem in how CircleCI ran this build, "
           [:a {:title "Report an error in how Circle ran this build"
-               :on-click #(put! controls-ch [:report-build-clicked {:build-url build-url}])}
+               :on-click #(raise! owner [:report-build-clicked {:build-url build-url}])}
            "report this issue"]
           " and we'll investigate."]
 
@@ -44,7 +44,7 @@
           [:a {:href "https://status.aws.amazon.com/"} "AWS"]
           ") We should have automatically retried this build. We've been alerted of"
           " the issue and are almost certainly looking into it, please "
-          (common/contact-us-inner controls-ch)
+          (common/contact-us-inner owner)
           " if you're interested in the cause of the problem."])])))
 
 (defn container-pill [{:keys [container current-container-id build-running?]} owner]
@@ -53,10 +53,9 @@
     (render [_]
       (html
        (let [container-id (container-model/id container)
-             controls-ch (om/get-shared owner [:comms :controls])
              status (container-model/status container build-running?)]
         [:a.container-selector
-         {:on-click #(put! controls-ch [:container-selected {:container-id container-id}])
+         {:on-click #(raise! owner [:container-selected {:container-id container-id}])
           :role "button"
           :class (concat (container-model/status->classes status)
                          (when (= container-id current-container-id) ["active"]))}
@@ -76,7 +75,6 @@
       (let [container-data (:container-data data)
             build-running? (:build-running? data)
             {:keys [containers current-container-id]} container-data
-            controls-ch (om/get-shared owner [:comms :controls])
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))]
         (html
@@ -98,13 +96,12 @@
              project-data (:project-data data)
              plan (:plan project-data)
              project (:project project-data)
-             build (:build build-data)
-             controls-ch (om/get-shared owner [:comms :controls])]
+             build (:build build-data)]
          [:div.row-fluid
           [:div.offset1.span10
            [:div (common/messages (set (:messages build)))]
            (when (empty? (:messages build))
-             [:div (report-error build controls-ch)])
+             [:div (report-error build owner)])
 
            (when (and plan (project-common/show-trial-notice? project plan))
              (om/build project-common/trial-notice project-data))
@@ -132,8 +129,7 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            user (get-in data state/user-path)]
         (html
          [:div#build-log-container
           (if-not build
