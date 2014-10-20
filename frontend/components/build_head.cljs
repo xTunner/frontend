@@ -243,10 +243,6 @@
     (did-update [_ _ _]
       (timer/set-updating! owner (not stop)))
 
-    om/IWillUnmount
-    (will-unmount [_]
-      (timer/set-updating! owner false))
-
     om/IRender
     (render [_]
       (let [end-ms (if stop
