@@ -31,14 +31,15 @@
                                 (assoc state :status status)
                                 state)))
     (when (#{:success :failed} status)
-      (js/setTimeout #(set-status! owner event-id status :idle) 1000))))
+      (js/setTimeout #(set-status! owner event-id :idle) 1000))
+    (when (= :idle status)
+      (swap! event-owners dissoc event-id))))
 
 (defn release-button!
   "Used by the controls controller to set the button state. status should be a valid button state,
   :success, :failed, or :idle"
   [event-id status]
   (when-let [owner (get @event-owners event-id)]
-    (swap! event-owners dissoc event-id)
     (set-status! owner event-id status)))
 
 (defn wrap-managed-button-handler

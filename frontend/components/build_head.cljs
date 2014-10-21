@@ -372,7 +372,6 @@
               (forms/managed-button
                [:button.retry_build
                 {:data-loading-text "Rebuilding",
-                 :data-success-text "Rebuild"
                  :title "Retry the same tests",
                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
                                                                  :vcs-url vcs-url
@@ -383,7 +382,6 @@
               (forms/managed-button
                [:button.clear_cache_retry
                 {:data-loading-text "Rebuilding",
-                 :data-success-text "& clear cache"
                  :title "Clear cache and retry",
                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
                                                                  :vcs-url vcs-url
@@ -395,7 +393,6 @@
                 (forms/managed-button
                  [:button.ssh_build
                   {:data-loading-text "Rebuilding",
-                   :data-success-text "& enable ssh"
                    :title "Retry with SSH in VM",
                    :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
                                                                  :vcs-url vcs-url
