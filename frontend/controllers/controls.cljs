@@ -363,11 +363,13 @@
   [target message {:keys [build-num build-id vcs-url clear-cache?] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        uuid frontend.async/*uuid*]
     (go
      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
                                              :params (when clear-cache? {:no-cache true})))]
        (put! api-ch [:retry-build (:status api-result) api-result])
+       (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track-trigger-build (:resp api-result) :clear-cache? clear-cache?))))))
 
@@ -376,10 +378,12 @@
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        uuid frontend.async/*uuid*]
     (go
      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/ssh" org-name repo-name build-num)))]
        (put! api-ch [:retry-build (:status api-result) api-result])
+       (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track-trigger-build (:resp api-result) :ssh? true))))))
 
