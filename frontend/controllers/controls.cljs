@@ -696,12 +696,12 @@
 
 (defmethod post-control-event! :invited-github-users
   [target message {:keys [project-name invitees]} previous-state current-state]
-  (ajax/ajax :post
-             (gstring/format "/api/v1/project/%s/users/invite" project-name)
-             :invite-github-users
-             (get-in current-state [:comms :api])
-             :context {:project-name project-name}
-             :params invitees)
+  (button-ajax :post
+               (gstring/format "/api/v1/project/%s/users/invite" project-name)
+               :invite-github-users
+               (get-in current-state [:comms :api])
+               :context {:project-name project-name}
+               :params invitees)
   ;; TODO: move all of the tracking stuff into frontend.analytics and let it
   ;;      keep track of which service to send things to
   (mixpanel/track "Sent invitations" {:first_green_build true
