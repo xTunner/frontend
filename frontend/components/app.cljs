@@ -29,6 +29,7 @@
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
+            [frontend.instrumentation :as instrumentation]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
@@ -75,7 +76,7 @@
 
     :error errors/error-page))
 
-(defn app* [app owner]
+(defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
     om/IRender
@@ -85,36 +86,45 @@
 
         (let [controls-ch (om/get-shared owner [:comms :controls])
               persist-state! #(put! controls-ch [:state-persisted])
-              restore-state! #(put! controls-ch [:state-restored])
+              restore-state! #(do (put! controls-ch [:state-restored])
+                                  ;; Components are not aware of external state changes.
+                                  (reinstall-om!))
               dom-com (dominant-component app)
               show-inspector? (get-in app state/show-inspector-path)
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
-              app-without-container-data (dissoc-in app state/container-data-path)]
+              app-without-container-data (dissoc-in app state/container-data-path)
+              slim-aside? (get-in app state/slim-aside-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
            (let [inner? (get-in app state/inner?-path)]
 
-             [:div#app {:class (if inner? "inner" "outer")}
+             [:div#app {:class (concat [(if inner? "inner" "outer")]
+                                       (when slim-aside? ["aside-slim"])
+                                       (when-not logged-in? ["aside-nil"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-              (when show-inspector?
-                ;; TODO inspector still needs lots of work. It's slow and it defaults to
-                ;;     expanding all datastructures.
-                (om/build inspector/inspector app))
               (when (and inner? logged-in?)
                 (om/build aside/aside app-without-container-data))
-              [:main.app-main {:tab-index 1}
+              [:main.app-main
+               (when show-inspector?
+                 ;; TODO inspector still needs lots of work. It's slow and it defaults to
+                 ;;     expanding all datastructures.
+                 (om/build inspector/inspector app))
                (om/build header/header app-without-container-data)
                [:div.main-body
                 (om/build dom-com app)]
                [:footer.main-foot
                 (footer/footer)]
                (when-not logged-in?
-                 (om/build shared/sticky-help-link app))]])))))))
+                 (om/build shared/sticky-help-link app))]
+              ;; modal trigger is in aside-nav
+              shared/invite-form])))))))
 
 
-(defn app [app owner]
-  (reify om/IRender (render [_] (om/build app* (dissoc app :inputs)))))
+(defn app [app owner opts]
+  (reify om/IRender
+    (render [_]
+      (om/build app* (dissoc app :inputs :state-map) {:opts opts}))))

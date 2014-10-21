@@ -15,6 +15,7 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]))
@@ -307,10 +308,12 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state (conj state/project-path :ssh_keys)
-               (fn [keys]
-                 (remove #(= (:fingerprint context) (:fingerprint %))
-                         keys)))))
+    (let [{:keys [hostname fingerprint]} context]
+      (update-in state (conj state/project-path :ssh_keys)
+                 (fn [keys]
+                   (remove #(and (= (:hostname %) hostname)
+                                 (= (:fingerprint %) fingerprint))
+                           keys))))))
 
 
 (defmethod api-event [:save-project-api-token :success]
@@ -540,7 +543,7 @@
 
 (defmethod api-event [:changelog :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state state/changelog-path resp))
+  (assoc-in state state/changelog-path {:entries resp :show-id (:show-id context)}))
 
 (defmethod api-event [:build-state :success]
   [target message status {:keys [resp]} state]
@@ -557,3 +560,7 @@
 (defmethod api-event [:doc-markdown :success]
   [target message status {:keys [resp context] :as data} state]
   (assoc-in state (concat state/docs-data-path [(:subpage context) :markdown]) resp))
+
+(defmethod api-event [:doc-manifest :success]
+  [target message status {:keys [resp] :as data} state]
+  (assoc-in state state/docs-data-path (doc-utils/format-doc-manifest resp)))

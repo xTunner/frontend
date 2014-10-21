@@ -108,21 +108,9 @@
     (logout! nav-ch))
 
   (defroute v1-doc "/docs" []
-    (open-to-outer! nav-ch :documentation {:_title "What can we help you with?"}))
-  (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:as params}
-    (let [subpage (keyword (:subpage params))]
-      (if-let [doc (get (doc-utils/find-all-docs) subpage)]
-        (open-to-outer! nav-ch :documentation (assoc params
-                                                :subpage subpage
-                                                :_analytics-page "View Docs"
-                                                :_title (:title doc)))
-        (do
-          (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
-                rewrite-token (doc-utils/maybe-rewrite-token token)
-                path (if (= token rewrite-token)
-                       "/docs"
-                       (str "/docs" (when-not (str/blank? rewrite-token) (str "/" rewrite-token))))]
-            (put! nav-ch [:navigate! {:path path :replace-token? true}]))))))
+    (open-to-outer! nav-ch :documentation {}))
+  (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:keys [subpage] :as params}
+    (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))
@@ -160,13 +148,15 @@
     (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
 
   (defroute v1-languages (FragmentRoute. "/features/:language") {:as params}
-    (open-to-outer! nav-ch :language-landing (assoc params 
-                                              :_analytics-page "View Language Landing" { "language" (:language params) }
+    (open-to-outer! nav-ch :language-landing (assoc params
                                               :_title (str "CircleCI for " (:language params)))))
 
   ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
   (defroute v1-integrations (FragmentRoute. "/integrations/docker") {:as params}
     (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
+
+  (defroute v1-changelog (FragmentRoute. "/changelog/:id") {:as params}
+    (open-to-outer! nav-ch :changelog params))
 
   (defroute v1-changelog (FragmentRoute. "/changelog") {:as params}
     (open-to-outer! nav-ch :changelog params))

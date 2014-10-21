@@ -131,6 +131,14 @@
   [target message _ state]
   (update-in state state/user-options-shown-path not))
 
+(defmethod control-event :invite-form-opened
+  [target message _ state]
+  (assoc-in state state/user-options-shown-path false))
+
+(defmethod post-control-event! :invite-form-opened
+  [_ _ _ _ _ _]
+  (utils/open-modal "#inviteForm"))
+
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
@@ -202,9 +210,9 @@
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (sel1 target "#container_parent")]
     (let [container (sel1 target (str "#container_" container-id))
-          app-main (sel1 target ".app-main")
+          body (sel1 target "body")
           current-scroll-top (.-scrollTop parent)
-          app-main-scroll-top (.-scrollTop app-main)
+          body-scroll-top (.-scrollTop body)
           current-scroll-left (.-scrollLeft parent)
           new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
       (let [scroller (or (.-scroll_handler parent)
@@ -222,8 +230,8 @@
         ;; causing the parent to scroll. But then we set it to relative and there
         ;; is no longer any overflow, so we need to scroll app-main instead.
         (set! (.-onEnd scroller) #(do (.call onEnd scroller)
-                                      (set! (.-scrollTop app-main)
-                                            (+ app-main-scroll-top current-scroll-top))))
+                                      (set! (.-scrollTop body)
+                                            (+ body-scroll-top current-scroll-top))))
         (.play scroller))))
   (when (not= (get-in previous-state state/current-container-path)
               container-id)
@@ -516,47 +524,53 @@
        (release-button! uuid (:status api-result))))))
 
 
-(defmethod post-control-event! :saved-project-settings
-  ;; Takes the state of project settings inputs and PUTs the new settings to
-  ;; /api/v1/project/:project/settings.
-  ;;
-  ;; `merge-path` is a path into the nested project data-structure. When
-  ;; merge-path is non-nil the part of the project data-structure at that path is
-  ;; used as the base values for the settings. The new settings from the inputs
-  ;; state are merged on top.
-  ;;
-  ;; This allows all the settings on a page to be submitted, even if the user only
-  ;; modifies one.
-  ;;
-  ;; E.g.
-  ;; project is
-  ;;   {:github-info { ... }
-  ;;    :aws {:keypair {:access_key_id "access key"
-  ;;                    :secret_access_key "secret key"}}}
-  ;;
-  ;; The user sets a new access key ID so inputs is
-  ;;   {:aws {:keypair {:access_key_id "new key id"}}}
-  ;;
-  ;; :merge-path is [:aws :keypair]
-  ;;
-  ;; The settings posted to the settings API will be:
-  ;;   {:aws {:keypair {:access_key_id "new key id"
-  ;;                    :secret_access_key "secret key"}}}
-  [target message {:keys [project-id merge-paths]} previous-state current-state]
+(defn save-project-settings
+  "Takes the state of project settings inputs and PUTs the new settings to
+  /api/v1/project/:project/settings.
+
+  `merge-path` is a path into the nested project data-structure. When
+  merge-path is non-nil the part of the project data-structure at that path is
+  used as the base values for the settings. The new settings from the inputs
+  state are merged on top.
+
+  This allows all the settings on a page to be submitted, even if the user only
+  modifies one.
+
+  E.g.
+  project is
+    {:github-info { ... }
+     :aws {:keypair {:access_key_id \"access key\"
+                     :secret_access_key \"secret key\"}}}
+
+  The user sets a new access key ID so inputs is
+    {:aws {:keypair {:access_key_id \"new key id\"}}}
+
+  :merge-path is [:aws :keypair]
+
+  The settings posted to the settings API will be:
+    {:aws {:keypair {:access_key_id \"new key id\"
+                     :secret_access_key \"secret key\"}}}"
+  [project-id merge-paths current-state]
   (let [project-name (vcs-url/project-name project-id)
         comms (get-in current-state [:comms])
-        uuid frontend.async/*uuid*
         inputs (get-in current-state state/inputs-path)
         project (get-in current-state state/project-path)
         settings (merge-settings merge-paths project inputs)]
     (go
-     (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
-       (if (= :success (:status api-result))
-         (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
-           (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
-           (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
-         (put! (:errors comms) [:api-error api-result]))
-       (release-button! uuid (:status api-result))))))
+      (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1/project/%s/settings" project-name) :params settings))]
+        (if (= :success (:status api-result))
+          (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
+            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
+          (put! (:errors comms) [:api-error api-result]))
+        api-result))))
+
+(defmethod post-control-event! :saved-project-settings
+  [target message {:keys [project-id merge-paths]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*]
+    (go
+      (let [api-result (<! (save-project-settings project-id merge-paths current-state))]
+        (release-button! uuid (:status api-result))))))
 
 
 (defmethod post-control-event! :saved-ssh-key
@@ -572,16 +586,35 @@
 
 
 (defmethod post-control-event! :deleted-ssh-key
-  [target message {:keys [project-id fingerprint]} previous-state current-state]
+  [target message {:keys [project-id hostname fingerprint]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
                (gstring/format "/api/v1/project/%s/ssh-key" project-name)
                :delete-ssh-key
                api-ch
-               :params {:fingerprint fingerprint}
+               :params {:fingerprint fingerprint
+                        :hostname (str hostname)} ; coerce nil to ""
                :context {:project-id project-id
+                         :hostname hostname
                          :fingerprint fingerprint})))
+
+
+(defmethod post-control-event! :test-hook
+  [target message {:keys [project-id merge-paths service]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        project-name (vcs-url/project-name project-id)
+        comms (get-in current-state [:comms])]
+    (go
+      (let [save-result (<! (save-project-settings project-id merge-paths current-state))
+            test-result (if (= (:status save-result) :success)
+                          (let [test-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/hooks/%s/test" project-name service)
+                                                                   :params {:project-id project-id}))]
+                            (when (not= (:status test-result) :success)
+                              (put! (:errors comms) [:api-error test-result]))
+                            test-result)
+                          save-result)]
+        (release-button! uuid (:status test-result))))))
 
 
 (defmethod post-control-event! :saved-project-api-token
@@ -818,6 +851,23 @@
    (get-in current-state [:comms :api])
    :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
             :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
+
+(defmethod control-event :project-preferences-updated
+  [target message args state]
+  (update-in state (conj state/user-path :projects)
+             (partial merge-with merge)
+             ;; The keys of the projects map are unfortunately keywords, despite being URLs.
+             (into {} (for [[vcs-url prefs] args]
+                        [(keyword vcs-url) prefs]))))
+
+(defmethod post-control-event! :project-preferences-updated
+  [target message args previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:projects args}))
 
 (defmethod post-control-event! :heroku-key-add-attempted
   [target message args previous-state current-state]

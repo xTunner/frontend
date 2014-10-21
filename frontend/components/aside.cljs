@@ -124,9 +124,7 @@
              (common/ico :fail-light)]]
            [:div.aside-user-options
             [:a.aside-item {:href "/account"} "Settings"]
-            [:a.aside-item {:on-click #(do
-                                        (utils/open-modal "#inviteForm")
-                                        (put! controls-ch [:user-options-toggled]))}
+            [:a.aside-item {:on-click #(put! controls-ch [:invite-form-opened])}
              "Invite a Teammate"]
             [:a.aside-item {:href "/logout"} "Logout"]]])))))
 
@@ -173,7 +171,7 @@
             settings (get-in app state/settings-path)
             slim-aside? (get-in app state/slim-aside-path)]
         (html
-         [:nav.aside-left-nav {:class (when slim-aside? "slim")}
+         [:nav.aside-left-nav
 
           [:a.aside-item.logo  {:title "Home"
                                 :data-placement "right"
@@ -188,9 +186,7 @@
                           :title "Account"
                           :class (when (get-in app state/user-options-shown-path)
                                   "open")}
-           [:img {:src (gh-utils/gravatar-url {:gravatar_id (:gravatar-id opts)
-                                               :login (:login opts)
-                                               :size 50})}]
+           [:img {:src (gh-utils/make-avatar-url opts)}]
            (:login opts)]
 
           [:a.aside-item {:title "Documentation"
@@ -218,7 +214,7 @@
            [:i.fa.fa-comments]
            [:span "Live Support"]]
 
-          [:a#add-projects.aside-item {:href "/add-projects",
+          [:a.aside-item {:href "/add-projects",
                                        :data-placement "right"
                                        :data-trigger "hover"
                                        :title "Add Projects"}
@@ -250,11 +246,9 @@
       (let [data (select-in app [state/projects-path state/settings-path state/user-options-shown-path])
             user (get-in app state/user-path)
             login (:login user)
-            gravatar-id (:gravatar_id user)]
+            avatar-url (gh-utils/make-avatar-url user)]
         (html
          [:aside.app-aside-left
-          shared/invite-form ;; modal trigger is in aside-nav
-          (om/build aside-nav data {:opts {:login login
-                                           :gravatar-id gravatar-id}})
+          (om/build aside-nav data {:opts user})
 
           (om/build activity data {:opts {:login login}})])))))

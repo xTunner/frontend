@@ -62,7 +62,7 @@
            [:em "Capfiles"]
            " in their repositories."]
           [:p
-           "Currently, only key employees have the ability to check out your code, including the founders and senior engineers. All of these employees are located in the US. To reiterate, we would only do so in response to a support request, with explicit permission. Contractors will never be given access to customer code."]
+           "Currently, only key employees have the ability to check out your code, including the founders and senior engineers. To reiterate, we would only do so in response to a support request, with explicit permission. Contractors will never be given access to customer code."]
           [:p
            "Note that this is a change from our early policies, when we believed that customers wanted our help in setting up their CI with Circle. Early feedback, however, was unanimous: never ever read customer code unless asked to. So that is our rule!"]]
          [:section

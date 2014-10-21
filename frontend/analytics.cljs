@@ -6,6 +6,7 @@
             [frontend.analytics.perfect-audience :as pa]
             [frontend.analytics.rollbar :as rollbar]
             [frontend.analytics.twitter :as twitter]
+            [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
@@ -44,14 +45,17 @@
   (mixpanel/track-pageview path)
   (google/push path))
 
-(defn track-page [page]
-  (mixpanel/track page))
+(defn track-page [page & [props]]
+  (mixpanel/track page props))
 
 (defn track-pricing []
   (mixpanel/register-once {:view-pricing true}))
 
 (defn track-invited-by [invited-by]
   (mixpanel/register-once {:invited_by invited-by}))
+
+(defn track-join-code [join-code]
+  (when join-code (mixpanel/register-once {"join_code" join-code})))
 
 (defn track-save-containers []
   (mixpanel/track "Save Containers"))
@@ -71,6 +75,7 @@
 (defn track-signup []
   (utils/swallow-errors
    (twitter/track-signup)
+   (facebook/track-signup)
    ((aget js/window "track_signup_conversion"))))
 
 (defn track-payer [login]
@@ -99,3 +104,6 @@
 
 (defn track-message [message]
   (mixpanel/track-message message))
+
+(defn track-view-page [zone]
+  (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))

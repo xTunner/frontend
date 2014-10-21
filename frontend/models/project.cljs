@@ -32,28 +32,14 @@
   [project]
   (branch-builds project (keyword (:default_branch project))))
 
-(def notification-keys [:hipchat_room
-                        :hipchat_api_token
-                        :hipchat_notify
-                        :hipchat_notify_prefs
-                        :slack_channel
-                        :slack_subdomain
-                        :slack_api_token
-                        :slack_notify_prefs
-                        :slack_webhook_url
-                        :hall_room_api_token
-                        :hall_notify_prefs
-                        :campfire_room
-                        :campfire_token
-                        :campfire_subdomain
-                        :campfire_notify_prefs
-                        :flowdock_api_token
-                        :irc_server
-                        :irc_channel
-                        :irc_keyword
-                        :irc_username
-                        :irc_password
-                        :irc_notify_prefs])
+(def hipchat-keys [:hipchat_room :hipchat_api_token :hipchat_notify :hipchat_notify_prefs])
+(def slack-keys [:slack_channel :slack_subdomain :slack_api_token :slack_notify_prefs :slack_webhook_url])
+(def hall-keys [:hall_room_api_token :hall_notify_prefs])
+(def campfire-keys [:campfire_room :campfire_token :campfire_subdomain :campfire_notify_prefs])
+(def flowdock-keys [:flowdock_api_token])
+(def irc-keys [:irc_server :irc_channel :irc_keyword :irc_username :irc_password :irc_notify_prefs])
+
+(def notification-keys (concat hipchat-keys slack-keys hall-keys campfire-keys flowdock-keys irc-keys))
 
 (defn notification-settings [project]
   (select-keys project notification-keys))
@@ -76,3 +62,10 @@
 
 (defn id [project]
   (:vcs_url project))
+
+;; I was confused, on the backend, we now default to oss if
+;; github-info shows it to be public and no one sets the flag
+;; explicitly to false. But the read-api always delivers the frontend
+;; a feature_flags oss set to true for those cases.
+(defn oss? [project]
+  (get-in project [:feature_flags :oss]))

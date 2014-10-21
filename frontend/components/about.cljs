@@ -92,6 +92,12 @@
     :email "nick@circleci.com"
     :bio ["Nick is an aspiring merman who spends most of his time outside of the Circle office in the ocean; surfing, diving, sailing, and swimming. He lived in Japan for 3 years as a student, consultant, actor, and vagabond and wrote his senior thesis on the cultural importance of baseball in the country. He won a hackathon by building a social haiku app for iPhone (which is still in the App Store). Eventually he came back to the US and got his first ‘real job’ at a digital consultancy where he optimized conversion rates for websites that comprise hundreds of thousands of visitors and generate millions in revenue every month.",
           "In 2012 Nick was lured to San Francisco by the prospect of hitting it big with his own startup, which crashed and burned, but he liked the place so decided to stick around. He loves the open work culture at Circle which allows him to fulfill his constant need to get-shit-done while helping developers do the same. One day he will unplug his computer and sail around the world."]}
+   {:name "Travis Vachon"
+    :visible true
+    :role "Developer"
+    :github "travis"
+    :twitter "tvachon"
+    :email "travis@circleci.com"}
    {:name "Emile Snyder"
     :visible true
     :role "Backend Developer"
@@ -109,13 +115,32 @@
     :role "Developer"
     :github "iand675"
     :twitter "iand675"
-    :email "ian@circleci.com"}
+    :email "ian@circleci.com"
+    :bio ["Ian joins the CircleCI team remotely from South Carolina. When he’s not busy coding away on CircleCI, he’s probably off hacking on his Haskell side projects or studying distributed systems with a quality microbrew in hand. He started learning Haskell in high school for some research projects, and has been hooked on functional programming ever since. Ian's always had more ideas for things to build than time on his hands, but managed to win runner up in a few entrepreneurship competitions in college for his work.",
+          "He’s particularly fond of travel, and has done two cross-country moves in 2 years. He loves getting to know foreign cultures, and has learned to speak some Japanese and French along the way. During the summer months, he spends his time bicycling, hiking, and running, and once the weather turns cold he hones his gaming skills on Dance Dance Revolution and Super Smash Bros, sits back and binge-watches television shows (currently: Castle and Brooklyn Nine-Nine), and chows down on pumpkin pie."]}
    {:name "Kevin Bell"
     :visible true
     :role "Developer Evangelist"
     :github "bellkev"
     :twitter "iamkevinbell"
-    :email "kevin@circleci.com"}])
+    :email "kevin@circleci.com"}
+   {:name "Cayenne Geis"
+    :visible true
+    :role "Developer"
+    :github "cayennes"
+    :email "cayenne@circleci.com"}
+   {:name "Jonathan Irving"
+    :visible true
+    :role "Developer"
+    :github "j0ni"
+    :twitter "j0ni"
+    :email "jonathan@circleci.com"}
+   {:name "Tim Reinke"
+    :visible true
+    :role "Developer Success"
+    :github "musicalchair"
+    :twitter "timreinke"
+    :email "tim.reinke@circleci.com"}])
 
 (def placeholder-image [:svg.about-placeholder {:height "150px" :width "150px" :viewBox "0 0 150 150"}
                         [:path.bust {:d "M-1.673,151.75v-13.856c0,0,0.901-8.505,11.143-11.142c0,0,16.495-6.022,29.415-11.646 c6.681-2.907,8.119-4.652,14.859-7.631c0,0,0.703-3.461,0.45-5.521h5.271c0,0,1.204,0.702,0-7.43c0,0-6.425-1.705-6.725-14.655 c0,0-4.825,1.625-5.121-6.224c-0.202-5.321-4.318-9.939,1.607-13.753l-3.012-8.131c0,0-6.023-32.826,11.294-28.008 c-7.305-8.734,41.409-17.465,44.574,10.24c0,0,2.256,14.958,0,25.197c0,0,7.113-0.824,2.357,12.852c0,0-2.609,9.836-6.627,7.628 c0,0,0.656,12.447-5.668,14.559c0,0,0.449,6.625,0.449,7.075l6.025,0.903c0,0-0.906,5.424,0.152,6.022c0,0,7.142,4.894,15.657,7.081 c16.414,4.212,35.837,11.44,35.837,17.766c0,0,1.659,8.435,1.659,18.673H-1.673z",

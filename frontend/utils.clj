@@ -34,7 +34,7 @@
           (merror e#)
           (rollbar/push e#)
           (when (:rethrow-errors? initial-query-map)
-            (js* "debugger;")
+            (js/eval "debugger")
             (throw e#)))))
 
 (defmacro defrender

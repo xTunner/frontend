@@ -35,7 +35,7 @@
          (if-not builds
            [:div.loading-spinner common/spinner]
            [:div.build-queue.active
-            (when-not usage-queued?
+            (when (and (:queued_at build) (not usage-queued?))
               [:p "Circle " (when run-queued? "has") " spent "
                (om/build common/updating-duration {:start (:queued_at build)
                                                    :stop (or (:start_time build) (:stop_time build))})
@@ -371,16 +371,16 @@
                        :href (build-model/path-for-parallelism build)}
                    (str (:parallel build) "x")]
                   [:span (:parallel build) "x"])]
-               (let [urls (:pull_request_urls build)]
-                 (when (seq urls)
-                   (list [:th "PRs"]
-                         [:td
-                          (interpose
-                           ", "
-                           (map (fn [url] [:a {:href url} "#"
-                                           (let [n (re-find #"/\d+$" url)]
-                                             (if n (subs n 1) "?"))])
-                                urls))])))]]]
+               (when-let [urls (seq (:pull_request_urls build))]
+                 ;; It's possible for a build to be part of multiple PRs, but it's rare
+                 (list [:th (str "PR" (when (< 1 (count urls)) "s"))]
+                       [:td
+                        (interpose
+                         ", "
+                         (map (fn [url] [:a {:href url} "#"
+                                         (let [n (re-find #"/\d+$" url)]
+                                           (if n (subs n 1) "?"))])
+                              urls))]))]]]
             [:div.build-actions
              [:div.actions
               (forms/stateful-button

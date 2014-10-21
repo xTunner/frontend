@@ -8,13 +8,6 @@
             [om.core :as om :include-macros true])
   (:require-macros [dommy.macros :refer [node]]))
 
-(defn include-article [template-name]
-  ((aget (aget js/window "HAML") template-name)))
-
-(defn render-haml-template [template-name & [args]]
-  [:div {:dangerouslySetInnerHTML
-         #js {"__html"  ((aget (aget js/window "HAML") template-name)
-                         (clj->js (merge {"include_article" include-article} args)))}}])
 
 (defn api-curl [endpoint]
   (let [curl-args (if-not (= (:method endpoint) "GET")
@@ -88,31 +81,18 @@
         replace-variables
         js/marked)))
 
-(defn new-context []
-  (let [context (js/Object.)]
-    (aset context "include_article" include-article)
-    context))
-
-(defn ->template-kw [template-name]
-  (keyword (string/replace (name template-name) "_" "-")))
-
-(defn article? [template-fn]
-  (re-find #"this.title =" (str template-fn)))
-
-(defn article-info [template-name template-fn]
-  (let [context (new-context) ;; create an object that we can pass to the template-fn
-        _ (template-fn context)       ;; writes properties into the context
-        props (utils/js->clj-kw context)
-        children (map ->template-kw (or (:children props) []))
-        title (:title props)
-        short-title (or (:short_title props) title)]
-    {:url (str "/docs/" (string/replace template-name "_" "-"))
-     :slug template-name
+(defn article-info [doc-kw doc]
+  (let [doc-name (name doc-kw)
+        children (map keyword (or (:children doc) []))
+        title (:title doc)
+        short-title (or (:short_title doc) title)]
+    {:url (str "/docs/" doc-name)
+     :slug doc-name
      :title title
      :sort_title short-title
      :children children
-     :lastUpdated (:lastUpdated props)
-     :category (:category props)}))
+     :lastUpdated (:last_updated doc)
+     :category (:category doc)}))
 
 (defn update-child-counts [{:keys [children title ] short-title :sort_title :as info}]
   (let [child-count (count children)
@@ -129,20 +109,10 @@
               acc))
           docs docs))
 
-(defn find-all-docs*
-  "process all HAML templates, and picks the articles based on their contents
-  (they write into the context, and we check for that)
-   Returns an hash map of article subpages to articles."
-  []
-  (let [docs (reduce (fn [acc [template-name template-fn]]
-                       (if (article? template-fn)
-                         (let [subpage (->template-kw template-name)]
-                           (assoc acc subpage (update-child-counts (article-info template-name template-fn))))
-                         acc))
-                     {} (js->clj (aget js/window "HAML")))]
-    (update-children docs)))
+(defn format-doc-manifest [manifest]
+  (update-children (reduce (fn [acc [k v]]
+                             (assoc acc k (update-child-counts (article-info k v)))) {} manifest)))
 
-(def find-all-docs (memoize find-all-docs*))
 
 (defn maybe-rewrite-token [token]
   (case token
