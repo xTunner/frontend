@@ -1,7 +1,7 @@
 (ns frontend.components.account
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.project.common :as project]
@@ -20,15 +20,14 @@
   (if (= current-subpage subpage-link)
     {:class "active"}))
 
-(defn handle-email-notification-change [ch pref]
-  (put! ch [:preferences-updated {:basic_email_prefs pref}]))
+(defn handle-email-notification-change [owner pref]
+  (raise! owner [:preferences-updated {:basic_email_prefs pref}]))
 
 (defn plans [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch   (om/get-shared owner [:comms :controls])
-            user-and-orgs (conj (get-in app state/user-organizations-path)
+      (let [user-and-orgs (conj (get-in app state/user-organizations-path)
                                 (get-in app state/user-path))]
         (html/html
          [:div#settings-plans
@@ -61,10 +60,9 @@
   (reify
     om/IRenderState
     (render-state [_ _]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            heroku-api-key (get-in app (conj state/user-path :heroku_api_key))
+      (let [heroku-api-key (get-in app (conj state/user-path :heroku_api_key))
             heroku-api-key-input (get-in app (conj state/user-path :heroku-api-key-input))
-            submit-form! #(put! controls-ch [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
+            submit-form! #(raise! owner [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
             project-page? (:project-page? opts)]
         (html/html
          [:div#settings-heroku
@@ -89,7 +87,7 @@
              {:required  true
               :type      "text",
               :value     heroku-api-key-input
-              :on-change  #(utils/edit-input controls-ch (conj state/user-path :heroku-api-key-input) %)}]
+              :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
             [:label {:placeholder "Add new key"}]
             (forms/managed-button
              [:input
@@ -104,9 +102,8 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch   (om/get-shared owner [:comms :controls])
-            tokens        (get-in app state/user-tokens-path)
-            create-token! #(put! controls-ch [:api-token-creation-attempted {:label %}])
+      (let [tokens        (get-in app state/user-tokens-path)
+            create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
             new-user-token (get-in app state/new-user-token-path)]
         (html/html
          [:div#settings-api
@@ -120,7 +117,7 @@
               :name      "label",
               :type      "text",
               :value     (str new-user-token)
-              :on-change #(utils/edit-input controls-ch state/new-user-token-path %)}]
+              :on-change #(utils/edit-input owner state/new-user-token-path %)}]
             [:label {:placeholder "Token name"}]
             (forms/managed-button
              [:input.btn
@@ -148,11 +145,11 @@
                        {:data-loading-text "Revoking...",
                         :data-failed-text  "Failed to revoke token",
                         :data-success-text "Revoked",
-                        :on-click          #(put! controls-ch [:api-token-revocation-attempted {:token token}])}
+                        :on-click          #(raise! owner [:api-token-revocation-attempted {:token token}])}
                        [:i.fa.fa-times-circle]
                        " Revoke"]]]]))]])]])))))
 
-(defn preferred-email-address [controls-ch user]
+(defn preferred-email-address [owner user]
   [:div.notification-item
    [:form#email_address.form-horizontal
     [:fieldset
@@ -168,10 +165,10 @@
            :value email
            :name "selected_email"
            :type "radio"
-           :on-click #(put! controls-ch [:preferences-updated {:selected_email email}])}]
+           :on-click #(raise! owner [:preferences-updated {:selected_email email}])}]
          [:span email]])]]]])
 
-(defn default-email-pref [controls-ch email-pref]
+(defn default-email-pref [owner email-pref]
   [:div.notification-item
    [:form
     [:fieldset
@@ -181,21 +178,21 @@
        {:name "email_pref",
         :type "radio"
         :checked (= email-pref "all")
-        :on-change (partial handle-email-notification-change controls-ch "all")}]
+        :on-change (partial handle-email-notification-change owner "all")}]
       "Send me a personalized email for every build in my projects."]
      [:label.radio
       [:input
        {:name "email_pref",
         :type "radio"
         :checked (= email-pref "smart")
-        :on-change (partial handle-email-notification-change controls-ch "smart")}]
+        :on-change (partial handle-email-notification-change owner "smart")}]
       "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]
      [:label.radio
       [:input
        {:name "email_pref",
         :type "radio"
         :checked (= email-pref "none")
-        :on-change (partial handle-email-notification-change controls-ch "none")}]
+        :on-change (partial handle-email-notification-change owner "none")}]
       "Don't send me emails."]]]])
 
 (defn project-email-prefs [{:keys [projects user]}]
@@ -216,13 +213,12 @@
       (utils/tooltip "#email-addresses-tooltip-hack" {:placement "right" :trigger "hover"}))
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            user (get-in app state/user-path)
+      (let [user (get-in app state/user-path)
             projects (get-in app state/projects-path)]
         (html/html
          [:div#settings-notification
-          (preferred-email-address controls-ch user)
-          (default-email-pref controls-ch (:basic_email_prefs user))
+          (preferred-email-address owner user)
+          (default-email-pref owner (:basic_email_prefs user))
           (project-email-prefs {:projects projects :user user})])))))
 
 (defn account [app owner]

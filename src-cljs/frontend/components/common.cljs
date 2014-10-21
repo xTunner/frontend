@@ -1,16 +1,17 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.timer :as timer]
             [goog.dom.DomHelper]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn contact-us-inner [controls-ch]
-  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
+(defn contact-us-inner [owner]
+  [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
    "contact us"])
 
 (defn flashes
@@ -19,10 +20,11 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            ;; use error messages that have html without passing html around
-            display-message (condp = error-message
-                              :logged-out [:span "You've been logged out, " [:a {:href (gh-utils/auth-url)} "log back in"] " to continue."]
+      ;; use error messages that have html without passing html around
+      (let [display-message (condp = error-message
+                              :logged-out [:span "You've been logged out, "
+                                                 [:a {:href (gh-utils/auth-url)} "log back in"]
+                                                 " to continue."]
                               error-message)]
         (html
          (if-not error-message
@@ -31,9 +33,9 @@
            [:div.flash-error-wrapper.row-fluid
             [:div.offset1.span10
              [:div.alert.alert-block.alert-danger
-              [:a.close {:on-click #(put! controls-ch [:clear-error-message-clicked])} "×"]
+              [:a.close {:on-click #(raise! owner [:clear-error-message-clicked])} "×"]
               "Error: " display-message
-              " If we can help, " (contact-us-inner controls-ch) "."]]]))))))
+              " If we can help, " (contact-us-inner owner) "."]]]))))))
 
 (defn normalize-html
   "Creates a valid html string given a (possibly) invalid html string."
@@ -126,36 +128,25 @@
    function in opts."
   [{:keys [start stop]} owner opts]
   (reify
-    om/IDisplayName (display-name [_] "Updating Duration")
-    om/IInitState
-    (init-state [_]
-      {:watcher-uuid (utils/uuid)
-       :now (datetime/server-now)
-       :has-watcher? false})
+
+    om/IDisplayName
+    (display-name [_] "Updating Duration")
+
     om/IDidMount
     (did-mount [_]
-      (when-not stop
-        (let [timer-atom (om/get-shared owner [:timer-atom])
-              uuid (om/get-state owner [:watcher-uuid])]
-          (add-watch timer-atom uuid (fn [_k _r _p t]
-                                       (om/set-state! owner [:now] t)))
-          (om/set-state! owner [:has-watcher?] true))))
-    om/IWillUnmount
-    (will-unmount [_]
-      (when (om/get-state owner [:has-watcher?])
-        (remove-watch (om/get-shared owner [:timer-atom])
-                      (om/get-state owner [:watcher-uuid]))))
+      (timer/set-updating! owner (not stop)))
 
     om/IDidUpdate
     (did-update [_ _ _]
-      (when (and stop (om/get-state owner [:has-watcher?]))
-        (remove-watch (om/get-shared owner [:timer-atom])
-                      (om/get-state owner [:watcher-uuid]))))
-    om/IRenderState
-    (render-state [_ {:keys [now]}]
+      (timer/set-updating! owner (not stop)))
+
+    om/IRender
+    (render [_]
       (let [end-ms (if stop
                      (.getTime (js/Date. stop))
-                     now)
+                     (datetime/server-now))
             formatter (get opts :formatter datetime/as-duration)
             duration-ms (- end-ms (.getTime (js/Date. start)))]
-        (dom/span nil (formatter duration-ms))))))
+        (dom/span nil (formatter duration-ms))))
+
+    ))

@@ -28,6 +28,7 @@
             [frontend.browser-settings :as browser-settings]
             [frontend.utils :as utils :refer [mlog merror third]]
             [frontend.datetime :as datetime]
+            [frontend.timer :as timer]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]])
@@ -166,14 +167,6 @@
        (swap! state (partial errors-con/error container (first value) (second value)))
        (errors-con/post-error! container (first value) (second value) previous-state @state)))))
 
-(defn setup-timer-atom
-  "Sets up an atom that will keep track of the current time.
-   Used from frontend.components.common/updating-duration "
-  []
-  (let [mya (atom (datetime/server-now))]
-    (js/setInterval #(reset! mya (datetime/server-now)) 1000)
-    mya))
-
 (declare reinstall-om!)
 
 (defn install-om [state container comms instrument?]
@@ -182,7 +175,7 @@
    state
    {:target container
     :shared {:comms comms
-             :timer-atom (setup-timer-atom)
+             :timer-atom (timer/initialize)
              :_app-state-do-not-use state}
     :instrument (let [methods (cond-> state-graft/no-local-state-methods
                                 instrument? instrumentation/instrument-methods)

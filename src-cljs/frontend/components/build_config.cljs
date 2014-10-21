@@ -1,6 +1,6 @@
 (ns frontend.components.build-config
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -52,12 +52,11 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            config (:circle_yml build)]
+      (let [config (:circle_yml build)]
         (html
          [:div.config-diagnostics.heroic
           (when-not (:lethal config)
-            [:button.dismiss {:on-click #(put! controls-ch [:dismiss-config-errors])}
+            [:button.dismiss {:on-click #(raise! owner [:dismiss-config-errors])}
              "Dismiss "
              [:i.fa.fa-times-circle]])
           [:header
@@ -77,5 +76,5 @@
             [:p
              "You may want to look at "
              [:a {:href "/docs/configuration"} "our docs"]
-             " or " (common/contact-us-inner controls-ch) " if you're having trouble."]]]
+             " or " (common/contact-us-inner owner) " if you're having trouble."]]]
           (om/build diagnostics config)])))))

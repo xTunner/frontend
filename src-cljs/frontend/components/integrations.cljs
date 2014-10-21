@@ -1,7 +1,6 @@
 (ns frontend.components.integrations
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [put!]]
             [frontend.analytics.marketo :as marketo]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
@@ -47,8 +46,7 @@
                  :loading? false})
     om/IRenderState
     (render-state [_ {:keys [email use-case notice loading?]}]
-                  (let [controls-ch (om/get-shared owner [:comms :controls])
-                        clear-notice! #(om/set-state! owner [:notice] nil)
+                  (let [clear-notice! #(om/set-state! owner [:notice] nil)
                         clear-form! (fn [& [notice]]
                                       (om/update-state! owner (fn [s]
                                                                 (merge s
@@ -99,8 +97,7 @@
   (reify
     om/IRender
     (render [_]
-            (let [controls-ch (om/get-shared owner [:comms :controls])
-                  ab-tests (:ab-tests app)]
+            (let [ab-tests (:ab-tests app)]
               (html
                 [:div#integrations.docker
                  [:div.section-container
@@ -129,7 +126,7 @@
                       [:a {:href "/docs/docker"} "docs"]]
                      [:div.feature
                       [:img {:src (utils/cdn-path "/icons/scale-circle.png")}]
-                      
+
                       [:h3 "Dev-production parity"]
                       [:p
                        "Docker containers let you remove almost all of the variables that differ between your test and production environments. You can specify everything from your Linux distro to what executables run at startup in a Dockerfile, build all of that information into a Docker image, test it, and deploy the exact same image byte-for-byte to production. You can now run this entire process on CircleCI."]
@@ -148,7 +145,7 @@
                     [:div.ctabox {:class "line"}
                      [:div
                       [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
-                     (shared/home-button {:source "integrations/docker"} controls-ch)
+                     (shared/home-button owner {:source "integrations/docker"})
                      [:div
                       [:p
                        [:i "CircleCI keeps your code safe. "

@@ -18,10 +18,10 @@
 ;;         (html
 ;;          [:form
 ;;           [:input {:value my-value
-;;                    :on-click #(put! controls-ch [:my-input-clicked {:my-value my-value}])}]])))))
+;;                    :on-click #(raise! owner [:my-input-clicked {:my-value my-value}])}]])))))
 ;;
 ;; Inputs are cleared out on page transitions, you should also clear them out on successful submits, e.g.
-;; and to your controls-handler: (put! controls-ch [:clear-inputs {:paths [[:my-value]]}])
+;; and to your controls-handler: (raise! owner [:clear-inputs {:paths [[:my-value]]}])
 
 (defn get-inputs-from-app-state
   "Helper function to get the inputs that we've replicated in the component owner"

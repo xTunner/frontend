@@ -1,7 +1,7 @@
 (ns frontend.components.landing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.shared :as shared]
@@ -33,17 +33,17 @@
            :src (stefon/data-uri "/img/outer/home/deploy.png")}]
     [:h4 "Deploy green builds to your servers"]]])
 
-(defn home-cta [ab-tests controls-ch]
+(defn home-cta [ab-tests owner]
   [:div.ctabox {:class (if first "line")}
    [:div
     [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
-   (shared/home-button {:source "hero"} controls-ch)
+   (shared/home-button {:source "hero"} owner)
    [:div
     [:p
      [:i "CircleCI keeps your code safe. "
       [:a {:href "/security" :title "Security"} "Learn how."]]]]])
 
-(defn home-hero-unit [ab-tests controls-ch]
+(defn home-hero-unit [ab-tests owner]
   [:div#hero
    [:div.container
     [:h1 "Ship better code, faster"]
@@ -52,7 +52,7 @@
        hero-graphic]
     [:div.row-fluid
      [:div.hero-unit-cta
-      (home-cta ab-tests controls-ch)]]]])
+      (home-cta ab-tests owner)]]]])
 
 (defn customer-image [customer-name image]
   [:div.big-company
@@ -180,9 +180,9 @@
        [:p
         "At CircleCI we are always listening to our customers for ideas and feedback. If there is a specific feature or configuration ability you need, we want to know."]]]]]])
 
-(defn tech-tab [tab selected controls-ch]
+(defn tech-tab [tab selected owner]
   [:li {:class (when (= tab selected) "active")}
-   [:a {:on-click #(put! controls-ch [:home-technology-tab-selected {:tab tab}])}
+   [:a {:on-click #(raise! owner [:home-technology-tab-selected {:tab tab}])}
     (str/capitalize (name tab))]])
 
 (defn tech-tab-content [tab template]
@@ -201,8 +201,7 @@
     om/IRender
     (render [_]
       (let [selected-tab (or (get-in app state/selected-home-technology-tab-path)
-                             :languages)
-            controls-ch (om/get-shared owner [:comms :controls])]
+                             :languages)]
         (html
          [:section.technology
           [:div.container
@@ -212,7 +211,7 @@
              [:div.nav-tabs-container.span12
               [:ul#tech.nav.nav-tabs
                (for [tab [:languages :databases :queues :browsers :libraries :deployment :custom]]
-                 (tech-tab tab selected-tab controls-ch))]]]
+                 (tech-tab tab selected-tab owner))]]]
             [:div.tab-content
              (let [templates {:languages {:img-url "/img/outer/home/tech-languages.png"
                                           :blurb "CircleCI automatically infers how to run your Ruby, Node, Python and Java tests. You can customize any step, or set up your test steps manually for PHP or other languages."}
@@ -228,7 +227,7 @@
                               :custom {:blurb "Although we do our best to set up your tests in one click, occasionally developers have custom setups. Need to use npm in your PHP project? Using Haskell? Use a specific Ruby patchset? Do you depend on private repos? We have support for dozens of different ways to customize, and we make it trivial to customize basically anything. Custom language versions, environment variables, timeouts, packages, databases, commands, etc, are all trivial to set up."}}]
                (tech-tab-content selected-tab (get templates selected-tab)))]]]])))))
 
-(defn home-get-started [controls-ch]
+(defn home-get-started [owner]
   [:div.get-started
    [:div.container
     [:div.row
@@ -247,9 +246,9 @@
          [:div.ctabox
           [:a.btn.btn-action-orange.btn-jumbo
            {:href (auth-url)
-            :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                        :properties {:source "get_started_section"}
-                                                                        :path (auth-url)}])}
+            :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                    :properties {:source "get_started_section"}
+                                                                    :path (auth-url)}])}
            "RUN YOUR TESTS"]]]]
        [:p.center
         [:i "CircleCI keeps your code safe. "
@@ -263,13 +262,12 @@
   (reify
     om/IRender
     (render [_]
-      (let [ab-tests (:ab-tests app)
-            controls-ch (om/get-shared owner [:comms :controls])]
+      (let [ab-tests (:ab-tests app)]
         (html [:div.landing.page
                [:div.banner]
                [:div
-                (home-hero-unit ab-tests controls-ch)
+                (home-hero-unit ab-tests owner)
                 home-customers
                 (om/build home-technology app)
                 home-features
-                (home-get-started controls-ch)]])))))
+                (home-get-started owner)]])))))

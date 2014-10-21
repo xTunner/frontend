@@ -1,6 +1,6 @@
 (ns frontend.components.header
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
@@ -46,8 +46,7 @@
       (let [crumbs-data (get-in app state/crumbs-path)
             project (get-in app state/project-path)
             project-id (project-model/id project)
-            vcs-url (:vcs_url project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            vcs-url (:vcs_url project)]
         (html
           [:div.head-user
            [:div.breadcrumbs
@@ -57,7 +56,7 @@
            (when (show-follow-project-button? app)
              (forms/stateful-button
                [:button#follow-project-button
-                {:on-click #(put! controls-ch [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
                  :data-spinner true}
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app)])))))
@@ -70,7 +69,6 @@
       (let [open? (get-in app state/show-admin-panel-path)
             expanded? (get-in app state/show-instrumentation-line-items-path)
             inspector? (get-in app state/show-inspector-path)
-            controls-ch (om/get-shared owner [:comms :controls])
             user-session-settings (get-in app [:render-context :user_session_settings])]
         (html
          [:div.head-admin {:class (concat (when open? ["open"])
@@ -78,7 +76,7 @@
           [:div.admin-tools
            [:div.environment {:class (str "env-" (name (env/env)))
                               :role "button"
-                              :on-click #(put! controls-ch [:show-admin-panel-toggled])}
+                              :on-click #(raise! owner [:show-admin-panel-toggled])}
             (name (env/env))]
 
            [:div.options
@@ -87,21 +85,21 @@
             [:a {:href "/admin/recent-builds"} "builds "]
             [:a {:href "/admin/deployments"} "deploys "]
             (let [use-local-assets (get user-session-settings :use_local_assets)]
-              [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-local-assets
-                                                                            :value (not use-local-assets)}])}
+              [:a {:on-click #(raise! owner [:set-user-session-setting {:setting :use-local-assets
+                                                                        :value (not use-local-assets)}])}
                "local assets " (if use-local-assets "off " "on ")])
-            [:a {:on-click #(put! controls-ch [:set-user-session-setting {:setting :use-om
-                                                                          :value false}])}
+            [:a {:on-click #(raise! owner [:set-user-session-setting {:setting :use-om
+                                                                      :value false}])}
              "om off "]
             (let [current-build-id (get user-session-settings :om_build_id "dev")]
               (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
                 [:a.menu-item
-                 {:on-click #(put! controls-ch [:set-user-session-setting {:setting :om-build-id
-                                                                           :value build-id}])}
+                 {:on-click #(raise! owner [:set-user-session-setting {:setting :om-build-id
+                                                                       :value build-id}])}
                  [:span (str "om " build-id " ")]]))
-            [:a {:on-click #(put! controls-ch [:show-inspector-toggled])}
+            [:a {:on-click #(raise! owner [:show-inspector-toggled])}
              (if inspector? "inspector off " "inspector on ")]
-            [:a {:on-click #(put! controls-ch [:clear-instrumentation-data-clicked])} "clear stats"]]
+            [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]]
            (om/build instrumentation/summary (:instrumentation app))]
           (when (and open? expanded?)
             (om/build instrumentation/line-items (:instrumentation app)))])))))
@@ -112,8 +110,7 @@
     om/IRender
     (render [_]
       (let [flash (get-in app state/flash-path)
-            logged-in? (get-in app state/user-path)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            logged-in? (get-in app state/user-path)]
         (html
          [:div
           [:div
@@ -143,12 +140,12 @@
 
                [:div.controls.span2.offset2
                 [:a#login.login-link {:href (auth-url)
-                                      :on-click #(put! controls-ch [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
+                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                       :title "Sign in with Github"}
                  "Sign in"]
                 [:span.seperator " | "]
                 [:a#login.login-link {:href (auth-url)
-                                      :on-click #(put! controls-ch [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
                                       :title "Sign up with Github"}
                  "Sign up "
                  [:i.fa.fa-github-alt]]])]]]])))))
