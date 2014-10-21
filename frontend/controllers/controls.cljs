@@ -727,11 +727,11 @@
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
-               :cancel-build
-               api-ch
-               :context {:build-id build-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
+                 :cancel-build
+                 api-ch
+                 :context {:build-id build-id})))
 
 
 (defmethod post-control-event! :enabled-project

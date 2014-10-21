@@ -408,7 +408,7 @@
                   :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}
                  "Report"])
               (when (build-model/can-cancel? build)
-                (forms/stateful-button
+                (forms/managed-button
                  [:button.cancel_build
                   {:data-loading-text "Canceling",
                    :title "Cancel this build",
