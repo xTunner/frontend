@@ -63,6 +63,22 @@
       (utils/deep-merge (apply merge {} (map (partial extract-from project) paths))
                         settings))))
 
+(defn button-ajax
+  "An ajax/ajax wrapper that releases the current managed-button after the API
+  request.  Exists to faciliate migration away from stateful-button."
+  [method url message channel & opts]
+  (let [uuid frontend.async/*uuid*
+        c (chan)]
+    (apply ajax/ajax method url message c opts)
+    (go-loop []
+      (if-let [[_ status _ :as event] (<! c)]
+        (do
+          (when (#{:success :failed} status)
+            (release-button! uuid status))
+          (>! channel event)
+          (recur))
+        (close! channel)))))
+
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti control-event
@@ -458,13 +474,13 @@
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/envvar" project-name)
-               :create-env-var
-               api-ch
-               :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
-                        :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
-               :context {:project-id project-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/envvar" project-name)
+                 :create-env-var
+                 api-ch
+                 :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
+                          :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-env-var

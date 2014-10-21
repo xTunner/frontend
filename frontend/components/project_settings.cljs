@@ -278,7 +278,7 @@
              {:required true, :type "text", :value new-env-var-value
               :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]
             [:label {:placeholder "Value"}]
-            (forms/stateful-button
+            (forms/managed-button
              [:input {:data-failed-text "Failed",
                       :data-success-text "Added",
                       :data-loading-text "Adding...",
