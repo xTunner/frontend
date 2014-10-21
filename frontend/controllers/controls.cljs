@@ -402,11 +402,11 @@
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
-               :follow-project
-               api-ch
-               :context {:project-id project-id}))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
+                 :follow-project
+                 api-ch
+                 :context {:project-id project-id}))
   (analytics/track-follow-project))
 
 
@@ -424,11 +424,11 @@
 (defmethod post-control-event! :unfollowed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
-               :unfollow-project
-               api-ch
-               :context {:project-id project-id}))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
+                 :unfollow-project
+                 api-ch
+                 :context {:project-id project-id}))
   (analytics/track-unfollow-project))
 
 
@@ -597,12 +597,12 @@
   [target message {:keys [project-id ssh-key]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/ssh-key" project-name)
-               :save-ssh-key
-               api-ch
-               :params ssh-key
-               :context {:project-id project-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+                 :save-ssh-key
+                 api-ch
+                 :params ssh-key
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-ssh-key
@@ -641,12 +641,12 @@
   [target message {:keys [project-id api-token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/token" project-name)
-               :save-project-api-token
-               api-ch
-               :params api-token
-               :context {:project-id project-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/token" project-name)
+                 :save-project-api-token
+                 api-ch
+                 :params api-token
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-project-api-token
@@ -665,23 +665,23 @@
   [target message {:keys [project-id login]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
-               :set-heroku-deploy-user
-               api-ch
-               :context {:project-id project-id
-                         :login login})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 :set-heroku-deploy-user
+                 api-ch
+                 :context {:project-id project-id
+                           :login login})))
 
 
 (defmethod post-control-event! :removed-heroku-deploy-user
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :delete
-               (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
-               :remove-heroku-deploy-user
-               api-ch
-               :context {:project-id project-id})))
+    (button-ajax :delete
+                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 :remove-heroku-deploy-user
+                 api-ch
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :set-user-session-setting

@@ -735,7 +735,7 @@
             [:textarea#privateKey {:required true :value (str private-key)
                                    :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}]
             [:label {:placeholder "Private Key"}]
-            (forms/stateful-button
+            (forms/managed-button
              [:input#submit.btn
               {:data-failed-text "Failed",
                :data-success-text "Saved",
@@ -949,7 +949,7 @@
              {:required true, :type "text" :value (str label)
               :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :label) %)}]
             [:label {:placeholder "Token label"}]
-            (forms/stateful-button
+            (forms/managed-button
              [:input
               {:data-failed-text "Failed",
                :data-success-text "Created",
@@ -1027,7 +1027,7 @@
               :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
            [:form.api
             (if (= (:heroku_deploy_user project) (:login user))
-              (forms/stateful-button
+              (forms/button-button
                [:input.remove-user
                 {:data-success-text "Saved",
                  :data-loading-text "Saving...",
@@ -1036,7 +1036,7 @@
                  :value "Remove Heroku Deploy User",
                  :type "submit"}])
 
-              (forms/stateful-button
+              (forms/managed-button
                [:input.set-user
                 {:data-success-text "Saved",
                  :data-loading-text "Saving...",
@@ -1148,7 +1148,7 @@
                "You can stop these any time from your "
                [:a {:href "/account"} "account settings"]
                "."]
-              (forms/stateful-button
+              (forms/managed-button
                [:button {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url
                                                                         :project-id project-id}])
                          :data-loading-text "Unfollowing..."}
@@ -1160,7 +1160,7 @@
               [:p
                "We can't update you with personalized build emails unless you follow this project. "
                "Projects are only tested if they have a follower."]
-              (forms/stateful-button
+              (forms/managed-button
                [:button {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url
                                                                       :project-id project-id}])
                          :data-loading-text "Following..."}

@@ -54,7 +54,7 @@
               [:a {:title "home", :href "/"} [:i.fa.fa-home] " "])
             (crumbs/crumbs crumbs-data)]
            (when (show-follow-project-button? app)
-             (forms/stateful-button
+             (forms/managed-button
                [:button#follow-project-button
                 {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
                  :data-spinner true}
