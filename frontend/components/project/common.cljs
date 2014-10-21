@@ -106,7 +106,7 @@
          [:div.row-fluid
           [:div.offset1.span10
            [:div.alert.alert-success
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Following...",
                :on-click #(raise! owner [:followed-repo {:vcs_url vcs-url}])}

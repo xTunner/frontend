@@ -391,11 +391,11 @@
 (defmethod post-control-event! :followed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
-               :follow-repo
-               api-ch
-               :context repo))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
+                 :follow-repo
+                 api-ch
+                 :context repo))
   (analytics/track-follow-repo))
 
 
@@ -413,11 +413,11 @@
 (defmethod post-control-event! :unfollowed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
-               :unfollow-repo
-               api-ch
-               :context repo))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
+                 :unfollow-repo
+                 api-ch
+                 :context repo))
   (analytics/track-unfollow-repo))
 
 

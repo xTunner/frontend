@@ -28,7 +28,7 @@
   (let [channel (chan)
         uuid (utils/uuid)]
     (swap! registered-channels assoc uuid channel)
-    (om/update-state! owner [:registered-channel-uuids] #(conj % uuid))
+    (om/update-state! owner [:registered-channel-uuids] #(conj (set %) uuid))
     {:channel channel :uuid uuid}))
 
 (defn deregister-channel! [owner uuid]
@@ -123,7 +123,7 @@
                           ;; people click on it.
                           (assoc :disabled (not= :idle button-state))
                           (update-in [:class] (fn [c] (cond (= :idle button-state) c
-                                                            (string? c) (str c  " disabled")
+                                                            (string? c) (str c " disabled")
                                                             (coll? c) (conj c "disabled")
                                                             :else "disabled")))
                           (update-in [:on-click] wrap-managed-button-handler owner)
