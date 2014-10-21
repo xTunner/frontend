@@ -80,7 +80,7 @@
            [:ul
             (om/build-all invite-tile users {:key :login})]]
           [:footer
-           (forms/stateful-button
+           (forms/managed-button
             [:button (let [users-to-invite (invitees users)]
                        {:data-success-text "Sent"
                         :on-click #(raise! owner [:invited-github-users {:invitees users-to-invite

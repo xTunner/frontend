@@ -84,7 +84,7 @@
             "Project "
             project-name
             " isn't configured with a deploy key or a github user, so we may not be able to test all pushes."
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Adding...",
                :on-click #(raise! owner [:enabled-project {:project-id project-id
@@ -106,7 +106,7 @@
          [:div.row-fluid
           [:div.offset1.span10
            [:div.alert.alert-success
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Following...",
                :on-click #(raise! owner [:followed-repo {:vcs_url vcs-url}])}

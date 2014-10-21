@@ -5,7 +5,7 @@
             [frontend.models.user :as user-model]
             [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
-            [frontend.components.forms :refer [stateful-button]]
+            [frontend.components.forms :refer [managed-button]]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -95,13 +95,12 @@
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 (when building?
                   [:div.building "Starting first build..."])
-                (stateful-button
+                (managed-button
                  [:button {:on-click #(do (raise! owner [:followed-repo (assoc @repo
                                                                                :login login
                                                                                :type type)])
                                           (when should-build?
                                             (om/set-state! owner :building? true)))
-                           :data-api-count (if should-build? 2 1)
                            :data-spinner true}
                   [:span "Follow"]])]
 
@@ -118,7 +117,7 @@
                   [:i.fa.fa-external-link]]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                (stateful-button
+                (managed-button
                  [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
                                                                              :login login
                                                                              :type type)])

@@ -67,7 +67,7 @@
                 build-num (:build_num build)]
             ;; TODO: how are we going to get back to the correct build in the app-state?
             ;;       Not a problem here, b/c the websocket will be updated, but something to think about
-            (forms/stateful-button
+            (forms/managed-button
              [:button.cancel_build
               {:on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                 :vcs-url vcs-url

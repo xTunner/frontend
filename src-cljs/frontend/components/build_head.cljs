@@ -369,7 +369,7 @@
 
             [:div.build-actions
              [:div.actions
-              (forms/stateful-button
+              (forms/managed-button
                [:button.retry_build
                 {:data-loading-text "Rebuilding",
                  :title "Retry the same tests",
@@ -379,7 +379,7 @@
                                                                  :clear-cache? false}])}
                 "Rebuild"])
 
-              (forms/stateful-button
+              (forms/managed-button
                [:button.clear_cache_retry
                 {:data-loading-text "Rebuilding",
                  :title "Clear cache and retry",
@@ -390,7 +390,7 @@
                 "& clear cache"])
 
               (if (has-scope :write-settings data)
-                (forms/stateful-button
+                (forms/managed-button
                  [:button.ssh_build
                   {:data-loading-text "Rebuilding",
                    :title "Retry with SSH in VM",
@@ -405,7 +405,7 @@
                   :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}
                  "Report"])
               (when (build-model/can-cancel? build)
-                (forms/stateful-button
+                (forms/managed-button
                  [:button.cancel_build
                   {:data-loading-text "Canceling",
                    :title "Cancel this build",
