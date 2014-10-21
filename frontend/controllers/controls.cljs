@@ -71,13 +71,11 @@
         c (chan)]
     (apply ajax/ajax method url message c opts)
     (go-loop []
-      (if-let [[_ status _ :as event] (<! c)]
-        (do
-          (when (#{:success :failed} status)
-            (release-button! uuid status))
-          (>! channel event)
-          (recur))
-        (close! channel)))))
+      (when-let [[_ status _ :as event] (<! c)]
+        (when (#{:success :failed} status)
+          (release-button! uuid status))
+        (>! channel event)
+        (recur)))))
 
 ;; --- Navigation Multimethod Declarations ---
 
