@@ -84,7 +84,7 @@
             "Project "
             project-name
             " isn't configured with a deploy key or a github user, so we may not be able to test all pushes."
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Adding...",
                :on-click #(raise! owner [:enabled-project {:project-id project-id

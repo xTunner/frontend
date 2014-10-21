@@ -736,12 +736,12 @@
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [project-name project-id]} previous-state current-state]
-  (ajax/ajax :post
-             (gstring/format "/api/v1/project/%s/enable" project-name)
-             :enable-project
-             (get-in current-state [:comms :api])
-             :context {:project-name project-name
-                       :project-id project-id}))
+  (button-ajax :post
+               (gstring/format "/api/v1/project/%s/enable" project-name)
+               :enable-project
+               (get-in current-state [:comms :api])
+               :context {:project-name project-name
+                         :project-id project-id}))
 
 (defmethod post-control-event! :extend-trial-clicked
   [target message {:keys [org-name]} previous-state current-state]
