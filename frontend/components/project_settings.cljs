@@ -1027,7 +1027,7 @@
               :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
            [:form.api
             (if (= (:heroku_deploy_user project) (:login user))
-              (forms/button-button
+              (forms/managed-button
                [:input.remove-user
                 {:data-success-text "Saved",
                  :data-loading-text "Saving...",
