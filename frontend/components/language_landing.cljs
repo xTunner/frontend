@@ -59,7 +59,7 @@
                          :title "Intelligent Test Running"  
                          :icon (utils/cdn-path "/img/outer/languages/file-icon.svg")}
                         {:feature "CircleCI makes setting up Continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like with Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
-                         :title "Easy continuous Delivery"
+                         :title "Easy Continuous Delivery"
                          :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}]
              :docs-link "/docs/language-python"
              :testimonials [{:text "The speed is really impressive, the rspec suite alone takes 6 minutes to run on my Macbook Air, but only 2 minutes on Circle."
