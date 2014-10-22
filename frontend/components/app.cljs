@@ -70,7 +70,7 @@
     :enterprise enterprise/enterprise
     :shopify-story stories/shopify
     :language-landing language-landing/language-landing
-    :docker-integration integrations/docker
+    :integrations integrations/integration
     :changelog changelog/changelog
     :documentation docs/documentation
 

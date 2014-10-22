@@ -151,3 +151,9 @@
                        [:i "CircleCI keeps your code safe. "
                         [:a {:href "/security" :title "Security"} "Learn how."]]]]]
                     ]]]])))))
+
+(defrender integration [app owner]
+  (let [integration (get-in app [:navigation-data :integration])]
+    (if (= integration :docker)
+      (om/build docker app)
+      (html [:p "Hey"]))))
