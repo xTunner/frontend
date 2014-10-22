@@ -9,7 +9,9 @@
             [frontend.stefon :as stefon]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            [goog.string :as gstring]
+            [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
 (defn arrow-class [selected-testimonial]
@@ -23,6 +25,7 @@
   {"ruby" {:language "Ruby"
            :headline "CircleCI makes Continuous Integration and Deployment for Ruby projects a breeze."
            :logo-path (utils/cdn-path "/img/outer/languages/ruby-logo.svg")
+           :screenshot (utils/cdn-path "/img/outer/languages/build-screenshot.png")
            :features [{:feature "CircleCI provides support for a wide variety of Ruby versions and gems, including Ruby on Rails. It is trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
                        :title "Built For Ruby"
                        :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
@@ -48,6 +51,7 @@
    "python" {:language "Python"
              :headline "CircleCI makes continuous Integration and Deployment for Python projects a breeze."
              :logo-path (utils/cdn-path "/img/outer/languages/python-logo.svg")
+             :screenshot (stefon/asset-path "/img/outer/languages/build-screenshot-python.png")
              :features [{:feature "When CircleCI detects a Python project, it automatically uses 'virtualenv' and 'pip' to create an isolated Python environment with all of the dependencies specified in your requirements.txt file. This helps ensure that your Python projects can be set up quickly and easily and that your CircleCI enviroment is configured correctly."
                          :title "Built For Python"
                          :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
@@ -109,7 +113,8 @@
           [:div.languages-head {:class (:language template)}
            [:img {:src (:logo-path template)}]
            [:h1 (:headline template)]
-           [:div.languages-screenshots]
+           [:div.languages-screenshots
+            {:style {:background-image (gstring/format "url('%s')" (:screenshot template))}}]
            [:div.hero-shadow]]
           [:div.languages-body
            [:div.languages-features
