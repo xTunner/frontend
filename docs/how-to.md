@@ -16,6 +16,7 @@ children:
   - continuous-deployment-with-heroku
   - deploy-google-app-engine
   - deploy-bluemix
+  - continuous-deployment-with-ninefold
 
 -->
 

@@ -56,6 +56,7 @@ window.stefon_hack_for_om =
     "/docs/composer-api-rate-limit.md": '(asset-path "docs/composer-api-rate-limit.md")'
     "/docs/config-sample.md": '(asset-path "docs/config-sample.md")'
     "/docs/configuration.md": '(asset-path "docs/configuration.md")'
+    "/docs/continuous-deployment-with-ninefold.md": '(asset-path "docs/continuous-deployment-with-ninefold.md")'
     "/docs/continuous-deployment-with-heroku.md": '(asset-path "docs/continuous-deployment-with-heroku.md")'
     "/docs/continuous-deployment.md": '(asset-path "docs/continuous-deployment.md")'
     "/docs/deploy-google-app-engine.md": '(asset-path "docs/deploy-google-app-engine.md")'
