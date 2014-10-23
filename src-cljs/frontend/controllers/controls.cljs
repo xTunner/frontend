@@ -18,6 +18,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
             goog.style)
@@ -1069,3 +1070,56 @@
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
           (when (= (:success (:status api-result)))
             (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
+
+(defmethod post-control-event! :home-scroll-1st-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) vh]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-2nd-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 2 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-3rd-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 3 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-4th-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 4 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-logo-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) 0]
+                         0))))
+
+(defmethod control-event :customer-logo-clicked
+  [target message {:keys [customer]} state]
+  (assoc-in state state/customer-logo-customer-path customer))
+
+(defmethod control-event :toolset-clicked
+  [target message {:keys [toolset]} state]
+  (assoc-in state state/selected-toolset-path toolset))
