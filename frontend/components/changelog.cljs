@@ -1,7 +1,6 @@
 (ns frontend.components.changelog
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [put!]]
             [frontend.components.about :as about]
             [frontend.components.common :as common]
             [frontend.components.shared :as shared]

@@ -1,6 +1,6 @@
 (ns frontend.components.documentation
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [clojure.string :as string]
             [dommy.core :as dommy]
             [om.core :as om :include-macros true]
@@ -20,36 +20,34 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (utils/typeahead
-         "#searchQuery"
-         {:source (fn [query process]
-                    (go (let [res (<! (ajax/managed-ajax :get "/autocomplete-articles"
-                                                         :params {:query query}))]
-                          (when (= :success (:status res))
-                            (process (->> res
-                                          :resp
-                                          :suggestions
-                                          (map gstring/htmlEscape)
-                                          clj->js))))))
-          :updater (fn [query]
-                     (put! controls-ch [:edited-input {:path state/docs-search-path
-                                                       :value query}])
-                     (put! controls-ch [:doc-search-submitted {:query query}])
-                     query)})))
+      (utils/typeahead
+       "#searchQuery"
+       {:source (fn [query process]
+                  (go (let [res (<! (ajax/managed-ajax :get "/autocomplete-articles"
+                                                       :params {:query query}))]
+                        (when (= :success (:status res))
+                          (process (->> res
+                                        :resp
+                                        :suggestions
+                                        (map gstring/htmlEscape)
+                                        clj->js))))))
+        :updater (fn [query]
+                   (raise! owner [:edited-input {:path state/docs-search-path
+                                                 :value query}])
+                   (raise! owner [:doc-search-submitted {:query query}])
+                   query)}))
     om/IRender
     (render [_]
-      (let [query (get-in app state/docs-search-path)
-            controls-ch (om/get-shared owner [:comms :controls])]
+      (let [query (get-in app state/docs-search-path)]
         (html
          [:form#searchDocs.clearfix.form-search
           [:input#searchQuery
            {:type "text",
             :value query
-            :on-change #(utils/edit-input controls-ch state/docs-search-path %)
+            :on-change #(utils/edit-input owner state/docs-search-path %)
             :placeholder "What can we help you find?",
             :name "query"}]
-          [:button {:on-click #(do (put! controls-ch [:doc-search-submitted {:query query}])
+          [:button {:on-click #(do (raise! owner [:doc-search-submitted {:query query}])
                                    false)
                     :type "submit"}
            [:i.fa.fa-search]]])))))

@@ -1,6 +1,6 @@
 (ns frontend.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
             [frontend.components.about :as about]
             [frontend.components.admin :as admin]
@@ -85,9 +85,8 @@
       (if-not (:navigation-point app)
         (html [:div#app])
 
-        (let [controls-ch (om/get-shared owner [:comms :controls])
-              persist-state! #(put! controls-ch [:state-persisted])
-              restore-state! #(do (put! controls-ch [:state-restored])
+        (let [persist-state! #(raise! owner [:state-persisted])
+              restore-state! #(do (raise! owner [:state-restored])
                                   ;; Components are not aware of external state changes.
                                   (reinstall-om!))
               show-inspector? (get-in app state/show-inspector-path)

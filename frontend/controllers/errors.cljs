@@ -1,7 +1,6 @@
 (ns frontend.controllers.errors
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.changelog :as changelog]
             [frontend.favicon]

@@ -5,6 +5,6 @@
 ;; Making this a macro so that we can call it form the swallow-errors macro
 (defmacro push [& args]
   `(try
-     (js/_rollbar.push ~@args)
+     (js/Rollbar.log ~@args)
      (catch :default e#
        (js/console.log e#))))

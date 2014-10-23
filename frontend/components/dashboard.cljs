@@ -1,6 +1,5 @@
 (ns frontend.components.dashboard
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
@@ -23,7 +22,6 @@
             plan (:plan current-project)
             project (:project current-project)
             nav-ch (get-in data [:comms :nav])
-            controls-ch (om/get-shared owner [:comms :controls])
             nav-data (:navigation-data data)
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)]

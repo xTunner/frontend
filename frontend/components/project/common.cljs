@@ -1,6 +1,6 @@
 (ns frontend.components.project.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
             [frontend.models.plan :as plan-model]
@@ -76,8 +76,7 @@
     om/IRender
     (render [_]
       (let [project-name (vcs-url/project-name (:vcs_url project))
-            project-id (project-model/id project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            project-id (project-model/id project)]
         (html
          [:div.row-fluid
           [:div.offset1.span10
@@ -85,11 +84,11 @@
             "Project "
             project-name
             " isn't configured with a deploy key or a github user, so we may not be able to test all pushes."
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Adding...",
-               :on-click #(put! controls-ch [:enabled-project {:project-id project-id
-                                                               :project-name project-name}])}
+               :on-click #(raise! owner [:enabled-project {:project-id project-id
+                                                           :project-name project-name}])}
               "Add SSH key"])]]])))))
 
 (defn show-follow-notice [project]
@@ -102,16 +101,15 @@
     om/IRender
     (render [_]
       (let [project-name (vcs-url/project-name (:vcs_url project))
-            vcs-url (:vcs_url project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            vcs-url (:vcs_url project)]
         (html
          [:div.row-fluid
           [:div.offset1.span10
            [:div.alert.alert-success
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Following...",
-               :on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
+               :on-click #(raise! owner [:followed-repo {:vcs_url vcs-url}])}
               "Follow"])
             " " project-name " to add " project-name " to your sidebar and get build notifications."]]])))))
 
@@ -135,6 +133,6 @@
            [:select {:value pref
                      :on-change #(let [value (.. % -target -value)
                                        args {vcs_url {:emails value}}]
-                                   (put! ch [:project-preferences-updated args]))}
+                                   (raise! owner [:project-preferences-updated args]))}
             (for [[pref label] email-prefs]
               [:option {:value pref} label])]])))))
