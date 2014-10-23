@@ -57,7 +57,7 @@
                          :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
                         {:feature "CircleCI intelligently determines the best way to run your tests using 'nosetests', 'tox', or Django. We also provide complete flexibility to override our inferred commands with your own custom commands via the circle.yml."
                          :title "Intelligent Test Running"  
-                         :icon (utils/cdn-path "/img/outer/languages/file-icon.svg")}
+                         :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}
                         {:feature "CircleCI makes setting up Continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like with Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
                          :title "Easy Continuous Delivery"
                          :icon (utils/cdn-path "/img/outer/languages/cycle.svg")}]
