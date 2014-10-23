@@ -25,8 +25,8 @@ mixpanel.identify
 var _pq;
 _pq.push;
 
-var _rollbar;
-_rollbar.push;
+var Rollbar;
+Rollbar.log;
 
 var twttr;
 twttr.conversion;
