@@ -61,19 +61,7 @@
                         {:feature "CircleCI makes setting up Continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like with Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
                          :title "Easy Continuous Delivery"
                          :icon (utils/cdn-path "/img/outer/languages/cycle.svg")}]
-             :docs-link "/docs/language-python"
-             :testimonials [{:text "The speed is really impressive, the rspec suite alone takes 6 minutes to run on my Macbook Air, but only 2 minutes on Circle."
-                             :img (utils/cdn-path "/img/outer/languages/olivier.jpg")
-                             :author "Olivier Melcher"
-                             :title "Developer @PasswordBox"}
-                            {:text "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure."
-                             :img (stefon/asset-path "/img/outer/stories/john.jpg")
-                             :author "John Duff"
-                             :title "Director of Engineering @Shopify"}
-                            {:text "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. CircleCI's customer support is outstanding. We get quick, thorough answers to all our questions."
-                             :img (utils/cdn-path "/img/outer/languages/aaron.jpg")
-                             :author "Aaron Suggs"
-                             :title "Operations Engineer @Kickstarter"}]}
+             :docs-link "/docs/language-python"}
    "node" {:language "Node"
            :headline "CircleCI makes Continous Integration and Deployment for Node.js projects a breeze."
            :logo-path (utils/cdn-path "/img/outer/languages/node-logo.svg")
@@ -139,19 +127,20 @@
 
             [:div.button
              [:a {:href (:docs-link template)} "Read documentation on " (:language template)]]]]
-          [:div.languages-testimonials {:class (arrow-class selected-testimonial)}
-           [:div.languages-body
-            [:div.center-text
-             [:h3 "TESTIMONIALS"]]
-            [:div.testimonial-authors
-             (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(put! controls-ch [:language-testimonial-tab-selected {:index i}])}])
-                          (:testimonials template))]
-            [:div.testimonial-box
-             [:div.testimonial
-              [:p.testimonial-text (get-in template [:testimonials selected-testimonial :text])]
+          (when (:testimonials template)
+            [:div.languages-testimonials {:class (arrow-class selected-testimonial)}
+             [:div.languages-body
+              [:div.center-text
+               [:h3 "TESTIMONIALS"]]
+              [:div.testimonial-authors
+               (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(put! controls-ch [:language-testimonial-tab-selected {:index i}])}])
+                            (:testimonials template))]
+              [:div.testimonial-box
+               [:div.testimonial
+                [:p.testimonial-text (get-in template [:testimonials selected-testimonial :text])]
 
-              [:div.testimonial-author "—" (get-in template [:testimonials selected-testimonial :author])]
-              [:div.testimonial-author-title (get-in template [:testimonials selected-testimonial :title])]]]]]
+                [:div.testimonial-author "—" (get-in template [:testimonials selected-testimonial :author])]
+                [:div.testimonial-author-title (get-in template [:testimonials selected-testimonial :title])]]]]])
 
           [:div.languages-cta
            [:div.languages-body
