@@ -280,12 +280,13 @@
   (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state)))
 
 (defn refresh-css! []
-  (let [is-app-css? #(re-matches #"/assets/css/app.*?\.css(?:\.less)?" (dommy/attr % :href))
-        old-link (->> (sel [:head :link])
-                      (filter is-app-css?)
-                      first)]
-        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href "/assets/css/app.css"}])
-        (dommy/remove! old-link)))
+  (let [is-app-css? (fn [elem]
+                      (let [href (inspect (dommy/attr elem :href))]
+                         (re-find #"/assets/css/app.*?\.css(?:\.less)?" href)))
+        potential-links (sel [:head :link])
+        old-links (filter is-app-css? potential-links)]
+        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href (str "/assets/css/app.css?t=" (.getTime (js/Date.)))}])
+        (map #(dommy/remove! %) old-links)))
 
 (defn update-ui! []
   (reinstall-om!)
