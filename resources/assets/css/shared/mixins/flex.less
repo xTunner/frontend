@@ -1,3 +1,7 @@
+.order(...) {
+  .prefixer(box-ordinal-group, @arguments, webkit moz); // Old Syntax
+  .prefixer(order, @arguments, webkit moz);
+}
 .flex(@a: 0; ...) {
   .prefixer(box-flex; extract(@a, 1); webkit); // Old Syntax
   .prefixer(flex; @arguments; webkit);
@@ -37,10 +41,8 @@
   .prefixer(flex-wrap; @arguments; webkit)
 }
 .flexy(...) {
-  display: -webkit-box;
-  display: box;
-  display: -webkit-flex;
-  display: flex;
+  .prefixer_value(display; box; webkit);
+  .prefixer_value(display; flex; webkit);
   .infer_1(@a) when (length(@a) = 1) {
     .infer_direction(@a) when (@a = row), (@a = row-reverse), (@a = column), (@a = column-reverse) {
       .flex-direction(@a);

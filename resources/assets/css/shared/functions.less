@@ -6,6 +6,14 @@
   }.prefix(@property; @value; @rest);
   @{property}: @value;
 }
+.prefixer_value(@property; @value; @rest...) {
+  .prefix(@property; @value; @rest; @counter: length(@rest)) when (@counter > 0) {
+    .prefix(@property; @value; @rest; (@counter - 1));
+    @prefix: extract(@rest, @counter);
+    @{property}: ~"-@{prefix}-@{value}";
+  }.prefix(@property; @value; @rest);
+  @{property}: @value;
+}
 
 // old mixins
 // scheduled for demolition
@@ -143,6 +151,22 @@
   @concat: (unit(@a) / unit(@font_size));
   @to_em: ~"@{concat}em";
 }
+
+// .for
+// see: https://github.com/seven-phases-max/less.curious/blob/master/src/for.less
+
+.for(@i, @n) {.-each(@i)}
+.for(@n)     when (isnumber(@n)) {.for(1, @n)}
+.for(@i, @n) when not (@i = @n)  {
+    .for((@i + (@n - @i) / abs(@n - @i)), @n);
+}
+
+// .for-each
+// see: https://github.com/seven-phases-max/less.curious/blob/master/src/for.less
+
+.for(@array)   when (default()) {.for-impl_(length(@array))}
+.for-impl_(@i) when (@i > 1)    {.for-impl_((@i - 1))}
+.for-impl_(@i) when (@i > 0)    {.-each(extract(@array, @i))}
 
 // Outline
 // same effect as "border" w/o increasing object size
@@ -282,6 +306,18 @@
     min-height: 1em;
     padding: @padding;
   }
+}
+
+.filter(...) {
+    .for(@arguments); .-each(@argument) {
+        -webkit-filter+_: @argument;
+                filter+_: @argument;
+    }
+}
+
+.backface-visibility(...) {
+  -webkit-backface-visibility: @arguments;
+          backface-visibility: @arguments;
 }
 
 @import "mixins/transforms.less";
