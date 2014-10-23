@@ -3,6 +3,7 @@
             [frontend.async :refer [put!]]
             [weasel.repl :as ws-repl]
             [clojure.browser.repl :as repl]
+            [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
             [dommy.core :as dommy]
             [goog.dom]
@@ -291,3 +292,8 @@
 (defn update-ui! []
   (reinstall-om!)
   (refresh-css!))
+
+(fw/watch-and-reload
+  :websocket-url "ws://localhost:3449/figwheel-ws"
+  :jsload-callback (fn [] (do
+                            (update-ui!))))
