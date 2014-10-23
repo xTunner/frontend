@@ -57,7 +57,7 @@ test:
     - curl --retry 10 --retry-delay 5 -v http://localhost:9200
 
 deployment:
-  hub: 
+  hub:
     branch: master
     commands:
       - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" \
@@ -69,7 +69,7 @@ Note that a `.dockercfg` file must be dropped in place in order to skip interact
 the registry. You should use [environment variables](/docs/environment-variables)
 as in the example above to store sensitive information.
 
-For a complete example of building and deploying a Docker image to a 
+For a complete example of building and deploying a Docker image to a
 registry, see the [circleci/docker-elasticsearch](https://github.com/circleci/docker-elasticsearch)
 example project on GitHub.
 
@@ -84,7 +84,7 @@ for AWS Elastic Beanstalk and Google Compute Engine with Kubernetes.
 ####AWS Elastic Beanstalk
 
 The example below demonstrates building and
-testing a Dockerized Rails app and deploying the built image to 
+testing a Dockerized Rails app and deploying the built image to
 [AWS Elastic Beanstalk](http://aws.amazon.com/elasticbeanstalk/)
 (in fact, you can't even really tell that it's a Rails app because all of the
 specifics of the app are handled by the Dockerfile). At a high level, this example
@@ -307,7 +307,7 @@ dependencies:
     - "~/docker"
 
   override:
-    - if [[ -e ~/docker ]]; then docker load -i ~/docker/image.tar; fi
+    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
     - docker build -t circleci/elasticsearch .
     - mkdir -p ~/docker; docker save circleci/elasticsearch > ~/docker/image.tar
 ```
