@@ -239,12 +239,19 @@
                             [:li (test-model/format-test-name test)])
                           (sort-by test-model/format-test-name tests))]]))]))])))))
 
+(defn circle-yml-ad []
+  [:div
+   [:p "We didn't find a circle.yml for this build. You can specify deployment or override our inferred test steps from a circle.yml checked in to your repo's root directory."]
+   [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "configuration"})} "in our docs"] "."]])
+
 (defn build-config [{:keys [config-string]} owner opts]
   (reify
     om/IRender
     (render [_]
       (html
-       [:div.build-config-string [:pre config-string]]))))
+       (if (seq config-string)
+         [:div.build-config-string [:pre config-string]]
+         (circle-yml-ad))))))
 
 (defn expected-duration
   [{:keys [start stop build]} owner opts]
@@ -304,10 +311,9 @@
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :commits}])}
                 "Commit Log"]])
 
-            (when (build-model/config-string? build)
-              [:li {:class (when (= :config selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
-                "circle.yml"]])
+            [:li {:class (when (= :config selected-tab) "active")}
+             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
+              "circle.yml"]]
 
             (when logged-in?
               [:li {:class (when (= :usage-queue selected-tab) "active")}
