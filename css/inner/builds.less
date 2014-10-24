@@ -21,11 +21,49 @@
   section {
     margin: @innerContentPadding 0 0 0;
     padding-top: @innerContentPadding;
-    box-shadow: 0 1px @grayBoxBorder inset;
+  }
+  .build-info {
+    padding-bottom: 1em;
   }
   .compare {
     padding-left: 0.5ex;
     font-weight: normal;
+  }
+  .sub-head-top {
+    box-shadow: 0 -1px @grayBoxBorder inset;
+  }
+
+  .nav {
+    border: none; // BS RESET
+    &.nav-tabs {
+      max-width: @minimumContentWidth;
+      margin: 0 auto;
+      .active a {
+        background: none; // BS RESET
+        color: @blue; // BS RESET
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
+      }
+    }
+    li {
+      margin: 0; // BS RESET
+    }
+    a {
+      color: @grayLight;
+      line-height: 1em;
+      border: none; // BS RESET
+      margin: 0; // BS RESET
+      &:hover {
+        background: none; // BS RESET
+        color: @blue; // BS RESET
+        box-shadow: 0 -1px @blue inset,
+                    0  1px @blue;
+      }
+    }
+  }
+  .sub-head-content {
+    padding-top: 1em;
+    padding-left: 1em;
   }
 }
 .build-info {
@@ -100,13 +138,6 @@
   }
 }
 .build-queue {
-  margin-top: @innerContentPadding;
-  p {
-    text-align: center;
-  }
-  .recent-builds-table {
-    margin-bottom: 1em;
-  }
   .cancel_build {
     .subtleButton(@grayLight);
     .subtleButtonColor(@redLight, @redLight);
@@ -130,9 +161,15 @@
   margin-top: .5em;
 }
 
+.build-tests-list-container {
+  padding-top: 1em;
+  .failure-source {
+    color: @redLight;
+  }
+}
+
 .build-artifacts-list {
   .clearfix();
-  margin: 1em 0 0;
   font-family: @codeFontFamily;
   font-size: @codeFontSize;
   li {
