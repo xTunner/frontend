@@ -141,19 +141,13 @@
 
 (defn build-ssh [nodes owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (utils/popover "#ssh-popover-hack"
-                     {:placement "right"
-                      :content "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes. This build takes up one of your concurrent builds, so cancel it when you are done."
-                      :title "SSH"}))
     om/IRender
     (render [_]
       (html
-       [:section.build-ssh
+       [:div.ssh-info-container
         [:div.build-ssh-title
-         [:strong "SSH Info "]
-         [:i.fa.fa-question-circle {:id "ssh-popover-hack" :title "SSH"}]]
+         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
+         [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
         [:div.build-ssh-list
          [:dl.dl-horizontal
           (map (fn [node i]
@@ -290,8 +284,12 @@
     om/IRender
     (render [_]
       (let [build-data (:build-data data)
-            selected-tab (get build-data :selected-header-tab :commits)
+            user (:user data)
+            logged-in? (not (empty? user))
             build (:build build-data)
+            show-ssh-info? (and logged-in? (utils/inspect (build-model/ssh-enabled-now? build)))
+            ;; default to ssh-info for SSH builds if they haven't clicked a different tab
+            selected-tab (get build-data :selected-header-tab (if show-ssh-info? :ssh-info :commits))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -299,8 +297,6 @@
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
             plan (get-in data [:project-data :plan])
-            user (:user data)
-            logged-in? (not (empty? user))
             config-data (:config-data build-data)]
         (html
          [:div.sub-head
@@ -325,6 +321,11 @@
                                                    :reponame (:reponame @build)
                                                    :build_num (:build_num @build)}]))}
                 "Queue"]])
+
+            (when show-ssh-info?
+              [:li {:class (when (= :ssh-info selected-tab) "active")}
+               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
+                "SSH info"]])
 
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
@@ -356,7 +357,8 @@
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
-                                                 :plan plan}))]])))))
+                                                 :plan plan})
+             :ssh-info (om/build build-ssh (:node build)))]])))))
 
 (defn build-head [data owner]
   (reify
@@ -505,8 +507,5 @@
                                                                     :build-num build-num}])}
                   "Cancel"]))]]
             [:div.no-user-actions]]
-
-           (when (and logged-in? (build-model/ssh-enabled-now? build))
-             (om/build build-ssh (:node build)))
 
            (om/build build-sub-head data)]])))))
