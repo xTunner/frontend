@@ -143,16 +143,22 @@
   }
 }
 .build-ssh-list {
+  padding: 1em;
   dt {
-    width: 20px;
+    width: auto; // BS reset
+    white-space: pre;
   }
   dd {
+    width: auto; // BS reset
     margin-left: 1em;
     font-family: monospace;
     color: lightgray;
   }
   .connected {
     color: #666;
+  }
+  i {
+    display: inline-block;
   }
 }
 .build-ssh-doc {
