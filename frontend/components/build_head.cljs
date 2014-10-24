@@ -152,7 +152,7 @@
          [:dl.dl-horizontal
           (map (fn [node i]
                  (list
-                  [:dt (when (< 1 (count nodes)) [:span i])]
+                  [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
                   [:dd {:class (when (:ssh_enabled node) "connected")}
                    [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
                    (when-not (:ssh_enabled node)
@@ -333,7 +333,7 @@
                [:a {:on-click #(do
                                  (raise! owner [:build-header-tab-clicked {:tab :tests}])
                                  (raise! owner [:tests-showed]))}
-                "Tests"]])
+                "Test Failures"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
