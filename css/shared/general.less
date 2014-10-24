@@ -41,6 +41,13 @@ body {
         font-size: @baseFontSize;
       }
     }
+    i.ico {
+      .spinner {
+        path {
+          fill: @grayDark;
+        }
+      }
+    }
   }
 }
 .main-body {
@@ -179,12 +186,16 @@ button [spinner], button [data-spinner]{
 }
 
 .om-instrumentation {
+  figure {
+    margin: 0;
+  }
   .admin-stats {
     .animation(admin-slide-down 200ms ease-in-out);
     width: 100%;
     color: white;
     background-color: black;
-    position: absolute;
+    z-index: 2000;
+    position: fixed;
     top: 0;
     left: 0;
     opacity: 0.7;

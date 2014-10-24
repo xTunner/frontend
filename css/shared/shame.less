@@ -1,9 +1,6 @@
 //
 // see: http://csswizardry.com/2013/04/shame-css/
 //
-#IntercomTab {
-  z-index: 9000; // intercom's styles are stupid and overpowering (this is overriding them in vendors)
-}
 #jasmine-results {
   height: 100vh;
   overflow-y: auto;
@@ -97,4 +94,9 @@ header.main-head.guest {
       }
     }
   }
+}
+
+.home.page {
+  .backface-visibility(hidden);
+  .home-practice svg[class*="logo"] { .backface-visibility(hidden); }
 }

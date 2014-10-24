@@ -15,7 +15,7 @@ Note that this article assumes some knowledge of Docker. If you are just getting
 with Docker, then take a look at the [Docker docs](http://docs.docker.com/userguide/)
 first.
 
-<h3 id="basic">Basic usage</h3>
+###Basic usage
 
 To use Docker on CircleCI, simply add Docker as a required service in your
 `circle.yml` file like this:
@@ -30,7 +30,7 @@ You will then be able to use the `docker` command throughout your
 `circle.yml` file. Note that you don't need to use `sudo`
 to use the command on CircleCI.
 
-<h3 id="registries">Deployment to a Docker registry</h3>
+###Deployment to a Docker registry
 
 One key use of Docker on CircleCI is to use Docker to build base images to deploy to a
 registry like [Docker Hub.](https://hub.docker.com/)
@@ -57,7 +57,7 @@ test:
     - curl --retry 10 --retry-delay 5 -v http://localhost:9200
 
 deployment:
-  hub: 
+  hub:
     branch: master
     commands:
       - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" \
@@ -69,11 +69,11 @@ Note that a `.dockercfg` file must be dropped in place in order to skip interact
 the registry. You should use [environment variables](/docs/environment-variables)
 as in the example above to store sensitive information.
 
-For a complete example of building and deploying a Docker image to a 
+For a complete example of building and deploying a Docker image to a
 registry, see the [circleci/docker-elasticsearch](https://github.com/circleci/docker-elasticsearch)
 example project on GitHub.
 
-<h3 id="app-deployment">Application deployment</h3>
+###Application deployment
 
 Another very important use case for Docker containers is "Dockerizing"
 applications for deployment purposes. There are countless languages
@@ -81,10 +81,10 @@ and technologies that can be deployed this way to a number of hosts that
 support Docker containers, but just a couple of examples are provided below
 for AWS Elastic Beanstalk and Google Compute Engine with Kubernetes.
 
-<h4 id="elastic-beanstalk">AWS Elastic Beanstalk</h4>
+####AWS Elastic Beanstalk
 
 The example below demonstrates building and
-testing a Dockerized Rails app and deploying the built image to 
+testing a Dockerized Rails app and deploying the built image to
 [AWS Elastic Beanstalk](http://aws.amazon.com/elasticbeanstalk/)
 (in fact, you can't even really tell that it's a Rails app because all of the
 specifics of the app are handled by the Dockerfile). At a high level, this example
@@ -159,7 +159,7 @@ To see the complete source code for the application from this example,
 see [circleci/docker-hello](https://github.com/circleci/docker-hello)
 on GitHub.
 
-<h4 id="kubernetes">Google Compute Engine and Kubernetes</h4>
+####Google Compute Engine and Kubernetes
 
 This example shows how to build and deploy a Dockerized application
 to [Google Compute Engine](https://cloud.google.com/products/compute-engine/)
@@ -251,7 +251,7 @@ To see the complete example project using Google Compute Engine and Kubernetes,
 see [circleci/docker-hello-google](https://github.com/circleci/docker-hello-google)
 for the project source.
 
-<h3 id="testing">Running tests in a container</h3>
+###Running tests in a container
 
 Another use case for Docker on CircleCI is running tests inside of or against
 a Docker container. All of the usual Docker commands are available within
@@ -307,7 +307,7 @@ dependencies:
     - "~/docker"
 
   override:
-    - if [[ -e ~/docker ]]; then docker load -i ~/docker/image.tar; fi
+    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
     - docker build -t circleci/elasticsearch .
     - mkdir -p ~/docker; docker save circleci/elasticsearch > ~/docker/image.tar
 ```
