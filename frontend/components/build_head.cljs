@@ -336,12 +336,13 @@
 
             (when logged-in?
               [:li {:class (when (= :usage-queue selected-tab) "active")}
-               [:a {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
-                                   (raise! owner [:usage-queue-why-showed
-                                                  {:build-id build-id
-                                                   :username (:username @build)
-                                                   :reponame (:reponame @build)
-                                                   :build_num (:build_num @build)}]))}
+               [:a#queued_explanation
+                {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
+                                (raise! owner [:usage-queue-why-showed
+                                               {:build-id build-id
+                                                :username (:username @build)
+                                                :reponame (:reponame @build)
+                                                :build_num (:build_num @build)}]))}
                 "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
