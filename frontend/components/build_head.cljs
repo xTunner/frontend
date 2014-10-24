@@ -14,6 +14,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
+            [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -245,11 +246,9 @@
               (tests-ad owner)
               [:div.build-tests-info
                [:div.build-tests-summary
-                (str "Your build ran " (count tests) " tests in "
+                (str "Your build ran " (pluralize (count tests) "test") " in "
                      (string/join ", " (map test-model/pretty-source sources))
-                     " with ")
-                [:span.failed-count (str (count failed-tests))]
-                " failures."]
+                     " with " (pluralize (count failed-tests) "failure") ".")]
                (when (seq failed-tests)
                  (for [[source tests] (group-by :source failed-tests)]
                    [:div.build-tests-list-container
