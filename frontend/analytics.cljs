@@ -85,6 +85,7 @@
 
 (defn track-payer [login]
   (mixpanel/track "Paid")
+  (intercom/track :paid-for-plan)
   (pa/track "payer" {:orderId login})
   (twitter/track-payer)
   (adroll/record-payer))
