@@ -125,19 +125,20 @@
               (if (:show-all-commits build-data)
                 [:i.fa.fa-caret-up]
                 [:i.fa.fa-caret-down])])]
-          [:div.build-commits-list
-           (if-not (seq (:all_commit_details build))
-             (om/build commit-line {:build build
-                                    :subject (:subject build)
-                                    :body (:body build)
-                                    :commit_url (build-model/github-commit-url build)
-                                    :commit (:vcs_revision build)})
-             (list
-              (om/build-all commit-line (take 3 (map #(assoc % :build build)
-                                                     (:all_commit_details build))))
-              (when (:show-all-commits build-data)
-                (om/build-all commit-line (drop 3 (map #(assoc % :build build)
-                                                       (:all_commit_details build)))))))]])))))
+          (when (:subject build)
+            [:div.build-commits-list
+             (if-not (seq (:all_commit_details build))
+               (om/build commit-line {:build build
+                                      :subject (:subject build)
+                                      :body (:body build)
+                                      :commit_url (build-model/github-commit-url build)
+                                      :commit (:vcs_revision build)})
+               (list
+                (om/build-all commit-line (take 3 (map #(assoc % :build build)
+                                                       (:all_commit_details build))))
+                (when (:show-all-commits build-data)
+                  (om/build-all commit-line (drop 3 (map #(assoc % :build build)
+                                                         (:all_commit_details build)))))))])])))))
 
 (defn ssh-ad [build owner]
   (let [build-id (build-model/id build)
@@ -325,10 +326,9 @@
          [:div.sub-head
           [:div.sub-head-top
            [:ul.nav.nav-tabs
-            (when (:subject build)
-              [:li {:class (when (= :commits selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :commits}])}
-                "Commit Log"]])
+            [:li {:class (when (= :commits selected-tab) "active")}
+             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :commits}])}
+              "Commit Log"]]
 
             [:li {:class (when (= :config selected-tab) "active")}
              [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
