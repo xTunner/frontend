@@ -222,7 +222,7 @@
                (> 3 (plan-model/days-left-in-trial plan)))
       [:p
        "Need more time to decide? "
-       (forms/stateful-button
+       (forms/managed-button
         [:button.btn.btn-mini.btn-success
          {:data-success-text "Extended!",
           :data-loading-text "Extending...",

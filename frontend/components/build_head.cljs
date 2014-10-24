@@ -145,7 +145,7 @@
         build-num (:build_num build)]
     [:div.ssh-ad
      [:p "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on."]
-     (forms/stateful-button
+     (forms/managed-button
       [:button.ssh_build
        {:data-loading-text "Starting SSH build...",
         :title "Retry with SSH in VM",
@@ -489,7 +489,7 @@
 
             [:div.build-actions
              [:div.actions
-              (forms/stateful-button
+              (forms/managed-button
                [:button.retry_build
                 {:data-loading-text "Rebuilding",
                  :title "Retry the same tests",
@@ -499,7 +499,7 @@
                                                                  :clear-cache? false}])}
                 "Rebuild"])
 
-              (forms/stateful-button
+              (forms/managed-button
                [:button.clear_cache_retry
                 {:data-loading-text "Rebuilding",
                  :title "Clear cache and retry",
@@ -510,7 +510,7 @@
                 "& clear cache"])
 
               (if (has-scope :write-settings data)
-                (forms/stateful-button
+                (forms/managed-button
                  [:button.ssh_build
                   {:data-loading-text "Rebuilding",
                    :title "Retry with SSH in VM",
@@ -525,7 +525,7 @@
                   :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}
                  "Report"])
               (when (build-model/can-cancel? build)
-                (forms/stateful-button
+                (forms/managed-button
                  [:button.cancel_build
                   {:data-loading-text "Canceling",
                    :title "Cancel this build",

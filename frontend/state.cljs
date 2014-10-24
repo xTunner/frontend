@@ -7,7 +7,10 @@
    ;; 2. If you change a test's options, you must also change the test's name
    ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
    :ab-test-definitions {:a_is_a [true false]
-                         :split_form [true false]}
+                         :split_form [true false]
+                         ;; only show 25% the new homepage, make sure to change the
+                         ;; test name if you change the proportion
+                         :new-homepage [true false false false]}
    :ab-tests {}
    :changelog nil
    :environment "development"
@@ -197,3 +200,7 @@
 (def docs-articles-results-query-path [:docs-articles-results-query])
 
 (def user-options-shown-path [:user-options-shown])
+
+(def customer-logo-customer-path [:customer-logo-customer])
+
+(def selected-toolset-path [:selected-toolset])

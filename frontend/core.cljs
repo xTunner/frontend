@@ -19,6 +19,7 @@
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.scroll :as scroll]
             [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
@@ -67,10 +68,12 @@
   (chan))
 
 (defn get-ab-tests [ab-test-definitions]
-  (let [overrides (some-> js/window
-                          (aget "renderContext")
-                          (aget "abOverrides")
-                          (utils/js->clj-kw))]
+  (let [overrides (merge (some-> js/window
+                                 (aget "renderContext")
+                                 (aget "abOverrides")
+                                 (utils/js->clj-kw))
+                         (when (env/development?)
+                           {:new-homepage true}))]
     (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
@@ -252,6 +255,7 @@
     (def debug-state state)
     (when instrument? (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
+    (scroll/setup-scroll-handler)
     (main state top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
