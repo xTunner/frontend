@@ -320,7 +320,12 @@
                                                    :username (:username @build)
                                                    :reponame (:reponame @build)
                                                    :build_num (:build_num @build)}]))}
-                "Queue"]])
+                "Queue"
+                (when (:usage_queued_at build)
+                  [:span " ("
+                   (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                       :stop (or (:start_time build) (:stop_time build))})
+                   ")"])]])
 
             (when show-ssh-info?
               [:li {:class (when (= :ssh-info selected-tab) "active")}
