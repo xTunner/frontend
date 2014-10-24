@@ -493,7 +493,7 @@
             [:div.avatar-circle
              (common/ico :logo)]]]
           [:div.home-bottom-shelf
-           [:span.home-footer-bait
+           [:a {:on-click #(put! controls-ch [:home-scroll-5th-clicked])}
             (common/ico :chevron-down)]]])))))
 
 
