@@ -54,3 +54,12 @@
 
 (defn get-project-settings [project-name api-ch]
   (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))
+
+(defn get-build-tests [build api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1/project/%s/%s/tests"
+                             (vcs-url/project-name (:vcs_url build))
+                             (:build_num build))
+             :build-tests
+             api-ch
+             :context (build-model/id build)))

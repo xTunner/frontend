@@ -4,6 +4,7 @@
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
@@ -110,11 +111,10 @@
       (let [build (:build build-data)
             build-id (build-model/id build)]
         (html
-         [:section.build-commits {:class (when (:show-all-commits build-data) "active")}
+         [:div.build-commits-container
           [:div.build-commits-title
-           [:strong "Commit Log"]
            (when (:compare build)
-             [:a.compare {:href (:compare build)}
+             [:a {:href (:compare build)}
               "compare "
               [:i.fa.fa-github]
               " "])
@@ -175,23 +175,27 @@
       (string/replace "$CIRCLE_ARTIFACTS/" "")
       (gstring/truncateMiddle 80)))
 
+(defn artifacts-ad []
+  [:div
+   [:p "We didn't find any build artifacts for this build. You can upload build artifacts by moving files to the $CIRCLE_ARTIFACTS directory."
+    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
+    [:p
+     "More information "
+     [:a {:href (routes/v1-doc-subpage {:subpage "build-artifacts"})}
+      "in our docs"] "."]]])
+
 (defn build-artifacts-list [data owner {:keys [show-node-indices?] :as opts}]
   (reify
     om/IRender
     (render [_]
       (let [artifacts-data (:artifacts-data data)
             artifacts (:artifacts artifacts-data)
-            show-artifacts (:show-artifacts artifacts-data)
+            has-artifacts? (:has-artifacts? data)
             admin? (:admin (:user data))]
         (html
-         [:section.build-artifacts {:class (when show-artifacts "active")}
-          [:div.build-artifacts-title
-           [:strong "Build Artifacts"]
-           [:a {:role "button"
-                :on-click #(raise! owner [:show-artifacts-toggled])}
-            [:span " view "]
-            [:i.fa.fa-caret-down {:class (when show-artifacts "fa-rotate-180")}]]]
-          (when show-artifacts
+         [:div.build-artifacts-container
+          (if-not has-artifacts?
+            (artifacts-ad)
             (if-not artifacts
               [:div.loading-spinner common/spinner]
 
@@ -207,22 +211,49 @@
                            [:a {:href (:url artifact) :target "_blank"} display-path])]))
                     artifacts)]))])))))
 
-(defn build-config [{:keys [build config-data]} owner opts]
+(defn tests-ad [owner]
+  [:div
+   [:p "We didn't find any test metadata for this build. If you're using our inferred RSpec or Cucumber test steps, then we'll collect the metadata automatically. RSpec users will also have add our junit formatter gem to their Gemfile, with the line:"]
+   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
+   [:p [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "Let us know"]
+    " if you want us to add support for your test runner."]])
+
+(defn build-tests-list [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [config-string (get-in build [:circle_yml :string])
-            show-config (:show-config config-data)]
+      (let [tests-data (:tests-data data)
+            tests (:tests tests-data)
+            sources (reduce (fn [s test] (conj s (:source test))) #{} tests)
+            failed-tests (filter #(not= "success" (:result %)) tests)]
         (html
-         [:section.build-config {:class (when show-config "active")}
-          [:div.build-config-title
-           [:strong "circle.yml"]
-           [:a {:role "button"
-                :on-click #(raise! owner [:show-config-toggled])}
-            [:span " view "]
-            [:i.fa.fa-caret-down {:class (when show-config "fa-rotate-180")}]]]
-          (when show-config
-            [:div.build-config-string [:pre config-string]])])))))
+         [:div.build-tests-container
+          (if-not tests
+            [:div.loading-spinner common/spinner]
+            (if (empty? tests)
+              (tests-ad owner)
+              [:div.build-tests-info
+               [:div.build-tests-summary
+                (str "Your build ran " (count tests) " tests in "
+                     (string/join ", " (map test-model/pretty-source sources))
+                     " with ")
+                [:span.failed-count (str (count failed-tests))]
+                " failures."]
+               (when (seq failed-tests)
+                 (for [[source tests] (group-by :source failed-tests)]
+                   [:div.build-tests-list-container
+                    [:span.failure-source (str (test-model/pretty-source source) " failures:")]
+                    [:ol.build-tests-list
+                     (map (fn [test]
+                            [:li (test-model/format-test-name test)])
+                          (sort-by test-model/format-test-name tests))]]))]))])))))
+
+(defn build-config [{:keys [config-string]} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.build-config-string [:pre config-string]]))))
 
 (defn expected-duration
   [{:keys [start stop build]} owner opts]
@@ -252,9 +283,80 @@
                  (= (:status build) "running")
                  (< duration-ms (* 1.5 past-ms)))
           (dom/span nil "/~" (formatter past-ms))
-          (dom/span nil ""))))
+          (dom/span nil ""))))))
 
-    ))
+(defn build-sub-head [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [build-data (:build-data data)
+            selected-tab (get build-data :selected-header-tab :commits)
+            build (:build build-data)
+            build-id (build-model/id build)
+            build-num (:build_num build)
+            vcs-url (:vcs_url build)
+            usage-queue-data (:usage-queue-data build-data)
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)
+            plan (get-in data [:project-data :plan])
+            user (:user data)
+            logged-in? (not (empty? user))
+            config-data (:config-data build-data)]
+        (html
+         [:div.sub-head
+          [:div.sub-head-top
+           [:ul.nav.nav-tabs
+            (when (:subject build)
+              [:li {:class (when (= :commits selected-tab) "active")}
+               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :commits}])}
+                "Commit Log"]])
+
+            (when (build-model/config-string? build)
+              [:li {:class (when (= :config selected-tab) "active")}
+               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
+                "circle.yml"]])
+
+            (when logged-in?
+              [:li {:class (when (= :usage-queue selected-tab) "active")}
+               [:a {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
+                                   (raise! owner [:usage-queue-why-showed
+                                                  {:build-id build-id
+                                                   :username (:username @build)
+                                                   :reponame (:reponame @build)
+                                                   :build_num (:build_num @build)}]))}
+                "Queue"]])
+
+            ;; tests don't get saved until the end of the build (TODO: stream the tests!)
+            (when (build-model/finished? build)
+              [:li {:class (when (= :tests selected-tab) "active")}
+               [:a {:on-click #(do
+                                 (raise! owner [:build-header-tab-clicked {:tab :tests}])
+                                 (raise! owner [:tests-showed]))}
+                "Tests"]])
+
+            ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
+            (when (and logged-in? (build-model/finished? build))
+              [:li {:class (when (= :artifacts selected-tab) "active")}
+               [:a {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :artifacts}])
+                                   (raise! owner [:artifacts-showed]))}
+                "Artifacts"]])]]
+
+          [:div.sub-head-content
+           (case selected-tab
+             :commits (om/build build-commits build-data)
+
+             :tests (om/build build-tests-list build-data)
+
+             :artifacts (om/build build-artifacts-list
+                                  {:artifacts-data (get build-data :artifacts-data) :user user
+                                   :has-artifacts? (:has_artifacts build)}
+                                  {:opts {:show-node-indices? (< 1 (:parallel build))}})
+
+             :config (om/build build-config {:config-string (get-in build [:circle_yml :string])})
+
+             :usage-queue (om/build build-queue {:build build
+                                                 :builds (:builds usage-queue-data)
+                                                 :plan plan}))]])))))
 
 (defn build-head [data owner]
   (reify
@@ -329,18 +431,7 @@
                               [:span
                                (om/build common/updating-duration {:start (:usage_queued_at build)
                                                                    :stop (or (:queued_at build) (:stop_time build))})
-                               " waiting for builds to finish"])
-
-                        (if (has-scope :read-settings data)
-                          [:span
-                           [:a#queued_explanation
-                            {:on-click #(raise! owner [:usage-queue-why-toggled
-                                                       {:build-id build-id
-                                                        :username (:username @build)
-                                                        :reponame (:reponame @build)
-                                                        :build_num (:build_num @build)}])}
-                            " view "]
-                           [:i.fa.fa-caret-down {:class (when (:show-usage-queue usage-queue-data) "fa-rotate-180")}]])]))
+                               " waiting for builds to finish"])]))
                (when (build-model/author-isnt-committer build)
                  [:th "Committer"]
                  [:td
@@ -414,18 +505,8 @@
                                                                     :build-num build-num}])}
                   "Cancel"]))]]
             [:div.no-user-actions]]
-           (when (and logged-in? (:show-usage-queue usage-queue-data))
-             (om/build build-queue {:build build
-                                    :builds (:builds usage-queue-data)
-                                    :plan plan}))
-           (when (:subject build)
-             (om/build build-commits build-data))
+
            (when (and logged-in? (build-model/ssh-enabled-now? build))
              (om/build build-ssh (:node build)))
-           (when (and logged-in? (:has_artifacts build))
-             (om/build build-artifacts-list
-                       {:artifacts-data (get build-data :artifacts-data) :user user}
-                       {:opts {:show-node-indices? (< 1 (:parallel build))}}))
-           (when (build-model/config-string? build)
-             (om/build build-config
-                       {:build build :config-data config-data}))]])))))
+
+           (om/build build-sub-head data)]])))))
