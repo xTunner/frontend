@@ -1,7 +1,7 @@
 (ns frontend.components.org-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.set]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
@@ -207,7 +207,7 @@
                    [:a.github-icon-link {:href vcs-url}
                     [:i.fa.fa-github]]]]])])]])))))
 
-(defn plans-trial-notification [plan org-name controls-ch]
+(defn plans-trial-notification [plan org-name owner]
   [:div.row-fluid
    [:div.alert.alert-success {:class (when (plan-model/trial-over? plan) "alert-error")}
     [:p
@@ -222,11 +222,11 @@
                (> 3 (plan-model/days-left-in-trial plan)))
       [:p
        "Need more time to decide? "
-       (forms/stateful-button
+       (forms/managed-button
         [:button.btn.btn-mini.btn-success
          {:data-success-text "Extended!",
           :data-loading-text "Extending...",
-          :on-click #(put! controls-ch [:extend-trial-clicked {:org-name org-name}])}
+          :on-click #(raise! owner [:extend-trial-clicked {:org-name org-name}])}
          "Extend your trial"])])]])
 
 (defn plans-piggieback-plan-notification [plan current-org-name]
@@ -274,15 +274,14 @@
     om/IRenderState
     (render-state [_ {:keys [checkout-loaded?]}]
       (let [plan (get-in app state/org-plan-path)
-            org-name (get-in app state/org-name-path)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            org-name (get-in app state/org-name-path)]
         (html
          (if-not (and plan checkout-loaded?)
            [:div.loading-spinner common/spinner]
 
            [:div#billing.plans.pricing.row-fluid
             (when (plan-model/trial? plan)
-              (plans-trial-notification plan org-name controls-ch))
+              (plans-trial-notification plan org-name owner))
             (when (plan-model/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name))
             (om/build plans-component/plans app)
@@ -300,7 +299,6 @@
       (let [plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
                                     (:containers plan))
-            controls-ch (om/get-shared owner [:comms :controls])
             old-total (plan-model/stripe-cost plan)
             new-total (plan-model/cost (:template_properties plan) selected-containers)]
         (html
@@ -348,14 +346,14 @@
                        :value selected-containers
                        :min (get-in plan [:template_properties :free_containers])
                        :max max
-                       :on-change #(utils/edit-input controls-ch state/selected-containers-path %
+                       :on-change #(utils/edit-input owner state/selected-containers-path %
                                                      :value (int (.. % -target -value)))}]
                      [:span max]))]
                  [:div.container-input
                   [:input
                    {:type "text"
                     :value selected-containers
-                    :on-change #(utils/edit-input controls-ch state/selected-containers-path %
+                    :on-change #(utils/edit-input owner state/selected-containers-path %
                                                   :value (int (.. % -target -value)))}]]]
                 [:fieldset
                  (forms/managed-button
@@ -363,7 +361,7 @@
                    {:data-success-text "Saved",
                     :data-loading-text "Saving...",
                     :type "submit"
-                    :on-click #(do (put! controls-ch [:update-containers-clicked {:containers selected-containers}])
+                    :on-click #(do (raise! owner [:update-containers-clicked {:containers selected-containers}])
                                    false)}
                    "Update plan"])
                  (when (< old-total new-total)
@@ -393,8 +391,7 @@
           ;; to return #{"org-b" "org-c"}
           selected-piggyback-orgs (set (keys (filter last
                                                      (merge (zipmap (:piggieback_orgs plan) (repeat true))
-                                                            (get-in app state/selected-piggyback-orgs-path)))))
-          controls-ch (om/get-shared owner [:comms :controls])]
+                                                            (get-in app state/selected-piggyback-orgs-path)))))]
       [:div.row-fluid
        [:div.span8
         [:fieldset
@@ -421,7 +418,7 @@
                     (let [checked? (contains? selected-piggyback-orgs org)]
                       {:value org
                        :checked checked?
-                       :on-change #(utils/edit-input controls-ch (conj state/selected-piggyback-orgs-path org) % :value (not checked?))
+                       :on-change #(utils/edit-input owner (conj state/selected-piggyback-orgs-path org) % :value (not checked?))
                        :type "checkbox"})]
                    org]])]
               [:div.form-actions.span7
@@ -430,8 +427,8 @@
                  {:data-success-text "Saved",
                   :data-loading-text "Saving...",
                   :type "submit",
-                  :on-click #(do (put! controls-ch [:save-piggyback-orgs-clicked {:org-name org-name
-                                                                                  :selected-piggyback-orgs selected-piggyback-orgs}])
+                  :on-click #(do (raise! owner [:save-piggyback-orgs-clicked {:org-name org-name
+                                                                              :selected-piggyback-orgs selected-piggyback-orgs}])
                                  false)}
                  "Also pay for these organizations"])]]]])]]]))))
 
@@ -447,8 +444,7 @@
                                       (disj org-name)
                                       (sort))
           plan (get-in app state/org-plan-path)
-          selected-transfer-org (get-in app state/selected-transfer-org-path)
-          controls-ch (om/get-shared owner [:comms :controls])]
+          selected-transfer-org (get-in app state/selected-transfer-org-path)]
       [:div.row-fluid
        [:div.span8
         [:fieldset
@@ -479,7 +475,7 @@
                    [:label.radio {:name org}
                     [:input {:value org
                              :checked (= org selected-transfer-org)
-                             :on-change #(utils/edit-input controls-ch state/selected-transfer-org-path %)
+                             :on-change #(utils/edit-input owner state/selected-transfer-org-path %)
                              :type "radio"}]
                     org]])]
                [:div.form-actions.span6
@@ -489,8 +485,8 @@
                    :data-loading-text "Tranferring...",
                    :type "submit",
                    :class (when (empty? selected-transfer-org) "disabled")
-                   :on-click #(do (put! controls-ch [:transfer-plan-clicked {:org-name org-name
-                                                                             :to selected-transfer-org}])
+                   :on-click #(do (raise! owner [:transfer-plan-clicked {:org-name org-name
+                                                                         :to selected-transfer-org}])
                                   false)
                    :data-bind
                    "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
@@ -525,8 +521,7 @@
     om/IRenderState
     (render-state [_ {:keys [checkout-loaded?]}]
       (html
-        (let [card (get-in app state/stripe-card-path)
-              controls-ch (om/get-shared owner [:comms :controls])]
+        (let [card (get-in app state/stripe-card-path)]
           (if-not (and card checkout-loaded?)
             [:div.card.row-fluid [:legend.span8 "Card on file"]
              [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
@@ -557,7 +552,7 @@
                       {:data-success-text "Success",
                        :data-failed-text "Failed",
                        :data-loading-text "Updating",
-                       :on-click #(do (put! controls-ch [:update-card-clicked])
+                       :on-click #(do (raise! owner [:update-card-clicked])
                                       false)
                        :type "submit"}
                       "Change credit card"])]]]]]]))))))
@@ -609,8 +604,7 @@
     om/IRender
     (render [_]
       (html
-        (let [controls-ch (om/get-shared owner [:comms :controls])
-              plan-data (get-in app state/org-plan-path)
+        (let [plan-data (get-in app state/org-plan-path)
               settings (state-utils/merge-inputs plan-data
                                                  (inputs/get-inputs-from-app-state owner)
                                                  [:billing_email :billing_name :extra_billing_data])]
@@ -629,7 +623,7 @@
                   {:value (str (:billing_email settings))
                    :name "billing_email",
                    :type "text"
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :billing_email) %)}]]]
+                   :on-change #(utils/edit-input owner (conj state/inputs-path :billing_email) %)}]]]
                [:div.control-group
                 [:label.control-label {:for "billing_name"} "Billing name"]
                 [:div.controls
@@ -637,7 +631,7 @@
                   {:value (str (:billing_name settings))
                    :name "billing_name",
                    :type "text"
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :billing_name) %)}]]]
+                   :on-change #(utils/edit-input owner (conj state/inputs-path :billing_name) %)}]]]
                [:div.control-group
                 [:label.control-label
                  {:for "extra_billing_data"}
@@ -650,14 +644,14 @@
                    :rows 3
                    :name "extra_billing_data"
                    ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra_billing_data) %)}]]]
+                   :on-change #(utils/edit-input owner (conj state/inputs-path :extra_billing_data) %)}]]]
                [:div.control-group
                 [:div.controls
                  (forms/managed-button
                    [:button.btn.btn-primary
                     {:data-success-text "Saved invoice data",
                      :data-loading-text "Saving invoice data...",
-                     :on-click #(do (put! controls-ch [:save-invoice-data-clicked])
+                     :on-click #(do (raise! owner [:save-invoice-data-clicked])
                                     false)
                      :type "submit",}
                     "Save invoice data"])]]]]]))))))
@@ -688,8 +682,7 @@
     om/IRender
     (render [_]
       (html
-        (let [controls-ch (om/get-shared owner [:comms :controls])
-              invoice-id (:id invoice)]
+        (let [invoice-id (:id invoice)]
           [:tr
             [:td (stripe-ts->date (:date invoice))]
             [:td (str (stripe-ts->date (:period_start invoice)))
@@ -703,8 +696,8 @@
                     {:data-failed-text "Failed",
                      :data-success-text "Sent",
                      :data-loading-text "Sending...",
-                     :on-click #(do (put! controls-ch [:resend-invoice-clicked
-                                                       {:invoice-id invoice-id}])
+                     :on-click #(do (raise! owner [:resend-invoice-clicked
+                                                   {:invoice-id invoice-id}])
                                     false)}
                     "Resend"])]]])))))
 
@@ -777,8 +770,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            org-name (get-in app state/org-name-path)]
+      (let [org-name (get-in app state/org-name-path)]
         (html
          [:div.org-cancel
           [:div.row-fluid [:fieldset [:legend "Cancel"]]]
@@ -798,13 +790,13 @@
               [:label.cancel-reason
                [:input
                 {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
-                 :on-change #(utils/toggle-input controls-ch (state/selected-cancel-reason-path (:value reason)) %)
+                 :on-change #(utils/toggle-input owner (state/selected-cancel-reason-path (:value reason)) %)
                  :type "checkbox"}]
                (:text reason)])
             [:textarea
              {:required true
               :value (get-in app state/cancel-notes-path)
-              :on-change #(utils/edit-input controls-ch state/cancel-notes-path %)}]
+              :on-change #(utils/edit-input owner state/cancel-notes-path %)}]
             [:label
              {:placeholder "Thanks for the feedback!",
               :alt (if (get app (state/selected-cancel-reason-path "other"))
@@ -828,9 +820,9 @@
                   "Cancel Plan"])
                 (forms/managed-button
                  [:button {:data-spinner "true"
-                           :on-click #(do (put! controls-ch [:cancel-plan-clicked {:org-name org-name
-                                                                                   :cancel-reasons reasons
-                                                                                   :cancel-notes notes}])
+                           :on-click #(do (raise! owner [:cancel-plan-clicked {:org-name org-name
+                                                                               :cancel-reasons reasons
+                                                                               :cancel-notes notes}])
                                           false)}
                   "Cancel Plan"])))]]])))))
 

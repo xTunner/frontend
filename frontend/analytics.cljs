@@ -9,6 +9,7 @@
             [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
+            [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.style]))
 
@@ -30,7 +31,7 @@
 (defn track-org-settings [org-name]
   (mixpanel/track "View Org" {:username org-name}))
 
-(defn track-build [build]
+(defn track-build [user build]
   (mixpanel/track "View Build" (merge {:running (build-model/running? build)
                                        :build-num (:build_num build)
                                        :vcs-url (vcs-url/project-name (:vcs_url build))
@@ -39,7 +40,11 @@
                                       (when (:stop_time build)
                                         {:elapsed_hours (/ (- (.getTime (js/Date.))
                                                               (.getTime (js/Date. (:stop_time build))))
-                                                           1000 60 60)}))))
+                                                           1000 60 60)})))
+  (when (and (:oss build) (build-model/owner? build user))
+    (intercom/track :viewed-self-triggered-oss-build
+                    {:vcs-url (vcs-url/project-name (:vcs_url build))
+                     :outcome (:outcome build)})))
 
 (defn track-path [path]
   (mixpanel/track-pageview path)
@@ -80,6 +85,7 @@
 
 (defn track-payer [login]
   (mixpanel/track "Paid")
+  (intercom/track :paid-for-plan)
   (pa/track "payer" {:orderId login})
   (twitter/track-payer)
   (adroll/record-payer))

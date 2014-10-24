@@ -1,11 +1,11 @@
 (ns frontend.components.add-projects
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.user :as user-model]
             [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
-            [frontend.components.forms :refer [stateful-button]]
+            [frontend.components.forms :refer [managed-button]]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -27,14 +27,14 @@
                      (string/join "and " missing-scopes)
                      (if (< 1 (count missing-scopes)) "scope" "scopes"))]]])
 
-(defn side-item [org settings ch]
+(defn side-item [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)]
     [:li.side-item {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
-     [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
+     [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])}
       [:img {:src (gh-utils/make-avatar-url org :size 25)
              :height 25}]
-      [:div.orgname {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
+      [:div.orgname {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])}
        login]]]))
 
 (defn org-sidebar [data owner]
@@ -45,20 +45,19 @@
     om/IRender
     (render [_]
       (let [user (:user data)
-            settings (:settings data)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            settings (:settings data)]
         (html [:ul.side-list
                [:li.add-orgs "Your Organizations"]
-               (map (fn [org] (side-item org settings controls-ch))
+               (map (fn [org] (side-item org settings owner))
                     (:organizations user))
                [:li.add-you "Your Projects"]
-               (map (fn [org] (side-item org settings controls-ch))
+               (map (fn [org] (side-item org settings owner))
                     (filter (fn [org] (= (:login user) (:login org)))
                             (:collaborators user)))
                [:li.add-collabs
                 [:span#collaborators-tooltip-hack {:title "For all repos & forks"}
                  "Your Collaborators"]]
-               (map (fn [org] (side-item org settings controls-ch))
+               (map (fn [org] (side-item org settings owner))
                     (remove (fn [org] (= (:login user) (:login org)))
                             (:collaborators user)))])))))
 
@@ -83,7 +82,6 @@
             type (get-in settings [:add-projects :selected-org :type])
             repo-id (repo-model/id repo)
             tooltip-id (str "view-project-tooltip-" (string/replace repo-id #"[^\w]" ""))
-            controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             should-build? (repo-model/should-do-first-follower-build? repo)]
         (html
@@ -97,13 +95,12 @@
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 (when building?
                   [:div.building "Starting first build..."])
-                (stateful-button
-                 [:button {:on-click #(do (put! controls-ch [:followed-repo (assoc @repo
-                                                                            :login login
-                                                                            :type type)])
+                (managed-button
+                 [:button {:on-click #(do (raise! owner [:followed-repo (assoc @repo
+                                                                               :login login
+                                                                               :type type)])
                                           (when should-build?
                                             (om/set-state! owner :building? true)))
-                           :data-api-count (if should-build? 2 1)
                            :data-spinner true}
                   [:span "Follow"]])]
 
@@ -120,10 +117,10 @@
                   [:i.fa.fa-external-link]]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                (stateful-button
-                 [:button {:on-click #(put! controls-ch [:unfollowed-repo (assoc @repo
-                                                                            :login login
-                                                                            :type type)])
+                (managed-button
+                 [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
+                                                                             :login login
+                                                                             :type type)])
                            :data-spinner true}
                   [:span "Unfollow"]])]
 
@@ -163,8 +160,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])
-            controls-ch (om/get-shared owner [:comms :controls])]
+      (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
         (html
          [:div.repo-filter
           [:i.fa.fa-search]
@@ -172,14 +168,13 @@
            {:placeholder "Filter repos..."
             :type "search"
             :value repo-filter-string
-            :on-change #(utils/edit-input controls-ch [:settings :add-projects :repo-filter-string] %)}]])))))
+            :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]])))))
 
 (defn main [data owner]
   (reify
     om/IRender
     (render [_]
       (let [user (:current-user data)
-            controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             repos (:repos data)
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
@@ -207,7 +202,6 @@
     om/IRender
     (render [_]
       (let [user (:current-user data)
-            controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             repo-key (gstring/format "%s.%s"
                                      (get-in settings [:add-projects :selected-org :login])

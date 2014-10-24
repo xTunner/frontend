@@ -1,6 +1,6 @@
 (ns frontend.components.instrumentation
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.env :as env]
             [frontend.models.project :as project-model]
@@ -42,12 +42,11 @@
     om/IDisplayName (display-name [_] "Instrumentation Summary")
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            sums (reduce (fn [acc item]
+      (let [sums (reduce (fn [acc item]
                            (merge-with + acc (select-keys item [:request-time :circle-latency :query-latency :query-count])))
                          {} instrumentation-data)]
         (html
-         [:div.metrics {:on-click #(put! controls-ch [:instrumentation-line-items-toggled])}
+         [:div.metrics {:on-click #(raise! owner [:instrumentation-line-items-toggled])}
           [:span.data (str (count instrumentation-data))]
           [:strong "requests"]
           [:span.data (:request-time sums) "ms"]

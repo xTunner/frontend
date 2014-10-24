@@ -19,6 +19,7 @@
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.scroll :as scroll]
             [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
@@ -28,6 +29,7 @@
             [frontend.browser-settings :as browser-settings]
             [frontend.utils :as utils :refer [mlog merror third]]
             [frontend.datetime :as datetime]
+            [frontend.timer :as timer]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]])
@@ -66,10 +68,12 @@
   (chan))
 
 (defn get-ab-tests [ab-test-definitions]
-  (let [overrides (some-> js/window
-                          (aget "renderContext")
-                          (aget "abOverrides")
-                          (utils/js->clj-kw))]
+  (let [overrides (merge (some-> js/window
+                                 (aget "renderContext")
+                                 (aget "abOverrides")
+                                 (utils/js->clj-kw))
+                         (when (env/development?)
+                           {:new-homepage true}))]
     (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
@@ -166,14 +170,6 @@
        (swap! state (partial errors-con/error container (first value) (second value)))
        (errors-con/post-error! container (first value) (second value) previous-state @state)))))
 
-(defn setup-timer-atom
-  "Sets up an atom that will keep track of the current time.
-   Used from frontend.components.common/updating-duration "
-  []
-  (let [mya (atom (datetime/server-now))]
-    (js/setInterval #(reset! mya (datetime/server-now)) 1000)
-    mya))
-
 (declare reinstall-om!)
 
 (defn install-om [state container comms instrument?]
@@ -182,7 +178,7 @@
    state
    {:target container
     :shared {:comms comms
-             :timer-atom (setup-timer-atom)
+             :timer-atom (timer/initialize)
              :_app-state-do-not-use state}
     :instrument (let [methods (cond-> state-graft/no-local-state-methods
                                 instrument? instrumentation/instrument-methods)
@@ -259,6 +255,7 @@
     (def debug-state state)
     (when instrument? (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
+    (scroll/setup-scroll-handler)
     (main state top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context

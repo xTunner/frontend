@@ -8,7 +8,7 @@
   key combinations need to be pressed within one second, or the loop
   forgets about them."
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [put! raise!]]
             [om.core :as om :include-macros true]
             [clojure.string :refer [join split]]
             [dommy.core :as dommy]
@@ -29,7 +29,7 @@
    46 "del"
    186 ";"
    191 "slash"})
- 
+
 (defn event-modifiers
   "Given a keydown event, return the modifier keys that were being held."
   [e]
@@ -37,7 +37,7 @@
                              (if (.-altKey e)   "alt")
                              (if (.-ctrlKey e)  "ctrl")
                              (if (.-metaKey e)  "meta")])))
- 
+
 (def mod-keys
   "A vector of the modifier keys that we use to compare against to make
   sure that we don't report things like pressing the shift key as independent events.
@@ -49,15 +49,15 @@
    (js/String.fromCharCode 17)
    ;; alt
    (js/String.fromCharCode 18)])
- 
+
 (defn event->key
   "Given an event, return a string like 'up' or 'shift+l' or 'ctrl+;'
   describing the key that was pressed.
   This fn will never return just 'shift' or any other lone modifier key."
   [event]
   (let [mods (event-modifiers event)
-        which (.-which event)        
-        key (or (code->key which) (.toLowerCase (js/String.fromCharCode which)))]  
+        which (.-which event)
+        key (or (code->key which) (.toLowerCase (js/String.fromCharCode which)))]
     (if (and key (not (empty? key)) (not (some #{key} mod-keys)))
       (join "+" (conj mods key)))))
 
@@ -115,7 +115,7 @@
                                         ;; Catch any errors to avoid breaking key loop
                                         (catch js/Object error
                                           (utils/merror error "Error calling" key-fn "with key event" e)
-                                          (put! error-ch [:keyboard-handler-error error])))
+                                          (raise! owner [:keyboard-handler-error error])))
                                    (recur [] nil))
                                ;; No match yet, but remember in case user is entering
                                ;; a multi-key combination.

@@ -1,6 +1,6 @@
 (ns frontend.components.build-invites
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.state :as state]
@@ -23,15 +23,14 @@
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [avatar_url email login index]} user
-            controls-ch (om/get-shared owner [:comms :controls])]
+      (let [{:keys [avatar_url email login index]} user]
         (html
          [:li
           [:div.invite-gravatar
            [:img {:src (gh-utils/make-avatar-url user)}]]
           [:div.invite-profile
            login
-           [:input {:on-change #(utils/edit-input controls-ch (conj (state/build-github-user-path index) :email) %)
+           [:input {:on-change #(utils/edit-input owner (conj (state/build-github-user-path index) :email) %)
                     :required true
                     :type "email"
                     :value email
@@ -44,8 +43,7 @@
            [:input {:type "checkbox"
                     :id (str login "-checkbox")
                     :checked (boolean (:checked user))
-                    :on-change #(utils/toggle-input
-                                 controls-ch (conj (state/build-github-user-path index) :checked) %)}]
+                    :on-change #(utils/toggle-input owner (conj (state/build-github-user-path index) :checked) %)}]
            [:div.checked \uf046]
            [:div.unchecked \uf096]]])))))
 
@@ -53,19 +51,17 @@
   (reify
     om/IWillMount
     (will-mount [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            project-name (:project-name opts)]
-        (put! controls-ch [:load-first-green-build-github-users {:project-name project-name}])))
+      (let [project-name (:project-name opts)]
+        (raise! owner [:load-first-green-build-github-users {:project-name project-name}])))
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            project-name (:project-name opts)
+      (let [project-name (:project-name opts)
             users (remove :following (:github-users invite-data))
             dismiss-form (:dismiss-invite-form invite-data)]
         (html
          [:div.first-green.invite-form {:class (when (or (empty? users) dismiss-form)
                                                  "animation-fadeout-collapse")}
-          [:button {:on-click #(put! controls-ch [:dismiss-invite-form])}
+          [:button {:on-click #(raise! owner [:dismiss-invite-form])}
            [:span "Dismiss "] [:i.fa.fa-times-circle]]
           [:header
            [:div.head-left
@@ -75,19 +71,19 @@
             [:p "You just got your first green build! Invite some of your collaborators below and never test alone!"]]]
           [:section
            [:a {:role "button"
-                :on-click #(put! controls-ch [:invite-selected-all])}
+                :on-click #(raise! owner [:invite-selected-all])}
             "all"]
            " / "
            [:a {:role "button"
-                :on-click #(put! controls-ch [:invite-selected-none])}
+                :on-click #(raise! owner [:invite-selected-none])}
             "none"]
            [:ul
             (om/build-all invite-tile users {:key :login})]]
           [:footer
-           (forms/stateful-button
+           (forms/managed-button
             [:button (let [users-to-invite (invitees users)]
                        {:data-success-text "Sent"
-                        :on-click #(put! controls-ch [:invited-github-users {:invitees users-to-invite
-                                                                             :project-name project-name}])})
+                        :on-click #(raise! owner [:invited-github-users {:invitees users-to-invite
+                                                                         :project-name project-name}])})
              "Send Invites "
              [:i.fa.fa-envelope-o]])]])))))

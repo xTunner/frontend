@@ -1,6 +1,6 @@
 (ns frontend.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
             [frontend.components.about :as about]
             [frontend.components.admin :as admin]
@@ -27,6 +27,7 @@
             [frontend.components.stories :as stories]
             [frontend.components.language-landing :as language-landing]
             [frontend.components.landing :as landing]
+            [frontend.components.landing-b :as landing-b]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
             [frontend.instrumentation :as instrumentation]
@@ -46,7 +47,7 @@
     om/IRender
     (render [_] (html [:div.loading-spinner common/spinner]))))
 
-(defn dominant-component [app-state]
+(defn dominant-component [app-state new-homepage?]
   (condp = (get-in app-state [:navigation-point])
     :build build-com/build
     :dashboard dashboard/dashboard
@@ -60,7 +61,7 @@
 
     :loading loading
 
-    :landing landing/home
+    :landing (if new-homepage? landing-b/home landing/home)
     :about about/about
     :pricing pricing/pricing
     :jobs jobs/jobs
@@ -84,17 +85,17 @@
       (if-not (:navigation-point app)
         (html [:div#app])
 
-        (let [controls-ch (om/get-shared owner [:comms :controls])
-              persist-state! #(put! controls-ch [:state-persisted])
-              restore-state! #(do (put! controls-ch [:state-restored])
+        (let [persist-state! #(raise! owner [:state-persisted])
+              restore-state! #(do (raise! owner [:state-restored])
                                   ;; Components are not aware of external state changes.
                                   (reinstall-om!))
-              dom-com (dominant-component app)
               show-inspector? (get-in app state/show-inspector-path)
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
-              slim-aside? (get-in app state/slim-aside-path)]
+              slim-aside? (get-in app state/slim-aside-path)
+              new-homepage? (get-in app [:ab-tests :new-homepage])
+              dom-com (dominant-component app new-homepage?)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -102,13 +103,16 @@
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when slim-aside? ["aside-slim"])
-                                       (when-not logged-in? ["aside-nil"]))}
+                                       (when-not logged-in? ["aside-nil"])
+                                       ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
+                                       (when new-homepage? ["landing-b"])
+                                       (when (= :landing (:navigation-point app)) ["landing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
               (when (and inner? logged-in?)
                 (om/build aside/aside app-without-container-data))
-              [:main.app-main
+              [:main.app-main {:ref "app-main"}
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
@@ -125,6 +129,6 @@
 
 
 (defn app [app owner opts]
-  (reify om/IRender
-    (render [_]
-      (om/build app* (dissoc app :inputs :state-map) {:opts opts}))))
+  (reify
+    om/IDisplayName (display-name [_] "App Wrapper")
+    om/IRender (render [_] (om/build app* (dissoc app :inputs :state-map) {:opts opts}))))

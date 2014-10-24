@@ -1,16 +1,17 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.timer :as timer]
             [goog.dom.DomHelper]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn contact-us-inner [controls-ch]
-  [:a {:on-click #(put! controls-ch [:intercom-dialog-raised])}
+(defn contact-us-inner [owner]
+  [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
    "contact us"])
 
 (defn flashes
@@ -19,10 +20,11 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            ;; use error messages that have html without passing html around
-            display-message (condp = error-message
-                              :logged-out [:span "You've been logged out, " [:a {:href (gh-utils/auth-url)} "log back in"] " to continue."]
+      ;; use error messages that have html without passing html around
+      (let [display-message (condp = error-message
+                              :logged-out [:span "You've been logged out, "
+                                                 [:a {:href (gh-utils/auth-url)} "log back in"]
+                                                 " to continue."]
                               error-message)]
         (html
          (if-not error-message
@@ -31,9 +33,9 @@
            [:div.flash-error-wrapper.row-fluid
             [:div.offset1.span10
              [:div.alert.alert-block.alert-danger
-              [:a.close {:on-click #(put! controls-ch [:clear-error-message-clicked])} "×"]
+              [:a.close {:on-click #(raise! owner [:clear-error-message-clicked])} "×"]
               "Error: " display-message
-              " If we can help, " (contact-us-inner controls-ch) "."]]]))))))
+              " If we can help, " (contact-us-inner owner) "."]]]))))))
 
 (defn normalize-html
   "Creates a valid html string given a (possibly) invalid html string."
@@ -68,6 +70,9 @@
    :slim_ban "M95,50 c0,24.9-20.1,45-45,45S5,74.9,5,50S25.1,5,50,5S95,25.1,95,50z M18.2,81.8l63.6-63.6"
    :slim_settings "M94.8,54.3c-0.3,2.1-1.9,3.8-3.9,4c-2.5,0.3-7.7,0.9-7.7,0.9c-2.3,0.5-3.9,2.5-3.9,4.9c0,1,0.3,2,0.8,2.7c0,0.1,3.1,4.1,4.7,6.2 c1.3,1.6,1.2,3.9-0.1,5.5c-1.8,2.3-3.8,4.3-6.1,6.1c-0.8,0.7-1.8,1-2.8,1c-0.9,0-2-0.3-2.7-0.9L67,80.1c-0.7-0.6-1.8-0.8-2.8-0.8 c-2.4,0-4.4,1.8-4.9,4.1l-0.9,7.5c-0.3,2.1-2,3.7-4,3.9C52.9,94.9,51.4,95,50,95c-1.4,0-2.9-0.1-4.3-0.2c-2.1-0.3-3.7-1.9-4-3.9 c0,0-0.9-7.4-0.9-7.5c-0.4-2.3-2.4-4.1-4.9-4.1c-1.1,0-2.2,0.4-3,0.9L27,84.8c-0.7,0.7-1.8,0.9-2.7,0.9c-1,0-2-0.4-2.8-1 c-2.3-1.8-4.3-3.8-6.1-6.1c-1.3-1.6-1.4-3.9-0.1-5.5l4.5-5.9c0.7-0.8,1-1.9,1-3c0-2.5-1.9-4.6-4.3-4.9l-7.3-0.9 c-2.1-0.3-3.7-2-3.9-4c-0.3-2.8-0.3-5.7,0-8.6c0.2-2.1,1.9-3.7,3.9-4l7.3-0.9c2.4-0.4,4.3-2.4,4.3-5c0-1-0.4-2.1-1-2.9 c0,0-3-3.9-4.5-5.9c-1.3-1.6-1.3-3.9,0.1-5.5c1.8-2.3,3.8-4.3,6.1-6.1c1.6-1.3,3.9-1.4,5.5-0.1l5.9,4.6c0.8,0.6,1.9,0.9,3,0.9 c2.4,0,4.5-1.8,4.9-4.1l0.9-7.5c0.3-2.1,2-3.7,4-3.9c2.8-0.3,5.7-0.3,8.6,0c2.1,0.3,3.7,1.9,4,3.9l0.9,7.5c0.5,2.3,2.4,4.1,4.9,4.1 c1,0,2-0.4,2.8-0.8c0,0,4-3.1,6.1-4.7c1.6-1.3,3.9-1.2,5.5,0.1c2.3,1.8,4.3,3.8,6.1,6.1c1.3,1.6,1.4,3.9,0.1,5.5 c0,0-4.7,6.1-4.7,6.2c-0.6,0.7-0.8,1.7-0.8,2.6c0,2.4,1.7,4.4,3.9,5c0,0,5.2,0.7,7.7,0.9c2.1,0.3,3.7,2,3.9,4 C95.1,48.5,95.1,51.4,94.8,54.3z"
    :clock "M59.524,47.619h-7.143V30.952c0-1.315-1.066-2.381-2.381-2.381c-1.315,0-2.381,1.065-2.381,2.381V50c0,1.315,1.066,2.38,2.381,2.38h9.524c1.314,0,2.381-1.065,2.381-2.38S60.839,47.619,59.524,47.619z"
+   :chevron_down "M90.4,21.3l-45,45l-45-45"
+   :slim_arrow_right "M53.6,17.5L86.1,50L53.6,82.5 M13.9,50h72.2"
+   :github "M50.2,0.2c-27.6,0-50,22.4-50,50c0,22.1,14.3,40.8,34.2,47.4c2.5,0.5,3.4-1.1,3.4-2.4c0-1.2,0-5.1-0.1-9.3 c-13.9,3-16.8-5.9-16.8-5.9c-2.3-5.8-5.6-7.3-5.6-7.3c-4.5-3.1,0.3-3,0.3-3c5,0.4,7.7,5.2,7.7,5.2c4.5,7.6,11.7,5.4,14.6,4.2 c0.4-3.2,1.7-5.4,3.2-6.7C30,71.1,18.3,66.8,18.3,47.6c0-5.5,2-9.9,5.2-13.4C23,33,21.3,27.9,24,21c0,0,4.2-1.3,13.8,5.1 c4-1.1,8.3-1.7,12.5-1.7c4.2,0,8.5,0.6,12.5,1.7c9.5-6.5,13.7-5.1,13.7-5.1c2.7,6.9,1,12,0.5,13.2c3.2,3.5,5.1,8,5.1,13.4 c0,19.2-11.7,23.4-22.8,24.7c1.8,1.6,3.4,4.6,3.4,9.3c0,6.7-0.1,12.1-0.1,13.7c0,1.3,0.9,2.9,3.4,2.4c19.9-6.6,34.2-25.4,34.2-47.4 C100.2,22.6,77.9,0.2,50.2,0.2z"
    :repo "M44.4,27.5h-5.6v5.6h5.6V27.5z M44.4,16.2h-5.6v5.6h5.6V16.2z M78.1,5H21.9c0,0-5.6,0-5.6,5.6 v67.5c0,5.6,5.6,5.6,5.6,5.6h11.2V95l8.4-8.4L50,95V83.8h28.1c0,0,5.6-0.1,5.6-5.6V10.6C83.8,5,78.1,5,78.1,5z M78.1,72.5 c0,5.4-5.6,5.6-5.6,5.6H50v-5.6H33.1v5.6h-5.6c-5.6,0-5.6-5.6-5.6-5.6v-5.6h56.2V72.5z M78.1,61.2h-45V10.6h45.1L78.1,61.2z M44.4,50h-5.6v5.6h5.6V50z M44.4,38.8h-5.6v5.6h5.6V38.8z"})
 
 (def ico-templates
@@ -83,18 +88,20 @@
    :stop-light {:paths [:slim_ban]}
    :settings-light {:paths [:slim_settings :slim_circle]}
    :none-light {:paths [:slim_circle]}
+   :chevron-down {:paths [:chevron_down]}
+   :slim-arrow-right {:paths [:slim_arrow_right]}
+   :github {:paths [:github]}
    :repo {:paths [:repo]}
    :spinner {:paths [:turn :circle]}})
 
 (defn ico [ico-name]
   (let [template (get ico-templates ico-name)]
-    [:i {:class "ico"}
+    (html
+     [:i {:class "ico"}
       [:svg {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
-             :class (name ico-name)
-             :dangerouslySetInnerHTML
-             #js {"__html" (apply str
-                                  (for [path (:paths template)]
-                                    (str "<path class='" (name path) "' fill='none' d='" (get ico-paths path) "'></path>")))}}]]))
+             :class (name ico-name)}
+       (for [path (:paths template)]
+         (html [:path {:class (name path) :fill "none" :d (get ico-paths path)}]))]])))
 
 (def spinner
   (ico :spinner))
@@ -126,36 +133,25 @@
    function in opts."
   [{:keys [start stop]} owner opts]
   (reify
-    om/IDisplayName (display-name [_] "Updating Duration")
-    om/IInitState
-    (init-state [_]
-      {:watcher-uuid (utils/uuid)
-       :now (datetime/server-now)
-       :has-watcher? false})
+
+    om/IDisplayName
+    (display-name [_] "Updating Duration")
+
     om/IDidMount
     (did-mount [_]
-      (when-not stop
-        (let [timer-atom (om/get-shared owner [:timer-atom])
-              uuid (om/get-state owner [:watcher-uuid])]
-          (add-watch timer-atom uuid (fn [_k _r _p t]
-                                       (om/set-state! owner [:now] t)))
-          (om/set-state! owner [:has-watcher?] true))))
-    om/IWillUnmount
-    (will-unmount [_]
-      (when (om/get-state owner [:has-watcher?])
-        (remove-watch (om/get-shared owner [:timer-atom])
-                      (om/get-state owner [:watcher-uuid]))))
+      (timer/set-updating! owner (not stop)))
 
     om/IDidUpdate
     (did-update [_ _ _]
-      (when (and stop (om/get-state owner [:has-watcher?]))
-        (remove-watch (om/get-shared owner [:timer-atom])
-                      (om/get-state owner [:watcher-uuid]))))
-    om/IRenderState
-    (render-state [_ {:keys [now]}]
+      (timer/set-updating! owner (not stop)))
+
+    om/IRender
+    (render [_]
       (let [end-ms (if stop
                      (.getTime (js/Date. stop))
-                     now)
+                     (datetime/server-now))
             formatter (get opts :formatter datetime/as-duration)
             duration-ms (- end-ms (.getTime (js/Date. start)))]
-        (dom/span nil (formatter duration-ms))))))
+        (dom/span nil (formatter duration-ms))))
+
+    ))

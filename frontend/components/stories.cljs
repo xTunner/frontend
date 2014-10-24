@@ -1,7 +1,7 @@
 (ns frontend.components.stories
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.analytics.marketo :as marketo]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
@@ -34,8 +34,7 @@
        :loading? false})
     om/IRenderState
     (render-state [_ {:keys [first-name last-name company email notice loading?]}]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            split? (:split? opts)
+      (let [split? (:split? opts)
             clear-notice! #(om/set-state! owner [:notice] nil)
             clear-form! (fn [& [notice]]
                           (om/update-state! owner (fn [s]
@@ -107,45 +106,42 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:div.container
-          [:div.section (shared/customers-trust)]
-          [:div.cta-contianer
-           [:a.bold-btn.btn.btn-primary
-            {:href (gh-utils/auth-url)
-             :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                         :properties {:source "shopify story"}
-                                                                         :path (gh-utils/auth-url)}])}
-            [:i.fa.fa-github-alt]
-            " Sign up for a "
-            [:strong.white "14-day Free Trial"]]
-           [:div.seperator [:div.line [:div "or"]]]
-           [:div
-            [:h3.center-text "Request A Demo"]
-            (om/build cta-form app {:opts {:split? true}})]]])))))
+      (html
+       [:div.container
+        [:div.section (shared/customers-trust)]
+        [:div.cta-contianer
+         [:a.bold-btn.btn.btn-primary
+          {:href (gh-utils/auth-url)
+           :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                   :properties {:source "shopify story"}
+                                                                   :path (gh-utils/auth-url)}])}
+          [:i.fa.fa-github-alt]
+          " Sign up for a "
+          [:strong.white "14-day Free Trial"]]
+         [:div.seperator [:div.line [:div "or"]]]
+         [:div
+          [:h3.center-text "Request A Demo"]
+          (om/build cta-form app {:opts {:split? true}})]]]))))
 
 (defn cta-simple [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:div.stories-cta
-          [:h3 "Request a Free Demo"]
-          [:a {:href (gh-utils/auth-url)
-               :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                           :properties {:source "shopify story"}
-                                                                           :path (gh-utils/auth-url)}])}
-           [:span "Or try Circle for free!"]]
-          [:div (om/build cta-form app {:opts {:split? false}})]])))))
+      (html
+       [:div.stories-cta
+        [:h3 "Request a Free Demo"]
+        [:a {:href (gh-utils/auth-url)
+             :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                     :properties {:source "shopify story"}
+                                                                     :path (gh-utils/auth-url)}])}
+         [:span "Or try Circle for free!"]]
+        [:div (om/build cta-form app {:opts {:split? false}})]]))))
 
 (defn shopify [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            ab-tests (:ab-tests app)]
+      (let [ab-tests (:ab-tests app)]
         (html
          [:div.page.shopify.stories
           [:div.stories-head
