@@ -171,12 +171,9 @@
 
 (defn artifacts-ad []
   [:div
-   [:p "We didn't find any build artifacts for this build. You can upload build artifacts by moving files to the $CIRCLE_ARTIFACTS directory."
-    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
-    [:p
-     "More information "
-     [:a {:href (routes/v1-doc-subpage {:subpage "build-artifacts"})}
-      "in our docs"] "."]]])
+   [:p "We didn't find any build artifacts for this build. You can upload build artifacts by moving files to the $CIRCLE_ARTIFACTS directory."]
+   [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
+   [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "build-artifacts"})} "in our docs"] "."]])
 
 (defn build-artifacts-list [data owner {:keys [show-node-indices?] :as opts}]
   (reify
