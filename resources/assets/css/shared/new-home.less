@@ -306,6 +306,9 @@
       }
     }
   }
+  .home-bottom-shelf {
+    z-index: @zindex_home_bottom_shelf;
+  }
   // opening animations
   .avatar-circle          { .animation(prolog-logo @prolog_open_duration @bezier_fadein); }
   .context:nth-of-type(1) { .animation(prolog-up @prolog_open_duration @bezier_fadein (@prolog_open_delay * 1) both); }
@@ -460,11 +463,13 @@
   .flexy(center, center);
   .order(5);
   position: relative;
-  z-index: @zindex_home_bottom_shelf;
   height: @tile;
   margin-top: auto;
+  z-index: auto;
   a {
     .flexy();
+    margin: 0;
+    padding: 1em 3em;
   }
   .chevron-down {
     width: .89em;
@@ -674,13 +679,6 @@
       }
     }
   }
-  .home-bottom-shelf {
-    z-index: auto;
-    a {
-      margin: 0;
-      padding: 1em 3em;
-    }
-  }
 }
 .home-purpose-content {
   .order(1);
@@ -764,13 +762,6 @@
   .home-top-shelf,
   .home-bottom-shelf {
     .order(0);
-  }
-  .home-bottom-shelf {
-    z-index: auto;
-    a {
-      margin: 0;
-      padding: 1em 3em;
-    }
   }
 }
 .practice-tools {
@@ -1075,13 +1066,6 @@
       }
     }
   }
-  .home-bottom-shelf {
-    z-index: auto;
-    a {
-      margin: 0;
-      padding: 1em 3em;
-    }
-  }
 }
 .home-potential-content {
   .order(1);
@@ -1151,26 +1135,15 @@
     .box-sizing(border-box);
     .flex-direction(column);
     width: 100%;
-    height: auto;
     a:not(:hover) {
       color: @grayLight;
+      path {
+        stroke: @blue;
+      }
     }
     h5 {
       color: @grayDark;
     }
-  }
-}
-.home-footer-bait {
-  .flexy(center);
-  height: @tile;
-  color: @home_color_last_cta;
-  overflow: hidden;
-  transition: (@prolog_cover_fadein * 0.6);
-  transition-timing-function: @bezier_transform;
-  .chevron-down {
-    fill: none;
-    stroke: @home_color_last_cta;
-    stroke-width: 8;
   }
 }
 .home-footer {
