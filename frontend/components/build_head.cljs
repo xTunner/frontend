@@ -139,30 +139,49 @@
                 (om/build-all commit-line (drop 3 (map #(assoc % :build build)
                                                        (:all_commit_details build)))))))]])))))
 
-(defn build-ssh [nodes owner]
+(defn ssh-ad [build owner]
+  (let [build-id (build-model/id build)
+        vcs-url (:vcs_url build)
+        build-num (:build_num build)]
+    [:div.ssh-ad
+     [:p "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on."]
+     (forms/stateful-button
+      [:button.ssh_build
+       {:data-loading-text "Starting SSH build...",
+        :title "Retry with SSH in VM",
+        :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                      :vcs-url vcs-url
+                                                      :build-num build-num}])}
+       "Retry this build with SSH enabled"])
+     [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."]]))
+
+(defn build-ssh [build owner]
   (reify
     om/IRender
     (render [_]
-      (html
-       [:div.ssh-info-container
-        [:div.build-ssh-title
-         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-         [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
-        [:div.build-ssh-list
-         [:dl.dl-horizontal
-          (map (fn [node i]
-                 (list
-                  [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
-                  [:dd {:class (when (:ssh_enabled node) "connected")}
-                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
-                   (when-not (:ssh_enabled node)
-                     [:span.loading-spinner common/spinner])]))
-               nodes (range))]]
-        [:div.build-ssh-doc
-         "Debugging Selenium browser tests? "
-         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-          "Read our doc on interacting with the browser over VNC"]
-         "."]]))))
+      (let [nodes (:node build)]
+        (html
+         (if-not (build-model/ssh-enabled-now? build)
+           (ssh-ad build owner)
+           [:div.ssh-info-container
+            [:div.build-ssh-title
+             [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
+             [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
+            [:div.build-ssh-list
+             [:dl.dl-horizontal
+              (map (fn [node i]
+                     (list
+                      [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
+                      [:dd {:class (when (:ssh_enabled node) "connected")}
+                       [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
+                       (when-not (:ssh_enabled node)
+                         [:span.loading-spinner common/spinner])]))
+                   nodes (range))]]
+            [:div.build-ssh-doc
+             "Debugging Selenium browser tests? "
+             [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+              "Read our doc on interacting with the browser over VNC"]
+             "."]]))))))
 
 (defn cleanup-artifact-path [path]
   (-> path
@@ -291,7 +310,7 @@
             user (:user data)
             logged-in? (not (empty? user))
             build (:build build-data)
-            show-ssh-info? (and logged-in? (utils/inspect (build-model/ssh-enabled-now? build)))
+            show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
             ;; default to ssh-info for SSH builds if they haven't clicked a different tab
             selected-tab (get build-data :selected-header-tab (if show-ssh-info? :ssh-info :commits))
             build-id (build-model/id build)
@@ -330,7 +349,7 @@
                                                        :stop (or (:start_time build) (:stop_time build))})
                    ")"])]])
 
-            (when show-ssh-info?
+            (when (has-scope :write-settings data)
               [:li {:class (when (= :ssh-info selected-tab) "active")}
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
                 "SSH info"]])
@@ -366,7 +385,7 @@
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
                                                  :plan plan})
-             :ssh-info (om/build build-ssh (:node build)))]])))))
+             :ssh-info (om/build build-ssh build))]])))))
 
 (defn build-head [data owner]
   (reify
