@@ -133,7 +133,7 @@
                       [:a {:href "/docs/docker"} "docs"]]
                      [:div.feature
                       [:img {:src (utils/cdn-path "/icons/wrench-circle.png")}]
-                      [:h3 "Full Docker functionality"]
+v                      [:h3 "Full Docker functionality"]
                       [:p
                        "You can now use all Docker functionality within the CircleCI build environment. All of the usual Docker command-line commands work as expected, so you can build and run Docker containers to your heart's content."]
                       [:a {:href "/docs/docker"} "docs"]]]]]]
@@ -156,4 +156,13 @@
   (let [integration (get-in app [:navigation-data :integration])]
     (if (= integration :docker)
       (om/build docker app)
-      (html [:p "Hey"]))))
+      (html [:div#integrations.generic
+             [:div.top-section
+              [:div.line]
+              [:div.hero-wrapper
+               [:div.integration-icon
+                [:img {:src (utils/cdn-path "/img/outer/integrations/integration-icon.svg")}]]
+               [:div
+                [:h1 "Deploy to " [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg") :alt "Heroku"}] " from CircleCI"]
+                [:p "Experience a simple, modern continuous delivery workflow now."]]
+               [:a {:role "button"} "Sign up for CircleCI"]]]]))))
