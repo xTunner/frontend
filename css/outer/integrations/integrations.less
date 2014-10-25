@@ -94,7 +94,7 @@
       height: 100vh;
       // TODO: Hack until new header is merged
       margin-top: -72px;
-
+      .flexy(center, space-between, column);
 
       .line {
 	width:800px;
@@ -108,6 +108,7 @@
 					  rgba(255,255,255,0.5),
 					  rgba(255,255,255,0));					  
       }
+      
       .hero-wrapper {
 	height: 300px;
 	text-align: center;
@@ -145,6 +146,20 @@
 	    background: #fff;
 	    color: @grayDark
 	  }
+	}
+      }
+      .bullets {
+	.flexy(flex-start, space-between, row);
+	margin-top: 100px;
+	width:800px;
+      }
+      .bullet {
+	text-align: center;
+	color: #fff;
+	width: 200px;
+	h2 {
+	  font-size: 20px;
+	  font-weight: normal;
 	}
       }
     }
