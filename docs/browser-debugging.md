@@ -54,9 +54,9 @@ Now you can run your integration tests from the command line and watch the brows
 
 ### Sharing Circle's X Server
 
-If you do not want to just run your tests on Circle, but also attach to a running browser session, this can be achieved by attaching a VNC server to X.
+If you find yourself setting up a VNC server often, then you might want to automate the process. You can use x11vnc to attach a VNC server to X.
 
-Following configuration will download [`x11vnc`](http://www.karlrunge.com/x11vnc/index.html) and start it before your tests:
+Download [`x11vnc`](http://www.karlrunge.com/x11vnc/index.html) and start it before your tests:
 
 ```
 dependencies:
@@ -66,7 +66,7 @@ dependencies:
         background: true
 ```
 
-Now [start an SSH build](/docs/ssh-build) and connect to it with your tests running. You can either use a VNC viewer that is capable of SSH tunneling, or set up a tunnel on your own:
+Now when you [start an SSH build](/docs/ssh-build), you'll be able to connect to the VNC server while your default test steps run. You can either use a VNC viewer that is capable of SSH tunneling, or set up a tunnel on your own:
 
 ```
 $ ssh -p PORT ubuntu@IP_ADDRESS -L 5900:localhost:5900
