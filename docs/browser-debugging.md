@@ -60,9 +60,8 @@ Following configuration will download [`x11vnc`](http://www.karlrunge.com/x11vnc
 
 ```
 dependencies:
-  - sudo apt-get install -y x11vnc
-test:
-  pre:
+  post:
+    - sudo apt-get install -y x11vnc
     - x11vnc -forever -nopw:
         background: true
 ```
