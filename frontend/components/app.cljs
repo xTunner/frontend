@@ -27,7 +27,6 @@
             [frontend.components.stories :as stories]
             [frontend.components.language-landing :as language-landing]
             [frontend.components.landing :as landing]
-            [frontend.components.landing-b :as landing-b]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
             [frontend.instrumentation :as instrumentation]
@@ -47,7 +46,7 @@
     om/IRender
     (render [_] (html [:div.loading-spinner common/spinner]))))
 
-(defn dominant-component [app-state new-homepage?]
+(defn dominant-component [app-state]
   (condp = (get-in app-state [:navigation-point])
     :build build-com/build
     :dashboard dashboard/dashboard
@@ -61,7 +60,7 @@
 
     :loading loading
 
-    :landing (if new-homepage? landing-b/home landing/home)
+    :landing landing/home
     :about about/about
     :pricing pricing/pricing
     :jobs jobs/jobs
@@ -94,8 +93,7 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               slim-aside? (get-in app state/slim-aside-path)
-              new-homepage? (get-in app [:ab-tests :new-homepage])
-              dom-com (dominant-component app new-homepage?)]
+              dom-com (dominant-component app)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
