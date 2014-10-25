@@ -87,11 +87,16 @@
 (def artifacts-path [:current-build-data :artifacts-data :artifacts])
 (def show-artifacts-path [:current-build-data :artifacts-data :show-artifacts])
 
+(def tests-path [:current-build-data :tests-data :tests])
+
 (def show-config-path [:current-build-data :config-data :show-config])
 
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
 (def current-container-path [:current-build-data :container-data :current-container-id])
+(def build-header-tab-path [:current-build-data :selected-header-tab])
+
+
 (defn container-path [container-index] (conj containers-path container-index))
 (defn actions-path [container-index] (conj (container-path container-index) :actions))
 (defn action-path [container-index action-index] (conj (actions-path container-index) action-index))

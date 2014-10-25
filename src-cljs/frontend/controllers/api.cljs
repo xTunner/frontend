@@ -215,6 +215,17 @@
       state
       (assoc-in state state/artifacts-path artifacts))))
 
+(defmethod api-event [:build-tests :success]
+  [target message status args state]
+  (let [tests (get-in args [:resp :tests])
+        build-id (:context args)]
+    (if-not (= build-id (build-model/id (get-in state state/build-path)))
+      state
+      (update-in state state/tests-path (fn [old-tests]
+                                          ;; prevent om from thrashing while doing comparisons
+                                          (if (> (count tests) (count old-tests))
+                                            tests
+                                            (vec old-tests)))))))
 
 (defmethod api-event [:action-log :success]
   [target message status args state]
