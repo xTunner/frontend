@@ -196,6 +196,30 @@
    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
    [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "build-artifacts"})} "in our docs"] "."]])
 
+(defn artifacts-tree [artifacts]
+  (->> (for [artifact artifacts
+             :let [parts (-> artifact :path (string/split #"/"))]]
+         [(vec (remove #{""} parts)) artifact])
+       (reduce (fn [acc [parts artifact]]
+                 (let [loc (interleave (repeat :children) parts)]
+                   (assoc-in acc (concat loc [:artifact]) artifact)))
+               {})
+       :children))
+
+(defn artifacts-node [artifacts {:keys [show-node-indices? admin?] :as opts}]
+  (when (seq artifacts)
+    [:ul.build-artifacts-list
+     (for [[part {:keys [artifact children]}] (sort-by first artifacts)
+           :let [text (cond
+                        (not artifact) (str part "/") ; directory
+                        show-node-indices? (str part " (" (:node_index artifact) ")")
+                        :else part)
+                 url (:url artifact)
+                 tag (if (and url (not admin?)) ; Be extra careful about XSS of admins
+                       [:a {:href (:url artifact) :target "_blank"} text]
+                       [:span text])]]
+       [:li tag (artifacts-node children opts)])]))
+
 (defn build-artifacts-list [data owner {:keys [show-node-indices?] :as opts}]
   (reify
     om/IRender
@@ -203,25 +227,15 @@
       (let [artifacts-data (:artifacts-data data)
             artifacts (:artifacts artifacts-data)
             has-artifacts? (:has-artifacts? data)
-            admin? (:admin (:user data))]
+            node-opts {:admin? (:admin (:user data))
+                       :show-node-indices? show-node-indices?}]
         (html
          [:div.build-artifacts-container
           (if-not has-artifacts?
             (artifacts-ad)
             (if-not artifacts
               [:div.loading-spinner common/spinner]
-
-              [:ol.build-artifacts-list
-               (map (fn [artifact]
-                      (let [display-path (-> artifact
-                                             :pretty_path
-                                             cleanup-artifact-path
-                                             (str (when show-node-indices? (str " (" (:node_index artifact) ")"))))]
-                        [:li
-                         (if admin? ; Be extra careful about XSS of admins
-                           display-path
-                           [:a {:href (:url artifact) :target "_blank"} display-path])]))
-                    artifacts)]))])))))
+              (artifacts-node (artifacts-tree artifacts) node-opts)))])))))
 
 (defn tests-ad [owner]
   [:div
