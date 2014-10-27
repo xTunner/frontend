@@ -1,4 +1,5 @@
 @signup-button-height: 20px;
+@pagesize: 940px;
 
 // TODO: Hack to use until new header ships
 #navbar.heroku {
@@ -91,16 +92,13 @@
       background-image: -moz-radial-gradient(50% 92%, #7C72AD 29%, #573A7F 93%);
       background-image: -ms-radial-gradient(50% 92%, #7C72AD 29%, #573A7F 93%);
       background-image: radial-gradient(50% 92%, #7C72AD 29%, #573A7F 93%);
-      height: 100vh;
       // TODO: Hack until new header is merged
       margin-top: -72px;
-      .flexy(center, space-between, column);
 
       .line {
-	width:800px;
-	height:1px;
+	width: @pagesize;
+	height: 1px;
 	margin-top: 84px;
-	margin-bottom: 64px;
 	margin-left: auto;
 	margin-right: auto;
 	background-image: linear-gradient(to right,
@@ -108,9 +106,16 @@
 					  rgba(255,255,255,0.5),
 					  rgba(255,255,255,0));					  
       }
-      
+
       .hero-wrapper {
-	height: 300px;
+	// Try to fill ~60% of the screen, but don't get too short
+	height: 60vh;
+	min-height: 400px;
+	.flexy(center, center, column);
+      }
+
+      .hero {
+	min-height: 300px;
 	text-align: center;
 	.flexy(center, space-between, column);
 	h1 {
@@ -148,20 +153,11 @@
 	  }
 	}
       }
-      .bullets {
-	.flexy(flex-start, space-between, row);
-	margin-top: 100px;
-	width:800px;
-      }
-      .bullet {
-	text-align: center;
-	color: #fff;
-	width: 200px;
-	h2 {
-	  font-size: 20px;
-	  font-weight: normal;
-	}
-      }
+    }
+    .bottom-section {
+      margin: 0 auto;
+      width: @pagesize;
+      padding: 10px;
     }
   }
 }
