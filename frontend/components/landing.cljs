@@ -2,7 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
             [dommy.core :as dommy]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.drawings :as drawings]
@@ -166,35 +166,34 @@
     om/IDisplayName (display-name [_] "Home Nav")
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:nav.home-nav {:style (if (> 70 (:header-bkg-scroller data))
-                                  {:background-size (str "100% " (:header-bkg-scroller data) "px")}
-                                  {})
-                         :class (concat
-                                 (when (:header-logo-visible data) ["logo-visible"])
-                                 (when (:header-cta-visible data) ["cta-visible"])
-                                 (when (:header-bkg-visible data) ["bkg-visible"])
-                                 (when (:header-bkg-invisible data) ["bkg-invisible"])
-                                 (when (:header-cta-invisible data) ["cta-invisible"]))}
-          [:a.promo {:href "integrations/docker"}
+      (html
+       [:nav.home-nav {:style (if (> 70 (:header-bkg-scroller data))
+                                {:background-size (str "100% " (:header-bkg-scroller data) "px")}
+                                {})
+                       :class (concat
+                               (when (:header-logo-visible data) ["logo-visible"])
+                               (when (:header-cta-visible data) ["cta-visible"])
+                               (when (:header-bkg-visible data) ["bkg-visible"])
+                               (when (:header-bkg-invisible data) ["bkg-invisible"])
+                               (when (:header-cta-invisible data) ["cta-invisible"]))}
+        [:a.promo {:href "integrations/docker"}
                                         ; "What is Continuous Integration?"
-           "Learn how we support Docker."]
-          [:a.login {:href (auth-url)
-                     :on-click #(put! controls-ch [:track-external-link-clicked
-                                                   {:event "Auth GitHub"
-                                                    :properties {:source "header-log-in"}
-                                                    :path (auth-url)}])}
-           "Log In"]
-          [:a.logo-circleci {:on-click #(put! controls-ch [:home-scroll-logo-clicked])}
-           [:figure circle-logo]]
-          [:a.action {:href (auth-url)
-                      :role "button"
-                      :on-click #(put! controls-ch [:track-external-link-clicked
-                                                    {:event "Auth GitHub"
-                                                     :properties {:source "header-cta"}
-                                                     :path (auth-url)}])}
-           "Sign Up Free"]])))))
+         "Learn how we support Docker."]
+        [:a.login {:href (auth-url)
+                   :on-click #(raise! owner [:track-external-link-clicked
+                                             {:event "Auth GitHub"
+                                              :properties {:source "header-log-in"}
+                                              :path (auth-url)}])}
+         "Log In"]
+        [:a.logo-circleci {:on-click #(raise! owner [:home-scroll-logo-clicked])}
+         [:figure circle-logo]]
+        [:a.action {:href (auth-url)
+                    :role "button"
+                    :on-click #(raise! owner [:track-external-link-clicked
+                                              {:event "Auth GitHub"
+                                               :properties {:source "header-cta"}
+                                               :path (auth-url)}])}
+         "Sign Up Free"]]))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback
                                  cta-visibility-callback
@@ -236,38 +235,37 @@
     om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:section.home-prolog {:ref "home-prolog"}
-          [:a.home-action {:href (auth-url)
-                           :role "button"
-                           :ref "prolog-cta"
-                           :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                                       :properties {:source "prolog-cta"}
-                                                                                       :path (auth-url)}])}
-           "Sign Up Free"]
-          [:div.home-cover]
-          [:div.home-top-shelf]
-          [:div.home-slogans
-           [:h1.slogan.proverb {:item-prop "Ship better code, faster."
-                                :alt       "Let's just authorize first."}
-            "Ship better code, faster."]
-           [:h3.slogan.context {:item-prop "You have a product to focus on, let CircleCI handle your"
-                                :alt       "Signing up using your GitHub login lets us start really fast."}
-            "You have a product to focus on, let CircleCI handle your"]
-           [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."
-                                :alt       "Currently, we must request permissions in bulk."}
-            "Continuous Integration & Deployment."]]
-          [:div.home-avatars
-           [:div.avatars
-            [:div.avatar-github
-             (common/ico :github)]
-            [:div.avatar-circle {:ref "center-logo"}
-             (common/ico :logo)]]]
-          [:div.home-bottom-shelf
-           [:a {:on-click #(put! controls-ch [:home-scroll-1st-clicked])}
-            "Learn more"
-            (common/ico :chevron-down)]]])))))
+      (html
+       [:section.home-prolog {:ref "home-prolog"}
+        [:a.home-action {:href (auth-url)
+                         :role "button"
+                         :ref "prolog-cta"
+                         :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                 :properties {:source "prolog-cta"}
+                                                                                 :path (auth-url)}])}
+         "Sign Up Free"]
+        [:div.home-cover]
+        [:div.home-top-shelf]
+        [:div.home-slogans
+         [:h1.slogan.proverb {:item-prop "Ship better code, faster."
+                              :alt       "Let's just authorize first."}
+          "Ship better code, faster."]
+         [:h3.slogan.context {:item-prop "You have a product to focus on, let CircleCI handle your"
+                              :alt       "Signing up using your GitHub login lets us start really fast."}
+          "You have a product to focus on, let CircleCI handle your"]
+         [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."
+                              :alt       "Currently, we must request permissions in bulk."}
+          "Continuous Integration & Deployment."]]
+        [:div.home-avatars
+         [:div.avatars
+          [:div.avatar-github
+           (common/ico :github)]
+          [:div.avatar-circle {:ref "center-logo"}
+           (common/ico :logo)]]]
+        [:div.home-bottom-shelf
+         [:a {:on-click #(raise! owner [:home-scroll-1st-clicked])}
+          "Learn more"
+          (common/ico :chevron-down)]]]))))
 
 (defn purpose [data owner]
   (reify
@@ -284,38 +282,36 @@
     om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:section.home-purpose {:class (when (om/get-state owner [:first-fig-animate]) "animate")}
-          [:div.home-top-shelf]
-          [:div.home-purpose-content
-           [:div.home-drawings
-            [:figure]
-            [:figure]
-            [:figure drawings/drawing-dashboard]]
-           [:div.home-articles
-            [:article {:ref "purpose-article"}
-             [:h1 "Launches are dead, long live iteration."]
-             [:p "We believe that rapid iteration, tight feedback loops, and team communication are the keys to a great product workflow.
+      (html
+       [:section.home-purpose {:class (when (om/get-state owner [:first-fig-animate]) "animate")}
+        [:div.home-top-shelf]
+        [:div.home-purpose-content
+         [:div.home-drawings
+          [:figure]
+          [:figure]
+          [:figure drawings/drawing-dashboard]]
+         [:div.home-articles
+          [:article {:ref "purpose-article"}
+           [:h1 "Launches are dead, long live iteration."]
+           [:p "We believe that rapid iteration, tight feedback loops, and team communication are the keys to a great product workflow.
                        That's why we designed the world's leading continuous integration and delivery solution.
                        Continuous integration and delivery is revolutionizing the way development teams operate by reducing barriers between your ideas and your production code.
                        Remember, it doesn't count until it ships."]
-             [:p
-              [:a.shopify-link {:href "/stories/shopify"}
-               "See how Shopify does it"
-               (common/ico :slim-arrow-right)]]]]]
-          [:div.home-bottom-shelf
-           [:a {:on-click #(put! controls-ch [:home-scroll-2nd-clicked])}
-            ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
-            (common/ico :chevron-down)]]])))))
+           [:p
+            [:a.shopify-link {:href "/stories/shopify"}
+             "See how Shopify does it"
+             (common/ico :slim-arrow-right)]]]]]
+        [:div.home-bottom-shelf
+         [:a {:on-click #(raise! owner [:home-scroll-2nd-clicked])}
+          ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
+          (common/ico :chevron-down)]]]))))
 
 (defn practice [app owner]
   (reify
     om/IDisplayName (display-name [_] "Home Practice")
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            selected-customer (get-in app state/customer-logo-customer-path :shopify)
+      (let [selected-customer (get-in app state/customer-logo-customer-path :shopify)
             selected-toolset (get-in app state/selected-toolset-path :languages)]
         (html
          [:section.home-practice
@@ -351,7 +347,7 @@
             [:p
              (for [toolset ["Languages" "databases" "queues" "browsers" "deployment"]]
                (html
-                [:a {:on-mouse-enter #(put! controls-ch [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "))
+                [:a {:on-mouse-enter #(raise! owner [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "))
              "we support all of your tools.
               If it runs on Linux, then it will work on CircleCI.
               We'll even be around to help you install your own tools.
@@ -362,7 +358,7 @@
             [:div.customers-brands {:class (str "selected-" (get-in customer-brands [selected-customer :position]))}
              (for [[customer template] customer-brands]
                (html
-                [:a.customers-brand {:on-mouse-enter #(do (put! controls-ch [:customer-logo-clicked {:customer customer}])
+                [:a.customers-brand {:on-mouse-enter #(do (raise! owner [:customer-logo-clicked {:customer customer}])
                                                           (om/set-state! owner [:hovered-customer] customer))
                                      :on-mouse-leave #(om/set-state! owner [:hovered-customer] nil)}
                  (get customer-logos customer)]))]
@@ -377,7 +373,7 @@
                " at "
                (get-in customer-brands [selected-customer :name])]]]]]
           [:div.home-bottom-shelf
-           [:a {:on-click #(put! controls-ch [:home-scroll-3rd-clicked])}
+           [:a {:on-click #(raise! owner [:home-scroll-3rd-clicked])}
             ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
             (common/ico :chevron-down)]]])))))
 
@@ -396,38 +392,37 @@
     om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:section.home-potential {:class (when (om/get-state owner [:second-fig-animate]) "animate")}
-          [:div.home-top-shelf]
-          [:div.home-potential-content
-           [:div.home-articles
-            [:article {:ref "potential-article"}
-             [:h1 "Look under the hood & check the bullet points."]
-             [:div.home-potential-bullets
-              [:ul
-               [:li "Quick & easy setup"]
-               [:li "Lightning fast builds"]
-               [:li "Deep Customization"]
-               [:li "Easy debugging"]]
-              [:ul
-               [:li "Smart notifications"]
-               [:li "Loving support"]
-               [:li "Automatic parallelization"]
-               [:li "Continuous Deployment"]]
-              [:ul
-               [:li "Build artifacts"]
-               [:li "Clean build environments"]
-               [:li "GitHub Integration"]
-               [:li "Free Open Source Support"]]]]]
-           [:div.home-drawings
-            [:figure]
-            [:figure]
-            [:figure drawings/draw-build-large]]]
-          [:div.home-bottom-shelf
-           [:a {:on-click #(put! controls-ch [:home-scroll-4th-clicked])}
-            ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
-            (common/ico :chevron-down)]]])))))
+      (html
+       [:section.home-potential {:class (when (om/get-state owner [:second-fig-animate]) "animate")}
+        [:div.home-top-shelf]
+        [:div.home-potential-content
+         [:div.home-articles
+          [:article {:ref "potential-article"}
+           [:h1 "Look under the hood & check the bullet points."]
+           [:div.home-potential-bullets
+            [:ul
+             [:li "Quick & easy setup"]
+             [:li "Lightning fast builds"]
+             [:li "Deep Customization"]
+             [:li "Easy debugging"]]
+            [:ul
+             [:li "Smart notifications"]
+             [:li "Loving support"]
+             [:li "Automatic parallelization"]
+             [:li "Continuous Deployment"]]
+            [:ul
+             [:li "Build artifacts"]
+             [:li "Clean build environments"]
+             [:li "GitHub Integration"]
+             [:li "Free Open Source Support"]]]]]
+         [:div.home-drawings
+          [:figure]
+          [:figure]
+          [:figure drawings/draw-build-large]]]
+        [:div.home-bottom-shelf
+         [:a {:on-click #(raise! owner [:home-scroll-4th-clicked])}
+          ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
+          (common/ico :chevron-down)]]]))))
 
 (defn epilog [data owner {:keys [cta-visibility-callback
                                  epilog-visibility-callback
@@ -462,39 +457,38 @@
     om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:section.home-epilog {:ref "home-epilog"}
-          [:a.home-action {:href (auth-url)
-                           :ref "epilog-cta"
-                           :role "button"
-                           :on-click #(put! controls-ch [:track-external-link-clicked {:event "Auth GitHub"
-                                                                                       :properties {:source "epilog-cta"}
-                                                                                       :path (auth-url)}])}
-           "Sign Up Free"]
-          [:div.home-cover]
-          [:div.home-top-shelf]
-          [:div.home-slogans
-           [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"
-                                :alt       "Let's just authorize first."}
-            "So, ready to ship faster?"]
-           [:h3.slogan.context {:item-prop "Next you'll just need to sign in using your GitHub account."
-                                :alt       "Signing up using your GitHub login lets us start really fast."}
-            "Next you'll just need to sign in using your GitHub account."]
-           [:h3.slogan.context {:item-prop "Still not convinced yet? Check out our pricing."
-                                :alt       "Currently, we must request permissions in bulk."}
-            "Still not convinced yet? Check out our "
-            [:a {:href "pricing"} "pricing"]
-            "."]]
-          [:div.home-avatars
-           [:div.avatars
-            [:div.avatar-github
-             (common/ico :github)]
-            [:div.avatar-circle
-             (common/ico :logo)]]]
-          [:div.home-bottom-shelf
-           [:a {:on-click #(put! controls-ch [:home-scroll-5th-clicked])}
-            (common/ico :chevron-down)]]])))))
+      (html
+       [:section.home-epilog {:ref "home-epilog"}
+        [:a.home-action {:href (auth-url)
+                         :ref "epilog-cta"
+                         :role "button"
+                         :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                 :properties {:source "epilog-cta"}
+                                                                                 :path (auth-url)}])}
+         "Sign Up Free"]
+        [:div.home-cover]
+        [:div.home-top-shelf]
+        [:div.home-slogans
+         [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"
+                              :alt       "Let's just authorize first."}
+          "So, ready to ship faster?"]
+         [:h3.slogan.context {:item-prop "Next you'll just need to sign in using your GitHub account."
+                              :alt       "Signing up using your GitHub login lets us start really fast."}
+          "Next you'll just need to sign in using your GitHub account."]
+         [:h3.slogan.context {:item-prop "Still not convinced yet? Check out our pricing."
+                              :alt       "Currently, we must request permissions in bulk."}
+          "Still not convinced yet? Check out our "
+          [:a {:href "pricing"} "pricing"]
+          "."]]
+        [:div.home-avatars
+         [:div.avatars
+          [:div.avatar-github
+           (common/ico :github)]
+          [:div.avatar-circle
+           (common/ico :logo)]]]
+        [:div.home-bottom-shelf
+         [:a {:on-click #(raise! owner [:home-scroll-5th-clicked])}
+          (common/ico :chevron-down)]]]))))
 
 
 (def footer
