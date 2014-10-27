@@ -160,22 +160,13 @@ v                      [:h3 "Full Docker functionality"]
              [:div.top-section
               [:div.line]
               [:div.hero-wrapper
-               [:div.integration-icon
-                [:img {:src (utils/cdn-path "/img/outer/integrations/integration-icon.svg")}]]
-               [:div
-                [:h1 "Deploy to " [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg") :alt "Heroku"}] " from CircleCI"]
-                [:p "Experience a simple, modern continuous delivery workflow now."]]
-               [:a {:role "button"} "Sign up for CircleCI"]]
-              [:div.bullets
-               [:div.bullet
-                [:img {:src (utils/cdn-path "/img/outer/integrations/growing-pains.svg")}]
-                [:h2 "Minimal Configuration"]
-                [:p "Start doing things right from the beginning. Build your continuous delivery workflow on CircleCI and Heroku with a single build container and a couple of Heroku dynos, and simply turn up the dial as your development."]]
-               [:div.bullet
-                [:img {:src (utils/cdn-path "/img/outer/integrations/growing-pains.svg")}]
-                [:h2 "Minimal Configuration"]
-                [:p "Start doing things right from the beginning. Build your continuous delivery workflow on CircleCI and Heroku with a single build container and a couple of Heroku dynos, and simply turn up the dial as your development."]]
-               [:div.bullet
-                [:img {:src (utils/cdn-path "/img/outer/integrations/growing-pains.svg")}]
-                [:h2 "Minimal Configuration"]
-                [:p "Start doing things right from the beginning. Build your continuous delivery workflow on CircleCI and Heroku with a single build container and a couple of Heroku dynos, and simply turn up the dial as your development."]]]]]))))
+               [:div.hero
+                [:div.integration-icon
+                 [:img {:src (utils/cdn-path "/img/outer/integrations/integration-icon.svg")}]]
+                [:div
+                 [:h1 "Deploy to " [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg") :alt "Heroku"}] " from CircleCI"]
+                 [:p "Experience a simple, modern continuous delivery workflow now."]]
+                [:a {:role "button"} "Sign up for CircleCI"]]]]
+             [:div.bottom-section
+              [:h2 "Test before you deploy. Always."]
+              [:p "Some text"]]]))))
