@@ -23,13 +23,13 @@
   (not= (:org_name plan) org-name))
 
 (defn paid? [plan]
-  (not= (get-in plan [:template_properties :type] "trial") "trial"))
+  (boolean (:paid plan)))
 
 (defn can-edit-plan? [plan org-name]
   (and (paid? plan) (not (piggieback? plan org-name))))
 
 (defn trial? [plan]
-  (some-> plan :template_properties :type name (= "trial")))
+  (boolean (:trial plan)))
 
 (defn trial-over? [plan]
   (time/after? (time/now) (time-format/parse (:trial_end plan))))
@@ -79,5 +79,6 @@
   (/ (:amount plan) 100))
 
 (defn grandfathered? [plan]
-  (< (stripe-cost plan)
-     (cost (:template-properties plan) (:containers plan))))
+  (when-let [paid-template (get-in plan [:paid :template])]
+    (< (stripe-cost plan)
+       (cost paid-template (:containers plan)))))
