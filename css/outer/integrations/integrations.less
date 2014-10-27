@@ -1,4 +1,4 @@
-@signup-button-height: 20px;
+@signup-button-height: 60px;
 @pagesize: 940px;
 
 // TODO: Hack to use until new header ships
@@ -132,12 +132,11 @@
 	}
 	a {
 	  font-size: 18px;
-	  height: 65px;
 	  width: 220px;
 	  .flexy(center,center);
 	  .box-sizing(border-box);
-	  height: 50px;
-	  border-radius: 25px;
+	  height: @signup-button-height;
+	  border-radius: @signup-button-height / 2;
 	  background: #fff;
 	  border: 1px solid #fff;
 	  color: @grayDark;
