@@ -103,7 +103,6 @@
                                        (when slim-aside? ["aside-slim"])
                                        (when-not logged-in? ["aside-nil"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
-                                       (when new-homepage? ["landing-b"])
                                        (when (= :landing (:navigation-point app)) ["landing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
