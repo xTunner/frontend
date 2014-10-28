@@ -1,5 +1,6 @@
 window.stefon_hack_for_om =
   data_uris:
+    "/img/status-logos/success.svg": '(data-uri "img/status-logos/success.svg")'
     "/img/logos/salesforce.png": '(data-uri "img/logos/salesforce.png")'
     "/img/logos/samsung.png": '(data-uri "img/logos/samsung.png")'
     "/img/logos/kickstarter.png": '(data-uri "img/logos/kickstarter.png")'

@@ -157,6 +157,31 @@
       margin: 0 auto;
       width: @pagesize;
       padding: 10px;
+      code {
+	color: @grayDark;
+      }
+      .bullet {
+	.flexy(center, space-between, row);
+	.content {
+	  width: 65%;
+	}
+	.graphic {
+	  img {
+	    width: 120px;
+	  }
+
+	  // Custom graphic styles
+	  .console pre {
+	    background-color: #000;
+	    width: 210px;
+	    opacity: 0.6;
+	    color: #fff;
+	    .value {
+	      color: #0f0;
+	    }
+	  }
+	}
+      }
     }
   }
 }
