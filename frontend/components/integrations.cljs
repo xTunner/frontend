@@ -167,7 +167,7 @@ v                      [:h3 "Full Docker functionality"]
                  [:h1 "Deploy to " [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg") :alt "Heroku"}] " from CircleCI"]
                  [:p "Experience a simple, modern continuous delivery workflow now."]]
                 [:a {:role "button"} "Sign up for CircleCI"]]]]
-             [:div.bottom-section
+             [:div.middle-section
               [:div.bullet
                [:div.content
                 [:h2 "Test before you deploy. Always."]
@@ -197,4 +197,8 @@ v                      [:h3 "Full Docker functionality"]
                  [:br]
                  [:div {:style {:width "600px" :margin "0 auto"}}
                   [:p "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
-                   "See our docs for a " [:a {:href "/docs/"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]]]]))))
+                   "See our docs for a " [:a {:href "/docs/"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]]]
+             [:div.bottom-section
+              [:h2 "Ready for world-class" [:br] "continuous delivery?"]
+              [:a {:role "button"} "Sign up for Free"]
+              [:p "Want more information? See our complete" [:br] [:a {:href "/docs/continuous-deployment-with-heroku"} "documentation on deploying to Heroku."]]]]))))
