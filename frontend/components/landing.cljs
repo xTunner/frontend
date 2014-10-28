@@ -520,7 +520,7 @@
 
 (defn home [app owner]
   (reify
-    om/IDisplayName (display-name [_] "Homepage B")
+    om/IDisplayName (display-name [_] "Homepage")
     om/IInitState
     (init-state [_]
       {:header-logo-visible false
@@ -532,7 +532,6 @@
     (render [_]
       (html
        [:div.home.page
-        ;; xxx less stuff in here
         (om/build nav (om/get-state owner))
         (om/build prolog {} {:opts {:logo-visibility-callback
                                     (fn [visible?]
@@ -549,7 +548,6 @@
         (om/build purpose {})
         (om/build practice (select-in app [state/customer-logo-customer-path
                                            state/selected-toolset-path]))
-        ;; xxx: use state and determine animate elsewhere
         (om/build potential {})
         (om/build epilog {} {:opts {:cta-visibility-callback
                                     (fn [visible?]
