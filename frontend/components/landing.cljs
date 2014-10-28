@@ -242,7 +242,8 @@
                          :ref "prolog-cta"
                          :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
                                                                                  :properties {:source "prolog-cta"}
-                                                                                 :path (auth-url)}])}
+                                                                                 :path (auth-url)}])
+                         :on-mouse-enter #(raise! owner [:prolog-cta-hovered])}
          "Sign Up Free"]
         [:div.home-cover]
         [:div.home-top-shelf]
@@ -464,7 +465,8 @@
                          :role "button"
                          :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
                                                                                  :properties {:source "epilog-cta"}
-                                                                                 :path (auth-url)}])}
+                                                                                 :path (auth-url)}])
+                         :on-mouse-enter #(raise! owner [:epilog-cta-hovered])}
          "Sign Up Free"]
         [:div.home-cover]
         [:div.home-top-shelf]
