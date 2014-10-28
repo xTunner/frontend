@@ -180,7 +180,7 @@
                                         ; "What is Continuous Integration?"
          "Learn how we support Docker."]
         (if logged-in?
-          [:a.login {:href "/"} "Return to App"]
+          [:a.return {:href "/"} "Return to App"]
           [:a.login {:href (auth-url)
                      :on-click #(raise! owner [:track-external-link-clicked
                                                {:event "Auth GitHub"
@@ -190,7 +190,7 @@
         [:a.logo-circleci {:on-click #(raise! owner [:home-scroll-logo-clicked])}
          [:figure circle-logo]]
         (if logged-in?
-          [:a.action {:href "/"} "Return to App"]
+          [:a.return {:href "/"} "Return to App"]
           [:a.action {:href (auth-url)
                       :role "button"
                       :on-click #(raise! owner [:track-external-link-clicked
