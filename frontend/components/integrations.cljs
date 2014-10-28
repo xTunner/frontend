@@ -168,5 +168,33 @@ v                      [:h3 "Full Docker functionality"]
                  [:p "Experience a simple, modern continuous delivery workflow now."]]
                 [:a {:role "button"} "Sign up for CircleCI"]]]]
              [:div.bottom-section
-              [:h2 "Test before you deploy. Always."]
-              [:p "Some text"]]]))))
+              [:div.bullet
+               [:div.content
+                [:h2 "Test before you deploy. Always."]
+                [:p "Heroku revolutionized the way developers think about deployment. Being able to deploy with a simple "
+                 [:code "git push heroku master"] " is an amazing thing. But setting up a proper continuous delivery workflow means automating every step of the process. With CircleCI whenever you push a commit to master, it will go through a complete continuous delivery pipeline. All of your tests will run with our blazing fast parallelism, and" [:em " only if they pass, "] "your code will be pushed to Heroku automatically."]]
+               [:div.graphic
+                [:img {:src (stefon/data-uri "/img/status-logos/success.svg")}]]]
+              [:div.bullet
+               [:div.graphic
+                [:div.console
+                 [:pre
+                  "deployment:\n  staging:\n    branch: " [:span.value "master"] "\n    heroku:\n      appname: " [:span.value "my-app"]]]]
+               [:div.content
+                [:h2 "Dead Simple Configuration"]
+                [:p "The deployment of your application is configured through just a few lines of YAML that are kept safe in your source code. All you need to do to deploy to Heroku from CircleCI is configure your Heroku credentials in our UI, add a simple config file like this one into your project, and make a push. You can also easily deploy different branches to different Heroku apps (e.g. one for staging and one for production)."]]]
+              [:div.bullet
+               [:div.content
+                [:h2 "Watch how to get started in minutes"]
+                [:p "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
+                 "See our docs for a " [:a {:href "/docs/"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]
+               [:div.graphic
+                [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]]]
+              #_[:div {:style {:text-align "center"}}
+                 [:h2 "Watch how easy it is to get started in minutes..."]
+                                        ; Need to support some weird html attributes
+                 [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>"}}]
+                 [:br]
+                 [:div {:style {:width "600px" :margin "0 auto"}}
+                  [:p "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
+                   "See our docs for a " [:a {:href "/docs/"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]]]]))))
