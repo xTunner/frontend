@@ -21,14 +21,14 @@
                  [org.clojure/google-closure-library "0.0-20140718-946a7d39"]
                  [com.google.javascript/closure-compiler "v20140625"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [cljs-ajax "0.2.6"]
+                 [cljs-ajax "0.3.3"]
                  [om "0.7.3"]
                  [com.facebook/react "0.11.2"] ;; include for externs
                  [prismatic/dommy "0.1.3"]
                  [sablono "0.2.22"]
                  [secretary "1.2.0"]
                  [com.andrewmcveigh/cljs-time "0.1.5"]
-                 [weasel "0.3.0"] ;; repl
+                 [weasel "0.4.1"] ;; repl
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]]
 
