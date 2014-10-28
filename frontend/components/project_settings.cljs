@@ -1186,6 +1186,7 @@
                 :setup (om/build dependencies project-data)
                 :tests (om/build tests project-data)
                 :hooks (om/build notifications project-data)
+                :webhooks (om/build webhooks project-data)
                 :badges (om/build status-badges project-data)
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})

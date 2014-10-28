@@ -135,18 +135,20 @@
 
 (def project-settings-subpages
   [{:href "edit" :title "Overview" :subpage :overview}
-   {:href "#parallel-builds" :title "Parallelism" :subpage :parallel-builds}
+   {:href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}
    {:href "#env-vars" :title "Environment variables" :subpage :env-vars}
    {:href "#experimental" :title "Experimental Settings" :subpage :experimental}
    {:href "#setup" :title "Dependency Commands" :subpage :setup}
    {:href "#tests" :title "Test Commands" :subpage :tests}
-   {:href "#hooks" :title "Notifications" :subpage :hooks}
+   {:href "#hooks" :title "Chat Notifications" :subpage :hooks}
+   {:href "#webhooks" :title "Webhook Notifications" :subpage :webhooks}
    {:href "#badges" :title "Status Badges" :subpage :badges}
    {:href "#checkout" :title "Checkout SSH keys" :subpage :checkout}
-   {:href "#ssh" :title "SSH keys" :subpage :ssh}
-   {:href "#api" :title "API tokens" :subpage :api}
-   {:href "#aws" :title "AWS keys" :subpage :aws}
-   {:href "#heroku" :title "Heroku" :subpage :heroku}
+   {:href "#ssh" :title "SSH Permissions" :subpage :ssh}
+   {:href "#api" :title "API Permissions" :subpage :api}
+   {:href "#aws" :title "AWS Permissions" :subpage :aws}
+   {:href "#artifacts" :title "Artifacts" :subpage :artifacts}
+   {:href "#heroku" :title "Heroku Deployment" :subpage :heroku}
    {:href "#deployment" :title "Other Deployments" :subpage :deployment}])
 
 (defn project-settings-menu [app owner]
@@ -164,7 +166,8 @@
            [:div.aside-user-options
             (for [template project-settings-subpages]
               [:a.aside-item {:href (:href template)
-                              :class (when (= subpage (:subpage template)) "active")}
+                              :class (when (= subpage (:subpage template)) "active")
+                              :disabled (:disabled template)}
                (:title template)])]])))))
 
 (defn activity [app owner opts]
