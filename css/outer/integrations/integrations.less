@@ -1,6 +1,35 @@
 @signup-button-height: 60px;
 @pagesize: 940px;
 
+// Mostly stolen from the new homepage
+.clear-button(@height, @width) {
+  font-size: 18px;
+  width: @width;
+  .flexy(center,center);
+  .box-sizing(border-box);
+  height: @height;
+  border-radius: @height / 2;
+  background: #fff;
+  border: 1px solid #fff;
+  color: @grayDark;
+  transition: .2s;
+  &:hover {
+    background: none;
+    color: #fff;
+    transition: .1s;
+  }
+  &:active {
+    background: #fff;
+    color: @grayDark
+  }
+}
+
+
+.big-skinny-font {
+  font-weight: normal;
+  font-size: 40px;
+}
+
 // TODO: Hack to use until new header ships
 #navbar.heroku {
   position: relative;
@@ -119,10 +148,8 @@
 	text-align: center;
 	.flexy(center, space-between, column);
 	h1 {
-	  font-size: 40px;
+	  .big-skinny-font;
 	  color: #FFFFFF;
-	  line-height: 41px;
-	  font-weight: normal;
 	}
 	p {
 	  // Generated from sketch
@@ -130,30 +157,12 @@
 	  color: #FFFFFF;
 	  line-height: 23px;
 	}
-	a {
-	  font-size: 18px;
-	  width: 220px;
-	  .flexy(center,center);
-	  .box-sizing(border-box);
-	  height: @signup-button-height;
-	  border-radius: @signup-button-height / 2;
-	  background: #fff;
-	  border: 1px solid #fff;
-	  color: @grayDark;
-	  transition: .2s;
-	  &:hover {
-	    background: none;
-	    color: #fff;
-	    transition: .1s;
-	  }
-	  &:active {
-	    background: #fff;
-	    color: @grayDark
-	  }
+	[role="button"] {
+	  .clear-button(@signup-button-height, 220px);
 	}
       }
     }
-    .bottom-section {
+    .middle-section {
       margin: 0 auto;
       width: @pagesize;
       padding: 10px;
@@ -181,6 +190,25 @@
 	    }
 	  }
 	}
+      }
+    }
+    .bottom-section {
+      .flexy(center, center, column);
+      // Stolen from new homepage
+      .vertGradient(@blueDarkest, @blueDarker);
+      height: 400px;
+      color: #fff;
+      text-align: center;
+      h2 {
+	.big-skinny-font;
+	line-height: 1.2em;
+      }
+      [role="button"] {
+	.clear-button(@signup-button-height, 220px);
+	margin: 30px;
+      }
+      p {
+	font-size: 18px;
       }
     }
   }
