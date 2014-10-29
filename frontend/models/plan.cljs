@@ -22,6 +22,9 @@
 (defn piggieback? [plan org-name]
   (not= (:org_name plan) org-name))
 
+(defn freemium? [plan]
+  (boolean (:free plan)))
+
 (defn paid? [plan]
   (boolean (:paid plan)))
 

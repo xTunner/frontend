@@ -21,10 +21,53 @@
                     (plan-model/trial? plan)
                     ;; only bug them if < 20 days left in trial
                     ;; note that this includes expired trials
-                    (< (plan-model/days-left-in-trial plan) 20)]]
+                    (< (plan-model/days-left-in-trial plan) 20)
+                    (or (not (plan-model/freemium? plan))
+                        (not (plan-model/trial-over? plan)))]]
     (utils/mlog (gstring/format "show-trial-notice? has conditions %s days left %d"
                                 conditions (plan-model/days-left-in-trial plan)))
     (every? identity conditions)))
+
+(defn non-freemium-trial-html [plan project project-name days org-name plan-path]
+  (html
+   [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
+    (cond (plan-model/trial-over? plan)
+          (list (gstring/format "The %s project is covered by %s's plan, whose trial ended %s ago. "
+                                project-name org-name (pluralize (Math/abs days) "day"))
+                [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
+                ".")
+
+          (> days 10)
+          (list (gstring/format "The %s project is covered by %s's trial, enjoy! (or check out "
+                                project-name org-name)
+                [:a {:href plan-path} "our plans"]
+                ").")
+          
+          (> days 7)
+          (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
+                                project-name org-name (pluralize days "day"))
+                [:a {:href plan-path} "Check out our plans"]
+                ".")
+          
+          (> days 4)
+          (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
+                                project-name org-name (pluralize days "day"))
+                [:a {:href plan-path} "Add a plan"]
+                " to keep running builds.")
+          
+          :else
+          (list (gstring/format "The %s project is covered by %s's trial which expires in %s! "
+                                project-name org-name (plan-model/pretty-trial-time plan))
+                [:a {:href plan-path} "Add a plan"]
+                " to keep running builds."))]))
+
+(defn freemium-trial-html [plan project project-name days org-name plan-path]
+  (html
+   [:div.alert {:class "alert-success"}
+    (list (gstring/format "The %s project is covered by %s's trial of %d containers. "
+                          project-name org-name (plan-model/usable-containers plan))
+          [:a {:href plan-path} "Add more containers"]
+          " for parallel builds and reduced build queueing once the trial runs out.")]))
 
 (defn trial-notice [data owner]
   (reify
@@ -35,38 +78,11 @@
             project-name (gstring/format "%s/%s" (:username project) (:reponame project))
             days (plan-model/days-left-in-trial plan)
             org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})]
-        (html
-         [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
-          (cond (plan-model/trial-over? plan)
-                (list (gstring/format "The %s project is covered by %s's plan, whose trial ended %s ago. "
-                                      project-name org-name (pluralize (Math/abs days) "day"))
-                      [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
-                      ".")
-
-                (> days 10)
-                (list (gstring/format "The %s project is covered by %s's trial, enjoy! (or check out "
-                                      project-name org-name)
-                      [:a {:href plan-path} "our plans"]
-                      ").")
-
-                (> days 7)
-                (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
-                                      project-name org-name (pluralize days "day"))
-                      [:a {:href plan-path} "Check out our plans"]
-                      ".")
-
-                (> days 4)
-                (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
-                                      project-name org-name (pluralize days "day"))
-                      [:a {:href plan-path} "Add a plan"]
-                      " to keep running builds.")
-
-                :else
-                (list (gstring/format "The %s project is covered by %s's trial which expires in %s! "
-                                      project-name org-name (plan-model/pretty-trial-time plan))
-                      [:a {:href plan-path} "Add a plan"]
-                      " to keep running builds."))])))))
+            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})
+            trial-notice-fn (if (plan-model/freemium? plan)
+                              freemium-trial-html
+                              non-freemium-trial-html)]
+        (trial-notice-fn plan project project-name days org-name plan-path)))))
 
 (defn show-enable-notice [project]
   (not (:has_usable_key project)))
