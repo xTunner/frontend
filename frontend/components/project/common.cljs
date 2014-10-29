@@ -22,8 +22,12 @@
                     ;; only bug them if < 20 days left in trial
                     ;; note that this includes expired trials
                     (< (plan-model/days-left-in-trial plan) 20)
-                    (or (not (plan-model/freemium? plan))
-                        (not (plan-model/trial-over? plan)))]]
+
+                    ;; only show freemium trial notices if the
+                    ;; trial is still active.
+                    (if (plan-model/freemium? plan)
+                      (not (plan-model/trial-over? plan))
+                      true)]]
     (utils/mlog (gstring/format "show-trial-notice? has conditions %s days left %d"
                                 conditions (plan-model/days-left-in-trial plan)))
     (every? identity conditions)))
