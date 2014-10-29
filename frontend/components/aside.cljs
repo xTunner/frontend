@@ -166,9 +166,7 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [projects (get-in app state/projects-path)
-            settings (get-in app state/settings-path)
-            slim-aside? (get-in app state/slim-aside-path)]
+      (let [slim-aside? (get-in app state/slim-aside-path)]
         (html
          [:nav.aside-left-nav
 

@@ -9,7 +9,7 @@
             [secretary.core :as sec]))
 
 (defn get-projects [api-ch]
-  (ajax/ajax :get "/api/v1/projects" :projects api-ch))
+  (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch))
 
 (defn get-usage-queue [build api-ch]
   (ajax/ajax :get
