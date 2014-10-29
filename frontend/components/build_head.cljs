@@ -251,7 +251,7 @@
       (let [tests-data (:tests-data data)
             tests (:tests tests-data)
             sources (reduce (fn [s test] (conj s (:source test))) #{} tests)
-            failed-tests (filter #(not= "success" (:result %)) tests)]
+            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
         (html
          [:div.build-tests-container
           (if-not tests
