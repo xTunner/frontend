@@ -173,9 +173,10 @@
                     "See our docs for a " [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]
                        :graphic [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]}]
             :bottom-header "Ready for world-class continuous delivery?"
-            :secondary-cta [:span "Want more information? See our " [:a {:href "/docs/continuous-deployment-with-heroku"} "complete documentation"] " on deploying to Heroku."]}
-   :saucelabs {:hero {:header [:span "Test with " [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :style {:width ""}}] " on CircleCI"]
-                      :text "Test with as many browsers as you want, in parallel."}}})
+            :secondary-cta [:span "Or see our " [:a {:href "/docs/continuous-deployment-with-heroku"} "docs on deploying to Heroku."]]}
+   :saucelabs {:hero {:header [:span "Test with " [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :alt "Sauce Labs" :style {:width "300px"}}] " on CircleCI"]
+                      :text "Test with as many browsers as you want, in parallel."}
+               :bullets [{:title "Test against hundreds of mobile and desktop browsers"}]}})
 
 (defrender integration [app owner]
   (let [integration (get-in app [:navigation-data :integration])]
