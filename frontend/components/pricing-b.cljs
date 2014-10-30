@@ -31,4 +31,44 @@
     om/IRender
     (render [_]
       (html
-       [:h1 "hello world"]))))
+        [:div.pricing.page
+         (common/nav)
+         [:div.torso
+          [:section.pricing-intro
+           [:article
+            [:h1 "Transparent pricing, built to scale."]
+            [:h3 "The first container is free and each additional one is $50/mo."]]
+           [:div.pricing-calculator
+            [:div.pricing-calculator-controls
+             [:div.controls-containers
+              [:h2 "Number of Containers"]
+              [:input {:type "range" :max "16"}]]
+             [:div.controls-parallelism
+              [:h2 "Amount of Parallelism"]
+              [:button "1x"]
+              [:button "4x"]
+              [:button "8x"]
+              [:button "12x"]
+              [:button "16x"]]]
+            [:div.pricing-calculator-preview
+             [:h5 "Estimated Cost"]
+             [:div.calculator-preview-item
+              [:div.item "Repos"]
+              [:div.value "0"]]
+             [:div.calculator-preview-item
+              [:div.item "Builds"]
+              [:div.value "0"]]
+             [:div.calculator-preview-item
+              [:div.item "Users"]
+              [:div.value "0"]]
+             [:div.calculator-preview-item
+              [:div.item "Max Parallelism"]
+              [:div.value "0"]]
+             [:div.calculator-preview-item
+              [:div.item "Concurrent Builds"]
+              [:div.value "0"]]
+             [:div.calculator-preview-item
+              [:div.item "Cost"]
+              [:div.value "0"]]
+             [:a.pricing-action {:role "button"} "Sign Up Free"]]]]]
+         (common/footer)]))))
