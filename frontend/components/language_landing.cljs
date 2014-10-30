@@ -154,7 +154,7 @@
              [:div.languages-cta-step
               [:div.step-number]
               [:div
-               "Run one of your " (:language template) " projects on Circle"]]
+               "Run one of your " (:language template) " projects on CircleCI"]]
              [:div.languages-cta-step
               [:div.step-number]
               [:div
