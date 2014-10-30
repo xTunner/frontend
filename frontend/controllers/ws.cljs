@@ -8,9 +8,8 @@
             [frontend.pusher :as pusher]
             [frontend.utils.seq :refer [find-index]]
             [frontend.state :as state]
-            [frontend.utils :as utils :refer [mlog]])
-  (:require-macros [frontend.utils :refer [inspect]]
-                   [frontend.controllers.ws :refer [with-swallow-ignored-build-channels]]))
+            [frontend.utils :as utils :include-macros true])
+  (:require-macros [frontend.controllers.ws :refer [with-swallow-ignored-build-channels]]))
 
 ;; To subscribe to a channel, put a subscribe message in the websocket channel
 ;; with the channel name and the messages you want to listen to. That will be
@@ -61,12 +60,12 @@
 
 (defmethod ws-event :default
   [pusher-imp message args state]
-  (mlog "Unknown ws event: " (pr-str message))
+  (utils/mlog "Unknown ws event: " (pr-str message))
   state)
 
 (defmethod post-ws-event! :default
   [pusher-imp message args previous-state current-state]
-  (mlog "No post-ws for: " message))
+  (utils/mlog "No post-ws for: " message))
 
 (defmethod ws-event :build/update
   [pusher-imp message {:keys [data channel-name]} state]
@@ -109,7 +108,7 @@
               (let [container-index (aget data "index")
                     action-index (aget data "step")]
                 (if (not= container-index (get-in state state/current-container-path 0))
-                  (do (mlog "Ignoring output for inactive container: " container-index)
+                  (do (utils/mlog "Ignoring output for inactive container: " container-index)
                       (-> state
                           (build-model/fill-containers container-index action-index)
                           (update-in (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true)))
@@ -137,7 +136,7 @@
 (defmethod post-ws-event! :subscribe
   [pusher-imp message {:keys [channel-name messages context]} previous-state current-state]
   (let [ws-ch (get-in current-state [:comms :ws])]
-    (mlog "subscribing to " channel-name)
+    (utils/mlog "subscribing to " channel-name)
     (pusher/subscribe pusher-imp channel-name ws-ch :messages messages :context context)))
 
 
@@ -149,7 +148,7 @@
   [pusher-imp message _ previous-state current-state]
   (doseq [channel-name (clojure.set/difference (pusher/subscribed-channels pusher-imp)
                                                (fresh-channels current-state))]
-    (mlog "unsubscribing from " channel-name)
+    (utils/mlog "unsubscribing from " channel-name)
     (pusher/unsubscribe pusher-imp channel-name)))
 
 (defmethod post-ws-event! :refresh
