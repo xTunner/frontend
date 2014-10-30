@@ -157,7 +157,7 @@
     (if (= integration :docker)
       (om/build docker app)
       (html [:div#integrations.generic
-             [:div.top-section
+             [:div.top-section.heroku
               [:div.line]
               [:div.hero-wrapper
                [:div.hero
