@@ -36,7 +36,7 @@
 }
 
 // TODO: Hack to use until new header ships
-#navbar.heroku {
+#navbar.heroku, #navbar.saucelabs {
   position: relative;
   z-index: 1000;
   background: transparent;
@@ -122,8 +122,12 @@
   &.generic {
     .top-section {
       .brand-background(@blueDark, @blueDarkest);
+      // Branded gradient colors
       &.heroku {
 	.brand-background(#7C72AD, #573A7F);
+      }
+      &.saucelabs {
+	.brand-background(#313942, #222C34);
       }
 
       // TODO: Hack until new header is merged
