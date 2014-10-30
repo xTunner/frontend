@@ -167,8 +167,10 @@
                       {:title "Watch how to get started in minutes"
                        :text [:span "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
                     "See our docs for a " [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]
-                       :graphic [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]}]}
-   :saucelabs {:hero {:header [:span "Test with " [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :style {:width "300px"}}] " on CircleCI"]
+                       :graphic [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]}]
+            :bottom-header "Ready for world-class continuous delivery?"
+            :secondary-cta [:span "Want more information? See our " [:a {:href "/docs/continuous-deployment-with-heroku"} "complete documentation"] " on deploying to Heroku."]}
+   :saucelabs {:hero {:header [:span "Test with " [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :style {:width ""}}] " on CircleCI"]
                       :text "Test with as many browsers as you want, in parallel."}}})
 
 (defrender integration [app owner]
@@ -196,6 +198,6 @@
                    [:h2 (:title bullet)]
                    [:p (:text bullet)]]])]
                [:div.bottom-section
-                [:h2 "Ready for world-class continuous delivery?"]
+                [:h2 (:bottom-header data)]
                 [:a {:role "button"} "Sign up for Free"]
-                [:p "Want more information? See our " [:a {:href "/docs/continuous-deployment-with-heroku"} "complete documentation"] " on deploying to Heroku."]]])))))
+                [:p (:secondary-cta data)]]])))))
