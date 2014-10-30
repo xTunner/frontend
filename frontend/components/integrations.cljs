@@ -133,7 +133,7 @@
                       [:a {:href "/docs/docker"} "docs"]]
                      [:div.feature
                       [:img {:src (utils/cdn-path "/icons/wrench-circle.png")}]
-v                      [:h3 "Full Docker functionality"]
+                      [:h3 "Full Docker functionality"]
                       [:p
                        "You can now use all Docker functionality within the CircleCI build environment. All of the usual Docker command-line commands work as expected, so you can build and run Docker containers to your heart's content."]
                       [:a {:href "/docs/docker"} "docs"]]]]]]
@@ -164,7 +164,7 @@ v                      [:h3 "Full Docker functionality"]
                 [:div.integration-icon
                  [:img {:src (utils/cdn-path "/img/outer/integrations/integration-icon.svg")}]]
                 [:div
-                 [:h1 "Deploy to " [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg") :alt "Heroku"}] " from CircleCI"]
+                 [:h1 "Deploy to " [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg") :alt "Heroku" :style {:vertical-align "-35%"}}] " from CircleCI"]
                  [:p "Experience a simple, modern continuous delivery workflow now."]]
                 [:a {:role "button"} "Sign up for CircleCI"]]]]
              [:div.middle-section
@@ -187,17 +187,9 @@ v                      [:h3 "Full Docker functionality"]
                [:div.content
                 [:h2 "Watch how to get started in minutes"]
                 [:p "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
-                 "See our docs for a " [:a {:href "/docs/"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]
+                 "See our docs for a " [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]
                [:div.graphic
-                [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]]]
-              #_[:div {:style {:text-align "center"}}
-                 [:h2 "Watch how easy it is to get started in minutes..."]
-                                        ; Need to support some weird html attributes
-                 [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>"}}]
-                 [:br]
-                 [:div {:style {:width "600px" :margin "0 auto"}}
-                  [:p "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
-                   "See our docs for a " [:a {:href "/docs/"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]]]
+                [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]]]]
              [:div.bottom-section
               [:h2 "Ready for world-class" [:br] "continuous delivery?"]
               [:a {:role "button"} "Sign up for Free"]
