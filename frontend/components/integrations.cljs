@@ -163,7 +163,11 @@
                        :text "The deployment of your application is configured through just a few lines of YAML that are kept safe in your source code. All you need to do to deploy to Heroku from CircleCI is configure your Heroku credentials in our UI, add a simple config file like this one into your project, and make a push. You can also easily deploy different branches to different Heroku apps (e.g. one for staging and one for production)."
                        :graphic [:div.console
                                  [:pre
-                                  "deployment:\n  staging:\n    branch: " [:span.value "master"] "\n    heroku:\n      appname: " [:span.value "my-app"]]]}
+                                  "deployment:\n"
+                                  "  staging:\n"
+                                  "    branch: " [:span.value "master"] "\n"
+                                  "      heroku:\n"
+                                  "        appname: " [:span.value "my-app"]]]}
                       {:title "Watch how to get started in minutes"
                        :text [:span "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
                     "See our docs for a " [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]
