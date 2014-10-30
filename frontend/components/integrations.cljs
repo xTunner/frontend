@@ -191,6 +191,6 @@
                [:div.graphic
                 [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]]]]
              [:div.bottom-section
-              [:h2 "Ready for world-class" [:br] "continuous delivery?"]
+              [:h2 "Ready for world-class continuous delivery?"]
               [:a {:role "button"} "Sign up for Free"]
-              [:p "Want more information? See our complete" [:br] [:a {:href "/docs/continuous-deployment-with-heroku"} "documentation on deploying to Heroku."]]]]))))
+              [:p "Want more information? See our " [:a {:href "/docs/continuous-deployment-with-heroku"} "complete documentation"] " on deploying to Heroku."]]]))))
