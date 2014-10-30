@@ -110,7 +110,9 @@
                     action-index (aget data "step")]
                 (if (not= container-index (get-in state state/current-container-path 0))
                   (do (mlog "Ignoring output for inactive container: " container-index)
-                      (update-in state (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true))
+                      (-> state
+                          (build-model/fill-containers container-index action-index)
+                          (update-in (state/action-path container-index action-index) assoc :missing-pusher-output true :has_output true)))
 
                   (let [output (utils/js->clj-kw (aget data "out"))]
                     (-> state
