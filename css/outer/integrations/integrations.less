@@ -25,6 +25,11 @@
 }
 
 
+.brand-background(@brandLight, @brandDark) {
+  background-image: radial-gradient(50% 92%, @brandLight 29%, @brandDark 93%);
+}
+
+
 .big-skinny-font {
   font-weight: normal;
   font-size: 40px;
@@ -116,11 +121,11 @@
 
   &.generic {
     .top-section {
-      // Generated from sketch
-      background-image: -o-radial-gradient(50% 92%, #7C72AD 29%, #573A7F 93%);
-      background-image: -moz-radial-gradient(50% 92%, #7C72AD 29%, #573A7F 93%);
-      background-image: -ms-radial-gradient(50% 92%, #7C72AD 29%, #573A7F 93%);
-      background-image: radial-gradient(50% 92%, #7C72AD 29%, #573A7F 93%);
+      .brand-background(@blueDark, @blueDarkest);
+      &.heroku {
+	.brand-background(#7C72AD, #573A7F);
+      }
+
       // TODO: Hack until new header is merged
       margin-top: -72px;
 
