@@ -36,6 +36,10 @@
             :d "M30.3,64.2c0.2,0,0.4,0,0.6,0.1c-0.2,0.1-0.3,0.3-0.3,0.6\r\n\t\tc0,0.4,0.3,0.7,0.7,0.7c0.3,0,0.5-0.1,0.6-0.4c0.1,0.2,0.2,0.4,0.2,0.7c0,1-0.8,1.8-1.8,1.8c-1,0-1.7-0.8-1.7-1.8\r\n\t\tC28.6,64.9,29.4,64.2,30.3,64.2",
             :clip-rule "evenodd"}]]])
 
+(def selenium-logo
+  [:svg {:x "0" :y "0" :width "120px" :height "120px" :view-box "0 0 100 100"}
+   [:path {:d "M64.6,75.6c0,2.7-3.3,5.6-7.7,5.6 c-5.7,0-9.7-3-9.7-11.5c0-6.8,2.9-11.5,9.7-11.5c9.2,0,8,10.8,8,10.8H47.6 M15.9,73.9c0,4.1,5.2,6.8,10.9,6.8s9.6-3.1,9.6-8 s-3.7-6-9.6-7.8c-5.9-1.9-9.6-2.8-9.6-7.8s3.5-7.4,9.6-7.4c6.7,0,9.6,3.2,9.6,5.2 M44.3,33c0,0,12.7,12.7,12.7,12.7l38-38 M81.3,14.9c-2.3-2-5.4-3.3-8.7-3.3H18.9C11.5,11.7,5,17.9,5,25.2V79c0,7.4,6.5,13.3,13.9,13.3h53.8c7.4,0,13-5.9,13-13.3V25.2 c0-0.7,0.1-1.5,0-2.2" :stroke-width "3px" :stroke-linecap "round" :stroke "#2bb033" :fill "none"}]])
+
 (defn cta-form [app owner]
   (reify
     om/IInitState
@@ -175,8 +179,16 @@
             :bottom-header "Ready for world-class continuous delivery?"
             :secondary-cta [:span "Or see our " [:a {:href "/docs/continuous-deployment-with-heroku"} "docs on deploying to Heroku."]]}
    :saucelabs {:hero {:header [:span "Test with " [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :alt "Sauce Labs" :style {:width "300px"}}] " on CircleCI"]
-                      :text "Test with as many browsers as you want, in parallel."}
-               :bullets [{:title "Test against hundreds of mobile and desktop browsers"}]}})
+                      :text "Test against hundreds of mobile and desktop browsers."}
+               :bullets [{:title "Selenium WebDriver"
+                          :text "Sauce Labs supports automated browser tests using Selenium WebDriver, a widely-adopted browser driving standard. Selenium WebDriver provides a common API for programatically driving browsers implemented in several popular languages, including Java, Python, and Ruby. WebDriver can operate in two modes: local or remote. When run locally, your tests use the Selenium WebDriver library to communicate directly with a browser on the same machine. When run in remote mode, your tests interact with a Selenium Server, and it it is up to the server to drive the browsers. Sauce Labs essentially provides a Selenium Server as a service, with all kinds of browsers available to test. It provides some extra goodies like videos of all test runs as well."
+                          :graphic selenium-logo}
+                         {:title "All the browsers and platforms you need"
+                          :text "Sauce Labs provides a huge variety of browsers and operating systems. You can choose between combinations of Firefox, Chrome, Safari, and Internet Explorer browsers and OSX, Windows, and Linux operating systems. You can also test against mobile Safari and Android browsers."}
+                         {:title "No public test servers required"
+                          :text [:span "Sauce Labs operates browsers on a network separate from CircleCI build containers, but there needs to be a way for the browsers to access the web application you want to test. The easiest way to do this is to simply run your server during a CircleCI build and use Sauce Connect to setup a secure tunnel between Sauce Labs' browsers and your build containers on CircleCI. There is an in-depth example of this in " [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."]]}]
+               :bottom-header "Want to get rid of browser bugs?"
+               :secondary-cta [:span "Or see our " [:a {:href "/docs/browser-testing-with-sauce-labs"} "docs on Sauce Labs."]]}})
 
 (defrender integration [app owner]
   (let [integration (get-in app [:navigation-data :integration])]
