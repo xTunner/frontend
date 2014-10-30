@@ -155,9 +155,19 @@
 (def integration-data
   {:heroku {:hero {:header [:span "Deploy to " [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg") :alt "Heroku" :style {:vertical-align "-35%"}}] " from CircleCI"]
                    :text "Experience a simple, modern continuous delivery workflow now."}
-            :bullets [{:title nil
-                       :content nil
-                       :graphic nil}]}})
+            :bullets [{:title "Test before you deploy. Always."
+                       :text [:span "Heroku revolutionized the way developers think about deployment. Being able to deploy with a simple "
+                              [:code "git push heroku master"] " is an amazing thing. But setting up a proper continuous delivery workflow means automating every step of the process. With CircleCI whenever you push a commit to master, it will go through a complete continuous delivery pipeline. All of your tests will run with our blazing fast parallelism, and" [:em " only if they pass, "] "your code will be pushed to Heroku automatically."]
+                       :graphic [:img {:src (stefon/data-uri "/img/status-logos/success.svg")}]}
+                      {:title "Dead Simple Configuration"
+                       :text "The deployment of your application is configured through just a few lines of YAML that are kept safe in your source code. All you need to do to deploy to Heroku from CircleCI is configure your Heroku credentials in our UI, add a simple config file like this one into your project, and make a push. You can also easily deploy different branches to different Heroku apps (e.g. one for staging and one for production)."
+                       :graphic [:div.console
+                                 [:pre
+                                  "deployment:\n  staging:\n    branch: " [:span.value "master"] "\n    heroku:\n      appname: " [:span.value "my-app"]]]}
+                      {:title "Watch how to get started in minutes"
+                       :text [:span "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
+                    "See our docs for a " [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]
+                       :graphic [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]}]}})
 
 (defrender integration [app owner]
   (let [integration (get-in app [:navigation-data :integration])]
@@ -176,28 +186,13 @@
                    [:p (get-in data [:hero :text])]]
                   [:a {:role "button"} "Sign up for CircleCI"]]]]
                [:div.middle-section
-                [:div.bullet
-                 [:div.content
-                  [:h2 "Test before you deploy. Always."]
-                  [:p "Heroku revolutionized the way developers think about deployment. Being able to deploy with a simple "
-                   [:code "git push heroku master"] " is an amazing thing. But setting up a proper continuous delivery workflow means automating every step of the process. With CircleCI whenever you push a commit to master, it will go through a complete continuous delivery pipeline. All of your tests will run with our blazing fast parallelism, and" [:em " only if they pass, "] "your code will be pushed to Heroku automatically."]]
-                 [:div.graphic
-                  [:img {:src (stefon/data-uri "/img/status-logos/success.svg")}]]]
-                [:div.bullet
-                 [:div.graphic
-                  [:div.console
-                   [:pre
-                    "deployment:\n  staging:\n    branch: " [:span.value "master"] "\n    heroku:\n      appname: " [:span.value "my-app"]]]]
-                 [:div.content
-                  [:h2 "Dead Simple Configuration"]
-                  [:p "The deployment of your application is configured through just a few lines of YAML that are kept safe in your source code. All you need to do to deploy to Heroku from CircleCI is configure your Heroku credentials in our UI, add a simple config file like this one into your project, and make a push. You can also easily deploy different branches to different Heroku apps (e.g. one for staging and one for production)."]]]
-                [:div.bullet
-                 [:div.content
-                  [:h2 "Watch how to get started in minutes"]
-                  [:p "This video shows step-by-step how to configure CircleCI to test your application and deploy to Heroku, and how CircleCI keeps defects from getting into production. "
-                   "See our docs for a " [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"} "followup video"] " showing how to setup a more robust continuous delivery pipeline with staging and prod environments."]]
-                 [:div.graphic
-                  [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]]]]
+                (for [bullet (:bullets data)]
+                 [:div.bullet
+                  [:div.graphic
+                   (:graphic bullet)]
+                  [:div.content
+                   [:h2 (:title bullet)]
+                   [:p (:text bullet)]]])]
                [:div.bottom-section
                 [:h2 "Ready for world-class continuous delivery?"]
                 [:a {:role "button"} "Sign up for Free"]
