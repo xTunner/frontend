@@ -9,7 +9,9 @@
             [frontend.stefon :as stefon]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            [goog.string :as gstring]
+            [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
 (defn arrow-class [selected-testimonial]
@@ -21,8 +23,9 @@
 
 (def templates
   {"ruby" {:language "Ruby"
-           :headline "CircleCI makes Continous Integration and Deployment for Ruby projects a breeze."
+           :headline "CircleCI makes Continuous Integration and Deployment for Ruby projects a breeze."
            :logo-path (utils/cdn-path "/img/outer/languages/ruby-logo.svg")
+           :screenshot (utils/cdn-path "/img/outer/languages/build-screenshot.png")
            :features [{:feature "CircleCI provides support for a wide variety of Ruby versions and gems, including Ruby on Rails. It is trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
                        :title "Built For Ruby"
                        :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
@@ -46,30 +49,19 @@
                            :author "Aaron Suggs"
                            :title "Operations Engineer @Kickstarter"}]}
    "python" {:language "Python"
-             :headline "CircleCI makes Continous Integration and Deployment for Python projects a breeze."
+             :headline "CircleCI makes Continuous Integration and Deployment for Python projects a breeze."
              :logo-path (utils/cdn-path "/img/outer/languages/python-logo.svg")
-             :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
-                         :title "Built For Ruby"
+             :screenshot (stefon/asset-path "/img/outer/languages/build-screenshot-python.png")
+             :features [{:feature "When CircleCI detects a Python project, it automatically uses 'virtualenv' and 'pip' to create an isolated Python environment with all of the dependencies specified in your requirements.txt file. This helps ensure that your Python projects can be set up quickly and easily and that your CircleCI enviroment is configured correctly."
+                         :title "Built For Python"
                          :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
-                        {:feature "Circle manages all your database requirements for your, such as running your rake commands for creating, loading, and migrating your database. We have pre-installed more than a dozen databases and queues, including PostgreSQL, MySQL, and MongoDB. You can also add custom database commands via your circle.yml."
-                         :title "Database Management"
-                         :icon (utils/cdn-path "/img/outer/languages/file-icon.svg")}
-                        {:feature "For the majority of Ruby projects no configuration is required; you just run your builds on CircleCI and it works! CircleCI will automatically infer your test commands if you're using Test::Unit, RSpec, Cucumber, Spinach, Jasmine, or Konacha."
-                         :title "Inference That Just Works"
-                         :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}]
-             :docs-link "/docs/language-ruby-on-rails"
-             :testimonials [{:text "The speed is really impressive, the rspec suite alone takes 6 minutes to run on my Macbook Air, but only 2 minutes on Circle."
-                             :img (utils/cdn-path "/img/outer/languages/olivier.jpg")
-                             :author "Olivier Melcher"
-                             :title "Developer @PasswordBox"}
-                            {:text "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining Continuous Integration and Delivery infrastructure."
-                             :img (stefon/asset-path "/img/outer/stories/john.jpg")
-                             :author "John Duff"
-                             :title "Director of Engineering @Shopify"}
-                            {:text "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently. CircleCI's customer support is outstanding. We get quick, thorough answers to all our questions."
-                             :img (utils/cdn-path "/img/outer/languages/aaron.jpg")
-                             :author "Aaron Suggs"
-                             :title "Operations Engineer @Kickstarter"}]}
+                        {:feature "CircleCI intelligently determines the best way to run your tests using 'nosetests', 'tox', or Django. We also provide complete flexibility to override our inferred commands with your own custom commands via the circle.yml."
+                         :title "Intelligent Test Running"  
+                         :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}
+                        {:feature "CircleCI makes setting up Continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
+                         :title "Easy Continuous Delivery"
+                         :icon (utils/cdn-path "/img/outer/languages/cycle.svg")}]
+             :docs-link "/docs/language-python"}
    "node" {:language "Node"
            :headline "CircleCI makes Continous Integration and Deployment for Node.js projects a breeze."
            :logo-path (utils/cdn-path "/img/outer/languages/node-logo.svg")
@@ -108,7 +100,8 @@
           [:div.languages-head {:class (:language template)}
            [:img {:src (:logo-path template)}]
            [:h1 (:headline template)]
-           [:div.languages-screenshots]
+           [:div.languages-screenshots
+            {:style {:background-image (gstring/format "url('%s')" (:screenshot template))}}]
            [:div.hero-shadow]]
           [:div.languages-body
            [:div.languages-features
@@ -133,19 +126,19 @@
 
             [:div.button
              [:a {:href (:docs-link template)} "Read documentation on " (:language template)]]]]
-          [:div.languages-testimonials {:class (arrow-class selected-testimonial)}
-           [:div.languages-body
-            [:div.center-text
-             [:h3 "TESTIMONIALS"]]
-            [:div.testimonial-authors
-             (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(raise! owner [:language-testimonial-tab-selected {:index i}])}])
-                          (:testimonials template))]
-            [:div.testimonial-box
-             [:div.testimonial
-              [:p.testimonial-text (get-in template [:testimonials selected-testimonial :text])]
-
-              [:div.testimonial-author "—" (get-in template [:testimonials selected-testimonial :author])]
-              [:div.testimonial-author-title (get-in template [:testimonials selected-testimonial :title])]]]]]
+          (when (:testimonials template)
+            [:div.languages-testimonials {:class (arrow-class selected-testimonial)}
+             [:div.languages-body
+              [:div.center-text
+               [:h3 "TESTIMONIALS"]]
+              [:div.testimonial-authors
+               (map-indexed (fn [i testimonial] [:img {:src (:img testimonial) :on-click #(raise! owner [:language-testimonial-tab-selected {:index i}])}])
+                            (:testimonials template))]
+              [:div.testimonial-box
+               [:div.testimonial
+                [:p.testimonial-text (get-in template [:testimonials selected-testimonial :text])]
+                [:div.testimonial-author "—" (get-in template [:testimonials selected-testimonial :author])]
+                [:div.testimonial-author-title (get-in template [:testimonials selected-testimonial :title])]]]]])
 
           [:div.languages-cta
            [:div.languages-body
@@ -161,7 +154,7 @@
              [:div.languages-cta-step
               [:div.step-number]
               [:div
-               "Run one of your Ruby projects on Circle"]]
+               "Run one of your " (:language template) " projects on CircleCI"]]
              [:div.languages-cta-step
               [:div.step-number]
               [:div
