@@ -191,19 +191,44 @@
 .pricing-calculator {
   .flexy();
   margin-top: (@tile * 2);
-  // background: red;
 }
 .pricing-calculator-controls {
   .flex(1);
   .flexy(column);
-  // background: blue;
+  padding-right: 2em;
+}
+.containers-range {
+  .flexy(column);
+  figure {
+    .box-sizing(border-box);
+    height: 1em;
+    margin: 0;
+    border-radius: 1em;
+  }
+  .range-back {
+    background: @white;
+    border: 1px solid @grayBoxBorder;
+  }
+  .range-highlight {
+    background: @green;
+    width: 20%;
+    margin-top: -1em;
+  }
+  .range-knob {
+    width: 2em;
+    height: 2em;
+    margin-top: -1.5em;
+    border-radius: 1em;
+    margin-left: ~"calc(20% - 1em)";
+    background: @white;
+    border: 1px solid @grayBoxBorder;
+  }
 }
 .pricing-calculator-preview {
   .box-sizing(border-box);
   .flex(0 0 (@tile * 4));
   .flexy(column);
   height: (@tile * 6.5);
-  // background: green;
   border: 1px solid @grayBoxBorder;
   h5 {
     text-align: center;
