@@ -42,7 +42,10 @@
             [:div.pricing-calculator-controls
              [:div.controls-containers
               [:h2 "Number of Containers"]
-              [:input {:type "range" :max "16"}]]
+              [:div.containers-range
+               [:figure.range-back]
+               [:figure.range-highlight]
+               [:figure.range-knob]]]
              [:div.controls-parallelism
               [:h2 "Amount of Parallelism"]
               [:button "1x"]
