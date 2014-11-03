@@ -24,7 +24,8 @@
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format]
-            [goog.style])
+            [goog.style]
+            [inflections.core :refer [pluralize]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [dommy.macros :refer [node sel sel1]]
                    [frontend.utils :refer [html]]))
@@ -37,7 +38,7 @@
                 (map (fn [{:keys [page text]} msg]
                        [:li {:class (when (= page subpage) :active)}
                         [:a {:href (str "#" (name page))} text]])
-                     templates))]
+                     (filter #(not (nil? %)) templates)))]
         (html [:div.span3
                [:ul.nav.nav-list.well
                 [:li.nav-header "Organization settings"]
@@ -48,10 +49,13 @@
                 [:li.nav-header "Plan"]
                 (when plan
                   (if (plan-model/can-edit-plan? plan org-name)
-                    (nav-links [{:page :containers :text "Add containers"}
-                                {:page :organizations :text "Organizations"}
-                                {:page :billing :text "Billing info"}
-                                {:page :cancel :text "Cancel"}])
+                    (let [links [{:page :containers :text "Adjust containers"}
+                                 {:page :organizations :text "Organizations"}]
+                          links (if (plan-model/paid? plan)
+                                  (into links [{:page :billing :text "Billing info"}
+                                               {:page :cancel :text "Cancel"}])
+                                  links)]
+                      (nav-links links))
                     (nav-links [{:page :plan :text "Choose plan"}])))]])))))
 
 (defn non-admin-plan [{:keys [org-name login]} owner]
@@ -261,6 +265,7 @@
     (will-mount [_]
       (let [ch (om/get-state owner [:checkout-loaded-chan])
             checkout-loaded? (om/get-state owner [:checkout-loaded?])]
+        (utils/mlog "plan/IWillMount with Stripe checkout-loaded? " checkout-loaded?)
         (when-not checkout-loaded?
           (go (<! ch) ;; wait for success message
               (utils/mlog "Stripe checkout loaded")
@@ -275,6 +280,7 @@
     (render-state [_ {:keys [checkout-loaded?]}]
       (let [plan (get-in app state/org-plan-path)
             org-name (get-in app state/org-name-path)]
+        (utils/mlog "org_settings render-state Stripe checkout-loaded? " checkout-loaded?)
         (html
          (if-not (and plan checkout-loaded?)
            [:div.loading-spinner common/spinner]
@@ -296,11 +302,14 @@
       (utils/tooltip "#grandfathered-tooltip-hack") {:animation false})
     om/IRender
     (render [_]
-      (let [plan (get-in app state/org-plan-path)
+      (let [org-name (get-in app state/org-name-path)
+            plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                    (:containers plan))
+                                    (plan-model/usable-containers plan))
+            selected-paid-containers (max 0 (- selected-containers (plan-model/freemium-containers plan)))
             old-total (plan-model/stripe-cost plan)
-            new-total (plan-model/cost (:template_properties plan) selected-containers)]
+            new-total (plan-model/cost plan selected-containers)
+            container-cost (plan-model/per-container-cost plan)]
         (html
          (if-not plan
            [:div.loading-spinner common/spinner]
@@ -309,68 +318,107 @@
             [:fieldset
              [:legend
               "Our pricing is flexible and scales with you. Add as many containers as you want for $"
-              (get-in plan [:template_properties :container_cost])
-              "/month each."]
+              container-cost "/month each."]
              [:div.main-content
               [:div.left-section
-               [:div.plan
-                [:h2 "Your Current Plan"]
-                [:p
-                 [:strong "$" old-total] "/ month"]
-                [:ul [:li "Includes " (:containers plan) " containers"]
-                 [:li "Additional containers for $"
-                  (get-in plan [:template_properties :container_cost]) "/month"]
-                 [:li [:strong "No other limits"]]]]]
-              [:div.right-section
-               [:h3 "New total: $" new-total]
-               [:h4
-                "Old total: $" old-total
-                (when (plan-model/grandfathered? plan)
-                  [:span.grandfather
-                   "(grandfathered"
-                   [:i.fa.fa-question-circle#grandfathered-tooltip-hack
-                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
-                   ")"])]
+               [:h3 "Containers"]
                [:form
                 [:div.container-picker
-                 [:p "You can add or remove containers below; more containers means faster builds and lower queue times."]
+                 [:p "More containers means faster builds and lower queue times."]
                  [:div.container-slider
-                  [:span (get-in plan [:template_properties :free_containers])]
-                  (let [max (if (< selected-containers 80)
+                  (let [min (+ (plan-model/freemium-containers plan) (plan-model/paid-plan-min-containers plan))
+                        max (if (< selected-containers 80)
                               80
                               (let [num (+ 80 selected-containers)]
                                 (+ num (- 10 (mod num 10)))))]
                     (list
+                     [:span min]
                      [:input#rangevalue
                       {:type "range"
                        :value selected-containers
-                       :min (get-in plan [:template_properties :free_containers])
+                       :min min
                        :max max
                        :on-change #(utils/edit-input owner state/selected-containers-path %
                                                      :value (int (.. % -target -value)))}]
                      [:span max]))]
-                 [:div.container-input
-                  [:input
-                   {:type "text"
-                    :value selected-containers
-                    :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                  :value (int (.. % -target -value)))}]]]
+                 [:div
+                  [:span (if (= 0 new-total) "Free!" (str selected-containers " for $" new-total "/month"))]
+                  (when (not (= new-total old-total))
+                    [:span.strikeout (str "$" old-total "/month")])
+                  (when (plan-model/grandfathered? plan)
+                    [:span.grandfather
+                     "(grandfathered"
+                     [:i.fa.fa-question-circle#grandfathered-tooltip-hack
+                      {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
+                     ")"])]
+                 ]
                 [:fieldset
-                 (forms/managed-button
-                  [:button.btn.btn-large.btn-primary.center
-                   {:data-success-text "Saved",
-                    :data-loading-text "Saving...",
-                    :type "submit"
-                    :on-click #(do (raise! owner [:update-containers-clicked {:containers selected-containers}])
-                                   false)}
-                   "Update plan"])
+                 (if (plan-model/paid? plan)
+                   (forms/managed-button
+                    [:button.btn.btn-large.btn-primary.center
+                     {:data-success-text "Saved",
+                      :data-loading-text "Saving...",
+                      :type "submit"
+                      :on-click #(do (raise! owner [:update-containers-clicked
+                                                    {:containers selected-paid-containers}])
+                                     false)}
+                     "Update plan"])
+                   (forms/managed-button
+                    [:button.btn.btn-large.btn-primary.center
+                     {:data-success-text "Paid!",
+                      :data-loading-text "Paying...",
+                      :data-failed-text "Failed!",
+                      :on-click #(raise! owner [:new-plan-clicked {:containers selected-containers
+                                                                   :paid {:template (:id plan-model/default-template-properties)}
+                                                                   :price new-total
+                                                                   :description (str "$" new-total "/month, includes " (pluralize selected-containers "container"))}])}
+                     "Update plan"]))
                  (when (< old-total new-total)
                    [:span.help-block
                     "We'll charge your card today, for the prorated difference between your new and old plans."])
                  (when (> old-total new-total)
                    [:span.help-block
-                    "We'll credit your account, for the prorated difference between your new and old plans."])]]]]
-             plans-component/pricing-faq]]))))))
+                    "We'll credit your account, for the prorated difference between your new and old plans."])]]]
+              [:div.right-section
+               [:div.plan
+                [:h2 "Your Current Plan" [:br] org-name]
+                (cond
+                 (plan-model/paid? plan)
+                 (list
+                   [:p [:strong "PAID"]]
+                   [:p [:strong (plan-model/usable-containers plan) " for $" old-total] "/ month"]
+                   [:ul
+                    (when (plan-model/freemium? plan)
+                      [:li "Includes " (pluralize (plan-model/freemium-containers plan) "container") " FREE!"])
+                    (if (> (plan-model/paid-plan-min-containers plan) 0)
+                      [:li (if (plan-model/freemium? plan) "Next " "First ")
+                       (pluralize (plan-model/paid-plan-min-containers plan) "container") " at $"
+                       (-> plan :paid :template :price)])
+                    [:li "Additional containers for $" (plan-model/per-container-cost plan) "/month"]
+                    [:li [:strong "No other limits"]]])
+
+                 (plan-model/freemium? plan)
+                 (if (plan-model/in-trial? plan)
+                   (list
+                    [:p [:strong "TRIAL"]]
+                    [:ul
+                     [:li "You are currently trialing a plan with " (pluralize (plan-model/usable-containers plan) "container") ". (freemium)"]])
+                   (list
+                     [:p [:strong "FREE"]]
+                     [:ul [:li "Includes " (pluralize (:containers plan) "container") " free!"]
+                      [:li "Additional containers for $" container-cost "/month"]
+                      [:li [:strong "No other limits"]]]))
+
+                 (plan-model/trial? plan)
+                 (if (plan-model/in-trial? plan)
+                   (list
+                     [:p [:strong "TRIAL"]]
+                     [:p "You are currently trialing a plan with " (pluralize (plan-model/usable-containers plan) "container") "."])
+                   (list
+                     [:p [:strong "TRIAL ENDED"]]
+                     [:p "Your trial of a plan with " (pluralize (plan-model/trial-containers plan) "container") " has ended. Please add containers to continue building private repositories."])))
+                ]]]]]))))))
+
 
 (defn piggyback-organizations [app owner]
   (om/component

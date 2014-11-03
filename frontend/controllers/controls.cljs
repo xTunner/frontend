@@ -769,10 +769,12 @@
 
 (defmethod post-control-event! :new-plan-clicked
   [target message {:keys [containers price description paid]} previous-state current-state]
+  (utils/mlog "handling new-plan-clicked")
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         org-name (get-in current-state state/org-name-path)]
+    (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
           (condp = message
