@@ -114,5 +114,6 @@
   (/ (:amount plan) 100))
 
 (defn grandfathered? [plan]
-  (< (stripe-cost plan)
-     (cost plan (usable-containers plan))))
+  (and (paid? plan)
+       (< (stripe-cost plan)
+          (cost plan (usable-containers plan)))))
