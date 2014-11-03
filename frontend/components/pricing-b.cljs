@@ -41,18 +41,21 @@
            [:div.pricing-calculator
             [:div.pricing-calculator-controls
              [:div.controls-containers
-              [:h2 "Number of Containers"]
+              [:h2 "Containers"]
+              [:h5 "All of your containers are shared across your entire organization."]
               [:div.containers-range
                [:figure.range-back]
                [:figure.range-highlight]
                [:figure.range-knob]]]
              [:div.controls-parallelism
-              [:h2 "Amount of Parallelism"]
-              [:button "1x"]
-              [:button "4x"]
-              [:button "8x"]
-              [:button "12x"]
-              [:button "16x"]]]
+              [:h2 "Parallelism"]
+              [:h5 "You could run X concurrent builds with X containers and X parallelism. (You can adjust per project.)"]
+              [:div.parallelism-options
+               [:button "1x"]
+               [:button "4x"]
+               [:button "8x"]
+               [:button "12x"]
+               [:button "16x"]]]]
             [:div.pricing-calculator-preview
              [:h5 "Estimated Cost"]
              [:div.calculator-preview-item
