@@ -35,11 +35,14 @@
       line-height: @prolog_h3_line;
       font-weight: normal;
     }
+    h2 {
+      margin: 8px 0;
+    }
     h5 {
       font-size: @prolog_h5_font;
       line-height: @prolog_h5_line;
       font-weight: normal;
-      margin: 1em 0;
+      margin: 8px 0;
     }
   }
   a {
@@ -199,6 +202,7 @@
 }
 .containers-range {
   .flexy(column);
+  margin: 3em 0;
   figure {
     .box-sizing(border-box);
     height: 1em;
@@ -222,6 +226,14 @@
     margin-left: ~"calc(20% - 1em)";
     background: @white;
     border: 1px solid @grayBoxBorder;
+  }
+}
+.controls-parallelism {
+  .parallelism-options {
+    margin: 3em 0;
+    button {
+      background: none;
+    }
   }
 }
 .pricing-calculator-preview {
