@@ -297,11 +297,31 @@
 
 (defn containers [app owner]
   (reify
+    ;; I stole the stateful "did we load stripe checkout code" stuff
+    ;; from the billing-info component; is there some nice way to
+    ;; abstract it out?
+    om/IInitState
+    (init-state [_]
+      {:checkout-loaded? (stripe/checkout-loaded?)
+       :checkout-loaded-chan (chan)})
+    om/IWillMount
+    (will-mount [_]
+      (let [ch (om/get-state owner [:checkout-loaded-chan])
+            checkout-loaded? (om/get-state owner [:checkout-loaded?])]
+        (when-not checkout-loaded?
+          (go (<! ch)
+              (utils/mlog "Stripe checkout loaded")
+              (om/set-state! owner [:checkout-loaded?] true))
+          (utils/mlog "Loading Stripe checkout")
+          (stripe/load-checkout ch))))
     om/IDidMount
     (did-mount [_]
       (utils/tooltip "#grandfathered-tooltip-hack") {:animation false})
-    om/IRender
-    (render [_]
+    om/IWillUnmount
+    (will-unmount [_]
+      (close! (om/get-state owner [:checkout-loaded-chan])))
+    om/IRenderState
+    (render-state [_ {:keys [checkout-loaded?]}]
       (let [org-name (get-in app state/org-name-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
@@ -363,16 +383,18 @@
                                                     {:containers selected-paid-containers}])
                                      false)}
                      "Update plan"])
-                   (forms/managed-button
-                    [:button.btn.btn-large.btn-primary.center
-                     {:data-success-text "Paid!",
-                      :data-loading-text "Paying...",
-                      :data-failed-text "Failed!",
-                      :on-click #(raise! owner [:new-plan-clicked {:containers selected-containers
-                                                                   :paid {:template (:id plan-model/default-template-properties)}
-                                                                   :price new-total
-                                                                   :description (str "$" new-total "/month, includes " (pluralize selected-containers "container"))}])}
-                     "Update plan"]))
+                   (if-not checkout-loaded?
+                     [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
+                     (forms/managed-button
+                      [:button.btn.btn-large.btn-primary.center
+                       {:data-success-text "Paid!",
+                        :data-loading-text "Paying...",
+                        :data-failed-text "Failed!",
+                        :on-click #(raise! owner [:new-plan-clicked {:containers selected-containers
+                                                                     :paid {:template (:id plan-model/default-template-properties)}
+                                                                     :price new-total
+                                                                     :description (str "$" new-total "/month, includes " (pluralize selected-containers "container"))}])}
+                       "Update plan"])))
                  (when (< old-total new-total)
                    [:span.help-block
                     "We'll charge your card today, for the prorated difference between your new and old plans."])
