@@ -43,17 +43,17 @@
             [:div.pricing-calculator-controls
              [:div.controls-containers
               [:h2 "Containers"]
-              [:h5 "All of your containers are shared across your entire organization."]
+              [:p "All of your containers are shared across your entire organization."]
               [:div.containers-range
                [:figure.range-back]
                [:figure.range-highlight]
                [:figure.range-knob]]]
              [:div.controls-parallelism
               [:h2 "Parallelism"]
-              [:h5 "You can run X concurrent builds with X containers and X parallelism. (Adjustable per project.)"]
+              [:p "You can run X concurrent builds with X containers and X parallelism. (Adjustable per project.)"]
               [:div.parallelism-options
                [:button "1x"]
-               [:button "4x"]
+               [:button.active "4x"]
                [:button "8x"]
                [:button "12x"]
                [:button "16x"]]]]
@@ -94,7 +94,7 @@
                  Who cares if the tests pass yet again, you only want notifications when they fail.
                  Circle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire, FlowDock, IRC and webhooks."]]]
            [:article
-            [:h2 "How do containers work?"]
+            [:h3 "How do containers work?"]
             [:p "Every time you push to GitHub, we checkout your code and run your build inside of a container.
                  If you don't have enough free containers available, then your builds queue up until other builds finish."]
             [:p "Everyone gets their first container free and your team can run as many builds as you want with that container.
@@ -102,7 +102,7 @@
             [:p "Parallelism is an extrememly powerful feature and allows to dramitcally speed up your test suite.
                  CircleCI automatically splits your tests across multiple containers, finishing your build in a fraction of the time."]]
            [:article
-            [:h2 "How many containers do I need?"]
+            [:h3 "How many containers do I need?"]
             [:p "Most of our customers use about 2.5 containers per full-time developer.
                  Every team is different however and we're happy to set you up with a trial to help you figure out how many works best for you."]]]]
          (common/footer)]))))
