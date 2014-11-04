@@ -1,6 +1,7 @@
 (ns frontend.components.integrations
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.async :refer [raise!]]
             [frontend.analytics.marketo :as marketo]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
@@ -222,16 +223,24 @@
                   [:div
                    [:h1 (get-in data [:hero :header])]
                    [:p (get-in data [:hero :text])]]
-                  [:a {:role "button"} "Sign up for CircleCI"]]]]
+                  [:a {:href (gh-utils/auth-url)
+                       :role "button"
+                       :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
+                                                                               :event "Auth GitHub"}])}
+                   "Sign up for CircleCI"]]]]
                [:div.middle-section
                 (for [bullet (:bullets data)]
-                 [:div.bullet
-                  [:div.graphic
-                   (:graphic bullet)]
-                  [:div.content
-                   [:h2 (:title bullet)]
-                   [:p (:text bullet)]]])]
+                  [:div.bullet
+                   [:div.graphic
+                    (:graphic bullet)]
+                   [:div.content
+                    [:h2 (:title bullet)]
+                    [:p (:text bullet)]]])]
                [:div.bottom-section
                 [:h2 (:bottom-header data)]
-                [:a {:role "button"} "Sign up for Free"]
+                [:a {:href (gh-utils/auth-url)
+                       :role "button"
+                       :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
+                                                                               :event "Auth GitHub"}])}
+                   "Sign up for Free"]
                 [:p (:secondary-cta data)]]])))))
