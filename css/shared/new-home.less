@@ -1,11 +1,9 @@
 // temporary hacks for mocking up initial design
 .landing {
-  &.landing-b {
-    #navbar,
-    #sticky-help-link,
-    .main-foot {
-      display: none !important;
-    }
+  #navbar,
+  #sticky-help-link,
+  .main-foot {
+    display: none !important;
   }
 }
 // temporary hacks for mocking up initial design
@@ -224,7 +222,7 @@
     transition+: opacity @prolog_cover_fadeout;
   }
   .promo,
-  .login {
+  .login, .return {
     opacity: 1;
     &:not(:hover) {
       color: @grayLight;
@@ -234,7 +232,7 @@
     left: 0;
     padding: 0 1.5em;
   }
-  .login {
+  .login, .return {
     right: 0;
     padding: 0 1.5em;
   }
