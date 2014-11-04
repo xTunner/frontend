@@ -30,6 +30,10 @@
       }
     }
 
+    p {
+      color: @gray;
+    }
+
 
     h1 {
       font-size: @prolog_h1_font;
@@ -224,7 +228,8 @@
     border: 1px solid @grayBoxBorder;
   }
   .range-highlight {
-    background: @green;
+    // background: @green;
+    background: @grayDark;
     width: 20%;
     margin-top: -1em;
   }
@@ -250,6 +255,17 @@
     background: none;
     border: 1px solid @grayBoxBorder;
     outline: none;
+    transition: 200ms;
+    &:hover,
+    &:active {
+      background: @grayBoxBorder;
+      transition: 100ms;
+    }
+    &.active {
+      color: @white;
+      background: @grayDark;
+      // background: @green;
+    }
     &:first-of-type {
       border-radius: 1.5em 0 0 1.5em;
     }
