@@ -15,7 +15,8 @@
                    "x-forwarded-for" (:remote-addr req)
                    "x-forwarded-proto" "http"
                    "x-forwarded-host" (get-in req [:headers "host"]))
-   :body (:body req)})
+   :body (:body req)
+   :follow-redirects false})
 
 (defn wrap-handler [handler options]
   (fn [req]
