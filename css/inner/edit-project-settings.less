@@ -441,7 +441,6 @@
   }
   .chat-room-item {
     width: 21em;
-    min-height: 34em;
     .outlineFlat();
     border-radius: 4px;
     padding: 0;
@@ -545,7 +544,6 @@
       padding: 1em;
     }
     section:last-of-type {
-      position: absolute;
       bottom: 1em;
       width: 100%;
       padding: 0 1em;
@@ -557,11 +555,11 @@
       line-height: 1.300em;
     }
     .tooltip {
-      position: relative;
+      position: absolute;
     }
   }
   .chat-room-buttons {
-    padding-top: 1em;
+    padding-bottom: 1em;
     text-align: center;
     button {
       .subtleButton(@grayLight);

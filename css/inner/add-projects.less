@@ -1,6 +1,4 @@
 #add-projects {
-  .flexy();
-  padding: 1em 0;
 
   .repo-filter {
     margin-bottom: 10px;
@@ -25,59 +23,62 @@
     padding: 0 .5em;
   }
 
-  .sidebar {
-    width: 25%;
-    padding-left: 15px;
-    .flex(0 0 auto);
+  .org-listing {
+    margin: 5px 2.5px;
+
     .nav-header {
       background: #d7dce3;
       color: #455C78;
     }
-    .orgname {
-      padding-top: 3px;
-      overflow: hidden;
-      margin-left: 3%;
-      width: 70%;
+
+    @avatar-size: 48px;
+    .avatar {
+      width: @avatar-size;
+      float: left;
     }
-    li {
-      clear: both;
+
+    .other-stuff {
+      padding-left: @avatar-size + 5px;
     }
+
     img {
-      .pull-left();
-      width: 25px;
-      height: 25px;
+      width: @avatar-size;
+      height: @avatar-size;
+      border-radius: 4px;
     }
+
     i {
       width: 5%;
       margin-right: 0;
       padding-top: 5px;
-      .pull-right();
     }
   }
+
   #inviteForm {
     input {
       width: 270px;
     }
   }
+
   .add-repos {
     text-align: center;
     font-size: 1.231em; // 16px
     margin: 25vh 0;
     color: @grayLight;
+
     h3 {
       font-size: 1.846em; // 24px
       font-weight: 300;
       color: @gray;
     }
+
     ul {
       list-style: none;
     }
+
     &:empty {
       display: none;
     }
-  }
-  .project-listing {
-    .flex(0 1 auto);
   }
 
   .overview {
@@ -97,16 +98,19 @@
         transition: .1s;
       }
     }
+    
     h3 {
       margin-top: 0;
       font-weight: normal;
       color: #555;
       line-height: 1.25em;
     }
+
     p {
       color: #999;
     }
   }
+
   .proj-wrapper {
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
@@ -116,58 +120,69 @@
       margin: 1.5em auto;
     }
   }
+
   .proj-list {
     // border: 1px solid darken(@grayBorder,1%); (for later use with tabbing visual)
     list-style: none;
     margin: 0;
     width: 100%;
   }
-  .side-list {
-    list-style-type: none;
 
-    img {
-      width: 25px;
-      height: 25px;
-      border-radius:25px;
-    }
-
-    a {
-      cursor: pointer;
-      color: @gray;
+  a {
+    cursor: pointer;
+    color: @gray;
+    text-decoration: none;
+    &:hover {
+      color: @blueLight;
       text-decoration: none;
+    }
+  }
+
+  & > span {
+    text-align: center;
+    display: block;
+    line-height: 13em;
+  }
+
+  .tooltip {
+    white-space: normal;
+  }
+
+  .organization {
+    border: 1px @grayBorder solid;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 0 2.5px 5px 2.5px;
+    padding: 5px;
+    width: 30%;
+    display: inline-block;
+    min-width: 280px;
+  }
+
+  .organization.active {
+    a {
+      color: @blueDark;
       &:hover {
         color: @blueLight;
-        text-decoration: none;
       }
     }
+  }
 
-    & > span {
-      text-align: center;
-      display: block;
-      line-height: 13em;
-    }
-    .tooltip {
-      white-space: normal;
-    }
-    .side-item.active {
-      a {
-        color: @blueDark;
-        &:hover {
-          color: @blueLight;
-          }
-        }
-    }
-
- }
   .add-orgs,
   .add-collabs,
   .add-you {
     color: @gray;
     font-weight: bold;
   }
+
   .orgname {
     display: inline-block;
+    font-weight: bold;
+    font-size: @baseLineHeight;
+    line-height: 24px;
+    overflow: hidden;
   }
+
   .proj-list {
     li {
       .flexy();
@@ -192,17 +207,15 @@
         color: @grayLight;
       }
     }
+
     button {
-      .circleButton();
-      padding: 0.5em;
-      line-height: 1em;
-      min-width: 6em;
       &.disabled {
         position: relative;
         span {
           display: none;
         }
       }
+
       svg {
         height: 1em;
         width: 1em;
@@ -211,14 +224,17 @@
           fill: @grayDark;
         }
       }
+
       i {
         position: absolute;
         margin-left: .5ex;
         .scale3d(.75, .75);
       }
     }
+
     .repoButtonColor(@color) {
       button {
+        .subtleButton(@color);
         &:not(.disabled) {
           &:hover {
             background-color: @color;
@@ -237,12 +253,15 @@
         }
       }
     }
+
     .repo-unfollow {
       .repoButtonColor(@redLight);
     }
+
     .repo-nofollow {
-      .repoButtonColor(@green);
+      .repoButtonColor(@gray);
     }
+
     .repo-1stfollow {
       .repoButtonColor(@green);
       .building {
@@ -252,6 +271,7 @@
       }
     }
   }
+
   .proj-name {
     margin-right: auto;
     .fa-external-link {
@@ -261,6 +281,7 @@
       color: @grayLighter;
     }
   }
+
   .tooltip {
     font-size: inherit;
     opacity: .89;
@@ -269,4 +290,17 @@
       .box-sizing(border-box);
     }
   }
+}
+
+.head-user {
+  h1 {
+    font-size: @fontSizeLarge;
+    font-weight: normal;
+  }
+
+  padding: 0 20px;
+}
+
+.project-listing {
+  margin: 0 5px;
 }
