@@ -289,8 +289,18 @@
         (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href (str "/assets/css/app.css?t=" (.getTime (js/Date.)))}])
         (map #(dommy/remove! %) old-links)))
 
+(defn fix-figwheel-css! []
+  (let [is-figwheel-css? (fn [elem] (re-find #"3449resources" (dommy/attr elem :href)))
+        patch (fn [elem]
+                (let [fixed-href (string/replace (dommy/attr elem :href) #"3449resources" "3449/resources")]
+                  (do
+                    (dommy/remove! elem)
+                    (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href fixed-href}]))))]
+    (map patch (filter is-figwheel-css? (sel [:head :link])))))
+
 (defn update-ui! []
   (reinstall-om!)
+  (fix-figwheel-css!)
   (refresh-css!))
 
 (fw/watch-and-reload
