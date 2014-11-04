@@ -41,7 +41,7 @@
                 :data-failed-text "Failed!",
                 :data-success-text "Paid!",
                 :on-click #(raise! owner [:new-plan-clicked {:containers containers
-                                                             :base-template-id (:id plan-model/default-template-properties)
+                                                             :paid {:template (:id plan-model/default-template-properties)}
                                                              :price price
                                                              :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])

@@ -168,12 +168,11 @@
   [target message {:keys [build-id]} state]
   (update-in state state/show-usage-queue-path not))
 
-(defmethod post-control-event! :usage-queue-why-toggled
+(defmethod post-control-event! :usage-queue-why-showed
   [target message {:keys [username reponame
                           build_num build-id]} previous-state current-state]
-  (when (get-in current-state state/show-usage-queue-path)
-    (let [api-ch (get-in current-state [:comms :api])]
-      (api/get-usage-queue (get-in current-state state/build-path) api-ch))))
+  (let [api-ch (get-in current-state [:comms :api])]
+    (api/get-usage-queue (get-in current-state state/build-path) api-ch)))
 
 
 (defmethod control-event :selected-add-projects-org
@@ -194,22 +193,25 @@
                :context args)))
 
 
-(defmethod control-event :show-artifacts-toggled
-  [target message build-id state]
-  (update-in state state/show-artifacts-path not))
-
-(defmethod post-control-event! :show-artifacts-toggled
+(defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state]
-  (when (get-in current-state state/show-artifacts-path)
-    (let [api-ch (get-in current-state [:comms :api])
-          build (get-in current-state state/build-path)]
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/%s/artifacts"
-                                 (vcs-url/project-name (:vcs_url build))
-                                 (:build_num build))
-                 :build-artifacts
-                 api-ch
-                 :context (build-model/id build)))))
+  (let [api-ch (get-in current-state [:comms :api])
+        build (get-in current-state state/build-path)]
+    (ajax/ajax :get
+               (gstring/format "/api/v1/project/%s/%s/artifacts"
+                               (vcs-url/project-name (:vcs_url build))
+                               (:build_num build))
+               :build-artifacts
+               api-ch
+               :context (build-model/id build))))
+
+
+(defmethod post-control-event! :tests-showed
+  [target message _ previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])
+        build (get-in current-state state/build-path)]
+    (when (empty? (get-in current-state state/tests-path))
+      (api/get-build-tests build api-ch))))
 
 
 (defmethod control-event :show-config-toggled
@@ -756,7 +758,7 @@
 
 
 (defmethod post-control-event! :new-plan-clicked
-  [target message {:keys [containers price description base-template-id]} previous-state current-state]
+  [target message {:keys [containers price description paid]} previous-state current-state]
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
@@ -776,7 +778,7 @@
                                              :containers containers
                                              :billing-name org-name
                                              :billing-email (get-in current-state (conj state/user-path :selected_email))
-                                             :base-template-id base-template-id}))]
+                                             :paid paid}))]
                 (put! api-ch [:create-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
                 (release-button! uuid (:status api-result))))
             nil)))))
@@ -1070,6 +1072,10 @@
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
           (when (= (:success (:status api-result)))
             (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
+
+(defmethod control-event :build-header-tab-clicked
+  [target message {:keys [tab]} state]
+  (assoc-in state state/build-header-tab-path tab))
 
 (defmethod post-control-event! :home-scroll-1st-clicked
   [target message _ previous-state current-state]

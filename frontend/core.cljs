@@ -71,9 +71,7 @@
   (let [overrides (merge (some-> js/window
                                  (aget "renderContext")
                                  (aget "abOverrides")
-                                 (utils/js->clj-kw))
-                         (when (env/development?)
-                           {:new-homepage true}))]
+                                 (utils/js->clj-kw)))]
     (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
@@ -274,6 +272,10 @@
 
 (defn ^:export toggle-admin []
   (swap! debug-state update-in [:current-user :admin] not))
+
+(defn ^:export explode []
+  (swallow-errors
+    (assoc [] :deliberate :exception)))
 
 (defn ^:export set-ab-test
   "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
