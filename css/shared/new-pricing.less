@@ -18,10 +18,16 @@
 
     .torso {
       max-width: (@tile * 15);
-      margin: 0 auto;
+      // margin: 0 auto;
+      margin: 0 auto (@tile * 3);
     }
     section {
       width: (@tile * 15);
+    }
+    article {
+      + article {
+        margin-top: 2em;
+      }
     }
 
 
@@ -29,6 +35,9 @@
       font-size: @prolog_h1_font;
       line-height: @prolog_h1_line;
       font-weight: 300;
+    }
+    h2 {
+      font-weight: normal;
     }
     h3 {
       font-size: @prolog_h3_font;
@@ -193,12 +202,13 @@
 }
 .pricing-calculator {
   .flexy();
-  margin-top: (@tile * 2);
+  // margin-top: (@tile * 2);
+  margin: (@tile * 2) 0;
 }
 .pricing-calculator-controls {
   .flex(1);
-  .flexy(column);
-  padding-right: 2em;
+  .flexy(stretch, center, column);
+  padding-right: 3em;
 }
 .containers-range {
   .flexy(column);
@@ -228,11 +238,26 @@
     border: 1px solid @grayBoxBorder;
   }
 }
-.controls-parallelism {
-  .parallelism-options {
-    margin: 3em 0;
-    button {
-      background: none;
+.parallelism-options {
+  .flexy();
+  margin: 3em 0;
+  button {
+    .box-sizing(border-box);
+    .flex(1 1 20%);
+    height: 3em;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 1px solid @grayBoxBorder;
+    outline: none;
+    &:first-of-type {
+      border-radius: 1.5em 0 0 1.5em;
+    }
+    &:last-of-type {
+      border-radius: 0 1.5em 1.5em 0;
+    }
+    &:not(:last-of-type) {
+      border-right: none;
     }
   }
 }
@@ -275,5 +300,14 @@
     color: @white;
     background: @grayDark;
     transition-duration: 100ms @prolog_cover_fadein;
+  }
+}
+.pricing-features {
+  .flexy();
+}
+.pricing-feature {
+  .flex(1 1 33%);
+  &:not(:last-of-type) {
+    padding-right: 3em;
   }
 }
