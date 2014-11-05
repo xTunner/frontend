@@ -87,14 +87,14 @@
              [:a.pricing-action {:role "button"} "Sign Up Free"]]]
            [:article.pricing-features
             [:div.pricing-feature
-             [:h3 "Continuous Deployment"]
-             [:p "If your tests work, deploy straight to staging, production, or a QA server.
-                 Deploy anywhere, including Heroku, DotCloud, EngineYard, etc, or using Capistrano, Fabric or custom commands."]]
-            [:div.pricing-feature
              [:h3 "Easy Debugging"]
              [:p "When your tests are broken, we help you get them fixed. We automatically warn you about common mistakes, and document how to fix them.
                  We provide all the information you need to reproduce an error locally.
                  And if you still can't reproduce it, you can SSH into our VMs to debug it yourself."]]
+            [:div.pricing-feature
+             [:h3 "Continuous Deployment"]
+             [:p "If your tests work, deploy straight to staging, production, or a QA server.
+                 Deploy anywhere, including Heroku, DotCloud, EngineYard, etc, or using Capistrano, Fabric or custom commands."]]
             [:div.pricing-feature
              [:h3 "Personalized Notifications"]
              [:p "You don't care what John did in his feature branch, but you care what gets pushed to master.
