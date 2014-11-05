@@ -172,6 +172,14 @@
     border-radius: 1em;
     background: @white;
     border: 1px solid @grayBoxBorder;
+    &:before {
+      content: attr(data-count);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      text-align: center;
+    }
   }
 }
 .controls-parallelism {
@@ -184,6 +192,7 @@
     font-weight: normal;
     width: 24px;
     margin: 0 .25em;
+    color: @green;
     text-align: center;
     &:before {
       .box-sizing(border-box);
