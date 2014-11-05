@@ -1,4 +1,11 @@
 #add-projects {
+  padding: 0 14px;
+
+  h3 {
+    font-size: 1.846em; // 24px
+    font-weight: 300;
+    color: @gray;
+  }
 
   .repo-filter {
     margin-bottom: 10px;
@@ -9,14 +16,7 @@
   }
 
   .unobtrusive-search {
-    width: 90%;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-    background: transparent;
-    border: none;
     font-size: 1.5em;
-    border-radius: inherit;
     height: 1.2em;
     line-height: 1.2em;
     margin-bottom: 0;
@@ -24,7 +24,7 @@
   }
 
   .org-listing {
-    margin: 5px 2.5px;
+    margin: 14px;
 
     .nav-header {
       background: #d7dce3;
@@ -66,12 +66,6 @@
     margin: 25vh 0;
     color: @grayLight;
 
-    h3 {
-      font-size: 1.846em; // 24px
-      font-weight: 300;
-      color: @gray;
-    }
-
     ul {
       list-style: none;
     }
@@ -82,23 +76,6 @@
   }
 
   .overview {
-    a {
-      font-size: 1em;
-      border-radius: 4px;
-      line-height: 1.5em;
-      color: @grayDark;
-      display: block;
-      transition: all .3s ease-in-out;
-      font-weight: normal;
-      text-decoration: none;
-      background-color: transparent;
-      &:hover {
-        text-decoration: none;
-        color: @blueLight;
-        transition: .1s;
-      }
-    }
-    
     h3 {
       margin-top: 0;
       font-weight: normal;
@@ -107,7 +84,7 @@
     }
 
     p {
-      color: #999;
+      color: @grayDark;
     }
   }
 
@@ -115,14 +92,12 @@
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
     margin-bottom: 20vh;
-    // padding: 1vw; (for later use with tabbing visual)
     .loading-spinner {
       margin: 1.5em auto;
     }
   }
 
   .proj-list {
-    // border: 1px solid darken(@grayBorder,1%); (for later use with tabbing visual)
     list-style: none;
     margin: 0;
     width: 100%;
@@ -149,14 +124,23 @@
   }
 
   .organization {
-    border: 1px @grayBorder solid;
-    border-radius: 4px;
-    padding: 5px;
-    margin: 0 2.5px 5px 2.5px;
-    padding: 5px;
-    width: 30%;
+    & > .inner {
+      margin: 5px;
+      padding: 5px;
+      border: 1px @grayBorder solid;
+      border-radius: 4px;
+    }
+
+    width: 33.33%;
     display: inline-block;
-    min-width: 280px;
+    
+    @media only screen and (min-width: 800px) and (max-width: 970px) {
+      width: 50%;
+    }
+
+    @media only screen and (max-width: 800px) {
+      width: 100%;
+    }
   }
 
   .organization.active {
@@ -187,14 +171,14 @@
     li {
       .flexy();
       .align-items(center);
-      box-shadow: 0 1px lighten(@grayLightest, .5) inset, 0 2px @white inset;
+      border-top: solid 1px lighten(@grayLightest, .5);
       line-height: 1.5em;
       position: relative;
       height: 1.5em;
-      padding: 1em;
-      padding-right: .5em;
+      padding: 1em 0.5em 1em 1em;
+
       &:first-child {
-        box-shadow: none;
+        border-top: none;
       }
       &:hover {
         background-color: darken(@whiten, 1);
