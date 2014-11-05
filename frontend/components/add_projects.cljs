@@ -31,18 +31,21 @@
   (let [login (:login org)
         type (if (:org org) :org :user)]
     [:div.organization {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
-     [:div.avatar
-      [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
-       [:img {:src (gh-utils/make-avatar-url org :size 50)
-              :height 50}]]]
-     [:div.other-stuff
-      [:div.orgname 
-       [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])} login]]
-      [:small.github-url.pull-right
-       [:a {:href "http://github.com"}
-        [:i.fa.fa-github-alt ""]]]
-      [:div "12 projects"]
-      [:div "30 members"]]]))
+     [:div.inner
+      [:div.avatar
+       [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])}
+        [:img {:src (gh-utils/make-avatar-url org :size 50)
+               :height 50}]]]
+      [:div.other-stuff
+       [:div.orgname 
+        [:a {:on-click #(put! ch [:selected-add-projects-org {:login login :type type}])} login]]
+       [:small.github-url.pull-right
+        [:a {:href "http://github.com"}
+         [:i.fa.fa-github-alt ""]]]
+       [:div
+        "12 projects"
+        " • "
+        "30 members"]]]]))
 
 (defn org-sidebar [data owner]
   (reify
@@ -53,8 +56,12 @@
     (render [_]
       (let [user (:user data)
             settings (:settings data)
+            org (inspect (:organizations user))
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div
+            [:div.overview
+             [:p
+              "Choose a repo in GitHub from one of your organizations, your own repos, or repos you share with others, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits; come back here to follow more projects."]]
                (map (fn [org] (side-item org settings controls-ch))
                     (:organizations user))
                (map (fn [org] (side-item org settings controls-ch))
@@ -229,11 +236,7 @@
             (om/build org-sidebar {:user user
                                    :settings settings})]
            [:div.project-listing
-            [:div.overview
-             [:h3 "Start following your projects"]
-             [:p
-              "Choose a repo in GitHub from one of your organizations, your own repos, or repos you share with others, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits; come back here to follow more projects."]]
-
+            [:hr]
 
             (om/build repo-filter settings)
 
