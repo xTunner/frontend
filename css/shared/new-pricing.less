@@ -4,21 +4,15 @@
 .home-footer {
   margin-top: auto;
 }
-
 .pricing {
   &.page {
-
     .flexy(column);
     min-height: 100vh;
-
     font-size: 1.1428572em; // 16px
     line-height: 1.5em; // 24px
     margin-top: @tile;
-
-
     .torso {
       max-width: (@tile * 15);
-      // margin: 0 auto;
       margin: 0 auto (@tile * 3);
     }
     section {
@@ -29,12 +23,9 @@
         margin-top: 2em;
       }
     }
-
     p {
       color: @gray;
     }
-
-
     h1 {
       font-size: @prolog_h1_font;
       line-height: @prolog_h1_line;
@@ -79,7 +70,6 @@
   }
 }
 .outer-nav {
-  // .animation(prolog-down @prolog_open_duration @bezier_fadein @prolog_open_duration both);
   .box-sizing(border-box);
   .flexy(center);
   .vertGradient(@white, @white);
@@ -90,9 +80,7 @@
   width: 100%;
   height: @tile;
   border-bottom: 1px solid @grayBoxBorder;
-  // box-shadow: 1px 2px fade(@black, 08);
   overflow: hidden;
-
   a {
     &:not(:first-of-type) {
       &:not(:last-of-type) {
@@ -100,8 +88,6 @@
       }
     }
   }
-
-
   &.logo-visible {
     .promo {
       top: -100%;
@@ -115,58 +101,8 @@
       transition+: opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
     }
   }
-  // &.cta-visible {
-  //   &:not(.cta-invisible) {
-  //     .login {
-  //       top: -100%;
-  //       opacity: 0;
-  //     }
-  //     .action {
-  //       right: 0;
-  //       opacity: 1;
-  //       pointer-events: auto;
-  //       transition+: right @prolog_cover_fadein;
-  //       transition+: opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
-  //     }
-  //   }
-  // }
-  // &.bkg-visible {
-  //   .vertGradient(@white, @white);
-  //   background-size: 100% 100%;
-  //   &:not(.bkg-invisible) {
-  //     box-shadow: 1px 2px fade(@black, 08);
-  //     border-color: @white;
-  //   }
-  // }
-  // &.bkg-invisible {
-  //   background-position: top center;
-  // }
-  // a {
-  //   .flexy(center);
-  //   position: absolute;
-  //   top: 0;
-  //   height: 100%;
-  //   transition+: top @prolog_cover_fadeout;
-  //   transition+: left @prolog_cover_fadeout;
-  //   transition+: right @prolog_cover_fadeout;
-  //   transition+: opacity @prolog_cover_fadeout;
-  // }
-  // .promo,
-  // .login {
-  //   opacity: 1;
-  //   &:not(:hover) {
-  //     color: @grayLight;
-  //   }
-  // }
-  // .login {
-  //   right: 0;
-  //   padding: 0 1.5em;
-  // }
   .logo-circleci {
-    // left: @tile;
     padding: 0 1.5em;
-    // opacity: 0;
-    // pointer-events: none;
     figure {
       margin: 0;
       width: 6em;
@@ -174,14 +110,11 @@
     }
     svg {
       height: 100%;
-      // fill: @grayLighter;
       fill: @grayDark;
     }
   }
   .action {
     .flexy(center, center);
-    // right: @tile;
-    // top: ~"calc(50% - 1.5em)";
     height: auto;
     font-size: .875em;
     color: @black;
@@ -190,8 +123,6 @@
     background: @white;
     border: 1px solid @gray;
     border-radius: (@home_action_height / 2);
-    // pointer-events: none;
-    // opacity: 0;
     white-space: nowrap;
     &:hover {
       color: @white;
@@ -200,13 +131,11 @@
     }
   }
 }
-
 .pricing-intro {
   margin-top: (@tile * 2);
 }
 .pricing-calculator {
   .flexy();
-  // margin-top: (@tile * 2);
   margin: (@tile * 2) 0;
 }
 .pricing-calculator-controls {
@@ -302,11 +231,9 @@
   .box-sizing(border-box);
   .flexy(center, center);
   color: @grayDark;
-  // font-size: 20px;
   background: @white;
   width: @pricing_action_width;
   height: @pricing_action_height;
-  // margin: 1em auto;
   margin: auto auto 2em;
   border: 1px solid @grayDark;
   border-radius: (@pricing_action_height / 2);
