@@ -47,7 +47,7 @@
               [:div.containers-range
                [:figure.range-back]
                [:figure.range-highlight]
-               [:figure.range-knob]]]
+               [:figure.range-knob {:data-count "16"}]]]
              [:div.controls-parallelism
               [:h2 "Parallelism"]
               [:p
