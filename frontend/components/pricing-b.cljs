@@ -50,7 +50,14 @@
                [:figure.range-knob]]]
              [:div.controls-parallelism
               [:h2 "Parallelism"]
-              [:p "You can run X concurrent builds with X containers and X parallelism. (Adjustable per project.)"]
+              [:p
+               [:span "You can run "]
+               [:strong "3"]
+               [:span " concurrent builds with "]
+               [:strong "9"]
+               [:span " containers and "]
+               [:strong "2"]
+               [:span " parallelism. (Adjustable per project.)"]]
               [:div.parallelism-options
                [:button "1x"]
                [:button.active "4x"]
