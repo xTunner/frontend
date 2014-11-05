@@ -172,6 +172,31 @@
     border: 1px solid @grayBoxBorder;
   }
 }
+.controls-parallelism {
+  p {
+    .flexy();
+  }
+  strong {
+    position: relative;
+    font-size: 0.875em;
+    font-weight: normal;
+    width: 24px;
+    margin: 0 .25em;
+    text-align: center;
+    &:before {
+      .box-sizing(border-box);
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 1px solid @green;
+      border-radius: 1em;
+      z-index: -1;
+    }
+  }
+}
 .parallelism-options {
   .flexy();
   margin: 3em 0;
