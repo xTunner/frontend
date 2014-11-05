@@ -145,6 +145,7 @@
 }
 .containers-range {
   .flexy(column);
+  position: relative;
   margin: 3em 0;
   figure {
     .box-sizing(border-box);
@@ -157,17 +158,18 @@
     border: 1px solid @grayBoxBorder;
   }
   .range-highlight {
-    // background: @green;
     background: @grayDark;
     width: 20%;
     margin-top: -1em;
   }
   .range-knob {
+    position: absolute;
     width: 2em;
     height: 2em;
-    margin-top: -1.5em;
+    left: 20%;
+    top: -.5em;
+    margin-left: -1em;
     border-radius: 1em;
-    margin-left: ~"calc(20% - 1em)";
     background: @white;
     border: 1px solid @grayBoxBorder;
   }
