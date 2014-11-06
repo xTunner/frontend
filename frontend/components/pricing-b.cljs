@@ -36,7 +36,7 @@
         event-left (.-pageX event)
         ; increment (/ 100.0 64)
         ]
-    (* increment (.ceil js/Math (/ (min 100 (max 0 (* 100 (/ (- event-left slider-left) width)))) increment)))))
+    (min 100 (max 0 (* 100 (/ (- event-left slider-left) width))))))
 
 (defn pricing [app owner]
   (reify
@@ -45,7 +45,9 @@
                                    :dragging? false})
     om/IRenderState
     (render-state [_ {:keys [drag-percent dragging?]}]
-      (let [container-count (/ drag-percent increment)]
+      (let [pricing-parallelism (get-in app state/pricing-parallelism-path 1)
+            normalized-drag-percent (* increment (js/Math.ceil (/ drag-percent increment)))
+            container-count (max pricing-parallelism (/ normalized-drag-percent increment))]
         (html
           [:div.pricing.page {:on-mouse-up #(om/set-state! owner :dragging? false)
                               :on-mouse-down #(when dragging?
@@ -68,26 +70,27 @@
                                         :on-mouse-down #(om/set-state! owner :dragging? true)
                                         :ref "pricing-range"}
                  [:figure.range-back]
-                 [:figure.range-highlight {:style {:width (str drag-percent "%")}}]
+                 [:figure.range-highlight {:style {:width (str (* container-count increment) "%")}}]
                  [:button.range-knob {:on-mouse-down #(om/set-state! owner :dragging? true)
-                                      :style {:left (str drag-percent "%")}
+                                      :style {:left (str (* container-count increment) "%")}
                                       :data-count container-count}]]]
                [:div.controls-parallelism
                 [:h2 "Parallelism"]
                 [:p
                  [:span "You can run "]
-                 [:strong "3"]
+                 [:strong (str (int (/ container-count pricing-parallelism)))]
                  [:span " concurrent builds with "]
                  [:strong {:class (when (> container-count 9) "double-digits")} (str container-count)]
                  [:span " containers and "]
-                 [:strong "2"]
+                 [:strong (str pricing-parallelism)]
                  [:span " parallelism. (Adjustable per project.)"]]
                 [:div.parallelism-options
-                 [:button "1x"]
-                 [:button.active "4x"]
-                 [:button "8x"]
-                 [:button "12x"]
-                 [:button "16x"]]]]
+                 (for [p [1 4 8 12 16]]
+                 [:button {:on-click #(do
+                                        (raise! owner [:pricing-parallelism-clicked {:p p}])
+                                        (om/set-state! owner :drag-percent (max drag-percent (* p increment))))
+                           :class (when (= p pricing-parallelism) "active")}
+                  (str p "x")])]]]
               [:div.pricing-calculator-preview
                [:h5 "Estimated Cost"]
                [:div.calculator-preview-item
@@ -101,13 +104,13 @@
                 [:div.value "0"]]
                [:div.calculator-preview-item
                 [:div.item "Max Parallelism"]
-                [:div.value "0"]]
+                [:div.value (str container-count)]]
                [:div.calculator-preview-item
                 [:div.item "Concurrent Builds"]
-                [:div.value "0"]]
+                [:div.value (str (int (/ container-count pricing-parallelism)))]]
                [:div.calculator-preview-item
                 [:div.item "Cost"]
-                [:div.value "0"]]
+                [:div.value (str "$" (max (* (dec container-count) 50) 0))]]
                [:a.pricing-action {:role "button"} "Sign Up Free"]]]
              [:article.pricing-features
               [:div.pricing-feature

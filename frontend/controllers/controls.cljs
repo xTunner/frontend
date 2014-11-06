@@ -1151,3 +1151,7 @@
 (defmethod control-event :toolset-clicked
   [target message {:keys [toolset]} state]
   (assoc-in state state/selected-toolset-path toolset))
+
+(defmethod control-event :pricing-parallelism-clicked
+  [target message {:keys [p]} state]
+  (assoc-in state state/pricing-parallelism-path p))

@@ -201,3 +201,5 @@
 (def customer-logo-customer-path [:customer-logo-customer])
 
 (def selected-toolset-path [:selected-toolset])
+
+(def pricing-parallelism-path [:pricing-parallelism])
