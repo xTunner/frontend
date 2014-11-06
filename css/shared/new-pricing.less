@@ -78,7 +78,7 @@
   .flexy(center);
   .vertGradient(@white, @white);
   position: fixed;
-  z-index: @zindex_outer_nav; // ducks under prolog content intentionally
+  z-index: @zindex_outer_nav;
   left: 0;
   top: 0;
   width: 100%;
@@ -229,7 +229,6 @@
     &.active {
       color: @white;
       background: @grayDark;
-      // background: @green;
     }
     &:first-of-type {
       .animation(pricing-button 500ms @bezier_fadein 500ms backwards);
