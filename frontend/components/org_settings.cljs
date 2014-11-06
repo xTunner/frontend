@@ -319,7 +319,7 @@
         (list
          [:p [:strong "PAID"]]
          [:ul
-          [:li [:strong (pm/usable-containers plan) " for $" plan-total] "/ month"]
+          [:li [:strong.old-plan-total (str (pm/usable-containers plan) " for $" plan-total "/ month")]]
           (when (pm/freemium? plan)
             [:li "Includes " (pluralize (pm/freemium-containers plan) "container") " FREE!"])
           (if (> (pm/paid-plan-min-containers plan) 0)
@@ -416,11 +416,11 @@
                        :on-change #(utils/edit-input owner state/selected-containers-path %
                                                      :value (int (.. % -target -value)))}]
                      [:span max]))]
-                 [:div
+                 [:div.container-input
                   [:input {:type "text" :value selected-containers
                            :on-change #(utils/edit-input owner state/selected-containers-path %
                                                          :value (int (.. % -target -value)))}]
-                  [:span {:id "new-plan-total"} (str "containers for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
+                  [:span.new-plan-total (str "containers for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
                   (when (not (= new-total old-total))
                     [:span.strikeout (str "$" old-total "/month")])
                   (when (pm/grandfathered? plan)
