@@ -25,9 +25,9 @@
                    [dommy.macros :refer [sel1 node]])
   (:import [goog.ui IdGenerator]))
 
-(def pricing-containers-max 64)
+(def max-containers 64)
 
-(def pricing-increment (/ 100.0 pricing-containers-max))
+(def increment (/ 100.0 max-containers))
 
 (defn calculate-drag-percent [owner event]
   (let [slider (om/get-node owner "pricing-range")
@@ -36,14 +36,14 @@
         event-left (.-pageX event)
         ; increment (/ 100.0 64)
         ]
-    (* pricing-increment (.ceil js/Math (/ (min 100 (max 0 (* 100 (/ (- event-left slider-left) width)))) pricing-increment)))))
+    (* increment (.ceil js/Math (/ (min 100 (max 0 (* 100 (/ (- event-left slider-left) width)))) increment)))))
 
 (defn pricing [app owner]
   (reify
     om/IDisplayName (display-name [_] "Pricing B")
     om/IRender
     (render [_]
-      (let [container-count (/ (om/get-state owner :drag-percent) pricing-increment)]
+      (let [container-count (/ (om/get-state owner :drag-percent) increment)]
         (html
           [:div.pricing.page {:on-mouse-up #(om/set-state! owner :dragging (utils/inspect false))
                               :on-mouse-down #(when (om/get-state owner :dragging)
@@ -74,7 +74,7 @@
                  [:span "You can run "]
                  [:strong "3"]
                  [:span " concurrent builds with "]
-                 [:strong container-count]
+                 [:strong {:class (when (> container-count 9) "double-digits")} container-count]
                  [:span " containers and "]
                  [:strong "2"]
                  [:span " parallelism. (Adjustable per project.)"]]
