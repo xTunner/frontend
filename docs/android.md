@@ -113,7 +113,8 @@ test:
       background: true
       parallel: true
   - # start your build here
-  - ./wait.sh: { parallel: true }
+  - ./wait.sh:
+      parallel: true
   - # install your APK
   - # run your tests
 ```
