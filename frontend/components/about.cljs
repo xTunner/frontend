@@ -92,6 +92,7 @@
     :bio ["Nick is an aspiring merman who spends most of his time outside of the Circle office in the ocean; surfing, diving, sailing, and swimming. He lived in Japan for 3 years as a student, consultant, actor, and vagabond and wrote his senior thesis on the cultural importance of baseball in the country. He won a hackathon by building a social haiku app for iPhone (which is still in the App Store). Eventually he came back to the US and got his first ‘real job’ at a digital consultancy where he optimized conversion rates for websites that comprise hundreds of thousands of visitors and generate millions in revenue every month.",
           "In 2012 Nick was lured to San Francisco by the prospect of hitting it big with his own startup, which crashed and burned, but he liked the place so decided to stick around. He loves the open work culture at Circle which allows him to fulfill his constant need to get-shit-done while helping developers do the same. One day he will unplug his computer and sail around the world."]}
    {:name "Emile Snyder"
+    :img-path (stefon/asset-path "/img/outer/about/emile.png")
     :visible true
     :role "Backend Developer"
     :github "esnyder"
@@ -104,6 +105,7 @@
     :github "startling"
     :email "tim@circleci.com"}
    {:name "Ian Duncan"
+    :img-path (stefon/asset-path "/img/outer/about/ian.png")
     :visible true
     :role "Developer"
     :github "iand675"
@@ -118,17 +120,20 @@
     :twitter "iamkevinbell"
     :email "kevin@circleci.com"}
    {:name "Cayenne Geis"
+    :img-path (stefon/asset-path "/img/outer/about/cayenne.png")
     :visible true
     :role "Developer"
     :github "cayennes"
     :email "cayenne@circleci.com"}
    {:name "Jonathan Irving"
+    :img-path (stefon/asset-path "/img/outer/about/jonathan.png")
     :visible true
     :role "Developer"
     :github "j0ni"
     :twitter "j0ni"
     :email "jonathan@circleci.com"}
    {:name "Tim Reinke"
+    :img-path (stefon/asset-path "/img/outer/about/timr.png")
     :visible true
     :role "Developer Success"
     :github "musicalchair"
