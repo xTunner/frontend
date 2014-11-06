@@ -110,7 +110,7 @@
                 [:div.item "Concurrent Builds"]
                 [:div.value (str (int (/ container-count pricing-parallelism)))]]
                [:div.calculator-preview-item
-                [:div.item "Cost"]
+                [:div.item "Total"]
                 [:div.value (if (> total-cost 0)
                               (str "$" total-cost)
                               "Free")]]
