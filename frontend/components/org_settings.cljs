@@ -420,7 +420,7 @@
                   [:input {:type "text" :value selected-containers
                            :on-change #(utils/edit-input owner state/selected-containers-path %
                                                          :value (int (.. % -target -value)))}]
-                  [:span "containers for " (if (= 0 new-total) "Free!" (str "$" new-total "/month"))]
+                  [:span {:id "new-plan-total"} (str "containers for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
                   (when (not (= new-total old-total))
                     [:span.strikeout (str "$" old-total "/month")])
                   (when (pm/grandfathered? plan)
