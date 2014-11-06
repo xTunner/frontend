@@ -1246,6 +1246,24 @@
 
 (defn aws-codedeploy [project-data owner]
   (reify
+    ;; I am so sorry for this horrific hack.
+    ;;
+    ;; Without https://github.com/circleci/circle/pull/3466 going anywhere I'm
+    ;; left with the follow-status sidebar using horizontal whitespace that
+    ;; prevents the CodeDeploy help popovers from displaying correctly on
+    ;; smaller screens.
+    ;;
+    ;; overflow: visible doesn't work for the other project settings so toggle
+    ;; the overflow to visible when the codedeploy settings are shown and reset
+    ;; when selecting a different settings page.
+    om/IDidMount
+    (did-mount [_]
+      (-> (js/$ ".project-settings-inner")
+          (.css "overflow" "visible")))
+    om/IWillUnmount
+    (will-unmount [_]
+      (-> (js/$ ".project-settings-inner")
+          (.css "overflow" "auto")))
     om/IRender
     (render [_]
       (let [project (:project project-data)
