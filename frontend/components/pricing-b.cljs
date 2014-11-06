@@ -95,13 +95,13 @@
                [:h5 "Estimated Cost"]
                [:div.calculator-preview-item
                 [:div.item "Repos"]
-                [:div.value "0"]]
+                [:div.value (common/ico :infinity)]]
                [:div.calculator-preview-item
                 [:div.item "Builds"]
-                [:div.value "0"]]
+                [:div.value (common/ico :infinity)]]
                [:div.calculator-preview-item
                 [:div.item "Users"]
-                [:div.value "0"]]
+                [:div.value (common/ico :infinity)]]
                [:div.calculator-preview-item
                 [:div.item "Max Parallelism"]
                 [:div.value (str container-count)]]
