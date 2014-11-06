@@ -171,11 +171,10 @@
    [:nav.outer-nav
     [:a.logo-circleci {:on-click #(raise! owner [:home-scroll-logo-clicked])}
      [:figure circle-logo]]
-    [:a "Pricing"]
-    [:a "Docs"]
-    [:a "About"]
-    [:a "Blog"]
-    [:a "Contact"]
+    [:a {:href "/about"} "About"]
+    [:a {:href "/pricing"} "Pricing"]
+    [:a {:href "/docs"} "Docs"]
+    [:a {:href "http://blog.circleci.com"} "Blog"]
     [:a.login {:href (auth-url)
                :on-click #(raise! owner [:track-external-link-clicked
                                          {:event "Auth GitHub"
@@ -188,8 +187,7 @@
                                           {:event "Auth GitHub"
                                            :properties {:source "header-cta"}
                                            :path (auth-url)}])}
-     "Sign Up Free"]
-    ]))
+     "Sign Up Free"]]))
 
 (defn footer []
   (html [:div.home-footer
