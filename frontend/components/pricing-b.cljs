@@ -41,16 +41,18 @@
 (defn pricing [app owner]
   (reify
     om/IDisplayName (display-name [_] "Pricing B")
-    om/IRender
-    (render [_]
-      (let [container-count (/ (om/get-state owner :drag-percent) increment)]
+    om/IInitState (init-state [_] {:drag-percent 0
+                                   :dragging? false})
+    om/IRenderState
+    (render-state [_ {:keys [drag-percent dragging?]}]
+      (let [container-count (/ drag-percent increment)]
         (html
-          [:div.pricing.page {:on-mouse-up #(om/set-state! owner :dragging (utils/inspect false))
-                              :on-mouse-down #(when (om/get-state owner :dragging)
-                                                (om/set-state! owner :drag-percent (utils/inspect (calculate-drag-percent owner %))))
-                              :on-mouse-move #(when (om/get-state owner :dragging)
-                                                (om/set-state! owner :drag-percent (utils/inspect (calculate-drag-percent owner %))))}
-           (common/nav)
+          [:div.pricing.page {:on-mouse-up #(om/set-state! owner :dragging? false)
+                              :on-mouse-down #(when dragging?
+                                                (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))
+                              :on-mouse-move #(when dragging?
+                                                (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))}
+           (common/nav owner)
            [:div.torso
             [:section.pricing-intro
              [:article
@@ -62,11 +64,13 @@
                [:div.controls-containers
                 [:h2 "Containers"]
                 [:p "All of your containers are shared across your entire organization."]
-                [:div.containers-range {:on-mouse-down #(om/set-state! owner :dragging (utils/inspect true))
+                [:div.containers-range {:on-click #(om/set-state! owner :drag-percent (calculate-drag-percent owner %))
+                                        :on-mouse-down #(om/set-state! owner :dragging? true)
                                         :ref "pricing-range"}
                  [:figure.range-back]
-                 [:figure.range-highlight {:style {:width (str (om/get-state owner :drag-percent) "%")}}]
-                 [:button.range-knob {:style {:left (str (om/get-state owner :drag-percent) "%")}
+                 [:figure.range-highlight {:style {:width (str drag-percent "%")}}]
+                 [:button.range-knob {:on-mouse-down #(om/set-state! owner :dragging? true)
+                                      :style {:left (str drag-percent "%")}
                                       :data-count container-count}]]]
                [:div.controls-parallelism
                 [:h2 "Parallelism"]
@@ -74,7 +78,7 @@
                  [:span "You can run "]
                  [:strong "3"]
                  [:span " concurrent builds with "]
-                 [:strong {:class (when (> container-count 9) "double-digits")} container-count]
+                 [:strong {:class (when (> container-count 9) "double-digits")} (str container-count)]
                  [:span " containers and "]
                  [:strong "2"]
                  [:span " parallelism. (Adjustable per project.)"]]
