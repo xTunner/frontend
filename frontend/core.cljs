@@ -285,7 +285,13 @@
     (swap! debug-state assoc-in test-path value)
     (println "value for" test-name "is now" (get-in @debug-state test-path))))
 
-(defn reinstall-om! []
+(defn ^:export app-state-to-js
+  "Used for inspecting app state in the console."
+  []
+  (clj->js @debug-state))
+
+
+(defn ^:export reinstall-om! []
   (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state) true))
 
 (defn refresh-css! []
