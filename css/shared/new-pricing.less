@@ -255,6 +255,14 @@
 .calculator-preview-item {
   .flexy(center, space-between);
   margin: 0 2em 1em;
+  i {
+    svg {
+      stroke: @grayDark;
+      stroke-width: 8px;
+      height: @fontSizeLarge;
+      width: @fontSizeLarge;
+    }
+  }
 }
 
 @pricing_action_height: (@tile * (2 / 3));
