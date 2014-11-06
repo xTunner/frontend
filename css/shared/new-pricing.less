@@ -33,7 +33,7 @@
       font-weight: 300;
     }
     h2 {
-      font-weight: normal;
+      font-weight: 300;
     }
     h3 {
       font-size: @prolog_h3_font;
@@ -185,8 +185,7 @@
       .animation(pricing-hang 500ms @bezier_fadein 500ms backwards);
       content: attr(data-count);
       position: absolute;
-      color: @green;
-      font-weight: bold;
+      color: @grayLight;
       top: 100%;
       left: 0;
       width: 100%;
@@ -248,25 +247,33 @@
   .box-sizing(border-box);
   .flex(0 0 (@tile * 4));
   .flexy(column);
-  height: (@tile * 6.5);
+  min-height: (@tile * 6);
+  color: @grayLight;
   border: 1px solid @grayBoxBorder;
   h5 {
     text-align: center;
     &:first-child { // hack for specificity
-      margin: 2em 0;
+      margin: 2em auto;
     }
   }
 }
 .calculator-preview-item {
   .flexy(center, space-between);
   margin: 0 2em 1em;
+  &:last-of-type {
+    color: @black;
+  }
   i {
     svg {
-      stroke: @grayDark;
+      stroke: @grayLight;
       stroke-width: 8px;
       height: @fontSizeLarge;
       width: @fontSizeLarge;
     }
+  }
+  .value {
+    min-width: 1.5em;
+    text-align: center;
   }
 }
 
@@ -280,7 +287,7 @@
   background: @white;
   width: @pricing_action_width;
   height: @pricing_action_height;
-  margin: auto auto 2em;
+  margin: 2em auto;
   border: 1px solid @grayDark;
   border-radius: (@pricing_action_height / 2);
   transition+: 200ms @bezier_fadein;
