@@ -47,7 +47,8 @@
     (render-state [_ {:keys [drag-percent dragging?]}]
       (let [pricing-parallelism (get-in app state/pricing-parallelism-path 1)
             normalized-drag-percent (* increment (js/Math.ceil (/ drag-percent increment)))
-            container-count (max pricing-parallelism (/ normalized-drag-percent increment))]
+            container-count (max pricing-parallelism (/ normalized-drag-percent increment))
+            total-cost (max (* (dec container-count) 50) 0)]
         (html
           [:div.pricing.page {:on-mouse-up #(om/set-state! owner :dragging? false)
                               :on-mouse-down #(when dragging?
@@ -110,7 +111,9 @@
                 [:div.value (str (int (/ container-count pricing-parallelism)))]]
                [:div.calculator-preview-item
                 [:div.item "Cost"]
-                [:div.value (str "$" (max (* (dec container-count) 50) 0))]]
+                [:div.value (if (> total-cost 0)
+                              (str "$" total-cost)
+                              "Free")]]
                [:a.pricing-action {:role "button"} "Sign Up Free"]]]
              [:article.pricing-features
               [:div.pricing-feature
