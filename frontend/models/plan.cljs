@@ -44,8 +44,9 @@
   (boolean (:paid plan)))
 
 (defn can-edit-plan? [plan org-name]
-  (or (freemium? plan)
-      (and (paid? plan) (not (piggieback? plan org-name)))))
+  ;; kill plan pricing page for trial plans by making
+  ;; can-edit-plan?' return true for them
+  (not (piggieback? plan org-name)))
 
 (defn trial? [plan]
   (boolean (:trial plan)))
