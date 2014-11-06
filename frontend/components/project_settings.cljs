@@ -1131,20 +1131,18 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
-        (html
-          [:div
-           [:form
-            [:input#application-name
-              {:required true, :type "text"
-               :on-change #(utils/edit-input controls-ch (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
-            [:label {:placeholder "Application Name"}]
-            [:input {:value "Add app settings",
-                     :type "submit"
-                     :on-click #(do
-                                 (put! controls-ch [:new-codedeploy-app-name-entered])
-                                 false)}]]])))))
+      (html
+        [:div
+         [:form
+          [:input#application-name
+            {:required true, :type "text"
+             :on-change #(utils/edit-input owner (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
+          [:label {:placeholder "Application Name"}]
+          [:input {:value "Add app settings",
+                   :type "submit"
+                   :on-click #(do
+                               (raise! owner [:new-codedeploy-app-name-entered])
+                               false)}]]]))))
 
 (defn aws-codedeploy-app-details [project-data owner]
   (reify
@@ -1178,12 +1176,11 @@
                                            (get-in inputs [:aws :services :codedeploy]))
 
             [app-name settings] (first applications)
-            {:keys [bucket key_pattern]} (:revision_location settings)
+            {:keys [bucket key_pattern]} (-> settings :revision_location :s3_location)
             application-root (:application_root settings)
             aws-region (:region settings)
 
             project-id (project-model/id project)
-            controls-ch (om/get-shared owner [:comms :controls])
             input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
         (html
          [:form
@@ -1194,7 +1191,7 @@
             [:select {:class (when (not aws-region) "placeholder")
                       :value (or aws-region "")
                       ;; Updates the project cursor in order to trigger a re-render
-                      :on-change #(utils/edit-input controls-ch (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+                      :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
              [:option {:value ""} "Choose AWS Region..."]
              [:option {:disabled "disabled"} "-----"]
              [:option {:value "us-east-1"} "us-east-1"]
@@ -1204,7 +1201,7 @@
            [:div.input-with-help
             [:input#application-root
              {:required true, :type "text", :value (or application-root "")
-              :on-change #(utils/edit-input controls-ch (input-path app-name :application_root) %)}]
+              :on-change #(utils/edit-input owner (input-path app-name :application_root) %)}]
             [:label {:placeholder "Application Root"}]
             [:i.fa.fa-question-circle#app-root-popover-hack {:title "Application Root"}]]]
 
@@ -1213,14 +1210,14 @@
            [:div.input-with-help
             [:input#s3-bucket
              {:required true, :type "text", :value (or bucket "")
-              :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :bucket) %)}]
+              :on-change #(utils/edit-input owner (input-path app-name :revision_location :s3_location :bucket) %)}]
             [:label {:placeholder "Bucket Name"}]
             [:i.fa.fa-question-circle#bucket-popover-hack {:title "S3 Bucket Name"}]]
 
            [:div.input-with-help
             [:input#s3-key-prefix
              {:required true, :type "text", :value (or key_pattern "")
-              :on-change #(utils/edit-input controls-ch (input-path app-name :revision_location :key_pattern) %)}]
+              :on-change #(utils/edit-input owner (input-path app-name :revision_location :s3_location :key_pattern) %)}]
             [:label {:placeholder "Key Pattern"}]
             [:i.fa.fa-question-circle#key-pattern-popover-hack {:title "S3 Key Pattern"}]]]
 
@@ -1232,8 +1229,9 @@
                           :value "Save app",
                           :type "submit"
                           :on-click #(do
-                                      (put! controls-ch [:saved-project-settings {:project-id project-id
-                                                                                  :merge-paths [[:aws :services :codedeploy]]}])
+                                      (raise! owner [:edited-input {:path (input-path app-name :revision_location :revision_type) :value "S3"}])
+                                      (raise! owner [:saved-project-settings {:project-id project-id
+                                                                              :merge-paths [[:aws :services :codedeploy]]}])
                                       false)}])
            (forms/managed-button
             [:input.remove {:data-failed-text "Failed",
@@ -1242,10 +1240,9 @@
                             :value "Remove app",
                             :type "submit"
                             :on-click #(do
-                                         (put! controls-ch [:edited-input {:path (input-path) :value nil}])
-                                         (put! controls-ch [:saved-project-settings {:project-id project-id}])
+                                         (raise! owner [:edited-input {:path (input-path) :value nil}])
+                                         (raise! owner [:saved-project-settings {:project-id project-id}])
                                          false)}])]])))))
-
 
 (defn aws-codedeploy [project-data owner]
   (reify
@@ -1297,8 +1294,10 @@
                       "        application_root: /\n"
                       "        region: us-east-1\n"
                       "        revision_location:\n"
-                      "          bucket: my-bucket\n"
-                      "          key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
+                      "          revision_type: S3\n"
+                      "          s3_location:\n"
+                      "            bucket: my-bucket\n"
+                      "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
                       "        deployment_group: my-deployment-group\n"))]]]]])))))
 
 (defn follow-sidebar [project owner]
