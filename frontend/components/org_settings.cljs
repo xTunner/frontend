@@ -5,7 +5,7 @@
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
-            [frontend.models.plan :as plan-model]
+            [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.components.common :as common]
@@ -48,10 +48,10 @@
                             {:page :users :text "Users"}])
                 [:li.nav-header "Plan"]
                 (when plan
-                  (if (plan-model/can-edit-plan? plan org-name)
+                  (if (pm/can-edit-plan? plan org-name)
                     (let [links [{:page :containers :text "Adjust containers"}
                                  {:page :organizations :text "Organizations"}]
-                          links (if (plan-model/paid? plan)
+                          links (if (pm/paid? plan)
                                   (into links [{:page :billing :text "Billing info"}
                                                {:page :cancel :text "Cancel"}])
                                   links)]
@@ -213,17 +213,17 @@
 
 (defn plans-trial-notification [plan org-name owner]
   [:div.row-fluid
-   [:div.alert.alert-success {:class (when (plan-model/trial-over? plan) "alert-error")}
+   [:div.alert.alert-success {:class (when (pm/trial-over? plan) "alert-error")}
     [:p
-     (if (plan-model/trial-over? plan)
+     (if (pm/trial-over? plan)
        "Your 2-week trial is over!"
 
        [:span "The " [:strong org-name] " organization has "
-        (plan-model/pretty-trial-time plan) " left in its trial."])]
+        (pm/pretty-trial-time plan) " left in its trial."])]
     [:p
      "The trial plan is equivalent to the Solo plan with 6 containers."]
     (when (and (not (:too_many_extensions plan))
-               (> 3 (plan-model/days-left-in-trial plan)))
+               (> 3 (pm/days-left-in-trial plan)))
       [:p
        "Need more time to decide? "
        (forms/managed-button
@@ -247,8 +247,13 @@
                                                   :subpage "plan"})}
        (:org_name plan) " plan page"] "."]
      [:p
-      "You can create a separate plan for " current-org-name " by selecting from the plans below."]]]])
+      "You can create a separate plan for " current-org-name " below."]]]])
 
+;;
+;; TODO: Kill this component when we're sure we're happy w/ the new
+;; pricing page (ie, the 'Adjust containers' used for all plans.)
+;; Leaving it for now out of cowardice.
+;;
 (defn plan [app owner]
   (reify
 
@@ -286,19 +291,67 @@
            [:div.loading-spinner common/spinner]
 
            [:div#billing.plans.pricing.row-fluid
-            (when (plan-model/trial? plan)
+            (when (pm/trial? plan)
               (plans-trial-notification plan org-name owner))
-            (when (plan-model/piggieback? plan org-name)
+            (when (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name))
             (om/build plans-component/plans app)
             (shared/customers-trust)
             (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
+(defn current-plan-desc
+  "A div that explains your current plan."
+  [app owner]
+  (om/component
+   (html
+    (let [org-name (get-in app state/org-name-path)
+          plan (get-in app state/org-plan-path)
+          plan-total (pm/stripe-cost plan)
+          container-cost (pm/per-container-cost plan)]
+      [:div.plan
+       ;; TODO: make the org-name a drop-down selector of the orgs you
+       ;; are a member of.
+       [:h2 org-name "'" (when-not (re-matches #".*s" org-name) "s")
+        " Current Plan"]
+       (cond
+        (pm/paid? plan)
+        (list
+         [:p [:strong "PAID"]]
+         [:ul
+          [:li [:strong (pm/usable-containers plan) " for $" plan-total] "/ month"]
+          (when (pm/freemium? plan)
+            [:li "Includes " (pluralize (pm/freemium-containers plan) "container") " FREE!"])
+          (if (> (pm/paid-plan-min-containers plan) 0)
+            [:li (if (pm/freemium? plan) "Next " "First ")
+             (pluralize (pm/paid-plan-min-containers plan) "container") " at $"
+             (-> plan :paid :template :price)])
+          [:li "Additional containers for $" (pm/per-container-cost plan) "/month"]
+          [:li [:strong "No other limits"]]])
+        
+        (and (pm/freemium? plan)
+             (not (pm/in-trial? plan)))
+        (list
+         [:p [:strong "FREE"]]
+         [:ul [:li "Includes " (pluralize (:containers plan) "container") " free!"]
+          [:li "Additional containers for $" container-cost "/month"]
+          [:li [:strong "No other limits"]]])
+        
+        (pm/trial? plan)
+        (list
+         [:p [:strong "TRIAL" (when-not (pm/in-trial? plan) " ENDED")]]
+         [:ul
+          (if (pm/in-trial? plan)
+            [:li "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") "."]
+            [:li "Your trial of a plan with " (pluralize (pm/trial-containers plan) "container") " has ended. Please add containers to continue building private repositories."])
+          [:li "Additional containers for $" (pm/per-container-cost plan) "/month"]
+          [:li [:strong "No other limits"]]]))]))))
+
 (defn containers [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
-    ;; from the billing-info component; is there some nice way to
+    ;; from the plan component above, but the billing-card component
+    ;; also has it. What's the nice way to
     ;; abstract it out?
     om/IInitState
     (init-state [_]
@@ -325,16 +378,18 @@
       (let [org-name (get-in app state/org-name-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                    (plan-model/usable-containers plan))
-            selected-paid-containers (max 0 (- selected-containers (plan-model/freemium-containers plan)))
-            old-total (plan-model/stripe-cost plan)
-            new-total (plan-model/cost plan selected-containers)
-            container-cost (plan-model/per-container-cost plan)]
+                                    (pm/usable-containers plan))
+            selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
+            old-total (pm/stripe-cost plan)
+            new-total (pm/cost plan selected-containers)
+            container-cost (pm/per-container-cost plan)]
         (html
          (if-not plan
-           [:div.loading-spinner common/spinner]
+           [:div.loading-spinner common/spinner] ;; TODO: fix; add plan
 
            [:div#edit-plan
+            (when (pm/piggieback? plan org-name)
+              (plans-piggieback-plan-notification plan org-name))
             [:fieldset
              [:legend
               "Our pricing is flexible and scales with you. Add as many containers as you want for $"
@@ -346,7 +401,7 @@
                 [:div.container-picker
                  [:p "More containers means faster builds and lower queue times."]
                  [:div.container-slider
-                  (let [min (+ (plan-model/freemium-containers plan) (plan-model/paid-plan-min-containers plan))
+                  (let [min (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan))
                         max (if (< selected-containers 80)
                               80
                               (let [num (+ 80 selected-containers)]
@@ -362,10 +417,13 @@
                                                      :value (int (.. % -target -value)))}]
                      [:span max]))]
                  [:div
-                  [:span (if (= 0 new-total) "Free!" (str selected-containers " for $" new-total "/month"))]
+                  [:input {:type "text" :value selected-containers
+                           :on-change #(utils/edit-input owner state/selected-containers-path %
+                                                         :value (int (.. % -target -value)))}]
+                  [:span "containers for " (if (= 0 new-total) "Free!" (str "$" new-total "/month"))]
                   (when (not (= new-total old-total))
                     [:span.strikeout (str "$" old-total "/month")])
-                  (when (plan-model/grandfathered? plan)
+                  (when (pm/grandfathered? plan)
                     [:span.grandfather
                      "(grandfathered"
                      [:i.fa.fa-question-circle#grandfathered-tooltip-hack
@@ -373,7 +431,7 @@
                      ")"])]
                  ]
                 [:fieldset
-                 (if (plan-model/paid? plan)
+                 (if (pm/paid? plan)
                    (forms/managed-button
                     [:button.btn.btn-large.btn-primary.center
                      {:data-success-text "Saved",
@@ -391,55 +449,30 @@
                         :data-loading-text "Paying...",
                         :data-failed-text "Failed!",
                         :on-click #(raise! owner [:new-plan-clicked {:containers selected-containers
-                                                                     :paid {:template (:id plan-model/default-template-properties)}
+                                                                     :paid {:template (:id pm/default-template-properties)}
                                                                      :price new-total
                                                                      :description (str "$" new-total "/month, includes " (pluralize selected-containers "container"))}])}
-                       "Update plan"])))
-                 (when (< old-total new-total)
-                   [:span.help-block
-                    "We'll charge your card today, for the prorated difference between your new and old plans."])
-                 (when (> old-total new-total)
-                   [:span.help-block
-                    "We'll credit your account, for the prorated difference between your new and old plans."])]]]
+                       "Pay Now"])))
+                 (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                   (list
+                    (when (< old-total new-total)
+                      [:span.help-block
+                       "We'll charge your card today, for the prorated difference between your new and old plans."])
+                    (when (> old-total new-total)
+                      [:span.help-block
+                       "We'll credit your account, for the prorated difference between your new and old plans."]))
+                   (if (pm/in-trial? plan)
+                     [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                      ". Please pay for a plan by then or "
+                      (if (pm/freemium? plan)
+                        (str "you will revert to a free " (pluralize (pm/freemium-containers plan) "container") " plan.")
+                        "we will stop building your private repository pushes.")]
+                     [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                      " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                      " ago. Pay now to enable builds of private repositories."]))]]]
+              
               [:div.right-section
-               [:div.plan
-                [:h2 "Your Current Plan" [:br] org-name]
-                (cond
-                 (plan-model/paid? plan)
-                 (list
-                   [:p [:strong "PAID"]]
-                   [:p [:strong (plan-model/usable-containers plan) " for $" old-total] "/ month"]
-                   [:ul
-                    (when (plan-model/freemium? plan)
-                      [:li "Includes " (pluralize (plan-model/freemium-containers plan) "container") " FREE!"])
-                    (if (> (plan-model/paid-plan-min-containers plan) 0)
-                      [:li (if (plan-model/freemium? plan) "Next " "First ")
-                       (pluralize (plan-model/paid-plan-min-containers plan) "container") " at $"
-                       (-> plan :paid :template :price)])
-                    [:li "Additional containers for $" (plan-model/per-container-cost plan) "/month"]
-                    [:li [:strong "No other limits"]]])
-
-                 (plan-model/freemium? plan)
-                 (if (plan-model/in-trial? plan)
-                   (list
-                    [:p [:strong "TRIAL"]]
-                    [:ul
-                     [:li "You are currently trialing a plan with " (pluralize (plan-model/usable-containers plan) "container") ". (freemium)"]])
-                   (list
-                     [:p [:strong "FREE"]]
-                     [:ul [:li "Includes " (pluralize (:containers plan) "container") " free!"]
-                      [:li "Additional containers for $" container-cost "/month"]
-                      [:li [:strong "No other limits"]]]))
-
-                 (plan-model/trial? plan)
-                 (if (plan-model/in-trial? plan)
-                   (list
-                     [:p [:strong "TRIAL"]]
-                     [:p "You are currently trialing a plan with " (pluralize (plan-model/usable-containers plan) "container") "."])
-                   (list
-                     [:p [:strong "TRIAL ENDED"]]
-                     [:p "Your trial of a plan with " (pluralize (plan-model/trial-containers plan) "container") " has ended. Please add containers to continue building private repositories."])))
-                ]]]]]))))))
+               (om/build current-plan-desc app)]]]]))))))
 
 
 (defn piggyback-organizations [app owner]
@@ -664,7 +697,7 @@
       (html
         (let [plan (get-in app state/org-plan-path)]
           [:div.row-fluid
-            (when (plan-model/has-active-discount? plan)
+            (when (pm/has-active-discount? plan)
               [:fieldset
                 [:legend.span8 "Discounts"]
                 [:div.span8 (format-discount plan)]])])))))
@@ -914,12 +947,12 @@
         subpage
 
         (and plan
-             (plan-model/can-edit-plan? plan org-name)
+             (pm/can-edit-plan? plan org-name)
              (= subpage :plan))
         :containers
 
         (and plan
-             (not (plan-model/can-edit-plan? plan org-name))
+             (not (pm/can-edit-plan? plan org-name))
              (#{:containers :organizations :billing :cancel} subpage))
         :plan
 
