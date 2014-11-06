@@ -1,6 +1,7 @@
 @zindex_outer_nav: 20;
 @pricing-max-parallelism: 64;
-
+@pricing_action_height: (@tile * (2 / 3));
+@pricing_action_width: (@pricing_action_height * 3);
 
 .home-footer {
   margin-top: auto;
@@ -275,10 +276,6 @@
     text-align: center;
   }
 }
-
-@pricing_action_height: (@tile * (2 / 3));
-@pricing_action_width: (@pricing_action_height * 3);
-
 .pricing-action {
   .box-sizing(border-box);
   .flexy(center, center);
