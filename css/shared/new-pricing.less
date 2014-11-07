@@ -241,6 +241,7 @@
   .box-sizing(border-box);
   .flex(0 0 (@tile * 4));
   .flexy(column);
+  max-width: (@tile * 5);
   min-height: (@tile * 6);
   color: @grayLight;
   border: 1px solid @grayBoxBorder;
@@ -295,5 +296,12 @@
   .flex(1 1 33%);
   &:not(:last-of-type) {
     padding-right: 3em;
+  }
+}
+
+@media (max-width: (@tile * 13)) {
+  .pricing-features,
+  .pricing-calculator {
+    .flex-direction(column);
   }
 }
