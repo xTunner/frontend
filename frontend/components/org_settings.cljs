@@ -448,7 +448,7 @@
                        {:data-success-text "Paid!",
                         :data-loading-text "Paying...",
                         :data-failed-text "Failed!",
-                        :on-click #(raise! owner [:new-plan-clicked {:containers selected-containers
+                        :on-click #(raise! owner [:new-plan-clicked {:containers selected-paid-containers
                                                                      :paid {:template (:id pm/default-template-properties)}
                                                                      :price new-total
                                                                      :description (str "$" new-total "/month, includes " (pluralize selected-containers "container"))}])}
