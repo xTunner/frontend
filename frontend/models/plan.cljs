@@ -4,6 +4,13 @@
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]))
 
+;; The template tells how to price the plan
+;; TODO: fix this to work from the backend db; how? Failing that, must
+;; update this code when we change the definition of p18
+(def default-template-properties {:price 19 :container_cost 50 :id
+                                  "p18" :max_containers 1000 :free_containers 1})
+;(def default-template-properties {:price 0 :container_cost 50 :id "p18" :max_containers 1000 :free_containers 0})
+
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
   [plan]
@@ -22,6 +29,10 @@
    the plan, you can't go below the free container count."
   [plan]
   (or (get-in plan [:paid :template :free_containers]) 0))
+
+(defn default-plan-min-containers
+  []
+  (:free_containers default-template-properties))
 
 (defn usable-containers
   "Maximum containers that the plan has available to it"
@@ -84,9 +95,6 @@
 
           :else
           (str (time/in-minutes trial-interval) " minutes"))))
-
-;; The template tells how to price the plan
-(def default-template-properties {:price 19 :container_cost 50 :id "p18" :max_containers 1000 :free_containers 1})
 
 (defn per-container-cost [plan]
   (let [template-properties (or (-> plan :paid :template)

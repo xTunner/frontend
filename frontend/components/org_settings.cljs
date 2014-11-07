@@ -300,6 +300,50 @@
             (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
+(defn plan-type-p [plan]
+  [:p [:strong
+       (cond
+        (pm/paid? plan) "PAID"
+
+        (and (pm/freemium? plan)
+             (not (pm/in-trial? plan)))
+        "FREE"
+
+        (pm/trial? plan)
+        (str "TRIAL" (when-not (pm/in-trial? plan) " ENDED")))]])
+
+(defn pricing-explanation-ul [plan plan-total]
+  (let [plan-min-containers (if (pm/paid? plan)
+                              (pm/paid-plan-min-containers plan)
+                              (pm/default-plan-min-containers))
+        plan-price (if (pm/paid? plan)
+                     (-> plan :paid :template :price)
+                     (-> pm/default-template-properties :price))]
+    [:ul
+     (cond
+      (pm/in-trial? plan)
+      [:li "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") "."]
+      
+      (not (or (pm/freemium? plan) (pm/paid? plan)))
+      [:li (str "Your trial of a plan with " (pluralize (pm/trial-containers plan) "container")
+                " has ended. Please add containers to continue building private repositories.")]
+
+      ;; otherwise, must be freemium or paid
+      :else
+      (list
+       [:li [:strong.old-plan-total (str (pm/usable-containers plan) " for $" plan-total "/ month")]]
+       (when (pm/grandfathered? plan)
+         [:li "Current price grandfathered in. Updates priced as:"])))
+     
+     (when (pm/freemium? plan)
+       [:li "First " (pluralize (pm/freemium-containers plan) "container") " free!"])
+     (when (> plan-min-containers 0)
+       [:li (str (if (pm/freemium? plan) "Next " "First ")
+                 (pluralize plan-min-containers "container") " at $" plan-price)])
+
+     [:li "Additional containers for $" (pm/per-container-cost plan) "/month"]
+     [:li [:strong "No other limits"]]]))
+
 (defn current-plan-desc
   "A div that explains your current plan."
   [app owner]
@@ -314,44 +358,8 @@
        ;; are a member of.
        [:h2 org-name "'" (when-not (re-matches #".*s" org-name) "s")
         " Current Plan"]
-       (cond
-        (pm/paid? plan)
-        (list
-         [:p [:strong "PAID"]]
-         [:ul
-          [:li [:strong.old-plan-total (str (pm/usable-containers plan) " for $" plan-total "/ month")]]
-          (when (pm/grandfathered? plan)
-            [:li "Current price grandfathered in. Updates will be priced as:"])
-          (when (pm/freemium? plan)
-            [:li "First " (pluralize (pm/freemium-containers plan) "container") " free!"])
-          (when (> (pm/paid-plan-min-containers plan) 0)
-            [:li (str (if (pm/freemium? plan) "Next " "First ")
-                      (pluralize (pm/paid-plan-min-containers plan) "container") " at $"
-                      (-> plan :paid :template :price))])
-          [:li "Additional containers for $" (pm/per-container-cost plan) "/month"]
-          [:li [:strong "No other limits"]]])
-        
-        (and (pm/freemium? plan)
-             (not (pm/in-trial? plan)))
-        (list
-         [:p [:strong "FREE"]]
-         [:ul [:li "First " (pluralize (:containers plan) "container") " free!"]
-          (when (> (pm/paid-plan-min-containers plan) 0)
-            [:li (str (if (pm/freemium? plan) "Next " "First ")
-                      (pluralize (pm/paid-plan-min-containers plan) "container") " at $"
-                      (-> plan :paid :template :price))])
-          [:li "Additional containers for $" container-cost "/month"]
-          [:li [:strong "No other limits"]]])
-        
-        (pm/trial? plan)
-        (list
-         [:p [:strong "TRIAL" (when-not (pm/in-trial? plan) " ENDED")]]
-         [:ul
-          (if (pm/in-trial? plan)
-            [:li "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") "."]
-            [:li "Your trial of a plan with " (pluralize (pm/trial-containers plan) "container") " has ended. Please add containers to continue building private repositories."])
-          [:li "Additional containers for $" (pm/per-container-cost plan) "/month"]
-          [:li [:strong "No other limits"]]]))]))))
+       (plan-type-p plan)
+       (pricing-explanation-ul plan plan-total)]))))
 
 (defn containers [app owner]
   (reify
