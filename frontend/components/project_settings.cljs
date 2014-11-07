@@ -394,7 +394,7 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your dependencies commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
@@ -441,7 +441,7 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your test commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
