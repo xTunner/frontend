@@ -320,12 +320,14 @@
          [:p [:strong "PAID"]]
          [:ul
           [:li [:strong.old-plan-total (str (pm/usable-containers plan) " for $" plan-total "/ month")]]
+          (when (pm/grandfathered? plan)
+            [:li "Current price grandfathered in. Updates will be priced as:"])
           (when (pm/freemium? plan)
-            [:li "Includes " (pluralize (pm/freemium-containers plan) "container") " FREE!"])
-          (if (> (pm/paid-plan-min-containers plan) 0)
-            [:li (if (pm/freemium? plan) "Next " "First ")
-             (pluralize (pm/paid-plan-min-containers plan) "container") " at $"
-             (-> plan :paid :template :price)])
+            [:li "First " (pluralize (pm/freemium-containers plan) "container") " free!"])
+          (when (> (pm/paid-plan-min-containers plan) 0)
+            [:li (str (if (pm/freemium? plan) "Next " "First ")
+                      (pluralize (pm/paid-plan-min-containers plan) "container") " at $"
+                      (-> plan :paid :template :price))])
           [:li "Additional containers for $" (pm/per-container-cost plan) "/month"]
           [:li [:strong "No other limits"]]])
         
@@ -333,7 +335,11 @@
              (not (pm/in-trial? plan)))
         (list
          [:p [:strong "FREE"]]
-         [:ul [:li "Includes " (pluralize (:containers plan) "container") " free!"]
+         [:ul [:li "First " (pluralize (:containers plan) "container") " free!"]
+          (when (> (pm/paid-plan-min-containers plan) 0)
+            [:li (str (if (pm/freemium? plan) "Next " "First ")
+                      (pluralize (pm/paid-plan-min-containers plan) "container") " at $"
+                      (-> plan :paid :template :price))])
           [:li "Additional containers for $" container-cost "/month"]
           [:li [:strong "No other limits"]]])
         
