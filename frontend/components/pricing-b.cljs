@@ -48,6 +48,7 @@
       (let [pricing-parallelism (get-in app state/pricing-parallelism-path 1)
             normalized-drag-percent (* increment (js/Math.ceil (/ drag-percent increment)))
             container-count (max pricing-parallelism (/ normalized-drag-percent increment))
+            concurrent-count (int (/ container-count pricing-parallelism))
             total-cost (max (* (dec container-count) 50) 0)]
         (html
           [:div.pricing.page {:on-mouse-up #(om/set-state! owner :dragging? false)
@@ -79,7 +80,7 @@
                 [:h2 "Parallelism"]
                 [:p
                  [:span "You can run "]
-                 [:strong (str (int (/ container-count pricing-parallelism)))]
+                 [:strong {:class (when (> concurrent-count 9) "double-digits")} (str concurrent-count)]
                  [:span " concurrent builds with "]
                  [:strong {:class (when (> container-count 9) "double-digits")} (str container-count)]
                  [:span " containers and "]
@@ -108,7 +109,7 @@
                 [:div.value (str container-count)]]
                [:div.calculator-preview-item
                 [:div.item "Concurrent Builds"]
-                [:div.value (str (int (/ container-count pricing-parallelism)))]]
+                [:div.value (str concurrent-count)]]
                [:div.calculator-preview-item
                 [:div.item "Total"]
                 [:div.value (if (> total-cost 0)
