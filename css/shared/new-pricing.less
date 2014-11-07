@@ -8,17 +8,14 @@
 }
 .pricing {
   &.page {
-    .flexy(column);
+    .flexy(center, center, column);
     min-height: 100vh;
     font-size: 1.1428572em; // 16px
     line-height: 1.5em; // 24px
     margin-top: @tile;
     .torso {
       max-width: (@tile * 15);
-      margin: 0 auto (@tile * 3);
-    }
-    section {
-      width: (@tile * 15);
+      margin: 0 2em (@tile * 3);
     }
     article {
       + article {
