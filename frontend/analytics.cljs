@@ -62,8 +62,11 @@
 (defn track-join-code [join-code]
   (when join-code (mixpanel/register-once {"join_code" join-code})))
 
-(defn track-save-containers []
-  (mixpanel/track "Save Containers"))
+(defn track-save-containers [upgraded?]
+  (mixpanel/track "Save Containers")
+  (if upgraded? 
+    (intercom/track :upgraded-containers) 
+    (intercom/track :downgraded-containers)))
 
 (defn track-save-orgs []
   (mixpanel/track "Save Organizations"))

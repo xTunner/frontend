@@ -822,7 +822,8 @@
                            :params {:containers containers}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))
-    (analytics/track-save-containers)))
+    (let [upgrade? (> containers (get-in previous-state (conj state/org-plan-path :containers)))]
+      (analytics/track-save-containers upgrade?))))
 
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
