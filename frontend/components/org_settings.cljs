@@ -401,7 +401,7 @@
                 [:div.container-picker
                  [:p "More containers means faster builds and lower queue times."]
                  [:div.container-slider
-                  (let [min (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan))
+                  (let [min (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
                         max (if (< selected-containers 80)
                               80
                               (let [num (+ 80 selected-containers)]
