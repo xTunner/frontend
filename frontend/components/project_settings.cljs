@@ -43,8 +43,6 @@
    [:li [:a {:href "#ssh"} "SSH keys"]]
    [:li [:a {:href "#api"} "API tokens"]]
    [:li [:a {:href "#aws"} "AWS keys"]]
-   [:li.side-title "Build Artifacts"]
-   [:li [:a {:href "#artifacts"} "Artifacts"]]
    [:li.side-title "Continuous Deployment"]
    [:li [:a {:href "#heroku"} "Heroku"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
@@ -983,18 +981,6 @@
                     [:i.fa.fa-times-circle]
                     [:span " Remove"]]]])]])]])))))
 
-(defn artifacts [project-data owner]
-  (om/component
-   (html
-    [:div
-     [:h2 "Build artifacts for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
-     [:div.doc
-      [:p
-       "Circle supports saving files from any build. See "
-       [:a {:href "/docs/build-artifacts", :target "_blank"}
-        "our build artifact documentation‘"]
-       " to set it up."]]])))
-
 (defn heroku [data owner]
   (reify
     om/IRender
@@ -1193,7 +1179,6 @@
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
                 :api (om/build api-tokens project-data)
-                :artifacts (om/build artifacts project-data)
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
