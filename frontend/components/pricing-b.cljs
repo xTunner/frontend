@@ -84,7 +84,7 @@
                  [:strong {:class (when (> container-count 9) "double-digits")} (str container-count)]
                  [:span " containers and "]
                  [:strong (str pricing-parallelism)]
-                 [:span " parallelism. (Adjustable per project.)"]]
+                 [:span " parallelism."]]
                 [:div.parallelism-options
                  (for [p [1 4 8 12 16]]
                  [:button {:on-click #(do
