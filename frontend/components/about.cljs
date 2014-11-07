@@ -28,15 +28,6 @@
     :email "allen@circleci.com"
     :bio ["Allen loves Ultimate Frisbee: he's played in the snow, on the beach, on Thanksgiving Day, New Year's Eve, and New Year's Day, and he regularly plays in 110 degree August heat. His future plans include the tacocopter, the burrito bomber, and the mosquito laser. When Allen's not coding, he spends his time making his own pizza dough and brewing his own beer. He'd make his own whiskey, too, if he wanted to wait 10 years for a drink.",
           "Back in the day, Allen started work on his own self-hosting, native code lisp, and then the clouds parted and he discovered Clojure. Since then, he's become a Clojure contributor, and has commits in clojure.core, contrib, lein, ring, compojure, noir, and about a dozen more libraries. He finished SICP, and wrote Scriptjure, a Clojure to Javascript compiler, 2 years before ClojureScript. Other devs used his work as a basis for Stevedore, which he's happy to say is used in production every day at Circle. In addition to co-founding Circle as a means to bring Continuous Deployment to the masses, he looks forward to building tools that help debug test failures by anticipating common problems. He currently deploys six times a day, and more on weekends."]}
-   {:name "David Lowe"
-    :visible true
-    :role "Backend Developer"
-    :github "dlowe"
-    :twitter "j_david_lowe"
-    :email "dlowe@circleci.com"
-    :img-path (stefon/asset-path "/img/outer/about/david.png")
-    :bio ["David is responsible for all of the bugs. He wrote his first buggy code in BASIC with a pencil and paper, and he's been getting better at it ever since. He keeps a 1/4 acre garden and eats almost entirely home-grown veggies during the growing season. Helping to balance out the numerous times that he's lost at chess, David has won the IOCCC on 6 separate occasions. In a past life, he wrote MTA software which at one time was sending about 1% of the internet's email.",
-          "Besides being invited to speak at the Frozen Perl Conference, OIT's CSET Department, and SOU's CS Department, David co-founded the SF perl user group, the southern Oregon geek group, and the Rogue hack lab hackerspace. He drank the automated testing kool-aid years ago, and after introducing and championing (and constantly fiddling with) continuous integration tools at his last N jobs, he came to Circle, and is particularly keen on building and scaling things which would be impossible to justify for any single small company where CI isn't what they do. He splits his time between introducing new bugs, telling kids to get off his lawn, and baking pies. His current running total is roughly 1500 delicious pastry concoctions."]}
    {:name "Jenneviere Villegas"
     :img-path (stefon/asset-path "/img/outer/about/jenneviere.png")
     :visible true
@@ -46,6 +37,15 @@
     :email "jenneviere@circleci.com"
     :bio ["Jenneviere moved to the Bay Area in 2010 after spending a few months there, singing and dancing, as the lead in a rock opera. She then worked as an extra on the movie Twixt, and when she realized that Mr. Coppola wasn't going to cast her as the lead in his next film, she began drowning her sorrows in hoppy IPAs and the soothing click of knitting needles. She took the black and works the Gate at That Thing In The Desert, and has only written a single line of code, ever.",
           "Drawing from her many years' experience in her previous position as the Customer Amazement Specialist, Operations Manager, Returns Siren, and Retail Store Maven for a certain large utility kilt manufacturer, Jenneviere brings her skills as a professional pottymouth, dabbler in inappropriate and snarky humor, and cat wrangling to the team at Circle, and spends most of her time trying to keep everyone well-groomed and hairball free."]}
+   {:name "David Lowe"
+    :visible true
+    :role "Backend Developer"
+    :github "dlowe"
+    :twitter "j_david_lowe"
+    :email "dlowe@circleci.com"
+    :img-path (stefon/asset-path "/img/outer/about/david.png")
+    :bio ["David is responsible for all of the bugs. He wrote his first buggy code in BASIC with a pencil and paper, and he's been getting better at it ever since. He keeps a 1/4 acre garden and eats almost entirely home-grown veggies during the growing season. Helping to balance out the numerous times that he's lost at chess, David has won the IOCCC on 6 separate occasions. In a past life, he wrote MTA software which at one time was sending about 1% of the internet's email.",
+          "Besides being invited to speak at the Frozen Perl Conference, OIT's CSET Department, and SOU's CS Department, David co-founded the SF perl user group, the southern Oregon geek group, and the Rogue hack lab hackerspace. He drank the automated testing kool-aid years ago, and after introducing and championing (and constantly fiddling with) continuous integration tools at his last N jobs, he came to Circle, and is particularly keen on building and scaling things which would be impossible to justify for any single small company where CI isn't what they do. He splits his time between introducing new bugs, telling kids to get off his lawn, and baking pies. His current running total is roughly 1500 delicious pastry concoctions."]}
    {:name "Daniel Woelfel"
     :img-path (stefon/asset-path "/img/outer/about/daniel.png")
     :visible true
@@ -91,13 +91,8 @@
     :email "nick@circleci.com"
     :bio ["Nick is an aspiring merman who spends most of his time outside of the Circle office in the ocean; surfing, diving, sailing, and swimming. He lived in Japan for 3 years as a student, consultant, actor, and vagabond and wrote his senior thesis on the cultural importance of baseball in the country. He won a hackathon by building a social haiku app for iPhone (which is still in the App Store). Eventually he came back to the US and got his first ‘real job’ at a digital consultancy where he optimized conversion rates for websites that comprise hundreds of thousands of visitors and generate millions in revenue every month.",
           "In 2012 Nick was lured to San Francisco by the prospect of hitting it big with his own startup, which crashed and burned, but he liked the place so decided to stick around. He loves the open work culture at Circle which allows him to fulfill his constant need to get-shit-done while helping developers do the same. One day he will unplug his computer and sail around the world."]}
-   {:name "Travis Vachon"
-    :visible true
-    :role "Developer"
-    :github "travis"
-    :twitter "tvachon"
-    :email "travis@circleci.com"}
    {:name "Emile Snyder"
+    :img-path (stefon/asset-path "/img/outer/about/emile.png")
     :visible true
     :role "Backend Developer"
     :github "esnyder"
@@ -110,6 +105,7 @@
     :github "startling"
     :email "tim@circleci.com"}
    {:name "Ian Duncan"
+    :img-path (stefon/asset-path "/img/outer/about/ian.png")
     :visible true
     :role "Developer"
     :github "iand675"
@@ -124,22 +120,31 @@
     :twitter "iamkevinbell"
     :email "kevin@circleci.com"}
    {:name "Cayenne Geis"
+    :img-path (stefon/asset-path "/img/outer/about/cayenne.png")
     :visible true
     :role "Developer"
     :github "cayennes"
     :email "cayenne@circleci.com"}
    {:name "Jonathan Irving"
+    :img-path (stefon/asset-path "/img/outer/about/jonathan.png")
     :visible true
     :role "Developer"
     :github "j0ni"
     :twitter "j0ni"
     :email "jonathan@circleci.com"}
    {:name "Tim Reinke"
+    :img-path (stefon/asset-path "/img/outer/about/timr.png")
     :visible true
     :role "Developer Success"
     :github "musicalchair"
     :twitter "timreinke"
-    :email "tim.reinke@circleci.com"}])
+    :email "tim.reinke@circleci.com"}
+   {:name "Travis Vachon"
+    :visible true
+    :role "Developer"
+    :github "travis"
+    :twitter "tvachon"
+    :email "travis@circleci.com"}])
 
 (def placeholder-image [:svg.about-placeholder {:height "150px" :width "150px" :viewBox "0 0 150 150"}
                         [:path.bust {:d "M-1.673,151.75v-13.856c0,0,0.901-8.505,11.143-11.142c0,0,16.495-6.022,29.415-11.646 c6.681-2.907,8.119-4.652,14.859-7.631c0,0,0.703-3.461,0.45-5.521h5.271c0,0,1.204,0.702,0-7.43c0,0-6.425-1.705-6.725-14.655 c0,0-4.825,1.625-5.121-6.224c-0.202-5.321-4.318-9.939,1.607-13.753l-3.012-8.131c0,0-6.023-32.826,11.294-28.008 c-7.305-8.734,41.409-17.465,44.574,10.24c0,0,2.256,14.958,0,25.197c0,0,7.113-0.824,2.357,12.852c0,0-2.609,9.836-6.627,7.628 c0,0,0.656,12.447-5.668,14.559c0,0,0.449,6.625,0.449,7.075l6.025,0.903c0,0-0.906,5.424,0.152,6.022c0,0,7.142,4.894,15.657,7.081 c16.414,4.212,35.837,11.44,35.837,17.766c0,0,1.659,8.435,1.659,18.673H-1.673z",
