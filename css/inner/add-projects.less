@@ -39,6 +39,7 @@
 
     .other-stuff {
       padding-left: @avatar-size + 5px;
+      min-height: @avatar-size;
     }
 
     img {
@@ -160,11 +161,13 @@
   }
 
   .orgname {
-    display: inline-block;
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: @baseLineHeight;
     line-height: 24px;
-    overflow: hidden;
+    color: @gray;
   }
 
   .proj-list {
