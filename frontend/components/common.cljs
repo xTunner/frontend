@@ -170,7 +170,7 @@
   (html
    [:nav.outer-nav
     [:a.logo-circleci {:on-click #(raise! owner [:home-scroll-logo-clicked])}
-     [:figure circle-logo]]
+     [:figure (circle-logo)]]
     [:a {:href "/about"} "About"]
     [:a {:href "/pricing"} "Pricing"]
     [:a {:href "/docs"} "Docs"]
