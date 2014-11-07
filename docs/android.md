@@ -127,8 +127,10 @@ test:
   override:
   - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
       background: true
+      parallel: true
   - # start your build here
-  - ./wait.sh
+  - ./wait.sh:
+      parallel: true
   - # install your APK
   - # run your tests
 ```
