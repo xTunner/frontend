@@ -20,10 +20,8 @@
 
 (defn new-pusher-instance [& {:keys [key]
                               :or {key pusher-key}}]
-  (aset (aget js/window "Pusher") "channel_auth_endpoint" "/auth/pusher")
   (js/Pusher. key (clj->js {:encrypted true
                             :auth {:params {:CSRFToken (utils/csrf-token)}}
-                            ;; this doesn't seem to work (outdated client library?)
                             :authEndpoint "/auth/pusher"})))
 
 (defn user-channel [user]
