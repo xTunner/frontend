@@ -43,12 +43,20 @@ daniel@mymac$ ssh -p PORT ubuntu@IP_ADDRESS -L 5902:localhost:5901
 You should be connected to the Circle VM, now start the VNC server:
 
 ```
-ubuntu@box159:~$ vnc4server -geometry 1280x1024 -depth 24; export DISPLAY=:1.0
+ubuntu@box159:~$ vnc4server -geometry 1280x1024 -depth 24
 ```
 
 Enter the password `password` when it prompts you for a password. Your connection is secured with SSH, so there is no need for a strong password. You do need to enter a password to start the VNC server.
 
 Start your VNC viewer and connect to `localhost:5902`, enter the password you entered when it prompts you for a password. You should see a display containing a terminal window. You can ignore any warnings about an insecure or unencrypted connection. Your connection is secured through the SSH tunnel.
+
+Next, make sure to run:
+
+```
+ubuntu@box159:~$ export DISPLAY=:1.0
+```
+
+to ensure that windows open in the VNC server, rather than the default headless X server.
 
 Now you can run your integration tests from the command line and watch the browser for unexpected behavior. You can even interact with the browser &mdash; it's as if the tests were running on your local machine!
 
