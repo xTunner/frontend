@@ -137,13 +137,13 @@
   margin-top: (@tile * 2);
 }
 .pricing-calculator {
-  .flexy();
+  .flexy(stretch, space-between);
   margin: (@tile * 2) 0;
 }
 .pricing-calculator-controls {
-  .flex(1);
+  @2third: (100% * (2 / 3));
+  .flex(0 0 ~"calc(@{2third} - 1.5em)" );
   .flexy(stretch, center, column);
-  padding-right: 3em;
 }
 .containers-range {
   .flexy(stretch, center, column);
@@ -238,8 +238,9 @@
   }
 }
 .pricing-calculator-preview {
+  @third: (100% / 3);
   .box-sizing(border-box);
-  .flex(0 0 (@tile * 4));
+  .flex(0 0 ~"calc(@{third} - 1.5em)" );
   .flexy(column);
   max-width: (@tile * 5);
   min-height: (@tile * 6);
@@ -290,13 +291,11 @@
   }
 }
 .pricing-features {
-  .flexy();
+  .flexy(stretch, space-between);
 }
 .pricing-feature {
-  .flex(1 1 33%);
-  &:not(:last-of-type) {
-    padding-right: 3em;
-  }
+  @third: (100% / 3);
+  .flex(0 0 ~"calc(@{third} - 1.5em)" );
 }
 
 @media (max-width: (@tile * 13)) {
