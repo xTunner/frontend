@@ -1,6 +1,6 @@
 <!--
 
-title: Continuous Deployment with Amazon CodeDeploy
+title: Continuous Deployment with AWS CodeDeploy
 last_updated: September 29, 2014
 
 -->
@@ -190,7 +190,7 @@ and register new revisions:
 If you want to be able to deploy this application from several different
 branches (e.g. deploy `development` to your staging instances and `master` to
 your production instances) you can configure these project-wide application
-settings in the CircleCI UI at **Project Settings > Amazon CodeDeploy**. The
+settings in the CircleCI UI at **Project Settings > AWS CodeDeploy**. The
 main benefit is that you will have a simpler [circle.yml][] file.
 
 You can also skip this step and configure everything in your [circle.yml][]
