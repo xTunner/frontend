@@ -42,19 +42,21 @@
 
 (def port 3000)
 
+(def proxy-config
+  {:patterns [#"/"
+              #"/logout"
+              #"/auth/.*"
+              #"/api/.*"]
+   :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}
+              "prod.circlehost" {:proto "https" :host "circleci.com"}}})
+
 (defn start-server []
   (stop-server)
   (println "starting server on port" port)
   (reset! stopf
           (httpkit/run-server (-> (site #'routes)
                                   (stefon/asset-pipeline stefon-options)
-                                  (proxy/wrap-handler {:patterns [#"/"
-                                                                  #"/logout"
-                                                                  #"/auth/.*"
-                                                                  #"/api/.*"]
-                                                       ;;TODO also support production backend
-                                                       :backend {:proto "http"
-                                                                 :host "circlehost:8080"}})
+                                  (proxy/wrap-handler proxy-config)
                                   (cross-origin-everything))
                               {:port port}))
   nil)

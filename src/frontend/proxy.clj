@@ -2,21 +2,22 @@
   (:require [org.httpkit.server :refer [with-channel send!]]
             [org.httpkit.client :refer [request]]))
 
-(defn proxy-request [req {:keys [backend] :as options}]
-  {:url (str (:proto backend) "://"
-             (:host backend)
-             (:uri req)
-             (when-let [q (:query-string req)]
-               (str "?" q)))
-   :timeout 30000 ;ms
-   :method (:request-method req)
-   :headers (assoc (:headers req)
-                   "host" (:host backend)
-                   "x-forwarded-for" (:remote-addr req)
-                   "x-forwarded-proto" "http"
-                   "x-forwarded-host" (get-in req [:headers "host"]))
-   :body (:body req)
-   :follow-redirects false})
+(defn proxy-request [req {:keys [backends] :as options}]
+  (let [backend (get backends (:server-name req))]
+    (assert backend)
+    {:url (str (:proto backend) "://"
+               (:host backend)
+               (:uri req)
+               (when-let [q (:query-string req)]
+                 (str "?" q)))
+     :timeout 30000 ;ms
+     :method (:request-method req)
+     :headers (assoc (:headers req)
+                     "host" (:host backend)
+                     "x-circle-assets-proto" "http"
+                     "x-circle-assets-host" (get-in req [:headers "host"]))
+     :body (:body req)
+     :follow-redirects false}))
 
 (defn wrap-handler [handler options]
   (fn [req]
