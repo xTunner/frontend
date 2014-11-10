@@ -1,26 +1,20 @@
 #add-projects {
   padding: 0 14px;
 
-  h3 {
-    font-size: 1.846em; // 24px
+  h4 {
+    font-size: 20px;
     font-weight: 300;
     color: @gray;
   }
 
   .repo-filter {
-    margin-bottom: 10px;
-    border-bottom: 1px #d8d8d8 solid;
     & > .fa {
       font-size: 1.2em;
     }
   }
 
   .unobtrusive-search {
-    font-size: 1.5em;
-    height: 1.2em;
-    line-height: 1.2em;
-    margin-bottom: 0;
-    padding: 0 .5em;
+    margin: 0;
   }
 
   .org-listing {
@@ -168,6 +162,31 @@
     font-size: @baseLineHeight;
     line-height: 24px;
     color: @gray;
+  }
+
+  .wordy-hr {
+    text-align: center;
+
+    span {
+      display: inline-block;
+      width: 100%;
+    }
+
+    span:before, span:after {
+      border-top: 1px solid @grayLight;
+      display: inline-block;
+      height: 1px;
+      content: " ";
+      width: 35%;
+      left: 0;
+      top: 1.2em;
+      margin: 3px 10px;
+    }
+
+    span:after {
+      right: 0;
+      left: auto;
+    }
   }
 
   .proj-list {
