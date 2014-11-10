@@ -70,8 +70,8 @@ to copy your artifacts into the [artifacts directory](/docs/build-artifacts).
 
 ### Seeing the results in the CircleCI UI
 
-We will upload your coverage files, which will allow you view them from your build page.
-These are available via a dropdown in your build:
+We will upload your coverage files, which will allow you view them from the "Artifacts"
+tab on the build page:
 
 ![](asset://img/outer/docs/artifacts_listing.png)
 
