@@ -18,6 +18,5 @@
            "&filters%5B0%5D%5Bcomparison%5D=contains&filters%5B0%5D%5Bvalue%5D="
            (second path)))))
 
-(utils/swallow-errors
-  (defn track [event & [metadata]]
-    (js/Intercom "trackEvent" (name event) metadata)))
+(defn track [event & [metadata]]
+  (utils/swallow-errors (js/Intercom "trackEvent" (name event) metadata)))
