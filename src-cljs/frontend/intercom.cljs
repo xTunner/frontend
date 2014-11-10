@@ -19,4 +19,4 @@
            (second path)))))
 
 (defn track [event & [metadata]]
-  (js/Intercom "trackEvent" (name event) metadata))
+  (utils/swallow-errors (js/Intercom "trackEvent" (name event) metadata)))
