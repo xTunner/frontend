@@ -116,7 +116,13 @@
           [:div
            (when flash
              [:div#flash flash])]
-          [:div#navbar {:class (when (= :language-landing (:navigation-point app)) (get-in app [:navigation-data :language]))}
+          ;; TODO: Temporary hack until new header ships
+          [:div#navbar {:class (case (:navigation-point app)
+                                 :language-landing
+                                 (get-in app [:navigation-data :language])
+                                 :integrations
+                                 (name (get-in app [:navigation-data :integration]))
+                                 nil)}
            [:div.container
             [:div.row
              [:div.span8

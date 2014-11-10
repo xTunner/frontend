@@ -99,12 +99,20 @@
     (gstring/format "%s waiting for builds to finish"
                     (datetime/as-duration (usage-queued-time build)))))
 
+(defn not-run-words [build]
+  (case (:dont_build build)
+    "ci-skip"            "skipped"
+    "branch-blacklisted" "skipped"
+    "org-not-paid"       "not paid"
+    "user-not-paid"      "not paid"
+    "not run"))
+
 (defn status-words [build]
   (condp = (:status build)
     "infrastructure_fail" "circle bug"
     "timedout" "timed out"
     "no_tests" "no tests"
-    "not_run" "not run"
+    "not_run" (not-run-words build)
     "not_running" "not running"
     (:status build)))
 

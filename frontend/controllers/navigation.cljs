@@ -438,3 +438,10 @@
   [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
   (post-default navigation-point args)
   (analytics/track-page "View Language Landing" {:language language}))
+
+(defmethod post-navigated-to! :integrations
+  [history-imp navigation-point {:keys [integration] :as args} previous-state current-state]
+  (let [titles {:docker "CircleCI and Docker"
+                :heroku "Deploy to Heroku from CircleCI"
+                :saucelabs "Test with Sauce Labs on CircleCI"}]
+    (set-page-title! (get titles integration))))
