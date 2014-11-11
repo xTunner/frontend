@@ -20,7 +20,8 @@ CI.github =
 
     l = window.location
     auth_host = window.renderContext.auth_host
-    redirect = "#{l.protocol}//#{auth_host}/auth/github?return-to=#{destination}&CSRFToken=#{csrf_token}"
+    auth_protocol = window.renderContext.auth_protocol ? 'https'
+    redirect = "#{auth_protocol}://#{auth_host}/auth/github?return-to=#{destination}&CSRFToken=#{csrf_token}"
     if auth_host != window.location.host
       redirect += "&delegate=#{window.location.host}"
     redirect = encodeURIComponent(redirect)
