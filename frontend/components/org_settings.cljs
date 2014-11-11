@@ -383,8 +383,7 @@
           elligible-piggyback-orgs (-> (map :login user-orgs)
                                        (set)
                                        (conj user-login)
-                                       (disj org-name)
-                                       (sort))
+                                       (disj org-name))
           ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
           ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
           ;; selected-orgs:           {"org-a" false "org-c" true}
@@ -411,7 +410,8 @@
              [:form
               [:div.controls
                ;; orgs that this user can add to piggyback orgs and existing piggyback orgs
-               (for [org (clojure.set/union elligible-piggyback-orgs (set (:piggieback_orgs plan)))]
+               (for [org (sort (clojure.set/union elligible-piggyback-orgs
+                                                  (set (:piggieback_orgs plan))))]
                  [:div.control
                   [:label.checkbox
                    [:input
