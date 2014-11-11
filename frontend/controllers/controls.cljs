@@ -146,14 +146,6 @@
   [target message _ state]
   (update-in state state/user-options-shown-path not))
 
-(defmethod control-event :invite-form-opened
-  [target message _ state]
-  (assoc-in state state/user-options-shown-path false))
-
-(defmethod post-control-event! :invite-form-opened
-  [_ _ _ _ _ _]
-  (utils/open-modal "#inviteForm"))
-
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
@@ -310,14 +302,14 @@
 
 (defmethod control-event :invite-selected-all
   [target message _ state]
-  (update-in state state/build-github-users-path (fn [users]
-                                                   (vec (map #(assoc % :checked true) users)))))
+  (update-in state state/invite-github-users-path (fn [users]
+                                                    (vec (map #(assoc % :checked true) users)))))
 
 
 (defmethod control-event :invite-selected-none
   [target message _ state]
-  (update-in state state/build-github-users-path (fn [users]
-                                                   (vec (map #(assoc % :checked false) users)))))
+  (update-in state state/invite-github-users-path (fn [users]
+                                                    (vec (map #(assoc % :checked false) users)))))
 
 
 (defmethod control-event :dismiss-config-errors
@@ -710,24 +702,28 @@
 
 
 (defmethod post-control-event! :invited-github-users
-  [target message {:keys [project-name invitees]} previous-state current-state]
-  (button-ajax :post
-               (gstring/format "/api/v1/project/%s/users/invite" project-name)
-               :invite-github-users
-               (get-in current-state [:comms :api])
-               :context {:project-name project-name}
-               :params invitees)
-  ;; TODO: move all of the tracking stuff into frontend.analytics and let it
-  ;;      keep track of which service to send things to
-  (mixpanel/track "Sent invitations" {:first_green_build true
-                                      :project project-name
-                                      :users (map :login invitees)})
-  (doseq [u invitees]
-    (mixpanel/track "Sent invitation" {:first_green_build true
-                                       :project project-name
-                                       :login (:login u)
-                                       :id (:id u)
-                                       :email (:email u)})))
+  [target message {:keys [project-name org-name invitees]} previous-state current-state]
+  (let [context (if project-name {:project project-name} {:org org-name})]
+    (button-ajax :post
+                 (if project-name
+                   (gstring/format "/api/v1/project/%s/users/invite" project-name)
+                   (gstring/format "/api/v1/organization/%s/invite" org-name))
+                 :invite-github-users
+                 (get-in current-state [:comms :api])
+                 :context context
+                 :params invitees)
+    ;; TODO: move all of the tracking stuff into frontend.analytics and let it
+    ;;      keep track of which service to send things to
+    (mixpanel/track "Sent invitations" (merge {:first_green_build true
+                                               :users (map :login invitees)}
+                                              context))
+    (doseq [u invitees]
+      (mixpanel/track "Sent invitation" (merge {:first_green_build true
+                                                :project project-name
+                                                :login (:login u)
+                                                :id (:id u)
+                                                :email (:email u)}
+                                               context)))))
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]

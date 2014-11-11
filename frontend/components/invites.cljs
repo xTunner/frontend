@@ -1,4 +1,4 @@
-(ns frontend.components.build-invites
+(ns frontend.components.invites
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
@@ -9,6 +9,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
+
+; TODO: rename this file/namespace to invites
 
 (defn invitees
   "Filters users to invite and returns only fields needed by invitation API"
@@ -30,7 +32,7 @@
            [:img {:src (gh-utils/make-avatar-url user)}]]
           [:div.invite-profile
            login
-           [:input {:on-change #(utils/edit-input owner (conj (state/build-github-user-path index) :email) %)
+           [:input {:on-change #(utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
                     :required true
                     :type "email"
                     :value email
@@ -43,11 +45,40 @@
            [:input {:type "checkbox"
                     :id (str login "-checkbox")
                     :checked (boolean (:checked user))
-                    :on-change #(utils/toggle-input owner (conj (state/build-github-user-path index) :checked) %)}]
+                    :on-change #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}]
            [:div.checked \uf046]
            [:div.unchecked \uf096]]])))))
 
-(defn build-invites [invite-data owner opts]
+(defn invites [users owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         [:section
+          [:a {:role "button"
+               :on-click #(raise! owner [:invite-selected-all])}
+           "all"]
+          " / "
+          [:a {:role "button"
+               :on-click #(raise! owner [:invite-selected-none])}
+           "none"]
+          [:ul
+           (om/build-all invite-tile users {:key :login})]]
+         [:footer
+          (forms/managed-button
+           [:button (let [users-to-invite (invitees users)]
+                      {:data-success-text "Sent"
+                       :on-click #(raise! owner [:invited-github-users
+                                                 (merge {:invitees users-to-invite}
+                                                        (if (:project-name opts)
+                                                          {:project-name (:project-name opts)}
+                                                          {:org-name (:org-name opts)}))])})
+
+            "Send Invites "
+            [:i.fa.fa-envelope-o]])]]))))
+
+(defn build-invites [invite-data owner opts]; TODO: move this to build?
   (reify
     om/IWillMount
     (will-mount [_]
@@ -69,21 +100,36 @@
            [:div.head-right
             [:h2 "Congratulations!"]
             [:p "You just got your first green build! Invite some of your collaborators below and never test alone!"]]]
-          [:section
-           [:a {:role "button"
-                :on-click #(raise! owner [:invite-selected-all])}
-            "all"]
-           " / "
-           [:a {:role "button"
-                :on-click #(raise! owner [:invite-selected-none])}
-            "none"]
-           [:ul
-            (om/build-all invite-tile users {:key :login})]]
-          [:footer
-           (forms/managed-button
-            [:button (let [users-to-invite (invitees users)]
-                       {:data-success-text "Sent"
-                        :on-click #(raise! owner [:invited-github-users {:invitees users-to-invite
-                                                                         :project-name project-name}])})
-             "Send Invites "
-             [:i.fa.fa-envelope-o]])]])))))
+          (om/build invites users {:opts opts})])))))
+
+(defn side-item [org owner]; TODO: copy styles (or anything else necessary) out of add project
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:li.side-item
+         [:a {:href (str "/invite-teammates/organization/" (:login org))}
+          [:img {:src (gh-utils/make-avatar-url org :size 25)
+                 :width 25}]
+          [:div.orgname (:login org)]]]))))
+
+(defn teammates-invites [data owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (let [invite-data (:invite-data data)]
+        (html
+          [:div
+           ; org bar on the left, borrowed from add projects
+           [:ul.side-list
+            (om/build-all side-item (get-in data state/user-organizations-path))]
+           ; invites box on the right
+           [:p "Invite your " (:org invite-data) " teammates"]
+           [:div.first-green.invite-form
+            (if (:org invite-data)
+              (om/build invites
+                        (remove :circle_member (:github-users invite-data))
+                        {:opts {:org-name (:org invite-data)}})
+              [:div [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
+                    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]
+                    [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]])]])))))

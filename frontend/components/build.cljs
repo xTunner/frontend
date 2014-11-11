@@ -8,7 +8,7 @@
             [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
-            [frontend.components.build-invites :as build-invites]
+            [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
@@ -113,8 +113,8 @@
              (om/build project-common/follow-notice project))
 
            (when (build-model/display-build-invite build)
-             (om/build build-invites/build-invites
-                       (:invite-data build-data)
+             (om/build invites/build-invites
+                       (:invite-data data)
                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
 
            (when (and (build-model/config-errors? build)
@@ -128,6 +128,7 @@
       (let [build (get-in data state/build-path)
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
+            invite-data (:invite-data data)
             project-data (get-in data state/project-data-path)
             user (get-in data state/user-path)]
         (html
@@ -144,7 +145,8 @@
                                               :scopes (get-in data state/project-scopes-path)})
              (om/build common/flashes (get-in data state/error-message-path))
              (om/build notices {:build-data (dissoc build-data :container-data)
-                                :project-data project-data})
+                                :project-data project-data
+                                :invite-data invite-data})
              (om/build container-pills {:container-data container-data
                                         :build-running? (build-model/running? build)})
              (om/build build-steps/container-build-steps container-data)
