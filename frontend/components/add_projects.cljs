@@ -61,19 +61,19 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div
             [:div.overview
-             [:p
-              "Choose a repo in GitHub from one of your organizations, your own repos, or repos you share with others, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits; come back here to follow more projects."]]
-            [:div.wordy-hr [:span "1. Choose a GitHub Account"]]
-            (map (fn [org] (side-item org settings controls-ch))
-                  (:organizations user))
-            (map (fn [org] (side-item org settings controls-ch))
-                  (filter (fn [org] (= (:login user) (:login org)))
-                          (:collaborators user)))
-             [:div
-              [:h4 "Users & organizations with forks of your repos"]
-              (map (fn [org] (side-item org settings controls-ch))
-                   (remove (fn [org] (= (:login user) (:login org)))
-                           (:collaborators user)))]])))))
+             [:span.big-number "1."]
+             [:div.instruction "Choose an GitHub account that you are a member of or have access to. "]]
+            [:div.organizations
+             (map (fn [org] (side-item org settings controls-ch))
+                   (:organizations user))
+             (map (fn [org] (side-item org settings controls-ch))
+                   (filter (fn [org] (= (:login user) (:login org)))
+                           (:collaborators user)))
+              [:div
+               [:h4 "Users & organizations with forks of your repos"]
+               (map (fn [org] (side-item org settings controls-ch))
+                    (remove (fn [org] (= (:login user) (:login org)))
+                            (:collaborators user)))]]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -236,9 +236,12 @@
            [:div.org-listing
             (om/build org-sidebar {:user user
                                    :settings settings})]
+           [:hr]
            [:div.project-listing
-            [:div.wordy-hr [:span "2. Choose a Repo"]]
+            [:div.overview
+             [:span.big-number "2."]
+             [:div.instruction "Choose a repo, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits."]]
             (om/build main {:user user
                             :repos repos
                             :settings settings})]
-           [:div.sidebar]]])))))
+           ]])))))
