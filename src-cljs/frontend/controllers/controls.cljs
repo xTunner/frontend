@@ -549,10 +549,10 @@
   "Takes the state of project settings inputs and PUTs the new settings to
   /api/v1/project/:project/settings.
 
-  `merge-path` is a path into the nested project data-structure. When
-  merge-path is non-nil the part of the project data-structure at that path is
-  used as the base values for the settings. The new settings from the inputs
-  state are merged on top.
+  `merge-paths` is a list of paths into the nested project data-structure.
+  When a merge-path is non-nil the part of the project data-structure at
+  that path is used as the base values for the settings. The new settings
+  from the inputs state are merged on top.
 
   This allows all the settings on a page to be submitted, even if the user only
   modifies one.
@@ -566,7 +566,7 @@
   The user sets a new access key ID so inputs is
     {:aws {:keypair {:access_key_id \"new key id\"}}}
 
-  :merge-path is [:aws :keypair]
+  :merge-paths is [[:aws :keypair]]
 
   The settings posted to the settings API will be:
     {:aws {:keypair {:access_key_id \"new key id\"
@@ -592,6 +592,16 @@
     (go
       (let [api-result (<! (save-project-settings project-id merge-paths current-state))]
         (release-button! uuid (:status api-result))))))
+
+
+(defmethod control-event :new-codedeploy-app-name-entered
+  [target message _ state]
+  (let [app-name (get-in state (conj state/inputs-path :project-settings-codedeploy-app-name))]
+    (if (seq app-name)
+      (-> state
+          (update-in (conj state/project-path :aws :services :codedeploy) assoc app-name {})
+          (assoc (conj state/inputs-path :project-settings-codedeploy-app-name) nil))
+      state)))
 
 
 (defmethod post-control-event! :saved-ssh-key
