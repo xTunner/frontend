@@ -231,12 +231,12 @@
   (let [api-ch (get-in current-state [:comms :api])
         org (:org args)]
     ; get the list of orgs
-    (print "getting orgs")
     (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
       (put! api-ch [:organizations (:status api-result) api-result])))
     (when org
       (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/members" org)))]
-            (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))))
+            (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))
+    (set-page-title! "Invite teammates")))
 
 (defmethod navigated-to :project-settings
   [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
