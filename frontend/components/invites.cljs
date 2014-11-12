@@ -10,8 +10,6 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-; TODO: rename this file/namespace to invites
-
 (defn invitees
   "Filters users to invite and returns only fields needed by invitation API"
   [users]
@@ -78,7 +76,7 @@
             "Send Invites "
             [:i.fa.fa-envelope-o]])]]))))
 
-(defn build-invites [invite-data owner opts]; TODO: move this to build?
+(defn build-invites [invite-data owner opts]
   (reify
     om/IWillMount
     (will-mount [_]
@@ -102,7 +100,7 @@
             [:p "You just got your first green build! Invite some of your collaborators below and never test alone!"]]]
           (om/build invites users {:opts opts})])))))
 
-(defn side-item [org owner]; TODO: copy styles (or anything else necessary) out of add project
+(defn side-item [org owner]
   (reify
     om/IRender
     (render [_]
@@ -110,7 +108,7 @@
         [:li.side-item
          [:a {:href (str "/invite-teammates/organization/" (:login org))}
           [:img {:src (gh-utils/make-avatar-url org :size 25)
-                 :width 25}]
+                 :width 25 :height 25}]
           [:div.orgname (:login org)]]]))))
 
 (defn teammates-invites [data owner opts]
@@ -119,17 +117,20 @@
     (render [_]
       (let [invite-data (:invite-data data)]
         (html
-          [:div
+          [:div#invite-teammates
            ; org bar on the left, borrowed from add projects
            [:ul.side-list
             (om/build-all side-item (get-in data state/user-organizations-path))]
            ; invites box on the right
-           [:p "Invite your " (:org invite-data) " teammates"]
-           [:div.first-green.invite-form
-            (if (:org invite-data)
+           (if (:org invite-data)
+             [:div.first-green.invite-form
+              [:h3 "Invite your " (:org invite-data) " teammates"]
               (om/build invites
                         (remove :circle_member (:github-users invite-data))
-                        {:opts {:org-name (:org invite-data)}})
-              [:div [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
-                    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]
-                    [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]])]])))))
+                        {:opts {:org-name (:org invite-data)}}) ]
+             [:div.org-invites
+               [:h3 "Invite your teammates"]
+               [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
+               [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]
+               [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]]
+             )])))))
