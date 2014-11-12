@@ -61,8 +61,8 @@ application][].
 [comment]: <> "[AppSpec]: TODO link to doc on appspecs, linkify occurrences of 'AppSpec'"
 [comment]: <> "[application revision]: TODO link to doc on application revisions, linkify occurrences of 'application revisions'"
 [S3]: http://aws.amazon.com/s3/
-[CodeDeploy console]: https://razorbill-preview-console.aws.amazon.com/sds/home
-[creating a new application]: https://razorbill-preview-console.aws.amazon.com/sds/home#/applications/new
+[CodeDeploy console]: https://console.aws.amazon.com/codedeploy/home
+[creating a new application]: https://console.aws.amazon.com/codedeploy/home#/applications/new
 
 
 
