@@ -1166,7 +1166,7 @@
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Key Pattern"
                         :content (node [:p "A template used to construct S3 keys for storing application revisions."
-                                           "You can use " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy#key-patterns"} "substitution variables"]
+                                           "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy#key-patterns"} "substitution variables"]
                                            " in the Key Pattern to generate a unique key for each build."])})))
     om/IRender
     (render [_]
@@ -1255,7 +1255,7 @@
          [:div.aws-codedeploy
           [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
           [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
-              "Check out our " [:a {:href "/docs/continuous-deployment-with-amazon-codedeploy"} "getting started with CodeDeploy"]
+              "Check out our " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy"} "getting started with CodeDeploy"]
               " guide for detailed information on getting set up."]
           [:div.aws-page-inner
             [:div.aws-codedeploy-step
