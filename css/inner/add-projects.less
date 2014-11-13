@@ -1,8 +1,6 @@
 #add-projects {
 
   .overview {
-    display: inline-block;
-    width: 25%;
     vertical-align: top;
     text-align: justify;
     padding: 10px;
@@ -14,12 +12,15 @@
 
   @content: {
     display: inline-block;
-    width: 60%;
-
-    @media only screen and (max-width: 960px) {
-      width: 100%;
-    }
+    width: 100%;
   };
+
+  #follow-contents {
+    width: 100%;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 15px;
+  }
 
   .big-number {
     font-size: 32px;
@@ -33,13 +34,14 @@
     display: inline-block;
     text-align: center;
     line-height: 28px;
+    float: left;
   }
 
   .instruction {
     padding: 0 5px;
-    display: inline-block;
-    vertical-align: top;
-
+    display: block;
+    margin-left: 45px;
+    margin: 10px 0 0 45px;
   }
 
   h4 {
