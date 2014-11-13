@@ -264,13 +264,15 @@
                      (string/join ", " (map test-model/pretty-source sources))
                      " with " (pluralize (count failed-tests) "failure") ".")]
                (when (seq failed-tests)
-                 (for [[source tests] (group-by :source failed-tests)]
+                 (for [[source tests-by-source] (group-by :source failed-tests)]
                    [:div.build-tests-list-container
                     [:span.failure-source (str (test-model/pretty-source source) " failures:")]
                     [:ol.build-tests-list
-                     (map (fn [test]
-                            [:li (test-model/format-test-name test)])
-                          (sort-by test-model/format-test-name tests))]]))]))])))))
+                     (for [[file tests-by-file] (group-by :file tests-by-source)]
+                       (list (when file [:div.filename (str file ":")])
+                             (map (fn [test]
+                                    [:li (test-model/format-test-name test)])
+                                  (sort-by test-model/format-test-name tests-by-file))))]]))]))])))))
 
 (defn circle-yml-ad []
   [:div
