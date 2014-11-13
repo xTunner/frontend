@@ -61,7 +61,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html [:div
             [:div.overview
-             [:span.big-number "1."]
+             [:span.big-number "1"]
              [:div.instruction "Choose an GitHub account that you are a member of or have access to. "]]
             [:div.organizations
              (map (fn [org] (side-item org settings controls-ch))
@@ -239,7 +239,7 @@
            [:hr]
            [:div.project-listing
             [:div.overview
-             [:span.big-number "2."]
+             [:span.big-number "2"]
              [:div.instruction "Choose a repo, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits."]]
             (om/build main {:user user
                             :repos repos
