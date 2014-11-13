@@ -5,6 +5,7 @@
     width: 25%;
     vertical-align: top;
     text-align: justify;
+    padding: 10px;
 
     @media only screen and (max-width: 960px) {
       width: 100%;
@@ -51,10 +52,15 @@
     & > .fa {
       font-size: 1.2em;
     }
+
+    background-color: lighten(@grayLightest, .5);
+    border-bottom: solid 1px @grayLighter;
   }
 
   .unobtrusive-search {
-    margin: 0;
+    margin: 5px;
+    height: 1em;
+    width: 206px;
   }
 
   .org-listing {
@@ -246,10 +252,6 @@
   }
 
   .proj-list {
-    li.filter {
-      background-color: lighten(@grayLightest, .5);
-      border-bottom: solid 1px @grayLighter;
-    }
 
     li {
       .flexy();
@@ -369,5 +371,5 @@
 }
 
 .project-listing {
-  margin: 0 5px;
+  margin: 0 5px 10px 0;
 }
