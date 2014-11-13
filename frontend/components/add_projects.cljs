@@ -200,18 +200,20 @@
             repos-explanation
             (if-not (seq repos)
               [:div.loading-spinner common/spinner]
-              [:ul.proj-list
-               [:li.filter (om/build repo-filter settings)]
-               (let [filtered-repos (filter (fn [repo]
-                                              (-> repo
-                                                  :name
-                                                  (.toLowerCase)
-                                                  (.indexOf repo-filter-string)
-                                                  (not= -1)))
-                                            repos)]
-                 (map (fn [repo] (om/build repo-item {:repo repo
-                                                      :settings settings}))
-                      filtered-repos))]))
+              
+              [:div
+               (om/build repo-filter settings)
+               [:ul.proj-list
+                (let [filtered-repos (filter (fn [repo]
+                                               (-> repo
+                                                   :name
+                                                   (.toLowerCase)
+                                                   (.indexOf repo-filter-string)
+                                                   (not= -1)))
+                                             repos)]
+                  (map (fn [repo] (om/build repo-item {:repo repo
+                                                       :settings settings}))
+                       filtered-repos))]]))
           invite-modal])))))
 
 (defn add-projects [data owner]
