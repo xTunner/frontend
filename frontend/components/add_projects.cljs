@@ -62,8 +62,9 @@
         (html [:div
             [:div.overview
              [:span.big-number "1"]
-             [:div.instruction "Choose an GitHub account that you are a member of or have access to. "]]
+             [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
             [:div.organizations
+             [:h4 "Your accounts"]
              (map (fn [org] (side-item org settings controls-ch))
                    (:organizations user))
              (map (fn [org] (side-item org settings controls-ch))
@@ -235,6 +236,10 @@
           [:div#follow-contents
            (when (seq (user-model/missing-scopes user))
              (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+           [:h2 "Welcome!"]
+           [:h3 "You're about to set up a new project in CircleCI."]
+           [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+           [:hr]
            [:div.org-listing
             (om/build org-sidebar {:user user
                                    :settings settings})]
@@ -242,7 +247,7 @@
            [:div.project-listing
             [:div.overview
              [:span.big-number "2"]
-             [:div.instruction "Choose a repo, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+             [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
             (om/build main {:user user
                             :repos repos
                             :settings settings})]
