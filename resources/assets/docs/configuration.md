@@ -210,7 +210,7 @@ Here's an example of how to set the version of Node.js to be used for your tests
 ```
 machine:
   node:
-    version: 0.6.18
+    version: 0.11.8
 ```
 
 ### Java version
