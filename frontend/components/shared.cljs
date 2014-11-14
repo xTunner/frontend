@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [dommy.attrs :as attrs]
             [frontend.async :refer [raise!]]
+            [frontend.state :as state]
             [frontend.stefon :refer (data-uri)]
             [frontend.utils.ajax :as ajax]
             [frontend.utils :as utils :include-macros true]
@@ -215,3 +216,52 @@
         [:div.light-background
          (om/build contact-form app)
          [:span "Or, check out our " [:a {:target "_blank", :href "https://www.hipchat.com/gjwkHcrD5"} "live support!"]]]]))))
+
+;; Since we can't reliably make an html5 range element look like we
+;; want, fake it with divs for the bar, the knob and a highlight div
+;;
+;; Work in progress. Remaining issues:
+;; * still hardcoded state/selected-containers-path to update state
+;;   value
+;; * the mouse event handlers are only on the slider div itself, so
+;;   it doesn't behave right if you mousedown in it, start dragging,
+;;   drag out of it, and release. dragging? is still set, and when you
+;;   mouse back over, it starts moving it again.
+;; * doesn't display min and max; good? bad? some other way?
+(defn styled-range-slider [data owner]
+  (reify
+    om/IInitState (init-state [_] {:dragging? false :node-ref (str "pricing-range-" (Math.random))})
+    om/IRenderState
+    (render-state [_ {:keys [dragging? node-ref]}]
+      (let [min-val (get-in data [:min-val])
+            max-val (get-in data [:max-val])
+            value (or (get-in data state/selected-containers-path)
+                      (get-in data [:start-value]))
+            increment (/ 100.0 max-val)
+            calculate-drag-fraction (fn [owner event]
+                                      (let [slider (om/get-node owner node-ref)
+                                            width (.-width (goog.style/getSize slider))
+                                            slider-left (goog.style/getPageOffsetLeft slider)
+                                            event-left (.-pageX event)]
+                                        (min 1.0 (max 0.0 (/ (- event-left slider-left) width)))))
+            calculate-value (fn [owner event]
+                              (let [drag-fraction (calculate-drag-fraction owner event)]
+                                (Math.round (+ min-val (* drag-fraction (- max-val min-val))))))]
+        (html
+         [:div.range-slider {:on-click      #(utils/edit-input owner state/selected-containers-path %
+                                                               :value (calculate-value owner %))
+                             :on-mouse-down #(do (om/set-state! owner :dragging? true)
+                                                 (utils/edit-input owner state/selected-containers-path %
+                                                                   :value (calculate-value owner %)))
+                             :on-mouse-up   #(om/set-state! owner :dragging? false)
+                             :on-mouse-move #(when dragging?
+                                               (utils/edit-input owner state/selected-containers-path %
+                                                                 :value (calculate-value owner %)))
+                             :ref node-ref}
+          ;[:span min-val]
+          [:figure.range-back]
+          [:figure.range-highlight {:style {:width (str (* value increment) "%")}}]
+          [:button.range-knob {:style {:left (str (* value increment) "%")}
+                               :data-count value}]
+          ;[:span max-val]
+          ])))))
