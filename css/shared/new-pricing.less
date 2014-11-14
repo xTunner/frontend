@@ -192,6 +192,55 @@
     }
   }
 }
+
+.range-slider {
+  .flexy(stretch, center, column);
+  position: relative;
+  margin: 0em 0;
+  height: 3em;
+  figure,
+  button {
+    .box-sizing(border-box);
+    height: 1em;
+    margin: 0;
+    border-radius: 1em;
+    outline: none;
+  }
+  .range-back {
+    background: @white;
+    border: 1px solid @grayBoxBorder;
+  }
+  .range-highlight {
+    .animation(pricing-range 500ms @bezier_transform 100ms backwards);
+    background: @grayDark;
+    width: 0%;
+    margin-top: -1em;
+  }
+  .range-knob {
+    .animation(pricing-knob 500ms @bezier_transform 100ms backwards);
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    left: 0%;
+    top: 0.5em;
+    margin-left: -1em;
+    border-radius: 1em;
+    background: @white;
+    border: 1px solid @grayBoxBorder;
+    &:before {
+      .animation(pricing-hang 500ms @bezier_fadein 500ms backwards);
+      content: attr(data-count);
+      position: absolute;
+      color: @grayLight;
+      top: 0%;
+      left: 0;
+      width: 100%;
+      margin-top: .25em;
+      text-align: center;
+    }
+  }
+}
+
 .controls-parallelism {
   strong {
     display: inline-block;
