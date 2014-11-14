@@ -71,7 +71,7 @@
                    (filter (fn [org] (= (:login user) (:login org)))
                            (:collaborators user)))
               [:div
-               [:h4 "Users & organizations with forks of your repos"]
+               [:h4 "Users & organizations who have made pull requests to your repos"]
                (map (fn [org] (side-item org settings controls-ch))
                     (remove (fn [org] (= (:login user) (:login org)))
                             (:collaborators user)))]]])))))
