@@ -217,6 +217,20 @@ popd
 exit $RETVAL
 ```
 
+
+### Disable pre-Dexing to improve build performance
+
+By default gradle pre-dexes dependencies, converting their Java bytecode into
+Android bytecode. This speeds up development greatly since gradle only needs to
+do incremental dexing as you change code.
+
+Because CircleCI always runs clean builds this pre-dexing has no benefit, in fact
+it makes compilation slower and can also use large quantities of memory.
+We recommend [disabling
+pre-dexing](http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.)
+for Android builds on CircleCI.
+
+
 Please don't hesitate to [contact us](mailto:sayhi@circleci.com)
 if you have any questions at all about how to best test Android on
 CircleCI.
