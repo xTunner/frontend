@@ -205,13 +205,13 @@
               [:div
                (om/build repo-filter settings)
                [:ul.proj-list
-                (let [filtered-repos (filter (fn [repo]
+                (let [filtered-repos (sort-by :name (filter (fn [repo]
                                                (-> repo
                                                    :name
                                                    (.toLowerCase)
-                                                   (.indexOf repo-filter-string)
+                                                   (.indexOf (.toLowerCase repo-filter-string))
                                                    (not= -1)))
-                                             repos)]
+                                             repos))]
                   (map (fn [repo] (om/build repo-item {:repo repo
                                                        :settings settings}))
                        filtered-repos))]]))
