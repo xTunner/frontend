@@ -19,7 +19,9 @@
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
-            [frontend.instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.scroll :as scroll]
+            [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -28,6 +30,7 @@
             [frontend.browser-settings :as browser-settings]
             [frontend.utils :as utils :refer [mlog merror third]]
             [frontend.datetime :as datetime]
+            [frontend.timer :as timer]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]])
@@ -66,10 +69,10 @@
   (chan))
 
 (defn get-ab-tests [ab-test-definitions]
-  (let [overrides (some-> js/window
-                          (aget "renderContext")
-                          (aget "abOverrides")
-                          (utils/js->clj-kw))]
+  (let [overrides (merge (some-> js/window
+                                 (aget "renderContext")
+                                 (aget "abOverrides")
+                                 (utils/js->clj-kw)))]
     (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
@@ -166,23 +169,22 @@
        (swap! state (partial errors-con/error container (first value) (second value)))
        (errors-con/post-error! container (first value) (second value) previous-state @state)))))
 
-(defn setup-timer-atom
-  "Sets up an atom that will keep track of the current time.
-   Used from frontend.components.common/updating-duration "
-  []
-  (let [mya (atom (datetime/server-now))]
-    (js/setInterval #(reset! mya (datetime/server-now)) 1000)
-    mya))
+(declare reinstall-om!)
 
-
-(defn install-om [state container comms]
+(defn install-om [state container comms instrument?]
   (om/root
-     app/app
-     state
-     {:target container
-      :shared {:comms comms
-               :timer-atom (setup-timer-atom)
-               :_app-state-do-not-use state}}))
+   app/app
+   state
+   {:target container
+    :shared {:comms comms
+             :timer-atom (timer/initialize)
+             :_app-state-do-not-use state}
+    :instrument (let [methods (cond-> state-graft/no-local-state-methods
+                                instrument? instrumentation/instrument-methods)
+                      descriptor (state-graft/no-local-descriptor methods)]
+                  (fn [f cursor m]
+                    (om/build* f cursor (assoc m :descriptor descriptor))))
+    :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
   (sel1 :body))
@@ -190,7 +192,7 @@
 (defn find-app-container [top-level-node]
   (sel1 top-level-node "#om-app"))
 
-(defn main [state top-level-node history-imp]
+(defn main [state top-level-node history-imp instrument?]
   (let [comms       (:comms @state)
         container   (find-app-container top-level-node)
         uri-path    (.getPath utils/parsed-uri)
@@ -202,7 +204,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state container comms)
+    (install-om state container comms instrument?)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -246,11 +248,14 @@
   (mixpanel/set-existing-user)
   (let [state (app-state)
         top-level-node (find-top-level-node)
-        history-imp (history/new-history-imp top-level-node)]
+        history-imp (history/new-history-imp top-level-node)
+        instrument? (env/development?)]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
+    (when instrument? (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (main state top-level-node history-imp)
+    (scroll/setup-scroll-handler)
+    (main state top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
@@ -269,6 +274,10 @@
 (defn ^:export toggle-admin []
   (swap! debug-state update-in [:current-user :admin] not))
 
+(defn ^:export explode []
+  (swallow-errors
+    (assoc [] :deliberate :exception)))
+
 (defn ^:export set-ab-test
   "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
   [test-name value]
@@ -277,8 +286,14 @@
     (swap! debug-state assoc-in test-path value)
     (println "value for" test-name "is now" (get-in @debug-state test-path))))
 
-(defn reinstall-om! []
-  (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state)))
+(defn ^:export app-state-to-js
+  "Used for inspecting app state in the console."
+  []
+  (clj->js @debug-state))
+
+
+(defn ^:export reinstall-om! []
+  (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state) true))
 
 (defn refresh-css! []
   (let [is-app-css? (fn [elem]

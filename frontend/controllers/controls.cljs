@@ -18,6 +18,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
             goog.style)
@@ -62,6 +63,20 @@
       settings
       (utils/deep-merge (apply merge {} (map (partial extract-from project) paths))
                         settings))))
+
+(defn button-ajax
+  "An ajax/ajax wrapper that releases the current managed-button after the API
+  request.  Exists to faciliate migration away from stateful-button."
+  [method url message channel & opts]
+  (let [uuid frontend.async/*uuid*
+        c (chan)]
+    (apply ajax/ajax method url message c opts)
+    (go-loop []
+      (when-let [[_ status _ :as event] (<! c)]
+        (when (#{:success :failed} status)
+          (release-button! uuid status))
+        (>! channel event)
+        (recur)))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -153,12 +168,11 @@
   [target message {:keys [build-id]} state]
   (update-in state state/show-usage-queue-path not))
 
-(defmethod post-control-event! :usage-queue-why-toggled
+(defmethod post-control-event! :usage-queue-why-showed
   [target message {:keys [username reponame
                           build_num build-id]} previous-state current-state]
-  (when (get-in current-state state/show-usage-queue-path)
-    (let [api-ch (get-in current-state [:comms :api])]
-      (api/get-usage-queue (get-in current-state state/build-path) api-ch))))
+  (let [api-ch (get-in current-state [:comms :api])]
+    (api/get-usage-queue (get-in current-state state/build-path) api-ch)))
 
 
 (defmethod control-event :selected-add-projects-org
@@ -179,22 +193,25 @@
                :context args)))
 
 
-(defmethod control-event :show-artifacts-toggled
-  [target message build-id state]
-  (update-in state state/show-artifacts-path not))
-
-(defmethod post-control-event! :show-artifacts-toggled
+(defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state]
-  (when (get-in current-state state/show-artifacts-path)
-    (let [api-ch (get-in current-state [:comms :api])
-          build (get-in current-state state/build-path)]
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/%s/artifacts"
-                                 (vcs-url/project-name (:vcs_url build))
-                                 (:build_num build))
-                 :build-artifacts
-                 api-ch
-                 :context (build-model/id build)))))
+  (let [api-ch (get-in current-state [:comms :api])
+        build (get-in current-state state/build-path)]
+    (ajax/ajax :get
+               (gstring/format "/api/v1/project/%s/%s/artifacts"
+                               (vcs-url/project-name (:vcs_url build))
+                               (:build_num build))
+               :build-artifacts
+               api-ch
+               :context (build-model/id build))))
+
+
+(defmethod post-control-event! :tests-showed
+  [target message _ previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])
+        build (get-in current-state state/build-path)]
+    (when (empty? (get-in current-state state/tests-path))
+      (api/get-build-tests build api-ch))))
 
 
 (defmethod control-event :show-config-toggled
@@ -326,8 +343,8 @@
 
 
 (defmethod post-control-event! :intercom-dialog-raised
-  [target message dialog-message previous-state current-state]
-  (intercom/raise-dialog (get-in current-state [:comms :errors]) dialog-message))
+  [target message _ previous-state current-state]
+  (intercom/raise-dialog (get-in current-state [:comms :errors])))
 
 
 (defmethod post-control-event! :intercom-user-inspected
@@ -347,11 +364,13 @@
   [target message {:keys [build-num build-id vcs-url clear-cache?] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        uuid frontend.async/*uuid*]
     (go
      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
                                              :params (when clear-cache? {:no-cache true})))]
        (put! api-ch [:retry-build (:status api-result) api-result])
+       (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track-trigger-build (:resp api-result) :clear-cache? clear-cache?))))))
 
@@ -360,10 +379,12 @@
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        uuid frontend.async/*uuid*]
     (go
      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/ssh" org-name repo-name build-num)))]
        (put! api-ch [:retry-build (:status api-result) api-result])
+       (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track-trigger-build (:resp api-result) :ssh? true))))))
 
@@ -371,44 +392,44 @@
 (defmethod post-control-event! :followed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
-               :follow-repo
-               api-ch
-               :context repo))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
+                 :follow-repo
+                 api-ch
+                 :context repo))
   (analytics/track-follow-repo))
 
 
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
-               :follow-project
-               api-ch
-               :context {:project-id project-id}))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
+                 :follow-project
+                 api-ch
+                 :context {:project-id project-id}))
   (analytics/track-follow-project))
 
 
 (defmethod post-control-event! :unfollowed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
-               :unfollow-repo
-               api-ch
-               :context repo))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
+                 :unfollow-repo
+                 api-ch
+                 :context repo))
   (analytics/track-unfollow-repo))
 
 
 (defmethod post-control-event! :unfollowed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
-               :unfollow-project
-               api-ch
-               :context {:project-id project-id}))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
+                 :unfollow-project
+                 api-ch
+                 :context {:project-id project-id}))
   (analytics/track-unfollow-project))
 
 
@@ -458,13 +479,13 @@
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/envvar" project-name)
-               :create-env-var
-               api-ch
-               :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
-                        :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
-               :context {:project-id project-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/envvar" project-name)
+                 :create-env-var
+                 api-ch
+                 :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
+                          :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-env-var
@@ -528,10 +549,10 @@
   "Takes the state of project settings inputs and PUTs the new settings to
   /api/v1/project/:project/settings.
 
-  `merge-path` is a path into the nested project data-structure. When
-  merge-path is non-nil the part of the project data-structure at that path is
-  used as the base values for the settings. The new settings from the inputs
-  state are merged on top.
+  `merge-paths` is a list of paths into the nested project data-structure.
+  When a merge-path is non-nil the part of the project data-structure at
+  that path is used as the base values for the settings. The new settings
+  from the inputs state are merged on top.
 
   This allows all the settings on a page to be submitted, even if the user only
   modifies one.
@@ -545,7 +566,7 @@
   The user sets a new access key ID so inputs is
     {:aws {:keypair {:access_key_id \"new key id\"}}}
 
-  :merge-path is [:aws :keypair]
+  :merge-paths is [[:aws :keypair]]
 
   The settings posted to the settings API will be:
     {:aws {:keypair {:access_key_id \"new key id\"
@@ -573,16 +594,26 @@
         (release-button! uuid (:status api-result))))))
 
 
+(defmethod control-event :new-codedeploy-app-name-entered
+  [target message _ state]
+  (let [app-name (get-in state (conj state/inputs-path :project-settings-codedeploy-app-name))]
+    (if (seq app-name)
+      (-> state
+          (update-in (conj state/project-path :aws :services :codedeploy) assoc app-name {})
+          (assoc (conj state/inputs-path :project-settings-codedeploy-app-name) nil))
+      state)))
+
+
 (defmethod post-control-event! :saved-ssh-key
   [target message {:keys [project-id ssh-key]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/ssh-key" project-name)
-               :save-ssh-key
-               api-ch
-               :params ssh-key
-               :context {:project-id project-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+                 :save-ssh-key
+                 api-ch
+                 :params ssh-key
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-ssh-key
@@ -621,12 +652,12 @@
   [target message {:keys [project-id api-token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/token" project-name)
-               :save-project-api-token
-               api-ch
-               :params api-token
-               :context {:project-id project-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/token" project-name)
+                 :save-project-api-token
+                 api-ch
+                 :params api-token
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :deleted-project-api-token
@@ -645,23 +676,23 @@
   [target message {:keys [project-id login]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
-               :set-heroku-deploy-user
-               api-ch
-               :context {:project-id project-id
-                         :login login})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 :set-heroku-deploy-user
+                 api-ch
+                 :context {:project-id project-id
+                           :login login})))
 
 
 (defmethod post-control-event! :removed-heroku-deploy-user
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :delete
-               (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
-               :remove-heroku-deploy-user
-               api-ch
-               :context {:project-id project-id})))
+    (button-ajax :delete
+                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 :remove-heroku-deploy-user
+                 api-ch
+                 :context {:project-id project-id})))
 
 
 (defmethod post-control-event! :set-user-session-setting
@@ -680,12 +711,12 @@
 
 (defmethod post-control-event! :invited-github-users
   [target message {:keys [project-name invitees]} previous-state current-state]
-  (ajax/ajax :post
-             (gstring/format "/api/v1/project/%s/users/invite" project-name)
-             :invite-github-users
-             (get-in current-state [:comms :api])
-             :context {:project-name project-name}
-             :params invitees)
+  (button-ajax :post
+               (gstring/format "/api/v1/project/%s/users/invite" project-name)
+               :invite-github-users
+               (get-in current-state [:comms :api])
+               :context {:project-name project-name}
+               :params invitees)
   ;; TODO: move all of the tracking stuff into frontend.analytics and let it
   ;;      keep track of which service to send things to
   (mixpanel/track "Sent invitations" {:first_green_build true
@@ -700,29 +731,28 @@
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
-  (intercom/raise-dialog (get-in current-state [:comms :errors])
-                         (gstring/format "I think I found a bug in Circle at %s" build-url)))
+  (intercom/raise-dialog (get-in current-state [:comms :errors])))
 
 (defmethod post-control-event! :cancel-build-clicked
   [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
-    (ajax/ajax :post
-               (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
-               :cancel-build
-               api-ch
-               :context {:build-id build-id})))
+    (button-ajax :post
+                 (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
+                 :cancel-build
+                 api-ch
+                 :context {:build-id build-id})))
 
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [project-name project-id]} previous-state current-state]
-  (ajax/ajax :post
-             (gstring/format "/api/v1/project/%s/enable" project-name)
-             :enable-project
-             (get-in current-state [:comms :api])
-             :context {:project-name project-name
-                       :project-id project-id}))
+  (button-ajax :post
+               (gstring/format "/api/v1/project/%s/enable" project-name)
+               :enable-project
+               (get-in current-state [:comms :api])
+               :context {:project-name project-name
+                         :project-id project-id}))
 
 (defmethod post-control-event! :extend-trial-clicked
   [target message {:keys [org-name]} previous-state current-state]
@@ -738,7 +768,7 @@
 
 
 (defmethod post-control-event! :new-plan-clicked
-  [target message {:keys [containers price description base-template-id]} previous-state current-state]
+  [target message {:keys [containers price description paid]} previous-state current-state]
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
@@ -758,7 +788,7 @@
                                              :containers containers
                                              :billing-name org-name
                                              :billing-email (get-in current-state (conj state/user-path :selected_email))
-                                             :base-template-id base-template-id}))]
+                                             :paid paid}))]
                 (put! api-ch [:create-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
                 (release-button! uuid (:status api-result))))
             nil)))))
@@ -804,7 +834,8 @@
                            :params {:containers containers}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))
-    (analytics/track-save-containers)))
+    (let [upgrade? (> containers (get-in previous-state (conj state/org-plan-path :containers)))]
+      (analytics/track-save-containers upgrade?))))
 
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
@@ -985,7 +1016,7 @@
 
 
 
-(defmethod control-event :home-technology-tab-selected 
+(defmethod control-event :home-technology-tab-selected
   [target message {:keys [tab]} state]
   (assoc-in state state/selected-home-technology-tab-path tab))
 
@@ -1052,3 +1083,69 @@
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
           (when (= (:success (:status api-result)))
             (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
+
+(defmethod control-event :build-header-tab-clicked
+  [target message {:keys [tab]} state]
+  (assoc-in state state/build-header-tab-path tab))
+
+(defmethod post-control-event! :home-scroll-1st-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) vh]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-2nd-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 2 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-3rd-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 3 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-4th-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 4 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-5th-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) (* 5 vh)]
+                         250))))
+
+(defmethod post-control-event! :home-scroll-logo-clicked
+  [target message _ previous-state current-state]
+  (let [body (sel1 "body")
+        vh (.-height (goog.dom/getViewportSize))]
+    (.play (goog.fx.dom.Scroll. body
+                         #js [(.-scrollLeft body) (.-scrollTop body)]
+                         #js [(.-scrollLeft body) 0]
+                         0))))
+
+(defmethod control-event :customer-logo-clicked
+  [target message {:keys [customer]} state]
+  (assoc-in state state/customer-logo-customer-path customer))
+
+(defmethod control-event :toolset-clicked
+  [target message {:keys [toolset]} state]
+  (assoc-in state state/selected-toolset-path toolset))

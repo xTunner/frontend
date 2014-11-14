@@ -1,7 +1,7 @@
 (ns frontend.utils
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
             [ajax.core :as ajax]
             [cljs-time.core :as time]
@@ -12,8 +12,10 @@
             [goog.Uri]
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
+            [goog.style]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing defrender)])
+  (:require-macros [frontend.utils :refer (inspect timing defrender)]
+                   [dommy.macros :refer [sel1]])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
@@ -72,8 +74,8 @@
     (.update container content)
     (crypt/byteArrayToHex (.digest container))))
 
-(defn notify-error [ch message]
-  (put! ch [:error-triggered message]))
+(defn notify-error [owner message]
+  (raise! owner [:error-triggered message]))
 
 (defn trim-middle [s length]
   (let [str-len (count s)]
@@ -126,16 +128,16 @@
   Path is the vector of keys you would pass to assoc-in to change the value in state,
   event is the Synthetic React event. Pulls the value out of the event.
   Optionally takes :value as a keyword arg to override the event's value"
-  [controls-ch path event & {:keys [value]
-                             :or {value (.. event -target -value)}}]
-  (put! controls-ch [:edited-input {:path path :value value}]))
+  [owner path event & {:keys [value]
+                       :or {value (.. event -target -value)}}]
+  (raise! owner [:edited-input {:path path :value value}]))
 
 (defn toggle-input
   "Meant to be used in a react event handler, usually for the :on-change event on input.
   Path is the vector of keys you would pass to update-in to toggle the value in state,
   event is the Synthetic React event."
-  [controls-ch path event]
-  (put! controls-ch [:toggled-input {:path path}]))
+  [owner path event]
+  (raise! owner [:toggled-input {:path path}]))
 
 ;; TODO: get rid of bootstrap modals
 (defn open-modal
@@ -239,3 +241,32 @@
   (let [maps (filter identity maps)]
     (assert (every? map? maps))
     (apply merge-with deep-merge* maps)))
+
+
+(defn set-page-title! [& [title]]
+  (set! (.-title js/document) (strip-html
+                               (if title
+                                 (str title  " - CircleCI")
+                                 "CircleCI"))))
+
+(defn scroll-to-fragment!
+  "Scrolls to the element with id of fragment, if one exists"
+  [fragment]
+  (when-let [node (goog.dom.getElement fragment)]
+    (let [body (sel1 "body")
+          node-top (goog.style/getPageOffsetTop node)
+          body-top (goog.style/getPageOffsetTop body)]
+      (set! (.-scrollTop body) (- node-top body-top)))))
+
+(defn scroll!
+  "Scrolls to fragment if the url had one, or scrolls to the top of the page"
+  [args]
+  (if (:_fragment args)
+    ;; give the page time to render
+    (rAF #(scroll-to-fragment! (:_fragment args)))
+    (rAF #(set! (.-scrollTop (sel1 "body")) 0))))
+
+(defn react-id [x]
+  (let [id (aget x "_rootNodeID")]
+    (assert id)
+    id))

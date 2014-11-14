@@ -1,12 +1,13 @@
 (ns frontend.components.build-steps
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.action :as action-model]
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
             [frontend.components.common :as common]
             [frontend.state :as state]
+            [frontend.disposable :as disposable :refer [dispose]]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [goog.events]
@@ -56,8 +57,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            visible? (action-model/visible? action)
+      (let [visible? (action-model/visible? action)
             header-classes  (concat [(:status action)]
                                     (when-not visible?
                                       ["minimize"])
@@ -75,10 +75,10 @@
              [:div.header {:class (when (action-model/has-content? action)
                                     header-classes)
                            ;; TODO: figure out what to put here
-                           :on-click #(put! controls-ch [:action-log-output-toggled
-                                                         {:index (:index @action)
-                                                          :step (:step @action)
-                                                          :value (not visible?)}])}
+                           :on-click #(raise! owner [:action-log-output-toggled
+                                                     {:index (:index @action)
+                                                      :step (:step @action)
+                                                      :value (not visible?)}])}
               [:div.button {:class (when (action-model/has-content? action)
                                      header-classes)}
                (when (action-model/has-content? action)
@@ -137,7 +137,6 @@
     om/IRender
     (render [_]
       (let [container-id (container-model/id container)
-            controls-ch (om/get-shared owner [:comms :controls])
             actions (remove :filler-action
                             (map (fn [action]
                                    (get non-parallel-actions (:step action) action))
@@ -153,13 +152,15 @@
   the size of the browser window chagnes. Has to add an event listener at the top level."
   [owner]
   (om/set-state! owner [:browser-resize-key]
-                 (goog.events/listen
-                  js/window
-                  "resize"
-                  #(put! (om/get-shared owner [:comms :controls])
-                         ;; This is pretty hacky, it would be nice if we had a better way to do this
-                         [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
-                                               :animate? false}]))))
+                 (disposable/register
+                   (goog.events/listen
+                     js/window
+                     "resize"
+                     #(raise! owner
+                            ;; This is pretty hacky, it would be nice if we had a better way to do this
+                            [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
+                                                  :animate? false}]))
+                   goog.events/unlistenByKey)))
 
 (defn check-autoscroll [owner deltaY]
   (cond
@@ -189,7 +190,7 @@
       (mount-browser-resize owner))
     om/IWillUnmount
     (will-unmount [_]
-      (goog.events/unlistenByKey (om/get-state owner [:browser-resize-key])))
+      (dispose (om/get-state owner [:browser-resize-key])))
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
@@ -204,8 +205,7 @@
                                       (remove :parallel)
                                       (map (fn [action]
                                              [(:step action) action]))
-                                      (into {}))
-            controls-ch (om/get-shared owner [:comms :controls])]
+                                      (into {}))]
         (html
          [:div#container_scroll_parent ;; hides horizontal scrollbar
           [:div#container_parent {:on-wheel (fn [e]
@@ -219,7 +219,7 @@
                                                ;; transition to a new selected container
                                                (let [scroller (.. e -target -scroll_handler)]
                                                  (when (or (not scroller) (.isStopped scroller))
-                                                   (put! controls-ch [:container-parent-scroll]))))
+                                                   (raise! owner [:container-parent-scroll]))))
                                   :class (str "selected_" current-container-id)}
            (for [container containers]
              (om/build container-view

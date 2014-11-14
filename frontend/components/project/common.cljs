@@ -1,6 +1,6 @@
 (ns frontend.components.project.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
             [frontend.models.plan :as plan-model]
@@ -21,10 +21,57 @@
                     (plan-model/trial? plan)
                     ;; only bug them if < 20 days left in trial
                     ;; note that this includes expired trials
-                    (< (plan-model/days-left-in-trial plan) 20)]]
+                    (< (plan-model/days-left-in-trial plan) 20)
+
+                    ;; only show freemium trial notices if the
+                    ;; trial is still active.
+                    (if (plan-model/freemium? plan)
+                      (not (plan-model/trial-over? plan))
+                      true)]]
     (utils/mlog (gstring/format "show-trial-notice? has conditions %s days left %d"
                                 conditions (plan-model/days-left-in-trial plan)))
     (every? identity conditions)))
+
+(defn non-freemium-trial-html [plan project project-name days org-name plan-path]
+  (html
+   [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
+    (cond (plan-model/trial-over? plan)
+          (list (gstring/format "The %s project is covered by %s's plan, whose trial ended %s ago. "
+                                project-name org-name (pluralize (Math/abs days) "day"))
+                [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
+                ".")
+
+          (> days 10)
+          (list (gstring/format "The %s project is covered by %s's trial, enjoy! (or check out "
+                                project-name org-name)
+                [:a {:href plan-path} "our plans"]
+                ").")
+          
+          (> days 7)
+          (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
+                                project-name org-name (pluralize days "day"))
+                [:a {:href plan-path} "Check out our plans"]
+                ".")
+          
+          (> days 4)
+          (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
+                                project-name org-name (pluralize days "day"))
+                [:a {:href plan-path} "Add a plan"]
+                " to keep running builds.")
+          
+          :else
+          (list (gstring/format "The %s project is covered by %s's trial which expires in %s! "
+                                project-name org-name (plan-model/pretty-trial-time plan))
+                [:a {:href plan-path} "Add a plan"]
+                " to keep running builds."))]))
+
+(defn freemium-trial-html [plan project project-name days org-name plan-path]
+  (html
+   [:div.alert {:class "alert-success"}
+    (list (gstring/format "The %s project is covered by %s's trial of %d containers. "
+                          project-name org-name (plan-model/usable-containers plan))
+          [:a {:href plan-path} "Add more containers"]
+          " for parallel builds and reduced build queueing once the trial runs out.")]))
 
 (defn trial-notice [data owner]
   (reify
@@ -35,38 +82,11 @@
             project-name (gstring/format "%s/%s" (:username project) (:reponame project))
             days (plan-model/days-left-in-trial plan)
             org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})]
-        (html
-         [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
-          (cond (plan-model/trial-over? plan)
-                (list (gstring/format "The %s project is covered by %s's plan, whose trial ended %s ago. "
-                                      project-name org-name (pluralize (Math/abs days) "day"))
-                      [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
-                      ".")
-
-                (> days 10)
-                (list (gstring/format "The %s project is covered by %s's trial, enjoy! (or check out "
-                                      project-name org-name)
-                      [:a {:href plan-path} "our plans"]
-                      ").")
-
-                (> days 7)
-                (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
-                                      project-name org-name (pluralize days "day"))
-                      [:a {:href plan-path} "Check out our plans"]
-                      ".")
-
-                (> days 4)
-                (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
-                                      project-name org-name (pluralize days "day"))
-                      [:a {:href plan-path} "Add a plan"]
-                      " to keep running builds.")
-
-                :else
-                (list (gstring/format "The %s project is covered by %s's trial which expires in %s! "
-                                      project-name org-name (plan-model/pretty-trial-time plan))
-                      [:a {:href plan-path} "Add a plan"]
-                      " to keep running builds."))])))))
+            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})
+            trial-notice-fn (if (plan-model/freemium? plan)
+                              freemium-trial-html
+                              non-freemium-trial-html)]
+        (trial-notice-fn plan project project-name days org-name plan-path)))))
 
 (defn show-enable-notice [project]
   (not (:has_usable_key project)))
@@ -76,8 +96,7 @@
     om/IRender
     (render [_]
       (let [project-name (vcs-url/project-name (:vcs_url project))
-            project-id (project-model/id project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            project-id (project-model/id project)]
         (html
          [:div.row-fluid
           [:div.offset1.span10
@@ -85,11 +104,11 @@
             "Project "
             project-name
             " isn't configured with a deploy key or a github user, so we may not be able to test all pushes."
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Adding...",
-               :on-click #(put! controls-ch [:enabled-project {:project-id project-id
-                                                               :project-name project-name}])}
+               :on-click #(raise! owner [:enabled-project {:project-id project-id
+                                                           :project-name project-name}])}
               "Add SSH key"])]]])))))
 
 (defn show-follow-notice [project]
@@ -102,16 +121,15 @@
     om/IRender
     (render [_]
       (let [project-name (vcs-url/project-name (:vcs_url project))
-            vcs-url (:vcs_url project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            vcs-url (:vcs_url project)]
         (html
          [:div.row-fluid
           [:div.offset1.span10
            [:div.alert.alert-success
-            (forms/stateful-button
+            (forms/managed-button
              [:button.btn.btn-primary
               {:data-loading-text "Following...",
-               :on-click #(put! controls-ch [:followed-repo {:vcs_url vcs-url}])}
+               :on-click #(raise! owner [:followed-repo {:vcs_url vcs-url}])}
               "Follow"])
             " " project-name " to add " project-name " to your sidebar and get build notifications."]]])))))
 
@@ -135,6 +153,6 @@
            [:select {:value pref
                      :on-change #(let [value (.. % -target -value)
                                        args {vcs_url {:emails value}}]
-                                   (put! ch [:project-preferences-updated args]))}
+                                   (raise! owner [:project-preferences-updated args]))}
             (for [[pref label] email-prefs]
               [:option {:value pref} label])]])))))

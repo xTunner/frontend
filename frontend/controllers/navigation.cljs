@@ -14,42 +14,16 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog merror]]
+            [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-fragment! scroll!]]
             [goog.dom]
-            [goog.string :as gstring]
-            [goog.style])
+            [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
-                   [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
 ;;      We could also use a declarative way to specify each page.
 
-;; --- Helper Methods ---
-
-(defn set-page-title! [& [title]]
-  (set! (.-title js/document) (utils/strip-html
-                               (if title
-                                 (str title  " - CircleCI")
-                                 "CircleCI"))))
-
-(defn scroll-to-fragment!
-  "Scrolls to the element with id of fragment, if one exists"
-  [fragment]
-  (when-let [node (goog.dom.getElement fragment)]
-    (let [body (sel1 "body")
-          node-top (goog.style/getPageOffsetTop node)
-          body-top (goog.style/getPageOffsetTop body)]
-      (set! (.-scrollTop body) (- node-top body-top)))))
-
-(defn scroll!
-  "Scrolls to fragment if the url had one, or scrolls to the top of the page"
-  [args]
-  (if (:_fragment args)
-    ;; give the page time to render
-    (utils/rAF #(scroll-to-fragment! (:_fragment args)))
-    (utils/rAF #(set! (.-scrollTop (sel1 "body")) 0))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -202,7 +176,7 @@
             :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
-            (analytics/track-build (:resp api-result)))
+            (analytics/track-build current-user (:resp api-result)))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
@@ -432,7 +406,7 @@
     (let [api-ch (get-in current-state [:comms :api])
           nav-ch (get-in current-state [:comms :nav])
           docs (or (get-in current-state state/docs-data-path)
-                   (let [api-result (<! (ajax/managed-ajax "GET" (get-in current-state [:render-context :doc_manifest_url]) :csrf-token false))]
+                   (let [api-result (<! (ajax/managed-ajax :get (get-in current-state [:render-context :doc_manifest_url]) :csrf-token false))]
                      (put! api-ch [:doc-manifest (:status api-result) api-result])
                      (when (= :success (:status api-result))
                        (doc-utils/format-doc-manifest (:resp api-result)))))
@@ -464,3 +438,10 @@
   [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
   (post-default navigation-point args)
   (analytics/track-page "View Language Landing" {:language language}))
+
+(defmethod post-navigated-to! :integrations
+  [history-imp navigation-point {:keys [integration] :as args} previous-state current-state]
+  (let [titles {:docker "CircleCI and Docker"
+                :heroku "Deploy to Heroku from CircleCI"
+                :saucelabs "Test with Sauce Labs on CircleCI"}]
+    (set-page-title! (get titles integration))))

@@ -1,6 +1,6 @@
 (ns frontend.components.plans
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.models.plan :as plan-model]
             [frontend.state :as state]
@@ -21,7 +21,6 @@
   (om/component
    (let [{:keys [containers plan-name recommended]} opts
          logged-in? (get-in app state/user-path)
-         controls-ch (om/get-shared owner [:comms :controls])
          price (plan-model/cost plan-model/default-template-properties containers)]
      (html
       [:div.span3.plan {:class (when recommended "recommended")}
@@ -41,16 +40,16 @@
            [:a {:data-loading-text "Paying...",
                 :data-failed-text "Failed!",
                 :data-success-text "Paid!",
-                :on-click #(put! controls-ch [:new-plan-clicked {:containers containers
-                                                                 :base-template-id (:id plan-model/default-template-properties)
-                                                                 :price price
-                                                                 :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
+                :on-click #(raise! owner [:new-plan-clicked {:containers containers
+                                                             :paid {:template (:id plan-model/default-template-properties)}
+                                                             :price price
+                                                             :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])
 
           [:a {:href (gh-utils/auth-url)
-               :on-click #(put! controls-ch [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                           :event "Auth GitHub"
-                                                                           :properties {:source "pricing-business"}}])}
+               :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
+                                                                       :event "Auth GitHub"
+                                                                       :properties {:source "pricing-business"}}])}
            [:span "Start 14-day Free Trial"]])]]))))
 
 (def pricing-enterprise
@@ -90,7 +89,7 @@ You queue them up, we'll knock 'em down."},
    {:headline "Unlimited build time",
     :detail "Great testing means using Circle as much as possible. You don't want to weigh good testing against possible charges or monthly fees. So we have no limit, no per-hour cost, no overages. Just simple, predictable pricing."},
    {:headline "Phenomenal support",
-    :detail "We respond to support requests immediately, every day (yes, on weekends and holidays). Most requests are responded to within the hour, 99% are responded to in 12 hours. We're also available for live chat support."},
+    :detail "We respond to support requests quickly -- most requests during working hours are answered within the hour. We also offer live support chat."},
    {:headline "Custom NDA",
     :detail "Naturally we never look at your code. We also have a great security policy, which gives us no rights whatsoever to your code. However, if you would prefer that we sign your custom NDA, we'd be happy to.",
     :enterprise true},

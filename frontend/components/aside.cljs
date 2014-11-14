@@ -1,6 +1,6 @@
 (ns frontend.components.aside
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.shared :as shared]
             [frontend.models.build :as build-model]
@@ -11,6 +11,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.seq :refer [select-in]]
+            [goog.style]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -71,7 +72,6 @@
     (render [_]
       (let [login (:login opts)
             project (:project data)
-            controls-ch (om/get-shared owner [:comms :controls])
             settings (:settings data)
             project-id (project-model/id project)
             ;; lets us store collapse branches in localstorage without leaking info
@@ -87,8 +87,8 @@
           [:li
            [:div.project {:role "button"}
             [:a.toggle {:title "show/hide"
-                        :on-click #(put! controls-ch [:collapse-branches-toggled {:project-id project-id
-                                                                                  :project-id-hash project-id-hash}])}
+                        :on-click #(raise! owner [:collapse-branches-toggled {:project-id project-id
+                                                                              :project-id-hash project-id-hash}])}
              (common/ico :repo)]
 
             [:a.title {:href (routes/v1-project-dashboard {:org org
@@ -113,40 +113,40 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-          [:div.aside-user {:class (when (get-in app state/user-options-shown-path)
-                                     "open")}
-           [:header
-            [:h5 "Your Account"]
-            [:a.close-menu
-             {:on-click #(put! controls-ch [:user-options-toggled])}
-             (common/ico :fail-light)]]
-           [:div.aside-user-options
-            [:a.aside-item {:href "/account"} "Settings"]
-            [:a.aside-item {:on-click #(put! controls-ch [:invite-form-opened])}
-             "Invite a Teammate"]
-            [:a.aside-item {:href "/logout"} "Logout"]]])))))
+      (html
+        [:div.aside-user {:class (when (get-in app state/user-options-shown-path)
+                                   "open")}
+         [:header
+          [:h5 "Your Account"]
+          [:a.close-menu
+           {:on-click #(raise! owner [:user-options-toggled])}
+           (common/ico :fail-light)]]
+         [:div.aside-user-options
+          [:a.aside-item {:href "/account"} "Settings"]
+          [:a.aside-item {:on-click #(raise! owner [:invite-form-opened])}
+           "Invite a Teammate"]
+          [:a.aside-item {:href "/logout"} "Logout"]]]))))
 
 (defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
+    om/IInitState (init-state [_] {:scrollbar-width 0})
+    om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
       (let [slim-aside? (get-in app state/slim-aside-path)
             show-all-branches? (get-in app state/show-all-branches-path)
             projects (get-in app state/projects-path)
-            settings (get-in app state/settings-path)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            settings (get-in app state/settings-path)]
         (html
          [:nav.aside-left-menu
           (om/build context-menu app)
           [:div.aside-activity.open
-           [:div.wrapper
+           [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
             [:header
              [:select {:name "toggle-all-branches"
-                       :on-change #(put! controls-ch [:show-all-branches-toggled
-                                                      (utils/parse-uri-bool (.. % -target -value))])
+                       :on-change #(raise! owner [:show-all-branches-toggled
+                                                  (utils/parse-uri-bool (.. % -target -value))])
                        :value show-all-branches?}
               [:option {:value false} "Your Branch Activity"]
               [:option {:value true} "All Branch Activity" ]]
@@ -166,10 +166,7 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            projects (get-in app state/projects-path)
-            settings (get-in app state/settings-path)
-            slim-aside? (get-in app state/slim-aside-path)]
+      (let [slim-aside? (get-in app state/slim-aside-path)]
         (html
          [:nav.aside-left-nav
 
@@ -180,7 +177,7 @@
            [:div.logomark
             (common/ico :logo)]]
 
-          [:a.aside-item {:on-click #(put! controls-ch [:user-options-toggled])
+          [:a.aside-item {:on-click #(raise! owner [:user-options-toggled])
                           :data-placement "right"
                           :data-trigger "hover"
                           :title "Account"
@@ -196,7 +193,7 @@
            [:i.fa.fa-copy]
            [:span "Documentation"]]
 
-          [:a.aside-item {:on-click #(put! controls-ch [:intercom-dialog-raised])
+          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
                           :title "Report Bug"
                           :data-placement "right"
                           :data-trigger "hover"
@@ -231,7 +228,7 @@
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
                           :title "Expand"
-                          :on-click #(put! controls-ch [:slim-aside-toggled])}
+                          :on-click #(raise! owner [:slim-aside-toggled])}
            (if slim-aside?
              [:i.fa.fa-long-arrow-right]
              (list

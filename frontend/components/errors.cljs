@@ -1,6 +1,6 @@
 (ns frontend.components.errors
   (:require [frontend.state :as state]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -15,8 +15,7 @@
             logged-in? (get-in app state/user-path)
             orig-nav-point (get-in app [:original-navigation-point])
             _ (utils/mlog "error-page render with orig-nav-point " orig-nav-point " and logged-in? " (boolean logged-in?))
-            maybe-login-page? (some #{orig-nav-point} [:dashboard :build])
-            controls-ch (om/get-shared owner [:comms :controls])]
+            maybe-login-page? (some #{orig-nav-point} [:dashboard :build])]
         (html
          [:div.page.error
           [:div.banner
@@ -31,11 +30,11 @@
            (condp = status
              401 [:p
                   [:b [:a {:href (gh-utils/auth-url)
-                           :on-click #(put! controls-ch [:track-external-link-clicked
-                                                         {:event "Auth GitHub"
-                                                          :properties {:source "401"
-                                                                       :url js/window.location.pathname}
-                                                          :path (gh-utils/auth-url)}])}
+                           :on-click #(raise! owner [:track-external-link-clicked
+                                                     {:event "Auth GitHub"
+                                                      :properties {:source "401"
+                                                                   :url js/window.location.pathname}
+                                                      :path (gh-utils/auth-url)}])}
                        "Login here"]]
                   " to view this page"]
              404 (if (and (not logged-in?) maybe-login-page?)

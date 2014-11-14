@@ -1,7 +1,7 @@
 (ns frontend.components.enterprise
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
@@ -66,55 +66,54 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:div#enterprise
-          [:div.enterprise-hero
-           [:section.enterprise-hero-wrapper
-            [:article.enterprise-hero-title
-             [:h1 "Ship code at the speed of business."]
-             [:h3 "Powerful, continuous deployment, on-premises or in the cloud."]]
-            [:article.enterprise-hero-units
-             [:div.enterprise-hero-unit
-              server-image
-              [:h2 "CircleCI on-premises"]
-              [:p "Install CircleCI behind your firewall or in a private cloud for security that you control."]]
-             [:div.enterprise-hero-unit
-              cloud-image
-              [:h2 "CircleCI in the cloud"]
-              [:p "All the same great features as CircleCI's hosted offering along with SLA, role-based access control, flexible payments options and more."]]]]]
-          [:div.enterprise-features
-           [:section.enterprise-features-wrapper
-            [:div.enterprise-feature
-             [:article
-              [:h4 "Maintain complete control"]
-              [:p "With on-premises and private cloud options, role-based access control, and enterprise grade security you can maintain complete control of your source code and deployment process."]
-              [:a {:on-click #(put! controls-ch [:enterprise-learn-more-clicked {:source "control"}])}
-               "Learn More"]]
-             control-image]
-            [:div.enterprise-feature
-             support-image
-             [:article
-              [:h4 "Enterprise support"]
-              [:p
-               "Your success is our number one priority which is why we offer 24/7 support and multiple deployment options with service-level agreements."]
-              [:a {:on-click #(put! controls-ch [:enterprise-learn-more-clicked {:source "support"}])}
-               "Learn More"]]]
-            [:div.enterprise-feature
-             [:article
-              [:h4 "Seamless integration"]
-              [:p
-               "We integrate with your current workflow via Github Enterprise, Amazon VPC, and more."]
-              [:a
-               {:on-click #(put! controls-ch [:enterprise-learn-more-clicked {:source "integration"}])}
-               "Learn More"]]
-             integration-image]]]
-          [:div.enterprise-cta
-           [:section.enterprise-cta-wrapper
-            [:div.enterprise-cta-contact
-             [:button
-              {:on-click #(put! controls-ch [:enterprise-learn-more-clicked {:source "hero"}])}
-              "Contact Us"]]
-            [:div.enterprise-cta-trust
-             (shared/customers-trust)]
-            (om/build modal app)]]])))))
+      (html
+       [:div#enterprise
+        [:div.enterprise-hero
+         [:section.enterprise-hero-wrapper
+          [:article.enterprise-hero-title
+           [:h1 "Ship code at the speed of business."]
+           [:h3 "Powerful, continuous deployment, on-premises or in the cloud."]]
+          [:article.enterprise-hero-units
+           [:div.enterprise-hero-unit
+            server-image
+            [:h2 "CircleCI on-premises"]
+            [:p "Install CircleCI behind your firewall or in a private cloud for security that you control."]]
+           [:div.enterprise-hero-unit
+            cloud-image
+            [:h2 "CircleCI in the cloud"]
+            [:p "All the same great features as CircleCI's hosted offering along with SLA, role-based access control, flexible payments options and more."]]]]]
+        [:div.enterprise-features
+         [:section.enterprise-features-wrapper
+          [:div.enterprise-feature
+           [:article
+            [:h4 "Maintain complete control"]
+            [:p "With on-premises and private cloud options, role-based access control, and enterprise grade security you can maintain complete control of your source code and deployment process."]
+            [:a {:on-click #(raise! owner [:enterprise-learn-more-clicked {:source "control"}])}
+             "Learn More"]]
+           control-image]
+          [:div.enterprise-feature
+           support-image
+           [:article
+            [:h4 "Enterprise support"]
+            [:p
+             "Your success is our number one priority which is why we offer 24/7 support and multiple deployment options with service-level agreements."]
+            [:a {:on-click #(raise! owner [:enterprise-learn-more-clicked {:source "support"}])}
+             "Learn More"]]]
+          [:div.enterprise-feature
+           [:article
+            [:h4 "Seamless integration"]
+            [:p
+             "We integrate with your current workflow via Github Enterprise, Amazon VPC, and more."]
+            [:a
+             {:on-click #(raise! owner [:enterprise-learn-more-clicked {:source "integration"}])}
+             "Learn More"]]
+           integration-image]]]
+        [:div.enterprise-cta
+         [:section.enterprise-cta-wrapper
+          [:div.enterprise-cta-contact
+           [:button
+            {:on-click #(raise! owner [:enterprise-learn-more-clicked {:source "hero"}])}
+            "Contact Us"]]
+          [:div.enterprise-cta-trust
+           (shared/customers-trust)]
+          (om/build modal app)]]]))))

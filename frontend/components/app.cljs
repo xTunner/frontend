@@ -1,6 +1,6 @@
 (ns frontend.components.app
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
             [frontend.components.about :as about]
             [frontend.components.admin :as admin]
@@ -29,6 +29,7 @@
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
+            [frontend.instrumentation :as instrumentation]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
@@ -69,13 +70,13 @@
     :enterprise enterprise/enterprise
     :shopify-story stories/shopify
     :language-landing language-landing/language-landing
-    :docker-integration integrations/docker
+    :integrations integrations/integration
     :changelog changelog/changelog
     :documentation docs/documentation
 
     :error errors/error-page))
 
-(defn app* [app owner]
+(defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
     om/IRender
@@ -83,15 +84,16 @@
       (if-not (:navigation-point app)
         (html [:div#app])
 
-        (let [controls-ch (om/get-shared owner [:comms :controls])
-              persist-state! #(put! controls-ch [:state-persisted])
-              restore-state! #(put! controls-ch [:state-restored])
-              dom-com (dominant-component app)
+        (let [persist-state! #(raise! owner [:state-persisted])
+              restore-state! #(do (raise! owner [:state-restored])
+                                  ;; Components are not aware of external state changes.
+                                  (reinstall-om!))
               show-inspector? (get-in app state/show-inspector-path)
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
-              slim-aside? (get-in app state/slim-aside-path)]
+              slim-aside? (get-in app state/slim-aside-path)
+              dom-com (dominant-component app)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -99,13 +101,15 @@
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when slim-aside? ["aside-slim"])
-                                       (when-not logged-in? ["aside-nil"]))}
+                                       (when-not logged-in? ["aside-nil"])
+                                       ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
+                                       (when (= :landing (:navigation-point app)) ["landing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
               (when (and inner? logged-in?)
                 (om/build aside/aside app-without-container-data))
-              [:main.app-main
+              [:main.app-main {:ref "app-main"}
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
@@ -121,5 +125,7 @@
               shared/invite-form])))))))
 
 
-(defn app [app owner]
-  (reify om/IRender (render [_] (om/build app* (dissoc app :inputs)))))
+(defn app [app owner opts]
+  (reify
+    om/IDisplayName (display-name [_] "App Wrapper")
+    om/IRender (render [_] (om/build app* (dissoc app :inputs :state-map) {:opts opts}))))

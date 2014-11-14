@@ -149,11 +149,10 @@
 
   (defroute v1-languages (FragmentRoute. "/features/:language") {:as params}
     (open-to-outer! nav-ch :language-landing (assoc params
-                                              :_title (str "CircleCI for " (:language params)))))
+                                               :_title (str "CircleCI for " (:language params)))))
 
-  ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
-  (defroute v1-integrations (FragmentRoute. "/integrations/docker") {:as params}
-    (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
+  (defroute v1-integrations (FragmentRoute. "/integrations/:integration") {:keys [integration] :as params}
+    (open-to-outer! nav-ch :integrations (assoc params :integration (keyword integration))))
 
   (defroute v1-changelog (FragmentRoute. "/changelog/:id") {:as params}
     (open-to-outer! nav-ch :changelog params))
@@ -164,7 +163,10 @@
   (defroute v1-root (FragmentRoute. "/") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
-      (open-to-outer! nav-ch :landing params))))
+      (open-to-outer! nav-ch :landing params)))
+
+  (defroute v1-root (FragmentRoute. "/home") {:as params}
+    (open-to-outer! nav-ch :landing params)))
 
 (defn define-spec-routes! [nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]

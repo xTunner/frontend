@@ -1,6 +1,6 @@
 (ns frontend.components.project-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [raise!]]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
@@ -43,10 +43,9 @@
    [:li [:a {:href "#ssh"} "SSH keys"]]
    [:li [:a {:href "#api"} "API tokens"]]
    [:li [:a {:href "#aws"} "AWS keys"]]
-   [:li.side-title "Build Artifacts"]
-   [:li [:a {:href "#artifacts"} "Artifacts"]]
    [:li.side-title "Continuous Deployment"]
    [:li [:a {:href "#heroku"} "Heroku"]]
+   [:li [:a {:href "#aws-codedeploy"} "AWS CodeDeploy"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
 (defn branch-names [project-data]
@@ -56,13 +55,12 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (utils/typeahead
-         "#branch-picker-typeahead-hack"
-         {:source (branch-names project-data)
-          :updater (fn [branch]
-                     (put! controls-ch [:edited-input {:path (conj state/inputs-path :settings-branch) :value branch}])
-                     branch)})))
+      (utils/typeahead
+       "#branch-picker-typeahead-hack"
+       {:source (branch-names project-data)
+        :updater (fn [branch]
+                   (raise! owner [:edited-input {:path (conj state/inputs-path :settings-branch) :value branch}])
+                   branch)}))
     om/IRender
     (render [_]
       (let [{:keys [button-text channel-message channel-args]
@@ -70,8 +68,7 @@
              project (:project project-data)
              project-id (project-model/id project)
              default-branch (:default_branch project)
-             settings-branch (get (inputs/get-inputs-from-app-state owner) :settings-branch default-branch)
-             controls-ch (om/get-shared owner [:comms :controls])]
+             settings-branch (get (inputs/get-inputs-from-app-state owner) :settings-branch default-branch)]
         (html
          [:form
           [:input {:name "branch"
@@ -79,12 +76,12 @@
                    :required true
                    :type "text"
                    :value (str settings-branch)
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path :settings-branch) %)}]
+                   :on-change #(utils/edit-input owner (conj state/inputs-path :settings-branch) %)}]
           [:label {:placeholder "Test settings on..."}]
           (forms/managed-button
            [:input
             {:value button-text
-             :on-click #(do (put! controls-ch [channel-message (merge {:project-id project-id} channel-args)])
+             :on-click #(do (raise! owner [channel-message (merge {:project-id project-id} channel-args)])
                             false)
              :data-loading-text "Starting..."
              :data-success-text "Started..."
@@ -210,7 +207,7 @@
                                                     :subpage "containers"})}
          "Upgrade"]]))))
 
-(defn parallelism-picker [project-data controls-ch]
+(defn parallelism-picker [project-data owner]
   [:div.parallelism-picker
    (if-not (:plan project-data)
      [:div.loading-spinner common/spinner]
@@ -232,9 +229,9 @@
                      :type "radio"
                      :name "parallel"
                      :value parallelism
-                     :on-click #(put! controls-ch [:selected-project-parallelism
-                                                   {:project-id project-id
-                                                    :parallelism parallelism}])
+                     :on-click #(raise! owner [:selected-project-parallelism
+                                               {:project-id project-id
+                                                :parallelism parallelism}])
                      :disabled (> parallelism (plan-model/max-selectable-parallelism plan))
                      :checked (= parallelism (:parallel project))}]])])))])
 
@@ -242,14 +239,13 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])]
-        (html
-         [:div
-          [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
-          (if-not (:plan project-data)
-            [:div.loading-spinner common/spinner]
-            (list (parallelism-picker project-data controls-ch)
-                  (mini-parallelism-faq project-data)))])))))
+      (html
+       [:div
+        [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
+        (if-not (:plan project-data)
+          [:div.loading-spinner common/spinner]
+          (list (parallelism-picker project-data owner)
+                (mini-parallelism-faq project-data)))]))))
 
 (defn env-vars [project-data owner]
   (reify
@@ -259,8 +255,7 @@
             inputs (inputs/get-inputs-from-app-state owner)
             new-env-var-name (:new-env-var-name inputs)
             new-env-var-value (:new-env-var-value inputs)
-            project-id (project-model/id project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            project-id (project-model/id project)]
         (html
          [:div.environment-variables
           [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
@@ -276,20 +271,20 @@
            [:form
             [:input#env-var-name
              {:required true, :type "text", :value new-env-var-name
-              :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-name) %)}]
+              :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]
             [:label {:placeholder "Name"}]
             [:input#env-var-value
              {:required true, :type "text", :value new-env-var-value
-              :on-change #(utils/edit-input controls-ch (conj state/inputs-path :new-env-var-value) %)}]
+              :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]
             [:label {:placeholder "Value"}]
-            (forms/stateful-button
+            (forms/managed-button
              [:input {:data-failed-text "Failed",
                       :data-success-text "Added",
                       :data-loading-text "Adding...",
                       :value "Save variables",
                       :type "submit"
                       :on-click #(do
-                                   (put! controls-ch [:created-env-var {:project-id project-id}])
+                                   (raise! owner [:created-env-var {:project-id project-id}])
                                    false)}])]
            (when-let [env-vars (seq (:envvars project-data))]
              [:table
@@ -302,8 +297,8 @@
                   [:td
                    [:a
                     {:title "Remove this variable?",
-                     :on-click #(put! controls-ch [:deleted-env-var {:project-id project-id
-                                                                     :env-var-name name}])}
+                     :on-click #(raise! owner [:deleted-env-var {:project-id project-id
+                                                                 :env-var-name name}])}
                     [:i.fa.fa-times-circle]
                     [:span " Remove"]]]])]])]])))))
 
@@ -314,7 +309,6 @@
       (let [project (:project project-data)
             project-id (project-model/id project)
             project-name (vcs-url/project-name (:vcs_url project))
-            controls-ch (om/get-shared owner [:comms :controls])
             ;; This project's feature flags
             feature-flags (:feature_flags project)
             describe-flag (fn [{:keys [flag title blurb]}]
@@ -329,25 +323,25 @@
                                    [:input.radio
                                     {:type "checkbox"
                                      :checked (get feature-flags flag)
-                                     :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :flag flag
-                                                                                                   :value true}])}]
+                                     :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                               :flag flag
+                                                                                               :value true}])}]
                                    " On"]]
                                  [:li
                                   [:label
                                    [:input.radio
                                     {:type "checkbox"
                                      :checked (not (get feature-flags flag))
-                                     :on-change #(put! controls-ch [:project-feature-flag-checked {:project-id project-id
-                                                                                                   :flag flag
-                                                                                                   :value false}])}]
+                                     :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                               :flag flag
+                                                                                               :value false}])}]
                                    " Off"]]]]]))]
         (html
          [:div.project-settings-block
           [:h2 "Experimental Settings"]
           [:p
            " We've got a few settings you can play with, to enable things we're working on. We'd love to "
-           [:a {:on-click #(put! controls-ch [:project-experiments-feedback-clicked])}
+           [:a {:on-click #(raise! owner [:project-experiments-feedback-clicked])}
             "know what you think about them"] "."
            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
           [:ul
@@ -395,12 +389,11 @@
       (let [project (:project project-data)
             project-id (project-model/id project)
             inputs (inputs/get-inputs-from-app-state owner)
-            settings (state-utils/merge-inputs project inputs [:setup :dependencies :post_dependencies])
-            controls-ch (om/get-shared owner [:comms :controls])]
+            settings (state-utils/merge-inputs project inputs [:setup :dependencies :post_dependencies])]
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your dependencies commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
@@ -413,27 +406,27 @@
              [:textarea {:name "setup",
                          :required true
                          :value (str (:setup settings))
-                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :setup) % owner)}]
+                         :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
              [:label {:placeholder "Pre-dependency commands"}]
              [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
              [:textarea {:name "dependencies",
                          :required true
                          :value (str (:dependencies settings))
-                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :dependencies) %)}]
+                         :on-change #(utils/edit-input owner (conj state/inputs-path :dependencies) %)}]
              [:label {:placeholder "Dependency overrides"}]
              [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
               [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
               [:code "configure"] ", " [:code "make"] ", etc."]
              [:textarea {:required true
                          :value (str (:post_dependencies settings))
-                         :on-change #(utils/edit-input controls-ch (conj state/inputs-path :post_dependencies) %)}]
+                         :on-change #(utils/edit-input owner (conj state/inputs-path :post_dependencies) %)}]
              [:label {:placeholder "Post-dependency commands"}]
              [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
              (forms/managed-button
               [:input {:value "Next, setup your tests",
                        :type "submit"
                        :data-loading-text "Saving..."
-                       :on-click #(do (put! controls-ch [:saved-dependencies-commands {:project-id project-id}])
+                       :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
                                       false)}])]]]])))))
 
 (defn tests [project-data owner]
@@ -443,12 +436,11 @@
       (let [project (:project project-data)
             project-id (project-model/id project)
             inputs (inputs/get-inputs-from-app-state owner)
-            settings (state-utils/merge-inputs project inputs [:test :extra])
-            controls-ch (om/get-shared owner [:comms :controls])]
+            settings (state-utils/merge-inputs project inputs [:test :extra])]
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your test commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
@@ -460,13 +452,13 @@
             [:textarea {:name "test",
                         :required true
                         :value (str (:test settings))
-                        :on-change #(utils/edit-input controls-ch (conj state/inputs-path :test) %)}]
+                        :on-change #(utils/edit-input owner (conj state/inputs-path :test) %)}]
             [:label {:placeholder "Test commands"}]
             [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
             [:textarea {:name "extra",
                         :required true
                         :value (str (:extra settings))
-                        :on-change #(utils/edit-input controls-ch (conj state/inputs-path :extra) %)}]
+                        :on-change #(utils/edit-input owner (conj state/inputs-path :extra) %)}]
             [:label {:placeholder "Post-test commands"}]
             [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
             (forms/managed-button
@@ -474,7 +466,7 @@
                       :data-loading-text "Saving...",
                       :value "Save commands",
                       :type "submit"
-                      :on-click #(do (put! controls-ch [:saved-test-commands {:project-id project-id}])
+                      :on-click #(do (raise! owner [:saved-test-commands {:project-id project-id}])
                                      false)}])
             [:div.try-out-build
              (om/build branch-picker
@@ -491,15 +483,14 @@
     om/IRender
     (render [_]
       (html
-       (let [controls-ch (om/get-shared owner [:comms :controls])
-             notify_pref (get settings field)
+       (let [notify_pref (get settings field)
              id (string/replace (name field) "_" "-")]
          [:label {:for id}
           [:input {:id id
                    :checked (= "smart" notify_pref)
                    ;; note: can't use inputs-state here because react won't let us
                    ;;       change checked state without rerendering
-                   :on-change #(utils/edit-input controls-ch (conj state/project-path field) %
+                   :on-change #(utils/edit-input owner (conj state/project-path field) %
                                                  :value (if (= "smart" notify_pref) nil "smart"))
                    :value "smart"
                    :type "checkbox"}]
@@ -507,7 +498,7 @@
           [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
                                      :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
 
-(defn chatroom-item [project-id settings controls-ch
+(defn chatroom-item [project-id settings owner
                      {:keys [service doc inputs show-fixed-failed? top-section-content settings-keys]}]
   (let [service-id (string/lower-case service)]
     [:div {:class (str "chat-room-item " service-id)}
@@ -523,17 +514,17 @@
          (list
           [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
                    :value (str (get settings field))
-                   :on-change #(utils/edit-input controls-ch (conj state/inputs-path field) %)}]
+                   :on-change #(utils/edit-input owner (conj state/inputs-path field) %)}]
           [:label {:placeholder placeholder}]))
        (let [event-data {:project-id project-id :merge-paths (map vector settings-keys)}]
          [:div.chat-room-buttons
           (forms/managed-button
-            [:button.save {:on-click #(put! controls-ch [:saved-project-settings event-data])
+            [:button.save {:on-click #(raise! owner [:saved-project-settings event-data])
                            :data-loading-text "Saving"
                            :data-success-text "Saved"}
              "Save"])
           (forms/managed-button
-            [:button.test {:on-click #(put! controls-ch [:test-hook (assoc event-data :service service-id)])
+            [:button.test {:on-click #(raise! owner [:test-hook (assoc event-data :service service-id)])
                            :data-loading-text "Testing"
                            :data-success-text "Tested"}
              "& Test Hook"])])]]]))
@@ -544,7 +535,6 @@
     (render [_]
       (let [project (:project project-data)
             project-id (project-model/id project)
-            controls-ch (om/get-shared owner [:comms :controls])
             inputs (inputs/get-inputs-from-app-state owner)
             settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
         (html
@@ -561,7 +551,7 @@
                                            :checked (:hipchat_notify settings)
                                            ;; n.b. can't use inputs-state b/c react won't changed
                                            ;;      checked state without a rerender
-                                           :on-change #(utils/edit-input controls-ch (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
+                                           :on-change #(utils/edit-input owner (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
                                          [:span "Show popups"]])
                              :inputs [{:field :hipchat_room :placeholder "Room"}
                                       {:field :hipchat_api_token :placeholder "API"}]
@@ -608,7 +598,7 @@
                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
                              :show-fixed-failed? true
                              :settings-keys project-model/hall-keys}]]
-             (chatroom-item project-id settings controls-ch chat-spec))]])))))
+             (chatroom-item project-id settings owner chat-spec))]])))))
 
 (defn webhooks [project-data owner]
   (om/component
@@ -643,7 +633,6 @@
 
 (defn status-badges [project-data owner]
   (let [project (:project project-data)
-        controls-ch (om/get-shared owner [:comms :controls])
         oss (get-in project [:feature_flags :oss])
         ;; Get branch selection or the empty string for the default branch.
         branches (branch-names project-data)
@@ -677,7 +666,7 @@
           [:h4 "Branch"]
           [:div.styled-select
            [:select {:value branch
-                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :branch) %)}
+                     :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :branch) %)}
             [:option {:value ""} "Default"]
             [:option {:disabled "disabled"} "-----"]
             (for [branch branches]
@@ -690,7 +679,7 @@
             [:p [:span.warning "Warning: "] "Private projects require an " [:a {:href "#api"} "API token"] "."])
           [:div.styled-select
            [:select {:value token
-                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :token) %)}
+                     :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :token) %)}
             [:option {:value ""} "None"]
             [:option {:disabled "disabled"} "-----"]
             (for [{:keys [token label]} tokens]
@@ -704,7 +693,7 @@
            (for [[id {:keys [label]}] status-styles]
              [:label.radio
               [:input {:name "branch" :type "radio" :value id :checked (= style id)
-                       :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :style) %)}]
+                       :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :style) %)}]
               label])]]
 
          [:div.preview
@@ -715,7 +704,7 @@
           [:h4 "Embed Code"]
           [:div.styled-select
            [:select {:value format
-                     :on-change #(utils/edit-input controls-ch (conj state/project-data-path :status-badges :format) %)}
+                     :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :format) %)}
             (for [[id {:keys [label]}] status-formats]
               [:option {:value id} label])]
            [:i.fa.fa-chevron-down]]
@@ -732,8 +721,7 @@
       (let [project (:project project-data)
             project-id (project-model/id project)
             {:keys [hostname private-key]
-             :or {hostname "" private-key ""}} (:new-ssh-key project-data)
-            controls-ch (om/get-shared owner [:comms :controls])]
+             :or {hostname "" private-key ""}} (:new-ssh-key project-data)]
         (html
          [:div.sshkeys-page
           [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
@@ -741,21 +729,21 @@
            [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
            [:form
             [:input#hostname {:required true, :type "text" :value (str hostname)
-                              :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :hostname) %)}]
+                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)}]
             [:label {:placeholder "Hostname"}]
             [:textarea#privateKey {:required true :value (str private-key)
-                                   :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-ssh-key :private-key) %)}]
+                                   :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}]
             [:label {:placeholder "Private Key"}]
-            (forms/stateful-button
+            (forms/managed-button
              [:input#submit.btn
               {:data-failed-text "Failed",
                :data-success-text "Saved",
                :data-loading-text "Saving..",
                :value "Submit",
                :type "submit"
-               :on-click #(do (put! controls-ch [:saved-ssh-key {:project-id project-id
-                                                                 :ssh-key {:hostname hostname
-                                                                           :private_key private-key}}])
+               :on-click #(do (raise! owner [:saved-ssh-key {:project-id project-id
+                                                             :ssh-key {:hostname hostname
+                                                                       :private_key private-key}}])
                               false)}])]
            (when-let [ssh-keys (seq (:ssh_keys project))]
              [:table
@@ -766,9 +754,9 @@
                   [:td hostname]
                   [:td fingerprint]
                   [:td [:a {:title "Remove this Key?",
-                            :on-click #(put! controls-ch [:deleted-ssh-key {:project-id project-id
-                                                                            :hostname hostname
-                                                                            :fingerprint fingerprint}])}
+                            :on-click #(raise! owner [:deleted-ssh-key {:project-id project-id
+                                                                        :hostname hostname
+                                                                        :fingerprint fingerprint}])}
                         [:i.fa.fa-times-circle]
                         [:span " Remove"]]]])]])]])))))
 
@@ -796,8 +784,7 @@
             project (:project project-data)
             project-id (project-model/id project)
             project-name (vcs-url/project-name (:vcs_url project))
-            checkout-keys (:checkout-keys project-data)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            checkout-keys (:checkout-keys project-data)]
         (html
          [:div.checkout-page
           [:h2 "Checkout keys for " project-name]
@@ -830,9 +817,9 @@
                       [:td
                        [:a.slideBtn
                         {:title "Remove this key?",
-                         :on-click #(put! controls-ch [:delete-checkout-key-clicked {:project-id project-id
-                                                                                     :project-name project-name
-                                                                                     :fingerprint fingerprint}])}
+                         :on-click #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
+                                                                                 :project-name project-name
+                                                                                 :fingerprint fingerprint}])}
                         [:i.fa.fa-times-circle] " Remove"]]])]]])
               (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
                 [:div.add-key
@@ -843,7 +830,7 @@
                   (forms/managed-button
                    [:input.btn
                     {:type "submit"
-                     :on-click #(do (put! controls-ch
+                     :on-click #(do (raise! owner
                                           [:new-checkout-key-clicked {:project-id project-id
                                                                       :project-name project-name
                                                                       :key-type "deploy-key"}])
@@ -871,9 +858,9 @@
                       [:input.btn
                        {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false }"
                         :type "submit"
-                        :on-click #(do (put! controls-ch [:new-checkout-key-clicked {:project-id project-id
-                                                                                     :project-name project-name
-                                                                                     :key-type "github-user-key"}])
+                        :on-click #(do (raise! owner [:new-checkout-key-clicked {:project-id project-id
+                                                                                 :project-name project-name
+                                                                                 :key-type "github-user-key"}])
                                        false)
                         :value (str "Create and add " (:login user) " user key" )
                         :data-loading-text "Saving..."
@@ -941,8 +928,7 @@
       (let [project (:project project-data)
             project-id (project-model/id project)
             {:keys [scope label]
-             :or {scope "status" label ""}} (:new-api-token project-data)
-            controls-ch (om/get-shared owner [:comms :controls])]
+             :or {scope "status" label ""}} (:new-api-token project-data)]
         (html
          [:div.circle-api-page
           [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
@@ -953,23 +939,23 @@
            [:form
             [:div.styled-select
              [:select {:name "scope" :value scope
-                       :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :scope) %)}
+                       :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)}
               [:option {:value "status"} "Status"]
               [:option {:value "view-builds"} "Build Artifacts"]
               [:option {:value "all"} "All"]]
              [:i.fa.fa-chevron-down]]
             [:input
              {:required true, :type "text" :value (str label)
-              :on-change #(utils/edit-input controls-ch (conj state/project-data-path :new-api-token :label) %)}]
+              :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :label) %)}]
             [:label {:placeholder "Token label"}]
-            (forms/stateful-button
+            (forms/managed-button
              [:input
               {:data-failed-text "Failed",
                :data-success-text "Created",
                :data-loading-text "Creating...",
-               :on-click #(do (put! controls-ch [:saved-project-api-token {:project-id project-id
-                                                                           :api-token {:scope scope
-                                                                                       :label label}}])
+               :on-click #(do (raise! owner [:saved-project-api-token {:project-id project-id
+                                                                       :api-token {:scope scope
+                                                                                   :label label}}])
                               false)
                :value "Create token",
                :type "submit"}])]
@@ -991,22 +977,10 @@
                   [:td
                    [:a.slideBtn
                     {:title "Remove this Key?",
-                     :on-click #(put! controls-ch [:deleted-project-api-token {:project-id project-id
-                                                                               :token token}])}
+                     :on-click #(raise! owner [:deleted-project-api-token {:project-id project-id
+                                                                           :token token}])}
                     [:i.fa.fa-times-circle]
                     [:span " Remove"]]]])]])]])))))
-
-(defn artifacts [project-data owner]
-  (om/component
-   (html
-    [:div
-     [:h2 "Build artifacts for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
-     [:div.doc
-      [:p
-       "Circle supports saving files from any build. See "
-       [:a {:href "/docs/build-artifacts", :target "_blank"}
-        "our build artifact documentation‘"]
-       " to set it up."]]])))
 
 (defn heroku [data owner]
   (reify
@@ -1016,8 +990,7 @@
             user (:user data)
             project (:project project-data)
             project-id (project-model/id project)
-            login (:login user)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            login (:login user)]
         (html
          [:div.heroku-api
           [:h2 "Set personal Heroku API key for " (vcs-url/project-name (:vcs_url project))]
@@ -1041,21 +1014,21 @@
               :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
            [:form.api
             (if (= (:heroku_deploy_user project) (:login user))
-              (forms/stateful-button
+              (forms/managed-button
                [:input.remove-user
                 {:data-success-text "Saved",
                  :data-loading-text "Saving...",
-                 :on-click #(do (put! controls-ch [:removed-heroku-deploy-user {:project-id project-id}])
+                 :on-click #(do (raise! owner [:removed-heroku-deploy-user {:project-id project-id}])
                                 false)
                  :value "Remove Heroku Deploy User",
                  :type "submit"}])
 
-              (forms/stateful-button
+              (forms/managed-button
                [:input.set-user
                 {:data-success-text "Saved",
                  :data-loading-text "Saving...",
-                 :on-click #(do (put! controls-ch [:set-heroku-deploy-user {:project-id project-id
-                                                                            :login login}])
+                 :on-click #(do (raise! owner [:set-heroku-deploy-user {:project-id project-id
+                                                                        :login login}])
                                 false)
                  :value (str "Set user to " (:login user)),
                  :type "submit"}]))]]
@@ -1084,7 +1057,7 @@
         "our deployment documentation"]
        " to set it up."]]])))
 
-(defn aws [project-data owner]
+(defn aws-keys-form [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -1096,12 +1069,9 @@
             {:keys [access_key_id secret_access_key]} settings
 
             project-id (project-model/id project)
-            controls-ch (om/get-shared owner [:comms :controls])
             input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
         (html
-         [:div.aws-page
-          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
-          [:div.aws-page-inner
+          [:div
            [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
             "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
             [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
@@ -1114,23 +1084,24 @@
            [:form
             [:input#access-key-id
              {:required true, :type "text", :value (or access_key_id "")
-              :on-change #(utils/edit-input controls-ch (input-path :access_key_id) %)}]
+              :on-change #(utils/edit-input owner (input-path :access_key_id) %)}]
             [:label {:placeholder "Access Key ID"}]
 
             [:input#secret-access-key
              {:required true, :type "text", :value (or secret_access_key "")
-              :on-change #(utils/edit-input controls-ch (input-path :secret_access_key) %)}]
+              :on-change #(utils/edit-input owner (input-path :secret_access_key) %)}]
             [:label {:placeholder "Secret Access Key"}]
 
             [:div.buttons
               (forms/managed-button
-               [:input {:data-failed-text "Failed"
+               [(if (and access_key_id secret_access_key) :input.save :input)
+                       {:data-failed-text "Failed"
                         :data-success-text "Saved"
                         :data-loading-text "Saving..."
                         :value "Save AWS keys"
                         :type "submit"
                         :on-click #(do
-                                     (put! controls-ch [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])
+                                     (raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])
                                      false)}])
               (when (and access_key_id secret_access_key)
                (forms/managed-button
@@ -1140,17 +1111,201 @@
                                 :value "Clear AWS keys"
                                 :type "submit"
                                 :on-click #(do
-                                           (put! controls-ch [:edited-input {:path (input-path) :value nil}])
-                                           (put! controls-ch [:saved-project-settings {:project-id project-id}])
-                                           false)}]))]]]])))))
+                                           (raise! owner [:edited-input {:path (input-path) :value nil}])
+                                           (raise! owner [:saved-project-settings {:project-id project-id}])
+                                           false)}]))]]])))))
+
+(defn aws [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)]
+        (html
+         [:div.aws-page
+          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+          [:div.aws-page-inner
+            (om/build aws-keys-form project-data)]])))))
+
+
+(defn aws-codedeploy-app-name [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         [:form
+          [:input#application-name
+            {:required true, :type "text"
+             :on-change #(utils/edit-input owner (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
+          [:label {:placeholder "Application Name"}]
+          [:input {:value "Add app settings",
+                   :type "submit"
+                   :on-click #(do
+                               (raise! owner [:new-codedeploy-app-name-entered])
+                               false)}]]]))))
+
+(defn aws-codedeploy-app-details [project-data owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [project (:project project-data)
+            applications (get-in project [:aws :services :codedeploy])
+            [app-name _] (first applications)]
+        (utils/popover "#app-root-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Application Root"
+                        :content (node [:p "The directory in your repo to package up into an application revision. "
+                                           "This is relative to your repo's root, " [:code "/"] " means the repo's root "
+                                           "directory, " [:code "/app"] " means the app directory in your repo's root "
+                                           "directory."])})
+        (utils/popover "#bucket-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Revision Location: Bucket Name"
+                        :content (node [:p "The name of the S3 bucket CircleCI should store application revisions for \"" (name app-name) "\" in."])})
+        (utils/popover "#key-pattern-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Revision Location: Key Pattern"
+                        :content (node [:p "A template used to construct S3 keys for storing application revisions."
+                                           "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy#key-patterns"} "substitution variables"]
+                                           " in the Key Pattern to generate a unique key for each build."])})))
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+            applications (utils/deep-merge (get-in project [:aws :services :codedeploy])
+                                           (get-in inputs [:aws :services :codedeploy]))
+
+            [app-name settings] (first applications)
+            {:keys [bucket key_pattern]} (-> settings :revision_location :s3_location)
+            application-root (:application_root settings)
+            aws-region (:region settings)
+
+            project-id (project-model/id project)
+            input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
+        (html
+         [:form
+          [:legend (name app-name)]
+
+          [:fieldset
+           [:div.styled-select
+            [:select {:class (when (not aws-region) "placeholder")
+                      :value (or aws-region "")
+                      ;; Updates the project cursor in order to trigger a re-render
+                      :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+             [:option {:value ""} "Choose AWS Region..."]
+             [:option {:disabled "disabled"} "-----"]
+             [:option {:value "us-east-1"} "us-east-1"]
+             [:option {:value "us-west-2"} "us-west-2"]]
+            [:i.fa.fa-chevron-down]]
+
+           [:div.input-with-help
+            [:input#application-root
+             {:required true, :type "text", :value (or application-root "")
+              :on-change #(utils/edit-input owner (input-path app-name :application_root) %)}]
+            [:label {:placeholder "Application Root"}]
+            [:i.fa.fa-question-circle#app-root-popover-hack {:title "Application Root"}]]]
+
+          [:fieldset
+           [:h5 "Revision Location"]
+           [:div.input-with-help
+            [:input#s3-bucket
+             {:required true, :type "text", :value (or bucket "")
+              :on-change #(utils/edit-input owner (input-path app-name :revision_location :s3_location :bucket) %)}]
+            [:label {:placeholder "Bucket Name"}]
+            [:i.fa.fa-question-circle#bucket-popover-hack {:title "S3 Bucket Name"}]]
+
+           [:div.input-with-help
+            [:input#s3-key-prefix
+             {:required true, :type "text", :value (or key_pattern "")
+              :on-change #(utils/edit-input owner (input-path app-name :revision_location :s3_location :key_pattern) %)}]
+            [:label {:placeholder "Key Pattern"}]
+            [:i.fa.fa-question-circle#key-pattern-popover-hack {:title "S3 Key Pattern"}]]]
+
+          [:div.buttons
+           (forms/managed-button
+            [:input.save {:data-failed-text "Failed",
+                          :data-success-text "Saved",
+                          :data-loading-text "Saving...",
+                          :value "Save app",
+                          :type "submit"
+                          :on-click #(do
+                                      (raise! owner [:edited-input {:path (input-path app-name :revision_location :revision_type) :value "S3"}])
+                                      (raise! owner [:saved-project-settings {:project-id project-id
+                                                                              :merge-paths [[:aws :services :codedeploy]]}])
+                                      false)}])
+           (forms/managed-button
+            [:input.remove {:data-failed-text "Failed",
+                            :data-success-text "Removed",
+                            :data-loading-text "Removing...",
+                            :value "Remove app",
+                            :type "submit"
+                            :on-click #(do
+                                         (raise! owner [:edited-input {:path (input-path) :value nil}])
+                                         (raise! owner [:saved-project-settings {:project-id project-id}])
+                                         false)}])]])))))
+
+(defn aws-codedeploy [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            applications (get-in project [:aws :services :codedeploy])
+            app-name (some-> applications first key)]
+        (html
+         [:div.aws-codedeploy
+          [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
+          [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
+              "Check out our " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy"} "getting started with CodeDeploy"]
+              " guide for detailed information on getting set up."]
+          [:div.aws-page-inner
+            [:div.aws-codedeploy-step
+             [:h4 "Step 1"]
+              (om/build aws-keys-form project-data)]
+
+            [:div.aws-codedeploy-step
+             [:h4 "Step 2"]
+             [:p "[Optional] Configure application-wide settings."]
+             [:p "This is useful if you deploy the same app to multiple deployment groups "
+                 "(e.g. staging, production) depending on which branch was built. "
+                 "With application settings configured in the UI you only need to set the "
+                 "deployment group and, optionally, deployment configuration, in each deployment "
+                 "block in your " [:a {:href "/docs/configuration#deployment"} "circle.yml file"] ". "
+                 "If you skip this step you will need to add all deployment settings into your circle.yml file."]
+             (if (not (seq applications))
+               ;; No settings set, need to get the application name first
+               (om/build aws-codedeploy-app-name project-data)
+               ;; Once we have an application name we can accept the rest of the settings
+               (om/build aws-codedeploy-app-details project-data))]
+            [:div.aws-codedeploy-step
+             [:h4 "Step 3"]
+             [:p "Add deployment settings to your "
+                 [:a {:href "/docs/configuration#deployment"} "circle.yml file"]
+                 " (example below)."]
+             [:pre
+              [:code
+               "deployment:\n"
+               "  staging:\n"
+               "    branch: master\n"
+               "    codedeploy:\n"
+               (if app-name
+                 (str "      " (name app-name) ":\n"
+                      "        deployment_group: my-deployment-group\n")
+                 (str "      appname-1234:\n"
+                      "        application_root: /\n"
+                      "        region: us-east-1\n"
+                      "        revision_location:\n"
+                      "          revision_type: S3\n"
+                      "          s3_location:\n"
+                      "            bucket: my-bucket\n"
+                      "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
+                      "        deployment_group: my-deployment-group\n"))]]]]])))))
 
 (defn follow-sidebar [project owner]
   (reify
     om/IRender
     (render [_]
       (let [project-id (project-model/id project)
-            vcs-url (:vcs_url project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            vcs-url (:vcs_url project)]
         (html
          [:div.follow-status
           [:div.followed
@@ -1164,9 +1319,9 @@
                "You can stop these any time from your "
                [:a {:href "/account"} "account settings"]
                "."]
-              (forms/stateful-button
-               [:button {:on-click #(put! controls-ch [:unfollowed-project {:vcs-url vcs-url
-                                                                            :project-id project-id}])
+              (forms/managed-button
+               [:button {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url
+                                                                        :project-id project-id}])
                          :data-loading-text "Unfollowing..."}
                 "Unfollow"])))]
           [:div.not-followed
@@ -1176,9 +1331,9 @@
               [:p
                "We can't update you with personalized build emails unless you follow this project. "
                "Projects are only tested if they have a follower."]
-              (forms/stateful-button
-               [:button {:on-click #(put! controls-ch [:followed-project {:vcs-url vcs-url
-                                                                          :project-id project-id}])
+              (forms/managed-button
+               [:button {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url
+                                                                      :project-id project-id}])
                          :data-loading-text "Following..."}
                 "Follow"])))]])))))
 
@@ -1188,14 +1343,13 @@
     (render [_]
       (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
-            subpage (:project-settings-subpage data)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            subpage (:project-settings-subpage data)]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner common/spinner]
            [:div#project-settings
             [:aside sidebar]
-            [:div.project-settings-inner
+            [:div.project-settings-inner {:style {:overflow (if (= :aws-codedeploy subpage) "visible" "auto")}}
              (om/build common/flashes (get-in data state/error-message-path))
              [:div#subpage
               (condp = subpage
@@ -1210,9 +1364,9 @@
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
                 :api (om/build api-tokens project-data)
-                :artifacts (om/build artifacts project-data)
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
+                :aws-codedeploy (om/build aws-codedeploy project-data)
                 (om/build overview project-data))]]
             (om/build follow-sidebar (:project project-data))]))))))
