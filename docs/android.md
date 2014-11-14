@@ -1,14 +1,14 @@
 <!--
 
 title: Test Android applications
-last_updated: July 29, 2014
+last_updated: Oct 17, 2014
 
 -->
 
 <!--
 
 title: Test Android applications
-last_updated: July 29, 2014
+last_updated: Oct 17, 2014
 
 -->
 
@@ -30,10 +30,10 @@ also need to install those separately. For example:
 ```
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --filter "build-tools-20.0.0"
+    - echo y | android update sdk --no-ui --all --filter "build-tools-21.0.0"
 ```
 
-### Caching Android SDK components
+<h3 id="caching">Caching Android SDK components</h3>
 
 Installing SDK components can be expensive if you do it every time, so to speed
 up your builds, it is wise to copy
@@ -79,13 +79,15 @@ if [ ! -e $DEPS ]; then
   cp -r /usr/local/android-sdk-linux $ANDROID_HOME &&
   echo y | android update sdk -u -a -t android-18 &&
   echo y | android update sdk -u -a -t platform-tools &&
-  echo y | android update sdk -u -a -t build-tools-20.0.0 &&
+  echo y | android update sdk -u -a -t build-tools-21.0.0 &&
   echo y | android update sdk -u -a -t sys-img-x86-android-18 &&
   echo y | android update sdk -u -a -t addon-google_apis-google-18 &&
   echo n | android create avd -n testing -f -t android-18 &&
   touch $DEPS
 fi
 ```
+
+<h3 id="emulator">Starting the Android emulator</h3>
 
 For your actual tests, the first thing you should do is start up
 the emulator, as this usually takes several minutes, sadly.
@@ -125,8 +127,10 @@ test:
   override:
   - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
       background: true
+      parallel: true
   - # start your build here
-  - ./wait.sh
+  - ./wait.sh:
+      parallel: true
   - # install your APK
   - # run your tests
 ```
@@ -212,6 +216,20 @@ adb logcat -d
 popd
 exit $RETVAL
 ```
+
+
+### Disable pre-Dexing to improve build performance
+
+By default gradle pre-dexes dependencies, converting their Java bytecode into
+Android bytecode. This speeds up development greatly since gradle only needs to
+do incremental dexing as you change code.
+
+Because CircleCI always runs clean builds this pre-dexing has no benefit, in fact
+it makes compilation slower and can also use large quantities of memory.
+We recommend [disabling
+pre-dexing](http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.)
+for Android builds on CircleCI.
+
 
 Please don't hesitate to [contact us](mailto:sayhi@circleci.com)
 if you have any questions at all about how to best test Android on

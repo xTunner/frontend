@@ -76,6 +76,18 @@ We publish the details of the currently running build in these variables:
     The build number of the previous build, same as in circleci.com/gh/foo/bar/123
   </dd>
   <dt>
+    `CI_PULL_REQUESTS`
+  </dt>
+  <dd>
+    Comma-separated list of pull requests this build is a part of.
+  </dd>
+  <dt>
+    `CI_PULL_REQUEST`
+  </dt>
+  <dd>
+    If this build is part of only one pull request, its URL will be populated here. If there was more than one pull request, it will contain one of the pull request URLs (picked randomly).
+  </dd>
+  <dt>
     `CIRCLE_ARTIFACTS`
   </dt>
   <dd>
@@ -141,7 +153,7 @@ the ones you might be looking for:
   </dd>
 </dl>
 
-### Set your own!
+<h3 id="custom">Set your own!</h3>
 
 You can of course set your own environment variables, too!
 The only gotcha is that each command runs in its own shell, so just adding an

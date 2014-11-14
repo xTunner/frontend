@@ -1,7 +1,7 @@
 <!--
 
 title: Interacting with the browser on CircleCI's VM
-last_updated: May 30, 2014
+last_updated: October 20, 2014
 
 -->
 
@@ -25,6 +25,8 @@ To make this work with build artifacts, you need to save the screenshot to the
 
 ## Interact with the browser over VNC
 
+### Spawning your own X Server
+
 VNC allows you to view and interact with the browser that is running your tests. This will only work if you're using a driver that runs a real browser. You will be able to interact with a browser that Selenium controls, but phantomjs is headless -- there is nothing to interact with.
 
 Before you start, make sure you have a VNC viewer installed. If you're using OSX, I recommend
@@ -41,14 +43,42 @@ daniel@mymac$ ssh -p PORT ubuntu@IP_ADDRESS -L 5902:localhost:5901
 You should be connected to the Circle VM, now start the VNC server:
 
 ```
-ubuntu@box159:~$ vnc4server -geometry 1280x1024 -depth 24; export DISPLAY=:1.0
+ubuntu@box159:~$ vnc4server -geometry 1280x1024 -depth 24
 ```
 
 Enter the password `password` when it prompts you for a password. Your connection is secured with SSH, so there is no need for a strong password. You do need to enter a password to start the VNC server.
 
 Start your VNC viewer and connect to `localhost:5902`, enter the password you entered when it prompts you for a password. You should see a display containing a terminal window. You can ignore any warnings about an insecure or unencrypted connection. Your connection is secured through the SSH tunnel.
 
+Next, make sure to run:
+
+```
+ubuntu@box159:~$ export DISPLAY=:1.0
+```
+
+to ensure that windows open in the VNC server, rather than the default headless X server.
+
 Now you can run your integration tests from the command line and watch the browser for unexpected behavior. You can even interact with the browser &mdash; it's as if the tests were running on your local machine!
+
+### Sharing Circle's X Server
+
+If you find yourself setting up a VNC server often, then you might want to automate the process. You can use x11vnc to attach a VNC server to X.
+
+Download [`x11vnc`](http://www.karlrunge.com/x11vnc/index.html) and start it before your tests:
+
+```
+dependencies:
+  post:
+    - sudo apt-get install -y x11vnc
+    - x11vnc -forever -nopw:
+        background: true
+```
+
+Now when you [start an SSH build](/docs/ssh-build), you'll be able to connect to the VNC server while your default test steps run. You can either use a VNC viewer that is capable of SSH tunneling, or set up a tunnel on your own:
+
+```
+$ ssh -p PORT ubuntu@IP_ADDRESS -L 5900:localhost:5900
+```
 
 ## X11 forwarding over SSH
 

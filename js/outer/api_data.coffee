@@ -87,9 +87,9 @@ window.circle_api_data =
         "build_time_millis" : 23505,
         "username" : "circleci",
         "reponame" : "mongofinil",
-        "lifecycle" : "finished",
-        "outcome" : "failed",
-        "status" : "failed",
+        "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
+        "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
+        "status" : "failed", // :retried, :canceled, :infrastructure_fail, :timedout, :not_run, :running, :failed, :queued, :scheduled, :not_running, :no_tests, :fixed, :success
         "retry_of" : null, // build_num of the build this is a retry of
         "previous" : { // previous build
           "status" : "failed",
@@ -129,9 +129,9 @@ window.circle_api_data =
         "build_time_millis" : 23505,
         "username" : "circleci",
         "reponame" : "mongofinil",
-        "lifecycle" : "finished",
-        "outcome" : "failed",
-        "status" : "failed",
+        "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
+        "outcome" : "failed", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
+        "status" : "failed", // :retried, :canceled, :infrastructure_fail, :timedout, :not_run, :running, :failed, :queued, :scheduled, :not_running, :no_tests, :fixed, :success
         "retry_of" : null, // build_num of the build this is a retry of
         "previous" : { // previous build
           "status" : "failed",
@@ -161,9 +161,9 @@ window.circle_api_data =
           "build_time_millis" : 23505,
           "username" : "circleci",
           "reponame" : "mongofinil",
-          "lifecycle" : "finished",
-          "outcome" : "success", // all successful builds have "success"
-          "status" : "success",
+          "lifecycle" : "finished", // :queued, :scheduled, :not_run, :not_running, :running or :finished
+          "outcome" : "success", // :canceled, :infrastructure_fail, :timedout, :failed, :no_tests or :success
+          "status" : "success", // :retried, :canceled, :infrastructure_fail, :timedout, :not_run, :running, :failed, :queued, :scheduled, :not_running, :no_tests, :fixed, :success
           "retry_of" : null, // build_num of the build this is a retry of
           "steps" : [ {
             "name" : "configure the build",
@@ -360,7 +360,7 @@ window.circle_api_data =
           "committer_date": "2014-04-17T08:41:40Z",
           "start_time": null,
           "stop_time": null,
-          "lifecycle": "not_running",
+          "lifecycle": "not_running", // :queued, :scheduled, :not_run, :not_running, :running or :finished
           "user": {
             "email": "arohner@gmail.com",
             "name": "Allen Rohner",

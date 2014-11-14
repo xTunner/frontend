@@ -1,5 +1,5 @@
 checkOuterPages = (url) =>
-  outerPages = ["docs", "about", "privacy", "pricing"]
+  outerPages = ["docs", "about", "privacy", "pricing", "integrations", "features", "home"]
   for page in outerPages
     if (url.match "^/#{page}.*")
       return "/"

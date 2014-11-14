@@ -20,7 +20,7 @@ If you find yourself repeateadly consulting this guide, please
 We'll try to make it easier for you.
 
 
-## File structure and content
+<h2 id="phases">File structure and content</h2>
 
 The `circle.yml` file is made up of six primary sections.
 Each section represents a _phase_ of running your tests:
@@ -92,7 +92,7 @@ dependencies:
           test_dir
 ```
 
-## Machine configuration
+<h2 id="machine">Machine configuration</h2>
 
 The `machine` section enables you to configure the virtual machine that runs your tests.
 
@@ -194,7 +194,7 @@ machine:
 
 The complete list of supported Ruby versions is found [here](/docs/environment#ruby).
 
-### Node.js version
+<h3 id="node-version">Node.js version</h3>
 
 CircleCI uses [NVM](https://github.com/creationix/nvm)
 to manage Node versions. See
@@ -210,7 +210,7 @@ Here's an example of how to set the version of Node.js to be used for your tests
 ```
 machine:
   node:
-    version: 0.6.18
+    version: 0.11.8
 ```
 
 ### Java version
@@ -276,7 +276,7 @@ Our [test environment](/docs/environment) document has more configuration inform
 [Clojure](/docs/environment#clojure), [C/C++](/docs/environment#other),
 [Golang](/docs/environment#other) and [Erlang](/docs/environment#other).
 
-### Databases and other services
+<h3 id="services">Databases and other services</h3>
 
 CircleCI supports a large number of [databases and other services](/docs/environment#databases).
 Most popular ones are running by default on our build machines (bound to localhost), including Postgres, MySQL, Redis and MongoDB.
@@ -297,7 +297,7 @@ machine:
 
 ```
 
-## Code checkout from GitHub
+<h2 id="checkout">Code checkout from GitHub</h2>
 
 The `checkout` section is usually pretty vanilla, but we include examples of common things you might need to put in the section.
 You can modify commands by including `override`, `pre`, and/or `post`.
@@ -321,7 +321,7 @@ checkout:
     - mv config/.app.yml config/app.yml
 ```
 
-## Project-specific dependencies
+<h2 id="dependencies">Project-specific dependencies</h2>
 
 Most web programming languages and frameworks, including Ruby's bundler, npm for Node.js, and Python's pip, have some form of dependency specification;
 CircleCI automatically runs commands to fetch such dependencies.
@@ -337,7 +337,7 @@ dependencies:
     - npm install --dev
 ```
 
-####  Example: using a specific version of bundler
+<h4 id="bundler">Example: using a specific version of bundler</h4>
 
 ```
 dependencies:
@@ -358,7 +358,7 @@ dependencies:
     without: [production, osx]
 ```
 
-### Custom Cache Directories
+<h3 id="cache-directories">Custom Cache Directories</h3>
 
 CircleCI caches dependencies between builds.
 To include any custom directories in our caching, you can use
@@ -374,7 +374,7 @@ dependencies:
 
 Caches are private, and are not shared with other projects.
 
-## Database setup
+<h2 id="database">Database setup</h2>
 
 Your web framework typically includes commands to create your database, install your schema, and run your migrations.
 You can use `override`, `pre`, and/or `post` to modify `database` commands.
@@ -400,7 +400,7 @@ machine:
     DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
 ```
 
-## Running your tests
+<h2 id="test">Running your tests</h2>
 
 The most important part of testing is actually running the tests!
 
@@ -519,7 +519,7 @@ Add and then submit the one or more SSH keys needed
 for deploying to your machines. If you leave the **Hostname** field blank,
 the public key will be used for all hosts.
 
-### Heroku
+<h3 id="heroku-extra">Heroku</h3>
 
 CircleCI also has first-class support for deploying to Heroku.
 Specify the app you'd like to
@@ -552,7 +552,7 @@ deployment:
         - heroku run rake db:migrate --app foo-bar-123
 ```
 
-## Notifications
+<h2 id="notify">Notifications</h2>
 
 CircleCI sends personalized notifications by email.
 
@@ -587,7 +587,7 @@ call for the same build, except that it is wrapped in a "payload" key:
 
 ```
 
-## Specifying branches to build
+<h2 id="branches">Specifying branches to build</h2>
 
 CircleCI by default tests every push to _any_ branch in the repository.
 Testing all branches maintains quality in all branches and adds
@@ -622,7 +622,7 @@ it leads to problems when that untested code gets merged.
 `circle.yml` is per-branch configuration file, and the branch ignore list in one branch will
 only affect that branch and no other one.
 
-## Specifying build directory
+<h2 id="build-dir">Specifying build directory</h2>
 
 Circle runs all commands on the repository root, by default.  However, if
 you store your application code in a subdirectory instead of the root, you
@@ -636,10 +636,10 @@ general:
 
 Circle will run its inference as well as all build commands from that directory.
 
-## Specifying custom artifacts directories and files
+<h2 id="artifacts">Specifying custom artifacts directories and files</h2>
 
 You can specify extra directories and files to be
-[saved as artifacts](/docs/build_artifacts):
+[saved as artifacts](/docs/build-artifacts):
 
 ```
 general:
@@ -649,7 +649,7 @@ general:
     - "test.txt" # a single file, relative to the build directory
 ```
 
-## Need anything else?
+<h2 id="help">Need anything else?</h2>
 
 We are adding support for configuring every part of your build.
 If you need to tweak something that isn't currently supported, please
