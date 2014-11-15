@@ -16,13 +16,33 @@
   [plan]
   (get-in plan [:template_properties :max_parallelism]))
 
+(defn piggieback? [plan org-name]
+  (not= (:org_name plan) org-name))
+
+(defn freemium? [plan]
+  (boolean (:free plan)))
+
+(defn paid? [plan]
+  (boolean (:paid plan)))
+
+(defn trial? [plan]
+  (boolean (:trial plan)))
+
+(defn trial-over? [plan]
+  (time/after? (time/now) (time-format/parse (:trial_end plan))))
+
+(defn in-trial? [plan]
+  (and (trial? plan) (not (trial-over? plan))))
+
 (defn freemium-containers [plan] (or (get-in plan [:free :template :free_containers]) 0))
 (defn trial-containers [plan] (or (get-in plan [:trial :template :free_containers]) 0))
 
 (defn paid-containers [plan]
-  (max (:containers_override plan)
-       (:containers plan)
-       (get-in plan [:template_properties :free_containers])))
+  (if (paid? plan)
+    (max (:containers_override plan)
+         (:containers plan)
+         (get-in plan [:paid :template :free_containers]))
+    0))
 
 (defn paid-plan-min-containers
   "A plan has a price, and a free container count. If you are paying for
@@ -38,35 +58,17 @@
   "Maximum containers that the plan has available to it"
   [plan]
   (+ (freemium-containers plan)
-     (max (trial-containers plan) (paid-containers plan))))
+     (max (if (in-trial? plan) (trial-containers plan) 0) (paid-containers plan))))
 
 (defn max-selectable-parallelism [plan]
   (min (max-parallelism plan)
        (usable-containers plan)))
 
 
-(defn piggieback? [plan org-name]
-  (not= (:org_name plan) org-name))
-
-(defn freemium? [plan]
-  (boolean (:free plan)))
-
-(defn paid? [plan]
-  (boolean (:paid plan)))
-
 (defn can-edit-plan? [plan org-name]
   ;; kill plan pricing page for trial plans by making
   ;; can-edit-plan?' return true for them
   (not (piggieback? plan org-name)))
-
-(defn trial? [plan]
-  (boolean (:trial plan)))
-
-(defn trial-over? [plan]
-  (time/after? (time/now) (time-format/parse (:trial_end plan))))
-
-(defn in-trial? [plan]
-  (and (trial? plan) (not (trial-over? plan))))
 
 ;; true  if the plan has an active Stripe discount coupon.
 ;; false if the plan is nil (not loaded yet) or has no discount applied

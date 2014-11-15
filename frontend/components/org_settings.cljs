@@ -25,7 +25,7 @@
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style]
-            [inflections.core :refer [pluralize]])
+            [inflections.core :as infl :refer [pluralize]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [dommy.macros :refer [node sel sel1]]
                    [frontend.utils :refer [html]]))
@@ -300,49 +300,70 @@
             (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
-(defn plan-type-p [plan]
-  [:p [:strong
-       (cond
-        (pm/paid? plan) "PAID"
+(defn plan-type-str [plan]
+  (cond
+   (pm/paid? plan) "PAID"
 
-        (and (pm/freemium? plan)
-             (not (pm/in-trial? plan)))
-        "FREE"
+   (and (pm/freemium? plan)
+        (not (pm/in-trial? plan)))
+   "FREE"
 
-        (pm/trial? plan)
-        (str "TRIAL" (when-not (pm/in-trial? plan) " ENDED")))]])
+   (pm/trial? plan)
+   (str "TRIAL" (when-not (pm/in-trial? plan) " ENDED"))))
 
-(defn pricing-explanation-ul [plan plan-total]
+(defn plural-multiples [num word]
+  (if (> num 1)
+    (pluralize num word)
+    word))
+
+(defn pricing-explanation-elements [plan plan-total]
   (let [plan-min-containers (if (pm/paid? plan)
                               (pm/paid-plan-min-containers plan)
                               (pm/default-plan-min-containers))
         plan-price (if (pm/paid? plan)
                      (-> plan :paid :template :price)
                      (-> pm/default-template-properties :price))]
-    [:ul
+    (list
+     [:div.calculator-preview-item
+      [:div.item [:strong "Current Plan"]]
+      [:div.value [:strong (plan-type-str plan)]]]
+     
      (cond
       (pm/in-trial? plan)
-      [:li "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") "."]
+      [:div.calculator-preview-item
+       [:strong (str "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") ".")]]
       
       (not (or (pm/freemium? plan) (pm/paid? plan)))
-      [:li (str "Your trial of a plan with " (pluralize (pm/trial-containers plan) "container")
-                " has ended. Please add containers to continue building private repositories.")]
+      [:div.calculator-preview-item
+       [:div
+        "Your " [:strong (pm/trial-containers plan) " container"]
+        " trial has ended." [:br] "Please add containers to continue building private repositories."]]
 
       ;; otherwise, must be freemium or paid
       :else
       (list
-       [:li [:strong.old-plan-total (str (pm/usable-containers plan) " for $" plan-total "/ month")]]
+       [:div.calculator-preview-item
+        [:div.item  [:strong (pm/usable-containers plan)]]
+        [:div.value [:strong (str "$" plan-total "/month")]]]
        (when (pm/grandfathered? plan)
-         [:li "Current price grandfathered in. Updates priced as:"])))
+         [:div.calculator-preview-item "Current price grandfathered in. Updates priced as:"])))
+
+     [:hr]
      
      (when (pm/freemium? plan)
-       [:li "First " (pluralize (pm/freemium-containers plan) "container") " free!"])
+       [:div.calculator-preview-item
+        [:div.item (str "First " (plural-multiples (pm/freemium-containers plan) "container"))]
+        [:div.value "Free!"]])
      (when (> plan-min-containers 0)
-       [:li (str (if (pm/freemium? plan) "Next " "First ")
-                 (pluralize plan-min-containers "container") " at $" plan-price)])
+       [:div.calculator-preview-item
+        [:div.item (str (if (pm/freemium? plan) "Next " "First ") (plural-multiples plan-min-containers "container"))]
+        [:div.value (str "$" plan-price)]])
 
-     [:li "Additional containers for $" (pm/per-container-cost plan) "/month"]
-     [:li [:strong "No other limits"]]]))
+     [:div.calculator-preview-item
+      [:div.item  (str "Additional containers")]
+      [:div.value (str "$" (pm/per-container-cost plan))]]
+
+     [:div.calculator-preview-item "No other limits"])))
 
 (defn current-plan-desc
   "A div that explains your current plan."
@@ -353,13 +374,14 @@
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
           container-cost (pm/per-container-cost plan)]
-      [:div.plan
+      [:div.pricing-calculator-preview
        ;; TODO: make the org-name a drop-down selector of the orgs you
-       ;; are a member of.
-       [:h2 org-name "'" (when-not (re-matches #".*s" org-name) "s")
-        " Current Plan"]
-       (plan-type-p plan)
-       (pricing-explanation-ul plan plan-total)]))))
+       ;; are a member of? It's a pain right now to switch between org plans.
+       [:h3 (str org-name "'" (when-not (re-matches #".*s" org-name) "s"))]
+       (pricing-explanation-elements plan plan-total)]))))
+
+(defn pluralize-no-val [num word]
+  (if (> num 1) (infl/plural word) (infl/singular word)))
 
 (defn containers [app owner]
   (reify
@@ -392,58 +414,68 @@
       (let [org-name (get-in app state/org-name-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                    (pm/usable-containers plan))
+                                    (max (pm/usable-containers plan)
+                                         (pm/trial-containers plan)))
+            min-slider-val (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
+            max-slider-val (max 80 (* 2 (pm/usable-containers plan)))
+            old-max-slider-val (if (< selected-containers 50)
+                                 80
+                                 (let [n (* 2 selected-containers)] (+ n (- 10 (mod n 10)))))
             selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
             old-total (pm/stripe-cost plan)
             new-total (pm/cost plan selected-containers)
             container-cost (pm/per-container-cost plan)]
         (html
          (if-not plan
-           [:div.loading-spinner common/spinner] ;; TODO: fix; add plan
+           (cond ;; TODO: fix; add plan
+            (nil? plan)
+              [:div.loading-spinner common/spinner]
+            (not (seq plan))
+              [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
+            :else [:h3 "Something is wrong! Please submit a bug report."])
 
-           [:div#edit-plan
+           [:div#edit-plan {:class "pricing.page"}
             (when (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name))
             [:fieldset
-             [:legend
-              "Our pricing is flexible and scales with you. Add as many containers as you want for $"
-              container-cost "/month each."]
-             [:div.main-content
-              [:div.left-section
+             [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
+                           container-cost "/month each.")]]
+            [:div.main-content
+             [:div.left-section
+              [:div.pricing-calculator-controls
                [:h3 "Containers"]
                [:form
                 [:div.container-picker
                  [:p "More containers means faster builds and lower queue times."]
-                 [:div.container-slider
-                  (let [min (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
-                        max (if (< selected-containers 80)
-                              80
-                              (let [num (+ 80 selected-containers)]
-                                (+ num (- 10 (mod num 10)))))]
+                 (cond
+                   false
+                   (om/build shared/styled-range-slider
+                             (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
+                   true
+                   [:div.container-slider
                     (list
-                     [:span min]
+                     [:span min-slider-val]
                      [:input#rangevalue
-                      {:type "range"
-                       :value selected-containers
-                       :min min
-                       :max max
+                      {:style {:margin "1em 0.25em auto"}
+                       :type "range" :value selected-containers
+                       :min min-slider-val :max max-slider-val
                        :on-change #(utils/edit-input owner state/selected-containers-path %
                                                      :value (int (.. % -target -value)))}]
-                     [:span max]))]
+                     [:span max-slider-val])])
                  [:div.container-input
-                  [:input {:type "text" :value selected-containers
+                  [:input {:style {:margin "4px" :height "calc(2em + 2px)"}
+                           :type "text" :value selected-containers
                            :on-change #(utils/edit-input owner state/selected-containers-path %
                                                          :value (int (.. % -target -value)))}]
-                  [:span.new-plan-total (str "containers for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
+                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
                   (when (not (= new-total old-total))
-                    [:span.strikeout (str "$" old-total "/month")])
+                    [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])
                   (when (pm/grandfathered? plan)
                     [:span.grandfather
                      "(grandfathered"
                      [:i.fa.fa-question-circle#grandfathered-tooltip-hack
                       {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
-                     ")"])]
-                 ]
+                     ")"])]]
                 [:fieldset
                  (if (pm/paid? plan)
                    (forms/managed-button
@@ -483,10 +515,10 @@
                         "we will stop building your private repository pushes.")]
                      [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
                       " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                      " ago. Pay now to enable builds of private repositories."]))]]]
-              
-              [:div.right-section
-               (om/build current-plan-desc app)]]]]))))))
+                      " ago. Pay now to enable builds of private repositories."]))]]]]
+             
+             [:div.right-section
+              (om/build current-plan-desc app)]]]))))))
 
 
 (defn piggyback-organizations [app owner]
