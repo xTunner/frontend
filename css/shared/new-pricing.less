@@ -295,6 +295,8 @@
   min-height: (@tile * 6);
   color: @grayLight;
   border: 1px solid @grayBoxBorder;
+  padding: 10px;
+  text-align: center;
   h5 {
     text-align: center;
     &:first-child { // hack for specificity
@@ -355,4 +357,8 @@
       .flex(auto);
     }
   }
+}
+
+.container-input {
+  .flexy(baseline, flex-start);
 }
