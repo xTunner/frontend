@@ -9,7 +9,7 @@ dependencies:
 
 deployment:
   deploy:
-    branch: *
+    branch: /.+/
     commands:
       - lein cljsbuild once test production:
           timeout: 600
