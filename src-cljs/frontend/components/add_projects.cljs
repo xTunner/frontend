@@ -182,19 +182,24 @@
          [:div.proj-wrapper
           (if-not (get-in settings [:add-projects :selected-org :login])
             repos-explanation
-            (if-not (seq repos)
-              [:div.loading-spinner common/spinner]
-              [:ul.proj-list
-               (let [filtered-repos (filter (fn [repo]
-                                              (-> repo
-                                                  :name
-                                                  (.toLowerCase)
-                                                  (.indexOf repo-filter-string)
-                                                  (not= -1)))
-                                            repos)]
-                 (map (fn [repo] (om/build repo-item {:repo repo
-                                                      :settings settings}))
-                      filtered-repos))]))
+            (cond
+              (nil? repos)
+                [:div.loading-spinner common/spinner]
+              (not (seq repos))
+                [:ul.proj-list
+                  [:li (str "No repos found for organization " (:selected-org data))]]
+              :else
+                [:ul.proj-list
+                 (let [filtered-repos (filter (fn [repo]
+                                                (-> repo
+                                                    :name
+                                                    (.toLowerCase)
+                                                    (.indexOf repo-filter-string)
+                                                    (not= -1)))
+                                              repos)]
+                   (map (fn [repo] (om/build repo-item {:repo repo
+                                                        :settings settings}))
+                        filtered-repos))]))
           invite-modal])))))
 
 (defn add-projects [data owner]
@@ -203,8 +208,9 @@
     (render [_]
       (let [user (:current-user data)
             settings (:settings data)
+            selected-org (get-in settings [:add-projects :selected-org :login])
             repo-key (gstring/format "%s.%s"
-                                     (get-in settings [:add-projects :selected-org :login])
+                                     selected-org
                                      (get-in settings [:add-projects :selected-org :type]))
             repos (get-in user [:repos repo-key])]
         (html
@@ -225,5 +231,6 @@
 
            (om/build main {:user user
                            :repos repos
+                           :selected-org selected-org
                            :settings settings})]
           [:div.sidebar]])))))
