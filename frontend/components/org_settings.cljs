@@ -344,7 +344,7 @@
       (list
        [:div.calculator-preview-item
         [:div.item  [:strong (pm/usable-containers plan)]]
-        [:div.value [:strong (str "$" plan-total "/month")]]]
+        [:div.value [:strong#current-plan-total (str "$" plan-total "/month")]]]
        (when (pm/grandfathered? plan)
          [:div.calculator-preview-item "Current price grandfathered in. Updates priced as:"])))
 
