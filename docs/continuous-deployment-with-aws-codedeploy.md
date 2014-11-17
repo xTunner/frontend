@@ -163,7 +163,7 @@ configurations, check out the CodeDeploy IAM docs for more information.
 [comment]: <> "[CodeDeploy IAM docs]: TODO link to CodeDeploy IAM docs, linkify 'CodeDeploy IAM docs'"
 
 
-### Step 2: Configure CircleCI to use your new IAM user 
+### Step 2: Configure CircleCI to use your new IAM user
 Go to your project's **Project Settings > AWS keys** page, enter your IAM
 user's Access Key ID and Secret Access Key and hit "Save AWS keys".
 Your AWS keys are stored encrypted but it's important to note that they need to
@@ -236,8 +236,10 @@ bucket name and key pattern if you override `revision_location`):
           my-app:
             deployment_group: production-instances
             revision_location:
-              bucket_name: production-bucket
-              key_pattern: apps/my-app-master-{SHORT_COMMIT}-{BUILD_NUM}
+              revision_type: S3
+              s3_location:
+                bucket_name: production-bucket
+                key_pattern: apps/my-app-master-{SHORT_COMMIT}-{BUILD_NUM}
 
 If you haven't provided [project-wide settings](#step-3-optional-configure-packaging-and-revision-storage)
 you need to provide all the information for your deployment in your
@@ -250,8 +252,10 @@ you need to provide all the information for your deployment in your
           my-app:
             application_root: /
             revision_location:
-              bucket_name: staging-bucket
-              key_pattern: apps/my-app-{SHORT_COMMIT}-{BUILD_NUM}
+              revision_type: S3
+              s3_location:
+                bucket_name: staging-bucket
+                key_pattern: apps/my-app-{SHORT_COMMIT}-{BUILD_NUM}
             region: us-east-1
             deployment_group: staging-instances
             deployment_config: CodeDeployDefault.AllAtOnce
@@ -270,6 +274,7 @@ application.
   The entire contents of `application_root` will be packaged up into a zipfile and
   uploaded to S3.
 * `revision_location` tells CircleCI where to upload application revisions to.
+  * `revision_type` is where to store the revision - currently only S3 is supported
   * `bucket_name` is the name of the bucket that should store your application
     revision bundles.
   * `key_pattern` is used to generate the S3 key. You can use [substitution variables][]
