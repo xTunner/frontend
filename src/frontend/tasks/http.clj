@@ -12,7 +12,7 @@
 (def stefon-options {:asset-roots frontend.stefon/asset-roots
                      :precompiles frontend.stefon/precompiles
                      :serving-root "resources/public"
-                     :manifest-file "resources/assets/stefon-manifest.json"
+                     :manifest-file "resources/public/assets/stefon-manifest.json"
                      :mode :production})
 
 (defn update-hosted-scripts [scripts]
