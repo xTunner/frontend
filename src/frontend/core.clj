@@ -46,6 +46,7 @@
 
 (def proxy-config
   {:patterns [#"/"
+              #"/changelog.rss"
               #"/logout"
               #"/auth/.*"
               #"/api/.*"]
