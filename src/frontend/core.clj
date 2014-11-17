@@ -5,6 +5,7 @@
             [compojure.route]
             [frontend.less :as less]
             [frontend.util.docs :as doc-utils]
+            [frontend.proxy :as proxy]
             [ring.util.response :as response]
             [stefon.core :as stefon]
             [org.httpkit.server :as httpkit]))
@@ -31,13 +32,39 @@
     (-> (handler req)
         (response/header "Access-Control-Allow-Origin" "*"))))
 
+(defonce stopf (atom nil))
+
+(defn stop-server []
+  (when-let [f @stopf]
+    (println "stopping server")
+    (f :timeout 3000)
+    (reset! stopf nil)))
+
+(def port 3000)
+
+(def proxy-config
+  {:patterns [#"/"
+              #"/logout"
+              #"/auth/.*"
+              #"/api/.*"]
+   :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}
+              "prod.circlehost" {:proto "https" :host "circleci.com"}
+              "staging.circlehost" {:proto "https" :host "staging.circleci.com"}}})
+
+(defn start-server []
+  (stop-server)
+  (println "starting server on port" port)
+  (reset! stopf
+          (httpkit/run-server (-> (site #'routes)
+                                  (stefon/asset-pipeline stefon-options)
+                                  (proxy/wrap-handler proxy-config)
+                                  (cross-origin-everything))
+                              {:port port}))
+  nil)
+
 (defn -main
   "Starts the server that will serve the assets when visiting circle with ?use-local-assets=true"
   []
   (println "Starting less compiler.")
   (less/init)
-  (println "starting server on port 8080")
-  (httpkit/run-server (-> (site #'routes)
-                          (stefon/asset-pipeline stefon-options)
-                          (cross-origin-everything))
-                      {:port 8080}))
+  (start-server))

@@ -19,7 +19,11 @@ CI.github =
     client_id = window.renderContext.githubClientId
 
     l = window.location
-    redirect = "#{l.protocol}//#{l.host}/auth/github?return-to=#{destination}&CSRFToken=#{csrf_token}"
+    auth_host = window.renderContext.auth_host
+    auth_protocol = window.renderContext.auth_protocol ? 'https'
+    redirect = "#{auth_protocol}://#{auth_host}/auth/github?return-to=#{destination}&CSRFToken=#{csrf_token}"
+    if auth_host != window.location.host
+      redirect += "&delegate=#{window.location.host}"
     redirect = encodeURIComponent(redirect)
 
     url =  "#{path}?client_id=#{client_id}&redirect_uri=#{redirect}"
