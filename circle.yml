@@ -8,8 +8,10 @@ dependencies:
     - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
 
 deployment:
-
-  commands:
-    - lein cljsbuild once test production:
-        timeout: 600
-    - lein run -m frontend.tasks.http/precompile-assets
+  deploy:
+    branch: *
+    commands:
+      - lein cljsbuild once test production:
+          timeout: 600
+      - lein run -m frontend.tasks.http/precompile-assets
+      - tar -cz resources/public/ | aws put --http $DEPLOY_S3_BUCKET/public_$CIRCLE_SHA1.tgz
