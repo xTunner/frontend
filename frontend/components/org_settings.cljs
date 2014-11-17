@@ -405,7 +405,7 @@
           (stripe/load-checkout ch))))
     om/IDidMount
     (did-mount [_]
-      (utils/tooltip "#grandfathered-tooltip-hack") {:animation false})
+      (utils/tooltip "#grandfathered-tooltip-hack" {:animation false}))
     om/IWillUnmount
     (will-unmount [_]
       (close! (om/get-state owner [:checkout-loaded-chan])))
@@ -470,12 +470,10 @@
                   [:span.new-plan-total (str (pluralize-no-val selected-containers "container") " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
                   (when (not (= new-total old-total))
                     [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])
-                  (when (pm/grandfathered? plan)
-                    [:span.grandfather
-                     "(grandfathered"
-                     [:i.fa.fa-question-circle#grandfathered-tooltip-hack
-                      {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
-                     ")"])]]
+                  (when false ;; (pm/grandfathered? plan) ;; I don't
+                    ;; think this is useful anymore.
+                    [:i.fa.fa-question-circle#grandfathered-tooltip-hack
+                     {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
                 [:fieldset
                  (if (pm/paid? plan)
                    (forms/managed-button
