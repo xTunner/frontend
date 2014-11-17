@@ -37,15 +37,10 @@
                :height 50}]]]
       [:div.other-stuff
        [:div.orgname 
-        [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]]
-       [:small.github-url.pull-right
-        [:a {:href "http://github.com"}
-         [:i.fa.fa-github-alt ""]
-         ]]
-       [:div
-        "12 projects"
-        " • "
-        "30 members"]]]]))
+        [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]
+         [:small.github-url.pull-right
+                 [:a {:href (str "https://github.com/" login), :target "_blank"}
+                  [:i.fa.fa-github-alt ""]]]]]]]))
 
 (defn org-sidebar [data owner]
   (reify
@@ -179,7 +174,13 @@
            {:placeholder "Filter repos..."
             :type "search"
             :value repo-filter-string
-            :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]])))))
+            :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]
+          [:div.checkbox.pull-right.fork-filter
+           [:label
+            [:input {:type "checkbox"
+                     :name "Show forks"
+                     :on-change #(utils/edit-input owner [:settings :add-projects :show-forks] %)}]
+            "Show forks"]]])))))
 
 (defn main [data owner]
   (reify
@@ -188,23 +189,25 @@
       (let [user (:current-user data)
             settings (:settings data)
             repos (:repos data)
-            repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
+            repo-filter-string (get-in settings [:add-projects :repo-filter-string])
+            show-forks (get-in settings [:add-projects :show-forks])]
         (html
          [:div.proj-wrapper
           (if-not (get-in settings [:add-projects :selected-org :login])
             repos-explanation
             (if-not (seq repos)
               [:div.loading-spinner common/spinner]
-              
               [:div
                (om/build repo-filter settings)
                [:ul.proj-list
                 (let [filtered-repos (sort-by :name (filter (fn [repo]
-                                               (-> repo
+                                               (and
+                                                 (not (:fork repo))
+                                                 (-> repo
                                                    :name
                                                    (.toLowerCase)
                                                    (.indexOf (.toLowerCase repo-filter-string))
-                                                   (not= -1)))
+                                                   (not= -1))))
                                              repos))]
                   (map (fn [repo] (om/build repo-item {:repo repo
                                                        :settings settings}))
