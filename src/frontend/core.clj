@@ -15,6 +15,8 @@
    :mode :development})
 
 (defroutes routes
+  (GET "/js/om-dev.js" []
+       (response/redirect (stefon/link-to-asset "js/om-dev.js.stefon" stefon-options)))
   (compojure.route/resources "/" {:root "public"
                                   :mime-types {:svg "image/svg"}})
   (GET "/docs/manifest-dev.json" []
@@ -44,6 +46,7 @@
 
 (def proxy-config
   {:patterns [#"/"
+              #"/changelog.rss"
               #"/logout"
               #"/auth/.*"
               #"/api/.*"]
