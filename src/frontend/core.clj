@@ -6,12 +6,13 @@
             [frontend.less :as less]
             [frontend.util.docs :as doc-utils]
             [frontend.proxy :as proxy]
+            [frontend.stefon]
             [ring.util.response :as response]
             [stefon.core :as stefon]
             [org.httpkit.server :as httpkit]))
 
 (def stefon-options
-  {:asset-roots ["resources/assets"]
+  {:asset-roots frontend.stefon/asset-roots
    :mode :development})
 
 (defroutes routes
