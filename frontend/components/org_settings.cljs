@@ -494,10 +494,14 @@
                        {:data-success-text "Paid!",
                         :data-loading-text "Paying...",
                         :data-failed-text "Failed!",
-                        :on-click #(raise! owner [:new-plan-clicked {:containers selected-paid-containers
-                                                                     :paid {:template (:id pm/default-template-properties)}
-                                                                     :price new-total
-                                                                     :description (str "$" new-total "/month, includes " (pluralize selected-containers "container"))}])}
+                        :type "submit"
+                        :on-click #(do (raise! owner [:new-plan-clicked
+                                                      {:containers selected-paid-containers
+                                                       :paid {:template (:id pm/default-template-properties)}
+                                                       :price new-total
+                                                       :description (str "$" new-total "/month, includes "
+                                                                         (pluralize selected-containers "container"))}])
+                                       false)}
                        "Pay Now"])))
                  (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
                    (list
