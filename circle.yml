@@ -1,3 +1,7 @@
+checkout:
+  post:
+    - git submodule update --init resources/public/vendor/font-awesome
+
 dependencies:
 
   cache_directories:
