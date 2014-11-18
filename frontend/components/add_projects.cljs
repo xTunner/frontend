@@ -52,7 +52,7 @@
     (render [_]
       (let [user (:user data)
             settings (:settings data)
-            org (inspect (:organizations user))]
+            org (:organizations user)]
         (html [:div
             [:div.overview
              [:span.big-number "1"]
@@ -197,7 +197,7 @@
            (om/build repo-filter settings)
            [:ul.proj-list
             (let [filtered-repos (sort-by :name (filter (fn [repo]
-                                           (inspect (and
+                                           (and
                                              (if show-forks
                                                true
                                                (not (:fork repo)))
@@ -205,7 +205,7 @@
                                                :name
                                                (.toLowerCase)
                                                (.indexOf (.toLowerCase repo-filter-string))
-                                               (not= -1)))))
+                                               (not= -1))))
                                          repos))]
               (map (fn [repo] (om/build repo-item {:repo repo
                                                    :settings settings}))
