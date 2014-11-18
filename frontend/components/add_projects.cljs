@@ -14,7 +14,7 @@
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [html]]))
+                   [frontend.utils :refer [html defrender]]))
 
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div
@@ -26,7 +26,7 @@
                      (string/join "and " missing-scopes)
                      (if (< 1 (count missing-scopes)) "scope" "scopes"))]]])
 
-(defn side-item [org settings owner]
+(defn organization [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)]
     [:div.organization {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
@@ -36,14 +36,15 @@
         [:img {:src (gh-utils/make-avatar-url org :size 50)
                :height 50}]]]
       [:div.other-stuff
-       [:div.orgname 
+       [:div.orgname
         [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]
          [:small.github-url.pull-right
                  [:a {:href (str "https://github.com/" login), :target "_blank"}
                   [:i.fa.fa-github-alt ""]]]]]]]))
 
-(defn org-sidebar [data owner]
+(defn organization-listing [data owner]
   (reify
+    om/IDisplayName (display-name [_] "Organization Listing")
     om/IDidMount
     (did-mount [_]
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
@@ -58,14 +59,14 @@
              [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
             [:div.organizations
              [:h4 "Your accounts"]
-             (map (fn [org] (side-item org settings owner))
+             (map (fn [org] (organization org settings owner))
                    (:organizations user))
-             (map (fn [org] (side-item org settings owner))
+             (map (fn [org] (organization org settings owner))
                    (filter (fn [org] (= (:login user) (:login org)))
                            (:collaborators user)))
               [:div
                [:h4 "Users & organizations who have made pull requests to your repos"]
-               (map (fn [org] (side-item org settings owner))
+               (map (fn [org] (organization org settings owner))
                     (remove (fn [org] (= (:login user) (:login org)))
                             (:collaborators user)))]]])))))
 
@@ -79,6 +80,7 @@
 
 (defn repo-item [data owner]
   (reify
+    om/IDisplayName (display-name [_] "repo-item")
     om/IDidMount
     (did-mount [_]
       (utils/tooltip (str "#view-project-tooltip-" (-> data :repo repo-model/id (string/replace #"[^\w]" "")))))
@@ -162,89 +164,83 @@
      {:data-dismiss "modal", :aria-hidden "true"}
      "Got it"]]])
 
-(defn repo-filter [settings owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
-        (html
-         [:div.repo-filter
-          ; [:i.fa.fa-search]
-          [:input.unobtrusive-search
-           {:placeholder "Filter repos..."
-            :type "search"
-            :value repo-filter-string
-            :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]
-          [:div.checkbox.pull-right.fork-filter
-           [:label
-            [:input {:type "checkbox"
-                     :name "Show forks"
-                     :on-change #(utils/edit-input owner [:settings :add-projects :show-forks] %)}]
-            "Show forks"]]])))))
+(defrender repo-filter [settings owner]
+  (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
+    (html
+     [:div.repo-filter
+      ; [:i.fa.fa-search]
+      [:input.unobtrusive-search
+       {:placeholder "Filter repos..."
+        :type "search"
+        :value repo-filter-string
+        :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]
+      [:div.checkbox.pull-right.fork-filter
+       [:label
+        [:input {:type "checkbox"
+                 :name "Show forks"
+                 :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
+        "Show forks"]]])))
 
-(defn main [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [user (:current-user data)
-            settings (:settings data)
-            repos (:repos data)
-            repo-filter-string (get-in settings [:add-projects :repo-filter-string])
-            show-forks (get-in settings [:add-projects :show-forks])]
-        (html
-         [:div.proj-wrapper
-          (if-not (get-in settings [:add-projects :selected-org :login])
-            repos-explanation
-            (if-not (seq repos)
-              [:div.loading-spinner common/spinner]
-              [:div
-               (om/build repo-filter settings)
-               [:ul.proj-list
-                (let [filtered-repos (sort-by :name (filter (fn [repo]
-                                               (and
-                                                 (not (:fork repo))
-                                                 (-> repo
-                                                   :name
-                                                   (.toLowerCase)
-                                                   (.indexOf (.toLowerCase repo-filter-string))
-                                                   (not= -1))))
-                                             repos))]
-                  (map (fn [repo] (om/build repo-item {:repo repo
-                                                       :settings settings}))
-                       filtered-repos))]]))
-          invite-modal])))))
+(defrender main [data owner]
+  (let [user (:current-user data)
+        settings (:settings data)
+        repos (:repos data)
+        repo-filter-string (get-in settings [:add-projects :repo-filter-string])
+        show-forks (true? (get-in settings [:add-projects :show-forks]))]
+    (html
+     [:div.proj-wrapper
+      (if-not (get-in settings [:add-projects :selected-org :login])
+        repos-explanation
+        (if-not (seq repos)
+          [:div.loading-spinner common/spinner]
+          [:div
+           (om/build repo-filter settings)
+           [:ul.proj-list
+            (let [filtered-repos (sort-by :name (filter (fn [repo]
+                                           (inspect (and
+                                             (if show-forks
+                                               true
+                                               (not (:fork repo)))
+                                             (-> repo
+                                               :name
+                                               (.toLowerCase)
+                                               (.indexOf (.toLowerCase repo-filter-string))
+                                               (not= -1)))))
+                                         repos))]
+              (map (fn [repo] (om/build repo-item {:repo repo
+                                                   :settings settings}))
+                   filtered-repos))]]))
+      invite-modal])))
 
-(defn add-projects [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [user (:current-user data)
-            settings (:settings data)
-            repo-key (gstring/format "%s.%s"
-                                     (get-in settings [:add-projects :selected-org :login])
-                                     (get-in settings [:add-projects :selected-org :type]))
-            repos (get-in user [:repos repo-key])]
-        (html
-         [:div#add-projects
-          [:header.main-head
-           [:div.head-user
-            [:h1 "Start Building Your Projects"]]]
-          [:div#follow-contents
-           (when (seq (user-model/missing-scopes user))
-             (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
-           [:h2 "Welcome!"]
-           [:h3 "You're about to set up a new project in CircleCI."]
-           [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
-           [:hr]
-           [:div.org-listing
-            (om/build org-sidebar {:user user
-                                   :settings settings})]
-           [:hr]
-           [:div.project-listing
-            [:div.overview
-             [:span.big-number "2"]
-             [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
-            (om/build main {:user user
-                            :repos repos
-                            :settings settings})]
-           ]])))))
+(defrender add-projects [data owner]
+  (let [user (:current-user data)
+        settings (:settings data)
+        repo-key (gstring/format "%s.%s"
+                                 (get-in settings [:add-projects :selected-org :login])
+                                 (get-in settings [:add-projects :selected-org :type]))
+        repos (get-in user [:repos repo-key])]
+    (html
+     [:div#add-projects
+      [:header.main-head
+       [:div.head-user
+        [:h1 "Start Building Your Projects"]]]
+      [:div#follow-contents
+       (when (seq (user-model/missing-scopes user))
+         (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+       [:h2 "Welcome!"]
+       [:h3 "You're about to set up a new project in CircleCI."]
+       [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+       [:hr]
+       [:div.org-listing
+        (om/build organization-listing {:user user
+                                        :settings settings})]
+       [:hr]
+       [:div.project-listing
+        [:div.overview
+         [:span.big-number "2"]
+         [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+        (om/build main {:user user
+                        :repos repos
+                        :settings settings})]
+           ]])))
+
