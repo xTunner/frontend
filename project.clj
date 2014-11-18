@@ -66,7 +66,7 @@
                                    }}
 
                        {:id "test"
-                        :source-paths ["src-cljs" "test-cljs"]
+                        :source-paths ["src-cljs" #_"test-cljs"]
                         :compiler {:pretty-print true
                                    :output-to "resources/public/cljs/test/frontend-dev.js"
                                    :output-dir "resources/public/cljs/test"
