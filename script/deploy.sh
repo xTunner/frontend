@@ -14,7 +14,7 @@ backend_heads=$(git ls-remote --heads git@github.com:circleci/circle)
 if echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH$" ; then
   backend_branch=$CIRCLE_BRANCH
 else
-  backend_branch=master
+  backend_branch=production
 fi
 
 # Trigger a backend build of this sha1.
