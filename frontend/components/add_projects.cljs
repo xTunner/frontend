@@ -192,32 +192,37 @@
      [:div.proj-wrapper
       (if-not (get-in settings [:add-projects :selected-org :login])
         repos-explanation
-        (if-not (seq repos)
-          [:div.loading-spinner common/spinner]
-          [:div
-           (om/build repo-filter settings)
-           [:ul.proj-list
-            (let [filtered-repos (sort-by :name (filter (fn [repo]
-                                           (and
-                                             (if show-forks
-                                               true
-                                               (not (:fork repo)))
-                                             (-> repo
-                                               :name
-                                               (.toLowerCase)
-                                               (.indexOf (.toLowerCase repo-filter-string))
-                                               (not= -1))))
-                                         repos))]
-              (map (fn [repo] (om/build repo-item {:repo repo
-                                                   :settings settings}))
-                   filtered-repos))]]))
+        (cond
+         (nil? repos) [:div.loading-spinner common/spinner]
+         (not (seq repos)) [:div
+                            (om/build repo-filter settings)
+                            [:ul.proj-list
+                             [:li (str "No repos found for organization " (:selected-org data))]]]
+         :else [:div
+                (om/build repo-filter settings)
+                [:ul.proj-list
+                 (let [filtered-repos (sort-by :name (filter (fn [repo]
+                                                               (and
+                                                                (if show-forks
+                                                                  true
+                                                                  (not (:fork repo)))
+                                                                (-> repo
+                                                                    :name
+                                                                    (.toLowerCase)
+                                                                    (.indexOf (.toLowerCase repo-filter-string))
+                                                                    (not= -1)))
+                                                               repos)))]
+                   (map (fn [repo] (om/build repo-item {:repo repo
+                                                        :settings settings}))
+                        filtered-repos))]]))
       invite-modal])))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
         settings (:settings data)
+        selected-org (get-in settings [:add-projects :selected-org :login])
         repo-key (gstring/format "%s.%s"
-                                 (get-in settings [:add-projects :selected-org :login])
+                                 selected-org
                                  (get-in settings [:add-projects :selected-org :type]))
         repos (get-in user [:repos repo-key])]
     (html
@@ -242,6 +247,5 @@
          [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
         (om/build main {:user user
                         :repos repos
-                        :settings settings})]
-           ]])))
-
+                        :selected-org selected-org
+                        :settings settings})]]])))
