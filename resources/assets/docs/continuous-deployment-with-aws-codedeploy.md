@@ -99,7 +99,7 @@ key starts with `my-app`.
             "s3:PutObject"
           ],
           "Resource": [
-            "arn:aws:s3:::my-bucket/my-app*",
+            "arn:aws:s3:::my-bucket/my-app*"
           ]
         }
       ]
