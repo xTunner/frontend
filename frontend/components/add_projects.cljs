@@ -38,9 +38,10 @@
       [:div.other-stuff
        [:div.orgname
         [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]
-         [:small.github-url.pull-right
-                 [:a {:href (str "https://github.com/" login), :target "_blank"}
-                  [:i.fa.fa-github-alt ""]]]]]]]))
+        [:small.github-url.pull-right
+         [:a {:href (str "https://github.com/" login)
+              :target "_blank"}
+          [:i.fa.fa-github-alt ""]]]]]]]))
 
 (defn organization-listing [data owner]
   (reify
