@@ -20,6 +20,7 @@
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.pricing :as pricing]
+            [frontend.components.pricing-b :as pricing-b]
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
@@ -62,7 +63,8 @@
 
     :landing landing/home
     :about about/about
-    :pricing pricing/pricing
+    ; :pricing pricing/pricing
+    :pricing pricing-b/pricing
     :jobs jobs/jobs
     :privacy privacy/privacy
     :security security/security
@@ -103,7 +105,8 @@
                                        (when slim-aside? ["aside-slim"])
                                        (when-not logged-in? ["aside-nil"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
-                                       (when (= :landing (:navigation-point app)) ["landing"]))}
+                                       (when (= :landing (:navigation-point app)) ["landing"])
+                                       (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
