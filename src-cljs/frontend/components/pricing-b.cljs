@@ -62,7 +62,7 @@
              [:article
               [:h1 "Transparent pricing, built to scale."]
               [:h3 "The first container is free and each additional one is $50/mo. "
-                   [:a "Need enterprise pricing?"]]]
+                   [:a {:href "/enterprise"} "Need enterprise pricing?" ]]]
              [:div.pricing-calculator
               [:div.pricing-calculator-controls
                [:div.controls-containers
@@ -115,7 +115,9 @@
                 [:div.value (if (> total-cost 0)
                               (str "$" total-cost)
                               "Free")]]
-               [:a.pricing-action {:role "button"} "Sign Up Free"]]]
+               [:a.pricing-action {:href (auth-url)
+                                   :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
+                                   :title "Sign up with Github"} "Sign Up Free"]]]
              [:article.pricing-features
               [:div.pricing-feature
                [:h3 "Easy Debugging"]
