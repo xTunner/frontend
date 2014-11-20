@@ -35,13 +35,13 @@ do during the deployment.
 *How* to deploy is specified by the `AppSpec` file located inside the
 application revision.
 
-The AppSpec file lives in your repo and tells CodeDeploy which files from
+The [AppSpec][] file lives in your repo and tells CodeDeploy which files from
 your application to deploy, where to deploy them, and also allows you specify
 lifecyle scripts to be run at different stages during the deployment. You can
 use these lifecycle scripts to stop your service before a new version is
 deployed, run database migrations, install dependencies etc.
 
-An application revision is a zipfile or tarball containing the code/resources
+An [application revision][] is a zipfile or tarball containing the code/resources
 to be deployed. It's usually created by packaging up your entire repo but can
 be a sub-directory of the repo if desired. The `AppSpec` file must be stored
 in the application revision as `<application-root>/appspec.yml`.
@@ -58,8 +58,8 @@ The most straightforward way to configure a new application is to log on to the
 [CodeDeploy console][] which can guide you through the process of [creating a new
 application][].
 
-[comment]: <> "[AppSpec]: TODO link to doc on appspecs, linkify occurrences of 'AppSpec'"
-[comment]: <> "[application revision]: TODO link to doc on application revisions, linkify occurrences of 'application revisions'"
+[AppSpec]: http://docs.aws.amazon.com/codedeploy/latest/userguide/writing-app-spec.html
+[application revision]: http://docs.aws.amazon.com/codedeploy/latest/userguide/how-to-prepare-revision.html
 [S3]: http://aws.amazon.com/s3/
 [CodeDeploy console]: https://console.aws.amazon.com/codedeploy/home
 [creating a new application]: https://console.aws.amazon.com/codedeploy/home#/applications/new
@@ -157,10 +157,10 @@ resource specification.
 
 If you want to use custom deployment configurations then we will also need the
 `GetDeploymentConfig` permission for each of the custom deployment
-configurations, check out the CodeDeploy IAM docs for more information.
+configurations, check out the [CodeDeploy IAM docs][] for more information.
 
 [IAM user]: http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html
-[comment]: <> "[CodeDeploy IAM docs]: TODO link to CodeDeploy IAM docs, linkify 'CodeDeploy IAM docs'"
+[CodeDeploy IAM docs]: http://docs.aws.amazon.com/codedeploy/latest/userguide/access-permissions.html
 
 
 ### Step 2: Configure CircleCI to use your new IAM user
