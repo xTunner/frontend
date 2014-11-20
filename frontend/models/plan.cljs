@@ -5,9 +5,11 @@
             [cljs-time.format :as time-format]))
 
 ;; The template tells how to price the plan
-;; TODO: fix this to work from the backend db; how?
-(def default-template-properties {:price 0 :container_cost 50 :id
-                                  "p18" :max_containers 1000 :free_containers 0})
+;; TODO: fix this to work from the backend db; how? Failing that, must
+;; update this code when we change the definition of p18
+(def default-template-properties {:price 19 :container_cost 50 :id
+                                  "p18" :max_containers 1000 :free_containers 1})
+;(def default-template-properties {:price 0 :container_cost 50 :id "p18" :max_containers 1000 :free_containers 0})
 
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
