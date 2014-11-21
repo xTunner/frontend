@@ -91,7 +91,8 @@
                        {:react-key (:index container)}))
           [:a.container-selector.add-containers 
             {:role "button"
-             :href (build-model/path-for-parallelism build)}
+             :href (build-model/path-for-parallelism build)
+             :title "adjust parallelism"}
             [:span "+"]
             [:span "-"]]]])))))
 
