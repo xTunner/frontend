@@ -3,7 +3,7 @@
   .overview {
     vertical-align: top;
     text-align: justify;
-    padding: 10px;
+    padding: 10px 0;
 
     @media only screen and (max-width: 960px) {
       width: 100%;
@@ -38,10 +38,10 @@
   }
 
   .instruction {
-    padding: 0 5px;
+    padding: 0 0 5px 0;
     display: block;
     margin-left: 45px;
-    margin: 10px 0 0 45px;
+    margin: 0 0 0 45px;
   }
 
   h4 {
@@ -359,21 +359,27 @@
       .box-sizing(border-box);
     }
   }
-}
 
-.head-user {
-  h1 {
-    font-size: @fontSizeLarge;
-    font-weight: normal;
+  .head-user {
+    h1 {
+      font-size: @fontSizeLarge;
+      font-weight: normal;
+    }
+
+    padding: 0 20px;
   }
 
-  padding: 0 20px;
+  .project-listing {
+    margin: 0 5px 10px 0;
+  }
+
+  .fork-filter {
+    margin: 10px 20px 0 0;
+  }
+
+  .fa {
+    display: inline;
+    padding-top: 0;
+  }
 }
 
-.project-listing {
-  margin: 0 5px 10px 0;
-}
-
-.fork-filter {
-  margin: 10px 20px 0 0;
-}
