@@ -116,10 +116,14 @@ chooses a [Ruby version](#ruby-version)
 and patchset, and adds a custom test command
 to run after the rest of your commands.
 
-Although `pre` and `post` are supported in the `machine`
-section, `override` is not.
-Here's how you might adjust the `circle.yml` file using
-`pre` to install a different version of `phantomjs` than the version CircleCI has installed.
+Although `pre` and `post` are supported in the `machine` section,
+`override` is not. Note that custom environment variables are not
+available during the `machine pre` section because they are setup in
+the main `machine` section.
+
+Here's how you might adjust the `circle.yml` file
+using `pre` to install a different version of `phantomjs` than the
+version CircleCI has installed.
 
 ```
 machine:
