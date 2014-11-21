@@ -229,7 +229,7 @@
      [:div#add-projects
       [:header.main-head
        [:div.head-user
-        [:h1 "Start Building Your Projects"]]]
+        [:h1 "Add Projects"]]]
       [:div#follow-contents
        (when (seq (user-model/missing-scopes user))
          (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
