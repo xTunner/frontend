@@ -210,8 +210,8 @@
                                                                     :name
                                                                     (.toLowerCase)
                                                                     (.indexOf (.toLowerCase repo-filter-string))
-                                                                    (not= -1)))
-                                                               repos)))]
+                                                                    (not= -1))))
+                                                             repos))]
                    (map (fn [repo] (om/build repo-item {:repo repo
                                                         :settings settings}))
                         filtered-repos))]]))
