@@ -613,7 +613,8 @@
 
 (def status-styles
   {"badge" {:label "Badge" :string ".png?style=badge"}
-   "shield" {:label "Shield" :string ".svg?style=shield"}})
+   "shield" {:label "Shield" :string ".svg?style=shield"}
+   "svg" {:label "Badge" :string ".svg?style=svg"}})
 
 (def status-formats
   {"image" {:label "Image URL"
@@ -649,7 +650,7 @@
         project-name (vcs-url/project-name (:vcs_url project))
         gh-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
         target (str (.. js/window -location -origin) "/gh/" gh-path)
-        style (get-in project-data [:status-badges :style] "badge")
+        style (get-in project-data [:status-badges :style] "svg")
         image (str target (get-in status-styles [style :string]))
         image (if (seq token) (str image "&circle-token=" token) image)
         format (get-in project-data [:status-badges :format] "markdown")
