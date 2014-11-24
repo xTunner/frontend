@@ -143,7 +143,7 @@
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 [:button {:on-click #(utils/open-modal "#inviteForm-addprojects")}
                  [:i.fa.fa-lock]
-                 "Contact organization admin"]]))))))
+                 "Contact repo admin"]]))))))
 
 (def invite-modal
   [:div#inviteForm-addprojects.fade.hide.modal
@@ -231,21 +231,22 @@
        [:div.head-user
         [:h1 "Add Projects"]]]
       [:div#follow-contents
-       (when (seq (user-model/missing-scopes user))
-         (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
-       [:h2 "Welcome!"]
-       [:h3 "You're about to set up a new project in CircleCI."]
-       [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
-       [:hr]
-       [:div.org-listing
-        (om/build organization-listing {:user user
-                                        :settings settings})]
-       [:hr]
-       [:div.project-listing
-        [:div.overview
-         [:span.big-number "2"]
-         [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
-        (om/build main {:user user
-                        :repos repos
-                        :selected-org selected-org
-                        :settings settings})]]])))
+       [:div.follow-wrapper
+        (when (seq (user-model/missing-scopes user))
+          (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+        [:h2 "Welcome!"]
+        [:h3 "You're about to set up a new project in CircleCI."]
+        [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+        [:hr]
+        [:div.org-listing
+         (om/build organization-listing {:user user
+                                         :settings settings})]
+        [:hr]
+        [:div.project-listing
+         [:div.overview
+          [:span.big-number "2"]
+          [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+         (om/build main {:user user
+                         :repos repos
+                         :selected-org selected-org
+                         :settings settings})]]]])))
