@@ -55,7 +55,7 @@
 
   :figwheel {:css-dirs ["resources/public/assets/css"]}
   :cljsbuild {:builds [{:id "dev"
-                        :source-paths ["src-cljs"]
+                        :source-paths ["src-cljs" "test-cljs"]
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none
@@ -69,9 +69,9 @@
                                    }}
 
                        {:id "test"
-                        :source-paths ["src-cljs" #_"test-cljs"]
+                        :source-paths ["src-cljs" "test-cljs"]
                         :compiler {:pretty-print true
-                                   :output-to "resources/public/cljs/test/frontend-dev.js"
+                                   :output-to "resources/public/cljs/test/frontend-test.js"
                                    :output-dir "resources/public/cljs/test"
                                    :optimizations :advanced
                                    :externs ["test-js/externs.js"

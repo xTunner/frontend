@@ -12,3 +12,4 @@ pom.xml.asc
 /resources/components
 /resources/assets/css/app.css
 /resources/public/assets/
+/resources/assets/docs/manifest.json
