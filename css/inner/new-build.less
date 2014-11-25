@@ -93,7 +93,15 @@
   border-left-width: 0;
   &.parallelism-tab {
     max-width: 6em;
-    background: @grayLightest;
+    background: @circleBlue;
+    color: @white;
+    span {
+      margin-top: 8px;
+      font-size: 22px;
+    }
+    &:hover {
+      color: @white;
+    }
   }
   &:hover {
     &.waiting {
