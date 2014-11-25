@@ -89,12 +89,11 @@
                         :build-running? build-running?
                         :current-container-id current-container-id}
                        {:react-key (:index container)}))
-          [:a.container-selector.add-containers 
+          [:a.container-selector.parallelism-tab 
             {:role "button"
              :href (build-model/path-for-parallelism build)
              :title "adjust parallelism"}
-            [:span "+"]
-            [:span "-"]]]])))))
+            [:span "+"]]]])))))
 
 (defn notices [data owner]
   (reify
