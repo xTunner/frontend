@@ -20,9 +20,9 @@
     (let [result (try
                    (doseq [script scripts]
                      (println (format "Updating %s" script))
-                     (-> @(http/get (:url script))
-                         :body
-                         (#(spit (str "resources/assets/" (:path script)) %))))
+                     (let [response @(http/get (:url script) {:as :text})]
+                       (assert (= (:status response) 200))
+                       (spit (str "resources/assets/" (:path script)) (:body response))))
                    :success
                    (catch Exception e
                      (if (> 3 tries)
