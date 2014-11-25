@@ -318,7 +318,8 @@
   (fix-figwheel-css!)
   (refresh-css!))
 
-(fw/watch-and-reload
-  :websocket-url "ws://localhost:3449/figwheel-ws"
-  :jsload-callback (fn [] (do
-                            (update-ui!))))
+(if (env/development?)
+  (fw/watch-and-reload
+    :websocket-url "ws://localhost:3449/figwheel-ws"
+    :jsload-callback (fn [] (update-ui!))))
+
