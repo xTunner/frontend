@@ -16,7 +16,8 @@ body {
   .head-user {
     .flexy(center, space-between);
     height: @tile;
-    box-shadow: 0 -1px @grayBoxBorder inset;
+    box-sizing: border-box;
+    border-bottom: solid 1px @grayBoxBorder;
     .settings {
       .flexy(center, center);
       .tip(left);
