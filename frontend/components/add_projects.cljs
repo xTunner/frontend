@@ -97,7 +97,7 @@
             should-build? (repo-model/should-do-first-follower-build? repo)]
         (html
          (cond (repo-model/can-follow? repo)
-               [:li.repo-follow {:class (when should-build? "repo-1stfollow")}
+               [:li.repo-follow
                 [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
@@ -110,6 +110,9 @@
                                                                                :type type)])
                                           (when should-build?
                                             (om/set-state! owner :building? true)))
+                           :title (if should-build?
+                                    "This project has never been built by CircleCI before. Clicking will cause CircleCI to start building the project."
+                                    "This project has been built by CircleCI before. Clicking will cause builds for this project to show up for you in the UI.")
                            :data-spinner true}
                   (if should-build? "Build project" "Watch project")])]
 
