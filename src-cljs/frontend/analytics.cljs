@@ -116,3 +116,6 @@
 
 (defn track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
+
+(defn track-link-clicked [target]
+  (mixpanel/track "Track Link Clicked" {:link-class target}))
