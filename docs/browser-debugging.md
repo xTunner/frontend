@@ -110,3 +110,13 @@ ubuntu@box10$ xclock
 You can kill xclock with Ctrl+c after it appears on your desktop.
 
 Now you can run your integration tests from the command line and watch the browser for unexpected behavior. You can even interact with the browser &mdash; it's as if the tests were running on your local machine!
+
+### VNC Viewer Recommendations
+
+Some of our customers have had some VNC clients perform poorly and
+others perform well.  Particuarly, on OS X RealVNC produces a better
+image than Chicken of the VNC.
+
+If you have had a good or bad experience with a VNC viewer,
+[let us know](mailto:sayhi@circleci.com) so we can update this page and help
+other customers.

@@ -11,8 +11,6 @@
 @activity_line: (@em * 1.5);
 @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
 
-
-
 .inner {
   &.aside-slim {
     .aside-left-nav {
@@ -89,7 +87,7 @@
     .flex(0 0 auto);
     .flexy(center, space-between);
     height: @tile;
-    box-shadow: 0 -1px @grayBoxBorder inset;
+    border-bottom: solid 1px @grayBoxBorder;
     padding: @em;
     position: relative;
     select {
