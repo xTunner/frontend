@@ -3,6 +3,7 @@
             [frontend.async :refer [put!]]
             [weasel.repl :as ws-repl]
             [clojure.browser.repl :as repl]
+            [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
             [dommy.core :as dommy]
             [goog.dom]
@@ -295,13 +296,29 @@
   (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state) true))
 
 (defn refresh-css! []
-  (let [is-app-css? #(re-matches #"/assets/css/app.*?\.css(?:\.less)?" (dommy/attr % :href))
-        old-link (->> (sel [:head :link])
-                      (filter is-app-css?)
-                      first)]
-        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href "/assets/css/app.css"}])
-        (dommy/remove! old-link)))
+  (let [is-app-css? (fn [elem]
+                      (let [href (inspect (dommy/attr elem :href))]
+                         (re-find #"/assets/css/app.*?\.css(?:\.less)?" href)))
+        potential-links (sel [:head :link])
+        old-links (filter is-app-css? potential-links)]
+        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href (str "/assets/css/app.css?t=" (.getTime (js/Date.)))}])
+        (map #(dommy/remove! %) old-links)))
+
+(defn fix-figwheel-css! []
+  (let [is-figwheel-css? (fn [elem] (re-find #"3449resources" (dommy/attr elem :href)))
+        patch (fn [elem]
+                (let [fixed-href (string/replace (dommy/attr elem :href) #"3449resources" "3449/resources")]
+                  (do
+                    (dommy/remove! elem)
+                    (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href fixed-href}]))))]
+    (map patch (filter is-figwheel-css? (sel [:head :link])))))
 
 (defn update-ui! []
   (reinstall-om!)
+  (fix-figwheel-css!)
   (refresh-css!))
+
+(fw/watch-and-reload
+  :websocket-url "ws://localhost:3449/figwheel-ws"
+  :jsload-callback (fn [] (do
+                            (update-ui!))))

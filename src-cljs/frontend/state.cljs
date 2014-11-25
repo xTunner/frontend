@@ -15,7 +15,8 @@
               :organizations  {:circleci  {:plan {}}}
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
-                                            :type :org}}}
+                                            :type :org}
+                             :show-forks false}}
    :user-options-shown false
    :selected-home-technology-tab nil
    :builds-per-page 30

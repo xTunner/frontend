@@ -1,5 +1,4 @@
-(ns frontend.components.add-projects
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+(ns frontend.components.add-projects (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.user :as user-model]
@@ -15,7 +14,7 @@
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [html]]))
+                   [frontend.utils :refer [html defrender]]))
 
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div
@@ -27,39 +26,50 @@
                      (string/join "and " missing-scopes)
                      (if (< 1 (count missing-scopes)) "scope" "scopes"))]]])
 
-(defn side-item [org settings owner]
+(defn organization [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)]
-    [:li.side-item {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
-     [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])}
-      [:img {:src (gh-utils/make-avatar-url org :size 25)
-             :height 25}]
-      [:div.orgname {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])}
-       login]]]))
+    [:div.organization {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
+     [:div.inner
+      [:div.avatar
+       [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])}
+        [:img {:src (gh-utils/make-avatar-url org :size 50)
+               :height 50}]]]
+      [:div.other-stuff
+       [:div.orgname
+        [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]
+        [:small.github-url.pull-right
+         [:a {:href (str "https://github.com/" login)
+              :target "_blank"}
+          [:i.fa.fa-github-alt ""]]]]]]]))
 
-(defn org-sidebar [data owner]
+(defn organization-listing [data owner]
   (reify
+    om/IDisplayName (display-name [_] "Organization Listing")
     om/IDidMount
     (did-mount [_]
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
       (let [user (:user data)
-            settings (:settings data)]
-        (html [:ul.side-list
-               [:li.add-orgs "Your Organizations"]
-               (map (fn [org] (side-item org settings owner))
-                    (:organizations user))
-               [:li.add-you "Your Projects"]
-               (map (fn [org] (side-item org settings owner))
-                    (filter (fn [org] (= (:login user) (:login org)))
-                            (:collaborators user)))
-               [:li.add-collabs
-                [:span#collaborators-tooltip-hack {:title "For all repos & forks"}
-                 "Your Collaborators"]]
-               (map (fn [org] (side-item org settings owner))
+            settings (:settings data)
+            org (:organizations user)]
+        (html [:div
+            [:div.overview
+             [:span.big-number "1"]
+             [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
+            [:div.organizations
+             [:h4 "Your accounts"]
+             (map (fn [org] (organization org settings owner))
+                   (:organizations user))
+             (map (fn [org] (organization org settings owner))
+                   (filter (fn [org] (= (:login user) (:login org)))
+                           (:collaborators user)))
+              [:div
+               [:h4 "Users & organizations who have made pull requests to your repos"]
+               (map (fn [org] (organization org settings owner))
                     (remove (fn [org] (= (:login user) (:login org)))
-                            (:collaborators user)))])))))
+                            (:collaborators user)))]]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -71,6 +81,7 @@
 
 (defn repo-item [data owner]
   (reify
+    om/IDisplayName (display-name [_] "repo-item")
     om/IDidMount
     (did-mount [_]
       (utils/tooltip (str "#view-project-tooltip-" (-> data :repo repo-model/id (string/replace #"[^\w]" "")))))
@@ -90,9 +101,7 @@
                 [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
-                  (:name repo)]
-                 (when (:fork repo)
-                   [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
+                  (:name repo)]]
                 (when building?
                   [:div.building "Starting first build..."])
                 (managed-button
@@ -102,7 +111,7 @@
                                           (when should-build?
                                             (om/set-state! owner :building? true)))
                            :data-spinner true}
-                  [:span "Follow"]])]
+                  (if should-build? "Build project" "Watch project")])]
 
                (:following repo)
                [:li.repo-unfollow
@@ -122,7 +131,7 @@
                                                                              :login login
                                                                              :type type)])
                            :data-spinner true}
-                  [:span "Unfollow"]])]
+                  [:span "Stop watching project"]])]
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
@@ -132,9 +141,9 @@
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:i.fa.fa-lock]
                 [:button {:on-click #(utils/open-modal "#inviteForm-addprojects")}
-                 [:span "Follow"]]]))))))
+                 [:i.fa.fa-lock]
+                 "Contact repo admin"]]))))))
 
 (def invite-modal
   [:div#inviteForm-addprojects.fade.hide.modal
@@ -156,81 +165,88 @@
      {:data-dismiss "modal", :aria-hidden "true"}
      "Got it"]]])
 
-(defn repo-filter [settings owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
-        (html
-         [:div.repo-filter
-          [:i.fa.fa-search]
-          [:input.unobtrusive-search.input-large
-           {:placeholder "Filter repos..."
-            :type "search"
-            :value repo-filter-string
-            :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]])))))
+(defrender repo-filter [settings owner]
+  (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
+    (html
+     [:div.repo-filter
+      ; [:i.fa.fa-search]
+      [:input.unobtrusive-search
+       {:placeholder "Filter repos..."
+        :type "search"
+        :value repo-filter-string
+        :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]
+      [:div.checkbox.pull-right.fork-filter
+       [:label
+        [:input {:type "checkbox"
+                 :name "Show forks"
+                 :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
+        "Show forks"]]])))
 
-(defn main [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [user (:current-user data)
-            settings (:settings data)
-            repos (:repos data)
-            repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
-        (html
-         [:div.proj-wrapper
-          (if-not (get-in settings [:add-projects :selected-org :login])
-            repos-explanation
-            (cond
-              (nil? repos)
-                [:div.loading-spinner common/spinner]
-              (not (seq repos))
+(defrender main [data owner]
+  (let [user (:current-user data)
+        settings (:settings data)
+        repos (:repos data)
+        repo-filter-string (get-in settings [:add-projects :repo-filter-string])
+        show-forks (true? (get-in settings [:add-projects :show-forks]))]
+    (html
+     [:div.proj-wrapper
+      (if-not (get-in settings [:add-projects :selected-org :login])
+        repos-explanation
+        (cond
+         (nil? repos) [:div.loading-spinner common/spinner]
+         (not (seq repos)) [:div
+                            (om/build repo-filter settings)
+                            [:ul.proj-list
+                             [:li (str "No repos found for organization " (:selected-org data))]]]
+         :else [:div
+                (om/build repo-filter settings)
                 [:ul.proj-list
-                  [:li (str "No repos found for organization " (:selected-org data))]]
-              :else
-                [:ul.proj-list
-                 (let [filtered-repos (filter (fn [repo]
-                                                (-> repo
-                                                    :name
-                                                    (.toLowerCase)
-                                                    (.indexOf repo-filter-string)
-                                                    (not= -1)))
-                                              repos)]
+                 (let [filtered-repos (sort-by :name (filter (fn [repo]
+                                                               (and
+                                                                (if show-forks
+                                                                  true
+                                                                  (not (:fork repo)))
+                                                                (-> repo
+                                                                    :name
+                                                                    (.toLowerCase)
+                                                                    (.indexOf (.toLowerCase repo-filter-string))
+                                                                    (not= -1))))
+                                                             repos))]
                    (map (fn [repo] (om/build repo-item {:repo repo
                                                         :settings settings}))
-                        filtered-repos))]))
-          invite-modal])))))
+                        filtered-repos))]]))
+      invite-modal])))
 
-(defn add-projects [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [user (:current-user data)
-            settings (:settings data)
-            selected-org (get-in settings [:add-projects :selected-org :login])
-            repo-key (gstring/format "%s.%s"
-                                     selected-org
-                                     (get-in settings [:add-projects :selected-org :type]))
-            repos (get-in user [:repos repo-key])]
-        (html
-         [:div#add-projects
-          (when (seq (user-model/missing-scopes user))
-            (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
-          [:div.sidebar
-           (om/build org-sidebar {:user user
-                                  :settings settings})]
-          [:div.project-listing
-           [:div.overview
-            [:h3 "Start following your projects"]
-            [:p
-             "Choose a repo in GitHub from one of your organizations, your own repos, or repos you share with others, and we'll watch it for you. We'll show you the first build immediately, and a new build will be initiated each time someone pushes commits; come back here to follow more projects."]]
-
-
-           (om/build repo-filter settings)
-
-           (om/build main {:user user
-                           :repos repos
-                           :selected-org selected-org
-                           :settings settings})]
-          [:div.sidebar]])))))
+(defrender add-projects [data owner]
+  (let [user (:current-user data)
+        settings (:settings data)
+        selected-org (get-in settings [:add-projects :selected-org :login])
+        repo-key (gstring/format "%s.%s"
+                                 selected-org
+                                 (get-in settings [:add-projects :selected-org :type]))
+        repos (get-in user [:repos repo-key])]
+    (html
+     [:div#add-projects
+      [:header.main-head
+       [:div.head-user
+        [:h1 "Add Projects"]]]
+      [:div#follow-contents
+       [:div.follow-wrapper
+        (when (seq (user-model/missing-scopes user))
+          (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+        [:h2 "Welcome!"]
+        [:h3 "You're about to set up a new project in CircleCI."]
+        [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+        [:hr]
+        [:div.org-listing
+         (om/build organization-listing {:user user
+                                         :settings settings})]
+        [:hr]
+        [:div.project-listing
+         [:div.overview
+          [:span.big-number "2"]
+          [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+         (om/build main {:user user
+                         :repos repos
+                         :selected-org selected-org
+                         :settings settings})]]]])))
