@@ -9,6 +9,7 @@
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
             [frontend.components.errors :as errors]
@@ -52,6 +53,7 @@
     :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
+    :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
     :account account/account
@@ -123,9 +125,7 @@
                [:footer.main-foot
                 (footer/footer)]
                (when-not logged-in?
-                 (om/build shared/sticky-help-link app))]
-              ;; modal trigger is in aside-nav
-              shared/invite-form])))))))
+                 (om/build shared/sticky-help-link app))]])))))))
 
 
 (defn app [app owner opts]

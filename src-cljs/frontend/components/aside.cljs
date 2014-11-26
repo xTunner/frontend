@@ -123,8 +123,7 @@
            (common/ico :fail-light)]]
          [:div.aside-user-options
           [:a.aside-item {:href "/account"} "Settings"]
-          [:a.aside-item {:on-click #(raise! owner [:invite-form-opened])}
-           "Invite a Teammate"]
+          [:a.aside-item {:href "/invite-teammates"} "Invite a Teammate"]
           [:a.aside-item {:href "/logout"} "Logout"]]]))))
 
 (defn activity [app owner opts]

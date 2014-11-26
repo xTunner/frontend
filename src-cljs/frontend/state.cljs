@@ -51,19 +51,14 @@
                         :config-data {:show-config false}
                         :current-container-id 0
                         :container-data {:current-container-id 0
-                                         :containers nil}
-                        :invite-data {:dismiss-invite-form nil
-                                      ;; map of login to github user. These could go
-                                      ;; in current-project-data, but it would make the
-                                      ;; invites implementation more complex. Much easier
-                                      ;; for each build to have its own copy of github-users, especially
-                                      ;; since it's used so infrequently and goes stale fast.
-                                      :github-users nil}}
+                                         :containers nil}}
    :current-org-data {:plan nil
                       :projects nil
                       :users nil
                       :invoices nil
                       :name nil}
+   :invite-data {:dismiss-invite-form nil
+                 :github-users nil}
    :instrumentation []
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
    :inputs nil})
@@ -72,8 +67,8 @@
 
 (def build-data-path [:current-build-data])
 (def build-path [:current-build-data :build])
-(def build-github-users-path (conj build-data-path :invite-data :github-users))
-(defn build-github-user-path [index] (conj build-github-users-path index))
+(def invite-github-users-path [:invite-data :github-users])
+(defn invite-github-user-path [index] (conj invite-github-users-path index))
 (def dismiss-invite-form-path (conj build-data-path :invite-data :dismiss-invite-form))
 (def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
 (def invite-logins-path (conj build-data-path :invite-data :invite-logins))
