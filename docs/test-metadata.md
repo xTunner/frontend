@@ -26,23 +26,23 @@ For Minitest, you'll have to add the `minitest-ci` gem.
 ## Custom steps
 
 If you have a custom test step that produces JUnit xml output, you can put the xml
-files into the `$CI_REPORTS` directory. We'll automatically store the files in your
+files into the `$CIRCLE_TEST_REPORTS` directory. We'll automatically store the files in your
 [build artifacts](/docs/build-artifacts) and parse the xml.
 
-You can tell us the type of test by putting the files in a subdirectory of `$CI_REPORTS`.
-For example, if you have RSpec tests, you would move your xml files to `$CI_REPORTS/rspec`.
+You can tell us the type of test by putting the files in a subdirectory of `$CIRCLE_TEST_REPORTS`.
+For example, if you have RSpec tests, you would move your xml files to `$CIRCLE_TEST_REPORTS/rspec`.
 
 ### Cucumber
 
 For custom Cucumber steps, you should generate a file using the json formatter that ends
-with `.cucumber` and move it to the `$CI_REPORTS/cucumber` directory. Your [circle.yml](/docs/configuration)
+with `.cucumber` and move it to the `$CIRCLE_TEST_REPORTS/cucumber` directory. Your [circle.yml](/docs/configuration)
 might be:
 
 ```
 test:
   override:
-    - mkdir -p $CI_REPORTS/cucumber
-    - bundle exec cucumber --format json --out $CI_REPORTS/cucumber/tests.cucumber
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+    - bundle exec cucumber --format json --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber
 ```
 
 ## API
