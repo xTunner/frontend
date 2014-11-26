@@ -16,6 +16,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}
+                             :show-fork-accounts false
                              :show-forks false}}
    :user-options-shown false
    :selected-home-technology-tab nil
