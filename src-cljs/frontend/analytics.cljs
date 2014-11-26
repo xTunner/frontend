@@ -11,7 +11,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.style]))
+            [goog.style]
+            [goog.string :as gstr]))
 
 
 (defn init-user [login]
@@ -64,8 +65,8 @@
 
 (defn track-save-containers [upgraded?]
   (mixpanel/track "Save Containers")
-  (if upgraded? 
-    (intercom/track :upgraded-containers) 
+  (if upgraded?
+    (intercom/track :upgraded-containers)
     (intercom/track :downgraded-containers)))
 
 (defn track-save-orgs []
@@ -119,3 +120,12 @@
 
 (defn track-link-clicked [target]
   (mixpanel/track "Track Link Clicked" {:link-class target}))
+
+(defn utm? [[key val]]
+  (gstr/startsWith (name key) "utm"))
+
+(defn register-last-touch-utm [query-params]
+  (mixpanel/register (->> query-params
+                          (filter utm?)
+                          (map (fn [[key val]] [(str "last_" (name key)) val]))
+                          (into {}))))
