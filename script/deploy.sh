@@ -3,7 +3,7 @@
 set -ex
 
 # Only deploy for private repository builds.
-if [[ $CIRCLE_PROJECT_REPO_NAME != 'frontend-private' ]]; then
+if [[ $CIRCLE_PROJECT_REPONAME != 'frontend-private' ]]; then
   exit 0
 fi
 
