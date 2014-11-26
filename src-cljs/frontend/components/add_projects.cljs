@@ -53,7 +53,8 @@
     (render [_]
       (let [user (:user data)
             settings (:settings data)
-            org (:organizations user)]
+            org (:organizations user)
+            show-fork-accounts? (get-in settings [:add-projects :show-fork-accounts])]
         (html [:div
             [:div.overview
              [:span.big-number "1"]
@@ -66,10 +67,17 @@
                    (filter (fn [org] (= (:login user) (:login org)))
                            (:collaborators user)))
               [:div
-               [:h4 "Users & organizations who have made pull requests to your repos"]
-               (map (fn [org] (organization org settings owner))
-                    (remove (fn [org] (= (:login user) (:login org)))
-                            (:collaborators user)))]]])))))
+               [:h4
+                [:a
+                 {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
+                 "Users & organizations who have made pull requests to your repos "
+                 (if show-fork-accounts?
+                   [:i.fa.fa-chevron-down ""]
+                   [:i.fa.fa-chevron-up ""])]]
+               (if show-fork-accounts?
+                 (map (fn [org] (organization org settings owner))
+                      (remove (fn [org] (= (:login user) (:login org)))
+                              (:collaborators user))))]]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -172,7 +180,6 @@
   (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
     (html
      [:div.repo-filter
-      ; [:i.fa.fa-search]
       [:input.unobtrusive-search
        {:placeholder "Filter repos..."
         :type "search"
