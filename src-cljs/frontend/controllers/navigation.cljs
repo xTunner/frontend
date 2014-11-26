@@ -217,6 +217,27 @@
   (analytics/track-signup))
 
 
+(defmethod navigated-to :invite-teammates
+  [history-imp navigation-point args state]
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point
+             :navigation-data args
+             :navigation-settings {})
+      (assoc-in [:invite-data :org] (:org args))))
+
+(defmethod post-navigated-to! :invite-teammates
+  [history-imp navigation-point args previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])
+        org (:org args)]
+    ; get the list of orgs
+    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
+      (put! api-ch [:organizations (:status api-result) api-result])))
+    (when org
+      (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/members" org)))]
+            (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))
+    (set-page-title! "Invite teammates")))
+
 (defmethod navigated-to :project-settings
   [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
   (-> state
