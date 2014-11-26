@@ -365,7 +365,7 @@
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
     state
     (-> state
-        (assoc-in state/build-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
+        (assoc-in state/invite-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
 
 (defmethod post-api-event! [:first-green-build-github-users :success]
   [target message status {:keys [resp context]} previous-state current-state]
@@ -380,6 +380,11 @@
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
     state
     (assoc-in state state/dismiss-invite-form-path true)))
+
+
+(defmethod api-event [:org-member-invite-users :success]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state [:invite-data :github-users] (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))
 
 
 (defmethod api-event [:enable-project :success]
