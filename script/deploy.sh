@@ -15,7 +15,8 @@ backend_heads=$(git ls-remote --heads $backend_repo)
 if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH$" ; then
   backend_dir=$HOME/checkouts/circle
   git clone $backend_repo $backend_dir
-  git -C $backend_dir push origin origin/production:$CIRCLE_BRANCH
+  git -C $backend_dir branch $CIRCLE_BRANCH origin/production
+  git -C $backend_dir push origin $CIRCLE_BRANCH:$CIRCLE_BRANCH
 fi
 
 # Trigger a backend build of this sha1.
