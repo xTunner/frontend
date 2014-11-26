@@ -125,5 +125,7 @@
   (gstr/startsWith (name key) "utm"))
 
 (defn register-last-touch-utm [query-params]
-  (let [utm-params (filter utm? query-params)]
-    (mixpanel/register (into {} (map (fn [[key val]] [(str "last_" (name key)) val]) utm-params)))))
+  (mixpanel/register (->> query-params
+                          (filter utm?)
+                          (map (fn [[key val]] [(str "last_" (name key)) val]))
+                          (into {}))))
