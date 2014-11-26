@@ -2,16 +2,15 @@
 
 set -ex
 
+export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
+
 # Distribute built public files and publish the sha1 of this branch.
 dist_tgz=$DEPLOY_S3_BUCKET/dist/$CIRCLE_SHA1.tgz
 tar -cz resources/public/ | aws put --http $dist_tgz
 echo $CIRCLE_SHA1 | aws put --http $DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
 
-# Git Configuration
-export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
-export KEYPATH="$HOME/.ssh/id_frontend-private"
-
 # Check for matching branch name on backend or create one from production branch.
+export KEYPATH="$HOME/.ssh/id_frontend-private"
 backend_repo=git@github.com:circleci/circle
 backend_heads=$(git ls-remote --heads $backend_repo)
 if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
@@ -22,6 +21,7 @@ if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
 fi
 
 # Keep open source master branch up to date.
+export KEYPATH="$HOME/.ssh/id_frontend"
 public_repo=git@github.com:circleci/frontend
 if [[ $CIRCLE_BRNACH = master ]]; then
   git push $public_repo
