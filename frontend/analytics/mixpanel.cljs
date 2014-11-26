@@ -10,6 +10,9 @@
 (defn track-pageview [path]
   (utils/swallow-errors (js/mixpanel.track_pageview path)))
 
+(defn register [props]
+  (utils/swallow-errors (js/mixpanel.register (clj->js props))))
+
 (defn register-once [props]
   (utils/swallow-errors (js/mixpanel.register_once (clj->js props))))
 
