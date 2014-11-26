@@ -2,6 +2,12 @@
 
 set -ex
 
+# Only deploy for private repository builds.
+if [[ $CIRCLE_PROJECT_REPO_NAME != 'frontend-private' ]]; then
+  exit 0
+fi
+
+# Git Configuration
 export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
 
 # Distribute built public files and publish the sha1 of this branch.
