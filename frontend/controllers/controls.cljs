@@ -703,7 +703,10 @@
 
 (defmethod post-control-event! :invited-github-users
   [target message {:keys [project-name org-name invitees]} previous-state current-state]
-  (let [context (if project-name {:project project-name} {:org org-name})]
+  (let [context (if project-name
+                  ;; TODO: non-hackish way to indicate the type of invite
+                  {:project project-name :first_green_build true}
+                  {:org org-name})]
     (button-ajax :post
                  (if project-name
                    (gstring/format "/api/v1/project/%s/users/invite" project-name)
@@ -714,13 +717,10 @@
                  :params invitees)
     ;; TODO: move all of the tracking stuff into frontend.analytics and let it
     ;;      keep track of which service to send things to
-    (mixpanel/track "Sent invitations" (merge {:first_green_build true
-                                               :users (map :login invitees)}
+    (mixpanel/track "Sent invitations" (merge {:users (map :login invitees)}
                                               context))
     (doseq [u invitees]
-      (mixpanel/track "Sent invitation" (merge {:first_green_build true
-                                                :project project-name
-                                                :login (:login u)
+      (mixpanel/track "Sent invitation" (merge {:login (:login u)
                                                 :id (:id u)
                                                 :email (:email u)}
                                                context)))))
