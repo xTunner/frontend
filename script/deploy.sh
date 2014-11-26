@@ -8,7 +8,7 @@ tar -cz resources/public/ | aws put --http $dist_tgz
 echo $CIRCLE_SHA1 | aws put --http $DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
 
 # Check for matching branch name on backend or create one from production branch.
-export GIT_SSH='./script/git-ssh-wrap.sh'
+export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
 export KEYPATH="$HOME/.ssh/id_frontend-private"
 backend_repo=git@github.com:circleci/circle
 backend_heads=$(git ls-remote --heads $backend_repo)
