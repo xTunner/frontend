@@ -1,185 +1,269 @@
 #add-projects {
-  .flexy();
-  padding: 1em 0;
 
-  .repo-filter {
-    margin-bottom: 10px;
-    border-bottom: 1px #d8d8d8 solid;
-    & > .fa {
-      font-size: 1.2em;
+  .overview {
+    vertical-align: top;
+    text-align: justify;
+    padding: 10px 0;
+
+    @media only screen and (max-width: 960px) {
+      width: 100%;
     }
   }
 
-  .unobtrusive-search {
-    width: 90%;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-    background: transparent;
-    border: none;
-    font-size: 1.5em;
-    border-radius: inherit;
-    height: 1.2em;
-    line-height: 1.2em;
-    margin-bottom: 0;
-    padding: 0 .5em;
+  @content: {
+    display: inline-block;
+    width: 100%;
+  };
+
+  #follow-contents {
+    margin: 0 auto;
+    padding: 15px;
   }
 
-  .sidebar {
-    width: 25%;
-    padding-left: 15px;
-    .flex(0 0 auto);
+  .big-number {
+    font-size: 32px;
+    font-weight: 300;
+    color: @white;
+    background: @blueLight;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    padding: 8px;
+    display: inline-block;
+    text-align: center;
+    line-height: 28px;
+    float: left;
+  }
+
+  .instruction {
+    padding: 0 0 5px 0;
+    display: block;
+    margin-left: 45px;
+    margin: 0 0 0 45px;
+  }
+
+  h4 {
+    font-size: 20px;
+    font-weight: 300;
+    color: @gray;
+  }
+
+  .repo-filter {
+    & > .fa {
+      font-size: 1.2em;
+    }
+
+    background-color: lighten(@grayLightest, .5);
+    border-bottom: solid 1px @grayLighter;
+  }
+
+  .unobtrusive-search {
+    margin: 5px;
+    height: 1em;
+    width: 206px;
+  }
+
+  .org-listing {
+
+    .organizations {
+      @content();
+    };
+
     .nav-header {
       background: #d7dce3;
       color: #455C78;
     }
-    .orgname {
-      padding-top: 3px;
-      overflow: hidden;
-      margin-left: 3%;
-      width: 70%;
+
+    @avatar-size: 48px;
+    .avatar {
+      width: @avatar-size;
+      float: left;
     }
-    li {
-      clear: both;
+
+    .other-stuff {
+      padding-left: @avatar-size + 5px;
+      min-height: @avatar-size;
     }
+
     img {
-      .pull-left();
-      width: 25px;
-      height: 25px;
+      width: @avatar-size;
+      height: @avatar-size;
+      border-radius: 4px;
     }
+
     i {
       width: 5%;
       margin-right: 0;
       padding-top: 5px;
-      .pull-right();
     }
   }
+
   #inviteForm {
     input {
       width: 270px;
     }
   }
+
   .add-repos {
     text-align: center;
     font-size: 1.231em; // 16px
     margin: 25vh 0;
     color: @grayLight;
-    h3 {
-      font-size: 1.846em; // 24px
-      font-weight: 300;
-      color: @gray;
-    }
+
     ul {
       list-style: none;
     }
+
     &:empty {
       display: none;
     }
   }
-  .project-listing {
-    .flex(0 1 auto);
-  }
 
   .overview {
-    a {
-      font-size: 1em;
-      border-radius: 4px;
-      line-height: 1.5em;
-      color: @grayDark;
-      display: block;
-      transition: all .3s ease-in-out;
-      font-weight: normal;
-      text-decoration: none;
-      background-color: transparent;
-      &:hover {
-        text-decoration: none;
-        color: @blueLight;
-        transition: .1s;
-      }
-    }
     h3 {
       margin-top: 0;
       font-weight: normal;
       color: #555;
       line-height: 1.25em;
     }
+
     p {
-      color: #999;
+      color: @grayDark;
     }
   }
+
   .proj-wrapper {
+    @content();
+    box-sizing: border-box;
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
-    margin-bottom: 20vh;
-    // padding: 1vw; (for later use with tabbing visual)
     .loading-spinner {
       margin: 1.5em auto;
     }
   }
+
   .proj-list {
-    // border: 1px solid darken(@grayBorder,1%); (for later use with tabbing visual)
     list-style: none;
     margin: 0;
     width: 100%;
   }
-  .side-list {
-    list-style-type: none;
 
-    img {
-      width: 25px;
-      height: 25px;
-      border-radius:25px;
-    }
-
-    a {
-      cursor: pointer;
-      color: @gray;
+  a {
+    cursor: pointer;
+    color: @gray;
+    text-decoration: none;
+    &:hover {
+      color: @blueLight;
       text-decoration: none;
-      &:hover {
-        color: @blueLight;
-        text-decoration: none;
+    }
+  }
+
+  & > span {
+    text-align: center;
+    display: block;
+    line-height: 13em;
+  }
+
+  .tooltip {
+    white-space: normal;
+  }
+
+  .organization {
+    & > .inner {
+      margin: 5px 5px 5px 0;
+      padding: 5px;
+      border: 1px @grayBorder solid;
+      border-radius: 4px;
+
+      @media only screen and (max-width: 960px) {
+        margin: 5px;
       }
     }
 
-    & > span {
-      text-align: center;
-      display: block;
-      line-height: 13em;
+    display: inline-block;
+    
+    width: 50%;
+
+
+    @media only screen and (max-width: 960px) {
+      width: 100%;
+
     }
-    .tooltip {
-      white-space: normal;
-    }
-    .side-item.active {
-      a {
-        color: @blueDark;
-        &:hover {
-          color: @blueLight;
-          }
-        }
+  }
+
+  .organization.active {
+    .inner {
+      border: 1px solid @blueLight;
     }
 
- }
+    a {
+      color: @blueLight;
+      &:hover {
+        color: @blueLight;
+      }
+    }
+  }
+
   .add-orgs,
   .add-collabs,
   .add-you {
     color: @gray;
     font-weight: bold;
   }
+
   .orgname {
-    display: inline-block;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: @baseLineHeight;
+    line-height: 24px;
+    color: @gray;
   }
+
+  .wordy-hr {
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+
+    & > span {
+      position: relative;
+      display: inline-block;
+    }
+
+    span:before, span:after {
+      position: absolute;
+      content: "";
+      height: 1px;
+      width: 1000%;
+      top: 50%;
+      background: @grayLighter;
+    }
+
+    span:before {
+      right: 100%;
+      margin-right: 5px;
+    }
+
+    span:after {
+      left: 100%;
+      margin-left: 5px;
+    }
+  }
+
   .proj-list {
+
     li {
       .flexy();
       .align-items(center);
-      box-shadow: 0 1px lighten(@grayLightest, .5) inset, 0 2px @white inset;
+      border-top: solid 1px lighten(@grayLightest, .5);
       line-height: 1.5em;
       position: relative;
       height: 1.5em;
-      padding: 1em;
-      padding-right: .5em;
+      padding: 1em 0.5em 1em 1em;
+
       &:first-child {
-        box-shadow: none;
+        border-top: none;
       }
       &:hover {
         background-color: darken(@whiten, 1);
@@ -192,18 +276,15 @@
         color: @grayLight;
       }
     }
+
     button {
-      .circleButton();
-      padding: 0.5em;
-      line-height: 1em;
-      min-width: 6em;
-      min-height: 2em;
       &.disabled {
         position: relative;
         span {
           display: none;
         }
       }
+
       svg {
         height: 1em;
         width: 1em;
@@ -212,9 +293,15 @@
           fill: @grayDark;
         }
       }
+
+      i {
+        .scale3d(.75, .75);
+      }
     }
+
     .repoButtonColor(@color) {
       button {
+        .subtleButton(@color);
         &:not(.disabled) {
           &:hover {
             background-color: @color;
@@ -233,13 +320,16 @@
         }
       }
     }
+
     .repo-unfollow {
       .repoButtonColor(@redLight);
     }
+
     .repo-nofollow {
-      .repoButtonColor(@green);
+      .repoButtonColor(@gray);
     }
-    .repo-1stfollow {
+
+    .repo-follow {
       .repoButtonColor(@green);
       .building {
         white-space: nowrap;
@@ -248,6 +338,7 @@
       }
     }
   }
+
   .proj-name {
     margin-right: auto;
     .fa-external-link {
@@ -257,6 +348,7 @@
       color: @grayLighter;
     }
   }
+
   .tooltip {
     font-size: inherit;
     opacity: .89;
@@ -265,4 +357,31 @@
       .box-sizing(border-box);
     }
   }
+
+  .head-user {
+    h1 {
+      font-size: @fontSizeLarge;
+      font-weight: normal;
+    }
+
+    padding: 0 20px;
+  }
+
+  .project-listing {
+    margin: 0 5px 10px 0;
+  }
+
+  .fork-filter {
+    margin: 10px 20px 0 0;
+  }
+
+  .fa {
+    display: inline;
+    padding-top: 0;
+  }
+
+  .follow-wrapper {
+    margin: 0 10px;
+  }
 }
+

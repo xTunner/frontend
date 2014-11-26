@@ -70,8 +70,8 @@ to copy your artifacts into the [artifacts directory](/docs/build-artifacts).
 
 ### Seeing the results in the CircleCI UI
 
-We will upload your coverage files, which will allow you view them from your build page.
-These are available via a dropdown in your build:
+We will upload your coverage files, which will allow you view them from the "Artifacts"
+tab on the build page:
 
 ![](asset://img/outer/docs/artifacts_listing.png)
 
@@ -85,27 +85,37 @@ you can see beautifully rendered HTML in the UI.
 
 ## Using a Code Coverage service
 
-<h3 id="coveralls">Using Code Coverage with CircleCI and Coveralls</h3>
+You can easily send coverage results from CircleCI to a number of external
+code quality services:
+
+###Coveralls
 
 If you're a Coveralls customer, follow
 [their guide to set up your coverage stats.](https://coveralls.io/docs)
 You'll need to add `COVERALLS_REPO_TOKEN` to your CircleCI
-[environment variables.](https://circleci.com/docs/environment-variables)
+[environment variables](https://circleci.com/docs/environment-variables).
 
 Coveralls does not currently support CircleCI's parallelization.
 [Contact us](mailto:sayhi@circleci.com)
 if you'd like to use this.
 
-<h3 id="code-climate">Using Code Coverage with CircleCI and Code Climate</h3>
+###Code Climate
 
 If you're a Code Climate customer, follow the instructions under
 **Repo Settings -> Test Coverage**
 from your repo on the Code Climate site.
 You'll need to add your `CODECLIMATE_REPO_TOKEN` to your CircleCI
-[environment variables.](https://circleci.com/docs/environment-variables)
+[environment variables](https://circleci.com/docs/environment-variables).
 
 Code Climate does not currently support CircleCI's parallelization.
 [Contact us](mailto:sayhi@circleci.com) if you'd like to use this.
+
+###PullReview
+
+Follow the [instructions from PullReview](https://github.com/8thcolor/pullreview-coverage/blob/master/README.md)
+to configure the appropriate coverage
+reporter. You'll need to add PULLREVIEW_REPO_TOKEN to your
+[environment variables](/docs/environment-variables).
 
 ## Under construction
 
