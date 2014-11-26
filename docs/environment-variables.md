@@ -99,6 +99,12 @@ We publish the details of the currently running build in these variables:
   <dd>
     The GitHub login of the user who either pushed the code to GitHub or triggered the build from the UI/API.
   </dd>
+  <dt>
+    `CIRCLE_TEST_REPORTS`
+  </dt>
+  <dd>
+    The directory whose contents are automatically processed as [JUnit test metadata](/docs/test-metadata).
+  </dd>
 
 </dl>
 
