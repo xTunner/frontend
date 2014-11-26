@@ -11,3 +11,5 @@ pom.xml.asc
 /resources/public/cljs
 /resources/components
 /resources/assets/css/app.css
+/resources/public/assets/
+/resources/assets/docs/manifest.json

@@ -3,6 +3,8 @@
 (def hosted-scripts [{:path "js/hosted/intercom2.js"
                       :url "https://widget.intercom.io/widget/vnk4oztr"}])
 
+(def asset-roots ["resources/assets"])
+
 (def precompiles
   (concat ["js/om-dev.js.stefon"
            "js/om-production.js.stefon"

@@ -1,0 +1,26 @@
+checkout:
+  post:
+    - git submodule update --init resources/public/vendor/font-awesome
+
+dependencies:
+  cache_directories:
+    - "~/.cache/bower"
+  post:
+    - node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
+    - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
+    - lein cljsbuild once test production:
+        timeout: 600
+    - lein run -m frontend.tasks.http/precompile-assets
+
+
+test:
+  pre:
+    - git grep --color TODO | cat
+  post:
+    - node_modules/karma/bin/karma start karma.test.conf.js --single-run
+
+deployment:
+  deploy:
+    branch: /.+/
+    commands:
+      - script/deploy.sh
