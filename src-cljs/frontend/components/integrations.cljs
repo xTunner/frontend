@@ -161,7 +161,7 @@
                    [:div.docker-cta
                     [:div.ctabox {:class "line"}
                      [:div
-                      [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
+                      [:p "All customers get a free container. Additional containers are $50/month."]]
                      (shared/home-button owner {:source "integrations/docker"})
                      [:div
                       [:p
