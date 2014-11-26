@@ -488,7 +488,7 @@
                [:th "Parallelism"]
                [:td
                 (if (has-scope :write-settings data)
-                  [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                  [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                        :href (build-model/path-for-parallelism build)}
                    (str (:parallel build) "x")]
                   [:span (:parallel build) "x"])]
