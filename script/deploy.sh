@@ -12,7 +12,7 @@ export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
 export KEYPATH="$HOME/.ssh/id_frontend-private"
 backend_repo=git@github.com:circleci/circle
 backend_heads=$(git ls-remote --heads $backend_repo)
-if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH$" ; then
+if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
   backend_dir=$HOME/checkouts/circle
   git clone $backend_repo $backend_dir
   git -C $backend_dir branch $CIRCLE_BRANCH origin/production
