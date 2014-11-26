@@ -122,7 +122,7 @@
    (analytics/track-message (first value))))
 
 (defn nav-handler
-  [[navigation-point {:keys [inner?] {:keys [join]} :query-params :as args} :as value] state history]
+  [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
   (when (log-channels?)
     (mlog "Navigation Verbose: " value))
   (swallow-errors
@@ -130,7 +130,8 @@
      (let [previous-state @state]
        (swap! state (partial nav-con/navigated-to history navigation-point args))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state)
-       (when join (analytics/track-join-code join))
+       (analytics/register-last-touch-utm query-params)
+       (when-let [join (:join query-params)] (analytics/track-join-code join))
        (analytics/track-view-page (if inner? :inner :outer))))))
 
 (defn api-handler
@@ -322,4 +323,3 @@
   (fw/watch-and-reload
     :websocket-url "ws://localhost:3449/figwheel-ws"
     :jsload-callback (fn [] (update-ui!))))
-
