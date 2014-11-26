@@ -7,9 +7,11 @@ dist_tgz=$DEPLOY_S3_BUCKET/dist/$CIRCLE_SHA1.tgz
 tar -cz resources/public/ | aws put --http $dist_tgz
 echo $CIRCLE_SHA1 | aws put --http $DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
 
-# Check for matching branch name on backend or create one from production branch.
+# Git Configuration
 export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
 export KEYPATH="$HOME/.ssh/id_frontend-private"
+
+# Check for matching branch name on backend or create one from production branch.
 backend_repo=git@github.com:circleci/circle
 backend_heads=$(git ls-remote --heads $backend_repo)
 if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
@@ -17,6 +19,12 @@ if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
   git clone $backend_repo $backend_dir
   git -C $backend_dir branch $CIRCLE_BRANCH origin/production
   git -C $backend_dir push origin $CIRCLE_BRANCH:$CIRCLE_BRANCH
+fi
+
+# Keep open source master branch up to date.
+public_repo=git@github.com:circleci/frontend
+if [[ $CIRCLE_BRNACH = master ]]; then
+  git push $public_repo
 fi
 
 # Trigger a backend build of this sha1.
