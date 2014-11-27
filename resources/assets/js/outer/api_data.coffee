@@ -400,3 +400,30 @@ window.circle_api_data =
     "user/heroku-key":
       method: "POST"
       description: "Adds your Heroku API key to CircleCI, takes apikey as form param name."
+
+    test_metadata:
+      try_it: false
+      url: "/api/v1/project/:username/:project/:build_num/tests"
+      description: "Provides test metadata for a build"
+      method: "GET"
+      response: """
+        {
+          "tests" : [ {
+            "message" : null,
+            "file" : null,
+            "source" : "lein-test",
+            "run_time" : 0.009,
+            "result" : "success",
+            "name" : "simple-any-regex-matches?-works",
+            "classname" : "circle.util.test-re"
+          }, {
+            "message" : null,
+            "file" : null,
+            "source" : "lein-test",
+            "run_time" : 0.033,
+            "result" : "success",
+            "name" : "regex-matches?-works",
+            "classname" : "circle.util.test-re"
+          } ]
+        }
+        """

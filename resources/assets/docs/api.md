@@ -111,6 +111,13 @@ You can retry a build with ssh by swapping "retry" with "ssh":
 
 {{ api_data.project_build_cache | api-endpoint}}
 
+## Test Metadata
+
+{{ api_data.test_metadata | api-endpoint }}
+
+<span class='label label-info'>Note:</span> [Learn how to set up your builds to collect test metadata](/docs/test-metadata)
+
+
 <!-- TODO: Custom filter or something for this -->
 
 ## Summary
