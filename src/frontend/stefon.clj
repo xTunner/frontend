@@ -100,6 +100,7 @@
            "docs/skip-a-build.md"
            "docs/ssh-build.md"
            "docs/status-badges.md"
+           "docs/test-metadata.md"
            "docs/test-with-solr.md"
            "docs/time-day.md"
            "docs/time-seconds.md"
