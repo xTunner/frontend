@@ -64,22 +64,19 @@ lein cljsbuild auto dev
 ### Sanity Check
 
 To test that everything worked, visit
-[http://prod.circlehost:3000/assets/css/app.css](http://prod.circlehost:3000/assets/css/app.css)
-and
-[http://prod.circlehost:3000/assets/js/om-dev.js.stefon](http://prod.circlehost:3000/assets/js/om-prod.js.stefon)
-in your browser.
+http://prod.circlehost:3000/assets/css/app.css and
+http://prod.circlehost:3000/assets/js/om-dev.js.stefon in your browser.
 
 ### Production & Development Backends
 
 Now you should have everything you need to start hacking on Circle's frontend!
 
-Visit
-[http://prod.circlehost:3000?om-build-id=dev](http://prod.circlehost:3000?om-build-id=dev)
-for the a production backend with locally build development assets. Again, if
-you've got access to the backend code (NOTE: it's not open source), you can
-run it locally on `circlehost:8080`. To connect to the development backend,
-visit [http://dev.circlehost:3000](http://dev.circlehost:3000). The dev server
-will default to dev assets, so you don't need the query parameter.
+Visit http://prod.circlehost:3000?om-build-id=dev for the a production backend
+with locally build development assets. Again, if you've got access to the
+backend code (NOTE: it's not open source), you can run it locally on
+`circlehost:8080`. To connect to the development backend, visit
+http://dev.circlehost:3000. The dev server will default to dev assets, so you
+don't need the query parameter.
 
 **NOTE:** login and logout will invalidate the session, so you'll need to use
 the `?om-build-id=dev` query parameter again. This will be fixed soon.
