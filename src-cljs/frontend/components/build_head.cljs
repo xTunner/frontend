@@ -502,30 +502,29 @@
                                          (let [n (re-find #"/\d+$" url)]
                                            (if n (subs n 1) "?"))])
                               urls))]))]]]
-
             [:div.build-actions
-             [:div.actions
-              (forms/managed-button
-               [:button.retry_build
-                {:data-loading-text "Rebuilding",
-                 :title "Retry the same tests",
-                 :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                 :vcs-url vcs-url
-                                                                 :build-num build-num
-                                                                 :clear-cache? false}])}
-                "Rebuild"])
+             (when (has-scope :write-settings data)
+               [:div.actions
+                (forms/managed-button
+                 [:button.retry_build
+                  {:data-loading-text "Rebuilding",
+                   :title "Retry the same tests",
+                   :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
+                                                                   :clear-cache? false}])}
+                  "Rebuild"])
 
-              (forms/managed-button
-               [:button.clear_cache_retry
-                {:data-loading-text "Rebuilding",
-                 :title "Clear cache and retry",
-                 :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                 :vcs-url vcs-url
-                                                                 :build-num build-num
-                                                                 :clear-cache? true}])}
-                "& clear cache"])
+                (forms/managed-button
+                 [:button.clear_cache_retry
+                  {:data-loading-text "Rebuilding",
+                   :title "Clear cache and retry",
+                   :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
+                                                                   :clear-cache? true}])}
+                  "& clear cache"])
 
-              (if (has-scope :write-settings data)
                 (forms/managed-button
                  [:button.ssh_build
                   {:data-loading-text "Rebuilding",
@@ -533,7 +532,7 @@
                    :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
                                                                  :vcs-url vcs-url
                                                                  :build-num build-num}])}
-                  "& enable ssh"]))]
+                  "& enable ssh"])])
              [:div.actions
               (when logged-in? ;; no intercom for logged-out users
                 [:button.report_build
