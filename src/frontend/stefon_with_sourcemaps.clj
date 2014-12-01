@@ -35,9 +35,14 @@
               (let [compiled-source-map (second (asset/compile
                                                   (fs/join root (fs/dirname sf))
                                                   source-map))]
-                (swap! current-sourcemap-sections conj {:offset {:line @current-offset-row
-                                                                 :column 0}
-                                                        :map (json/read-str compiled-source-map)})))
+                (try
+                  (swap! current-sourcemap-sections conj {:offset {:line @current-offset-row
+                                                                   :column 0}
+                                                          :map (json/read-str compiled-source-map)})
+                  (catch java.lang.ClassCastException e
+                    (infof "(asset/compile %s source-map) gives compiled-source-map of type %s"
+                           (fs/join root (fs/dirname sf)) (type compiled-source-map))
+                    (throw e)))))
             (do
               ;; if the last line isn't a sourcemapping, append it
               (.append compiled-stefon (last compiled-content-lines))
