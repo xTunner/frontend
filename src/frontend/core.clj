@@ -46,11 +46,11 @@
 (def port 3000)
 
 (def proxy-config
-  {:patterns [#"/"
-              #"/changelog.rss"
-              #"/logout"
-              #"/auth/.*"
-              #"/api/.*"]
+  ;;NOTE: This proxies everything that the pipeline doesn't serve first.  We
+  ;; didn't do that originally because it masks problems with the fe/be split,
+  ;; but proxy-all eases development for others, so I won't check-in my
+  ;; patterns. -Brandon
+  {:patterns [#"/.*"]
    :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}
               "prod.circlehost" {:proto "https" :host "circleci.com"}
               "staging.circlehost" {:proto "https" :host "staging.circleci.com"}}})
