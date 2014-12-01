@@ -49,6 +49,7 @@
   {:patterns [#"/"
               #"/changelog.rss"
               #"/logout"
+              #"/gh/.*"
               #"/auth/.*"
               #"/api/.*"]
    :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}
