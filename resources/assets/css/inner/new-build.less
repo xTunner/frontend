@@ -91,6 +91,18 @@
   padding: 1ex 0;
   border: 1px solid @grayBoxBorder;
   border-left-width: 0;
+  &.parallelism-tab {
+    max-width: 6em;
+    background: @circleBlue;
+    color: @white;
+    span {
+      margin-top: 8px;
+      font-size: 22px;
+    }
+    &:hover {
+      color: @white;
+    }
+  }
   &:hover {
     &.waiting {
       color: @blueLight;

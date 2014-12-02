@@ -74,18 +74,25 @@
     (render [_]
       (let [container-data (:container-data data)
             build-running? (:build-running? data)
+            build (:build data)
             {:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))]
         (html
-         [:div.containers (when hide-pills? {:style {:display "none"}})
+         [:div.containers
           [:div.container-list
-           (for [container containers]
+           (for [container containers]  
              (om/build container-pill
                        {:container container
                         :build-running? build-running?
                         :current-container-id current-container-id}
-                       {:react-key (:index container)}))]])))))
+                       {:react-key (:index container)}))
+                      (when (get-in data [:ab-tests :parallelism_button])
+          [:a.container-selector.parallelism-tab 
+            {:role "button"
+             :href (build-model/path-for-parallelism build)
+             :title "adjust parallelism"}
+            [:span "+"]])]])))))
 
 (defn notices [data owner]
   (reify
@@ -148,7 +155,9 @@
                                 :project-data project-data
                                 :invite-data invite-data})
              (om/build container-pills {:container-data container-data
-                                        :build-running? (build-model/running? build)})
+                                        :build-running? (build-model/running? build)
+                                        :build build
+                                        :ab-tests (:ab-tests data)})
              (om/build build-steps/container-build-steps container-data)
 
              (when (< 1 (count (:steps build)))
