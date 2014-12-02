@@ -409,21 +409,21 @@ window.circle_api_data =
       response: """
         {
           "tests" : [ {
-            "message" : null,
-            "file" : null,
-            "source" : "lein-test",
-            "run_time" : 0.009,
+            "message" : "",
+            "file" : "features/desktop/invitations.feature",
+            "source" : "cucumber",
+            "run_time" : 2.957513661,
             "result" : "success",
-            "name" : "simple-any-regex-matches?-works",
-            "classname" : "circle.util.test-re"
+            "name" : "Accepting an invitation",
+            "classname" : "Invitations"
           }, {
             "message" : null,
-            "file" : null,
-            "source" : "lein-test",
-            "run_time" : 0.033,
+            "file" : "spec/lib/webfinger_spec.rb",
+            "source" : "rspec",
+            "run_time" : 0.011366,
             "result" : "success",
-            "name" : "regex-matches?-works",
-            "classname" : "circle.util.test-re"
+            "name" : "Webfinger#intialize sets account ",
+            "classname" : "spec.lib.webfinger_spec"
           } ]
         }
         """
