@@ -400,3 +400,30 @@ window.circle_api_data =
     "user/heroku-key":
       method: "POST"
       description: "Adds your Heroku API key to CircleCI, takes apikey as form param name."
+
+    test_metadata:
+      try_it: false
+      url: "/api/v1/project/:username/:project/:build_num/tests"
+      description: "Provides test metadata for a build"
+      method: "GET"
+      response: """
+        {
+          "tests" : [ {
+            "message" : "",
+            "file" : "features/desktop/invitations.feature",
+            "source" : "cucumber",
+            "run_time" : 2.957513661,
+            "result" : "success",
+            "name" : "Accepting an invitation",
+            "classname" : "Invitations"
+          }, {
+            "message" : null,
+            "file" : "spec/lib/webfinger_spec.rb",
+            "source" : "rspec",
+            "run_time" : 0.011366,
+            "result" : "success",
+            "name" : "Webfinger#intialize sets account ",
+            "classname" : "spec.lib.webfinger_spec"
+          } ]
+        }
+        """
