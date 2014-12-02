@@ -46,12 +46,34 @@
 (def port 3000)
 
 (def proxy-config
-  {:patterns [#"/"
+  ;; Incomplete lists of routes to proxy. Unfortuantely duplicated knowledge between
+  ;; here and various places in the backend. Ultimately, this will get cleaned up
+  ;; once we have production web servers separate from backend API servers.
+  {:patterns [;; These are owned by the backend. Add to this list if you expect
+              ;; the backend to handle these routes without frontend codebase help.
+              #"/api/.*"
+              #"/auth/.*"
+              #"/cc.xml"
               #"/changelog.rss"
               #"/logout"
+              ;; These bootstrap the frontend.  Add to this list if you expect
+              ;; the backend to serve HTML to bootstrap the client-side code.
+              #"/"
+              #"/about"
+              #"/account.*"
+              #"/add-projects"
+              #"/changelog.*"
+              #"/docs.*"
+              #"/enterprise"
+              #"/features.*"
               #"/gh/.*"
-              #"/auth/.*"
-              #"/api/.*"]
+              #"/home"
+              #"/integrations.*"
+              #"/invite-teammates"
+              #"/jobs"
+              #"/pricing"
+              #"/privacy"
+              #"/security.*"]
    :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}
               "prod.circlehost" {:proto "https" :host "circleci.com"}
               "staging.circlehost" {:proto "https" :host "staging.circleci.com"}}})
