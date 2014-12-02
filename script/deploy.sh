@@ -19,6 +19,10 @@ echo $CIRCLE_SHA1 | aws put --http $DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
 export KEYPATH="$HOME/.ssh/id_frontend-private"
 backend_repo=git@github.com:circleci/circle
 backend_heads=$(git ls-remote --heads $backend_repo)
+
+# backend_branch may be overridden by the next block
+backend_branch=$CIRCLE_BRANCH
+
 if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
   backend_dir=$HOME/checkouts/circle
   git clone $backend_repo $backend_dir
@@ -37,7 +41,7 @@ fi
 
 # Trigger a backend build of this sha1.
 circle_api=https://circleci.com/api/v1
-tree_url=$circle_api/project/circleci/circle/tree/$CIRCLE_BRANCH
+tree_url=$circle_api/project/circleci/circle/tree/$backend_branch
 http_status=$(curl -o /dev/null \
                    --silent \
                    --write-out '%{http_code}\n' \
