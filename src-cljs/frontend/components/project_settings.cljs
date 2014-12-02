@@ -156,12 +156,12 @@
      [:li [:a {:href "http://zencoder.com/company/"} "Brandon Arbini"]]
      [:li [:a {:href "http://zencoder.com/"} "Zencoder.com"]]]]])
 
-(defn parallel-label-classes [project-data parallelism]
+(defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
    []
-   (when (> parallelism (plan-model/max-selectable-parallelism (:plan project-data))) ["disabled"])
+   (when (> parallelism (project-model/max-selectable-parallelism plan project)) ["disabled"])
    (when (= parallelism (get-in project-data [:project :parallel])) ["selected"])
-   (when (not= 0 (mod (plan-model/usable-containers (:plan project-data)) parallelism)) ["bad_choice"])))
+   (when (not= 0 (mod (project-model/usable-containers plan project) parallelism)) ["bad_choice"])))
 
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
@@ -171,7 +171,7 @@
         project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades
-      (if-not (= "trial" (:type plan))
+      (if-not (plan-model/in-trial? plan)
         (cond (> parallelism (plan-model/max-parallelism plan))
               [:div.insufficient-plan
                "Your plan only allows up to "
@@ -180,25 +180,24 @@
                                                            :subpage "plan"})}
                 "Upgrade"]]
 
-              (> parallelism (plan-model/max-selectable-parallelism plan))
+              (> parallelism (project-model/max-selectable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers available."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})}
                 "Add More"]])
-
-        (when (> parallelism (plan-model/max-selectable-parallelism plan))
+        (when (> parallelism (project-model/max-selectable-parallelism plan project))
           [:div.insufficient-trial
-           "Trials only come with " (plan-model/usable-containers plan) " available containers."
+           "Trials only come with " (plan-model/trial-containers plan) " available containers."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "plan"})}
                 "Add a plan"]]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
      ;; but only on the tiles between (allowed parallelism and their current parallelism]
-     (when (and (> (:parallel project) (plan-model/usable-containers plan))
+     (when (and (> (:parallel project) (project-model/usable-containers plan project))
                 (>= (:parallel project) parallelism)
-                (> parallelism (plan-model/usable-containers plan)))
+                (> parallelism (project-model/usable-containers plan project)))
        [:div.insufficient-minimum
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
@@ -232,7 +231,7 @@
                      :on-click #(raise! owner [:selected-project-parallelism
                                                {:project-id project-id
                                                 :parallelism parallelism}])
-                     :disabled (> parallelism (plan-model/max-selectable-parallelism plan))
+                     :disabled (> parallelism (project-model/max-selectable-parallelism plan project))
                      :checked (= parallelism (:parallel project))}]])])))])
 
 (defn parallel-builds [project-data owner]
