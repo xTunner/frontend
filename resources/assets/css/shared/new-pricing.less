@@ -340,6 +340,18 @@
     background: @grayDark;
     transition-duration: 100ms @prolog_cover_fadein;
   }
+  &.green {
+    background: @green;
+    border: 0px;
+    &:hover,
+    &:active {
+      background: darken(@green, 10%);
+      transition-duration: 100ms @prolog_cover_fadein;
+    }
+    &:not(:hover) {
+      color: @white;
+    }
+  }
 }
 .pricing-features {
   .flexy(stretch, space-between);
