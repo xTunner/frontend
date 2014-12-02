@@ -87,12 +87,13 @@
                                    :output-to "resources/public/cljs/production/frontend.js"
                                    :output-dir "resources/public/cljs/production"
                                    :optimizations :advanced
+                                   :output-wrapper false
                                    :externs ["react/externs/react.js"
                                              "src-cljs/js/pusher-externs.js"
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
                                              "src-cljs/js/intercom-jquery-externs.js"]
-                                   ;; :source-map "resources/public/cljs/production/sourcemap-frontend.js"
+                                   :source-map "resources/public/cljs/production/sourcemap-frontend.js"
                                    }}]
               :test-commands {"frontend-unit-tests"
                               ["node_modules/karma/bin/karma" "start" "karma.conf.js" "--single-run"]}})
