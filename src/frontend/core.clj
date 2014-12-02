@@ -63,7 +63,7 @@
               #"/account.*"
               #"/add-projects"
               #"/changelog.*"
-              #"/docs.*"
+              #"(?!^/docs/manifest-dev\.json$)^/docs.*$"
               #"/enterprise"
               #"/features.*"
               #"/gh/.*"
