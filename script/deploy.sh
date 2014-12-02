@@ -22,8 +22,10 @@ backend_heads=$(git ls-remote --heads $backend_repo)
 if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
   backend_dir=$HOME/checkouts/circle
   git clone $backend_repo $backend_dir
-  git -C $backend_dir branch $CIRCLE_BRANCH origin/production
-  git -C $backend_dir push origin $CIRCLE_BRANCH:$CIRCLE_BRANCH
+  # the z is so that it gets pushed to the end of the branch list
+  backend_branch="zfe/$CIRCLE_BRANCH"
+  git -C $backend_dir branch $backend_branch origin/production
+  git -C $backend_dir push origin $backend_branch:$backend_branch
 fi
 
 # Keep open source master branch up to date.
