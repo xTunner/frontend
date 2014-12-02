@@ -16,7 +16,7 @@
         current-sourcemap-sections (atom [])
         compiled-stefon (StringBuilder.)]
     (doseq [sf (original-stefon/stefon-files root adrf content)]
-      (println "compile-stefon-with-sourcemaps handling: " sf)
+      (println "compile-stefon-with-sourcemaps: " sf)
       (let [compiled-content (->> sf
                                   (asset/compile root)
                                   second
@@ -33,17 +33,16 @@
             (do
               ;; if the last line is a sourcemapping, don't append it, but do compile it and
               ;; build up an internal sourcemap...
-              (let [compiled-source-map (second (asset/compile
-                                                  (fs/join root (fs/dirname sf))
-                                                  source-map))]
+              (let [asset-compile-result (asset/compile
+                                          (fs/join root (fs/dirname sf))
+                                          source-map)
+                    compiled-source-map (->> asset-compile-result second (String.))]
                 (try
-                  (println sf " asset compiled to compiled-source-map of type " (type compiled-source-map))
                   (swap! current-sourcemap-sections conj {:offset {:line @current-offset-row
                                                                    :column 0}
                                                           :map (json/read-str compiled-source-map)})
                   (catch java.lang.ClassCastException e
-                    (println "(asset/compile %s source-map) gives compiled-source-map of type %s"
-                             (fs/join root (fs/dirname sf)) (type compiled-source-map))
+                    (println "(asset/compile " (fs/join root (fs/dirname sf)) " " source-map ") gave " asset-compile-result)
                     (throw e)))))
             (do
               ;; if the last line isn't a sourcemapping, append it
