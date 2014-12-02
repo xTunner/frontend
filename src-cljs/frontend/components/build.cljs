@@ -78,8 +78,6 @@
             {:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))]
-        (println "test")
-        (println data)
         (html
          [:div.containers
           [:div.container-list
