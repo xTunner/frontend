@@ -29,7 +29,7 @@ fi
 # Keep open source master branch up to date.
 export KEYPATH="$HOME/.ssh/id_frontend"
 public_repo=git@github.com:circleci/frontend
-if [[ $CIRCLE_BRNACH = master ]]; then
+if [[ $CIRCLE_BRANCH = master ]]; then
   git push $public_repo
 fi
 
