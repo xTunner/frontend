@@ -92,7 +92,7 @@
                                    (.getAncestorByTagNameAndClass dom-helper -target "A"))
                           location (when target (str (.-pathname target) (.-search target) (.-hash target)))
                           new-token (when (seq location) (subs location 1))]
-                      (analytics/track-link-clicked (.-className target))
+                      (when target (analytics/track-link-clicked (.-className target)))
                       (when (and (seq location)
                                  (= (.. js/window -location -hostname)
                                     (.-hostname target))
