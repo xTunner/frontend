@@ -8,7 +8,8 @@
    ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
    :ab-test-definitions {:a_is_a [true false]
                          :split_form [true false]
-                         :parallelism_button [true false]}
+                         :parallelism_button [true false]
+                         :pricing_button_green [true false]}
    :ab-tests {}
    :changelog nil
    :environment "development"
