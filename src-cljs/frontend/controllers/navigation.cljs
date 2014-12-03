@@ -14,7 +14,7 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-fragment! scroll!]]
+            [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-id! scroll!]]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
