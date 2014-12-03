@@ -178,11 +178,13 @@
   (let [login (:login args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
-    (ajax/ajax :get
-               (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
-               :repos
-               api-ch
-               :context args)))
+    (do
+      (utils/scroll-to-id! "project-listing")
+      (ajax/ajax :get
+                 (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
+                 :repos
+                 api-ch
+                 :context args))))
 
 
 (defmethod post-control-event! :artifacts-showed
