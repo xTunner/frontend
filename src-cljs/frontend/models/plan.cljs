@@ -27,7 +27,8 @@
   (boolean (:trial plan)))
 
 (defn trial-over? [plan]
-  (time/after? (time/now) (time-format/parse (:trial_end plan))))
+  (or (nil? (:trial_end plan))
+      (time/after? (time/now) (time-format/parse (:trial_end plan)))))
 
 (defn in-trial? [plan]
   (and (trial? plan) (not (trial-over? plan))))
@@ -76,7 +77,8 @@
 (defn days-left-in-trial
   "Returns number of days left in trial, can be negative."
   [plan]
-  (let [trial-end (time-format/parse (:trial_end plan))
+  (let [trial-end (when (:trial_end plan)
+                    (time-format/parse (:trial_end plan)))
         now (time/now)]
     (when (not (nil? trial-end))
       (if (time/after? trial-end now)
@@ -85,16 +87,17 @@
         (- (time/in-days (time/interval trial-end now)))))))
 
 (defn pretty-trial-time [plan]
-  (let [trial-interval (time/interval (time/now) (time-format/parse (:trial_end plan)))
-        hours-left (time/in-hours trial-interval)]
-    (cond (< 24 hours-left)
-          (str (days-left-in-trial plan) " days")
+  (when-not (nil? (:trial_end plan))
+    (let [trial-interval (time/interval (time/now) (time-format/parse (:trial_end plan)))
+          hours-left (time/in-hours trial-interval)]
+      (cond (< 24 hours-left)
+            (str (days-left-in-trial plan) " days")
 
-          (< 1 hours-left)
-          (str hours-left " hours")
+            (< 1 hours-left)
+            (str hours-left " hours")
 
-          :else
-          (str (time/in-minutes trial-interval) " minutes"))))
+            :else
+            (str (time/in-minutes trial-interval) " minutes")))))
 
 (defn per-container-cost [plan]
   (let [template-properties (or (-> plan :paid :template)
