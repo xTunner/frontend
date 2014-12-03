@@ -249,10 +249,10 @@
                                  (str title  " - CircleCI")
                                  "CircleCI"))))
 
-(defn scroll-to-fragment!
-  "Scrolls to the element with id of fragment, if one exists"
-  [fragment]
-  (when-let [node (goog.dom.getElement fragment)]
+(defn scroll-to-id!
+  "Scrolls to the element with given id, if node exists"
+  [id]
+  (when-let [node (goog.dom.getElement id)]
     (let [body (sel1 "body")
           node-top (goog.style/getPageOffsetTop node)
           body-top (goog.style/getPageOffsetTop body)]
@@ -263,7 +263,7 @@
   [args]
   (if (:_fragment args)
     ;; give the page time to render
-    (rAF #(scroll-to-fragment! (:_fragment args)))
+    (rAF #(scroll-to-id! (:_fragment args)))
     (rAF #(set! (.-scrollTop (sel1 "body")) 0))))
 
 (defn react-id [x]
