@@ -115,9 +115,14 @@
                 [:div.value (if (> total-cost 0)
                               (str "$" total-cost)
                               "Free")]]
-               [:a.pricing-action {:href (auth-url)
-                                   :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
-                                   :title "Sign up with Github"} "Sign Up Free"]]]
+               (when (get-in app [:ab-tests :pricing_button_green])
+                 [:a.pricing-action.green {:href (auth-url)
+                                           :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
+                                           :title "Sign up with Github"} "Sign Up Free"])
+               (when-not (get-in app [:ab-tests :pricing_button_green])
+                 [:a.pricing-action {:href (auth-url)
+                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
+                                     :title "Sign up with Github"} "Sign Up Free"])]]
              [:article.pricing-features
               [:div.pricing-feature
                [:h3 "Easy Debugging"]

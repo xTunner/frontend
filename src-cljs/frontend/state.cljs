@@ -8,7 +8,8 @@
    ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
    :ab-test-definitions {:a_is_a [true false]
                          :split_form [true false]
-                         :parallelism_button [true false]}
+                         :parallelism_button [true false]
+                         :pricing_button_green [true false]}
    :ab-tests {}
    :changelog nil
    :environment "development"
@@ -70,7 +71,7 @@
 (def build-path [:current-build-data :build])
 (def invite-github-users-path [:invite-data :github-users])
 (defn invite-github-user-path [index] (conj invite-github-users-path index))
-(def dismiss-invite-form-path (conj build-data-path :invite-data :dismiss-invite-form))
+(def dismiss-invite-form-path [:invite-data :dismiss-invite-form])
 (def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
 (def invite-logins-path (conj build-data-path :invite-data :invite-logins))
 (defn invite-login-path [login] (conj invite-logins-path login))

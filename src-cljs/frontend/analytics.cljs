@@ -72,9 +72,6 @@
 (defn track-save-orgs []
   (mixpanel/track "Save Organizations"))
 
-(defn track-extend-trial []
-  (mixpanel/track "Extend trial"))
-
 (defn track-collapse-nav []
   (mixpanel/track "aside_nav_collapsed"))
 

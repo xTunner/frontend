@@ -226,12 +226,7 @@
                (> 3 (pm/days-left-in-trial plan)))
       [:p
        "Need more time to decide? "
-       (forms/managed-button
-        [:button.btn.btn-mini.btn-success
-         {:data-success-text "Extended!",
-          :data-loading-text "Extending...",
-          :on-click #(raise! owner [:extend-trial-clicked {:org-name org-name}])}
-         "Extend your trial"])])]])
+       [:a {:href "mailto:sayhi@circleci.com"} "Get in touch."]])]])
 
 (defn plans-piggieback-plan-notification [plan current-org-name]
   [:div.row-fluid
@@ -327,7 +322,6 @@
      [:div.calculator-preview-item
       [:div.item [:strong "Current Plan"]]
       [:div.value [:strong (plan-type-str plan)]]]
-     
      (cond
       (pm/in-trial? plan)
       [:div.calculator-preview-item
