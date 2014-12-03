@@ -10,6 +10,14 @@ application.
 
 ## Dependencies and Setup
 
+### Submodules
+
+The frontend uses some git submodules that you need to checkout:
+
+```
+git submodule update --init
+```
+
 ### Node.js
 
 Install [Node.js](http://nodejs.org/) and node dependencies:
@@ -58,7 +66,7 @@ lein run
 Second, the frontend clojurescript asset compiler:
 
 ```
-lein cljsbuild auto dev
+lein figwheel dev
 ```
 
 ### Sanity Check
