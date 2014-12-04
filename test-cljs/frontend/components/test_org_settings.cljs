@@ -6,12 +6,13 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.stefon :as stefon]
+            [goog.dom]
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
                    [dommy.macros :refer (sel1)]))
 
 (deftest test-discount-rendering
-  (let [format (fn [plan] (hiccup->html-str (org-settings/format-discount plan)))
+  (let [format (fn [plan] (.-innerText (goog.dom/htmlToDocumentFragment (hiccup->html-str (org-settings/format-discount plan)))))
         fifty-percent {:discount { :coupon {
                                      :id                 "qJayHMis"
                                      :percent_off        1
