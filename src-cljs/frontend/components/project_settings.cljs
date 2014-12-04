@@ -21,8 +21,7 @@
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]
-                   [dommy.macros :refer [node]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (def sidebar
   [:ul.side-list

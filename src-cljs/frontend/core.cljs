@@ -34,7 +34,7 @@
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]])
-  (:use-macros [dommy.macros :only [node sel sel1]]))
+  (:use-macros [dommy.macros :only [sel sel1]]))
 
 (enable-console-print!)
 

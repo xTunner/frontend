@@ -10,11 +10,12 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.macros :refer (sel1 node)]))
+                   [dommy.macros :refer (sel1)]))
 
 (defn ->iso8601 [time]
   (time-format/unparse (time-format/formatters :date-time) time))
@@ -73,7 +74,7 @@
 
     (testing "5: checkout actual rendered values"
       (let [project (:org-private projects)]
-        (om/root documentation/docs-subpage {} {:target (node [:div.content])})
+        (om/root documentation/docs-subpage {} {:target (goog.dom/htmlToDocumentFragment "<div class='content'></div>")})
         ;; The test-utils/render-into-document call below triggers
         ;;
         ;;	ERROR in (frontend.components.project.test-common/test-show-trial-notice?) (/home/emile/workspaces/circle-base/resources/public/cljs/out/frontend/components/project/common.js:59)

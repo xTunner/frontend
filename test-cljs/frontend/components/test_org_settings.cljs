@@ -4,13 +4,14 @@
             [frontend.test-utils :as test-utils]
             [frontend.components.org-settings :as org-settings]
             [frontend.utils.docs :as doc-utils]
+            [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.stefon :as stefon]
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.macros :refer (sel1 node)]))
+                   [dommy.macros :refer (sel1)]))
 
 (deftest test-discount-rendering
-  (let [format (fn [plan] (. (node (org-settings/format-discount plan)) -innerText))
+  (let [format (fn [plan] (hiccup->html-str (org-settings/format-discount plan)))
         fifty-percent {:discount { :coupon {
                                      :id                 "qJayHMis"
                                      :percent_off        1

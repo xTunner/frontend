@@ -5,9 +5,10 @@
             [frontend.components.documentation :as documentation]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
+            [goog.dom]
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.macros :refer (sel1 node)]))
+                   [dommy.macros :refer (sel1)]))
 
 
 (def test-doc-data {:continuous-deployment-with-heroku  {:slug "continuous_deployment_with_heroku"
@@ -46,7 +47,7 @@
 
 (deftest test-subpage-rendering
   (let [test-doc (:continuous-deployment-with-heroku test-docs)
-        test-node (node [:div.content])]
+        test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
     (om/root documentation/docs-subpage test-doc {:target test-node})
     (is (= "Continuous Deployment with Heroku"
            (-> test-node

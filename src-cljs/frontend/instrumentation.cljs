@@ -6,9 +6,10 @@
             [frontend.datetime :as datetime]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [goog.dom]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:use-macros [dommy.macros :only [node sel sel1]]))
+  (:use-macros [dommy.macros :only [sel sel1]]))
 
 (defn wrap-api-instrumentation [handler api-data]
   (fn [state]
@@ -126,8 +127,8 @@
                         (dom/td #js {:className "number" } std-dev)))))))))))
 
 (defn setup-component-stats! []
-  (let [stats-node (node [:div.om-instrumentation])]
-    (dommy/append! (sel1 :body) stats-node)
+  (let [stats-node (goog.dom/htmlToDocumentFragment "<div class='om-instrumentation'></div>")]
+    (utils/inspect (dommy/append! (sel1 :body) stats-node))
     (om/root
      stats-view
      component-stats

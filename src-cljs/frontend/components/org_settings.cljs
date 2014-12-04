@@ -27,7 +27,7 @@
             [goog.style]
             [inflections.core :as infl :refer [pluralize]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [node sel sel1]]
+                   [dommy.macros :refer [sel sel1]]
                    [frontend.utils :refer [html]]))
 
 (defn sidebar [{:keys [subpage plan org-name]} owner]

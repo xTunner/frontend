@@ -6,8 +6,7 @@
             [goog.string :as gstring]
             goog.string.format
             [frontend.state :as state]
-            [om.core :as om :include-macros true])
-  (:require-macros [dommy.macros :refer [node]]))
+            [om.core :as om :include-macros true]))
 
 
 (defn api-curl [endpoint]

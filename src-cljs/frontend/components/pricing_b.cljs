@@ -22,7 +22,7 @@
             [sablono.core :as html :refer-macros [html]])
   (:require-macros [frontend.utils :refer [defrender]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [sel1 node]])
+                   [dommy.macros :refer [sel1]])
   (:import [goog.ui IdGenerator]))
 
 (def max-containers 64)
