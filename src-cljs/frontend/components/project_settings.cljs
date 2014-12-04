@@ -15,6 +15,7 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
@@ -892,26 +893,25 @@
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
-  (.-innerHTML
-   (node
-    [:div
-     [:p "A token's scope limits what can be done with it."]
+  (hiccup->html-str
+   [:div
+    [:p "A token's scope limits what can be done with it."]
 
-     [:h5 "Status"]
-     [:p
-      "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
-      [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
-      " and "
-      [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
-      " for private projects."]
+    [:h5 "Status"]
+    [:p
+     "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
+     [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
+     " and "
+     [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
+     " for private projects."]
 
-     [:h5 "Build Artifacts"]
-     [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
+    [:h5 "Build Artifacts"]
+    [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
 
-     [:h5 "All"]
-     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
+    [:h5 "All"]
+    [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
 
-     ])))
+    ]))
 
 (defn api-tokens [project-data owner]
   (reify
