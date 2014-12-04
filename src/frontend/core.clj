@@ -9,6 +9,8 @@
             [frontend.stefon]
             [ring.util.response :as response]
             [stefon.core :as stefon]
+            [stefon.path :as path]
+            [stefon.settings]
             [org.httpkit.server :as httpkit]))
 
 (def stefon-options
@@ -34,6 +36,21 @@
   (fn [req]
     (-> (handler req)
         (response/header "Access-Control-Allow-Origin" "*"))))
+
+(defn wrap-hosted-scripts
+  "Redirects to the canonical url for a hosted script if we're using stefon in development mode."
+  [handler stefon-options hosted-scripts]
+  (if (not= (:mode stefon-options) :development)
+    handler
+    (stefon.settings/with-options stefon-options
+      (let [paths (set (map :path hosted-scripts))]
+        (fn [req]
+          (if (or (-> req :uri path/asset-uri? not)
+                  (->> req :uri path/uri->adrf (contains? paths) not))
+            (handler req)
+            (response/redirect (:url (first (filter #(= (:path %)
+                                                        (path/uri->adrf (:uri req)))
+                                                    hosted-scripts))))))))))
 
 (defonce stopf (atom nil))
 
@@ -84,6 +101,7 @@
   (reset! stopf
           (httpkit/run-server (-> (site #'routes)
                                   (stefon/asset-pipeline stefon-options)
+                                  (wrap-hosted-scripts stefon-options frontend.stefon/hosted-scripts)
                                   (proxy/wrap-handler proxy-config)
                                   (cross-origin-everything))
                               {:port port}))
