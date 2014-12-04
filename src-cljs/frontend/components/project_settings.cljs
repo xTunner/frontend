@@ -15,13 +15,13 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]
-                   [dommy.macros :refer [node]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (def sidebar
   [:ul.side-list
@@ -892,26 +892,25 @@
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
-  (.-innerHTML
-   (node
-    [:div
-     [:p "A token's scope limits what can be done with it."]
+  (hiccup->html-str
+   [:div
+    [:p "A token's scope limits what can be done with it."]
 
-     [:h5 "Status"]
-     [:p
-      "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
-      [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
-      " and "
-      [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
-      " for private projects."]
+    [:h5 "Status"]
+    [:p
+     "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
+     [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
+     " and "
+     [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
+     " for private projects."]
 
-     [:h5 "Build Artifacts"]
-     [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
+    [:h5 "Build Artifacts"]
+    [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
 
-     [:h5 "All"]
-     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
+    [:h5 "All"]
+    [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
 
-     ])))
+    ]))
 
 (defn api-tokens [project-data owner]
   (reify
@@ -1154,18 +1153,18 @@
         (utils/popover "#app-root-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Application Root"
-                        :content (node [:p "The directory in your repo to package up into an application revision. "
-                                           "This is relative to your repo's root, " [:code "/"] " means the repo's root "
-                                           "directory, " [:code "/app"] " means the app directory in your repo's root "
-                                           "directory."])})
+                        :content (hiccup->html-str [:p "The directory in your repo to package up into an application revision. "
+                                                    "This is relative to your repo's root, " [:code "/"] " means the repo's root "
+                                                    "directory, " [:code "/app"] " means the app directory in your repo's root "
+                                                    "directory."])})
         (utils/popover "#bucket-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Bucket Name"
-                        :content (node [:p "The name of the S3 bucket CircleCI should store application revisions for \"" (name app-name) "\" in."])})
+                        :content (hiccup->html-str [:p "The name of the S3 bucket CircleCI should store application revisions for \"" (name app-name) "\" in."])})
         (utils/popover "#key-pattern-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Key Pattern"
-                        :content (node [:p "A template used to construct S3 keys for storing application revisions."
+                        :content (hiccup->html-str [:p "A template used to construct S3 keys for storing application revisions."
                                            "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy#key-patterns"} "substitution variables"]
                                            " in the Key Pattern to generate a unique key for each build."])})))
     om/IRender

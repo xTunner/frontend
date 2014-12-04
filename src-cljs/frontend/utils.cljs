@@ -4,6 +4,7 @@
             [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
             [ajax.core :as ajax]
+            [dommy.core :refer-macros [sel1]]
             [cljs-time.core :as time]
             [frontend.env :as env]
             [goog.async.AnimationDelay]
@@ -14,8 +15,7 @@
             [goog.net.EventType :as gevt]
             [goog.style]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing defrender)]
-                   [dommy.macros :refer [sel1]])
+  (:require-macros [frontend.utils :refer (inspect timing defrender)])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []

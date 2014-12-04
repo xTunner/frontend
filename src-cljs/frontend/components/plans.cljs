@@ -8,12 +8,12 @@
             [frontend.utils.github :as gh-utils]
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
+            [dommy.core :refer-macros [sel sel1]]
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [node sel sel1]]
                    [frontend.utils :refer [html]]))
 
 

@@ -18,12 +18,12 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
+            [dommy.core :refer-macros [sel sel1]]
             [goog.dom]
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
             goog.style)
-  (:require-macros [dommy.macros :refer [sel sel1]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.fx.dom.Scroll]))
 
 ;; --- Helper Methods ---

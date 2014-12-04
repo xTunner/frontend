@@ -2,7 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [clojure.string :as string]
-            [dommy.core :as dommy]
+            [dommy.core :as dommy :refer-macros [sel sel1]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.components.common :as common]
@@ -13,7 +13,6 @@
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
-                   [dommy.macros :refer [sel sel1]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (defn docs-search [app owner]

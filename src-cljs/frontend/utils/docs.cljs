@@ -1,12 +1,12 @@
 (ns frontend.utils.docs
   (:require [clojure.string :as string]
             [frontend.stefon :as stefon]
+            [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.utils :as utils :include-macros true :refer [defrender]]
             [goog.string :as gstring]
             goog.string.format
             [frontend.state :as state]
-            [om.core :as om :include-macros true])
-  (:require-macros [dommy.macros :refer [node]]))
+            [om.core :as om :include-macros true]))
 
 
 (defn api-curl [endpoint]
@@ -22,11 +22,8 @@
     (gstring/format "curl %shttps://circleci.com%s?circle-token=:token%s"
                     curl-args (:url endpoint) curl-params)))
 
-(defn hiccup->str [hiccup]
-  (.-innerHTML (node [:div hiccup])))
-
 (defn api-endpoint-filter [endpoint]
-  (hiccup->str
+  (hiccup->html-str
    [:div
     [:p (:description endpoint)]
     [:h4 "Method"]
@@ -51,7 +48,7 @@
            "Try it in your browser"]])]))
 
 (defn code-list-filter [versions]
-  (hiccup->str
+  (hiccup->html-str
    [:ul (for [version versions]
           [:li [:code (if-let [name (:name version)] name version)]])]))
 
