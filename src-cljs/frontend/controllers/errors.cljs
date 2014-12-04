@@ -10,11 +10,11 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
+            [dommy.core :refer-macros [sel sel1]]
             [goog.dom]
             [goog.string :as gstring]
             [goog.style])
-  (:require-macros [dommy.macros :refer [sel sel1]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; --- Errors Multimethod Declarations ---
 

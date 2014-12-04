@@ -22,12 +22,12 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [clojure.string :as string]
+            [dommy.core :refer-macros [sel sel1]]
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style]
             [inflections.core :as infl :refer [pluralize]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [sel sel1]]
                    [frontend.utils :refer [html]]))
 
 (defn sidebar [{:keys [subpage plan org-name]} owner]

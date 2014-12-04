@@ -1,14 +1,13 @@
 (ns frontend.components.test-documentation
   (:require [cemerick.cljs.test :as t]
-            [dommy.core :as dommy]
+            [dommy.core :as dommy :refer-macros [sel1]]
             [frontend.test-utils :as test-utils]
             [frontend.components.documentation :as documentation]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
             [goog.dom]
             [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.macros :refer (sel1)]))
+  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
 
 
 (def test-doc-data {:continuous-deployment-with-heroku  {:slug "continuous_deployment_with_heroku"

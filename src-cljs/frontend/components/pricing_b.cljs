@@ -17,12 +17,12 @@
             [goog.events]
             [goog.dom]
             [goog.style]
+            [dommy.core :refer-macros [sel1]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
   (:require-macros [frontend.utils :refer [defrender]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [sel1]])
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.ui IdGenerator]))
 
 (def max-containers 64)

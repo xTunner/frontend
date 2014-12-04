@@ -21,8 +21,7 @@
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
   (:require-macros [frontend.utils :refer [defrender]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [sel1 node]])
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.ui IdGenerator]))
 
 (defn maybe-set-state! [owner korks value]

@@ -1,13 +1,12 @@
 (ns frontend.history
   (:require [clojure.string :as string]
-            [dommy.core :as dommy]
+            [dommy.core :as dommy :refer-macros [sel sel1]]
             [frontend.analytics :as analytics]
             [frontend.utils :as utils :include-macros true]
             [goog.events :as events]
             [goog.history.Html5History :as html5-history]
             [goog.window :as window]
             [secretary.core :as sec])
-  (:require-macros [dommy.macros :refer [sel sel1]])
   (:import [goog.history Html5History]
            [goog.events EventType Event BrowserEvent]
            [goog History]))

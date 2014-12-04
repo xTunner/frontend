@@ -5,7 +5,7 @@
             [clojure.browser.repl :as repl]
             [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
-            [dommy.core :as dommy]
+            [dommy.core :as dommy :refer-macros [sel sel1]]
             [goog.dom]
             [goog.dom.DomHelper]
             [frontend.ab :as ab]
@@ -33,8 +33,7 @@
             [frontend.timer :as timer]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing swallow-errors]])
-  (:use-macros [dommy.macros :only [sel sel1]]))
+                   [frontend.utils :refer [inspect timing swallow-errors]]))
 
 (enable-console-print!)
 

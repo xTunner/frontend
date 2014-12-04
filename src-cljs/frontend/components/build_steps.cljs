@@ -10,6 +10,7 @@
             [frontend.disposable :as disposable :refer [dispose]]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
+            [dommy.core :refer-macros [sel1]]
             [goog.events]
             [goog.string :as gstring]
             goog.dom
@@ -17,8 +18,7 @@
             goog.string.format
             goog.fx.dom.Scroll
             goog.fx.easing)
-  (:require-macros [frontend.utils :refer [html]]
-                   [dommy.macros :refer [sel1]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn source-type [source]
   (condp = source

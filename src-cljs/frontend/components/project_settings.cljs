@@ -1153,18 +1153,18 @@
         (utils/popover "#app-root-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Application Root"
-                        :content (node [:p "The directory in your repo to package up into an application revision. "
-                                           "This is relative to your repo's root, " [:code "/"] " means the repo's root "
-                                           "directory, " [:code "/app"] " means the app directory in your repo's root "
-                                           "directory."])})
+                        :content (hiccup->html-str [:p "The directory in your repo to package up into an application revision. "
+                                                    "This is relative to your repo's root, " [:code "/"] " means the repo's root "
+                                                    "directory, " [:code "/app"] " means the app directory in your repo's root "
+                                                    "directory."])})
         (utils/popover "#bucket-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Bucket Name"
-                        :content (node [:p "The name of the S3 bucket CircleCI should store application revisions for \"" (name app-name) "\" in."])})
+                        :content (hiccup->html-str [:p "The name of the S3 bucket CircleCI should store application revisions for \"" (name app-name) "\" in."])})
         (utils/popover "#key-pattern-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Key Pattern"
-                        :content (node [:p "A template used to construct S3 keys for storing application revisions."
+                        :content (hiccup->html-str [:p "A template used to construct S3 keys for storing application revisions."
                                            "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy#key-patterns"} "substitution variables"]
                                            " in the Key Pattern to generate a unique key for each build."])})))
     om/IRender

@@ -7,7 +7,7 @@
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
                    [frontend.utils :refer [inspect]]
-                   [dommy.macros :refer (sel1)]))
+                   [dommy.core :refer (sel1)]))
 
 (defn sample-component [data owner]
   (reify

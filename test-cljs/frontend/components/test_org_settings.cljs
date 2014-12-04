@@ -9,7 +9,7 @@
             [goog.dom]
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.macros :refer (sel1)]))
+                   [dommy.core :refer (sel1)]))
 
 (deftest test-discount-rendering
   (let [format (fn [plan] (.-innerText (goog.dom/htmlToDocumentFragment (hiccup->html-str (org-settings/format-discount plan)))))
