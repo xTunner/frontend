@@ -81,10 +81,9 @@
 
 (def repos-explanation
   [:div.add-repos
-   [:h3 "Welcome to Circle"]
    [:ul
     [:li
-     "Get started by selecting your GitHub username or organization on the left."]
+     "Get started by selecting your GitHub username or organization above."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
 (defn repo-item [data owner]
