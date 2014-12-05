@@ -87,12 +87,12 @@
                         :build-running? build-running?
                         :current-container-id current-container-id}
                        {:react-key (:index container)}))
-                      (when (get-in data [:ab-tests :parallelism_button])
-          [:a.container-selector.parallelism-tab 
-            {:role "button"
-             :href (build-model/path-for-parallelism build)
-             :title "adjust parallelism"}
-            [:span "+"]])]])))))
+           (when (om/get-shared owner [:ab-tests :parallelism_button])
+             [:a.container-selector.parallelism-tab
+              {:role "button"
+               :href (build-model/path-for-parallelism build)
+               :title "adjust parallelism"}
+              [:span "+"]])]])))))
 
 (defn notices [data owner]
   (reify
@@ -156,8 +156,7 @@
                                 :invite-data invite-data})
              (om/build container-pills {:container-data container-data
                                         :build-running? (build-model/running? build)
-                                        :build build
-                                        :ab-tests (:ab-tests data)})
+                                        :build build})
              (om/build build-steps/container-build-steps container-data)
 
              (when (< 1 (count (:steps build)))

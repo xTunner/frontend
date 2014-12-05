@@ -115,11 +115,11 @@
                 [:div.value (if (> total-cost 0)
                               (str "$" total-cost)
                               "Free")]]
-               (when (get-in app [:ab-tests :pricing_button_green])
+               (when (om/get-shared owner [:ab-tests :pricing_button_green])
                  [:a.pricing-action.green {:href (auth-url)
                                            :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
                                            :title "Sign up with Github"} "Sign Up Free"])
-               (when-not (get-in app [:ab-tests :pricing_button_green])
+               (when-not (om/get-shared owner [:ab-tests :pricing_button_green])
                  [:a.pricing-action {:href (auth-url)
                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
                                      :title "Sign up with Github"} "Sign Up Free"])]]
