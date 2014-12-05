@@ -73,6 +73,11 @@
                  (aget "abOverrides")
                  (utils/js->clj-kw))))
 
+(defn set-ab-override [test-name value]
+  (when (nil? (aget js/window "renderContext" "abOverrides"))
+    (aset js/window "renderContext" "abOverrides" #js {}))
+  (aset js/window "renderContext" "abOverrides" (name test-name) value))
+
 (defn get-ab-tests [ab-test-definitions]
   (let [overrides (get-ab-overrides)]
     (ab/setup! ab-test-definitions :overrides overrides)))
@@ -286,10 +291,17 @@
 (defn ^:export set-ab-test
   "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
   [test-name value]
-  (let [test-path [:ab-tests (keyword (name test-name))]]
-    (println "starting value for" test-name "was" (get-in @debug-state test-path))
-    (swap! debug-state assoc-in test-path value)
-    (println "value for" test-name "is now" (get-in @debug-state test-path))))
+  (let [test-key (keyword (name test-name))]
+    (println "starting value for" test-name "was" (-> @debug-state
+                                                      :ab-test-definitions
+                                                      get-ab-tests
+                                                      test-key))
+    (set-ab-override (name test-name) value)
+    (reinstall-om!)
+    (println "value for" test-name "is now" (-> @debug-state
+                                                :ab-test-definitions
+                                                get-ab-tests
+                                                test-key))))
 
 (defn ^:export app-state-to-js
   "Used for inspecting app state in the console."
