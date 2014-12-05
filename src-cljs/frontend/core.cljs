@@ -303,10 +303,14 @@
                                                 get-ab-tests
                                                 test-key))))
 
+(aset js/window "set_ab_test" set-ab-test)
+
 (defn ^:export app-state-to-js
   "Used for inspecting app state in the console."
   []
   (clj->js @debug-state))
+
+(aset js/window "app_state_to_js" set-ab-test)
 
 
 (defn ^:export reinstall-om! []
