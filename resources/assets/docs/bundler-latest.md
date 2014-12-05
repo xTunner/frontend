@@ -12,6 +12,5 @@ Just add the following to your [circle.yml](/docs/configuration) file.
 ```
 dependencies:
   pre:
-    - gem uninstall bundler
     - gem install bundler --pre
 ```
