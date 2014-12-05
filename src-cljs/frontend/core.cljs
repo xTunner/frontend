@@ -67,17 +67,19 @@
   ws-ch
   (chan))
 
+(defn get-ab-overrides []
+  (merge (some-> js/window
+                 (aget "renderContext")
+                 (aget "abOverrides")
+                 (utils/js->clj-kw))))
+
 (defn get-ab-tests [ab-test-definitions]
-  (let [overrides (merge (some-> js/window
-                                 (aget "renderContext")
-                                 (aget "abOverrides")
-                                 (utils/js->clj-kw)))]
+  (let [overrides (get-ab-overrides)]
     (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
   (let [initial-state (state/initial-state)]
     (atom (assoc initial-state
-              :ab-tests (get-ab-tests (:ab-test-definitions initial-state))
               :current-user (-> js/window
                                 (aget "renderContext")
                                 (aget "current_user")
@@ -171,12 +173,14 @@
 
 (declare reinstall-om!)
 
-(defn install-om [state container comms instrument?]
+(defn install-om [state ab-tests container comms instrument?]
   (om/root
    app/app
    state
    {:target container
     :shared {:comms comms
+             ;; note that changing ab-tests dynamically requires reinstalling om
+             :ab-tests ab-tests
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state}
     :instrument (let [methods (cond-> state-graft/no-local-state-methods
@@ -192,7 +196,7 @@
 (defn find-app-container [top-level-node]
   (sel1 top-level-node "#om-app"))
 
-(defn main [state top-level-node history-imp instrument?]
+(defn main [state ab-tests top-level-node history-imp instrument?]
   (let [comms       (:comms @state)
         container   (find-app-container top-level-node)
         uri-path    (.getPath utils/parsed-uri)
@@ -204,7 +208,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state container comms instrument?)
+    (install-om state ab-tests container comms instrument?)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -249,13 +253,14 @@
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)
-        instrument? (env/development?)]
+        instrument? (env/development?)
+        ab-tests (get-ab-tests (:ab-test-definitions @state))]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
     (when instrument? (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
     (scroll/setup-scroll-handler)
-    (main state top-level-node history-imp instrument?)
+    (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
@@ -293,7 +298,7 @@
 
 
 (defn ^:export reinstall-om! []
-  (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state) true))
+  (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container (find-top-level-node)) (:comms @debug-state) true))
 
 (defn refresh-css! []
   (let [is-app-css? (fn [elem]

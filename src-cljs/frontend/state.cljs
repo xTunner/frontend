@@ -10,7 +10,6 @@
                          :split_form [true false]
                          :parallelism_button [true false]
                          :pricing_button_green [true false]}
-   :ab-tests {}
    :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
