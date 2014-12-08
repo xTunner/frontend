@@ -68,28 +68,18 @@
 (defn freemium-trial-html [plan project project-name days org-name plan-path]
   (html
     [:div.alert {:class "alert-success"}
-    (when-not (get-in app [:ab-tests :pay_now_button])
        (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
              [:a {:href plan-path} "Please enter your payment information"]
              " before the trial expires to continue using these containers." 
-             ))
-    (when (get-in app [:ab-tests :pay_now_button])
-       (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
-                             org-name (plan-model/usable-containers plan) (pluralize days "day"))
-             [:a {:href plan-path} "Please enter your payment information"]
-             " before the trial expires to continue using these containers." 
-             [:a {:href plan-path} 
-              [:button.pay-now-button "Pay Now"]]
-             ))]))   
+             )]))   
 
 (defn freemium-trial-html-b [plan project project-name days org-name plan-path]
   (html
     [:div.alert {:class "alert-success"}
        (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
-             [:a {:href plan-path} "Please enter your payment information"]
-             " before the trial expires to continue using these containers." 
+             "Please enter your payment information before the trial expires to continue using these containers.    " 
              [:a {:href plan-path} 
               [:button.pay-now-button "Pay Now"]]
              )])) 
@@ -105,7 +95,7 @@
             org-name (:org_name plan)
             plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})
             trial-notice-fn (if (plan-model/freemium? plan)
-                              (if (get-in data [:ab-tests :pay_now_button])
+                               (if (om/get-shared owner [:ab-tests :pay_now_button])
                                           freemium-trial-html-b
                                           freemium-trial-html)
                               non-freemium-trial-html)]
