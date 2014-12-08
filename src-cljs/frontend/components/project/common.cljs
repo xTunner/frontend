@@ -95,9 +95,9 @@
             org-name (:org_name plan)
             plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})
             trial-notice-fn (if (plan-model/freemium? plan)
-                               (if (om/get-shared owner [:ab-tests :pay_now_button])
-                                          freemium-trial-html-b
-                                          freemium-trial-html)
+                              (if (om/get-shared owner [:ab-tests :pay_now_button])
+                                freemium-trial-html-b
+                                freemium-trial-html)
                               non-freemium-trial-html)]
         (trial-notice-fn plan project project-name days org-name plan-path)))))
 
