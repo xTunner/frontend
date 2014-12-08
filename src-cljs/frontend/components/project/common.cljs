@@ -67,11 +67,22 @@
 
 (defn freemium-trial-html [plan project project-name days org-name plan-path]
   (html
-   [:div.alert {:class "alert-success"}
-    (list (gstring/format "The %s project is covered by %s's trial of %d containers. "
-                          project-name org-name (plan-model/usable-containers plan))
-          [:a {:href plan-path} "Add more containers"]
-          " for parallel builds and reduced build queueing once the trial runs out.")]))
+    [:div.alert {:class "alert-success"}
+       (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
+                             org-name (plan-model/usable-containers plan) (pluralize days "day"))
+             [:a.pay-now-plain-text {:href plan-path} "Please enter your payment information"]
+             " before the trial expires to continue using these containers." 
+             )]))   
+
+(defn freemium-trial-html-b [plan project project-name days org-name plan-path]
+  (html
+    [:div.alert {:class "alert-success"}
+       (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
+                             org-name (plan-model/usable-containers plan) (pluralize days "day"))
+             "Please enter your payment information before the trial expires to continue using these containers.    " 
+             [:a.pay-now-button {:href plan-path} 
+              [:button "Pay Now"]]
+             )])) 
 
 (defn trial-notice [data owner]
   (reify
@@ -84,7 +95,9 @@
             org-name (:org_name plan)
             plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})
             trial-notice-fn (if (plan-model/freemium? plan)
-                              freemium-trial-html
+                              (if (om/get-shared owner [:ab-tests :pay_now_button])
+                                freemium-trial-html-b
+                                freemium-trial-html)
                               non-freemium-trial-html)]
         (trial-notice-fn plan project project-name days org-name plan-path)))))
 
