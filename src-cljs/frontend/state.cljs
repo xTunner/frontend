@@ -10,7 +10,8 @@
                          :split_form [true false]
                          :parallelism_button [true false]
                          :pricing_button_green [true false]
-                         :pay_now_button [true false]}
+                         :pay_now_button [true false]
+                         :follow_notice [true false]}
    :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
