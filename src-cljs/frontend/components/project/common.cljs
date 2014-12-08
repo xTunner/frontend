@@ -111,11 +111,6 @@
                                                            :project-name project-name}])}
               "Add SSH key"])]]])))))
 
-(defn show-follow-notice [project]
-  ;; followed here indicates that the user is following this project, not that the
-  ;; project has followers
-  (not (:followed project)))
-
 (def email-prefs
   [["default" "Default"]
    ["all" "All builds"]
