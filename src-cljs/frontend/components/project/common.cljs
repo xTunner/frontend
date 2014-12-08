@@ -111,6 +111,28 @@
                                                            :project-name project-name}])}
               "Add SSH key"])]]])))))
 
+(defn show-follow-notice [project]
+  ;; followed here indicates that the user is following this project, not that the
+  ;; project has followers
+  (not (:followed project)))
+
+(defn follow-notice [project owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project-name (vcs-url/project-name (:vcs_url project))
+            vcs-url (:vcs_url project)]
+        (html
+         [:div.row-fluid
+          [:div.offset1.span10
+           [:div.alert.alert-success
+            (forms/managed-button
+             [:button.btn.btn-primary
+              {:data-loading-text "Following...",
+               :on-click #(raise! owner [:followed-repo {:vcs_url vcs-url}])}
+              "Follow"])
+            " " project-name " to add " project-name " to your sidebar and get build notifications."]]])))))
+
 (def email-prefs
   [["default" "Default"]
    ["all" "All builds"]
