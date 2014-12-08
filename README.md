@@ -71,6 +71,17 @@ Second, the frontend clojurescript asset compiler:
 lein figwheel dev
 ```
 
+### Asset Compilation Errors
+
+If you are experiencing errors when building assets the following commands may
+help reset all cached state:
+
+```
+lein clean
+lein cljsbuild clean
+lein cljsbuild once
+```
+
 ### Sanity Check
 
 To test that everything worked, visit
@@ -90,3 +101,4 @@ don't need the query parameter.
 
 **NOTE:** login and logout will invalidate the session, so you'll need to use
 the `?om-build-id=dev` query parameter again. This will be fixed soon.
+
