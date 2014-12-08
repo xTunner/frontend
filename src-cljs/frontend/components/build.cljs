@@ -116,8 +116,9 @@
            (when (and project (project-common/show-enable-notice project))
              (om/build project-common/enable-notice project))
 
+           (if (om/get-shared owner [:ab-tests :follow_notice])
            (when (and project (project-common/show-follow-notice project))
-             (om/build project-common/follow-notice project))
+             (om/build project-common/follow-notice project)))
 
            (when (build-model/display-build-invite build)
              (om/build invites/build-invites
