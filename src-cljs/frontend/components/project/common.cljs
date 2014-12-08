@@ -70,7 +70,7 @@
     [:div.alert {:class "alert-success"}
        (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
-             [:a {:href plan-path} "Please enter your payment information"]
+             [:a.pay-now-plain-text {:href plan-path} "Please enter your payment information"]
              " before the trial expires to continue using these containers." 
              )]))   
 
@@ -80,8 +80,8 @@
        (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
              "Please enter your payment information before the trial expires to continue using these containers.    " 
-             [:a {:href plan-path} 
-              [:button.pay-now-button "Pay Now"]]
+             [:a.pay-now-button {:href plan-path} 
+              [:button "Pay Now"]]
              )])) 
 
 (defn trial-notice [data owner]
