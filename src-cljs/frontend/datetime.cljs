@@ -16,13 +16,13 @@
 (def server-offset (atom nil))
 
 (defn update-server-offset [date-header]
-  (let [server-date (.fromRfc822String goog.date.DateTime date-header)
-        newval (- (.getTime server-date) (now))]
-    (swap! server-offset
-           (fn [oldval]
-             (if oldval
-               (min oldval newval)
-               newval)))))
+  (when-let [server-date (.fromRfc822String goog.date.DateTime date-header)]
+    (let [newval (- (.getTime server-date) (now))]
+      (swap! server-offset
+             (fn [oldval]
+               (if oldval
+                 (min oldval newval)
+                 newval))))))
 
 (defn server-now []
   (+ (now) (or @server-offset 0)))
