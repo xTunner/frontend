@@ -1,13 +1,12 @@
 (ns frontend.favicon
   (:refer-clojure :exclude [reset!])
-  (:require [dommy.core :as attrs]
-            [frontend.utils :as utils :include-macros true]
+  (:require [frontend.utils :as utils :include-macros true]
             [dommy.core :refer-macros [sel1]]))
 
 (def favicon-query "link[rel='icon']")
 
 (defn get-color []
-  (last (re-find #"favicon-([^\.]+)\.ico" (attrs/attr (sel1 favicon-query) :href))))
+  (last (re-find #"favicon-([^\.]+)\.ico" (.getAttribute (sel1 favicon-query) "href"))))
 
 (defn set-color! [color]
   (utils/swallow-errors

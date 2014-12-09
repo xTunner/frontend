@@ -14,7 +14,7 @@
             [goog.string.format]
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.core :refer (sel1)]))
+                   [dommy.core :refer [sel1]]))
 
 (defn ->iso8601 [time]
   (time-format/unparse (time-format/formatters :date-time) time))

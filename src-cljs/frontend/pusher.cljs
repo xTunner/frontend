@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [clojure.string :as string]
-            [dommy.core :as dommy]
             [goog.dom.DomHelper]
             [goog.events]
             [om.core :as om :include-macros true]

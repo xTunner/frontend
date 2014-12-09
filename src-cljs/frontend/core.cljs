@@ -5,7 +5,6 @@
             [clojure.browser.repl :as repl]
             [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
-            [dommy.core :as dommy :refer-macros [sel sel1]]
             [goog.dom]
             [goog.dom.DomHelper]
             [frontend.ab :as ab]
@@ -198,12 +197,12 @@
 (defn find-top-level-node []
   (.-body js/document))
 
-(defn find-app-container [top-level-node]
-  (sel1 top-level-node "#om-app"))
+(defn find-app-container []
+  (goog.dom/getElement "om-app"))
 
 (defn main [state ab-tests top-level-node history-imp instrument?]
   (let [comms       (:comms @state)
-        container   (find-app-container top-level-node)
+        container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         pusher-imp (pusher/new-pusher-instance)
@@ -250,7 +249,7 @@
   "Hack to make the top-level id of the app the same as the
    current knockout app. Lets us use the same stylesheet."
   []
-  (goog.dom.setProperties (sel1 "#app") #js {:id "om-app"}))
+  (goog.dom.setProperties (goog.dom/getElement "app") #js {:id "om-app"}))
 
 (defn ^:export setup! []
   (apply-app-id-hack)
@@ -314,7 +313,7 @@
 
 
 (defn ^:export reinstall-om! []
-  (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container (find-top-level-node)) (:comms @debug-state) true))
+  (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container) (:comms @debug-state) true))
 
 (defn add-css-link [path]
   (let [link (goog.dom/createDom "link"
@@ -323,14 +322,14 @@
     (.appendChild (.-head js/document) link)))
 
 (defn refresh-css! []
-  (doseq [link (sel [:head :link])
+  (doseq [link (goog.dom/getElementsByTagNameAndClass "link")
           :when (let [href (inspect (.getAttribute link "href"))]
                   (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
     (.removeChild (.-head js/document) link))
   (add-css-link "/assets/css/app.css"))
 
 (defn fix-figwheel-css! []
-  (doseq [link (sel [:head :link])
+  (doseq [link (goog.dom/getElementsByTagNameAndClass "link")
           :when (re-find #"3449resources" (.getAttribute link "href"))]
     (add-css-link (string/replace (.getAttribute link "href") #"3449resources" "3449/resources"))
     (.removeChild (.-head js/document) link))

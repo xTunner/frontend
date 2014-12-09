@@ -1,6 +1,5 @@
 (ns frontend.components.shared
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [dommy.core :as attrs]
             [frontend.async :refer [raise!]]
             [frontend.state :as state]
             [frontend.stefon :refer (data-uri)]

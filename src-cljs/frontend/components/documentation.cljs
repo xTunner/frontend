@@ -9,6 +9,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.docs :as doc-utils]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
@@ -106,8 +107,8 @@
         (om/build article-list (get-in docs [:troubleshooting :children]))]]])))
 
 (defn add-link-targets [node]
-  (doseq [heading (sel node
-                       ".content h2, .content h3, .content h4, .content h5, .content h6")]
+  (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
+          heading (goog.dom/getElementsByTagNameAndClass tag "content")]
     (let [title (utils/text heading)
           id (if-not (string/blank? (.-id heading))
                (.-id heading)
