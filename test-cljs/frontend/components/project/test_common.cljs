@@ -2,7 +2,6 @@
   (:require [cemerick.cljs.test :as t]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [dommy.core :as dommy]
             [frontend.test-utils :as test-utils]
             [frontend.components.app :as app]
             [frontend.components.project.common :as project-common]
@@ -99,5 +98,5 @@
               ;; TODO: tree's suck! checking the message including the
               ;; link and the part after the link is crazy annoying.
               ;; Calling this good for now.
-              ;;(println plan-msg " LINK: " (dommy/text link))
-              (is (= plan-msg (dommy/text span)))))))))
+              ;;(println plan-msg " LINK: " (utils/text link))
+              (is (= plan-msg (utils/text span)))))))))

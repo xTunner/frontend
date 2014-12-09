@@ -269,3 +269,12 @@
   (let [id (aget x "_rootNodeID")]
     (assert id)
     id))
+
+(defn text [elem]
+  (or (.-textContent elem) (.-innerText elem)))
+
+(defn set-html!
+  "Set the innerHTML of `elem` to `html`"
+  [elem html]
+  (set! (.-innerHTML elem) html)
+  elem)

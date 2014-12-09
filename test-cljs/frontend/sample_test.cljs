@@ -1,6 +1,6 @@
 (ns frontend.sample-test
   (:require [cemerick.cljs.test :as t]
-            [dommy.core :as dommy]
+            [frontend.utils :as utils]
             [frontend.test-utils :as util]
             [goog.dom]
             [sablono.core :as html :refer-macros [html]]
@@ -17,7 +17,7 @@
 (deftest sample
   (let [n (goog.dom/htmlToDocumentFragment "<div class='sample-node'></div>")]
     (om/root sample-component (atom {}) {:target n})
-    (is (= "Woot" (dommy/text n)))))
+    (is (= "Woot" (utils/text n)))))
 
 (defn simulated-event-component [data owner]
   (reify

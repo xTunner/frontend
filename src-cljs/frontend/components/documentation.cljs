@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [clojure.string :as string]
-            [dommy.core :as dommy :refer-macros [sel]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.components.common :as common]
@@ -109,7 +108,7 @@
 (defn add-link-targets [node]
   (doseq [heading (sel node
                        ".content h2, .content h3, .content h4, .content h5, .content h6")]
-    (let [title (dommy/text heading)
+    (let [title (utils/text heading)
           id (if-not (string/blank? (.-id heading))
                (.-id heading)
                (-> title
@@ -119,7 +118,7 @@
                    (string/replace #"[^a-z0-9]+" "-") ; dashes
                    (string/replace #"^-" "") ; don't let first or last be dashes
                    (string/replace #"-$" "")))]
-      (dommy/set-html! heading
+      (utils/set-html! heading
                        (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
 
 (defrender markdown [markdown]

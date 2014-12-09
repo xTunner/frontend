@@ -3,6 +3,7 @@
             [dommy.core :as dommy :refer-macros [sel1]]
             [frontend.test-utils :as test-utils]
             [frontend.components.documentation :as documentation]
+            [frontend.utils :as utils]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
             [goog.dom]
@@ -51,17 +52,17 @@
     (is (= "Continuous Deployment with Heroku"
            (-> test-node
                (sel1 :h1)
-               dommy/text))
+               utils/text))
         "Title renders")
     (is (re-find #"Last Updated"
                  (-> test-node
                      (sel1 :p)
-                     dommy/text))
+                     utils/text))
         "Updated date renders")
     (is (= "Quick start videos"
            (-> test-node
                (sel1 :h2)
-               dommy/text))
+               utils/text))
         "Content renders")
     (is (= "#quick-start-videos"
            (-> test-node
@@ -77,13 +78,13 @@
            (-> rendered-component
                om/get-node
                (sel1 :h1)
-               dommy/text))
+               utils/text))
         "Title renders")
     (is (= "Do you need the latest version of Bundler?"
            (-> rendered-component
                om/get-node
                (sel1 :a)
-               dommy/text))
+               utils/text))
         "List renders")))
 
 (deftest test-categories-rendering
@@ -94,12 +95,12 @@
            (-> rendered-component
                om/get-node
                (sel1 :h4)
-               dommy/text)))
+               utils/text)))
     (is (= "Ruby (2)"
            (-> rendered-component
                om/get-node
                (sel1 :li>a)
-               dommy/text)))))
+               utils/text)))))
 
 (deftest test-article-list-rendering
   (let [test-doc (:troubleshooting test-docs)
@@ -109,7 +110,7 @@
     (is (= "Troubleshooting Ruby (2)"
            (-> test-node
                (sel1 :a)
-               dommy/text)))))
+               utils/text)))))
 
 ;; New markdown stuff
 (deftest test-markdown
@@ -127,7 +128,7 @@
     (is (= "Hey There!"  (-> markdown-str
                              md->node
                              (sel1 :h1)
-                             dommy/text))
+                             utils/text))
         "Markdown renders")
     (is (= asset-path (-> asset-str
                           md->node
@@ -136,17 +137,17 @@
         "Asset paths are replaced")
     (is (re-find (js/RegExp. git-version) (-> version-str
                                               md->node
-                                              dommy/text))
+                                              utils/text))
         "Versions render")
     (is (= (first ruby-versions) (-> versions-str
                                      md->node
                                      (sel1 :ul>li)
-                                     dommy/text))
+                                     utils/text))
         "Version lists render")
     (is (= "curl https://circleci.com/api/v1/recent-builds?circle-token=:token&limit=20&offset=5"
            (-> api-str
                md->node
                (sel1 :pre)
-               dommy/text))
+               utils/text))
         "API example renders")))
 
