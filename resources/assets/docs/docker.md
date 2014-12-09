@@ -1,7 +1,7 @@
 <!--
 
 title: Continous Integration and Delivery with Docker
-last_updated: August 4, 2014
+last_updated: December 8, 2014
 
 -->
 
@@ -303,3 +303,9 @@ dependencies:
     - docker build -t circleci/elasticsearch .
     - mkdir -p ~/docker; docker save circleci/elasticsearch > ~/docker/image.tar
 ```
+
+This method can still run into an issue with how Docker uses file modification times
+when checking for cached ADD commands, as discussed
+[here](https://github.com/docker/docker/issues/7387). One workaround until Docker
+adds more options is to
+[set file modification times to the commit time](https://git.wiki.kernel.org/index.php/ExampleScripts#Setting_the_timestamps_of_the_files_to_the_commit_timestamp_of_the_commit_which_last_touched_them).
