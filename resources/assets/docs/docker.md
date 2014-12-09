@@ -304,8 +304,8 @@ dependencies:
     - mkdir -p ~/docker; docker save circleci/elasticsearch > ~/docker/image.tar
 ```
 
-This method can still run into an issue with how Docker uses modification times
-of files when checking for cached ADD commands, as discussed
+This method can still run into an issue with how Docker uses file modification times
+when checking for cached ADD commands, as discussed
 [here](https://github.com/docker/docker/issues/7387). One workaround until Docker
 adds more options is to
 [set file modification times to the commit time](https://git.wiki.kernel.org/index.php/ExampleScripts#Setting_the_timestamps_of_the_files_to_the_commit_timestamp_of_the_commit_which_last_touched_them).
