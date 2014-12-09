@@ -6,8 +6,7 @@
             [sablono.core :as html :refer-macros [html]]
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [frontend.utils :refer [inspect]]
-                   [dommy.core :refer (sel1)]))
+                   [frontend.utils :refer [inspect]]))
 
 (defn sample-component [data owner]
   (reify

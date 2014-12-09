@@ -8,7 +8,6 @@
             [frontend.utils.github :as gh-utils]
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
-            [dommy.core :refer-macros [sel sel1]]
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format]

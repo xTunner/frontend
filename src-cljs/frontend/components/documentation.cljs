@@ -2,7 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [clojure.string :as string]
-            [dommy.core :as dommy :refer-macros [sel sel1]]
+            [dommy.core :as dommy :refer-macros [sel]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.components.common :as common]

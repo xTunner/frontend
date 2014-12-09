@@ -17,7 +17,6 @@
             [goog.events]
             [goog.dom]
             [goog.style]
-            [dommy.core :refer-macros [sel1]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])

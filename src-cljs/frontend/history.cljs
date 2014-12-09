@@ -1,6 +1,5 @@
 (ns frontend.history
   (:require [clojure.string :as string]
-            [dommy.core :as dommy :refer-macros [sel sel1]]
             [frontend.analytics :as analytics]
             [frontend.utils :as utils :include-macros true]
             [goog.events :as events]

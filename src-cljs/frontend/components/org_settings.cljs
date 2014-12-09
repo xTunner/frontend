@@ -22,7 +22,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [clojure.string :as string]
-            [dommy.core :refer-macros [sel sel1]]
+            [dommy.core :refer-macros [sel]]
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style]

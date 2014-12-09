@@ -10,7 +10,6 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
-            [dommy.core :refer-macros [sel sel1]]
             [goog.dom]
             [goog.string :as gstring]
             [goog.style])
@@ -52,7 +51,7 @@
 (defmethod post-error! :api-error
   [container message args previous-state current-state]
   (when (get-in current-state state/error-message-path)
-    (set! (.-scrollTop (sel1 "body")) 0)))
+    (set! (.-scrollTop (.-body js/document)) 0)))
 
 (defmethod error :error-triggered
   [container message error state]
@@ -61,4 +60,4 @@
 (defmethod post-error! :error-triggered
   [container message args previous-state current-state]
   (when (get-in current-state state/error-message-path)
-    (set! (.-scrollTop (sel1 "body")) 0)))
+    (set! (.-scrollTop (.-body js/document)) 0)))

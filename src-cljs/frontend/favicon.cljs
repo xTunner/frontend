@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [reset!])
   (:require [dommy.core :as attrs]
             [frontend.utils :as utils :include-macros true]
-            [dommy.core :refer-macros [sel sel1]]))
+            [dommy.core :refer-macros [sel1]]))
 
 (def favicon-query "link[rel='icon']")
 

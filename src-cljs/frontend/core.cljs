@@ -196,7 +196,7 @@
     :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
-  (sel1 :body))
+  (.-body js/document))
 
 (defn find-app-container [top-level-node]
   (sel1 top-level-node "#om-app"))
