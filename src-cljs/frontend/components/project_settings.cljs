@@ -888,7 +888,7 @@
                [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
                [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls a "
                 [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
-                ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]])))))
+                ". Give this user exactly the permissions your build requires, and then log into CircleCI as the machine user and associate its user key with your project."]]])]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
