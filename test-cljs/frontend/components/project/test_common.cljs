@@ -6,7 +6,7 @@
             [frontend.components.app :as app]
             [frontend.components.project.common :as project-common]
             [frontend.components.documentation :as documentation]
-            [frontend.utils :as utils :include-macros true :refer [sel1]]
+            [frontend.utils :as utils :include-macros true]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
             [goog.dom]
@@ -89,8 +89,8 @@
                   :let [notice-elem (-> (om/build project-common/trial-notice {:project project :plan plan})
                                         (test-utils/render-into-document)
                                         om/get-node)
-                        span (-> notice-elem (sel1 "span"))
-                        link (-> notice-elem (sel1 "a"))
+                        span (-> notice-elem (utils/sel1 "span"))
+                        link (-> notice-elem (utils/sel1 "a"))
                         plan-msg (gstring/format (:msg plan)
                                                  "circleci/circle" (:org_name plan))]]
             (do
