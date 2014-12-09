@@ -316,23 +316,25 @@
 (defn ^:export reinstall-om! []
   (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container (find-top-level-node)) (:comms @debug-state) true))
 
+(defn add-css-link [path]
+  (let [link (goog.dom/createDom "link"
+               #js {:rel "stylesheet"
+                    :href (str path "?t=" (.getTime (js/Date.)))})]
+    (.appendChild (.-head js/document) link)))
+
 (defn refresh-css! []
-  (let [is-app-css? (fn [elem]
-                      (let [href (inspect (dommy/attr elem :href))]
-                         (re-find #"/assets/css/app.*?\.css(?:\.less)?" href)))
-        potential-links (sel [:head :link])
-        old-links (filter is-app-css? potential-links)]
-        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href (str "/assets/css/app.css?t=" (.getTime (js/Date.)))}])
-        (map #(dommy/remove! %) old-links)))
+  (doseq [link (sel [:head :link])
+          :when (let [href (inspect (dommy/attr link :href))]
+                  (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
+    (dommy/remove! link))
+  (add-css-link "/assets/css/app.css"))
 
 (defn fix-figwheel-css! []
-  (let [is-figwheel-css? (fn [elem] (re-find #"3449resources" (dommy/attr elem :href)))
-        patch (fn [elem]
-                (let [fixed-href (string/replace (dommy/attr elem :href) #"3449resources" "3449/resources")]
-                  (do
-                    (dommy/remove! elem)
-                    (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href fixed-href}]))))]
-    (map patch (filter is-figwheel-css? (sel [:head :link])))))
+  (doseq [link (sel [:head :link])
+          :when (re-find #"3449resources" (dommy/attr link :href))]
+    (add-css-link (string/replace (dommy/attr link :href) #"3449resources" "3449/resources"))
+    (dommy/remove! link))
+  (add-css-link "/assets/css/app.css"))
 
 (defn update-ui! []
   (reinstall-om!)

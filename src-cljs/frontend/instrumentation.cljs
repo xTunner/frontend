@@ -126,7 +126,7 @@
 
 (defn setup-component-stats! []
   (let [stats-node (goog.dom/htmlToDocumentFragment "<div class='om-instrumentation'></div>")]
-    (utils/inspect (dommy/append! (.-body js/document) stats-node))
+    (utils/inspect (.appendChild (.-body js/document) stats-node))
     (om/root
      stats-view
      component-stats
