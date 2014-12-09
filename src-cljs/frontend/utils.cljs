@@ -278,3 +278,8 @@
   [elem html]
   (set! (.-innerHTML elem) html)
   elem)
+
+(defn sel1
+  ([selector] (sel1 js/document selector))
+  ([parent selector]
+   (.querySelector parent selector)))

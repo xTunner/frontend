@@ -6,15 +6,14 @@
             [frontend.components.app :as app]
             [frontend.components.project.common :as project-common]
             [frontend.components.documentation :as documentation]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :include-macros true :refer [sel1]]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
             [goog.dom]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.core :refer [sel1]]))
+  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
 
 (defn ->iso8601 [time]
   (time-format/unparse (time-format/formatters :date-time) time))
@@ -90,8 +89,8 @@
                   :let [notice-elem (-> (om/build project-common/trial-notice {:project project :plan plan})
                                         (test-utils/render-into-document)
                                         om/get-node)
-                        span (-> notice-elem (sel1 :span))
-                        link (-> notice-elem (sel1 :a))
+                        span (-> notice-elem (sel1 "span"))
+                        link (-> notice-elem (sel1 "a"))
                         plan-msg (gstring/format (:msg plan)
                                                  "circleci/circle" (:org_name plan))]]
             (do

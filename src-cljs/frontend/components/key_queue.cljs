@@ -11,7 +11,7 @@
             [frontend.async :refer [put! raise!]]
             [om.core :as om :include-macros true]
             [clojure.string :refer [join split]]
-            [dommy.core :as dommy]
+            [goog.events]
             [sablono.core :as html :include-macros true]
             [frontend.utils :as utils :include-macros true])
   (:require-macros [cljs.core.async.macros :as async]))
@@ -65,10 +65,10 @@
   (utils/mlog "key event" e) e)
 
 (defn start-key-queue [key-ch]
-  (dommy/listen! js/document :keydown
-                 #(when-let [k (event->key %)]
-                    (log-keystroke k)
-                    (async/put! key-ch k))))
+  (goog.events/listen js/document "keydown"
+    #(when-let [k (event->key %)]
+       (log-keystroke k)
+       (async/put! key-ch k))))
 
 (def global-key-ch
   (->> 1000 async/sliding-buffer async/chan))

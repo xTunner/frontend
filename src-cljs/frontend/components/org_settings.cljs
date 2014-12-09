@@ -22,6 +22,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [clojure.string :as string]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style]
