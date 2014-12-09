@@ -324,16 +324,16 @@
 
 (defn refresh-css! []
   (doseq [link (sel [:head :link])
-          :when (let [href (inspect (dommy/attr link :href))]
+          :when (let [href (inspect (.getAttribute link "href"))]
                   (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
-    (dommy/remove! link))
+    (.removeChild (.-head js/document) link))
   (add-css-link "/assets/css/app.css"))
 
 (defn fix-figwheel-css! []
   (doseq [link (sel [:head :link])
-          :when (re-find #"3449resources" (dommy/attr link :href))]
-    (add-css-link (string/replace (dommy/attr link :href) #"3449resources" "3449/resources"))
-    (dommy/remove! link))
+          :when (re-find #"3449resources" (.getAttribute link "href"))]
+    (add-css-link (string/replace (.getAttribute link "href") #"3449resources" "3449/resources"))
+    (.removeChild (.-head js/document) link))
   (add-css-link "/assets/css/app.css"))
 
 (defn update-ui! []

@@ -67,7 +67,7 @@
     (is (= "#quick-start-videos"
            (-> test-node
                (sel1 :a)
-               (dommy/attr :href)))
+               (.getAttribute "href")))
         "Links are replaced")))
 
 (deftest test-category-subpage-rendering
@@ -133,7 +133,7 @@
     (is (= asset-path (-> asset-str
                           md->node
                           (sel1 :img)
-                          (dommy/attr :src)))
+                          (.getAttribute "src")))
         "Asset paths are replaced")
     (is (re-find (js/RegExp. git-version) (-> version-str
                                               md->node
