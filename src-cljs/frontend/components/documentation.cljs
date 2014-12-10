@@ -108,7 +108,7 @@
 
 (defn add-link-targets [node]
   (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
-          heading (js/Array.prototype.slice (goog.dom/getElementsByTagNameAndClass tag "content"))]
+          heading (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass tag "content"))]
     (let [title (utils/text heading)
           id (if-not (string/blank? (.-id heading))
                (.-id heading)

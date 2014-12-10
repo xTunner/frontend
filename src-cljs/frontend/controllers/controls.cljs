@@ -435,7 +435,7 @@
         current-container-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent)))
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
-                            (goog.dom/getElementsByClass "container-view" parent))
+                            (utils/node-list->seqable (goog.dom/getElementsByClass "container-view" parent)))
         new-scrolled-container-id (if (= parent-scroll-left current-container-scroll-left)
                                     current-container-id
                                     (if-not (engine/isGecko)

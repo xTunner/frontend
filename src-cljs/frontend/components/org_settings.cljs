@@ -126,7 +126,7 @@
   "Given a node, will find all elements under node that satisfy selector and change
    the size of every element so that it is the same size as the largest element."
   [node class-name]
-  (let [items (goog.dom/getElementsByClass class-name node)
+  (let [items (utils/node-list->seqable (goog.dom/getElementsByClass class-name node))
         sizes (map goog.style/getSize items)
         max-width (apply max (map #(.-width %) sizes))
         max-height (apply max (map #(.-height %) sizes))]
