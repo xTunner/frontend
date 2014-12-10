@@ -283,3 +283,6 @@
   ([selector] (sel1 js/document selector))
   ([parent selector]
    (.querySelector parent selector)))
+
+(defn node-list->seqable [node-list]
+  (js/Array.prototype.slice.call node-list))
