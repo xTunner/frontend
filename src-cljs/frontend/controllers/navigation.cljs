@@ -15,6 +15,7 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-id! scroll!]]
+            [frontend.models.build :as build-model]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -164,6 +165,7 @@
       (api/get-projects api-ch))
     (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
+              build (:resp api-result)
               scopes (:scopes api-result)]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           ;; Start 404'ing on non-existent builds, as well as when you
@@ -176,7 +178,12 @@
             :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
-            (analytics/track-build current-user (:resp api-result)))
+            (analytics/track-build current-user build))
+          ;; Preemptively make the usage-queued API call if we're going to display the
+          ;; the usage queued tab by default.
+          ;; This feels like a weird bit of non-locality, but I can't think of a better solution. :(
+          (when (= :usage-queue (build-model/default-tab build))
+            (api/get-usage-queue build api-ch))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get

@@ -327,8 +327,7 @@
             logged-in? (not (empty? user))
             build (:build build-data)
             show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
-            ;; default to ssh-info for SSH builds if they haven't clicked a different tab
-            selected-tab (get build-data :selected-header-tab (if show-ssh-info? :ssh-info :commits))
+            selected-tab (get build-data :selected-header-tab (build-model/default-tab build))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
