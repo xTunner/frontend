@@ -126,6 +126,16 @@
   .aside-activity {
     color: @grayLight;
     position: relative;
+    &:hover {
+      .project-settings-icon {
+        svg {
+          stroke: @grayLight;
+          &:hover {
+            stroke: @linkColorHover;
+          }
+        }
+      }
+    }
     .status {
       .icon_style(transparent, @activity_ico);
       i {
@@ -150,7 +160,7 @@
   }
 }
 .aside-item {
-  .flex(0 0 @tile);
+  .flex(0 1 @tile);
   .flexy(center);
   .shadow_noboss();
   background: transparent;
@@ -170,9 +180,6 @@
     background: fade(@black, 8);
     transition-duration: 0;
   }
-  &:last-of-type {
-    margin-top: auto; // may want to make this more specific later
-  }
   &.logo {
     .justify-content(center);
     .underline_deboss();
@@ -182,6 +189,9 @@
       width: @tile;
       height: @tile;
     }
+  }
+  &.push-to-bottom {
+    margin-top: auto;
   }
   &:nth-child(2)  > i {transition-delay: @cascade_delay *  1;}
   &:nth-child(3)  > i {transition-delay: @cascade_delay *  2;}
@@ -325,6 +335,22 @@
       &.title {
         .flex(1 1 auto);
       }
+      &.project-settings-icon {
+        .flexy(center, center);
+        // width: @activity_line;
+        height: @activity_line;
+        line-height: @activity_line;
+        padding-right: 1em;
+        svg {
+          stroke: fade(@grayLight, 0);
+          transition: 200ms;
+          path {
+            &:first-child {
+              stroke-width: 8;
+            }
+          }
+        }
+      }
       &.latest {
         .flex(0 0 @activity_ico);
         display: none;
@@ -370,6 +396,7 @@
   }
 }
 .aside-user {
+  .flexy(column);
   position: absolute;
   top: 0;
   left: -@tile;
@@ -394,6 +421,7 @@
     }
   }
   header {
+    .flex(0 0 auto);
     .justify-content(center);
   }
   h5 {
@@ -423,9 +451,9 @@
   }
 }
 .aside-user-options {
+  .flex(1);
   .flexy(column);
   .aside-item {
-    transition: @aside_slim_speed ease-in-out;
     padding: 0;
     &:hover,
     &:focus {
@@ -434,9 +462,16 @@
       background: @grayLightest;
     }
     &:active {
-      .shadow_deboss(@white);
-      color: inherit;
+      &:not(.active) {
+        .shadow_deboss(@white);
+        color: inherit;
+        background: @grayLightest;
+      }
+    }
+    &.active {
+      color: @grayDark;
       background: @grayLightest;
+      cursor: default;
     }
   }
 }
