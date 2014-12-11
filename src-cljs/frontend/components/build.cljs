@@ -87,8 +87,14 @@
                         :build-running? build-running?
                         :current-container-id current-container-id}
                        {:react-key (:index container)}))
-           (when (om/get-shared owner [:ab-tests :parallelism_button])
+           (when (om/get-shared owner [:ab-tests :parallelism_button_design])
              [:a.container-selector.parallelism-tab
+              {:role "button"
+               :href (build-model/path-for-parallelism build)
+               :title "adjust parallelism"}
+              [:span "+"]])
+           (when-not (om/get-shared owner [:ab-tests :parallelism_button_design])
+                [:a.container-selector.parallelism-tab-b
               {:role "button"
                :href (build-model/path-for-parallelism build)
                :title "adjust parallelism"}
