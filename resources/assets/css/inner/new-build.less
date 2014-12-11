@@ -92,15 +92,33 @@
   border: 1px solid @grayBoxBorder;
   border-left-width: 0;
   &.parallelism-tab {
-    max-width: 6em;
+    max-width: 30px;
     background: @circleBlue;
+    border: @circleBlue 1px solid;
     color: @white;
+    border-left: 0px;
     span {
       margin-top: 8px;
       font-size: 22px;
     }
     &:hover {
-      color: @white;
+    background: lighten(@circleBlue, 4%);
+    border: @circleBlue 1px solid;
+    border-left: 0px;
+    color: @white;
+    }
+  }
+  &.parallelism-tab-b {
+    max-width: 30px;
+    background: @white;
+    color: @blue;
+    span {
+      margin-top: 8px;
+      font-size: 22px;
+    }
+    &:hover {
+    border: @blue 1px solid;
+    color: @blue;
     }
   }
   &:hover {
