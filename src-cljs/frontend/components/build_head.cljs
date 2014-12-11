@@ -210,6 +210,14 @@
               "Read our doc on interacting with the browser over VNC"]
              "."]]))))))
 
+(defn build-time-visualization [build owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.build-time-visualization
+        [:p "This should show you how the build ran on it's containers."]]))))
+
 (defn cleanup-artifact-path [path]
   (-> path
       (string/replace "$CIRCLE_ARTIFACTS/" "")
@@ -498,6 +506,11 @@
                   (when (not= 0 fail-count)
                     [:span {:class "fail-count"} fail-count]))]])
 
+            (when (build-model/finished? build)
+              [:li {:class (when (= :build-time-viz selected-tab) "active")}
+               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
+                "Build Timing"]])
+            
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [:li {:class (when (= :artifacts selected-tab) "active")}
@@ -511,6 +524,8 @@
 
              :tests (om/build build-tests-list build-data)
 
+             :build-time-viz (om/build build-time-visualization build)
+             
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
