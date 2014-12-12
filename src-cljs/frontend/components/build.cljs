@@ -158,6 +158,9 @@
            (when (and plan (project-common/show-trial-notice? project plan))
              (om/build project-common/trial-notice project-data))
 
+           (when (plan-model/suspended? plan)
+             (om/build project-common/suspended-notice plan))
+
            (when (and project (project-common/show-enable-notice project))
              (om/build project-common/enable-notice project))
 

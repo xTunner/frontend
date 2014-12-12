@@ -36,6 +36,10 @@
               [:div.dashboard
                (when (and plan (project-common/show-trial-notice? project plan))
                  (om/build project-common/trial-notice current-project))
+
+               (when (plan-model/suspended? plan)
+                 (om/build project-common/suspended-notice plan))
+
                (om/build builds-table/builds-table builds {:opts {:show-actions? false
                                                                   :show-branch? (not (:branch nav-data))
                                                                   :show-project? (not (:repo nav-data))}})

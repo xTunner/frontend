@@ -169,3 +169,18 @@
                                    (raise! owner [:project-preferences-updated args]))}
             (for [[pref label] email-prefs]
               [:option {:value pref} label])]])))))
+
+(defn suspended-notice [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [org-name (:org_name plan)
+            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "billing"})]
+        (html
+         [:div
+          [:div.alert {:class "alert-danger"}
+           ;; TODO: something else if you're not an admin.
+           (list org-name
+                 "'s plan has been suspended! Please "
+                 [:a {:href plan-path} "update your billing info"]
+                 " in order to continue using paid containers.")]])))))
