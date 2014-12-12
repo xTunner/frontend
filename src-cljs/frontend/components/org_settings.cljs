@@ -13,6 +13,7 @@
             [frontend.components.inputs :as inputs]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
+            [frontend.components.project.common :as project-common]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
@@ -931,12 +932,15 @@
     om/IRender
     (render [_]
       (let [org-data (get-in app state/org-data-path)
-            subpage (or (get app :org-settings-subpage) :overview)]
+            subpage (or (get app :org-settings-subpage) :overview)
+            plan (get-in app state/org-plan-path)]
         (html [:div.container-fluid.org-page
                (if-not (:loaded org-data)
                  [:div.loading-spinner common/spinner]
                  [:div.row-fluid
                   [:div.span9
+                   (when (pm/suspended? plan)
+                     (om/build project-common/suspended-notice plan))
                    (om/build common/flashes (get-in app state/error-message-path))
                    [:div#subpage
                     [:div
