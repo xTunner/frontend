@@ -5,7 +5,12 @@
             [goog.string :as gstring]
             goog.string.format))
 
-(defmulti format-test-name :source)
+(defn source [test]
+  (or (:source_type test)
+      ;; TODO: this can be removed once source_type is fully deployed
+      (:source test)))
+
+(defmulti format-test-name source)
 
 (defmethod format-test-name :default [test]
   (:name test))

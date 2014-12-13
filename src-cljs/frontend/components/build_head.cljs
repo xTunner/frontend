@@ -250,7 +250,7 @@
     (render [_]
       (let [tests-data (:tests-data data)
             tests (:tests tests-data)
-            sources (reduce (fn [s test] (conj s (:source test))) #{} tests)
+            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
             failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
         (html
          [:div.build-tests-container
@@ -264,7 +264,7 @@
                      (string/join ", " (map test-model/pretty-source sources))
                      " with " (pluralize (count failed-tests) "failure") ".")]
                (when (seq failed-tests)
-                 (for [[source tests-by-source] (group-by :source failed-tests)]
+                 (for [[source tests-by-source] (group-by test-model/source failed-tests)]
                    [:div.build-tests-list-container
                     [:span.failure-source (str (test-model/pretty-source source) " failures:")]
                     [:ol.build-tests-list
