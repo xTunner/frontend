@@ -107,21 +107,20 @@
         (om/build article-list (get-in docs [:troubleshooting :children]))]]])))
 
 (defn add-link-targets [node]
-  (let [content-container (goog.dom/getElementByClass "content")]
-    (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
-            heading (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass tag nil content-container))]
-      (let [title (utils/text heading)
-            id (if-not (string/blank? (.-id heading))
-                 (.-id heading)
-                 (-> title
-                     string/lower-case
-                     string/trim
-                     (string/replace \' "")     ; heroku's -> herokus
-                     (string/replace #"[^a-z0-9]+" "-") ; dashes
-                     (string/replace #"^-" "") ; don't let first or last be dashes
-                     (string/replace #"-$" "")))]
-        (utils/set-html! heading
-                         (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title))))))
+  (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
+          heading (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass tag nil node))]
+    (let [title (utils/text heading)
+          id (if-not (string/blank? (.-id heading))
+               (.-id heading)
+               (-> title
+                   string/lower-case
+                   string/trim
+                   (string/replace \' "")     ; heroku's -> herokus
+                   (string/replace #"[^a-z0-9]+" "-") ; dashes
+                   (string/replace #"^-" "") ; don't let first or last be dashes
+                   (string/replace #"-$" "")))]
+      (utils/set-html! heading
+                       (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
 
 (defrender markdown [markdown]
   (html
