@@ -58,7 +58,7 @@
        [:div#enterpriseModal.fade.hide.modal
         [:div.modal-body
          [:h4
-          "Contact us to learn more about enterprise Continous Delivery"]
+          "Contact us to learn more about enterprise Continuous Delivery"]
          [:hr]
          (om/build shared/contact-form app {:opts {:enterprise? true}})]]))))
 

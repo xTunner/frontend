@@ -136,7 +136,7 @@
            [:div.feature-container
             [:div.feature
              [:img {:src (utils/cdn-path "/icons/cloud-circle.png")}]
-             [:h3 "Continous Deployment of your Docker images"]
+             [:h3 "Continuous Deployment of your Docker images"]
              [:p
               "CircleCI makes it easy to deploy images to Docker Hub as well as to continuously deploy applications to AWS Elastic Beanstalk, Google Compute Engine, and others."]
              [:a {:href "/docs/docker"} "docs"]]
