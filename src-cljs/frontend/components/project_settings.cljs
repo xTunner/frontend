@@ -762,10 +762,10 @@
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
-        (str "https://github.com/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
+        (str (gh-utils/http-endpoint) "/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
 
         (and (= "github-user-key" (:type key)) (= (:login key) (:login user)))
-        "https://github.com/settings/ssh"
+        (str (gh-utils/http-endpoint) "/settings/ssh")
 
         :else nil))
 
