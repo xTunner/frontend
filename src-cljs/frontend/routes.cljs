@@ -6,7 +6,7 @@
             [frontend.models.project :as proj-mod]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :include-macros true]
-            [secretary.core :as sec :include-macros true :refer [defroute]])
+            [secretary.core :as sec :include-macros true :refer-macros [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 

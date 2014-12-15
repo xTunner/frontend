@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [frontend.stefon :as stefon]
             [frontend.utils.html :refer [hiccup->html-str]]
-            [frontend.utils :as utils :include-macros true :refer [defrender]]
+            [frontend.utils :as utils :include-macros true :refer-macros [defrender]]
             [goog.string :as gstring]
             goog.string.format
             [frontend.state :as state]
