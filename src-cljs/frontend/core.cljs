@@ -322,14 +322,14 @@
     (.appendChild (.-head js/document) link)))
 
 (defn refresh-css! []
-  (doseq [link (goog.dom/getElementsByTagNameAndClass "link")
+  (doseq [link (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass "link"))
           :when (let [href (inspect (.getAttribute link "href"))]
                   (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
     (.removeChild (.-head js/document) link))
   (add-css-link "/assets/css/app.css"))
 
 (defn fix-figwheel-css! []
-  (doseq [link (goog.dom/getElementsByTagNameAndClass "link")
+  (doseq [link (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass "link"))
           :when (re-find #"3449resources" (.getAttribute link "href"))]
     (add-css-link (string/replace (.getAttribute link "href") #"3449resources" "3449/resources"))
     (.removeChild (.-head js/document) link))
