@@ -1,7 +1,6 @@
 (ns frontend.components.pricing-b
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [dommy.core :as dommy]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
@@ -17,7 +16,6 @@
             [goog.events]
             [goog.dom]
             [goog.style]
-            [dommy.core :refer-macros [sel1]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])

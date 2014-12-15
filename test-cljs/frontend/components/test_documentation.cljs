@@ -1,8 +1,8 @@
 (ns frontend.components.test-documentation
   (:require [cemerick.cljs.test :as t]
-            [dommy.core :as dommy :refer-macros [sel1]]
             [frontend.test-utils :as test-utils]
             [frontend.components.documentation :as documentation]
+            [frontend.utils :as utils :refer [sel1]]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
             [goog.dom]
@@ -50,23 +50,23 @@
     (om/root documentation/docs-subpage test-doc {:target test-node})
     (is (= "Continuous Deployment with Heroku"
            (-> test-node
-               (sel1 :h1)
-               dommy/text))
+               (sel1 "h1")
+               utils/text))
         "Title renders")
     (is (re-find #"Last Updated"
                  (-> test-node
-                     (sel1 :p)
-                     dommy/text))
+                     (sel1 "p")
+                     utils/text))
         "Updated date renders")
     (is (= "Quick start videos"
            (-> test-node
-               (sel1 :h2)
-               dommy/text))
+               (sel1 "h2")
+               utils/text))
         "Content renders")
     (is (= "#quick-start-videos"
            (-> test-node
-               (sel1 :a)
-               (dommy/attr :href)))
+               (sel1 "a")
+               (.getAttribute "href")))
         "Links are replaced")))
 
 (deftest test-category-subpage-rendering
@@ -76,14 +76,14 @@
     (is (= "Troubleshooting Ruby"
            (-> rendered-component
                om/get-node
-               (sel1 :h1)
-               dommy/text))
+               (sel1 "h1")
+               utils/text))
         "Title renders")
     (is (= "Do you need the latest version of Bundler?"
            (-> rendered-component
                om/get-node
-               (sel1 :a)
-               dommy/text))
+               (sel1 "a")
+               utils/text))
         "List renders")))
 
 (deftest test-categories-rendering
@@ -93,13 +93,13 @@
     (is (re-find #"Troubleshooting"
            (-> rendered-component
                om/get-node
-               (sel1 :h4)
-               dommy/text)))
+               (sel1 "h4")
+               utils/text)))
     (is (= "Ruby (2)"
            (-> rendered-component
                om/get-node
-               (sel1 :li>a)
-               dommy/text)))))
+               (sel1 "li > a")
+               utils/text)))))
 
 (deftest test-article-list-rendering
   (let [test-doc (:troubleshooting test-docs)
@@ -108,8 +108,8 @@
         test-node (om/get-node rendered-component)]
     (is (= "Troubleshooting Ruby (2)"
            (-> test-node
-               (sel1 :a)
-               dommy/text)))))
+               (sel1 "a")
+               utils/text)))))
 
 ;; New markdown stuff
 (deftest test-markdown
@@ -126,27 +126,27 @@
         api-str "Recent builds: \n {{ api_data.recent_builds | api-endpoint }}\n"]
     (is (= "Hey There!"  (-> markdown-str
                              md->node
-                             (sel1 :h1)
-                             dommy/text))
+                             (sel1 "h1")
+                             utils/text))
         "Markdown renders")
     (is (= asset-path (-> asset-str
                           md->node
-                          (sel1 :img)
-                          (dommy/attr :src)))
+                          (sel1 "img")
+                          (.getAttribute "src")))
         "Asset paths are replaced")
     (is (re-find (js/RegExp. git-version) (-> version-str
                                               md->node
-                                              dommy/text))
+                                              utils/text))
         "Versions render")
     (is (= (first ruby-versions) (-> versions-str
                                      md->node
-                                     (sel1 :ul>li)
-                                     dommy/text))
+                                     (sel1 "ul > li")
+                                     utils/text))
         "Version lists render")
     (is (= "curl https://circleci.com/api/v1/recent-builds?circle-token=:token&limit=20&offset=5"
            (-> api-str
                md->node
-               (sel1 :pre)
-               dommy/text))
+               (sel1 "pre")
+               utils/text))
         "API example renders")))
 

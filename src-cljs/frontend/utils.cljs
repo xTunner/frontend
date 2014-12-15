@@ -4,7 +4,6 @@
             [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
             [ajax.core :as ajax]
-            [dommy.core :refer-macros [sel1]]
             [cljs-time.core :as time]
             [frontend.env :as env]
             [goog.async.AnimationDelay]
@@ -253,7 +252,7 @@
   "Scrolls to the element with given id, if node exists"
   [id]
   (when-let [node (goog.dom.getElement id)]
-    (let [body (sel1 "body")
+    (let [body (.-body js/document)
           node-top (goog.style/getPageOffsetTop node)
           body-top (goog.style/getPageOffsetTop body)]
       (set! (.-scrollTop body) (- node-top body-top)))))
@@ -264,9 +263,26 @@
   (if (:_fragment args)
     ;; give the page time to render
     (rAF #(scroll-to-id! (:_fragment args)))
-    (rAF #(set! (.-scrollTop (sel1 "body")) 0))))
+    (rAF #(set! (.-scrollTop (.-body js/document)) 0))))
 
 (defn react-id [x]
   (let [id (aget x "_rootNodeID")]
     (assert id)
     id))
+
+(defn text [elem]
+  (or (.-textContent elem) (.-innerText elem)))
+
+(defn set-html!
+  "Set the innerHTML of `elem` to `html`"
+  [elem html]
+  (set! (.-innerHTML elem) html)
+  elem)
+
+(defn sel1
+  ([selector] (sel1 js/document selector))
+  ([parent selector]
+   (.querySelector parent selector)))
+
+(defn node-list->seqable [node-list]
+  (js/Array.prototype.slice.call node-list))

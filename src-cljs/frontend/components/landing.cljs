@@ -1,7 +1,6 @@
 (ns frontend.components.landing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [dommy.core :as dommy]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]

@@ -1,7 +1,6 @@
 (ns frontend.instrumentation
   (:require [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [dommy.core :as dommy :refer-macros [sel sel1]]
             [frontend.components.key-queue :as keyq]
             [frontend.datetime :as datetime]
             [frontend.state :as state]
@@ -127,7 +126,7 @@
 
 (defn setup-component-stats! []
   (let [stats-node (goog.dom/htmlToDocumentFragment "<div class='om-instrumentation'></div>")]
-    (utils/inspect (dommy/append! (sel1 :body) stats-node))
+    (utils/inspect (.appendChild (.-body js/document) stats-node))
     (om/root
      stats-view
      component-stats

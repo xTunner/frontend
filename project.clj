@@ -24,7 +24,6 @@
                  [cljs-ajax "0.3.3"]
                  [om "0.7.3"]
                  [com.facebook/react "0.11.2"] ;; include for externs
-                 [prismatic/dommy "1.0.0"]
                  [hiccups "0.3.0"]
                  [sablono "0.2.22"]
                  [secretary "1.2.0"]

@@ -5,7 +5,6 @@
             [clojure.browser.repl :as repl]
             [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
-            [dommy.core :as dommy :refer-macros [sel sel1]]
             [goog.dom]
             [goog.dom.DomHelper]
             [frontend.ab :as ab]
@@ -196,14 +195,14 @@
     :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
-  (sel1 :body))
+  (.-body js/document))
 
-(defn find-app-container [top-level-node]
-  (sel1 top-level-node "#om-app"))
+(defn find-app-container []
+  (goog.dom/getElement "om-app"))
 
 (defn main [state ab-tests top-level-node history-imp instrument?]
   (let [comms       (:comms @state)
-        container   (find-app-container top-level-node)
+        container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         pusher-imp (pusher/new-pusher-instance)
@@ -250,7 +249,7 @@
   "Hack to make the top-level id of the app the same as the
    current knockout app. Lets us use the same stylesheet."
   []
-  (goog.dom.setProperties (sel1 "#app") #js {:id "om-app"}))
+  (goog.dom.setProperties (goog.dom/getElement "app") #js {:id "om-app"}))
 
 (defn ^:export setup! []
   (apply-app-id-hack)
@@ -314,25 +313,27 @@
 
 
 (defn ^:export reinstall-om! []
-  (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container (find-top-level-node)) (:comms @debug-state) true))
+  (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container) (:comms @debug-state) true))
+
+(defn add-css-link [path]
+  (let [link (goog.dom/createDom "link"
+               #js {:rel "stylesheet"
+                    :href (str path "?t=" (.getTime (js/Date.)))})]
+    (.appendChild (.-head js/document) link)))
 
 (defn refresh-css! []
-  (let [is-app-css? (fn [elem]
-                      (let [href (inspect (dommy/attr elem :href))]
-                         (re-find #"/assets/css/app.*?\.css(?:\.less)?" href)))
-        potential-links (sel [:head :link])
-        old-links (filter is-app-css? potential-links)]
-        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href (str "/assets/css/app.css?t=" (.getTime (js/Date.)))}])
-        (map #(dommy/remove! %) old-links)))
+  (doseq [link (goog.dom/getElementsByTagNameAndClass "link")
+          :when (let [href (inspect (.getAttribute link "href"))]
+                  (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
+    (.removeChild (.-head js/document) link))
+  (add-css-link "/assets/css/app.css"))
 
 (defn fix-figwheel-css! []
-  (let [is-figwheel-css? (fn [elem] (re-find #"3449resources" (dommy/attr elem :href)))
-        patch (fn [elem]
-                (let [fixed-href (string/replace (dommy/attr elem :href) #"3449resources" "3449/resources")]
-                  (do
-                    (dommy/remove! elem)
-                    (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href fixed-href}]))))]
-    (map patch (filter is-figwheel-css? (sel [:head :link])))))
+  (doseq [link (goog.dom/getElementsByTagNameAndClass "link")
+          :when (re-find #"3449resources" (.getAttribute link "href"))]
+    (add-css-link (string/replace (.getAttribute link "href") #"3449resources" "3449/resources"))
+    (.removeChild (.-head js/document) link))
+  (add-css-link "/assets/css/app.css"))
 
 (defn update-ui! []
   (reinstall-om!)
