@@ -14,7 +14,7 @@
             [goog.net.EventType :as gevt]
             [goog.style]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing defrender)])
+  (:require-macros [frontend.utils :refer [inspect timing defrender]])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []

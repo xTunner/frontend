@@ -20,7 +20,6 @@
             [frontend.env :as env]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
             [frontend.scroll :as scroll]
-            [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -187,9 +186,9 @@
              :ab-tests ab-tests
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state}
-    :instrument (let [methods (cond-> state-graft/no-local-state-methods
+    :instrument (let [methods (cond-> om/no-local-state-methods
                                 instrument? instrumentation/instrument-methods)
-                      descriptor (state-graft/no-local-descriptor methods)]
+                      descriptor (om/no-local-descriptor methods)]
                   (fn [f cursor m]
                     (om/build* f cursor (assoc m :descriptor descriptor))))
     :opts {:reinstall-om! reinstall-om!}}))
