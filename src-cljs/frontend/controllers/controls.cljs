@@ -177,6 +177,7 @@
   (let [login (:login args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
+    (utils/scroll-to-id! "project-listing")
     (ajax/ajax :get
                (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
                :repos
