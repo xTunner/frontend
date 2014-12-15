@@ -21,7 +21,11 @@ For RSpec, you'll have to add our junit formatter gem to your Gemfile:
 gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'
 ```
 
-For Minitest, you'll have to add the `minitest-ci` gem.
+For Minitest, you'll have to add the `minitest-ci` gem:
+
+```
+gem 'minitest-ci', :git => 'git@github.com:circleci/minitest-ci'
+```
 
 ## Custom steps
 
