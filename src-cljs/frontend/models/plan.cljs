@@ -12,7 +12,7 @@
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
   [plan]
-  (get-in plan [:template_properties :max_parallelism]))
+  (:max_parallelism plan))
 
 (defn piggieback? [plan org-name]
   (not= (:org_name plan) org-name))
