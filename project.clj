@@ -52,7 +52,7 @@
              "-Djna.library.path=target/native/macosx/x86_64:target/native/linux/x86_64:target/native/linux/x86"
              "-Dfile.encoding=UTF-8"]
 
-  :clean-targets ^{:protect false} [:target-path "resources/public/cljs/out/"]
+  :clean-targets ^{:protect false} [:target-path "resources/public/cljs/"]
 
   :figwheel {:css-dirs ["resources/public/assets/css"]}
   :cljsbuild {:builds [{:id "dev"
