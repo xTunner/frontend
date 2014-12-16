@@ -11,34 +11,45 @@
   (:require-macros [frontend.utils :refer [defrender html]]))
 
 (def app-store
-  (html [:img.app-store {:src "/img/outer/mobile/app-store.png"}]))
+  (html [:img.app-store {:src "/img/outer/mobile/app-store.png"
+                         :alt "Improve App Store Rating"}]))
 
 (def build-env
-  (html [:img.build-env {:src "/img/outer/mobile/build-env.png"}]))
+  (html [:img.build-env {:src "/img/outer/mobile/build-env.png"
+                         :alt "Control your mobile app testing environment"}]))
 
 (def commit
-  (html [:img.commit {:src "/img/outer/mobile/commit.png"}]))
+  (html [:img.commit {:src "/img/outer/mobile/commit.png"
+                      :alt "Merge App code with confidence"}]))
 
 (def deploy
-  (html [:img.deploy {:src "/img/outer/mobile/deploy.png"}]))
+  (html [:img.deploy {:src "/img/outer/mobile/deploy.png"
+                      :alt "Automate Mobile Continuous Deployment"}]))
 
 (def htc
-  (html [:img.htc {:src "/img/outer/mobile/htc.png"}]))
+  (html [:img.htc {:src "/img/outer/mobile/htc.png"
+                   :alt "Mobile Android app testing"}]))
 
 (def iphone
-  (html [:img.iphone {:src "/img/outer/mobile/iphone.png"}]))
+  (html [:img.iphone {:src "/img/outer/mobile/iphone.png"
+                      :alt "Mobile iPhone app testing"}]))
 
 (def nexus
-  (html [:img.nexus {:src "/img/outer/mobile/nexus.png"}]))
+  (html [:img.nexus {:src "/img/outer/mobile/nexus.png"
+                     :alt "Mobile Android app testing"}]))
 
 (def setup
-  (html [:img.setup {:src "/img/outer/mobile/setup.png"}]))
+  (html [:img.setup {:src "/img/outer/mobile/setup.png"
+                     :alt "Easy Continuous Integration setup"}]))
 
 (def steps
-  (html [:img.steps {:src "/img/outer/mobile/steps.png"}]))
+  (html [:img.steps {:src "/img/outer/mobile/steps.png"
+                     :alt "Mobile Continuous Integration and Deployment"}]))
 
 (def testing
-  (html [:img.testing {:src "/img/outer/mobile/testing.png"}]))
+  (html [:img.testing {:src "/img/outer/mobile/testing.png"
+                       :alt "Automate App Testing"}]))
 
 (def workflow
-  (html [:img.workflow {:src "/img/outer/mobile/workflow.png"}]))
+  (html [:img.workflow {:src "/img/outer/mobile/workflow.png"
+                        :alt "Mobile Continuous Integration Workflow"}]))
