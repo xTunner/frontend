@@ -441,21 +441,8 @@
                [:form
                 [:div.container-picker
                  [:p "More containers means faster builds and lower queue times."]
-                 (cond
-                   false
-                   (om/build shared/styled-range-slider
-                             (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
-                   true
-                   [:div.container-slider
-                    (list
-                     [:span min-slider-val]
-                     [:input#rangevalue
-                      {:style {:margin "1em 0.25em auto"}
-                       :type "range" :value selected-containers
-                       :min min-slider-val :max max-slider-val
-                       :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                     :value (int (.. % -target -value)))}]
-                     [:span max-slider-val])])
+                 (om/build shared/styled-range-slider
+                           (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
                  [:div.container-input
                   [:input {:style {:margin "4px" :height "calc(2em + 2px)"}
                            :type "text" :value selected-containers
