@@ -83,8 +83,8 @@ which allows you to run arbitrary bash commands instead of or in addition to the
 at various points in the build process. See the [configuration doc](/docs/configuration) for
 a detailed discussion of the structure of the `circle.yml` file. Note, however, that
 a number of options, particularly in the `machine` section, may result in errors because
-OSX vms feature less pre-installed packages and options than our standard Linux containers.
-In such cases you may need run custom commands in appropriate build phases and install
+OSX vms feature fewer pre-installed packages and options than our standard Linux containers.
+In such cases you may need to run custom commands in appropriate build phases and install
 custom packages yourself (see below).
 
 ###Custom packages
