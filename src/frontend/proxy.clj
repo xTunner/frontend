@@ -38,7 +38,7 @@
                     ;; fact that the backend was gzipped.
                     (dissoc "content-encoding")
                     ;; avoid setting two Dates!  httpkit here will insert another Date
-                    (dissoc "Date")
+                    (dissoc "date")
                     ;; The production server insists on secure cookies, but
                     ;; the development proxy does not support SSL.
                     strip-secure)]
