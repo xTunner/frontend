@@ -9,6 +9,7 @@
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.add-projects-old :as add-projects-old]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
@@ -52,7 +53,9 @@
   (condp = (get-in app-state [:navigation-point])
     :build build-com/build
     :dashboard dashboard/dashboard
-    :add-projects add-projects/add-projects
+    :add-projects (if (= (get-in app-state [:ab-tests :new_add_projects]) :old)
+                    add-projects-old/add-projects
+                    add-projects/add-projects)
     :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
