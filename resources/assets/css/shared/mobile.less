@@ -1,0 +1,86 @@
+.odd-section {
+  background: @whiten;
+  box-shadow: 0 1px 3px fade(@black, 5) inset;
+  overflow: hidden;
+}
+
+.page.mobile {
+
+  h1 {
+    font-size: 72px;
+    line-height: 72px;
+    font-weight: 300;
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: normal;
+  }
+
+  h5 {
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: normal;
+  }
+
+  a.signup {
+    background-color: #229922;
+    color: white;
+  }
+
+  section.intro {
+    img.iphone {
+      float: right;
+    }
+
+    img.htc {
+      float: right;
+    }
+
+    .mobile-tagline {
+      margin-top: 150px;
+    }
+  }
+
+  section.pitch {
+    text-align: center;
+  }
+
+  section.workflow {
+    img.workflow {
+      float: right;
+    }
+  }
+
+  section.features {
+    .feature-list {
+      text-align: center;
+      .flexy(stretch, space-between);
+      flex-wrap: wrap;
+    }
+
+    .feature {
+      @half: (100% / 2);
+      .flex(0 0 ~"calc(@{half} - 1.5em)" );
+    }
+    @media (max-width: (@tile * 13)) {
+      .feature-list {
+        .flex-direction(column);
+        div {
+          .flex(auto);
+        }
+      }
+    }
+  }
+
+  section.conclusion {
+    img.nexus {
+      float: left;
+    }
+
+    a.signup {
+      float: right;
+    }
+  }
+}

@@ -18,63 +18,62 @@
     om/IRender
     (render [_]
       (html
-       [:div.home.page
-        [:section {}
-         [:div.home-articles
-          [:article {}
-           [:h1 "Ship better mobile apps, faster."]
-           [:p "Mobile apps live and die, etc FIXME"]]]
-         [:a.home-action {:href (auth-url)
-                          :role "button"
-                          :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+       [:div.mobile.page
+        [:section.intro.odd-section {}
+         icons/htc
+         icons/iphone
+         [:article {}
+          [:h1.mobile-tagline "Ship better mobile apps, faster."]
+          [:p "Mobile apps live and die, etc FIXME"]]
+         [:a.home-action.signup {:href (auth-url)
+                     :role "button"
+                     :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
 
                                                                                   :path (auth-url)}])}
          "Sign up for free"]
-         icons/iphone
-         icons/htc]
-        [:section {}
-         [:div.home-articles
-          [:article {}
-           [:h3 "More testing, faster feedback, better releases."]
-           [:p "The mobile development workflow can be frustrating etc FIXME"]
-           icons/steps]]]
-        [:section {}
-         [:div.home-articles
-          [:article {}
-           [:h3 "How it works"]
-           [:p "Every time you push new code etc FIXME"]
-           icons/workflow]]]
-        [:section {}
-         [:div.pricing-feature
-          icons/app-store
-          [:h3 "Improve App Store Rating"]
-          [:p "Blah blah FIXME"]]
-         [:div.pricing-feature
-          icons/testing
-          [:h3 "Automate Testing"]
-          [:p "Blah blah FIXME"]]
-         [:div.pricing-feature
-          icons/setup
-          [:h3 "Inferred Project Setup"]
-          [:p "Blah blah FIXME"]]
-         [:div.pricing-feature
-          icons/build-env
-          [:h3 "Consistent Build Environment"]
-          [:p "Blah blah FIXME"]]
-         [:div.pricing-feature
-          icons/commit
-          [:h3 "Github Commit Status Integration"]
-          [:p "Blah blah FIXME"]]
-         [:div.pricing-feature
-          icons/deploy
-          [:h3 "Automate Deployment"]
-          [:p "Blah blah FIXME"]]]
-        [:section {}
+]
+        [:section.pitch {}
+         [:article {}
+          [:h3 "More testing, faster feedback, better releases."]
+          [:p "The mobile development workflow can be frustrating etc FIXME"]
+          icons/steps]]
+        [:section.workflow.odd-section {}
+         [:article {}
+          [:h3 "How it works"]
+          [:p "Every time you push new code etc FIXME"]
+          icons/workflow]]
+        [:section.features {}
+         [:article.feature-list
+          [:div.feature
+           icons/app-store
+           [:h3 "Improve App Store Rating"]
+           [:p "Blah blah FIXME"]]
+          [:div.feature
+           icons/testing
+           [:h3 "Automate Testing"]
+           [:p "Blah blah FIXME"]]
+          [:div.feature
+           icons/setup
+           [:h3 "Inferred Project Setup"]
+           [:p "Blah blah FIXME"]]
+          [:div.feature
+           icons/build-env
+           [:h3 "Consistent Build Environment"]
+           [:p "Blah blah FIXME"]]
+          [:div.feature
+           icons/commit
+           [:h3 "Github Commit Status Integration"]
+           [:p "Blah blah FIXME"]]
+          [:div.feature
+           icons/deploy
+           [:h3 "Automate Deployment"]
+           [:p "Blah blah FIXME"]]]]
+        [:section.conclusion.odd-section {}
          icons/nexus
          [:h3 "Start shipping faster, build for free using CircleCI today."]
-         [:a.home-action {:href (auth-url)
-                          :role "button"
-                          :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+         [:a.signup.home-action {:href (auth-url)
+                                 :role "button"
+                                 :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
 
                                                                                   :path (auth-url)}])}
          "Sign up for free"]]]))))
