@@ -1,6 +1,7 @@
 <!--
 
-title: Testing iOS Apps
+title: Test iOS applications
+short_title: iOS
 last_updated: December 17, 2014
 
 -->

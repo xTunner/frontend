@@ -101,6 +101,7 @@ window.stefon_hack_for_om =
     "/docs/manually.md": '(asset-path "docs/manually.md")'
     "/docs/missing-dir.md": '(asset-path "docs/missing-dir.md")'
     "/docs/missing-file.md": '(asset-path "docs/missing-file.md")'
+    "/docs/mobile.md": '(asset-path "docs/mobile.md")'
     "/docs/nightly-builds.md": '(asset-path "docs/nightly-builds.md")'
     "/docs/oom.md": '(asset-path "docs/oom.md")'
     "/docs/parallel-manual-setup.md": '(asset-path "docs/parallel-manual-setup.md")'

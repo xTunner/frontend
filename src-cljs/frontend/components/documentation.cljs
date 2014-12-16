@@ -157,7 +157,7 @@
   (let [subpage (get-in app [:navigation-data :subpage])
         fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
-        categories ((juxt :gettingstarted :languages :how-to :troubleshooting
+        categories ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
                           :reference :parallelism :privacy-security) docs)]
     (html
      [:div.docs.page
