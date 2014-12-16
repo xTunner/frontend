@@ -240,10 +240,16 @@
 
 (defn tests-ad [owner]
   [:div
-   [:p "We didn't find any test metadata for this build. If you're using our inferred RSpec or Cucumber test steps, then we'll collect the metadata automatically. RSpec users will also have add our junit formatter gem to their Gemfile, with the line:"]
-   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
-   [:p [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "Let us know"]
-    " if you want us to add support for your test runner."]])
+   [:p "We didn't find any test metadata for this build.  Here's how to get it:"
+       [:ul
+        [:li "For an inferred ruby test command, simply add the necessary "
+             [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "formatter gem"]
+             " and then we'll collect it automatically."]
+        [:li "For another inferred test runner that you'd like us to add metadata support for, "
+             [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "let us know"] "."]
+        [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
+             [:a {:ref ""} "the docs"] " for more information."]]
+       "With test metadata, we can provide better insight into your build results and in some cases speed up your parallel builds by more efficiently splitting your tests between containers."]])
 
 (defn build-tests-list [data owner]
   (reify
