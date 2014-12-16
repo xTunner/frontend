@@ -81,6 +81,8 @@
               #"/add-projects"
               #"/changelog.*"
               #"(?!^/docs/manifest-dev\.json$)^/docs.*$"
+              #"/autocomplete.*"
+              #"/search-articles.*"
               #"/enterprise"
               #"/features.*"
               #"/gh/.*"
