@@ -9,24 +9,26 @@ last_updated: December 17, 2014
 CircleCI now offers Beta support for building and testing iOS (and OSX) projects.
 To enable this feature, go to **Project Settings > Experimental Settings** and
 enable the "Build iOS project" experimental setting. This will cause builds for
-this project to be run on OSX machines rather than the usual Linux containers.
+this project to be run on OSX machines rather than the usual Linux containers,
+and iOS-related build and test commands will be automatically inferred.
 
 
 ##Basic setup
 
 Simple projects should run with minimal or no configuration. By default, CircleCI will:
 
-* **Install any Ruby gems specified in a Gemfile** - You can install a specific version of CocoaPods or other gems this way
+* **Install any Ruby gems specified in a Gemfile** - You can install a specific version of CocoaPods or other gems this way.
 * **Install any dependencies managed by [CocoaPods](http://cocoapods.org/)**
-* **Run the "test" build action for detected project(s) and scheme(s) (todo: are these plural?) 
-from the command line using `xcodebuild`** - The detected settings can be overridden with [environment variables](#environment-variables)
+* **Run the "test" build action for detected workspace (or project) and scheme
+from the command line using `xcodebuild`** - If a workspace is detected, it will take precedence
+over a project and be used to call `xcodebuild`. The detected settings can be overridden with [environment variables](#environment-variables)
 
 **Note:** Your scheme (what you select in the dropdown next to the
 run/stop buttons in Xcode) must be shared (there is a checkbox for this at the bottom of
 the "Edit scheme" screen in Xcode) so that CircleCI can run the appropriate build action.
-If more than one scheme is present, then whichever is alphabetically first will be used
-(TODO: Is that right?). If you need to use a specific scheme, you can specify the
-`XCODE_SCHEME` [environment variable](/docs/environment-variables#custom).
+If more than one scheme is present, then you should specify the
+`XCODE_SCHEME` [environment variable](/docs/environment-variables#custom). Otherwise a
+scheme will be chosen arbitrarily.
 
 
 ##Supported build and test tools
@@ -50,11 +52,10 @@ default, [xctool](https://github.com/facebook/xctool) is also pre-installed on
 CircleCI. For example you could run your build and tests with xctool by adding
 the following `circle.yml` file to your project:
 
-(todo: is this true?)
 ```
 test:
   override:
-    - xctool -scheme $XCODE_SCHEME -workspace $XCODE_WORKSPACE -sdk iphonesimulator clean test
+    - xctool -scheme "My Scheme" -workspace MyWorkspace.xcworkspace -sdk iphonesimulator clean test
 ```
 
 See [customizing your build](#customizing-your-build) for more information about customization options.
@@ -74,9 +75,12 @@ You can customize the behavior of CircleCI's automatic build commands by setting
 the following environment variables in a `circle.yml` file or at **Project Settings > Environment Variables** (see [here](/docs/environment-variables#custom) for more info
 about environment variables):
 
-* **XCODE_WORKSPACE** - The path to your `.xcworkspace` file relative to the git repository root
-* **XCODE_PROJECT** - The path to your `.xcodeproj` file relative to the repository root
-* **XCODE_SCHEME** - The name of the scheme you would like to use to run the "test" build action
+* `XCODE_WORKSPACE` - The path to your `.xcworkspace` file relative to the git repository root
+* `XCODE_PROJECT` - The path to your `.xcodeproj` file relative to the repository root
+* `XCODE_SCHEME` - The name of the scheme you would like to use to run the "test" build action
+
+**Note:** Only one of `XCODE_WORKSPACE` or `XCODE_PROJECT` will be used, with workspace taking
+precedence over project.
 
 ###Configuration file
 The most flexible means to customize your build is to add a `circle.yml` file to your project,
@@ -104,11 +108,10 @@ You can also use the `sudo` command if necessary to perform customizations outsi
 
 ##Code signing and deployment
 You can build a signed app and deploy to various destinations using the customization options
-mentioned [above](#customizing-your-build). For an example of a deployment to
-[HockeyApp](http://hockeyapp.net/features/), see [this gist](https://gist.github.com/bellkev/cb067710d6d0adf7c678).
-(todo: make public or put somewhere else). Note that [environment variables](/docs/environment-variables#custom) set in 
-the UI encrypted and secure and can be used to store
-credentials related to signing and deployment.
+mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in 
+the UI encrypted and secure and can be used to store credentials related to signing and deployment.
+Contact support at [sayhi@circleci.com](mailto:sayhi@circleci.com) if you need help with code signing
+or deployment.
 
 ##A note on code-generating tools
 Many iOS app developers use tools that generate substantial amounts of code. In such
@@ -124,6 +127,7 @@ Linux containers that are not available on OSX vms:
 * Parallelism is not supported
 * While the general `circle.yml` file structure will be honored in OSX-based builds
 [configuration options](/docs/configuration) that would normally be specified in the
-`machine:language`, `machine:services`, or a few other sections will not work correctly.
+`machine:language` (e.g. language version declarations), `machine:services`,
+or a few other sections will not work correctly.
 See the [customizing your build](#customizing-your-build) section for alternatives.
 
