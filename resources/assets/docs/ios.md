@@ -22,7 +22,7 @@ Simple projects should run with minimal or no configuration. By default, CircleC
 from the command line using `xcodebuild`** - The detected settings can be overridden with [environment variables](#environment-variables)
 
 **Note:** Your scheme (what you select in the dropdown next to the
-play/stop buttons in Xcode) must be shared (there is a checkbox for this at the bottom of
+run/stop buttons in Xcode) must be shared (there is a checkbox for this at the bottom of
 the "Edit scheme" screen in Xcode) so that CircleCI can run the appropriate build action.
 If more than one scheme is present, then whichever is alphabetically first will be used
 (TODO: Is that right?). If you need to use a specific scheme, you can specify the
@@ -36,7 +36,7 @@ as needed to satisfy almost any iOS build and test strategy.
 
 ###XCTest-based tools
 In addition to standard `XCTestCase` tests, CircleCI will automatically run tests
-written in any other tool that bilds on top of XCTest and is configured to run
+written in any other tool that builds on top of XCTest and is configured to run
 via the "test" build action. The following test tools are known to work well on CircleCI
 (though many others should work just fine):
 
