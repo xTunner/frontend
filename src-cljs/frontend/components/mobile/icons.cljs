@@ -15,7 +15,8 @@
                          :alt "Improve App Store Rating"}]))
 
 (def build-env
-  (html [:img.build-env {:src "/img/outer/mobile/build-env.png"}]))
+  (html [:img.build-env {:src "/img/outer/mobile/build-env.png"
+                         :alt "Control your mobile app testing environment"}]))
 
 (def commit
   (html [:img.commit {:src "/img/outer/mobile/commit.png"
@@ -26,13 +27,16 @@
                       :alt "Automate Mobile Continuous Deployment"}]))
 
 (def htc
-  (html [:img.htc {:src "/img/outer/mobile/htc.png"}]))
+  (html [:img.htc {:src "/img/outer/mobile/htc.png"
+                   :alt "Mobile Android app testing"}]))
 
 (def iphone
-  (html [:img.iphone {:src "/img/outer/mobile/iphone.png"}]))
+  (html [:img.iphone {:src "/img/outer/mobile/iphone.png"
+                      :alt "Mobile iPhone app testing"}]))
 
 (def nexus
-  (html [:img.nexus {:src "/img/outer/mobile/nexus.png"}]))
+  (html [:img.nexus {:src "/img/outer/mobile/nexus.png"
+                     :alt "Mobile Android app testing"}]))
 
 (def setup
   (html [:img.setup {:src "/img/outer/mobile/setup.png"

@@ -79,8 +79,8 @@
             "You can still setup your environment using the yml."]]
           [:div.feature
            icons/build-env
-           [:h3 "Consistent Build Environment"]
-           [:p "Blah blah FIXME"]]
+           [:h3 "Full Control"]
+           [:p "You have full control to customize exactly what you need, whether it's your build tool, package manager, or system dependencies. If you can do it on your server, you can do it on ours."]]
           [:div.feature
            icons/commit
            [:h3 "Merge With Confidence"]
