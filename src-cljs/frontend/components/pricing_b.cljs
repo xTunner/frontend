@@ -66,6 +66,7 @@
                [:div.controls-containers
                 [:h2 "Containers"]
                 [:p "All of your containers are shared across your entire organization."]
+                ;;TODO Use frontend.components.shared/styled-range-slider
                 [:div.containers-range {:on-click #(om/set-state! owner :drag-percent (calculate-drag-percent owner %))
                                         :on-mouse-down #(om/set-state! owner :dragging? true)
                                         :ref "pricing-range"}

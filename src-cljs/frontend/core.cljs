@@ -228,7 +228,7 @@
            errors-tap ([v] (errors-handler v state container))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
-           (async/timeout 10000) (do (print "TODO: print out history: ")))))))
+           (async/timeout 10000) (do #_(print "TODO: print out history: ")))))))
 
 (defn subscribe-to-user-channel [user ws-ch]
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
