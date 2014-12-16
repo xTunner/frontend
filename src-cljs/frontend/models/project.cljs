@@ -1,11 +1,13 @@
 (ns frontend.models.project
-  (:require [clojure.string :refer [lower-case]]
+  (:require [clojure.string :refer [lower-case split join]]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             [frontend.models.plan :as plan-model]))
 
 (defn project-name [project]
-  (subs (:vcs_url project) 19 (count (:vcs_url project))))
+  (->> (split (:vcs_url project) #"/")
+       (take-last 2)
+       (join "/")))
 
 (defn path-for [project & [branch]]
   (str "/gh/" (project-name project)

@@ -11,6 +11,7 @@
             [frontend.routes :as routes]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
@@ -80,7 +81,7 @@
     (let [issue-pattern #"(^|\s)#(\d+)\b"]
       (-> text
           (string/replace issue-pattern
-                          (gstring/format "$1<a href='https://github.com/%s/issues/$2' target='_blank'>#$2</a>" project-name))))))
+                          (gstring/format "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>" (gh-utils/http-endpoint) project-name))))))
 
 (defn commit-line [{:keys [build subject body commit_url commit] :as commit-details} owner]
   (reify

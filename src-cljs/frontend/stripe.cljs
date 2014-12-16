@@ -6,22 +6,23 @@
 
 ;; We may want to add StripeCheckout to externs to avoid all of the aget noise.
 
-(def ^{:doc "Publishable key to identify our account with Stripe: https://stripe.com/docs/tutorials/dashboard#api-keys"}
-  stripe-key
-  (if (env/production?)
-    "pk_ZPBtv9wYtkUh6YwhwKRqL0ygAb0Q9"
-    "pk_Np1Nz5bG0uEp7iYeiDIElOXBBTmtD"))
+(defn stripe-key []
+  ;; Publishable key to identify our account with Stripe:
+  ;; https://stripe.com/docs/tutorials/dashboard#api-keys"
+  (-> js/window
+      (aget "renderContext")
+      (aget "stripePublishableKey")))
 
-(def checkout-defaults {:key stripe-key
-                        :name "CircleCI"
-                        :address false
-                        :panelLabel "Pay"})
+(defn checkout-defaults [] {:key (stripe-key)
+                            :name "CircleCI"
+                            :address false
+                            :panelLabel "Pay"})
 
 (defn open-checkout
   "Opens the StripeCheckout modal, then puts the result of the token callback into channel"
   [{:keys [price description] :as checkout-args} channel]
   (let [checkout (aget js/window "StripeCheckout")
-        args (merge checkout-defaults
+        args (merge (checkout-defaults)
                     checkout-args
                     ;; Stripe will always return a token, even if the card is invalid.
                     ;; We'll propagate the error from the backend when we make the next API call
