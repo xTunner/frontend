@@ -191,7 +191,7 @@
            [:p
             "Drop a line to "
             [:a {:href "mailto:press@circleci.com"} "press@circleci.com"]
-            " or call Paul at +1 415 341 2432."]]]]]))))
+            " or call Laura at +1 415 373 4089."]]]]]))))
 
 (defn about [app owner]
   (reify
