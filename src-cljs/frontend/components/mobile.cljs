@@ -26,18 +26,22 @@
          [:article {}
           [:h1.mobile-tagline "Ship better mobile apps, faster."]
           [:p "Mobile apps live and die, etc FIXME"]]
-         [:a.home-action.signup {:href (auth-url)
-                     :role "button"
-                     :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
-
-                                                                                  :path (auth-url)}])}
-         "Sign up for free"]
-]
+         [:a.home-action.signup
+          {:href (auth-url)
+           :role "button"
+           :on-click #(raise! owner [:track-external-link-clicked
+                                     {:event "Auth GitHub"
+                                      :path (auth-url)}])}
+          "Sign up for free"]]
         [:section.pitch {}
          [:article {}
           [:h3 "More testing, faster feedback, better releases."]
           [:p "The mobile development workflow can be frustrating etc FIXME"]
-          icons/steps]]
+          icons/steps
+          [:div.labels
+           [:p.one "Automate Build Process"]
+           [:p.two "Create a Consistent Build Environment"]
+           [:p.three "One Click Deployment (coming soon)"]]]]
         [:section.workflow.odd-section {}
          [:article {}
           [:h3 "How it works"]

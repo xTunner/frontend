@@ -46,11 +46,13 @@
 
     img.iphone {
       float: right;
+      max-width: 33%;
     }
 
     img.htc {
       float: right;
       margin-left: 60px;
+      max-width: 33%;
     }
 
     .mobile-tagline {
@@ -67,6 +69,19 @@
 
     img.steps {
       margin-top: 70px;
+      max-width: 70%;
+    }
+
+    div.labels {
+      margin: auto;
+      width: 80%;
+      position: relative;
+      .flexy(stretch, space-between);
+
+      p {
+        max-width: 33%;
+        .flex(0 0 10em);
+      }
     }
   }
 
@@ -77,15 +92,20 @@
   }
 
   section.features {
+    padding-bottom: 0;
+    padding-top: 0;
+
     .feature-list {
       text-align: center;
-      .flexy(stretch, space-between);
+      .flexy(stretch, space-around);
       flex-wrap: wrap;
     }
 
     .feature {
       @half: (100% / 2);
       .flex(0 0 ~"calc(@{half} - 1.5em)" );
+      margin-bottom: 70px;
+      margin-top: 70px;
     }
     @media (max-width: (@tile * 13)) {
       .feature-list {
