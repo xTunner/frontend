@@ -26,7 +26,7 @@ run/stop buttons in Xcode) must be shared (there is a checkbox for this at the b
 the "Edit scheme" screen in Xcode) so that CircleCI can run the appropriate build action.
 If more than one scheme is present, then whichever is alphabetically first will be used
 (TODO: Is that right?). If you need to use a specific scheme, you can specify the
-`XCODE_SCHEME` environment variable from **Project Settings > Environment Variables**.
+`XCODE_SCHEME` [environment variable](/docs/environment-variables#custom).
 
 
 ##Supported build and test tools
@@ -71,7 +71,8 @@ have a lot of flexibility to customize what happens in your build.
 
 ###Environment variables
 You can customize the behavior of CircleCI's automatic build commands by setting
-the following environment variables in **Project Settings > Environment Variables**:
+the following environment variables in a `circle.yml` file or at **Project Settings > Environment Variables** (see [here](/docs/environment-variables#custom) for more info
+about environment variables):
 
 * **XCODE_WORKSPACE** - The path to your `.xcworkspace` file relative to the git repository root
 * **XCODE_PROJECT** - The path to your `.xcodeproj` file relative to the repository root
@@ -105,14 +106,14 @@ You can also use the `sudo` command if necessary to perform customizations outsi
 You can build a signed app and deploy to various destinations using the customization options
 mentioned [above](#customizing-your-build). For an example of a deployment to
 [HockeyApp](http://hockeyapp.net/features/), see [this gist](https://gist.github.com/bellkev/cb067710d6d0adf7c678).
-(todo: make public or put somewhere else). Note that environment variables set in 
-**Project Settings > Environment Variables** are encrypted and secure and can be used to store
+(todo: make public or put somewhere else). Note that [environment variables](/docs/environment-variables#custom) set in 
+the UI encrypted and secure and can be used to store
 credentials related to signing and deployment.
 
 ##A note on code-generating tools
 Many iOS app developers use tools that generate substantial amounts of code. In such
 cases CircleCI's inference may not correctly detect the Xcode workspace, project, or
-scheme. Instead, you can specify these through [environment variables](#environment-variables).
+scheme. Instead, you can specify these through [environment variables](/docs/environment-variables#custom).
 
 
 ##Constraints on OSX-based builds
@@ -125,5 +126,4 @@ Linux containers that are not available on OSX vms:
 [configuration options](/docs/configuration) that would normally be specified in the
 `machine:language`, `machine:services`, or a few other sections will not work correctly.
 See the [customizing your build](#customizing-your-build) section for alternatives.
-* All environement variables should be specified in **Project Settings > Environment Variables**
-instead of in the `circle.yml` file. (This is a temporary shortcoming that should be resolved soon.)
+
