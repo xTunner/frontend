@@ -336,6 +336,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)]
         (html
@@ -366,7 +367,9 @@
                                                        :stop (or (:start_time build) (:stop_time build))})
                    ")"])]])
 
-            (when (has-scope :write-settings data)
+            ;; XXX Temporarily remove the ssh info for OSX builds
+            (when (and (has-scope :write-settings data)
+                       (not (get-in project [:feature_flags :osx])))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
                 "SSH info"]])
@@ -416,6 +419,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             user (:user data)
             logged-in? (not (empty? user))
@@ -526,14 +530,16 @@
                                                                    :clear-cache? true}])}
                   "& clear cache"])
 
-                (forms/managed-button
-                 [:button.ssh_build
-                  {:data-loading-text "Rebuilding",
-                   :title "Retry with SSH in VM",
-                   :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                                 :vcs-url vcs-url
-                                                                 :build-num build-num}])}
-                  "& enable ssh"])])
+                ;; XXX Temporarily remove the ssh button for OSX builds
+                (when (not (get-in project [:feature_flags :osx]))
+                  (forms/managed-button
+                   [:button.ssh_build
+                    {:data-loading-text "Rebuilding",
+                     :title "Retry with SSH in VM",
+                     :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
+                    "& enable ssh"]))])
              [:div.actions
               (when logged-in? ;; no intercom for logged-out users
                 [:button.report_build
