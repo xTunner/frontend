@@ -83,6 +83,7 @@
               #"(?!^/docs/manifest-dev\.json$)^/docs.*$"
               #"/autocomplete.*"
               #"/search-articles.*"
+              #"/mobile.*"
               #"/enterprise"
               #"/features.*"
               #"/gh/.*"
