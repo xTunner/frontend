@@ -19,6 +19,7 @@
     (render [_]
       (html
        [:div.mobile.page
+        (common/nav owner)
         [:section.intro.odd-section {}
          icons/htc
          icons/iphone
@@ -69,11 +70,10 @@
            [:h3 "Automate Deployment"]
            [:p "Blah blah FIXME"]]]]
         [:section.conclusion.odd-section {}
-         icons/nexus
-         [:h3 "Start shipping faster, build for free using CircleCI today."]
          [:a.signup.home-action {:href (auth-url)
                                  :role "button"
                                  :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
-
-                                                                                  :path (auth-url)}])}
-         "Sign up for free"]]]))))
+                                                                                         :path (auth-url)}])}
+          "Sign up for free"]
+         [:h3 "Start shipping faster, build for free using CircleCI today."]
+         icons/nexus]]))))

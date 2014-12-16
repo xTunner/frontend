@@ -4,7 +4,18 @@
   overflow: hidden;
 }
 
+.mobile  #navbar {
+  display: none;
+}
+
 .page.mobile {
+  .outer-nav {
+    position: static;
+  }
+
+  section {
+    padding: 70px;
+  }
 
   h1 {
     font-size: 72px;
@@ -30,21 +41,33 @@
   }
 
   section.intro {
+    padding-top: 0px;
+    padding-right: 0px;
+
     img.iphone {
       float: right;
     }
 
     img.htc {
       float: right;
+      margin-left: 60px;
     }
 
     .mobile-tagline {
-      margin-top: 150px;
+      margin-top: 140px;
+    }
+
+    a.signup {
+      margin-top: 70px;
     }
   }
 
   section.pitch {
     text-align: center;
+
+    img.steps {
+      margin-top: 70px;
+    }
   }
 
   section.workflow {
@@ -75,11 +98,21 @@
   }
 
   section.conclusion {
+    text-align: center;
+    padding-bottom: 0px;
     img.nexus {
       float: left;
+      position: relative;
+      left: -70px;
+      margin-top: -30px;
+    }
+
+    h3 {
+      display: inline;
     }
 
     a.signup {
+      margin-top: -30px;
       float: right;
     }
   }
