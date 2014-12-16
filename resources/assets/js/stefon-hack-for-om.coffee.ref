@@ -89,6 +89,7 @@ window.stefon_hack_for_om =
     "/docs/installing-custom-software.md": '(asset-path "docs/installing-custom-software.md")'
     "/docs/installing-elasticsearch.md": '(asset-path "docs/installing-elasticsearch.md")'
     "/docs/introduction-to-continuous-deployment.md": '(asset-path "docs/introduction-to-continuous-deployment.md")'
+    "/docs/ios.md": '(asset-path "docs/ios.md")'
     "/docs/language-haskell.md": '(asset-path "docs/language-haskell.md")'
     "/docs/language-java.md": '(asset-path "docs/language-java.md")'
     "/docs/language-nodejs.md": '(asset-path "docs/language-nodejs.md")'
