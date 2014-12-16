@@ -15,6 +15,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.visualization.build :as viz-build]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -212,11 +213,16 @@
 
 (defn build-time-visualization [build owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (-> js/console (.log "did-mount calling get-node"))
+      (let [el (om/get-node owner)]
+        (viz-build/visualize-timing! el build)))
     om/IRender
     (render [_]
+      (js/console.log "build-time-visualization render called")
       (html
-       [:div.build-time-visualization
-        [:p "This should show you how the build ran on it's containers."]]))))
+       [:div.build-time-visualization]))))
 
 (defn cleanup-artifact-path [path]
   (-> path
