@@ -174,9 +174,9 @@
                                (when (:header-bkg-visible data) ["bkg-visible"])
                                (when (:header-bkg-invisible data) ["bkg-invisible"])
                                (when (:header-cta-invisible data) ["cta-invisible"]))}
-        [:a.promo {:href "integrations/docker"}
+        [:a.promo {:href "/mobile"}
                                         ; "What is Continuous Integration?"
-         "Learn how we support Docker."]
+         "Mobile App Testing for iOS & Android"]
         (if logged-in?
           [:a.return {:href "/"} "Return to App"]
           [:a.login {:href (auth-url)
