@@ -7,8 +7,14 @@
 (defn track [event & [props]]
   (utils/swallow-errors (js/mixpanel.track event (clj->js (merge {:event_time (unix-timestamp)} props)))))
 
-(defn track-pageview [path]
+(defn track-link [element event & [props]]
+  (utils/swallow-errors (js/mixpanel.track_links element event (clj->js (merge {:event_time (unix-timestamp)} props)))))
+
+(defn track-pageview [path]  
   (utils/swallow-errors (js/mixpanel.track_pageview path)))
+
+(defn register [props]
+  (utils/swallow-errors (js/mixpanel.register (clj->js props))))
 
 (defn register-once [props]
   (utils/swallow-errors (js/mixpanel.register_once (clj->js props))))

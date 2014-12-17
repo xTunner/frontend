@@ -1,10 +1,13 @@
 (ns frontend.models.project
-  (:require [clojure.string :refer [lower-case]]
+  (:require [clojure.string :refer [lower-case split join]]
             [frontend.utils :as utils :include-macros true]
-            [goog.string :as gstring]))
+            [goog.string :as gstring]
+            [frontend.models.plan :as plan-model]))
 
 (defn project-name [project]
-  (subs (:vcs_url project) 19 (count (:vcs_url project))))
+  (->> (split (:vcs_url project) #"/")
+       (take-last 2)
+       (join "/")))
 
 (defn path-for [project & [branch]]
   (str "/gh/" (project-name project)
@@ -69,3 +72,11 @@
 ;; a feature_flags oss set to true for those cases.
 (defn oss? [project]
   (get-in project [:feature_flags :oss]))
+
+(defn usable-containers [plan project]
+  (+ (plan-model/usable-containers plan)
+     (if (oss? project) 3 0)))
+
+(defn max-selectable-parallelism [plan project]
+  (min (plan-model/max-parallelism plan)
+       (usable-containers plan project)))

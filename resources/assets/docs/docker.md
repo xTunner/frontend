@@ -1,7 +1,7 @@
 <!--
 
-title: Continous Integration and Delivery with Docker
-last_updated: August 4, 2014
+title: Continuous Integration and Delivery with Docker
+last_updated: December 8, 2014
 
 -->
 
@@ -60,14 +60,9 @@ deployment:
   hub:
     branch: master
     commands:
-      - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" \
-          < .dockercfg.template > ~/.dockercfg
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push circleci/elasticsearch
 ```
-
-Note that a `.dockercfg` file must be dropped in place in order to skip interactive login to
-the registry. You should use [environment variables](/docs/environment-variables)
-as in the example above to store sensitive information.
 
 For a complete example of building and deploying a Docker image to a
 registry, see the [circleci/docker-elasticsearch](https://github.com/circleci/docker-elasticsearch)
@@ -123,8 +118,8 @@ deployment:
   elasticbeanstalk:
     branch: master
     commands:
-      - sed "s/<EMAIL>/$DOCKER_EMAIL/;s/<AUTH>/$DOCKER_AUTH/" < .dockercfg.template > ~/.dockercfg
-      - bash -x deploy.sh $CIRCLE_SHA1
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - ./deploy.sh $CIRCLE_SHA1
 ```
 
 ```
@@ -197,14 +192,15 @@ dependencies:
 
 test:
   post:
-    - docker run -d -p 3000:3000 -e "SECRET_KEY_BASE=abcd1234" \
-        $EXTERNAL_REGISTRY_ENDPOINT/hello:$CIRCLE_SHA1; sleep 10
+    - docker run -d -p 3000:3000 -e "SECRET_KEY_BASE=abcd1234" $EXTERNAL_REGISTRY_ENDPOINT/hello:$CIRCLE_SHA1; sleep 10
     - curl --retry 10 --retry-delay 5 -v http://localhost:3000
 
 deployment:
   prod:
     branch: master
     commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS $EXTERNAL_REGISTRY_ENDPOINT
+      - envsubst < .kubernetes_auth.template > ~/.kubernetes_auth
       - ./deploy.sh
 ```
 
@@ -216,10 +212,6 @@ deployment:
 set -e
 
 KUBE_CMD=${KUBERNETES_ROOT:-~/kubernetes}/cluster/kubecfg.sh
-
-# Create credential files
-envsubst < .kubernetes_auth.template > ~/.kubernetes_auth
-envsubst < .dockercfg.template > ~/.dockercfg
 
 # Deploy image to private GCS-backed registry
 docker push $EXTERNAL_REGISTRY_ENDPOINT/hello:$CIRCLE_SHA1
@@ -311,3 +303,9 @@ dependencies:
     - docker build -t circleci/elasticsearch .
     - mkdir -p ~/docker; docker save circleci/elasticsearch > ~/docker/image.tar
 ```
+
+This method can still run into an issue with how Docker uses file modification times
+when checking for cached ADD commands, as discussed
+[here](https://github.com/docker/docker/issues/7387). One workaround until Docker
+adds more options is to
+[set file modification times to the commit time](https://git.wiki.kernel.org/index.php/ExampleScripts#Setting_the_timestamps_of_the_files_to_the_commit_timestamp_of_the_commit_which_last_touched_them).

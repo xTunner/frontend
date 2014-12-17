@@ -63,7 +63,7 @@
                          :icon (utils/cdn-path "/img/outer/languages/cycle.svg")}]
              :docs-link "/docs/language-python"}
    "node" {:language "Node"
-           :headline "CircleCI makes Continous Integration and Deployment for Node.js projects a breeze."
+           :headline "CircleCI makes Continuous Integration and Deployment for Node.js projects a breeze."
            :logo-path (utils/cdn-path "/img/outer/languages/node-logo.svg")
            :features [{:feature "CircleCI uses RVM to provide support for a wide variety of Ruby versions and gems. It is also trivial to add any packages or frameworks that are not installed on our machines by default, allowing you to effortlessly customize your test enviroment.  CircleCI also supports Test::Unit, RSpec, Cucumber, Spinach, Jasmine, Konacha, and just about any other testing framework you use for your Ruby project."
                        :title "Built For Ruby"

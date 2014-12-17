@@ -1,13 +1,11 @@
 (ns frontend.history
   (:require [clojure.string :as string]
-            [dommy.core :as dommy]
             [frontend.analytics :as analytics]
             [frontend.utils :as utils :include-macros true]
             [goog.events :as events]
             [goog.history.Html5History :as html5-history]
             [goog.window :as window]
             [secretary.core :as sec])
-  (:require-macros [dommy.macros :refer [sel sel1]])
   (:import [goog.history Html5History]
            [goog.events EventType Event BrowserEvent]
            [goog History]))
@@ -92,6 +90,7 @@
                                    (.getAncestorByTagNameAndClass dom-helper -target "A"))
                           location (when target (str (.-pathname target) (.-search target) (.-hash target)))
                           new-token (when (seq location) (subs location 1))]
+                      (when target (analytics/track-link-clicked (.-className target)))
                       (when (and (seq location)
                                  (= (.. js/window -location -hostname)
                                     (.-hostname target))

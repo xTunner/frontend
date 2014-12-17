@@ -9,6 +9,7 @@
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
             [frontend.components.errors :as errors]
@@ -20,6 +21,7 @@
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.pricing :as pricing]
+            [frontend.components.pricing-b :as pricing-b]
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
@@ -51,6 +53,7 @@
     :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
+    :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
     :account account/account
@@ -62,7 +65,8 @@
 
     :landing landing/home
     :about about/about
-    :pricing pricing/pricing
+    ; :pricing pricing/pricing
+    :pricing pricing-b/pricing
     :jobs jobs/jobs
     :privacy privacy/privacy
     :security security/security
@@ -103,7 +107,8 @@
                                        (when slim-aside? ["aside-slim"])
                                        (when-not logged-in? ["aside-nil"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
-                                       (when (= :landing (:navigation-point app)) ["landing"]))}
+                                       (when (= :landing (:navigation-point app)) ["landing"])
+                                       (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
@@ -120,9 +125,7 @@
                [:footer.main-foot
                 (footer/footer)]
                (when-not logged-in?
-                 (om/build shared/sticky-help-link app))]
-              ;; modal trigger is in aside-nav
-              shared/invite-form])))))))
+                 (om/build shared/sticky-help-link app))]])))))))
 
 
 (defn app [app owner opts]

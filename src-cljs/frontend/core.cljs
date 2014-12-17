@@ -3,8 +3,8 @@
             [frontend.async :refer [put!]]
             [weasel.repl :as ws-repl]
             [clojure.browser.repl :as repl]
+            [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
-            [dommy.core :as dommy]
             [goog.dom]
             [goog.dom.DomHelper]
             [frontend.ab :as ab]
@@ -20,7 +20,6 @@
             [frontend.env :as env]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
             [frontend.scroll :as scroll]
-            [frontend.state-graft :as state-graft]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -32,8 +31,7 @@
             [frontend.timer :as timer]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing swallow-errors]])
-  (:use-macros [dommy.macros :only [node sel sel1]]))
+                   [frontend.utils :refer [inspect timing swallow-errors]]))
 
 (enable-console-print!)
 
@@ -67,17 +65,24 @@
   ws-ch
   (chan))
 
+(defn get-ab-overrides []
+  (merge (some-> js/window
+                 (aget "renderContext")
+                 (aget "abOverrides")
+                 (utils/js->clj-kw))))
+
+(defn set-ab-override [test-name value]
+  (when (nil? (aget js/window "renderContext" "abOverrides"))
+    (aset js/window "renderContext" "abOverrides" #js {}))
+  (aset js/window "renderContext" "abOverrides" (name test-name) value))
+
 (defn get-ab-tests [ab-test-definitions]
-  (let [overrides (merge (some-> js/window
-                                 (aget "renderContext")
-                                 (aget "abOverrides")
-                                 (utils/js->clj-kw)))]
+  (let [overrides (get-ab-overrides)]
     (ab/setup! ab-test-definitions :overrides overrides)))
 
 (defn app-state []
   (let [initial-state (state/initial-state)]
     (atom (assoc initial-state
-              :ab-tests (get-ab-tests (:ab-test-definitions initial-state))
               :current-user (-> js/window
                                 (aget "renderContext")
                                 (aget "current_user")
@@ -121,7 +126,7 @@
    (analytics/track-message (first value))))
 
 (defn nav-handler
-  [[navigation-point {:keys [inner?] {:keys [join]} :query-params :as args} :as value] state history]
+  [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
   (when (log-channels?)
     (mlog "Navigation Verbose: " value))
   (swallow-errors
@@ -129,7 +134,8 @@
      (let [previous-state @state]
        (swap! state (partial nav-con/navigated-to history navigation-point args))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state)
-       (when join (analytics/track-join-code join))
+       (analytics/register-last-touch-utm query-params)
+       (when-let [join (:join query-params)] (analytics/track-join-code join))
        (analytics/track-view-page (if inner? :inner :outer))))))
 
 (defn api-handler
@@ -170,30 +176,32 @@
 
 (declare reinstall-om!)
 
-(defn install-om [state container comms instrument?]
+(defn install-om [state ab-tests container comms instrument?]
   (om/root
    app/app
    state
    {:target container
     :shared {:comms comms
+             ;; note that changing ab-tests dynamically requires reinstalling om
+             :ab-tests ab-tests
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state}
-    :instrument (let [methods (cond-> state-graft/no-local-state-methods
+    :instrument (let [methods (cond-> om/no-local-state-methods
                                 instrument? instrumentation/instrument-methods)
-                      descriptor (state-graft/no-local-descriptor methods)]
+                      descriptor (om/no-local-descriptor methods)]
                   (fn [f cursor m]
                     (om/build* f cursor (assoc m :descriptor descriptor))))
     :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
-  (sel1 :body))
+  (.-body js/document))
 
-(defn find-app-container [top-level-node]
-  (sel1 top-level-node "#om-app"))
+(defn find-app-container []
+  (goog.dom/getElement "om-app"))
 
-(defn main [state top-level-node history-imp instrument?]
+(defn main [state ab-tests top-level-node history-imp instrument?]
   (let [comms       (:comms @state)
-        container   (find-app-container top-level-node)
+        container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
         history-path "/"
         pusher-imp (pusher/new-pusher-instance)
@@ -203,7 +211,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state container comms instrument?)
+    (install-om state ab-tests container comms instrument?)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -220,7 +228,7 @@
            errors-tap ([v] (errors-handler v state container))
            ;; Capture the current history for playback in the absence
            ;; of a server to store it
-           (async/timeout 10000) (do (print "TODO: print out history: ")))))))
+           (async/timeout 10000) (do #_(print "TODO: print out history: ")))))))
 
 (defn subscribe-to-user-channel [user ws-ch]
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
@@ -240,7 +248,7 @@
   "Hack to make the top-level id of the app the same as the
    current knockout app. Lets us use the same stylesheet."
   []
-  (goog.dom.setProperties (sel1 "#app") #js {:id "om-app"}))
+  (goog.dom.setProperties (goog.dom/getElement "app") #js {:id "om-app"}))
 
 (defn ^:export setup! []
   (apply-app-id-hack)
@@ -248,13 +256,14 @@
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)
-        instrument? (env/development?)]
+        instrument? (env/development?)
+        ab-tests (get-ab-tests (:ab-test-definitions @state))]
     ;; globally define the state so that we can get to it for debugging
     (def debug-state state)
     (when instrument? (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
     (scroll/setup-scroll-handler)
-    (main state top-level-node history-imp instrument?)
+    (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
@@ -280,28 +289,57 @@
 (defn ^:export set-ab-test
   "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
   [test-name value]
-  (let [test-path [:ab-tests (keyword (name test-name))]]
-    (println "starting value for" test-name "was" (get-in @debug-state test-path))
-    (swap! debug-state assoc-in test-path value)
-    (println "value for" test-name "is now" (get-in @debug-state test-path))))
+  (let [test-key (keyword (name test-name))]
+    (println "starting value for" test-name "was" (-> @debug-state
+                                                      :ab-test-definitions
+                                                      get-ab-tests
+                                                      test-key))
+    (set-ab-override (name test-name) value)
+    (reinstall-om!)
+    (println "value for" test-name "is now" (-> @debug-state
+                                                :ab-test-definitions
+                                                get-ab-tests
+                                                test-key))))
+
+(aset js/window "set_ab_test" set-ab-test)
 
 (defn ^:export app-state-to-js
   "Used for inspecting app state in the console."
   []
   (clj->js @debug-state))
 
+(aset js/window "app_state_to_js" set-ab-test)
+
 
 (defn ^:export reinstall-om! []
-  (install-om debug-state (find-app-container (find-top-level-node)) (:comms @debug-state) true))
+  (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container) (:comms @debug-state) true))
+
+(defn add-css-link [path]
+  (let [link (goog.dom/createDom "link"
+               #js {:rel "stylesheet"
+                    :href (str path "?t=" (.getTime (js/Date.)))})]
+    (.appendChild (.-head js/document) link)))
 
 (defn refresh-css! []
-  (let [is-app-css? #(re-matches #"/assets/css/app.*?\.css(?:\.less)?" (dommy/attr % :href))
-        old-link (->> (sel [:head :link])
-                      (filter is-app-css?)
-                      first)]
-        (dommy/append! (sel1 :head) [:link {:rel "stylesheet" :href "/assets/css/app.css"}])
-        (dommy/remove! old-link)))
+  (doseq [link (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass "link"))
+          :when (let [href (inspect (.getAttribute link "href"))]
+                  (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
+    (.removeChild (.-head js/document) link))
+  (add-css-link "/assets/css/app.css"))
+
+(defn fix-figwheel-css! []
+  (doseq [link (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass "link"))
+          :when (re-find #"3449resources" (.getAttribute link "href"))]
+    (add-css-link (string/replace (.getAttribute link "href") #"3449resources" "3449/resources"))
+    (.removeChild (.-head js/document) link))
+  (add-css-link "/assets/css/app.css"))
 
 (defn update-ui! []
   (reinstall-om!)
+  (fix-figwheel-css!)
   (refresh-css!))
+
+(if (env/development?)
+  (fw/watch-and-reload
+    :websocket-url "ws://localhost:3449/figwheel-ws"
+    :jsload-callback (fn [] (update-ui!))))

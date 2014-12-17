@@ -11,6 +11,7 @@
             [frontend.routes :as routes]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
@@ -80,7 +81,7 @@
     (let [issue-pattern #"(^|\s)#(\d+)\b"]
       (-> text
           (string/replace issue-pattern
-                          (gstring/format "$1<a href='https://github.com/%s/issues/$2' target='_blank'>#$2</a>" project-name))))))
+                          (gstring/format "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>" (gh-utils/http-endpoint) project-name))))))
 
 (defn commit-line [{:keys [build subject body commit_url commit] :as commit-details} owner]
   (reify
@@ -264,13 +265,15 @@
                      (string/join ", " (map test-model/pretty-source sources))
                      " with " (pluralize (count failed-tests) "failure") ".")]
                (when (seq failed-tests)
-                 (for [[source tests] (group-by :source failed-tests)]
+                 (for [[source tests-by-source] (group-by :source failed-tests)]
                    [:div.build-tests-list-container
                     [:span.failure-source (str (test-model/pretty-source source) " failures:")]
                     [:ol.build-tests-list
-                     (map (fn [test]
-                            [:li (test-model/format-test-name test)])
-                          (sort-by test-model/format-test-name tests))]]))]))])))))
+                     (for [[file tests-by-file] (group-by :file tests-by-source)]
+                       (list (when file [:div.filename (str file ":")])
+                             (map (fn [test]
+                                    [:li (test-model/format-test-name test)])
+                                  (sort-by test-model/format-test-name tests-by-file))))]]))]))])))))
 
 (defn circle-yml-ad []
   [:div
@@ -333,6 +336,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)]
         (html
@@ -363,7 +367,9 @@
                                                        :stop (or (:start_time build) (:stop_time build))})
                    ")"])]])
 
-            (when (has-scope :write-settings data)
+            ;; XXX Temporarily remove the ssh info for OSX builds
+            (when (and (has-scope :write-settings data)
+                       (not (get-in project [:feature_flags :osx])))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
                 "SSH info"]])
@@ -413,6 +419,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             user (:user data)
             logged-in? (not (empty? user))
@@ -486,7 +493,7 @@
                [:th "Parallelism"]
                [:td
                 (if (has-scope :write-settings data)
-                  [:a {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                  [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                        :href (build-model/path-for-parallelism build)}
                    (str (:parallel build) "x")]
                   [:span (:parallel build) "x"])]
@@ -500,38 +507,39 @@
                                          (let [n (re-find #"/\d+$" url)]
                                            (if n (subs n 1) "?"))])
                               urls))]))]]]
-
             [:div.build-actions
-             [:div.actions
-              (forms/managed-button
-               [:button.retry_build
-                {:data-loading-text "Rebuilding",
-                 :title "Retry the same tests",
-                 :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                 :vcs-url vcs-url
-                                                                 :build-num build-num
-                                                                 :clear-cache? false}])}
-                "Rebuild"])
-
-              (forms/managed-button
-               [:button.clear_cache_retry
-                {:data-loading-text "Rebuilding",
-                 :title "Clear cache and retry",
-                 :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                 :vcs-url vcs-url
-                                                                 :build-num build-num
-                                                                 :clear-cache? true}])}
-                "& clear cache"])
-
-              (if (has-scope :write-settings data)
+             (when (has-scope :write-settings data)
+               [:div.actions
                 (forms/managed-button
-                 [:button.ssh_build
+                 [:button.retry_build
                   {:data-loading-text "Rebuilding",
-                   :title "Retry with SSH in VM",
-                   :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                                 :vcs-url vcs-url
-                                                                 :build-num build-num}])}
-                  "& enable ssh"]))]
+                   :title "Retry the same tests",
+                   :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
+                                                                   :clear-cache? false}])}
+                  "Rebuild"])
+
+                (forms/managed-button
+                 [:button.clear_cache_retry
+                  {:data-loading-text "Rebuilding",
+                   :title "Clear cache and retry",
+                   :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
+                                                                   :clear-cache? true}])}
+                  "& clear cache"])
+
+                ;; XXX Temporarily remove the ssh button for OSX builds
+                (when (not (get-in project [:feature_flags :osx]))
+                  (forms/managed-button
+                   [:button.ssh_build
+                    {:data-loading-text "Rebuilding",
+                     :title "Retry with SSH in VM",
+                     :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
+                    "& enable ssh"]))])
              [:div.actions
               (when logged-in? ;; no intercom for logged-out users
                 [:button.report_build

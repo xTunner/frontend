@@ -114,60 +114,58 @@
   (reify
     om/IRender
     (render [_]
-            (let [ab-tests (:ab-tests app)]
-              (html
-                [:div#integrations.docker
-                 [:div.section-container
-                  [:section.integrations-hero-wrapper
-                   [:article.integrations-hero-title
-                    [:h1 "Build and deploy Docker containers on CircleCI."]]
-                   [:article.integrations-hero-units
-                    [:div.integrations-hero-unit
-                     circle-logo
-                     [:p "CircleCI makes modern Continuous Integration and Deployment easy."]]
-                    [:div.integrations-hero-unit
-                     docker-logo
-                     [:p "Docker makes it easy to build, run, and ship applications anywhere.  "]]]
-                   [:h3.message
-                    "Together they let you achieve development-production parity. At last.
+      (html
+       [:div#integrations.docker
+        [:div.section-container
+         [:section.integrations-hero-wrapper
+          [:article.integrations-hero-title
+           [:h1 "Build and deploy Docker containers on CircleCI."]]
+          [:article.integrations-hero-units
+           [:div.integrations-hero-unit
+            circle-logo
+            [:p "CircleCI makes modern Continuous Integration and Deployment easy."]]
+           [:div.integrations-hero-unit
+            docker-logo
+            [:p "Docker makes it easy to build, run, and ship applications anywhere.  "]]]
+          [:h3.message
+           "Together they let you achieve development-production parity. At last.
                     "]]]
-                 [:div.section-container
-                  [:section.integrations-hero-wrapper
-                   [:div.docker-features
-                    [:div.feature-container
-                     [:div.feature
-                      [:img {:src (utils/cdn-path "/icons/cloud-circle.png")}]
-                      [:h3 "Continous Deployment of your Docker images"]
-                      [:p
-                       "CircleCI makes it easy to deploy images to Docker Hub as well as to continuously deploy applications to AWS Elastic Beanstalk, Google Compute Engine, and others."]
-                      [:a {:href "/docs/docker"} "docs"]]
-                     [:div.feature
-                      [:img {:src (utils/cdn-path "/icons/scale-circle.png")}]
+        [:div.section-container
+         [:section.integrations-hero-wrapper
+          [:div.docker-features
+           [:div.feature-container
+            [:div.feature
+             [:img {:src (utils/cdn-path "/icons/cloud-circle.png")}]
+             [:h3 "Continuous Deployment of your Docker images"]
+             [:p
+              "CircleCI makes it easy to deploy images to Docker Hub as well as to continuously deploy applications to AWS Elastic Beanstalk, Google Compute Engine, and others."]
+             [:a {:href "/docs/docker"} "docs"]]
+            [:div.feature
+             [:img {:src (utils/cdn-path "/icons/scale-circle.png")}]
 
-                      [:h3 "Dev-production parity"]
-                      [:p
-                       "Docker containers let you remove almost all of the variables that differ between your test and production environments. You can specify everything from your Linux distro to what executables run at startup in a Dockerfile, build all of that information into a Docker image, test it, and deploy the exact same image byte-for-byte to production. You can now run this entire process on CircleCI."]
-                      [:a {:href "/docs/docker"} "docs"]]
-                     [:div.feature
-                      [:img {:src (utils/cdn-path "/icons/wrench-circle.png")}]
-                      [:h3 "Full Docker functionality"]
-                      [:p
-                       "You can now use all Docker functionality within the CircleCI build environment. All of the usual Docker command-line commands work as expected, so you can build and run Docker containers to your heart's content."]
-                      [:a {:href "/docs/docker"} "docs"]]]]]]
-                 [:div.section-container
-                  [:section.integrations-hero-wrapper
-                   [:p.center-text
-                    "Docker is enabled for all current CircleCI users, everyone else can sign up below!"]
-                   [:div.docker-cta
-                    [:div.ctabox {:class "line"}
-                     [:div
-                      [:p "Plans start at $19 per month. All plans include a free 14 day trial."]]
-                     (shared/home-button owner {:source "integrations/docker"})
-                     [:div
-                      [:p
-                       [:i "CircleCI keeps your code safe. "
-                        [:a {:href "/security" :title "Security"} "Learn how."]]]]]
-                    ]]]])))))
+             [:h3 "Dev-production parity"]
+             [:p
+              "Docker containers let you remove almost all of the variables that differ between your test and production environments. You can specify everything from your Linux distro to what executables run at startup in a Dockerfile, build all of that information into a Docker image, test it, and deploy the exact same image byte-for-byte to production. You can now run this entire process on CircleCI."]
+             [:a {:href "/docs/docker"} "docs"]]
+            [:div.feature
+             [:img {:src (utils/cdn-path "/icons/wrench-circle.png")}]
+             [:h3 "Full Docker functionality"]
+             [:p
+              "You can now use all Docker functionality within the CircleCI build environment. All of the usual Docker command-line commands work as expected, so you can build and run Docker containers to your heart's content."]
+             [:a {:href "/docs/docker"} "docs"]]]]]]
+        [:div.section-container
+         [:section.integrations-hero-wrapper
+          [:p.center-text
+           "Docker is enabled for all current CircleCI users, everyone else can sign up below!"]
+          [:div.docker-cta
+           [:div.ctabox {:class "line"}
+            [:div
+             [:p "All customers get a free container. Additional containers are $50/month."]]
+            (shared/home-button owner {:source "integrations/docker"})
+            [:div
+             [:p
+              [:i "CircleCI keeps your code safe. "
+               [:a {:href "/security" :title "Security"} "Learn how."]]]]]]]]]))))
 
 (def integration-data
   {:heroku {:hero {:header [:span

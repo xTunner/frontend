@@ -1,8 +1,9 @@
 (ns frontend.components.shared
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [dommy.attrs :as attrs]
             [frontend.async :refer [raise!]]
-            [frontend.stefon :refer (data-uri)]
+            [frontend.disposable :as disposable :refer [dispose]]
+            [frontend.state :as state]
+            [frontend.stefon :refer [data-uri]]
             [frontend.utils.ajax :as ajax]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -100,22 +101,6 @@
    [:i.fa.fa-github-alt]
      [:span " Sign up with " [:strong.white "GitHub"]]
   ])
-
-
-(def invite-form
-  [:div#inviteForm.fade.hide.invite-form.modal {:tabIndex "-1",
-                                                :role "dialog",
-                                                :aria-labelledby "inviteFormLabel",
-                                                :aria-hidden "true"}
-   [:div.modal-header
-    [:button.close {:type "button", :data-dismiss "modal", :aria-hidden "true"} "×"]
-    [:h3#inviteFormLabel "Invite Your Colleagues"]]
-   [:div.modal-body
-    [:p [:strong "To invite your friends, and colleagues to Circle, just send them this link:"]]
-    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]
-    [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]]
-   [:div.modal-footer
-    [:button.btn.btn-primary {:data-dismiss "modal", :aria-hidden "true"} "Got it"]]])
 
 (defn contact-form
   "It's not clear how this should fit into the global state, so it's using component-local
@@ -215,3 +200,62 @@
         [:div.light-background
          (om/build contact-form app)
          [:span "Or, check out our " [:a {:target "_blank", :href "https://www.hipchat.com/gjwkHcrD5"} "live support!"]]]]))))
+
+;; Since we can't reliably make an html5 range element look like we
+;; want, fake it with divs for the bar, the knob and a highlight div
+;;
+;; Work in progress. Remaining issues:
+;; * still hardcoded state/selected-containers-path to update state
+;;   value
+;; * doesn't display min and max; good? bad? some other way?
+(defn styled-range-slider [data owner]
+  (reify
+
+    om/IInitState
+    (init-state [_]
+      {:drag-id nil
+       :node-ref (str "pricing-range-" (Math.random))})
+
+    om/IRenderState
+    (render-state [this {:keys [dragging? node-ref]}]
+      (let [min-val (get-in data [:min-val])
+            max-val (get-in data [:max-val])
+            value (or (get-in data state/selected-containers-path)
+                      (get-in data [:start-val])
+                      min-val)
+            increment (/ 100.0 max-val)
+            dragging (fn [event]
+                       (let [node-ref (om/get-state owner :node-ref)
+                             slider (om/get-node owner node-ref)
+                             width (.-width (goog.style/getSize slider))
+                             slider-left (goog.style/getPageOffsetLeft slider)
+                             event-left (.-pageX event)
+                             drag-fraction (min 1.0 (max 0.0 (/ (- event-left slider-left) width)))
+                             value (Math.round (+ min-val (* drag-fraction (- max-val min-val))))]
+                         (utils/edit-input owner state/selected-containers-path event :value value)
+                         (.stopPropagation event)
+                         (.preventDefault event)))
+            drag-done (fn [event]
+                        (dragging event)
+                        (dispose (om/get-state owner :drag-id))
+                        (om/set-state! owner :drag-id nil))]
+        (html
+         [:div.range-slider {:on-mouse-down #(let [listeners (mapv (fn [[on f :as listener]]
+                                                                     (.addEventListener js/document on f)
+                                                                     listener)
+                                                                   [["mousemove" dragging]
+                                                                    ["mouseup" drag-done]])
+                                                   dispose (fn [listeners]
+                                                             (doseq [[on f] listeners]
+                                                               (.removeEventListener js/document on f)))]
+                                               (om/set-state! owner :drag-id (disposable/register listeners dispose)))
+                             :ref node-ref}
+          ;[:span min-val]
+          [:figure.range-back]
+          [:figure.range-highlight {:style {:width (str (* value increment) "%")}}]
+          [:button.range-knob {:style {:left (str (* value increment) "%")}
+                               :data-count value}]
+          ;[:span max-val]
+          ])))
+
+    ))

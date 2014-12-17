@@ -5,7 +5,7 @@
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
-            [frontend.models.plan :as plan-model]
+            [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.components.common :as common]
@@ -22,11 +22,12 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [clojure.string :as string]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.string.format]
-            [goog.style])
+            [goog.style]
+            [inflections.core :as infl :refer [pluralize]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [node sel sel1]]
                    [frontend.utils :refer [html]]))
 
 (defn sidebar [{:keys [subpage plan org-name]} owner]
@@ -37,7 +38,7 @@
                 (map (fn [{:keys [page text]} msg]
                        [:li {:class (when (= page subpage) :active)}
                         [:a {:href (str "#" (name page))} text]])
-                     templates))]
+                     (filter #(not (nil? %)) templates)))]
         (html [:div.span3
                [:ul.nav.nav-list.well
                 [:li.nav-header "Organization settings"]
@@ -47,11 +48,14 @@
                             {:page :users :text "Users"}])
                 [:li.nav-header "Plan"]
                 (when plan
-                  (if (plan-model/can-edit-plan? plan org-name)
-                    (nav-links [{:page :containers :text "Add containers"}
-                                {:page :organizations :text "Organizations"}
-                                {:page :billing :text "Billing info"}
-                                {:page :cancel :text "Cancel"}])
+                  (if (pm/can-edit-plan? plan org-name)
+                    (let [links [{:page :containers :text "Adjust containers"}
+                                 {:page :organizations :text "Organizations"}]
+                          links (if (pm/paid? plan)
+                                  (into links [{:page :billing :text "Billing info"}
+                                               {:page :cancel :text "Cancel"}])
+                                  links)]
+                      (nav-links links))
                     (nav-links [{:page :plan :text "Choose plan"}])))]])))))
 
 (defn non-admin-plan [{:keys [org-name login]} owner]
@@ -121,8 +125,8 @@
 (defn equalize-size
   "Given a node, will find all elements under node that satisfy selector and change
    the size of every element so that it is the same size as the largest element."
-  [node selector]
-  (let [items (sel node selector)
+  [node class-name]
+  (let [items (utils/node-list->seqable (goog.dom/getElementsByClass class-name node))
         sizes (map goog.style/getSize items)
         max-width (apply max (map #(.-width %) sizes))
         max-height (apply max (map #(.-height %) sizes))]
@@ -133,10 +137,10 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (equalize-size (om/get-node owner) ".follower-container"))
+      (equalize-size (om/get-node owner) "follower-container"))
     om/IDidUpdate
     (did-update [_ _ _]
-      (equalize-size (om/get-node owner) ".follower-container"))
+      (equalize-size (om/get-node owner) "follower-container"))
     om/IRender
     (render [_]
       (html
@@ -209,25 +213,20 @@
 
 (defn plans-trial-notification [plan org-name owner]
   [:div.row-fluid
-   [:div.alert.alert-success {:class (when (plan-model/trial-over? plan) "alert-error")}
+   [:div.alert.alert-success {:class (when (pm/trial-over? plan) "alert-error")}
     [:p
-     (if (plan-model/trial-over? plan)
+     (if (pm/trial-over? plan)
        "Your 2-week trial is over!"
 
        [:span "The " [:strong org-name] " organization has "
-        (plan-model/pretty-trial-time plan) " left in its trial."])]
+        (pm/pretty-trial-time plan) " left in its trial."])]
     [:p
      "The trial plan is equivalent to the Solo plan with 6 containers."]
     (when (and (not (:too_many_extensions plan))
-               (> 3 (plan-model/days-left-in-trial plan)))
+               (> 3 (pm/days-left-in-trial plan)))
       [:p
        "Need more time to decide? "
-       (forms/managed-button
-        [:button.btn.btn-mini.btn-success
-         {:data-success-text "Extended!",
-          :data-loading-text "Extending...",
-          :on-click #(raise! owner [:extend-trial-clicked {:org-name org-name}])}
-         "Extend your trial"])])]])
+       [:a {:href "mailto:sayhi@circleci.com"} "Get in touch."]])]])
 
 (defn plans-piggieback-plan-notification [plan current-org-name]
   [:div.row-fluid
@@ -243,8 +242,13 @@
                                                   :subpage "plan"})}
        (:org_name plan) " plan page"] "."]
      [:p
-      "You can create a separate plan for " current-org-name " by selecting from the plans below."]]]])
+      "You can create a separate plan for " current-org-name " below."]]]])
 
+;;
+;; TODO: Kill this component when we're sure we're happy w/ the new
+;; pricing page (ie, the 'Adjust containers' used for all plans.)
+;; Leaving it for now out of cowardice.
+;;
 (defn plan [app owner]
   (reify
 
@@ -261,6 +265,7 @@
     (will-mount [_]
       (let [ch (om/get-state owner [:checkout-loaded-chan])
             checkout-loaded? (om/get-state owner [:checkout-loaded?])]
+        (utils/mlog "plan/IWillMount with Stripe checkout-loaded? " checkout-loaded?)
         (when-not checkout-loaded?
           (go (<! ch) ;; wait for success message
               (utils/mlog "Stripe checkout loaded")
@@ -275,102 +280,229 @@
     (render-state [_ {:keys [checkout-loaded?]}]
       (let [plan (get-in app state/org-plan-path)
             org-name (get-in app state/org-name-path)]
+        (utils/mlog "org_settings render-state Stripe checkout-loaded? " checkout-loaded?)
         (html
          (if-not (and plan checkout-loaded?)
            [:div.loading-spinner common/spinner]
 
            [:div#billing.plans.pricing.row-fluid
-            (when (plan-model/trial? plan)
+            (when (pm/trial? plan)
               (plans-trial-notification plan org-name owner))
-            (when (plan-model/piggieback? plan org-name)
+            (when (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name))
             (om/build plans-component/plans app)
             (shared/customers-trust)
             (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
+(defn plan-type-str [plan]
+  (cond
+   (pm/paid? plan) "PAID"
+
+   (and (pm/freemium? plan)
+        (not (pm/in-trial? plan)))
+   "FREE"
+
+   (pm/trial? plan)
+   (str "TRIAL" (when-not (pm/in-trial? plan) " ENDED"))))
+
+(defn plural-multiples [num word]
+  (if (> num 1)
+    (pluralize num word)
+    word))
+
+(defn pricing-explanation-elements [plan plan-total]
+  (let [plan-min-containers (if (pm/paid? plan)
+                              (pm/paid-plan-min-containers plan)
+                              (pm/default-plan-min-containers))
+        plan-price (if (pm/paid? plan)
+                     (-> plan :paid :template :price)
+                     (-> pm/default-template-properties :price))]
+    (list
+     [:div.calculator-preview-item
+      [:div.item [:strong "Current Plan"]]
+      [:div.value [:strong (plan-type-str plan)]]]
+     (cond
+      (pm/in-trial? plan)
+      [:div.calculator-preview-item
+       [:strong (str "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") ".")]]
+      
+      (not (or (pm/freemium? plan) (pm/paid? plan)))
+      [:div.calculator-preview-item
+       [:div
+        "Your " [:strong (pm/trial-containers plan) " container"]
+        " trial has ended." [:br] "Please add containers to continue building private repositories."]]
+
+      ;; otherwise, must be freemium or paid
+      :else
+      (list
+       [:div.calculator-preview-item
+        [:div.item  [:strong (pm/usable-containers plan)]]
+        [:div.value [:strong#current-plan-total (str "$" plan-total "/month")]]]
+       (when (pm/grandfathered? plan)
+         [:div.calculator-preview-item "Current price grandfathered in. Updates priced as:"])))
+
+     [:hr]
+     
+     (when (pm/freemium? plan)
+       [:div.calculator-preview-item
+        [:div.item (str "First " (plural-multiples (pm/freemium-containers plan) "container"))]
+        [:div.value "Free!"]])
+     (when (> plan-min-containers 0)
+       [:div.calculator-preview-item
+        [:div.item (str (if (pm/freemium? plan) "Next " "First ") (plural-multiples plan-min-containers "container"))]
+        [:div.value (str "$" plan-price)]])
+
+     [:div.calculator-preview-item
+      [:div.item  (str "Additional containers")]
+      [:div.value (str "$" (pm/per-container-cost plan))]]
+
+     [:div.calculator-preview-item "No other limits"])))
+
+(defn current-plan-desc
+  "A div that explains your current plan."
+  [app owner]
+  (om/component
+   (html
+    (let [org-name (get-in app state/org-name-path)
+          plan (get-in app state/org-plan-path)
+          plan-total (pm/stripe-cost plan)
+          container-cost (pm/per-container-cost plan)]
+      [:div.pricing-calculator-preview
+       ;; TODO: make the org-name a drop-down selector of the orgs you
+       ;; are a member of? It's a pain right now to switch between org plans.
+       [:h3 (str org-name "'" (when-not (re-matches #".*s" org-name) "s"))]
+       (pricing-explanation-elements plan plan-total)]))))
+
+(defn pluralize-no-val [num word]
+  (if (> num 1) (infl/plural word) (infl/singular word)))
+
 (defn containers [app owner]
   (reify
+    ;; I stole the stateful "did we load stripe checkout code" stuff
+    ;; from the plan component above, but the billing-card component
+    ;; also has it. What's the nice way to
+    ;; abstract it out?
+    om/IInitState
+    (init-state [_]
+      {:checkout-loaded? (stripe/checkout-loaded?)
+       :checkout-loaded-chan (chan)})
+    om/IWillMount
+    (will-mount [_]
+      (let [ch (om/get-state owner [:checkout-loaded-chan])
+            checkout-loaded? (om/get-state owner [:checkout-loaded?])]
+        (when-not checkout-loaded?
+          (go (<! ch)
+              (utils/mlog "Stripe checkout loaded")
+              (om/set-state! owner [:checkout-loaded?] true))
+          (utils/mlog "Loading Stripe checkout")
+          (stripe/load-checkout ch))))
     om/IDidMount
     (did-mount [_]
-      (utils/tooltip "#grandfathered-tooltip-hack") {:animation false})
-    om/IRender
-    (render [_]
-      (let [plan (get-in app state/org-plan-path)
+      (utils/tooltip "#grandfathered-tooltip-hack" {:animation false}))
+    om/IWillUnmount
+    (will-unmount [_]
+      (close! (om/get-state owner [:checkout-loaded-chan])))
+    om/IRenderState
+    (render-state [_ {:keys [checkout-loaded?]}]
+      (let [org-name (get-in app state/org-name-path)
+            plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                    (:containers plan))
-            old-total (plan-model/stripe-cost plan)
-            new-total (plan-model/cost (:template_properties plan) selected-containers)]
+                                    (max (pm/usable-containers plan)
+                                         (pm/trial-containers plan)))
+            min-slider-val (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
+            max-slider-val (max 80 (* 2 (pm/usable-containers plan)))
+            old-max-slider-val (if (< selected-containers 50)
+                                 80
+                                 (let [n (* 2 selected-containers)] (+ n (- 10 (mod n 10)))))
+            selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
+            old-total (pm/stripe-cost plan)
+            new-total (pm/cost plan selected-containers)
+            container-cost (pm/per-container-cost plan)]
         (html
          (if-not plan
-           [:div.loading-spinner common/spinner]
+           (cond ;; TODO: fix; add plan
+            (nil? plan)
+              [:div.loading-spinner common/spinner]
+            (not (seq plan))
+              [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
+            :else [:h3 "Something is wrong! Please submit a bug report."])
 
-           [:div#edit-plan
+           [:div#edit-plan {:class "pricing.page"}
+            (when (pm/piggieback? plan org-name)
+              (plans-piggieback-plan-notification plan org-name))
             [:fieldset
-             [:legend
-              "Our pricing is flexible and scales with you. Add as many containers as you want for $"
-              (get-in plan [:template_properties :container_cost])
-              "/month each."]
-             [:div.main-content
-              [:div.left-section
-               [:div.plan
-                [:h2 "Your Current Plan"]
-                [:p
-                 [:strong "$" old-total] "/ month"]
-                [:ul [:li "Includes " (:containers plan) " containers"]
-                 [:li "Additional containers for $"
-                  (get-in plan [:template_properties :container_cost]) "/month"]
-                 [:li [:strong "No other limits"]]]]]
-              [:div.right-section
-               [:h3 "New total: $" new-total]
-               [:h4
-                "Old total: $" old-total
-                (when (plan-model/grandfathered? plan)
-                  [:span.grandfather
-                   "(grandfathered"
-                   [:i.fa.fa-question-circle#grandfathered-tooltip-hack
-                    {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}]
-                   ")"])]
+             [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
+                           container-cost "/month each.")]]
+            [:div.main-content
+             [:div.left-section
+              [:div.pricing-calculator-controls
+               [:h3 "Containers"]
                [:form
                 [:div.container-picker
-                 [:p "You can add or remove containers below; more containers means faster builds and lower queue times."]
-                 [:div.container-slider
-                  [:span (get-in plan [:template_properties :free_containers])]
-                  (let [max (if (< selected-containers 80)
-                              80
-                              (let [num (+ 80 selected-containers)]
-                                (+ num (- 10 (mod num 10)))))]
-                    (list
-                     [:input#rangevalue
-                      {:type "range"
-                       :value selected-containers
-                       :min (get-in plan [:template_properties :free_containers])
-                       :max max
-                       :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                     :value (int (.. % -target -value)))}]
-                     [:span max]))]
+                 [:p "More containers means faster builds and lower queue times."]
+                 (om/build shared/styled-range-slider
+                           (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
                  [:div.container-input
-                  [:input
-                   {:type "text"
-                    :value selected-containers
-                    :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                  :value (int (.. % -target -value)))}]]]
+                  [:input {:style {:margin "4px" :height "calc(2em + 2px)"}
+                           :type "text" :value selected-containers
+                           :on-change #(utils/edit-input owner state/selected-containers-path %
+                                                         :value (int (.. % -target -value)))}]
+                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
+                  (when (not (= new-total old-total))
+                    [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])
+                  (when false ;; (pm/grandfathered? plan) ;; I don't
+                    ;; think this is useful anymore.
+                    [:i.fa.fa-question-circle#grandfathered-tooltip-hack
+                     {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
                 [:fieldset
-                 (forms/managed-button
-                  [:button.btn.btn-large.btn-primary.center
-                   {:data-success-text "Saved",
-                    :data-loading-text "Saving...",
-                    :type "submit"
-                    :on-click #(do (raise! owner [:update-containers-clicked {:containers selected-containers}])
-                                   false)}
-                   "Update plan"])
-                 (when (< old-total new-total)
-                   [:span.help-block
-                    "We'll charge your card today, for the prorated difference between your new and old plans."])
-                 (when (> old-total new-total)
-                   [:span.help-block
-                    "We'll credit your account, for the prorated difference between your new and old plans."])]]]]
-             plans-component/pricing-faq]]))))))
+                 (if (pm/paid? plan)
+                   (forms/managed-button
+                    [:button.btn.btn-large.btn-primary.center
+                     {:data-success-text "Saved",
+                      :data-loading-text "Saving...",
+                      :type "submit"
+                      :on-click #(do (raise! owner [:update-containers-clicked
+                                                    {:containers selected-paid-containers}])
+                                     false)}
+                     "Update plan"])
+                   (if-not checkout-loaded?
+                     [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
+                     (forms/managed-button
+                      [:button.btn.btn-large.btn-primary.center
+                       {:data-success-text "Paid!",
+                        :data-loading-text "Paying...",
+                        :data-failed-text "Failed!",
+                        :type "submit"
+                        :on-click #(do (raise! owner [:new-plan-clicked
+                                                      {:containers selected-paid-containers
+                                                       :paid {:template (:id pm/default-template-properties)}
+                                                       :price new-total
+                                                       :description (str "$" new-total "/month, includes "
+                                                                         (pluralize selected-containers "container"))}])
+                                       false)}
+                       "Pay Now"])))
+                 (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                   (list
+                    (when (< old-total new-total)
+                      [:span.help-block
+                       "We'll charge your card today, for the prorated difference between your new and old plans."])
+                    (when (> old-total new-total)
+                      [:span.help-block
+                       "We'll credit your account, for the prorated difference between your new and old plans."]))
+                   (if (pm/in-trial? plan)
+                     [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                      ". Please pay for a plan by then or "
+                      (if (pm/freemium? plan)
+                        (str "you will revert to a free " (pluralize (pm/freemium-containers plan) "container") " plan.")
+                        "we will stop building your private repository pushes.")]
+                     [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                      " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                      " ago. Pay now to enable builds of private repositories."]))]]]]
+             
+             [:div.right-section
+              (om/build current-plan-desc app)]]]))))))
+
 
 (defn piggyback-organizations [app owner]
   (om/component
@@ -383,8 +515,7 @@
           elligible-piggyback-orgs (-> (map :login user-orgs)
                                        (set)
                                        (conj user-login)
-                                       (disj org-name)
-                                       (sort))
+                                       (disj org-name))
           ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
           ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
           ;; selected-orgs:           {"org-a" false "org-c" true}
@@ -411,7 +542,8 @@
              [:form
               [:div.controls
                ;; orgs that this user can add to piggyback orgs and existing piggyback orgs
-               (for [org (clojure.set/union elligible-piggyback-orgs (set (:piggieback_orgs plan)))]
+               (for [org (sort (clojure.set/union elligible-piggyback-orgs
+                                                  (set (:piggieback_orgs plan))))]
                  [:div.control
                   [:label.checkbox
                    [:input
@@ -594,7 +726,7 @@
       (html
         (let [plan (get-in app state/org-plan-path)]
           [:div.row-fluid
-            (when (plan-model/has-active-discount? plan)
+            (when (pm/has-active-discount? plan)
               [:fieldset
                 [:legend.span8 "Discounts"]
                 [:div.span8 (format-discount plan)]])])))))
@@ -844,12 +976,12 @@
         subpage
 
         (and plan
-             (plan-model/can-edit-plan? plan org-name)
+             (pm/can-edit-plan? plan org-name)
              (= subpage :plan))
         :containers
 
         (and plan
-             (not (plan-model/can-edit-plan? plan org-name))
+             (not (pm/can-edit-plan? plan org-name))
              (#{:containers :organizations :billing :cancel} subpage))
         :plan
 
