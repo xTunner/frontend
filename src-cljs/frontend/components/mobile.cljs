@@ -30,8 +30,11 @@
            "1-star reviews. Let CircleCI bring our deep knowledge and "
            "experience of Continuous Integration and Continuous Delivery "
            "to your mobile application development by automating the "
-           "build, test, and deploy pipeline for your iOS and "
-           "Android applications."]]
+           "build, test, and deploy pipeline for your "
+           [:a {:href "/docs/ios"} "iOS"]
+           " and "
+           [:a {:href "/docs/android"} "Android"]
+           " applications."]]
          [:a.home-action.signup
           {:href (auth-url)
            :role "button"
