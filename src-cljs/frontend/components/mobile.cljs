@@ -92,7 +92,8 @@
           [:div.feature
            icons/commit
            [:h3 "Merge With Confidence"]
-           [:p "Get updates for each build to monitor green tests."]]
+           [:p "Monitor test status with every commit, and only merge when all the tests pass."
+            "Feel productive instead of anxious when you press \"merge\"."]]
           [:div.feature
            icons/deploy
            [:h3 "Automate Deployment"]
