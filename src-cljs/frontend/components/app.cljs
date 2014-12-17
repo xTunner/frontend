@@ -49,11 +49,11 @@
     om/IRender
     (render [_] (html [:div.loading-spinner common/spinner]))))
 
-(defn dominant-component [app-state]
+(defn dominant-component [app-state owner]
   (condp = (get-in app-state [:navigation-point])
     :build build-com/build
     :dashboard dashboard/dashboard
-    :add-projects (if (= (get-in app-state [:ab-tests :new_add_projects]) :old)
+    :add-projects (if (= (om/get-shared owner [:ab-tests :new_add_projects]) :old)
                     add-projects-old/add-projects
                     add-projects/add-projects)
     :invite-teammates invites/teammates-invites
@@ -100,7 +100,7 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               slim-aside? (get-in app state/slim-aside-path)
-              dom-com (dominant-component app)]
+              dom-com (dominant-component app owner)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
