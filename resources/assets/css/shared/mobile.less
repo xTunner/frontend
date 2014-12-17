@@ -47,12 +47,14 @@
     img.iphone {
       float: right;
       width:320px;
+      max-width: 33%;
     }
 
     img.htc {
       float: right;
       margin-left: 60px;
       width: 260px;
+      max-width: 33%;
     }
 
     .mobile-tagline {
@@ -69,8 +71,21 @@
 
     img.steps {
       margin-top: 70px;
+      margin-bottom: 20px;
       width: 910px;
       max-width: 70%;
+    }
+
+    div.labels {
+      margin: auto;
+      width: 80%;
+      position: relative;
+      .flexy(stretch, space-between);
+
+      p {
+        max-width: 33%;
+        .flex(0 0 10em);
+      }
     }
   }
 
@@ -78,13 +93,17 @@
     img.workflow {
       float: right;
       max-width: 900px;
+      margin: 20px;
     }
   }
 
   section.features {
+    padding-bottom: 0;
+    padding-top: 0;
+
     .feature-list {
       text-align: center;
-      .flexy(stretch, space-between);
+      .flexy(stretch, space-around);
       flex-wrap: wrap;
       img {
 	height: 60px;
@@ -94,6 +113,8 @@
     .feature {
       @half: (100% / 2);
       .flex(0 0 ~"calc(@{half} - 1.5em)" );
+      margin-bottom: 70px;
+      margin-top: 70px;
     }
     @media (max-width: (@tile * 13)) {
       .feature-list {

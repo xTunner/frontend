@@ -47,7 +47,11 @@
            "pushing fixes quickly to address shipped bugs and issues. It’s "
            "important to get the app built correctly to ensure a great user "
            "experience and better app ratings."]
-          icons/steps]]
+          icons/steps
+          [:div.labels
+           [:p.one "Automate Build Process"]
+           [:p.two "Create a Consistent Build Environment"]
+           [:p.three "One Click Deployment (coming soon)"]]]]
         [:section.workflow.odd-section {}
          [:article {}
           [:h2 "How it works"]
