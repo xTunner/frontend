@@ -231,14 +231,3 @@
 
 (defn owner? [build user]
   (->> build (owners) (some #{(:login user)})))
-
-(defn default-tab
-  "The default tab to show in the build page head."
-  [build]
-  (cond
-   ;; default to ssh-info for SSH builds if they haven't clicked a different tab
-   (ssh-enabled-now? build) :ssh-info
-   ;; default to the queue tab if the build is currently usage queued.
-   (in-usage-queue? build) :usage-queue
-   ;; Otherwise, just use the first one.
-   :else :commits))

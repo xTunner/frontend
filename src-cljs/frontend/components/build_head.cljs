@@ -318,6 +318,17 @@
           (dom/span nil "/~" (formatter past-ms))
           (dom/span nil ""))))))
 
+(defn default-tab
+  "The default tab to show in the build page head, if they have't clicked a different tab."
+  [build]
+  (cond
+   ;; default to ssh-info for SSH builds
+   (build-model/ssh-enabled-now? build) :ssh-info
+   ;; default to the queue tab if the build is currently usage queued.
+   (build-model/in-usage-queue? build) :usage-queue
+   ;; Otherwise, just use the first one.
+   :else :commits))
+
 (defn build-sub-head [data owner]
   (reify
     om/IRender
@@ -327,7 +338,7 @@
             logged-in? (not (empty? user))
             build (:build build-data)
             show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
-            selected-tab (get build-data :selected-header-tab (build-model/default-tab build))
+            selected-tab (get build-data :selected-header-tab (default-tab build))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)

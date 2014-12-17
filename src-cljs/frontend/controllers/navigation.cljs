@@ -6,6 +6,7 @@
             [frontend.api :as api]
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
+            [frontend.components.build-head :refer (default-tab)]
             [frontend.favicon]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -15,7 +16,6 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-id! scroll!]]
-            [frontend.models.build :as build-model]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -182,7 +182,7 @@
           ;; Preemptively make the usage-queued API call if we're going to display the
           ;; the usage queued tab by default.
           ;; This feels like a weird bit of non-locality, but I can't think of a better solution. :(
-          (when (= :usage-queue (build-model/default-tab build))
+          (when (= :usage-queue (default-tab build))
             (api/get-usage-queue build api-ch))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
