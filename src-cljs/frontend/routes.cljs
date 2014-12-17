@@ -119,6 +119,9 @@
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))
 
+  (defroute v1-mobile "/mobile" []
+    (open-to-outer! nav-ch :mobile {}))
+
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage :plans})
