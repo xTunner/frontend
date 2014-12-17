@@ -32,17 +32,18 @@
            "to your mobile application development by automating the "
            "build, test, and deploy pipeline for your iOS and "
            "Android applications."]]
-         [:a.home-action.signup {:href (auth-url)
-                     :role "button"
-                     :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+         [:a.home-action.signup
+          {:href (auth-url)
+           :role "button"
+           :on-click #(raise! owner [:track-external-link-clicked
+                                     {:event "Auth GitHub"
 
-                                                                                  :path (auth-url)}])}
-         "Sign up for free"]
-]
+                                      :path (auth-url)}])}
+         "Sign up for free"]]
         [:section.pitch {}
          [:article {}
           [:h2 "More testing, faster feedback, better releases."]
-          [:p "The mobile development workflow can be frustrating and slow. "
+          [:p.explain "The mobile development workflow can be frustrating and slow. "
            "App review times add significant delays to shipping, and prevent "
            "pushing fixes quickly to address shipped bugs and issues. It’s "
            "important to get the app built correctly to ensure a great user "
@@ -55,13 +56,13 @@
         [:section.workflow.odd-section {}
          [:article {}
           [:h2 "How it works"]
+          icons/workflow
           [:p "Every time you push new code to your project repo on GitHub, "
            "we automatically build and test your changes to make sure you didn’t "
            "break anything. For every green build, you can one-click deploy that "
            "successful version via Hockey, Testflight, Crashlytics or other "
            "over-the-air (OTA) deployment service (coming soon) to start "
-           "collecting feedback immediately with no support from engineering."]
-          icons/workflow]]
+           "collecting feedback immediately with no support from engineering."]]]
         [:section.features {}
          [:article.feature-list
           [:div.feature
