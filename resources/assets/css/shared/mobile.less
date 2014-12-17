@@ -27,6 +27,11 @@
     font-weight: 300;
   }
 
+  h2 {
+    font-size: 30px;
+    font-weight: 300;
+  }
+
   h3 {
     font-size: 20px;
     line-height: 20px;
@@ -37,6 +42,11 @@
     font-size: 16px;
     line-height: 16px;
     font-weight: normal;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.6em;
   }
 
   a.signup {
@@ -70,7 +80,7 @@
     }
 
     p {
-      width: 80%;
+      width: 70%;
     }
   }
 
@@ -132,6 +142,9 @@
       .flex(0 0 ~"calc(@{half} - 1.5em)" );
       margin-bottom: 70px;
       margin-top: 70px;
+      p {
+	padding: 20px 100px 0 100px;
+      }
     }
     @media (max-width: (@tile * 13)) {
       .feature-list {
