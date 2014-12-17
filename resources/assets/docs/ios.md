@@ -109,7 +109,7 @@ You can also use the `sudo` command if necessary to perform customizations outsi
 ##Code signing and deployment
 You can build a signed app and deploy to various destinations using the customization options
 mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in 
-the UI encrypted and secure and can be used to store credentials related to signing and deployment.
+the UI are encrypted and secure and can be used to store credentials related to signing and deployment.
 Contact support at [sayhi@circleci.com](mailto:sayhi@circleci.com) if you need help with code signing
 or deployment.
 
