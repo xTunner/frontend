@@ -143,7 +143,7 @@
                    If you don't have enough free containers available, then your builds queue up until other builds finish."]
               [:p "Everyone gets their first container free and your team can run as many builds as you want with that container.
                    More containers allows faster builds through parallellism in addition shorter queue times"]
-              [:p "Parallelism is an extrememly powerful feature and allows to dramitcally speed up your test suite.
+              [:p "Parallelism is an extremely powerful feature and allows you to dramatically speed up your test suite.
                    CircleCI automatically splits your tests across multiple containers, finishing your build in a fraction of the time."]]
              [:article
               [:h3 "How many containers do I need?"]
