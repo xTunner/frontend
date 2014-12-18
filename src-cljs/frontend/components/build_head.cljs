@@ -289,6 +289,16 @@
          [:div.build-config-string [:pre config-string]]
          (circle-yml-ad))))))
 
+(defn build-parameters [{:keys [build-parameters]} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.build-parameters
+        [:pre (for [[k v] build-parameters
+                    :let [pname (name k) pval (pr-str v)]]
+                (str pname "=" pval \newline))]]))))
+
 (defn expected-duration
   [{:keys [start stop build]} owner opts]
   (reify
@@ -348,7 +358,8 @@
             usage-queued? (build-model/in-usage-queue? build)
             project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
-            config-data (:config-data build-data)]
+            config-data (:config-data build-data)
+            build-params (:build_parameters build)]
         (html
          [:div.sub-head
           [:div.sub-head-top
@@ -360,6 +371,11 @@
             [:li {:class (when (= :config selected-tab) "active")}
              [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
               "circle.yml"]]
+
+            (when (seq build-params)
+              [:li {:class (when (= :build-parameters selected-tab) "active")}
+               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-parameters}])}
+                "Build Parameters"]])
 
             (when logged-in?
               [:li {:class (when (= :usage-queue selected-tab) "active")}
@@ -411,6 +427,8 @@
                                   {:opts {:show-node-indices? (< 1 (:parallel build))}})
 
              :config (om/build build-config {:config-string (get-in build [:circle_yml :string])})
+
+             :build-parameters (om/build build-parameters {:build-parameters build-params})
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
