@@ -315,6 +315,7 @@ adds more options is to
 2. Make sure you tag the image you use in the FROM command in your Dockerfile, even if it
 is the default "latest" tag (e.g. use `FROM dockerfile/java:latest` instead of just
 `FROM dockerfile/java`. Otherwise, Docker will pull down all tags for the image you
-specify. This is problematic because the save/load strategy described above only caches
+specify. This will create significant performance problems because the save/load strategy
+described above only caches
 the image layers (and thus tags) that you specify in the `docker save` command, so
 other tags will be re-pulled on every build if a tag is not specified in the FROM command.
