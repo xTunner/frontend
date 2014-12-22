@@ -248,6 +248,12 @@
                                  (str title  " - CircleCI")
                                  "CircleCI"))))
 
+(defn set-page-description!
+  "This is an experiment... Not sure if GoogleBot looks at this after rendering."
+  [description]
+  (let [meta-el (.querySelector js/document "meta[name=description]")]
+    (.setAttribute meta-el "content" description)))
+
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"
   [id]

@@ -119,8 +119,10 @@
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))
 
-  (defroute v1-mobile "/mobile" []
-    (open-to-outer! nav-ch :mobile {}))
+  (defroute v1-mobile (FragmentRoute.  "/mobile") {:as params}
+    (open-to-outer! nav-ch :mobile (assoc params
+                                     :_title "Mobile Continuous Integration and Mobile App Testing"
+                                     :_description "Build 5-star mobile apps with Mobile Continuous Integration by automating your build, test, and deployment workflow on iOS and Android. ")))
 
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
