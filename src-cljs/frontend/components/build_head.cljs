@@ -4,6 +4,7 @@
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.plan :as plan-model]
             [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -25,6 +26,33 @@
 ;; in it depending on what sub-state with special keys we have, right?
 (defn has-scope [scope data]
   (scope (:scopes data)))
+
+(defn show-additional-containers-offer? [plan build]
+  (when (and plan build)
+    (let [usage-queued-secs (/ (build-model/usage-queued-time build))
+          run-queued-secs (/ (build-model/run-queued-time build))]
+      ;; more than 10 seconds waiting for other builds, and
+      ;; less than 10 seconds waiting for additional containers (our fault)
+      (and (> usage-queued-secs 10)
+           (< run-queued-secs 10)))))
+
+(defn additional-containers-offer [plan build]
+  [:p#additional_containers_offer
+   "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                                            :subpage "containers"})}
+                                 "add more containers"]
+   " and finish even faster."])
+
+(defn new-additional-containers-offer [plan build]
+  (let [run-phrase (if (build-model/finished? build)
+                     "ran"
+                     "is running")]
+    [:div.additional-containers-offer
+     [:p (str "This build " run-phrase " under " (:org_name plan) "'s plan which provides " (plan-model/usable-containers plan)
+              " containers, plus 3 additional containers available for free and open source projects.")]
+     [:p [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                              :subpage "containers"})}
+          [:button "Add Containers"]] "to run more builds concurrently."]]))
 
 (defn build-queue [data owner]
   (reify
@@ -55,14 +83,10 @@
                                                     :stop (or (:queued_at build) (:stop_time build))})]
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
-            (when (and plan
-                       (< 10000 (build-model/usage-queued-time build))
-                       (> 10000 (build-model/run-queued-time build)))
-              [:p#additional_containers_offer
-               "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                                                        :subpage "containers"})}
-                                             "add more containers"]
-               " and finish even faster."])]))))))
+            (when (show-additional-containers-offer? plan build)
+              (if (om/get-shared owner [:ab-tests :new_usage_queued_upsell])
+                (new-additional-containers-offer plan build)
+                (additional-containers-offer plan build)))]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
