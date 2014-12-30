@@ -7,7 +7,6 @@
             [frontend.components.drawings :as drawings]
             [frontend.components.shared :as shared]
             [frontend.env :as env]
-            [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
