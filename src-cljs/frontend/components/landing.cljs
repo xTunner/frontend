@@ -383,7 +383,6 @@
 (defn potential [data owner]
   (reify
     om/IDisplayName (display-name [_] "Home Potential")
-    om/IInitState (init-state [_] {:scroll-id (.getNextUniqueId (.getInstance IdGenerator))})
     om/IDidMount
     (did-mount [_]
       (scroll/register owner
