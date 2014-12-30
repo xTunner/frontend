@@ -180,26 +180,26 @@
       }
     }
 
+    & > .inner:hover {
+      color: @blueLight;
+    }
+
     display: inline-block;
     width: 50%;
 
 
     @media only screen and (max-width: 960px) {
       width: 100%;
-
     }
   }
 
   .organization.active {
     .inner {
       border: 1px solid @blueLight;
+      color: @blueLight;
     }
-
     a {
       color: @blueLight;
-      &:hover {
-        color: @blueLight;
-      }
     }
   }
 
@@ -217,7 +217,6 @@
     text-overflow: ellipsis;
     font-size: @baseLineHeight;
     line-height: 24px;
-    color: @gray;
   }
 
   .wordy-hr {

@@ -37,7 +37,7 @@
               :height 50}]]
       [:div.other-stuff
        [:div.orgname
-        [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]
+        login
         [:small.github-url.pull-right
          [:a {:href (str "https://github.com/" login)
               :target "_blank"}
