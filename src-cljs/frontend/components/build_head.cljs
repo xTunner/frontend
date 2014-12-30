@@ -33,8 +33,7 @@
           run-queued-secs (/ (build-model/run-queued-time build))]
       ;; more than 10 seconds waiting for other builds, and
       ;; less than 10 seconds waiting for additional containers (our fault)
-      (and (> usage-queued-secs 10)
-           (< run-queued-secs 10)))))
+      (< run-queued-secs 10 usage-queued-secs))))
 
 (defn additional-containers-offer [plan build]
   [:p#additional_containers_offer
@@ -51,7 +50,7 @@
      [:p (str "This build " run-phrase " under " (:org_name plan) "'s plan which provides " (plan-model/usable-containers plan)
               " containers, plus 3 additional containers available for free and open source projects.")]
      [:p [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                              :subpage "containers"})}
+                                                     :subpage "containers"})}
           [:button "Add Containers"]] "to run more builds concurrently."]]))
 
 (defn build-queue [data owner]
