@@ -29,11 +29,11 @@
 
 (defn show-additional-containers-offer? [plan build]
   (when (and plan build)
-    (let [usage-queued-secs (/ (build-model/usage-queued-time build))
-          run-queued-secs (/ (build-model/run-queued-time build))]
+    (let [usage-queued-ms (build-model/usage-queued-time build)
+          run-queued-ms (build-model/run-queued-time build)]
       ;; more than 10 seconds waiting for other builds, and
       ;; less than 10 seconds waiting for additional containers (our fault)
-      (< run-queued-secs 10 usage-queued-secs))))
+      (< run-queued-ms 10000 usage-queued-ms))))
 
 (defn additional-containers-offer [plan build]
   [:p#additional_containers_offer
