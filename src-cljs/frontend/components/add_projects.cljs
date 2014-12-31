@@ -30,15 +30,15 @@
 (defn organization [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)]
-    [:div.organization {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
+    [:div.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
+                        :class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
      [:div.inner
       [:div.avatar
-       [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])}
-        [:img {:src (gh-utils/make-avatar-url org :size 50)
-               :height 50}]]]
+       [:img {:src (gh-utils/make-avatar-url org :size 50)
+              :height 50}]]
       [:div.other-stuff
        [:div.orgname
-        [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]
+        login
         [:small.github-url.pull-right
          [:a {:href (str (gh-utils/http-endpoint) "/" login)
               :target "_blank"}
