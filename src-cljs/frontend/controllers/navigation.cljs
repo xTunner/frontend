@@ -15,7 +15,7 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-id! scroll!]]
+            [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -52,6 +52,8 @@
 (defn post-default [navigation-point args]
   (set-page-title! (or (:_title args)
                        (str/capitalize (name navigation-point))))
+  (when :_description args
+        (set-page-description! (:_description args)))
   (scroll! args)
   (when (:_analytics-page args)
     (analytics/track-page (:_analytics-page args))))

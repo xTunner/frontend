@@ -71,7 +71,7 @@
           [:div.feature
            icons/app-store
            [:h3 "Improve App Store Rating"]
-           [:p "Use Continuous Integration to reduce bugs so that you ship "
+           [:p "Use Continuous Integration to reduce bugs so you ship "
             "great apps that your customers love."]]
           [:div.feature
            icons/testing
@@ -84,7 +84,7 @@
            [:h3 "Inferred Project Setup"]
            [:p "Easily set up projects. Just like CircleCI for web apps, we infer "
             "your project settings without the developer having to do the setup. "
-            "You can still setup your environment using the yml."]]
+            "You can still set up your environment using the yml."]]
           [:div.feature
            icons/build-env
            [:h3 "Full Control"]
