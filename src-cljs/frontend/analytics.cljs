@@ -11,7 +11,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.style]))
+            [goog.style]
+            [goog.string :as gstr]))
 
 
 (defn init-user [login]
@@ -62,14 +63,14 @@
 (defn track-join-code [join-code]
   (when join-code (mixpanel/register-once {"join_code" join-code})))
 
-(defn track-save-containers []
-  (mixpanel/track "Save Containers"))
+(defn track-save-containers [upgraded?]
+  (mixpanel/track "Save Containers")
+  (if upgraded?
+    (intercom/track :upgraded-containers)
+    (intercom/track :downgraded-containers)))
 
 (defn track-save-orgs []
   (mixpanel/track "Save Organizations"))
-
-(defn track-extend-trial []
-  (mixpanel/track "Extend trial"))
 
 (defn track-collapse-nav []
   (mixpanel/track "aside_nav_collapsed"))
@@ -113,3 +114,15 @@
 
 (defn track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
+
+(defn track-link-clicked [target]
+  (mixpanel/track "Track Link Clicked" {:link-class target}))
+
+(defn utm? [[key val]]
+  (gstr/startsWith (name key) "utm"))
+
+(defn register-last-touch-utm [query-params]
+  (mixpanel/register (->> query-params
+                          (filter utm?)
+                          (map (fn [[key val]] [(str "last_" (name key)) val]))
+                          (into {}))))

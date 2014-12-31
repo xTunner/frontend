@@ -13,7 +13,6 @@
             [goog.string.format]
             [goog.style])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [dommy.macros :refer [node sel sel1]]
                    [frontend.utils :refer [html]]))
 
 
@@ -89,7 +88,7 @@ You queue them up, we'll knock 'em down."},
    {:headline "Unlimited build time",
     :detail "Great testing means using Circle as much as possible. You don't want to weigh good testing against possible charges or monthly fees. So we have no limit, no per-hour cost, no overages. Just simple, predictable pricing."},
    {:headline "Phenomenal support",
-    :detail "We respond to support requests immediately, every day (yes, on weekends and holidays). Most requests are responded to within the hour, 99% are responded to in 12 hours. We're also available for live chat support."},
+    :detail "We respond to support requests quickly -- most requests during working hours are answered within the hour. We also offer live support chat."},
    {:headline "Custom NDA",
     :detail "Naturally we never look at your code. We also have a great security policy, which gives us no rights whatsoever to your code. However, if you would prefer that we sign your custom NDA, we'd be happy to.",
     :enterprise true},

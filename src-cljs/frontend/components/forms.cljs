@@ -65,6 +65,10 @@
     (init-state [_]
       {:status :idle})
 
+    om/IWillMount
+    (will-mount [_]
+      (om/set-state! owner :status :idle))
+
     om/IRenderState
     (render-state [_ {:keys [status]}]
       (let [[tag attrs & body] hiccup-form

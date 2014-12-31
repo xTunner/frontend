@@ -6,7 +6,7 @@
             [frontend.models.project :as proj-mod]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :include-macros true]
-            [secretary.core :as sec :include-macros true :refer [defroute]])
+            [secretary.core :as sec :include-macros true :refer-macros [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 
@@ -99,6 +99,10 @@
                                               :repo repo}))
   (defroute v1-add-projects "/add-projects" []
     (open-to-inner! nav-ch :add-projects {}))
+  (defroute v1-invite-teammates "/invite-teammates" []
+    (open-to-inner! nav-ch :invite-teammates {}))
+  (defroute v1-invite-teammates-org "/invite-teammates/organization/:org" [org]
+    (open-to-inner! nav-ch :invite-teammates {:org org}))
   (defroute v1-account "/account" []
     (open-to-inner! nav-ch :account {:subpage nil}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
@@ -114,6 +118,9 @@
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))
+
+  (defroute v1-mobile "/mobile" []
+    (open-to-outer! nav-ch :mobile {}))
 
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
@@ -151,9 +158,8 @@
     (open-to-outer! nav-ch :language-landing (assoc params
                                                :_title (str "CircleCI for " (:language params)))))
 
-  ;; TODO: this should be integrations/:integration, but we'll wait for more integrations
-  (defroute v1-integrations (FragmentRoute. "/integrations/docker") {:as params}
-    (open-to-outer! nav-ch :docker-integration (assoc params :_title "CircleCI and Docker")))
+  (defroute v1-integrations (FragmentRoute. "/integrations/:integration") {:keys [integration] :as params}
+    (open-to-outer! nav-ch :integrations (assoc params :integration (keyword integration))))
 
   (defroute v1-changelog (FragmentRoute. "/changelog/:id") {:as params}
     (open-to-outer! nav-ch :changelog params))

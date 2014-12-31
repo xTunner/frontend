@@ -15,13 +15,13 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]
-                   [dommy.macros :refer [node]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (def sidebar
   [:ul.side-list
@@ -43,10 +43,9 @@
    [:li [:a {:href "#ssh"} "SSH keys"]]
    [:li [:a {:href "#api"} "API tokens"]]
    [:li [:a {:href "#aws"} "AWS keys"]]
-   [:li.side-title "Build Artifacts"]
-   [:li [:a {:href "#artifacts"} "Artifacts"]]
    [:li.side-title "Continuous Deployment"]
    [:li [:a {:href "#heroku"} "Heroku"]]
+   [:li [:a {:href "#aws-codedeploy"} "AWS CodeDeploy"]]
    [:li [:a {:href "#deployment"} "Other Deployments"]]])
 
 (defn branch-names [project-data]
@@ -157,12 +156,12 @@
      [:li [:a {:href "http://zencoder.com/company/"} "Brandon Arbini"]]
      [:li [:a {:href "http://zencoder.com/"} "Zencoder.com"]]]]])
 
-(defn parallel-label-classes [project-data parallelism]
+(defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
    []
-   (when (> parallelism (plan-model/max-selectable-parallelism (:plan project-data))) ["disabled"])
+   (when (> parallelism (project-model/max-selectable-parallelism plan project)) ["disabled"])
    (when (= parallelism (get-in project-data [:project :parallel])) ["selected"])
-   (when (not= 0 (mod (plan-model/usable-containers (:plan project-data)) parallelism)) ["bad_choice"])))
+   (when (not= 0 (mod (project-model/usable-containers plan project) parallelism)) ["bad_choice"])))
 
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
@@ -172,7 +171,7 @@
         project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades
-      (if-not (= "trial" (:type plan))
+      (if-not (plan-model/in-trial? plan)
         (cond (> parallelism (plan-model/max-parallelism plan))
               [:div.insufficient-plan
                "Your plan only allows up to "
@@ -181,25 +180,24 @@
                                                            :subpage "plan"})}
                 "Upgrade"]]
 
-              (> parallelism (plan-model/max-selectable-parallelism plan))
+              (> parallelism (project-model/max-selectable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers available."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})}
                 "Add More"]])
-
-        (when (> parallelism (plan-model/max-selectable-parallelism plan))
+        (when (> parallelism (project-model/max-selectable-parallelism plan project))
           [:div.insufficient-trial
-           "Trials only come with " (plan-model/usable-containers plan) " available containers."
+           "Trials only come with " (plan-model/trial-containers plan) " available containers."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "plan"})}
                 "Add a plan"]]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
      ;; but only on the tiles between (allowed parallelism and their current parallelism]
-     (when (and (> (:parallel project) (plan-model/usable-containers plan))
+     (when (and (> (:parallel project) (project-model/usable-containers plan project))
                 (>= (:parallel project) parallelism)
-                (> parallelism (plan-model/usable-containers plan)))
+                (> parallelism (project-model/usable-containers plan project)))
        [:div.insufficient-minimum
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
@@ -233,7 +231,7 @@
                      :on-click #(raise! owner [:selected-project-parallelism
                                                {:project-id project-id
                                                 :parallelism parallelism}])
-                     :disabled (> parallelism (plan-model/max-selectable-parallelism plan))
+                     :disabled (> parallelism (project-model/max-selectable-parallelism plan project))
                      :checked (= parallelism (:parallel project))}]])])))])
 
 (defn parallel-builds [project-data owner]
@@ -368,7 +366,7 @@
            (describe-flag {:flag :oss
                            :title "Free and Open Source"
                            :blurb [:p
-                                   "Be part of our F/OSS beta! Organizations now have three free containers"
+                                   "Be part of our F/OSS beta! Organizations now have three free containers "
                                    "reserved for F/OSS projects; enabling this will allow this project's "
                                    "builds to use them and let others see your builds, both through the "
                                    "web UI and the API."]})
@@ -381,7 +379,13 @@
                                     [:p
                                      "If you have SSH keys or AWS credentials stored in your project settings and "
                                      "untrusted forks can make pull requests against your repo, then this option "
-                                     "isn't for you!"])})]])))))
+                                     "isn't for you!"])})
+           (describe-flag {:flag :osx
+                           :title "Build iOS project"
+                           :blurb [:p
+                                   "If this option is selected, then CircleCI will run builds for this project "
+                                   "on Mac OSX rather than Linux. Select this if you have an iOS application "
+                                   "that you want to build using CircleCI."]})]])))))
 
 (defn dependencies [project-data owner]
   (reify
@@ -394,7 +398,7 @@
         (html
          [:div.dependencies-page
           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your dependencies commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
@@ -441,7 +445,7 @@
         (html
          [:div.tests-page
           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
-          [:p 
+          [:p
            "You can also set your test commands from your "
            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
            "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
@@ -614,7 +618,8 @@
 
 (def status-styles
   {"badge" {:label "Badge" :string ".png?style=badge"}
-   "shield" {:label "Shield" :string ".svg?style=shield"}})
+   "shield" {:label "Shield" :string ".svg?style=shield"}
+   "svg" {:label "Badge" :string ".svg?style=svg"}})
 
 (def status-formats
   {"image" {:label "Image URL"
@@ -650,7 +655,7 @@
         project-name (vcs-url/project-name (:vcs_url project))
         gh-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
         target (str (.. js/window -location -origin) "/gh/" gh-path)
-        style (get-in project-data [:status-badges :style] "badge")
+        style (get-in project-data [:status-badges :style] "svg")
         image (str target (get-in status-styles [style :string]))
         image (if (seq token) (str image "&circle-token=" token) image)
         format (get-in project-data [:status-badges :format] "markdown")
@@ -763,10 +768,10 @@
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
-        (str "https://github.com/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
+        (str (gh-utils/http-endpoint) "/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
 
         (and (= "github-user-key" (:type key)) (= (:login key) (:login user)))
-        "https://github.com/settings/ssh"
+        (str (gh-utils/http-endpoint) "/settings/ssh")
 
         :else nil))
 
@@ -889,30 +894,29 @@
                [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
                [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls a "
                 [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
-                ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]])))))
+                ". Give this user exactly the permissions your build requires, then log into CircleCI as the machine user and associate its user key with your project."]]])]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
-  (.-innerHTML
-   (node
-    [:div
-     [:p "A token's scope limits what can be done with it."]
+  (hiccup->html-str
+   [:div
+    [:p "A token's scope limits what can be done with it."]
 
-     [:h5 "Status"]
-     [:p
-      "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
-      [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
-      " and "
-      [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
-      " for private projects."]
+    [:h5 "Status"]
+    [:p
+     "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
+     [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
+     " and "
+     [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
+     " for private projects."]
 
-     [:h5 "Build Artifacts"]
-     [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
+    [:h5 "Build Artifacts"]
+    [:p "Allows read-only access to build artifacts of any branch of the project. Its intended use is for serving files to deployment systems."]
 
-     [:h5 "All"]
-     [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
+    [:h5 "All"]
+    [:p "Allows full read-write access to this project in CircleCI. It is intended for full-fledged API clients which only need to access a single project."]
 
-     ])))
+    ]))
 
 (defn api-tokens [project-data owner]
   (reify
@@ -982,18 +986,6 @@
                                                                            :token token}])}
                     [:i.fa.fa-times-circle]
                     [:span " Remove"]]]])]])]])))))
-
-(defn artifacts [project-data owner]
-  (om/component
-   (html
-    [:div
-     [:h2 "Build artifacts for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
-     [:div.doc
-      [:p
-       "Circle supports saving files from any build. See "
-       [:a {:href "/docs/build-artifacts", :target "_blank"}
-        "our build artifact documentation‘"]
-       " to set it up."]]])))
 
 (defn heroku [data owner]
   (reify
@@ -1070,7 +1062,7 @@
         "our deployment documentation"]
        " to set it up."]]])))
 
-(defn aws [project-data owner]
+(defn aws-keys-form [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -1084,9 +1076,7 @@
             project-id (project-model/id project)
             input-path (fn [& ks] (apply conj state/inputs-path :aws :keypair ks))]
         (html
-         [:div.aws-page
-          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
-          [:div.aws-page-inner
+          [:div
            [:p "Set the AWS keypair to be used for authenticating against AWS services during your builds. "
             "Credentials are installed on your containers into the " [:code "~/.aws/config"] " and "
             [:code "~/.aws/credentials"] " properties files. These are read by common AWS libraries such as "
@@ -1109,7 +1099,8 @@
 
             [:div.buttons
               (forms/managed-button
-               [:input {:data-failed-text "Failed"
+               [(if (and access_key_id secret_access_key) :input.save :input)
+                       {:data-failed-text "Failed"
                         :data-success-text "Saved"
                         :data-loading-text "Saving..."
                         :value "Save AWS keys"
@@ -1127,7 +1118,192 @@
                                 :on-click #(do
                                            (raise! owner [:edited-input {:path (input-path) :value nil}])
                                            (raise! owner [:saved-project-settings {:project-id project-id}])
-                                           false)}]))]]]])))))
+                                           false)}]))]]])))))
+
+(defn aws [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)]
+        (html
+         [:div.aws-page
+          [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+          [:div.aws-page-inner
+            (om/build aws-keys-form project-data)]])))))
+
+
+(defn aws-codedeploy-app-name [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         [:form
+          [:input#application-name
+            {:required true, :type "text"
+             :on-change #(utils/edit-input owner (conj state/inputs-path :project-settings-codedeploy-app-name) %)}]
+          [:label {:placeholder "Application Name"}]
+          [:input {:value "Add app settings",
+                   :type "submit"
+                   :on-click #(do
+                               (raise! owner [:new-codedeploy-app-name-entered])
+                               false)}]]]))))
+
+(defn aws-codedeploy-app-details [project-data owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [project (:project project-data)
+            applications (get-in project [:aws :services :codedeploy])
+            [app-name _] (first applications)]
+        (utils/popover "#app-root-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Application Root"
+                        :content (hiccup->html-str [:p "The directory in your repo to package up into an application revision. "
+                                                    "This is relative to your repo's root, " [:code "/"] " means the repo's root "
+                                                    "directory, " [:code "/app"] " means the app directory in your repo's root "
+                                                    "directory."])})
+        (utils/popover "#bucket-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Revision Location: Bucket Name"
+                        :content (hiccup->html-str [:p "The name of the S3 bucket CircleCI should store application revisions for \"" (name app-name) "\" in."])})
+        (utils/popover "#key-pattern-popover-hack"
+                       {:html true :delay 0 :animation false
+                        :placement "right" :title "Revision Location: Key Pattern"
+                        :content (hiccup->html-str [:p "A template used to construct S3 keys for storing application revisions."
+                                           "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy#key-patterns"} "substitution variables"]
+                                           " in the Key Pattern to generate a unique key for each build."])})))
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+            applications (utils/deep-merge (get-in project [:aws :services :codedeploy])
+                                           (get-in inputs [:aws :services :codedeploy]))
+
+            [app-name settings] (first applications)
+            {:keys [bucket key_pattern]} (-> settings :revision_location :s3_location)
+            application-root (:application_root settings)
+            aws-region (:region settings)
+
+            project-id (project-model/id project)
+            input-path (fn [& ks] (apply conj state/inputs-path :aws :services :codedeploy ks))]
+        (html
+         [:form
+          [:legend (name app-name)]
+
+          [:fieldset
+           [:div.styled-select
+            [:select {:class (when (not aws-region) "placeholder")
+                      :value (or aws-region "")
+                      ;; Updates the project cursor in order to trigger a re-render
+                      :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+             [:option {:value ""} "Choose AWS Region..."]
+             [:option {:disabled "disabled"} "-----"]
+             [:option {:value "us-east-1"} "us-east-1"]
+             [:option {:value "us-west-2"} "us-west-2"]]
+            [:i.fa.fa-chevron-down]]
+
+           [:div.input-with-help
+            [:input#application-root
+             {:required true, :type "text", :value (or application-root "")
+              :on-change #(utils/edit-input owner (input-path app-name :application_root) %)}]
+            [:label {:placeholder "Application Root"}]
+            [:i.fa.fa-question-circle#app-root-popover-hack {:title "Application Root"}]]]
+
+          [:fieldset
+           [:h5 "Revision Location"]
+           [:div.input-with-help
+            [:input#s3-bucket
+             {:required true, :type "text", :value (or bucket "")
+              :on-change #(utils/edit-input owner (input-path app-name :revision_location :s3_location :bucket) %)}]
+            [:label {:placeholder "Bucket Name"}]
+            [:i.fa.fa-question-circle#bucket-popover-hack {:title "S3 Bucket Name"}]]
+
+           [:div.input-with-help
+            [:input#s3-key-prefix
+             {:required true, :type "text", :value (or key_pattern "")
+              :on-change #(utils/edit-input owner (input-path app-name :revision_location :s3_location :key_pattern) %)}]
+            [:label {:placeholder "Key Pattern"}]
+            [:i.fa.fa-question-circle#key-pattern-popover-hack {:title "S3 Key Pattern"}]]]
+
+          [:div.buttons
+           (forms/managed-button
+            [:input.save {:data-failed-text "Failed",
+                          :data-success-text "Saved",
+                          :data-loading-text "Saving...",
+                          :value "Save app",
+                          :type "submit"
+                          :on-click #(do
+                                      (raise! owner [:edited-input {:path (input-path app-name :revision_location :revision_type) :value "S3"}])
+                                      (raise! owner [:saved-project-settings {:project-id project-id
+                                                                              :merge-paths [[:aws :services :codedeploy]]}])
+                                      false)}])
+           (forms/managed-button
+            [:input.remove {:data-failed-text "Failed",
+                            :data-success-text "Removed",
+                            :data-loading-text "Removing...",
+                            :value "Remove app",
+                            :type "submit"
+                            :on-click #(do
+                                         (raise! owner [:edited-input {:path (input-path) :value nil}])
+                                         (raise! owner [:saved-project-settings {:project-id project-id}])
+                                         false)}])]])))))
+
+(defn aws-codedeploy [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            applications (get-in project [:aws :services :codedeploy])
+            app-name (some-> applications first key)]
+        (html
+         [:div.aws-codedeploy
+          [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
+          [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
+              "Check out our " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy"} "getting started with CodeDeploy"]
+              " guide for detailed information on getting set up."]
+          [:div.aws-page-inner
+            [:div.aws-codedeploy-step
+             [:h4 "Step 1"]
+              (om/build aws-keys-form project-data)]
+
+            [:div.aws-codedeploy-step
+             [:h4 "Step 2"]
+             [:p "[Optional] Configure application-wide settings."]
+             [:p "This is useful if you deploy the same app to multiple deployment groups "
+                 "(e.g. staging, production) depending on which branch was built. "
+                 "With application settings configured in the UI you only need to set the "
+                 "deployment group and, optionally, deployment configuration, in each deployment "
+                 "block in your " [:a {:href "/docs/configuration#deployment"} "circle.yml file"] ". "
+                 "If you skip this step you will need to add all deployment settings into your circle.yml file."]
+             (if (not (seq applications))
+               ;; No settings set, need to get the application name first
+               (om/build aws-codedeploy-app-name project-data)
+               ;; Once we have an application name we can accept the rest of the settings
+               (om/build aws-codedeploy-app-details project-data))]
+            [:div.aws-codedeploy-step
+             [:h4 "Step 3"]
+             [:p "Add deployment settings to your "
+                 [:a {:href "/docs/configuration#deployment"} "circle.yml file"]
+                 " (example below)."]
+             [:pre
+              [:code
+               "deployment:\n"
+               "  staging:\n"
+               "    branch: master\n"
+               "    codedeploy:\n"
+               (if app-name
+                 (str "      " (name app-name) ":\n"
+                      "        deployment_group: my-deployment-group\n")
+                 (str "      appname-1234:\n"
+                      "        application_root: /\n"
+                      "        region: us-east-1\n"
+                      "        revision_location:\n"
+                      "          revision_type: S3\n"
+                      "          s3_location:\n"
+                      "            bucket: my-bucket\n"
+                      "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
+                      "        deployment_group: my-deployment-group\n"))]]]]])))))
 
 (defn follow-sidebar [project owner]
   (reify
@@ -1178,7 +1354,7 @@
            [:div.loading-spinner common/spinner]
            [:div#project-settings
             [:aside sidebar]
-            [:div.project-settings-inner
+            [:div.project-settings-inner {:style {:overflow (if (= :aws-codedeploy subpage) "visible" "auto")}}
              (om/build common/flashes (get-in data state/error-message-path))
              [:div#subpage
               (condp = subpage
@@ -1193,9 +1369,9 @@
                 :ssh (om/build ssh-keys project-data)
                 :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
                 :api (om/build api-tokens project-data)
-                :artifacts (om/build artifacts project-data)
                 :heroku (om/build heroku {:project-data project-data :user user})
                 :deployment (om/build other-deployment project-data)
                 :aws (om/build aws project-data)
+                :aws-codedeploy (om/build aws-codedeploy project-data)
                 (om/build overview project-data))]]
             (om/build follow-sidebar (:project project-data))]))))))

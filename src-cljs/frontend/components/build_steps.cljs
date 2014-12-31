@@ -17,8 +17,7 @@
             goog.string.format
             goog.fx.dom.Scroll
             goog.fx.easing)
-  (:require-macros [frontend.utils :refer [html]]
-                   [dommy.macros :refer [sel1]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn source-type [source]
   (condp = source
@@ -110,7 +109,7 @@
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
                      {:on-click #(let [node (om/get-node owner)
-                                       body (sel1 "body")]
+                                       body (.-body js/document)]
                                    (set! (.-scrollTop body) (- (+ (.-y (goog.style/getRelativePosition node body))
                                                                   (.-height (goog.style/getSize node)))
                                                                (.-height (goog.dom/getViewportSize)))))}]
@@ -194,7 +193,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (let [body (sel1 "body")
+        (let [body (.-body js/document)
               very-large-numer 10000000]
           (set! (.-scrollTop body) very-large-numer))))
     om/IRender
@@ -212,7 +211,7 @@
                                               (check-autoscroll owner (aget e "deltaY"))
                                               (when (not= 0 (aget e "deltaX"))
                                                 (.preventDefault e)
-                                                (let [body (sel1 "body")]
+                                                (let [body (.-body js/document)]
                                                   (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
                                   :on-scroll (fn [e]
                                                ;; prevent handling scrolling if we're animating the

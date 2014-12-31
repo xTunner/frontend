@@ -14,8 +14,7 @@
             [goog.net.EventType :as gevt]
             [goog.style]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing defrender)]
-                   [dommy.macros :refer [sel1]])
+  (:require-macros [frontend.utils :refer [inspect timing defrender]])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
@@ -249,11 +248,11 @@
                                  (str title  " - CircleCI")
                                  "CircleCI"))))
 
-(defn scroll-to-fragment!
-  "Scrolls to the element with id of fragment, if one exists"
-  [fragment]
-  (when-let [node (goog.dom.getElement fragment)]
-    (let [body (sel1 "body")
+(defn scroll-to-id!
+  "Scrolls to the element with given id, if node exists"
+  [id]
+  (when-let [node (goog.dom.getElement id)]
+    (let [body (.-body js/document)
           node-top (goog.style/getPageOffsetTop node)
           body-top (goog.style/getPageOffsetTop body)]
       (set! (.-scrollTop body) (- node-top body-top)))))
@@ -263,10 +262,27 @@
   [args]
   (if (:_fragment args)
     ;; give the page time to render
-    (rAF #(scroll-to-fragment! (:_fragment args)))
-    (rAF #(set! (.-scrollTop (sel1 "body")) 0))))
+    (rAF #(scroll-to-id! (:_fragment args)))
+    (rAF #(set! (.-scrollTop (.-body js/document)) 0))))
 
 (defn react-id [x]
   (let [id (aget x "_rootNodeID")]
     (assert id)
     id))
+
+(defn text [elem]
+  (or (.-textContent elem) (.-innerText elem)))
+
+(defn set-html!
+  "Set the innerHTML of `elem` to `html`"
+  [elem html]
+  (set! (.-innerHTML elem) html)
+  elem)
+
+(defn sel1
+  ([selector] (sel1 js/document selector))
+  ([parent selector]
+   (.querySelector parent selector)))
+
+(defn node-list->seqable [node-list]
+  (js/Array.prototype.slice.call node-list))

@@ -1,6 +1,7 @@
 <!--
 
 title: Test Android applications
+short_title: Android
 last_updated: Oct 17, 2014
 
 -->
@@ -127,8 +128,10 @@ test:
   override:
   - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
       background: true
+      parallel: true
   - # start your build here
-  - ./wait.sh
+  - ./wait.sh:
+      parallel: true
   - # install your APK
   - # run your tests
 ```
@@ -214,6 +217,20 @@ adb logcat -d
 popd
 exit $RETVAL
 ```
+
+
+### Disable pre-Dexing to improve build performance
+
+By default gradle pre-dexes dependencies, converting their Java bytecode into
+Android bytecode. This speeds up development greatly since gradle only needs to
+do incremental dexing as you change code.
+
+Because CircleCI always runs clean builds this pre-dexing has no benefit, in fact
+it makes compilation slower and can also use large quantities of memory.
+We recommend [disabling
+pre-dexing](http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.)
+for Android builds on CircleCI.
+
 
 Please don't hesitate to [contact us](mailto:sayhi@circleci.com)
 if you have any questions at all about how to best test Android on

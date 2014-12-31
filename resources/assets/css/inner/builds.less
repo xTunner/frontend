@@ -66,6 +66,7 @@
   .sub-head-content {
     padding-top: 1em;
     padding-left: 1em;
+    padding-right: 1em;
     pre, p {
       margin: 0;
     }
@@ -192,6 +193,15 @@
   ol {
     margin: 0 2em;
   }
+}
+.build-tests-list {
+  .filename {
+    &:not(:first-child) {
+      padding-top: 1em;
+    }
+    margin-left: -2em;
+  }
+
 }
 
 .build-artifacts-list {

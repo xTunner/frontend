@@ -7,6 +7,7 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
@@ -22,6 +23,7 @@
          [:section
           [:p "We would like to thank the following people for responsibly disclosing security issues to us."]]
          [:ul
+          [:li [:a {:href "https://github.com/jtmarmon"} "Jason Marmon"] " (2014-12-15)"]
           [:li [:a {:href "https://twitter.com/exploitprotocol"} "Aditya Agrawal"] " (2014-04-07)"]
           [:li [:a {:href "http://kevinmccarthy.org/"} "Kevin McCarthy"] " (2014-04-07)"]
           [:li [:a {:href "https://twitter.com/gazly"} "J.m.Gazzaly"] " (2014-03-27)"]
@@ -84,7 +86,7 @@
           [:p
            "To run your tests, we need to check out your code from GitHub. When you sign up for Circle, you tell GitHub that you are authorizing us to check out your private repositories. You may revoke this permission at any time through your "
            [:a
-            {:href "https://github.com/settings/applications"}
+            {:href (str (gh-utils/http-endpoint) "/settings/applications")}
             "GitHub application settings page"]
            " and by removing Circle's " [:em "Deploy Keys"] " and " [:em "Service Hooks"] " from your repositories' " [:em "Admin"] " pages."]
           [:p
@@ -96,7 +98,7 @@
           [:p
            "We do not currently have a button to delete your account, but we will be adding one soon. If you need your account canceled and your data deleted, please contact us at "
            [:a {:href "mailto:sayhi@circleci.com"} "sayhi@circleci.com"] ". To remove Circle's access to your GitHub account, you can remove it via your "
-           [:a {:href "https://github.com/settings/applications"} "GitHub application settings page"] "."
+           [:a {:href (str (gh-utils/http-endpoint) "/settings/applications")} "GitHub application settings page"] "."
            " You should also remove Circle's " [:em "Deploy Keys"] " and " [:em "Service Hooks"] " from your repositories' " [:em "Admin"] " pages."]]
          [:section
           [:h3 "Disclosure"]

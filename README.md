@@ -1,5 +1,7 @@
 # CircleCI's frontend
 
+[![Circle CI](https://circleci.com/gh/circleci/frontend.svg?style=svg)](https://circleci.com/gh/circleci/frontend)
+
 This is an open-source mirror of the code that is running
 [CircleCI's](https://circleci.com) frontend. CircleCI provides powerful
 Continuous Integration and Deployment with easy setup and maintenance.
@@ -9,6 +11,14 @@ application.
 
 
 ## Dependencies and Setup
+
+### Submodules
+
+The frontend uses some git submodules that you need to checkout:
+
+```
+git submodule update --init
+```
 
 ### Node.js
 
@@ -33,7 +43,13 @@ Install [Leiningen](http://leiningen.org/).
 In your `/etc/hosts`, add the following line:
 
 ```
-127.0.0.1 circlehost
+127.0.0.1 prod.circlehost
+```
+
+If you have access to the backend code, you can also add this line:
+
+```
+127.0.0.1 dev.circlehost
 ```
 
 
@@ -43,40 +59,45 @@ In your `/etc/hosts`, add the following line:
 
 Two processes must be running while you work.
 
-First, the HTTP server that will serve the compiled assets:
+First, start the HTTP server that will serve the compiled assets on port 3000:
 
 ```
 lein run
 ```
 
-That will start a server on port 8080, letting you use your locally compiled
-assets on https://circleci.com.
-
 Second, the frontend clojurescript asset compiler:
 
 ```
-lein cljsbuild auto dev
+lein figwheel dev
+```
+
+### Asset Compilation Errors
+
+If you are experiencing errors when building assets the following commands may
+help reset all cached state:
+
+```
+lein clean
+lein cljsbuild once
 ```
 
 ### Sanity Check
 
 To test that everything worked, visit
-[http://circlehost:8080/assets/css/app.css](http://circlehost:8080/assets/css/app.css)
-and
-[http://circlehost:8080/assets/js/om-dev.js.stefon](http://circlehost:8080/assets/js/om-dev.js.stefon)
-in your browser.
+http://prod.circlehost:3000/assets/css/app.css and
+http://prod.circlehost:3000/assets/js/om-dev.js.stefon in your browser.
 
-### Production Backend
+### Production & Development Backends
 
 Now you should have everything you need to start hacking on Circle's frontend!
 
-Visit
-[https://circleci.com?use-local-assets=true&om-build-id=dev](https://circleci.com?use-local-assets=true&om-build-id=dev)
-in Chrome. You'll see a page with the text "Help". You'll need to click the
-shield in the URL bar and click "Load unsafe script".
+Visit http://prod.circlehost:3000?om-build-id=dev for the a production backend
+with locally build development assets. Again, if you've got access to the
+backend code (NOTE: it's not open source), you can run it locally on
+`circlehost:8080`. To connect to the development backend, visit
+http://dev.circlehost:3000. The dev server will default to dev assets, so you
+don't need the query parameter.
 
-If everything worked properly, you should see the normal CircleCI website. If
-things didn't work properly, please open an issue.
+**NOTE:** login and logout will invalidate the session, so you'll need to use
+the `?om-build-id=dev` query parameter again. This will be fixed soon.
 
-To get back to the website using the default assets, visit
-[https://circleci.com?use-local-assets=false&om-build-id=production](https://circleci.com?use-local-assets=false&om-build-id=production).

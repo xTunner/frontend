@@ -6,6 +6,7 @@
             [frontend.api :as api]
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
+            [frontend.components.build-head :refer (default-tab)]
             [frontend.favicon]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -14,7 +15,7 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-fragment! scroll!]]
+            [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-id! scroll!]]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -164,6 +165,7 @@
       (api/get-projects api-ch))
     (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
+              build (:resp api-result)
               scopes (:scopes api-result)]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           ;; Start 404'ing on non-existent builds, as well as when you
@@ -176,7 +178,12 @@
             :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
-            (analytics/track-build current-user (:resp api-result)))
+            (analytics/track-build current-user build))
+          ;; Preemptively make the usage-queued API call if we're going to display the
+          ;; the usage queued tab by default.
+          ;; This feels like a weird bit of non-locality, but I can't think of a better solution. :(
+          (when (= :usage-queue (default-tab build))
+            (api/get-usage-queue build api-ch))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
@@ -209,13 +216,32 @@
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
-          (put! api-ch [:organizations (:status api-result) api-result])
-          (when-let [first-org (first (:resp api-result))]
-            (put! (get-in current-state [:comms :controls]) [:selected-add-projects-org {:login (:login first-org) :type :org}]))))
+          (put! api-ch [:organizations (:status api-result) api-result])))
     (ajax/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
   (set-page-title! "Add projects")
   (analytics/track-signup))
 
+
+(defmethod navigated-to :invite-teammates
+  [history-imp navigation-point args state]
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point
+             :navigation-data args
+             :navigation-settings {})
+      (assoc-in [:invite-data :org] (:org args))))
+
+(defmethod post-navigated-to! :invite-teammates
+  [history-imp navigation-point args previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])
+        org (:org args)]
+    ; get the list of orgs
+    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
+      (put! api-ch [:organizations (:status api-result) api-result])))
+    (when org
+      (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/members" org)))]
+            (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))
+    (set-page-title! "Invite teammates")))
 
 (defmethod navigated-to :project-settings
   [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
@@ -438,3 +464,10 @@
   [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
   (post-default navigation-point args)
   (analytics/track-page "View Language Landing" {:language language}))
+
+(defmethod post-navigated-to! :integrations
+  [history-imp navigation-point {:keys [integration] :as args} previous-state current-state]
+  (let [titles {:docker "CircleCI and Docker"
+                :heroku "Deploy to Heroku from CircleCI"
+                :saucelabs "Test with Sauce Labs on CircleCI"}]
+    (set-page-title! (get titles integration))))

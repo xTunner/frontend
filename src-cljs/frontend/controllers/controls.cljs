@@ -22,8 +22,7 @@
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
             goog.style)
-  (:require-macros [dommy.macros :refer [sel sel1]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.fx.dom.Scroll]))
 
 ;; --- Helper Methods ---
@@ -146,14 +145,6 @@
   [target message _ state]
   (update-in state state/user-options-shown-path not))
 
-(defmethod control-event :invite-form-opened
-  [target message _ state]
-  (assoc-in state state/user-options-shown-path false))
-
-(defmethod post-control-event! :invite-form-opened
-  [_ _ _ _ _ _]
-  (utils/open-modal "#inviteForm"))
-
 (defmethod control-event :state-restored
   [target message path state]
   (let [str-data (.getItem js/sessionStorage "circle-state")]
@@ -186,6 +177,7 @@
   (let [login (:login args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
+    (utils/scroll-to-id! "project-listing")
     (ajax/ajax :get
                (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
                :repos
@@ -225,9 +217,9 @@
 
 (defmethod post-control-event! :container-selected
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
-  (when-let [parent (sel1 target "#container_parent")]
-    (let [container (sel1 target (str "#container_" container-id))
-          body (sel1 target "body")
+  (when-let [parent (goog.dom/getElement "container_parent")]
+    (let [container (goog.dom/getElement (str "container_" container-id))
+          body (.-body js/document)
           current-scroll-top (.-scrollTop parent)
           body-scroll-top (.-scrollTop body)
           current-scroll-left (.-scrollLeft parent)
@@ -310,14 +302,14 @@
 
 (defmethod control-event :invite-selected-all
   [target message _ state]
-  (update-in state state/build-github-users-path (fn [users]
-                                                   (vec (map #(assoc % :checked true) users)))))
+  (update-in state state/invite-github-users-path (fn [users]
+                                                    (vec (map #(assoc % :checked true) users)))))
 
 
 (defmethod control-event :invite-selected-none
   [target message _ state]
-  (update-in state state/build-github-users-path (fn [users]
-                                                   (vec (map #(assoc % :checked false) users)))))
+  (update-in state state/invite-github-users-path (fn [users]
+                                                    (vec (map #(assoc % :checked false) users)))))
 
 
 (defmethod control-event :dismiss-config-errors
@@ -438,13 +430,13 @@
   [target message _ previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])
         current-container-id (get-in current-state state/current-container-path 0)
-        parent (sel1 target "#container_parent")
+        parent (goog.dom/getElement "container_parent")
         parent-scroll-left (.-scrollLeft parent)
-        current-container (sel1 target (str "#container_" current-container-id))
+        current-container (goog.dom/getElement (str "container_" current-container-id))
         current-container-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent)))
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
-                            (sel parent ".container-view"))
+                            (utils/node-list->seqable (goog.dom/getElementsByClass "container-view" parent)))
         new-scrolled-container-id (if (= parent-scroll-left current-container-scroll-left)
                                     current-container-id
                                     (if-not (engine/isGecko)
@@ -549,10 +541,10 @@
   "Takes the state of project settings inputs and PUTs the new settings to
   /api/v1/project/:project/settings.
 
-  `merge-path` is a path into the nested project data-structure. When
-  merge-path is non-nil the part of the project data-structure at that path is
-  used as the base values for the settings. The new settings from the inputs
-  state are merged on top.
+  `merge-paths` is a list of paths into the nested project data-structure.
+  When a merge-path is non-nil the part of the project data-structure at
+  that path is used as the base values for the settings. The new settings
+  from the inputs state are merged on top.
 
   This allows all the settings on a page to be submitted, even if the user only
   modifies one.
@@ -566,7 +558,7 @@
   The user sets a new access key ID so inputs is
     {:aws {:keypair {:access_key_id \"new key id\"}}}
 
-  :merge-path is [:aws :keypair]
+  :merge-paths is [[:aws :keypair]]
 
   The settings posted to the settings API will be:
     {:aws {:keypair {:access_key_id \"new key id\"
@@ -592,6 +584,16 @@
     (go
       (let [api-result (<! (save-project-settings project-id merge-paths current-state))]
         (release-button! uuid (:status api-result))))))
+
+
+(defmethod control-event :new-codedeploy-app-name-entered
+  [target message _ state]
+  (let [app-name (get-in state (conj state/inputs-path :project-settings-codedeploy-app-name))]
+    (if (seq app-name)
+      (-> state
+          (update-in (conj state/project-path :aws :services :codedeploy) assoc app-name {})
+          (assoc (conj state/inputs-path :project-settings-codedeploy-app-name) nil))
+      state)))
 
 
 (defmethod post-control-event! :saved-ssh-key
@@ -700,24 +702,28 @@
 
 
 (defmethod post-control-event! :invited-github-users
-  [target message {:keys [project-name invitees]} previous-state current-state]
-  (button-ajax :post
-               (gstring/format "/api/v1/project/%s/users/invite" project-name)
-               :invite-github-users
-               (get-in current-state [:comms :api])
-               :context {:project-name project-name}
-               :params invitees)
-  ;; TODO: move all of the tracking stuff into frontend.analytics and let it
-  ;;      keep track of which service to send things to
-  (mixpanel/track "Sent invitations" {:first_green_build true
-                                      :project project-name
-                                      :users (map :login invitees)})
-  (doseq [u invitees]
-    (mixpanel/track "Sent invitation" {:first_green_build true
-                                       :project project-name
-                                       :login (:login u)
-                                       :id (:id u)
-                                       :email (:email u)})))
+  [target message {:keys [project-name org-name invitees]} previous-state current-state]
+  (let [context (if project-name
+                  ;; TODO: non-hackish way to indicate the type of invite
+                  {:project project-name :first_green_build true}
+                  {:org org-name})]
+    (button-ajax :post
+                 (if project-name
+                   (gstring/format "/api/v1/project/%s/users/invite" project-name)
+                   (gstring/format "/api/v1/organization/%s/invite" org-name))
+                 :invite-github-users
+                 (get-in current-state [:comms :api])
+                 :context context
+                 :params invitees)
+    ;; TODO: move all of the tracking stuff into frontend.analytics and let it
+    ;;      keep track of which service to send things to
+    (mixpanel/track "Sent invitations" (merge {:users (map :login invitees)}
+                                              context))
+    (doseq [u invitees]
+      (mixpanel/track "Sent invitation" (merge {:login (:login u)
+                                                :id (:id u)
+                                                :email (:email u)}
+                                               context)))))
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
@@ -744,25 +750,14 @@
                :context {:project-name project-name
                          :project-id project-id}))
 
-(defmethod post-control-event! :extend-trial-clicked
-  [target message {:keys [org-name]} previous-state current-state]
-  (let [uuid frontend.async/*uuid*
-        api-ch (get-in current-state [:comms :api])]
-    (go (let [api-result (<! (ajax/managed-ajax
-                              :post
-                              (gstring/format "/api/v1/organization/%s/extend-trial" org-name)
-                              :params {:org-name org-name}))]
-          (put! api-ch [:org-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
-          (release-button! uuid (:status api-result))))
-    (analytics/track-extend-trial)))
-
-
 (defmethod post-control-event! :new-plan-clicked
   [target message {:keys [containers price description paid]} previous-state current-state]
+  (utils/mlog "handling new-plan-clicked")
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         org-name (get-in current-state state/org-name-path)]
+    (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
           (condp = message
@@ -824,7 +819,8 @@
                            :params {:containers containers}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))
-    (analytics/track-save-containers)))
+    (let [upgrade? (> containers (get-in previous-state (conj state/org-plan-path :containers)))]
+      (analytics/track-save-containers upgrade?))))
 
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
@@ -1070,7 +1066,7 @@
   (let [comms (get-in current-state [:comms])]
     (go (let [api-result (<! (ajax/managed-ajax :get "/search-articles" :params {:query query}))]
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
-          (when (= (:success (:status api-result)))
+          (when (= :success (:status api-result))
             (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
 
 (defmethod control-event :build-header-tab-clicked
@@ -1079,7 +1075,7 @@
 
 (defmethod post-control-event! :home-scroll-1st-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1088,7 +1084,7 @@
 
 (defmethod post-control-event! :home-scroll-2nd-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1097,7 +1093,7 @@
 
 (defmethod post-control-event! :home-scroll-3rd-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1106,7 +1102,7 @@
 
 (defmethod post-control-event! :home-scroll-4th-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1115,7 +1111,7 @@
 
 (defmethod post-control-event! :home-scroll-5th-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1124,7 +1120,7 @@
 
 (defmethod post-control-event! :home-scroll-logo-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1138,3 +1134,7 @@
 (defmethod control-event :toolset-clicked
   [target message {:keys [toolset]} state]
   (assoc-in state state/selected-toolset-path toolset))
+
+(defmethod control-event :pricing-parallelism-clicked
+  [target message {:keys [p]} state]
+  (assoc-in state state/pricing-parallelism-path p))

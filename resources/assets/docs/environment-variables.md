@@ -99,6 +99,12 @@ We publish the details of the currently running build in these variables:
   <dd>
     The GitHub login of the user who either pushed the code to GitHub or triggered the build from the UI/API.
   </dd>
+  <dt>
+    `CIRCLE_TEST_REPORTS`
+  </dt>
+  <dd>
+    The directory whose contents are automatically processed as [JUnit test metadata](/docs/test-metadata).
+  </dd>
 
 </dl>
 
@@ -173,6 +179,10 @@ git history.  Instead, you can add environment variables using the
 
 All commands and data on CircleCI's VMs can be accessed by any of your colleagues&mdash;we run your arbitrary code, so it is not possible to secure.
 Take this into account before adding important credentials that some colleagues do not have access to.
+
+It's important to note that environment variables configured through
+the UI are exported during the `machine` section of the build.  This
+means you cannot read UI environment variables during the `machine: pre`.
 
 #### Per-command environment variables
 

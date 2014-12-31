@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [clojure.string :as string]
-            [dommy.core :as dommy]
             [goog.dom.DomHelper]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -13,17 +12,16 @@
 
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-;; TODO: these should come from render-context
-(def pusher-key (if (env/production?)
-                  "7b71d1fda6ea5563b574"
-                  "5254dcaa34c3f603aca4"))
+(defn pusher-key []
+  (-> js/window
+      (aget "renderContext")
+      (aget "pusherAppKey")))
 
 (defn new-pusher-instance [& {:keys [key]
-                              :or {key pusher-key}}]
+                              :or {key (pusher-key)}}]
   (aset (aget js/window "Pusher") "channel_auth_endpoint" "/auth/pusher")
   (js/Pusher. key (clj->js {:encrypted true
                             :auth {:params {:CSRFToken (utils/csrf-token)}}
-                            ;; this doesn't seem to work (outdated client library?)
                             :authEndpoint "/auth/pusher"})))
 
 (defn user-channel [user]
