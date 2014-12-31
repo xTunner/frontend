@@ -32,7 +32,7 @@
           [:h2 "Why you'll love working at CircleCI"]
           [:p
            [:strong "Our culture is customer-driven."]
-           " Our customers and our founders are engineers, and most of our employees are too. We are inspired by companies like "
+           " Our customers and our founders are developers, and most of our employees are too. We are inspired by companies like "
            [:a {:href "http://blog.alexmaccaw.com/stripes-culture"} "Stripe,"]
            " "
            [:a {:href "http://gigaom.com/2012/03/26/tales-from-the-trenches-github/"} "GitHub,"]
@@ -41,18 +41,18 @@
            " and "
            [:a {:href "http://www.valvesoftware.com/company/Valve_Handbook_LowRes.pdf"} "Valve."]]
           [:p
-           [:strong "We have a flat organization."]
-           " There are no managers, no org-chart and no hierarchy, and we plan to keep it that way for as long as possible. Everyone gets access to all company information and can be involved in decision-making. By keeping communication open and transparent, we believe everybody is able to make good decisions about the best thing to work on."]
+           [:strong "We have an empowering organization."]
+           "Everyone gets access to all company information and can be involved in decision-making. By keeping communication open and transparent, we believe everybody is able to make good decisions about the best thing to work on."]
           [:p
            [:strong
             "We have a very strong focus on productivity, and on shipping product."]
            " This means you'll have a lot of days where you finish the day with the happy glow of having achieved something. We ship often, and shape our work lives around enabling that."]
           [:p
            [:strong "We spend a lot of time talking to customers."]
-           " We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too. This means you'll probably spend significant time listening to and fixing their problems. We refer to that as \"support\", but really think of it as \"customer development\"."]
+           " We make it really easy for customers to reach out to us, and we reach out to them to ask for their feedback too. We pride ourselves in being customer-driven."]
           [:p
            [:strong "We use cool technology."]
-           " Our backend is written in Clojure. Everything from managing LXC containers to package management to serving our REST API is all done in Clojure. This allows us to be really productive, handle concurrency with ease, and leads to beautiful manageable code. Clojure isn't just a fancy new language, it's the most productive, powerful and elegant language we've ever used. So much so, that we're in the process of switching our frontend over to ClojureScript."]
+           " Our backend is written in Clojure. Everything from managing LXC containers to package management to serving our REST API is all done in Clojure. This allows us to be really productive, handle concurrency with ease, and leads to beautiful manageable code. Clojure isn't just a fancy new language, it's the most productive, powerful and elegant language we've ever used. So much so, that we've open sourced our front-end, and switched it over to ClojureScript."]
           [:p
            [:strong
             "At a small growing company, your work has a disproportionate effect."]
@@ -98,7 +98,7 @@
              "Folks with an interest in the whole company, not just their job. Our transparent culture allows everyone to take a holistic view of the company. As a result, we really like people who enjoy getting familiar with the whole business, customers, product, culture, selling, etc."]]]
 
           [:div#engineer
-           [:h3 [:span "Engineering roles"]]
+           [:h3 [:span "Developer roles"]]
            [:p
             "We're looking for great engineers: whether you've 10 years of experience shipping products, or are new to the industry with talent to burn and a fire in your belly, we need you to have amazing coding chops."]
            [:h5 "We'd love to see"]
@@ -125,9 +125,25 @@
             [:li
              "Experience building fat JS apps, stateful HTML5 apps, and data visualizations."]
             [:li "Good product and user experience sensibilities."]]
+           [:h5 "Actively Hiring"]
+           [:h5
+            [:strong "Support Engineer"]
+            " — are you empathetic to developers and love to problem-solve? We’d love to talk to you if you:"]
+           [:ul
+            [:li
+             "Have a strong familiarity with a broad spectrum of technology stacks, including Rails, Python, PHP, Node, Java, and others."]
+            [:li "Have the ability to dive into a codebase easily to discover issues."]
+            [:li "Have a customer-centric and diplomatic writing style: you'll be helping customers from a wide range of backgrounds, languages, and experience levels."]
+            [:li
+             "Love talking to people and helping them solve problems."]
+            [:li "Really want to assist developers in being happy and successful."]
+            [:li
+             "Have significant technical ability, with an understanding of the developer mindset, tools and culture."]
+            [:li
+             "Have the ability to fix problems that come up often so that they never happen to any customer again."]]
            [:a
             {:role "button", :href "/jobs#apply"}
-            [:span "Apply for Engineering roles"]]]
+            [:span "Apply for Developer roles"]]]
 
           [:div#designer
            [:h3 [:span "Design roles"]]
@@ -146,15 +162,66 @@
            [:h5 "We would love to see"]
            [:ul
              [:li "An aptitude in many skill sets and a hunger for learning."]
-             [:li "The ability to communicate effeciently in a developer-centric environment."]
+             [:li "The ability to communicate efficiently in a developer-centric environment."]
              [:li "A keen eye and a very strong sense of taste."]
              [:li "A deep understanding of web design and development best practices."]
              [:li "Work you've done for other web-based developer tools."]
              [:li "Any other interesting work you wish to share, finished or not."]
              [:li "A willingness to approach sophisticated problems."]]
+           [:h5 "Actively Hiring"]
+           [:h5
+            [:strong "Designer"]
+            " — do you thrive on creating a customer experience that’s visually delightful? If so, you’ll fit in if you have:"]
+           [:ul
+            [:li
+             "An aptitude in many skill sets and a hunger for learning."]
+            [:li "The ability to communicate efficiently in a developer-centric environment."]
+            [:li "A keen eye and a very strong sense of taste."]
+            [:li
+             "A deep understanding of web design and development best practices."]
+            [:li "Work you've done for other web-based developer tools."]
+            [:li
+             "Any other interesting work you wish to share, finished or not."]
+            [:li
+             "A willingness to approach sophisticated problems."]]
            [:a
             {:role "button", :href "/jobs#apply"}
             [:span "Apply for Design roles"]]]
+          
+          [:div#product
+           [:h3 [:span "Product Roles"]]
+           [:p
+            "We’re building tools for the next generation of application developers."]
+           [:h5 "You should be interested in:"]
+           [:ul
+            [:li "Helping create product roadmaps that maximize business opportunities while delighting customers."]
+            [:li
+             "Skillfully articulating your decision-making processes."]
+            [:li
+             "The convergence of marketing, engineering, and design."]
+            [:li
+             "Innovations in developer and SaaS tools."]]
+                     [:h5 "Actively Hiring"]
+           [:h5
+            [:strong "Product Manager"]
+            " — Do you love working with a variety of teams to create the best customer experience you can? We’d love to talk to you if you:"]
+           [:ul
+            [:li
+             "Have deep understanding of the developer community and the supporting ecosystem."]
+            [:li "Have launched developer or SaaS products or features."]
+            [:li "Like the challenge of prioritizing between customer needs and business priorities."]
+            [:li
+             "Can easily communicate with developers and designers to be the voice of your customer."]
+            [:li "Have an affinity for tracking metrics and utilizing them to build a better product."]
+            [:li
+             "Are passionate about open-source technologies."]
+            [:li
+             "Possess more than a passing interest in agile development methodologies."]
+           [:li
+             "Love working with customers to solve their problems."]]
+           [:a
+            {:role "button", :href "/jobs#apply"}
+            [:span "Apply for Product roles"]]]
 
           [:div#business
            [:h3 [:span "Business roles"]]
