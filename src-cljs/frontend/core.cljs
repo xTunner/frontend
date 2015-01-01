@@ -202,7 +202,6 @@
   (let [comms       (:comms @state)
         container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
-        history-path "/"
         pusher-imp (pusher/new-pusher-instance)
         controls-tap (chan)
         nav-tap (chan)
