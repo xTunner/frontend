@@ -23,6 +23,7 @@
          [:section
           [:p "We would like to thank the following people for responsibly disclosing security issues to us."]]
          [:ul
+          [:li [:a {:href "https://github.com/jtmarmon"} "Jason Marmon"] " (2014-12-15)"]
           [:li [:a {:href "https://twitter.com/exploitprotocol"} "Aditya Agrawal"] " (2014-04-07)"]
           [:li [:a {:href "http://kevinmccarthy.org/"} "Kevin McCarthy"] " (2014-04-07)"]
           [:li [:a {:href "https://twitter.com/gazly"} "J.m.Gazzaly"] " (2014-03-27)"]

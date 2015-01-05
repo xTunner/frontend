@@ -21,16 +21,16 @@
 (def output-file "resources/assets/css/app.css")
 
 (def lessc-path "node_modules/.bin/lessc")
-(def lessc-options "-x")
 
 (def watch-opts-cdm
   (into-array WatchEvent$Kind [StandardWatchEventKinds/ENTRY_CREATE
                                StandardWatchEventKinds/ENTRY_DELETE
                                StandardWatchEventKinds/ENTRY_MODIFY]))
 
-(defn compile! [& {:keys [src dest]
-                   :or {src less-file dest output-file}}]
-  (let [cmd (format "%s %s %s > %s" lessc-path lessc-options src dest)
+(defn compile! [& {:keys [src dest minify]
+                   :or {src less-file, dest output-file, minify false}}]
+  (let [flags (if minify "--compress" "")
+        cmd (format "%s %s %s > %s" lessc-path flags src dest)
         res (shell/sh "bash" "-c" cmd)]
     (if (not= 0 (:exit res))
       (throw (Exception. (format "Couldn't compile less with %s returned exit code %s: %s %s" cmd (:exit res) (:out res) (:err res))))

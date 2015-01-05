@@ -67,6 +67,10 @@ window.circle_api_data =
             name: "offset"
             description: "The API returns builds starting from this offset, defaults to 0."
             example: 5
+          ,
+            name: "filter"
+            description: "Restricts which builds are returned. Set to \"completed\", \"successful\", \"failed\", \"running\", or defaults to no filter."
+            example: "completed"
           ]
       response: """
       [ {

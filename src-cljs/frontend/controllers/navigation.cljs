@@ -6,6 +6,7 @@
             [frontend.api :as api]
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
+            [frontend.components.build-head :refer (default-tab)]
             [frontend.favicon]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -14,7 +15,7 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog merror set-page-title! scroll-to-id! scroll!]]
+            [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -51,6 +52,8 @@
 (defn post-default [navigation-point args]
   (set-page-title! (or (:_title args)
                        (str/capitalize (name navigation-point))))
+  (when :_description args
+        (set-page-description! (:_description args)))
   (scroll! args)
   (when (:_analytics-page args)
     (analytics/track-page (:_analytics-page args))))
@@ -164,6 +167,7 @@
       (api/get-projects api-ch))
     (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
+              build (:resp api-result)
               scopes (:scopes api-result)]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           ;; Start 404'ing on non-existent builds, as well as when you
@@ -176,7 +180,12 @@
             :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
-            (analytics/track-build current-user (:resp api-result)))
+            (analytics/track-build current-user build))
+          ;; Preemptively make the usage-queued API call if we're going to display the
+          ;; the usage queued tab by default.
+          ;; This feels like a weird bit of non-locality, but I can't think of a better solution. :(
+          (when (= :usage-queue (default-tab build))
+            (api/get-usage-queue build api-ch))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get

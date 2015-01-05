@@ -4,6 +4,7 @@
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.plan :as plan-model]
             [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -25,6 +26,32 @@
 ;; in it depending on what sub-state with special keys we have, right?
 (defn has-scope [scope data]
   (scope (:scopes data)))
+
+(defn show-additional-containers-offer? [plan build]
+  (when (and plan build)
+    (let [usage-queued-ms (build-model/usage-queued-time build)
+          run-queued-ms (build-model/run-queued-time build)]
+      ;; more than 10 seconds waiting for other builds, and
+      ;; less than 10 seconds waiting for additional containers (our fault)
+      (< run-queued-ms 10000 usage-queued-ms))))
+
+(defn additional-containers-offer [plan build]
+  [:p#additional_containers_offer
+   "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                                            :subpage "containers"})}
+                                 "add more containers"]
+   " and finish even faster."])
+
+(defn new-additional-containers-offer [plan build]
+  (let [run-phrase (if (build-model/finished? build)
+                     "ran"
+                     "is running")]
+    [:div.additional-containers-offer
+     [:p (str "This build " run-phrase " under " (:org_name plan) "'s plan which provides " (plan-model/usable-containers plan)
+              " containers, plus 3 additional containers available for free and open source projects.")]
+     [:p [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                     :subpage "containers"})}
+          [:button "Add Containers"]] "to run more builds concurrently."]]))
 
 (defn build-queue [data owner]
   (reify
@@ -55,14 +82,10 @@
                                                     :stop (or (:queued_at build) (:stop_time build))})]
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
-            (when (and plan
-                       (< 10000 (build-model/usage-queued-time build))
-                       (> 10000 (build-model/run-queued-time build)))
-              [:p#additional_containers_offer
-               "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                                                        :subpage "containers"})}
-                                             "add more containers"]
-               " and finish even faster."])]))))))
+            (when (show-additional-containers-offer? plan build)
+              (if (om/get-shared owner [:ab-tests :new_usage_queued_upsell])
+                (new-additional-containers-offer plan build)
+                (additional-containers-offer plan build)))]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -240,10 +263,16 @@
 
 (defn tests-ad [owner]
   [:div
-   [:p "We didn't find any test metadata for this build. If you're using our inferred RSpec or Cucumber test steps, then we'll collect the metadata automatically. RSpec users will also have add our junit formatter gem to their Gemfile, with the line:"]
-   [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
-   [:p [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "Let us know"]
-    " if you want us to add support for your test runner."]])
+   "We didn't find any test metadata for this build.  Here's how to get it:"
+   [:ul
+    [:li "For an inferred ruby test command, simply add the necessary "
+     [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "formatter gem"]
+     " and then we'll collect it automatically."]
+    [:li "For another inferred test runner that you'd like us to add metadata support for, "
+     [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "let us know"] "."]
+    [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
+     [:a {:ref ""} "the docs"] " for more information."]]
+   "With test metadata, we can provide better insight into your build results and in some cases speed up your parallel builds by more efficiently splitting your tests between containers."])
 
 (defn build-tests-list [data owner]
   (reify
@@ -251,7 +280,7 @@
     (render [_]
       (let [tests-data (:tests-data data)
             tests (:tests tests-data)
-            sources (reduce (fn [s test] (conj s (:source test))) #{} tests)
+            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
             failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
         (html
          [:div.build-tests-container
@@ -265,7 +294,7 @@
                      (string/join ", " (map test-model/pretty-source sources))
                      " with " (pluralize (count failed-tests) "failure") ".")]
                (when (seq failed-tests)
-                 (for [[source tests-by-source] (group-by :source failed-tests)]
+                 (for [[source tests-by-source] (group-by test-model/source failed-tests)]
                    [:div.build-tests-list-container
                     [:span.failure-source (str (test-model/pretty-source source) " failures:")]
                     [:ol.build-tests-list
@@ -288,6 +317,16 @@
        (if (seq config-string)
          [:div.build-config-string [:pre config-string]]
          (circle-yml-ad))))))
+
+(defn build-parameters [{:keys [build-parameters]} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.build-parameters
+        [:pre (for [[k v] build-parameters
+                    :let [pname (name k) pval (pr-str v)]]
+                (str pname "=" pval \newline))]]))))
 
 (defn expected-duration
   [{:keys [start stop build]} owner opts]
@@ -319,6 +358,17 @@
           (dom/span nil "/~" (formatter past-ms))
           (dom/span nil ""))))))
 
+(defn default-tab
+  "The default tab to show in the build page head, if they have't clicked a different tab."
+  [build]
+  (cond
+   ;; default to ssh-info for SSH builds
+   (build-model/ssh-enabled-now? build) :ssh-info
+   ;; default to the queue tab if the build is currently usage queued.
+   (build-model/in-usage-queue? build) :usage-queue
+   ;; Otherwise, just use the first one.
+   :else :commits))
+
 (defn build-sub-head [data owner]
   (reify
     om/IRender
@@ -328,8 +378,7 @@
             logged-in? (not (empty? user))
             build (:build build-data)
             show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
-            ;; default to ssh-info for SSH builds if they haven't clicked a different tab
-            selected-tab (get build-data :selected-header-tab (if show-ssh-info? :ssh-info :commits))
+            selected-tab (get build-data :selected-header-tab (default-tab build))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -338,7 +387,8 @@
             usage-queued? (build-model/in-usage-queue? build)
             project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
-            config-data (:config-data build-data)]
+            config-data (:config-data build-data)
+            build-params (:build_parameters build)]
         (html
          [:div.sub-head
           [:div.sub-head-top
@@ -350,6 +400,11 @@
             [:li {:class (when (= :config selected-tab) "active")}
              [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
               "circle.yml"]]
+
+            (when (seq build-params)
+              [:li {:class (when (= :build-parameters selected-tab) "active")}
+               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-parameters}])}
+                "Build Parameters"]])
 
             (when logged-in?
               [:li {:class (when (= :usage-queue selected-tab) "active")}
@@ -401,6 +456,8 @@
                                   {:opts {:show-node-indices? (< 1 (:parallel build))}})
 
              :config (om/build build-config {:config-string (get-in build [:circle_yml :string])})
+
+             :build-parameters (om/build build-parameters {:build-parameters build-params})
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)

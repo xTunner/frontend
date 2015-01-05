@@ -1,6 +1,7 @@
 <!--
 
 title: Test Android applications
+short_title: Android
 last_updated: Oct 17, 2014
 
 -->

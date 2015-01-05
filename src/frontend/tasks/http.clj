@@ -43,7 +43,7 @@
 (defn precompile-assets []
   (generate-doc-manifest)
   (update-hosted-scripts frontend.stefon/hosted-scripts)
-  (less/compile!)
+  (less/compile! :minify true)
   (println (format "Stefon options: %s" stefon-options))
   (stefon-with-sourcemaps/register)
   (stefon/precompile stefon-options))
