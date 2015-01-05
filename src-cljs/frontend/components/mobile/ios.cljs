@@ -5,6 +5,7 @@
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
+            [frontend.components.mobile :as mobile]
             [frontend.components.mobile.icons :as mobile-icons]
             [frontend.components.mobile.ios.icons :as icons]
             [frontend.state :as state]
@@ -21,8 +22,8 @@
       (html
        [:div.mobile.ios.page
         (common/nav owner)
+        mobile/nav
         [:section.intro.odd-section {}
-
          [:article {}
           [:h1.mobile-tagline "Ship better iOS apps, faster"]
           icons/apple

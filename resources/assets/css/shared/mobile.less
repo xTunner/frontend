@@ -10,6 +10,29 @@
 
 .page.mobile {
 
+  nav.mobile {
+    padding-left: 70px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    h5 {
+      display: inline;
+    }
+
+    a h5 {
+      margin-right: 20px;
+      color: @grayDark;
+    }
+
+    a:visited h5 {
+      color: @gray;
+    }
+
+    a.overview {
+      margin-right: 70px;
+    }
+    border-bottom: 1px solid @grayBoxBorder;
+  }
+
   .outer-nav {
     position: static;
   }
@@ -17,7 +40,7 @@
   section {
     padding: 70px;
     a {
-      color: #229922;
+      color: @green;
     }
   }
 
@@ -50,7 +73,7 @@
   }
 
   a.signup {
-    background-color: #229922;
+    background-color: @green;
     color: white;
   }
 
@@ -209,7 +232,7 @@
       margin: auto;
       margin-top: 40px;
       margin-bottom: 140px;
-      border: 1px #229922 solid;
+      border: 1px @green solid;
     }
   }
 }

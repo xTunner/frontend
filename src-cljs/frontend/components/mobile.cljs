@@ -13,6 +13,11 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
+(def nav
+  [:nav.mobile {}
+   [:a.overview {:href "/mobile"} [:h5 "Overview"]]
+   [:a {:href "/mobile/ios"} [:h5 "iOS"]]])
+
 (defn mobile [app owner]
   (reify
     om/IRender
@@ -20,6 +25,7 @@
       (html
        [:div.mobile.page
         (common/nav owner)
+        nav
         [:section.intro.odd-section {}
          icons/htc
          icons/iphone
