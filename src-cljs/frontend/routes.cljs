@@ -124,6 +124,9 @@
                                      :_title "Mobile Continuous Integration and Mobile App Testing"
                                      :_description "Build 5-star mobile apps with Mobile Continuous Integration by automating your build, test, and deployment workflow on iOS and Android. ")))
 
+  (defroute v1-ios "/mobile/ios" []
+    (open-to-outer! nav-ch :ios {}))
+
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage :plans})

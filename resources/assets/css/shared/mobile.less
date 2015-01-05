@@ -4,7 +4,7 @@
   overflow: hidden;
 }
 
-.mobile  #navbar {
+.mobile #navbar, .ios #navbar {
   display: none;
 }
 
@@ -143,8 +143,8 @@
       margin-bottom: 70px;
       margin-top: 70px;
       p {
-	margin: 15px auto 0 auto;
-	max-width: 300px;
+        margin: 15px auto 0 auto;
+        max-width: 300px;
       }
     }
     @media (max-width: (@tile * 13)) {
@@ -160,7 +160,7 @@
   section.conclusion {
     text-align: center;
     padding-bottom: 0px;
-    img.nexus {
+    img.nexus, img.iphone {
       float: left;
       position: relative;
       left: -70px;
@@ -175,6 +175,41 @@
     a.signup {
       margin-top: -30px;
       float: right;
+    }
+  }
+}
+
+.page.ios {
+  section.intro {
+    padding-right: 70px;
+
+    article {
+      position: relative;
+    }
+
+    img.apple {
+      max-width: 40%;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      bottom: -70px;
+    }
+
+    p {
+      width: 100%;
+    }
+  }
+
+  section.pitch {
+    p.explain {
+      width: 100%;
+    }
+
+    a.documentation {
+      margin: auto;
+      margin-top: 40px;
+      margin-bottom: 140px;
+      border: 1px #229922 solid;
     }
   }
 }

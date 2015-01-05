@@ -9,6 +9,7 @@
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
             [frontend.components.mobile :as mobile]
+            [frontend.components.mobile.ios :as ios]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.add-projects-old :as add-projects-old]
             [frontend.components.invites :as invites]
@@ -82,6 +83,7 @@
     :changelog changelog/changelog
     :documentation docs/documentation
     :mobile mobile/mobile
+    :ios ios/ios
 
     :error errors/error-page))
 
@@ -114,7 +116,8 @@
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
                                        (when (= :landing (:navigation-point app)) ["landing"])
                                        (when (= :pricing (:navigation-point app)) ["pricing"])
-                                       (when (= :mobile (:navigation-point app)) ["mobile"]))}
+                                       (when (= :mobile (:navigation-point app)) ["mobile"])
+                                       (when (= :ios (:navigation-point app)) ["ios"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
