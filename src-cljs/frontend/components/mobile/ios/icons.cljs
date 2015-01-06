@@ -1,14 +1,6 @@
 (ns frontend.components.mobile.ios.icons
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :as str]
-            [frontend.components.common :as common]
-            [frontend.components.plans :as plans-component]
-            [frontend.components.shared :as shared]
-            [frontend.state :as state]
-            [frontend.stefon :as stefon]
-            [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+  (:require [frontend.utils :as utils])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (def apple
   (html [:img.apple {:src (utils/cdn-path "/img/outer/mobile/ios/apple.svg")

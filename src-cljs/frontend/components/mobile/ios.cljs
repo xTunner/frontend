@@ -1,19 +1,12 @@
 (ns frontend.components.mobile.ios
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :as str]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.plans :as plans-component]
-            [frontend.components.shared :as shared]
             [frontend.components.mobile :as mobile]
             [frontend.components.mobile.icons :as mobile-icons]
             [frontend.components.mobile.ios.icons :as icons]
-            [frontend.state :as state]
-            [frontend.stefon :as stefon]
-            [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn ios [app owner]
   (reify
