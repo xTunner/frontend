@@ -263,16 +263,16 @@
 
 (defn tests-ad [owner]
   [:div
-   [:p "We didn't find any test metadata for this build.  Here's how to get it:"
-       [:ul
-        [:li "For an inferred ruby test command, simply add the necessary "
-             [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "formatter gem"]
-             " and then we'll collect it automatically."]
-        [:li "For another inferred test runner that you'd like us to add metadata support for, "
-             [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "let us know"] "."]
-        [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
-             [:a {:ref ""} "the docs"] " for more information."]]
-       "With test metadata, we can provide better insight into your build results and in some cases speed up your parallel builds by more efficiently splitting your tests between containers."]])
+   "We didn't find any test metadata for this build.  Here's how to get it:"
+   [:ul
+    [:li "For an inferred ruby test command, simply add the necessary "
+     [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "formatter gem"]
+     " and then we'll collect it automatically."]
+    [:li "For another inferred test runner that you'd like us to add metadata support for, "
+     [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "let us know"] "."]
+    [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
+     [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"} "the docs"] " for more information."]]
+   "With test metadata, we can provide better insight into your build results and in some cases speed up your parallel builds by more efficiently splitting your tests between containers."])
 
 (defn build-tests-list [data owner]
   (reify
