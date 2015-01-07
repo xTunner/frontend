@@ -8,6 +8,11 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
+(defn track-auth-fn [owner]
+  #(raise! owner [:track-external-link-clicked
+                 {:event "Auth GitHub"
+                  :path (auth-url)}]))
+
 (defn ios [app owner]
   (reify
     om/IRender
@@ -18,22 +23,17 @@
         mobile/nav
         [:section.intro.odd-section {}
          [:article {}
-          [:h1.mobile-tagline "Ship better iOS apps, faster"]
+          [:h1.mobile-tagline "iOS App Testing, Done Better"]
           icons/apple
-          [:p "Shipping your app in iOS is hard. The App Store review process
-is long and painful. It's important to get your app built right the first time
-to avoid bugs and nasty 1-star reviews. Let CircleCI help your iOS app development
+          [:p "Shipping your app on iOS is hard. The App Store review process is
+long and painful. It’s important to get your app built right the first time to avoid
+bugs and those nasty 1-star reviews. Let CircleCI help your iOS app development
 cycle with our expertise in Continuous Integration and Continuous Delivery."
 [:br]
-"*In beta - " [:a {:href ""} "sign up"] " for the pilot program by marking your project
+           "*In beta - " [:a {:href (auth-url) :on-click (track-auth-fn owner)} "sign up"] " for the pilot program by marking your project
 iOS and you'll automatically be added to the beta."]
           [:a.home-action.signup
-           {:href (auth-url)
-            :role "button"
-            :on-click #(raise! owner [:track-external-link-clicked
-                                      {:event "Auth GitHub"
-
-                                       :path (auth-url)}])}
+           {:href (auth-url) :role "button" :on-click (track-auth-fn owner)}
            "Sign up for free"]]]
         [:section.pitch {}
          [:article {}
@@ -61,10 +61,7 @@ recent version(s) of the iOS toolchain (including XCode 6.x). You can build with
 xcodebuild, xctool, CocoaPods, or git submodules."]]]]]
 
         [:section.conclusion.odd-section {}
-         [:a.signup.home-action {:href (auth-url)
-                                 :role "button"
-                                 :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
-                                                                                         :path (auth-url)}])}
+         [:a.signup.home-action {:href (auth-url) :role "button" :on-click (track-auth-fn owner)}
           "Sign up for free"]
          [:h3 "Start shipping faster, build for free using CircleCI today."]
          icons/iphone]]))))
