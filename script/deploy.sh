@@ -18,12 +18,13 @@ echo $CIRCLE_SHA1 | aws put --http $DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
 # Check for matching branch name on backend or create one from production branch.
 export KEYPATH="$HOME/.ssh/id_frontend-private"
 backend_repo=git@github.com:circleci/circle
-backend_heads=$(git ls-remote --heads $backend_repo)
+heads_file=$(mktemp)
+git ls-remote --heads $backend_repo > $heads_file
 
 # backend_branch may be overridden by the next block
 backend_branch=$CIRCLE_BRANCH
 
-if ! echo $backend_heads | grep "refs/heads/$CIRCLE_BRANCH\b" ; then
+if ! grep -e "refs/heads/${CIRCLE_BRANCH}$" $heads_file ; then
   backend_dir=$HOME/checkouts/circle
   git clone $backend_repo $backend_dir
   # the z is so that it gets pushed to the end of the branch list
