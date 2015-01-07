@@ -10,6 +10,10 @@
 
 .page.mobile {
 
+  p {
+   color: @gray;
+  }
+
   nav.mobile {
     padding-left: 70px;
     padding-top: 5px;
@@ -20,11 +24,11 @@
 
     a h5 {
       margin-right: 20px;
-      color: @grayDark;
+      color: @gray;
     }
 
-    a:visited h5 {
-      color: @gray;
+    a.selected h5 {
+      color: @grayDarker;
     }
 
     a.overview {
@@ -45,8 +49,8 @@
   }
 
   h1 {
-    font-size: 72px;
-    line-height: 72px;
+    font-size: 60px;
+    line-height: 60px;
     font-weight: 300;
   }
 
@@ -211,6 +215,7 @@
     }
 
     img.apple {
+      width: 400px;
       max-width: 40%;
       position: absolute;
       bottom: 0;
