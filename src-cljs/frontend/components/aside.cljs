@@ -95,6 +95,10 @@
                                                            :repo repo})
                        :title (project-model/project-name project)}
              (project-model/project-name project)]
+            (when-not collapse-branches?
+             [:a.project-settings-icon {:href (routes/v1-project-settings {:org org :repo repo})
+                                        :title (str "Settings for " org "/" repo)}
+              (common/ico :settings-light)])
             (when-let [latest-master-build (last (project-model/master-builds project))]
               (sidebar-build latest-master-build {:org org :repo repo :branch (name (:default_branch project)) :latest? true}))]]
           (when-not collapse-branches?
@@ -126,6 +130,57 @@
           [:a.aside-item {:href "/invite-teammates"} "Invite a Teammate"]
           [:a.aside-item {:href "/logout"} "Logout"]]]))))
 
+(def project-settings-nav-items
+  [{:type :heading :title "Project Settings"}
+   {:type :subpage :href "edit" :title "Overview" :subpage :overview}
+   {:type :heading :title "Tweaks"}
+   {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}
+   {:type :subpage :href "#env-vars" :title "Environment variables" :subpage :env-vars}
+   {:type :subpage :href "#experimental" :title "Experimental Settings" :subpage :experimental}
+   {:type :heading :title "Test Commands"}
+   {:type :subpage :href "#setup" :title "Dependency Commands" :subpage :setup}
+   {:type :subpage :href "#tests" :title "Test Commands" :subpage :tests}
+   {:type :heading :title "Notifications"}
+   {:type :subpage :href "#hooks" :title "Chat Notifications" :subpage :hooks}
+   {:type :subpage :href "#webhooks" :title "Webhook Notifications" :subpage :webhooks}
+   {:type :subpage :href "#badges" :title "Status Badges" :subpage :badges}
+   {:type :heading :title "Permissions"}
+   {:type :subpage :href "#checkout" :title "Checkout SSH keys" :subpage :checkout}
+   {:type :subpage :href "#ssh" :title "SSH Permissions" :subpage :ssh}
+   {:type :subpage :href "#api" :title "API Permissions" :subpage :api}
+   {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
+   {:type :heading :title "Continuous Deployment"}
+   {:type :subpage :href "#heroku" :title "Heroku Deployment" :subpage :heroku}
+   {:type :subpage :href "#aws-codedeploy" :title "AWS CodeDeploy" :subpage :aws-codedeploy}
+   {:type :subpage :href "#deployment" :title "Other Deployments" :subpage :deployment}])
+
+(defn project-settings-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            subpage (or (:project-settings-subpage app) :overview)]
+        (html
+          [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
+           [:header
+            [:h5 "Project Settings"]
+            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+             (common/ico :fail-light)]]
+           [:div.aside-user-options
+            (for [item project-settings-nav-items]
+              (case (:type item)
+
+                :heading
+                [:.aside-item.aside-heading
+                 (:title item)]
+
+                :subpage
+                [:a.aside-item {:href (:href item)
+                                :class (when (= subpage (:subpage item)) "active")}
+                 (:title item)]
+
+                ))]])))))
+
 (defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
@@ -139,6 +194,7 @@
             settings (get-in app state/settings-path)]
         (html
          [:nav.aside-left-menu
+          (om/build project-settings-menu app)
           (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
@@ -224,10 +280,10 @@
            [:i.fa.fa-bell]
            [:span "Changelog"]]
 
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Expand"
-                          :on-click #(raise! owner [:slim-aside-toggled])}
+          [:a.aside-item.push-to-bottom {:data-placement "right"
+                                         :data-trigger "hover"
+                                         :title "Expand"
+                                         :on-click #(raise! owner [:slim-aside-toggled])}
            (if slim-aside?
              [:i.fa.fa-long-arrow-right]
              (list
@@ -239,12 +295,10 @@
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
-      (let [data (select-in app [state/projects-path state/settings-path state/user-options-shown-path])
-            user (get-in app state/user-path)
+      (let [user (get-in app state/user-path)
             login (:login user)
             avatar-url (gh-utils/make-avatar-url user)]
         (html
          [:aside.app-aside-left
-          (om/build aside-nav data {:opts user})
-
-          (om/build activity data {:opts {:login login}})])))))
+          (om/build aside-nav app {:opts user})
+          (om/build activity app {:opts {:login login}})])))))
