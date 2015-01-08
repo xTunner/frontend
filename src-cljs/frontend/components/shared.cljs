@@ -253,8 +253,8 @@
           ;[:span min-val]
           [:figure.range-back]
           [:figure.range-highlight {:style {:width (str (* value increment) "%")}}]
-          [:button.range-knob {:style {:left (str (* value increment) "%")}
-                               :data-count value}]
+          [:div.range-knob {:style {:left (str (* value increment) "%")}
+                            :data-count value}]
           ;[:span max-val]
           ])))
 
