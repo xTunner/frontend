@@ -216,14 +216,10 @@
                 [:ul.proj-list
                  (let [filtered-repos (sort-by sort-order (filter (fn [repo]
                                                                     (and
-                                                                     (if show-forks
-                                                                       true
-                                                                       (not (:fork repo)))
-                                                                     (-> repo
-                                                                         :name
-                                                                         (.toLowerCase)
-                                                                         (.indexOf (.toLowerCase repo-filter-string))
-                                                                         (not= -1))))
+                                                                     (or show-forks (not (:fork repo)))
+                                                                     (gstring/caseInsensitiveContains
+                                                                       (:name repo)
+                                                                       repo-filter-string)))
                                                                   repos))]
                    (map (fn [repo] (om/build repo-item {:repo repo
                                                         :settings settings}))
