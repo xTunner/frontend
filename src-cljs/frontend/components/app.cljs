@@ -122,7 +122,7 @@
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
               (when (and inner? logged-in?)
-                (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
+                (om/build aside/aside app-without-container-data))
               [:main.app-main {:ref "app-main"}
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to

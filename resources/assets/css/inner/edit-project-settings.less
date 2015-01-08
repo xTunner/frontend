@@ -5,6 +5,7 @@
 }
 #project-settings {
   .flexy();
+  padding: 1em;
   a {
     color: @blueDark;
     transition-property: color, text-shadow;
@@ -115,33 +116,43 @@
       padding-top: 0;
     }
   }
-  #subpage {
-    label:not([placeholder]) {
-      display: inline-block;
-      [type="checkbox"] {
-        margin: 0;
-        height: @baseLineHeight;
-      }
-    }
-    > section {
-      > article {
-        padding: 1em 0;
-      }
-    }
-  }
   .project-settings-inner {
     .flex(1 1 auto);
     padding: 0 2em;
     min-height: 89vh;
     overflow: auto;
   }
-  .project-setting-watch {
-    &:not(.unwatched) {
+  .follow-status {
+    width: @aside_nav_width;
+    min-width: 200px;
+    .flex(0 1.1 auto);
+    i {
+      font-size: 5em;
+      line-height: 1.5em;
+      display: block;
+      text-align: center;
+      color: #555;
+    }
+    h4 {
+      font-size: 1.077em;
+      line-height: 1.5em;
+      margin: 0 0 .5em 0;
+    }
+    p {
+      margin-bottom: 1em;
+      line-height: 1.34em;
+    }
+    button {
+      width: 100%;
+      margin: 0 auto;
+      display: block;
+    }
+    .followed {
       button {
         .circleButton(@grayLightest, @redLight);
       }
     }
-    &.unwatched {
+    .not-followed {
       button {
         .circleButton(@grayLightest, @green);
       }
