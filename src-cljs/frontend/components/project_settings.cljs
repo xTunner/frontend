@@ -549,14 +549,15 @@
 (defn webhooks [project-data owner]
   (om/component
    (html
-    [:div
-     [:h2 "Webhooks"]
-     [:div.doc
-      [:p
-       "Circle also support webhooks, which run at the end of a build. They can be configured in your "
-       [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
-        "circle.yml file"]
-       "."]]])))
+    [:section
+     [:article
+      [:h2 "Webhooks"]
+      [:div.doc
+       [:p
+        "Circle also support webhooks, which run at the end of a build. They can be configured in your "
+        [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
+         "circle.yml file"]
+        "."]]]])))
 
 (defn notifications [project-data owner]
   (reify
