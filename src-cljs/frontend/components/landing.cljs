@@ -203,15 +203,13 @@
                                  header-overlap-callback]}]
   (reify
     om/IDisplayName (display-name [_] "Home Prolog")
-    om/IInitState (init-state [_] {:scroll-id (.getNextUniqueId (.getInstance IdGenerator))
-                                   :logo-visible? (atom nil)
+    om/IInitState (init-state [_] {:logo-visible? (atom nil)
                                    :cta-visible? (atom nil)
                                    :prolog-visible? (atom nil)
                                    :header-overlap-px (atom 0)})
     om/IDidMount
     (did-mount [_]
-      (scroll/register-fn
-       (om/get-state owner :scroll-id)
+      (scroll/register owner
        #(let [logo (om/get-node owner "center-logo")
               cta (om/get-node owner "prolog-cta")
               prolog (om/get-node owner "home-prolog")
@@ -234,7 +232,9 @@
           (when-not (= header-overlap-px @(om/get-state owner :header-overlap-px))
             (reset! (om/get-state owner :header-overlap-px) header-overlap-px)
             (header-overlap-callback header-overlap-px)))))
-    om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
+    om/IWillUnmount
+    (will-unmount [_]
+      (scroll/dispose owner))
     om/IRender
     (render [_]
       (html
@@ -273,16 +273,16 @@
 (defn purpose [data owner]
   (reify
     om/IDisplayName (display-name [_] "Home Purpose")
-    om/IInitState (init-state [_] {:scroll-id (.getNextUniqueId (.getInstance IdGenerator))})
     om/IDidMount
     (did-mount [_]
-      (scroll/register-fn
-       (om/get-state owner :scroll-id)
+      (scroll/register owner
        #(let [article (om/get-node owner "purpose-article")
               vh (.-height (goog.dom/getViewportSize))
               animate? (< (.-bottom (.getBoundingClientRect article)) vh)]
           (maybe-set-state! owner [:first-fig-animate] animate?))))
-    om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
+    om/IWillUnmount
+    (will-unmount [_]
+      (scroll/dispose owner))
     om/IRender
     (render [_]
       (html
@@ -383,16 +383,16 @@
 (defn potential [data owner]
   (reify
     om/IDisplayName (display-name [_] "Home Potential")
-    om/IInitState (init-state [_] {:scroll-id (.getNextUniqueId (.getInstance IdGenerator))})
     om/IDidMount
     (did-mount [_]
-      (scroll/register-fn
-       (om/get-state owner :scroll-id)
+      (scroll/register owner
        #(let [article (om/get-node owner "potential-article")
               vh (.-height (goog.dom/getViewportSize))
               animate? (< (.-bottom (.getBoundingClientRect article)) vh)]
           (maybe-set-state! owner [:second-fig-animate] animate?))))
-    om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
+    om/IWillUnmount
+    (will-unmount [_]
+      (scroll/dispose owner))
     om/IRender
     (render [_]
       (html
@@ -432,14 +432,12 @@
                                  header-overlap-callback]}]
   (reify
     om/IDisplayName (display-name [_] "Home Epilog")
-    om/IInitState (init-state [_] {:scroll-id (.getNextUniqueId (.getInstance IdGenerator))
-                                   :cta-visible? (atom nil)
+    om/IInitState (init-state [_] {:cta-visible? (atom nil)
                                    :epilog-visible? (atom nil)
                                    :header-overlap-px (atom 0)})
     om/IDidMount
     (did-mount [_]
-      (scroll/register-fn
-       (om/get-state owner :scroll-id)
+      (scroll/register owner
        #(let [vh (.-height (goog.dom/getViewportSize))
               cta (om/get-node owner "epilog-cta")
               epilog (om/get-node owner "home-epilog")
@@ -457,7 +455,9 @@
           (when-not (= header-overlap-px @(om/get-state owner :header-overlap-px))
             (reset! (om/get-state owner :header-overlap-px) header-overlap-px)
             (header-overlap-callback header-overlap-px)))))
-    om/IWillUnmount (will-unmount [_] (scroll/deregister-fn (om/get-state owner :scroll-id)))
+    om/IWillUnmount
+    (will-unmount [_]
+      (scroll/dispose owner))
     om/IRender
     (render [_]
       (html

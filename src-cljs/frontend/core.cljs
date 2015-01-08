@@ -19,7 +19,6 @@
             [frontend.controllers.errors :as errors-con]
             [frontend.env :as env]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
-            [frontend.scroll :as scroll]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -262,7 +261,6 @@
     (def debug-state state)
     (when instrument? (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (scroll/setup-scroll-handler)
     (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
