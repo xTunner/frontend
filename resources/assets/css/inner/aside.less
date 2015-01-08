@@ -461,17 +461,27 @@
       box-shadow: none;
       background: @grayLightest;
     }
-    &:active {
+    &a:active {
       &:not(.active) {
         .shadow_deboss(@white);
         color: inherit;
         background: @grayLightest;
       }
     }
-    &.active {
+    &a.active {
       color: @grayDark;
       background: @grayLightest;
       cursor: default;
+    }
+    &.aside-heading {
+      padding-top: 1em;
+      font-weight: bold;
+      color: @gray;
+      background: @white;
+      box-shadow: none;
+    }
+    &:last-child {
+      padding-bottom: 1em;
     }
   }
 }
