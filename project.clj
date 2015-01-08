@@ -54,7 +54,7 @@
 
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs/"]
 
-  :figwheel {:css-dirs ["resources/public/assets/css"]}
+  :figwheel {:css-dirs ["resources/assets/css"]}
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs" "test-cljs"]
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
