@@ -58,6 +58,13 @@
           background: @tip_color;
           visibility: visible;
           margin: @mt @mr @mb @ml;
+          transition: visibility 0ms 0ms, background 100ms 1000ms, margin 100ms 1000ms, color 100ms 1000ms;
+        }
+      }
+    }
+    &[data-tooltip].fast {
+      &:hover {
+        &:after {
           transition: visibility 0ms 0ms, background 100ms 200ms, margin 100ms 200ms, color 100ms 200ms;
         }
       }
