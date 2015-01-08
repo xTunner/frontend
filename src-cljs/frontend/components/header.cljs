@@ -27,14 +27,17 @@
 (defn show-settings-link? [app]
   (:read-settings (get-in app state/page-scopes-path)))
 
-(defn settings-link [app]
+(defn settings-link [app owner]
   (when (show-settings-link? app)
-    (let [navigation-data (:navigation-data app)]
+    (let [navigation-data (:navigation-data app)
+          fast-tooltip? (om/get-shared owner [:ab-tests :fast_settings_tooltip])]
       (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
-                                                  :data-tooltip "Project Settings"}
+                                                  :data-tooltip "Project Settings"
+                                                  :class (when fast-tooltip? "fast")}
                                      (common/ico :settings-light)]
             (:org navigation-data) [:a.settings {:href (routes/v1-org-settings navigation-data)
-                                                 :data-tooltip "Org Settings"}
+                                                 :data-tooltip "Org Settings"
+                                                 :class (when fast-tooltip? "fast")}
                                     (common/ico :settings-light)]
             :else nil))))
 
@@ -59,7 +62,7 @@
                 {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
                  :data-spinner true}
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
-           (settings-link app)])))))
+           (settings-link app owner)])))))
 
 (defn head-admin [app owner]
   (reify

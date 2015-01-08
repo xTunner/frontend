@@ -13,7 +13,8 @@
                          :pay_now_button [true false]
                          :follow_notice [true false]
                          :new_add_projects [:old :new :new-recency-sort]
-                         :new_usage_queued_upsell [true false]}
+                         :new_usage_queued_upsell [true false]
+                         :fast_settings_tooltip [true false]}
    :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
