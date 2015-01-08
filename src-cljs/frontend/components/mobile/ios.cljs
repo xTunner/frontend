@@ -20,7 +20,7 @@
       (html
        [:div.mobile.ios.page
         (common/nav owner)
-        mobile/nav
+        (mobile/nav :ios)
         [:section.intro.odd-section {}
          [:article {}
           [:h1.mobile-tagline "iOS App Testing, Done Better"]

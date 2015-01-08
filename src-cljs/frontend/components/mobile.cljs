@@ -13,10 +13,12 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
-(def nav
+(defn nav [selected]
   [:nav.mobile {}
-   [:a.overview {:href "/mobile"} [:h5 "Overview"]]
-   [:a {:href "/mobile/ios"} [:h5 "iOS"]]])
+   [:a.overview {:href "/mobile" :class (when (= :overview selected) "selected")}
+    [:h5 "Overview"]]
+   [:a {:href "/mobile/ios" :class (when (= :ios selected) "selected")}
+    [:h5 "iOS"]]])
 
 (defn mobile [app owner]
   (reify
@@ -25,7 +27,7 @@
       (html
        [:div.mobile.page
         (common/nav owner)
-        nav
+        (nav :overview)
         [:section.intro.odd-section {}
          icons/htc
          icons/iphone
@@ -37,7 +39,7 @@
            "experience of Continuous Integration and Continuous Delivery "
            "to your mobile application development by automating the "
            "build, test, and deploy pipeline for your "
-           [:a {:href "/docs/ios"} "iOS"]
+           [:a {:href "/mobile/ios"} "iOS"]
            " and "
            [:a {:href "/docs/android"} "Android"]
            " applications."]]
