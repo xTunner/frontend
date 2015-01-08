@@ -49,7 +49,7 @@
                      :height 25
                      :width  25}]]
                   " "
-                  [:a
+                  [:a.account-plan-pricing-org-link
                    {:href org-url}
                    [:span (:login org)]]
                   [:br]
