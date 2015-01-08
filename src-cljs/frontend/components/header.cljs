@@ -31,13 +31,15 @@
   (when (show-settings-link? app)
     (let [navigation-data (:navigation-data app)
           fast-tooltip? (om/get-shared owner [:ab-tests :fast_settings_tooltip])]
-      (cond (:repo navigation-data) [:a.settings {:href (routes/v1-project-settings navigation-data)
-                                                  :data-tooltip "Project Settings"
-                                                  :class (when fast-tooltip? "fast")}
+      (cond (:repo navigation-data) [:a.settings.project-settings
+                                     {:href (routes/v1-project-settings navigation-data)
+                                      :data-tooltip "Project Settings"
+                                      :class (when fast-tooltip? "fast")}
                                      (common/ico :settings-light)]
-            (:org navigation-data) [:a.settings {:href (routes/v1-org-settings navigation-data)
-                                                 :data-tooltip "Org Settings"
-                                                 :class (when fast-tooltip? "fast")}
+            (:org navigation-data) [:a.settings.org-settings
+                                    {:href (routes/v1-org-settings navigation-data)
+                                     :data-tooltip "Org Settings"
+                                     :class (when fast-tooltip? "fast")}
                                     (common/ico :settings-light)]
             :else nil))))
 
