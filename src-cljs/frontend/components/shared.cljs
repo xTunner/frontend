@@ -254,7 +254,7 @@
           [:figure.range-back]
           [:figure.range-highlight {:style {:width (str (* value increment) "%")}}]
           [:div.range-knob {:style {:left (str (* value increment) "%")}
-                               :data-count value}]
+                            :data-count value}]
           ;[:span max-val]
           ])))
 
