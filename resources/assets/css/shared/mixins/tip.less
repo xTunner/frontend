@@ -62,6 +62,13 @@
         }
       }
     }
+    &[data-tooltip].fast {
+      &:hover {
+        &:after {
+          transition: visibility 0ms 0ms, background 100ms 200ms, margin 100ms 200ms, color 100ms 200ms;
+        }
+      }
+    }
   }
   .process_top (@arguments) when (@position = top) {
     .process(@t1: -50%, @l: 50%, @b: 100%, @mb: .5em);
