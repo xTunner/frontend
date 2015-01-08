@@ -15,7 +15,8 @@ CI.github =
     csrf_token = CSRFToken
     csrf_token = encodeURIComponent(csrf_token)
 
-    path = "https://github.com/login/oauth/authorize"
+    githubHttp = window.renderContext.githubHttpEndpoint
+    path = "#{githubHttp}/login/oauth/authorize"
     client_id = window.renderContext.githubClientId
 
     l = window.location

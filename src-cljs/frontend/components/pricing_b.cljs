@@ -1,14 +1,12 @@
 (ns frontend.components.pricing-b
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [dommy.core :as dommy]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.drawings :as drawings]
             [frontend.components.shared :as shared]
             [frontend.env :as env]
-            [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
@@ -17,7 +15,6 @@
             [goog.events]
             [goog.dom]
             [goog.style]
-            [dommy.core :refer-macros [sel1]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
@@ -68,6 +65,7 @@
                [:div.controls-containers
                 [:h2 "Containers"]
                 [:p "All of your containers are shared across your entire organization."]
+                ;;TODO Use frontend.components.shared/styled-range-slider
                 [:div.containers-range {:on-click #(om/set-state! owner :drag-percent (calculate-drag-percent owner %))
                                         :on-mouse-down #(om/set-state! owner :dragging? true)
                                         :ref "pricing-range"}
@@ -144,7 +142,7 @@
                    If you don't have enough free containers available, then your builds queue up until other builds finish."]
               [:p "Everyone gets their first container free and your team can run as many builds as you want with that container.
                    More containers allows faster builds through parallellism in addition shorter queue times"]
-              [:p "Parallelism is an extrememly powerful feature and allows to dramitcally speed up your test suite.
+              [:p "Parallelism is an extremely powerful feature and allows you to dramatically speed up your test suite.
                    CircleCI automatically splits your tests across multiple containers, finishing your build in a fraction of the time."]]
              [:article
               [:h3 "How many containers do I need?"]

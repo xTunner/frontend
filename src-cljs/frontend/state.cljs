@@ -8,10 +8,12 @@
    ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
    :ab-test-definitions {:a_is_a [true false]
                          :split_form [true false]
-                         :parallelism_button [true false]
+                         :parallelism_button_design [true false]
                          :pricing_button_green [true false]
                          :pay_now_button [true false]
-                         :follow_notice [true false]}
+                         :follow_notice [true false]
+                         :new_add_projects [:old :new :new-recency-sort]
+                         :new_usage_queued_upsell [true false]}
    :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings

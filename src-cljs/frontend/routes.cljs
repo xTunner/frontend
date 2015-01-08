@@ -6,7 +6,7 @@
             [frontend.models.project :as proj-mod]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :include-macros true]
-            [secretary.core :as sec :include-macros true :refer [defroute]])
+            [secretary.core :as sec :include-macros true :refer-macros [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 
@@ -118,6 +118,16 @@
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about params))
+
+  (defroute v1-mobile (FragmentRoute.  "/mobile") {:as params}
+    (open-to-outer! nav-ch :mobile (assoc params
+                                     :_title "Mobile Continuous Integration and Mobile App Testing"
+                                     :_description "Build 5-star mobile apps with Mobile Continuous Integration by automating your build, test, and deployment workflow on iOS and Android. ")))
+
+  (defroute v1-ios (FragmentRoute.  "/mobile/ios") {:as params}
+    (open-to-outer! nav-ch :ios (assoc params
+                                  :_title "Apple iOS App Testing"
+                                  :_description "Build 5-star iOS apps by automating your development workgflow with Mobile Continuous Integration and Delivery.")))
 
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?

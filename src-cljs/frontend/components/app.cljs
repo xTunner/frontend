@@ -8,7 +8,10 @@
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
+            [frontend.components.mobile :as mobile]
+            [frontend.components.mobile.ios :as ios]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.add-projects-old :as add-projects-old]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
@@ -52,7 +55,9 @@
   (condp = (get-in app-state [:navigation-point])
     :build build-com/build
     :dashboard dashboard/dashboard
-    :add-projects add-projects/add-projects
+    :add-projects (if (= (get-in app-state [:ab-tests :new_add_projects]) :old)
+                    add-projects-old/add-projects
+                    add-projects/add-projects)
     :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
@@ -77,6 +82,8 @@
     :integrations integrations/integration
     :changelog changelog/changelog
     :documentation docs/documentation
+    :mobile mobile/mobile
+    :ios ios/ios
 
     :error errors/error-page))
 
@@ -108,7 +115,9 @@
                                        (when-not logged-in? ["aside-nil"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
                                        (when (= :landing (:navigation-point app)) ["landing"])
-                                       (when (= :pricing (:navigation-point app)) ["pricing"]))}
+                                       (when (= :pricing (:navigation-point app)) ["pricing"])
+                                       (when (= :mobile (:navigation-point app)) ["mobile"])
+                                       (when (= :ios (:navigation-point app)) ["ios"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})

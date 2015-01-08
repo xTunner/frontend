@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [clojure.string :as string]
-            [dommy.core :as dommy :refer-macros [sel sel1]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.components.common :as common]
@@ -10,6 +9,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.docs :as doc-utils]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
@@ -107,9 +107,9 @@
         (om/build article-list (get-in docs [:troubleshooting :children]))]]])))
 
 (defn add-link-targets [node]
-  (doseq [heading (sel node
-                       ".content h2, .content h3, .content h4, .content h5, .content h6")]
-    (let [title (dommy/text heading)
+  (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
+          heading (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass tag nil node))]
+    (let [title (utils/text heading)
           id (if-not (string/blank? (.-id heading))
                (.-id heading)
                (-> title
@@ -119,7 +119,7 @@
                    (string/replace #"[^a-z0-9]+" "-") ; dashes
                    (string/replace #"^-" "") ; don't let first or last be dashes
                    (string/replace #"-$" "")))]
-      (dommy/set-html! heading
+      (utils/set-html! heading
                        (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
 
 (defrender markdown [markdown]
@@ -157,7 +157,7 @@
   (let [subpage (get-in app [:navigation-data :subpage])
         fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
-        categories ((juxt :gettingstarted :languages :how-to :troubleshooting
+        categories ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
                           :reference :parallelism :privacy-security) docs)]
     (html
      [:div.docs.page

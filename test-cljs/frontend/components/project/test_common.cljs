@@ -2,7 +2,6 @@
   (:require [cemerick.cljs.test :as t]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [dommy.core :as dommy]
             [frontend.test-utils :as test-utils]
             [frontend.components.app :as app]
             [frontend.components.project.common :as project-common]
@@ -14,8 +13,7 @@
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.core :refer (sel1)]))
+  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
 
 (defn ->iso8601 [time]
   (time-format/unparse (time-format/formatters :date-time) time))
@@ -91,13 +89,13 @@
                   :let [notice-elem (-> (om/build project-common/trial-notice {:project project :plan plan})
                                         (test-utils/render-into-document)
                                         om/get-node)
-                        span (-> notice-elem (sel1 :span))
-                        link (-> notice-elem (sel1 :a))
+                        span (-> notice-elem (utils/sel1 "span"))
+                        link (-> notice-elem (utils/sel1 "a"))
                         plan-msg (gstring/format (:msg plan)
                                                  "circleci/circle" (:org_name plan))]]
             (do
               ;; TODO: tree's suck! checking the message including the
               ;; link and the part after the link is crazy annoying.
               ;; Calling this good for now.
-              ;;(println plan-msg " LINK: " (dommy/text link))
-              (is (= plan-msg (dommy/text span)))))))))
+              ;;(println plan-msg " LINK: " (utils/text link))
+              (is (= plan-msg (utils/text span)))))))))

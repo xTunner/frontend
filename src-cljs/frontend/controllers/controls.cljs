@@ -18,7 +18,6 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
-            [dommy.core :refer-macros [sel sel1]]
             [goog.dom]
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
@@ -178,6 +177,7 @@
   (let [login (:login args)
         type (:type args)
         api-ch (get-in current-state [:comms :api])]
+    (utils/scroll-to-id! "project-listing")
     (ajax/ajax :get
                (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
                :repos
@@ -217,9 +217,9 @@
 
 (defmethod post-control-event! :container-selected
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
-  (when-let [parent (sel1 target "#container_parent")]
-    (let [container (sel1 target (str "#container_" container-id))
-          body (sel1 target "body")
+  (when-let [parent (goog.dom/getElement "container_parent")]
+    (let [container (goog.dom/getElement (str "container_" container-id))
+          body (.-body js/document)
           current-scroll-top (.-scrollTop parent)
           body-scroll-top (.-scrollTop body)
           current-scroll-left (.-scrollLeft parent)
@@ -430,13 +430,13 @@
   [target message _ previous-state current-state]
   (let [controls-ch (get-in current-state [:comms :controls])
         current-container-id (get-in current-state state/current-container-path 0)
-        parent (sel1 target "#container_parent")
+        parent (goog.dom/getElement "container_parent")
         parent-scroll-left (.-scrollLeft parent)
-        current-container (sel1 target (str "#container_" current-container-id))
+        current-container (goog.dom/getElement (str "container_" current-container-id))
         current-container-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto current-container parent)))
         ;; XXX stop making (count containers) queries on each scroll
         containers (sort-by (fn [c] (Math/abs (- parent-scroll-left (.-x (goog.style.getContainerOffsetToScrollInto c parent)))))
-                            (sel parent ".container-view"))
+                            (utils/node-list->seqable (goog.dom/getElementsByClass "container-view" parent)))
         new-scrolled-container-id (if (= parent-scroll-left current-container-scroll-left)
                                     current-container-id
                                     (if-not (engine/isGecko)
@@ -1066,7 +1066,7 @@
   (let [comms (get-in current-state [:comms])]
     (go (let [api-result (<! (ajax/managed-ajax :get "/search-articles" :params {:query query}))]
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
-          (when (= (:success (:status api-result)))
+          (when (= :success (:status api-result))
             (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
 
 (defmethod control-event :build-header-tab-clicked
@@ -1075,7 +1075,7 @@
 
 (defmethod post-control-event! :home-scroll-1st-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1084,7 +1084,7 @@
 
 (defmethod post-control-event! :home-scroll-2nd-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1093,7 +1093,7 @@
 
 (defmethod post-control-event! :home-scroll-3rd-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1102,7 +1102,7 @@
 
 (defmethod post-control-event! :home-scroll-4th-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1111,7 +1111,7 @@
 
 (defmethod post-control-event! :home-scroll-5th-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]
@@ -1120,7 +1120,7 @@
 
 (defmethod post-control-event! :home-scroll-logo-clicked
   [target message _ previous-state current-state]
-  (let [body (sel1 "body")
+  (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                          #js [(.-scrollLeft body) (.-scrollTop body)]

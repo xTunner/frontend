@@ -1,4 +1,5 @@
-(ns frontend.components.add-projects (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+(ns frontend.components.add-projects
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.models.user :as user-model]
@@ -29,17 +30,17 @@
 (defn organization [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)]
-    [:div.organization {:class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
+    [:div.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
+                        :class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
      [:div.inner
       [:div.avatar
-       [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])}
-        [:img {:src (gh-utils/make-avatar-url org :size 50)
-               :height 50}]]]
+       [:img {:src (gh-utils/make-avatar-url org :size 50)
+              :height 50}]]
       [:div.other-stuff
        [:div.orgname
-        [:a {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])} login]
+        login
         [:small.github-url.pull-right
-         [:a {:href (str "https://github.com/" login)
+         [:a {:href (str (gh-utils/http-endpoint) "/" login)
               :target "_blank"}
           [:i.fa.fa-github-alt ""]]]]]]]))
 
@@ -81,10 +82,9 @@
 
 (def repos-explanation
   [:div.add-repos
-   [:h3 "Welcome to Circle"]
    [:ul
     [:li
-     "Get started by selecting your GitHub username or organization on the left."]
+     "Get started by selecting your GitHub username or organization above."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
 (defn repo-item [data owner]
@@ -252,7 +252,7 @@
          (om/build organization-listing {:user user
                                          :settings settings})]
         [:hr]
-        [:div.project-listing
+        [:div#project-listing.project-listing
          [:div.overview
           [:span.big-number "2"]
           [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
@@ -260,3 +260,4 @@
                          :repos repos
                          :selected-org selected-org
                          :settings settings})]]]])))
+

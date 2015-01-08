@@ -376,7 +376,7 @@
             (describe-flag {:flag :oss
                             :title "Free and Open Source"
                             :blurb [:p
-                                    "Be part of our F/OSS beta! Organizations now have three free containers"
+                                   "Be part of our F/OSS beta! Organizations now have three free containers "
                                     "reserved for F/OSS projects; enabling this will allow this project's "
                                     "builds to use them and let others see your builds, both through the "
                                     "web UI and the API."]})
@@ -389,7 +389,13 @@
                                        [:p
                                         "If you have SSH keys or AWS credentials stored in your project settings and "
                                         "untrusted forks can make pull requests against your repo, then this option "
-                                        "isn't for you!"])})]]])))))
+                                       "isn't for you!"])})
+           (describe-flag {:flag :osx
+                           :title "Build iOS project"
+                           :blurb [:p
+                                   "If this option is selected, then CircleCI will run builds for this project "
+                                   "on Mac OSX rather than Linux. Select this if you have an iOS application "
+                                   "that you want to build using CircleCI."]})]]])))))
 
 (defn dependencies [project-data owner]
   (reify
@@ -773,10 +779,10 @@
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
-        (str "https://github.com/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
+        (str (gh-utils/http-endpoint) "/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
 
         (and (= "github-user-key" (:type key)) (= (:login key) (:login user)))
-        "https://github.com/settings/ssh"
+        (str (gh-utils/http-endpoint) "/settings/ssh")
 
         :else nil))
 

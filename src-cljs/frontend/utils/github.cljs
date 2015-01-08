@@ -9,6 +9,11 @@
                    :or {scope ["user:email" "repo"]}}]
   (js/CI.github.authUrl (clj->js scope)))
 
+(defn http-endpoint []
+  (-> js/window
+      (aget "renderContext")
+      (aget "githubHttpEndpoint")))
+
 (defn make-avatar-url [{:keys [avatar_url gravatar_id login]} & {:keys [size] :or {size 200}}]
   "Takes a map of user/org data and returns a url for the desired size of the user's avatar
 

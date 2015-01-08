@@ -22,7 +22,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [clojure.string :as string]
-            [dommy.core :refer-macros [sel sel1]]
+            [goog.dom]
             [goog.string :as gstring]
             [goog.string.format]
             [goog.style]
@@ -125,8 +125,8 @@
 (defn equalize-size
   "Given a node, will find all elements under node that satisfy selector and change
    the size of every element so that it is the same size as the largest element."
-  [node selector]
-  (let [items (sel node selector)
+  [node class-name]
+  (let [items (utils/node-list->seqable (goog.dom/getElementsByClass class-name node))
         sizes (map goog.style/getSize items)
         max-width (apply max (map #(.-width %) sizes))
         max-height (apply max (map #(.-height %) sizes))]
@@ -137,10 +137,10 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (equalize-size (om/get-node owner) ".follower-container"))
+      (equalize-size (om/get-node owner) "follower-container"))
     om/IDidUpdate
     (did-update [_ _ _]
-      (equalize-size (om/get-node owner) ".follower-container"))
+      (equalize-size (om/get-node owner) "follower-container"))
     om/IRender
     (render [_]
       (html
@@ -441,21 +441,8 @@
                [:form
                 [:div.container-picker
                  [:p "More containers means faster builds and lower queue times."]
-                 (cond
-                   false
-                   (om/build shared/styled-range-slider
-                             (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
-                   true
-                   [:div.container-slider
-                    (list
-                     [:span min-slider-val]
-                     [:input#rangevalue
-                      {:style {:margin "1em 0.25em auto"}
-                       :type "range" :value selected-containers
-                       :min min-slider-val :max max-slider-val
-                       :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                     :value (int (.. % -target -value)))}]
-                     [:span max-slider-val])])
+                 (om/build shared/styled-range-slider
+                           (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
                  [:div.container-input
                   [:input {:style {:margin "4px" :height "calc(2em + 2px)"}
                            :type "text" :value selected-containers

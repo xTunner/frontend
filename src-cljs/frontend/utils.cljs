@@ -4,7 +4,6 @@
             [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
             [ajax.core :as ajax]
-            [dommy.core :refer-macros [sel1]]
             [cljs-time.core :as time]
             [frontend.env :as env]
             [goog.async.AnimationDelay]
@@ -15,7 +14,7 @@
             [goog.net.EventType :as gevt]
             [goog.style]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer (inspect timing defrender)])
+  (:require-macros [frontend.utils :refer [inspect timing defrender]])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
@@ -249,11 +248,17 @@
                                  (str title  " - CircleCI")
                                  "CircleCI"))))
 
+(defn set-page-description!
+  "This is an experiment... Not sure if GoogleBot looks at this after rendering."
+  [description]
+  (let [meta-el (.querySelector js/document "meta[name=description]")]
+    (.setAttribute meta-el "content" description)))
+
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"
   [id]
   (when-let [node (goog.dom.getElement id)]
-    (let [body (sel1 "body")
+    (let [body (.-body js/document)
           node-top (goog.style/getPageOffsetTop node)
           body-top (goog.style/getPageOffsetTop body)]
       (set! (.-scrollTop body) (- node-top body-top)))))
@@ -264,9 +269,26 @@
   (if (:_fragment args)
     ;; give the page time to render
     (rAF #(scroll-to-id! (:_fragment args)))
-    (rAF #(set! (.-scrollTop (sel1 "body")) 0))))
+    (rAF #(set! (.-scrollTop (.-body js/document)) 0))))
 
 (defn react-id [x]
   (let [id (aget x "_rootNodeID")]
     (assert id)
     id))
+
+(defn text [elem]
+  (or (.-textContent elem) (.-innerText elem)))
+
+(defn set-html!
+  "Set the innerHTML of `elem` to `html`"
+  [elem html]
+  (set! (.-innerHTML elem) html)
+  elem)
+
+(defn sel1
+  ([selector] (sel1 js/document selector))
+  ([parent selector]
+   (.querySelector parent selector)))
+
+(defn node-list->seqable [node-list]
+  (js/Array.prototype.slice.call node-list))

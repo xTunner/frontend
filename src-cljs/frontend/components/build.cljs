@@ -12,6 +12,7 @@
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
+            [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -68,6 +69,43 @@
            :waiting (common/ico :none-light)
            nil)])))))
 
+(defn sticky [{:keys [wrapper-class content-class content]} owner]
+  (reify
+
+    om/IRenderState
+    (render-state [_ {:keys [stick]}]
+      (let [wrapper-style (when stick
+                            {:height (:height stick)})
+            content-style (when stick
+                            {:position :fixed
+                             :top 0
+                             :left (:left stick)
+                             :width (:width stick)
+                             :z-index 100})]
+        (html [:div {:ref "wrapper" :class wrapper-class :style wrapper-style}
+               [:div {:ref "content" :class content-class :style content-style}
+                content]])))
+
+    om/IDidMount
+    (did-mount [_]
+      (scroll/register owner
+        #(let [wrapper (om/get-node owner "wrapper")
+               content (om/get-node owner "content")
+               wrapper-rect (.getBoundingClientRect wrapper)
+               content-height (.-height (.getBoundingClientRect content))
+               stick? (<= (.-top wrapper-rect) 0)]
+           (om/set-state! owner :stick
+             (when stick?
+               {:left (.-left wrapper-rect)
+                :width (.-width wrapper-rect)
+                :height content-height})))))
+
+    om/IWillUnmount
+    (will-unmount [_]
+      (scroll/dispose owner))
+
+    ))
+
 (defn container-pills [data owner]
   (reify
     om/IRender
@@ -77,22 +115,29 @@
             build (:build data)
             {:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
-                            (empty? (remove :filler-action (mapcat :actions containers))))]
-        (html
-         [:div.containers
-          [:div.container-list
-           (for [container containers]  
-             (om/build container-pill
-                       {:container container
-                        :build-running? build-running?
-                        :current-container-id current-container-id}
-                       {:react-key (:index container)}))
-           (when (om/get-shared owner [:ab-tests :parallelism_button])
-             [:a.container-selector.parallelism-tab
-              {:role "button"
-               :href (build-model/path-for-parallelism build)
-               :title "adjust parallelism"}
-              [:span "+"]])]])))))
+                            (empty? (remove :filler-action (mapcat :actions containers))))
+            style {:position "fixed"}
+            div (html
+                 [:div.container-list
+                  (for [container containers]
+                    (om/build container-pill
+                              {:container container
+                               :build-running? build-running?
+                               :current-container-id current-container-id}
+                              {:react-key (:index container)}))
+                  (when (om/get-shared owner [:ab-tests :parallelism_button_design])
+                    [:a.container-selector.parallelism-tab
+                     {:role "button"
+                      :href (build-model/path-for-parallelism build)
+                      :title "adjust parallelism"}
+                     [:span "+"]])
+                  (when-not (om/get-shared owner [:ab-tests :parallelism_button_design])
+                       [:a.container-selector.parallelism-tab-b
+                     {:role "button"
+                      :href (build-model/path-for-parallelism build)
+                      :title "adjust parallelism"}
+                     [:span "+"]])])]
+        (om/build sticky {:content div :content-class "containers"})))))
 
 (defn notices [data owner]
   (reify

@@ -1,6 +1,5 @@
 (ns frontend.components.test-org-settings
   (:require [cemerick.cljs.test :as t]
-            [dommy.core :as dommy]
             [frontend.test-utils :as test-utils]
             [frontend.components.org-settings :as org-settings]
             [frontend.utils.docs :as doc-utils]
@@ -8,8 +7,7 @@
             [frontend.stefon :as stefon]
             [goog.dom]
             [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]
-                   [dommy.core :refer (sel1)]))
+  (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var]]))
 
 (deftest test-discount-rendering
   (let [format (fn [plan] (.-innerText (goog.dom/htmlToDocumentFragment (hiccup->html-str (org-settings/format-discount plan)))))

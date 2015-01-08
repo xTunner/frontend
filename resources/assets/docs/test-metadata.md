@@ -1,42 +1,46 @@
 <!--
 
 title: Collecting test metadata
-last_updated: Nov 10, 2014
+last_updated: Dec 16, 2014
 
 -->
 
-CircleCI can collect test metadata from JUnit xml files and Cucumber json files.
+CircleCI can collect test metadata from JUnit XML files and Cucumber JSON files.
 We'll use the test metadata to give you better insight into your build. For our
 inferred steps that use parallelism, we'll use the timing information to get you
 better test splits and finish your builds faster.
 
-## Automatic test metatdata collection
+## Automatic test metadata collection
 
 If you're using our inferred test steps for RSpec, Cucumber, or Minitest, then we'll
-automatically collect test metadata.
+automatically collect test metadata,
+though for RSpec and Minitest you'll need to add the necessary formatter gems to your Gemfile:
 
-For RSpec, you'll have to add our junit formatter gem to your Gemfile:
+For RSpec:
 
 ```
 gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'
 ```
 
-For Minitest, you'll have to add the `minitest-ci` gem.
+For Minitest:
 
-## Custom steps
+```
+gem 'minitest-ci', :git => 'git@github.com:circleci/minitest-ci.git'
+```
 
-If you have a custom test step that produces JUnit xml output, you can put the xml
-files into the `$CIRCLE_TEST_REPORTS` directory. We'll automatically store the files in your
-[build artifacts](/docs/build-artifacts) and parse the xml.
+## Metadata collection in custom test steps
+
+If you have a custom test step that produces JUnit XML output - most test runners support this in some form - you can write the XML
+files to the `$CIRCLE_TEST_REPORTS` directory.  We'll automatically store the files in your
+[build artifacts](/docs/build-artifacts) and parse the XML.
 
 You can tell us the type of test by putting the files in a subdirectory of `$CIRCLE_TEST_REPORTS`.
-For example, if you have RSpec tests, you would move your xml files to `$CIRCLE_TEST_REPORTS/rspec`.
+For example, if you have RSpec tests, you would write your XML files to `$CIRCLE_TEST_REPORTS/rspec`.
 
 ### Cucumber
 
-For custom Cucumber steps, you should generate a file using the json formatter that ends
-with `.cucumber` and move it to the `$CIRCLE_TEST_REPORTS/cucumber` directory. Your [circle.yml](/docs/configuration)
-might be:
+For custom Cucumber steps, you should generate a file using the JSON formatter that ends
+with `.cucumber` and write it to the `$CIRCLE_TEST_REPORTS/cucumber` directory.  Your [circle.yml](/docs/configuration) might be:
 
 ```
 test:

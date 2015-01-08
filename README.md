@@ -78,7 +78,6 @@ help reset all cached state:
 
 ```
 lein clean
-lein cljsbuild clean
 lein cljsbuild once
 ```
 
