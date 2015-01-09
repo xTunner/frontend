@@ -181,6 +181,22 @@
 
                 ))]])))))
 
+(defn org-settings-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [controls-ch (om/get-shared owner [:comms :controls])
+            subpage (or (:project-settings-subpage app) :overview)]
+        (html
+         [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
+          [:header
+           [:h5 "Organization Settings"]
+           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+            (common/ico :fail-light)]]
+          [:div.aside-user-options
+           [:.aside-item.aside-heading "Some title"]
+           [:.aside-item.active "Some item."]]])))))
+
 (defn activity [app owner opts]
   (reify
     om/IDisplayName (display-name [_] "Aside Activity")
@@ -195,6 +211,7 @@
         (html
          [:nav.aside-left-menu
           (om/build project-settings-menu app)
+          (om/build org-settings-menu app)
           (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
