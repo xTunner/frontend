@@ -5,6 +5,7 @@
             [frontend.components.shared :as shared]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
+            [frontend.models.plan :as pm]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -130,6 +131,19 @@
           [:a.aside-item {:href "/invite-teammates"} "Invite a Teammate"]
           [:a.aside-item {:href "/logout"} "Logout"]]]))))
 
+(defn expand-menu-items [items subpage]
+  (for [item items]
+    (case (:type item)
+      
+      :heading
+      [:.aside-item.aside-heading
+       (:title item)]
+      
+      :subpage
+      [:a.aside-item {:href (:href item)
+                      :class (when (= subpage (:subpage item)) "active")}
+       (:title item)])))
+
 (def project-settings-nav-items
   [{:type :heading :title "Project Settings"}
    {:type :subpage :href "edit" :title "Overview" :subpage :overview}
@@ -167,26 +181,53 @@
             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
              (common/ico :fail-light)]]
            [:div.aside-user-options
-            (for [item project-settings-nav-items]
-              (case (:type item)
+            (expand-menu-items project-settings-nav-items subpage)]])))))
 
-                :heading
-                [:.aside-item.aside-heading
-                 (:title item)]
+(defn org-settings-nav-items [can-edit? paid?]
+  (concat
+   [{:type :heading :title "Overview"}
+    {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
+    {:type :subpage :href "#users" :title "Users" :subpage :users}
+    {:type :heading :title "Plan"}]
+   (if-not can-edit?
+     [{:type :subpage :href "#plan" :text "Choose plan" :subpage :plan}]
+     (concat
+      [{:type :subpage :title "Adjust containers" :href "#containers" :subpage :containers}
+       {:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}]
+      (when paid?
+        [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}
+         {:type :subpage :title "Cancel" :href "#cancel" :subpage :cancel}])))))
 
-                :subpage
-                [:a.aside-item {:href (:href item)
-                                :class (when (= subpage (:subpage item)) "active")}
-                 (:title item)]
+(defn determine-org-settings-subpage
+  "Determines which subpage we should show the user. If they have
+   a plan, then we don't want to show them the plan page; if they
+   don't have a plan, then we don't want to show them the invoices page."
+  [subpage plan org-name]
+  (cond (#{:users :projects} subpage)
+        subpage
 
-                ))]])))))
+        (and plan
+             (pm/can-edit-plan? plan org-name)
+             (= subpage :plan))
+        :containers
+
+        (and plan
+             (not (pm/can-edit-plan? plan org-name))
+             (#{:containers :organizations :billing :cancel} subpage))
+        :plan
+
+        :else subpage))
 
 (defn org-settings-menu [app owner]
   (reify
     om/IRender
     (render [_]
       (let [controls-ch (om/get-shared owner [:comms :controls])
-            subpage (or (:project-settings-subpage app) :overview)]
+            plan (get-in app state/org-plan-path)
+            org-data (get-in app state/org-data-path)
+            org-name (:name org-data)
+            subpage (determine-org-settings-subpage (:project-settings-subpage app) plan org-name)
+            items (org-settings-nav-items (pm/can-edit-plan? plan org-name) (pm/paid? plan))]
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
           [:header
@@ -194,8 +235,7 @@
            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
             (common/ico :fail-light)]]
           [:div.aside-user-options
-           [:.aside-item.aside-heading "Some title"]
-           [:.aside-item.active "Some item."]]])))))
+           (expand-menu-items items subpage)]])))))
 
 (defn activity [app owner opts]
   (reify
