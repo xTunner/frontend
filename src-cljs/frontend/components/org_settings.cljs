@@ -871,11 +871,27 @@
                   "Cancel Plan"])))]]])))))
 
 (defn overview [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       [:div "hello world"]))))
+  (om/component
+   (html
+    (let [org-name (get-in app state/org-name-path)
+          plan (get-in app state/org-plan-path)
+          plan-total (pm/stripe-cost plan)
+          container-cost (pm/per-container-cost plan)
+          price (-> plan :paid :template :price)]
+      [:div
+       [:fieldset [:legend (str org-name "'s plan")]]
+       [:div.explanation
+        [:p
+         (str "Your builds will be distributed across " (pm/usable-containers plan) " containers.")]
+        (when (pm/paid? plan)
+          [:p
+           (str (pm/paid-containers plan) " of these are paid, at $" (pm/stripe-cost plan) "/month. ")
+           "You can "
+           [:a {:href "#containers"} "add more"]
+           " at $" container-cost " per container  for more parallelism and shorter queue times."])
+        (when  (pm/freemium? plan)
+          [:p (str (pm/freemium-containers plan) " container is free, forever.")])
+        [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]]]))))
 
 (def main-component
   {:overview overview
