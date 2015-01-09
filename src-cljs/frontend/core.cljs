@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [weasel.repl :as ws-repl]
-            [clojure.browser.repl :as repl]
             [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
             [goog.dom]
@@ -105,6 +104,8 @@
                                    :mult (async/mult mouse-down-ch)}
                       :mouse-up {:ch mouse-up-ch
                                  :mult (async/mult mouse-up-ch)}}))))
+
+(def debug-state)
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
@@ -232,49 +233,11 @@
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
                            :messages [:refresh]}]))
 
-(defn setup-browser-repl [repl-url]
-  (when repl-url
-    (mlog "setup-browser-repl calling repl/connect with repl-url: " repl-url)
-    (repl/connect repl-url))
-  ;; this is harmless if it fails
-  (ws-repl/connect "ws://localhost:9001" :verbose true)
-  ;; the repl tries to take over *out*, workaround for
-  ;; https://github.com/cemerick/austin/issues/49
-  (js/setInterval #(enable-console-print!) 1000))
-
 (defn apply-app-id-hack
   "Hack to make the top-level id of the app the same as the
    current knockout app. Lets us use the same stylesheet."
   []
   (goog.dom.setProperties (goog.dom/getElement "app") #js {:id "om-app"}))
-
-(defn ^:export setup! []
-  (apply-app-id-hack)
-  (mixpanel/set-existing-user)
-  (let [state (app-state)
-        top-level-node (find-top-level-node)
-        history-imp (history/new-history-imp top-level-node)
-        instrument? (env/development?)
-        ab-tests (get-ab-tests (:ab-test-definitions @state))]
-    ;; globally define the state so that we can get to it for debugging
-    (def debug-state state)
-    (when instrument? (instrumentation/setup-component-stats!))
-    (browser-settings/setup! state)
-    (main state ab-tests top-level-node history-imp instrument?)
-    (if-let [error-status (get-in @state [:render-context :status])]
-      ;; error codes from the server get passed as :status in the render-context
-      (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
-      (do (analytics/track-path (str "/" (.getToken history-imp)))
-          (sec/dispatch! (str "/" (.getToken history-imp)))))
-    (when-let [user (:current-user @state)]
-      (subscribe-to-user-channel user (get-in @state [:comms :ws]))
-      (analytics/init-user (:login user)))
-    (analytics/track-invited-by (:invited-by utils/initial-query-map))
-    (when (env/development?)
-      (try
-        (setup-browser-repl (get-in @state [:render-context :browser_connected_repl_url]))
-        (catch js/error e
-          (merror e))))))
 
 (defn ^:export toggle-admin []
   (swap! debug-state update-in [:current-user :admin] not))
@@ -328,8 +291,35 @@
   (reinstall-om!)
   (refresh-css!))
 
-(if (env/development?)
+(defn setup-figwheel! [url]
   (fw/watch-and-reload
-    :websocket-url "ws://localhost:3449/figwheel-ws"
+    :websocket-url url
     :jsload-callback (fn [& _] (reinstall-om!))
     :on-cssload (fn [files] (refresh-css!))))
+
+(defn ^:export setup! []
+  (apply-app-id-hack)
+  (mixpanel/set-existing-user)
+  (let [state (app-state)
+        top-level-node (find-top-level-node)
+        history-imp (history/new-history-imp top-level-node)
+        instrument? (env/development?)
+        ab-tests (get-ab-tests (:ab-test-definitions @state))]
+    ;; globally define the state so that we can get to it for debugging
+    (set! debug-state state)
+    (when instrument? (instrumentation/setup-component-stats!))
+    (browser-settings/setup! state)
+    (main state ab-tests top-level-node history-imp instrument?)
+    (if-let [error-status (get-in @state [:render-context :status])]
+      ;; error codes from the server get passed as :status in the render-context
+      (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
+      (do (analytics/track-path (str "/" (.getToken history-imp)))
+          (sec/dispatch! (str "/" (.getToken history-imp)))))
+    (when-let [user (:current-user @state)]
+      (subscribe-to-user-channel user (get-in @state [:comms :ws]))
+      (analytics/init-user (:login user)))
+    (analytics/track-invited-by (:invited-by utils/initial-query-map))
+    (some-> (get-in @state [:render-context :weasel_url])
+            (ws-repl/connect :verbose true))
+    (some-> (get-in @state [:render-context :figwheel_url])
+            setup-figwheel!)))

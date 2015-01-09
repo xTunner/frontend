@@ -11,7 +11,8 @@
             [stefon.core :as stefon]
             [stefon.path :as path]
             [stefon.settings]
-            [org.httpkit.server :as httpkit]))
+            [org.httpkit.server :as httpkit]
+            [weasel.repl.websocket :as weasel]))
 
 (def stefon-options
   {:asset-roots frontend.stefon/asset-roots
@@ -116,3 +117,6 @@
   (println "Starting less compiler.")
   (less/init)
   (start-server))
+
+(defn cljs-repl-env []
+  (weasel/repl-env))
