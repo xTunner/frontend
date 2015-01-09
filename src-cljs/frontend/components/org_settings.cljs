@@ -267,84 +267,10 @@
             (om/build plans-component/pricing-features app)
             plans-component/pricing-faq]))))))
 
-(defn plan-type-str [plan]
-  (cond
-   (pm/paid? plan) "PAID"
-
-   (and (pm/freemium? plan)
-        (not (pm/in-trial? plan)))
-   "FREE"
-
-   (pm/trial? plan)
-   (str "TRIAL" (when-not (pm/in-trial? plan) " ENDED"))))
-
 (defn plural-multiples [num word]
   (if (> num 1)
     (pluralize num word)
     word))
-
-(defn pricing-explanation-elements [plan plan-total]
-  (let [plan-min-containers (if (pm/paid? plan)
-                              (pm/paid-plan-min-containers plan)
-                              (pm/default-plan-min-containers))
-        plan-price (if (pm/paid? plan)
-                     (-> plan :paid :template :price)
-                     (-> pm/default-template-properties :price))]
-    (list
-     [:div.calculator-preview-item
-      [:div.item [:strong "Current Plan"]]
-      [:div.value [:strong (plan-type-str plan)]]]
-     (cond
-      (pm/in-trial? plan)
-      [:div.calculator-preview-item
-       [:strong (str "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") ".")]]
-
-      (not (or (pm/freemium? plan) (pm/paid? plan)))
-      [:div.calculator-preview-item
-       [:div
-        "Your " [:strong (pm/trial-containers plan) " container"]
-        " trial has ended." [:br] "Please add containers to continue building private repositories."]]
-
-      ;; otherwise, must be freemium or paid
-      :else
-      (list
-       [:div.calculator-preview-item
-        [:div.item  [:strong (pm/usable-containers plan)]]
-        [:div.value [:strong#current-plan-total (str "$" plan-total "/month")]]]
-       (when (pm/grandfathered? plan)
-         [:div.calculator-preview-item "Current price grandfathered in. Updates priced as:"])))
-
-     [:hr]
-
-     (when (pm/freemium? plan)
-       [:div.calculator-preview-item
-        [:div.item (str "First " (plural-multiples (pm/freemium-containers plan) "container"))]
-        [:div.value "Free!"]])
-     (when (> plan-min-containers 0)
-       [:div.calculator-preview-item
-        [:div.item (str (if (pm/freemium? plan) "Next " "First ") (plural-multiples plan-min-containers "container"))]
-        [:div.value (str "$" plan-price)]])
-
-     [:div.calculator-preview-item
-      [:div.item  (str "Additional containers")]
-      [:div.value (str "$" (pm/per-container-cost plan))]]
-
-     [:div.calculator-preview-item "No other limits"])))
-
-(defn current-plan-desc
-  "A div that explains your current plan."
-  [app owner]
-  (om/component
-   (html
-    (let [org-name (get-in app state/org-name-path)
-          plan (get-in app state/org-plan-path)
-          plan-total (pm/stripe-cost plan)
-          container-cost (pm/per-container-cost plan)]
-      [:div.pricing-calculator-preview
-       ;; TODO: make the org-name a drop-down selector of the orgs you
-       ;; are a member of? It's a pain right now to switch between org plans.
-       [:h3 (str org-name "'" (when-not (re-matches #".*s" org-name) "s"))]
-       (pricing-explanation-elements plan plan-total)]))))
 
 (defn pluralize-no-val [num word]
   (if (> num 1) (infl/plural word) (infl/singular word)))
@@ -462,7 +388,6 @@
                                                                            (pluralize selected-containers "container"))}])
                                          false))}
                        "Pay Now"])))
-
                  (when-not (pm/enterprise? plan)
                    ;; TODO: Clean up conditional here - super nested and many interactions
                    (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
@@ -482,13 +407,7 @@
                        ;; TODO: Only show for trial-plans?
                        [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
                         " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                        " ago. Pay now to enable builds of private repositories."])))]]]]
-
-             (when-not (pm/enterprise? plan)
-               ;; TODO: Show better current dashboard for enterprise
-               [:div.right-section
-                (om/build current-plan-desc app)])]]))))))
-
+                        " ago. Pay now to enable builds of private repositories."])))]]]]]]))))))
 
 (defn piggyback-organizations [app owner]
   (om/component
