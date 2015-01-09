@@ -133,7 +133,8 @@
 (defn project-settings-nav-items [data owner]
   (let [navigation-data (:navigation-data data)]
     [{:type :heading :title "Project Settings"}
-     {:type :subpage :href (routes/v1-org-settings navigation-data) :title "Org Settings"}
+     {:type :subpage :href (routes/v1-org-settings navigation-data) :title "Org Settings"
+      :class "project-settings-to-org-settings"}
      {:type :subpage :href "edit" :title "Overview" :subpage :overview}
      {:type :heading :title "Tweaks"}
      {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}
@@ -178,7 +179,7 @@
 
                 :subpage
                 [:a.aside-item {:href (:href item)
-                                :class (when (= subpage (:subpage item)) "active")}
+                                :class [(when (= subpage (:subpage item)) "active") (:class item)]}
                  (:title item)]
 
                 ))]])))))
