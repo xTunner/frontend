@@ -133,9 +133,9 @@
 (defn project-settings-nav-items [data owner]
   (let [navigation-data (:navigation-data data)]
     [{:type :heading :title "Project Settings"}
+     {:type :subpage :href "edit" :title "Overview" :subpage :overview}
      {:type :subpage :href (routes/v1-org-settings navigation-data) :title "Org Settings"
       :class "project-settings-to-org-settings"}
-     {:type :subpage :href "edit" :title "Overview" :subpage :overview}
      {:type :heading :title "Tweaks"}
      {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}
      {:type :subpage :href "#env-vars" :title "Environment variables" :subpage :env-vars}
