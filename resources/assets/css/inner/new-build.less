@@ -89,15 +89,17 @@
     border: @circleBlue 1px solid;
     color: @white;
     border-left: 0px;
+
     span {
       margin-top: 8px;
       font-size: 22px;
     }
+
     &:hover {
-    background: lighten(@circleBlue, 4%);
-    border: @circleBlue 1px solid;
-    border-left: 0px;
-    color: @white;
+      background: lighten(@circleBlue, 4%);
+      border: @circleBlue 1px solid;
+      border-left: 0px;
+      color: @white;
     }
   }
   &.parallelism-tab-b {
@@ -130,7 +132,7 @@
     &.canceled {
       color: @redLight;
       border: 1px solid @redLight;
-      background: none;
+      background: white;
       svg {
         path {
           stroke: @redLight;
