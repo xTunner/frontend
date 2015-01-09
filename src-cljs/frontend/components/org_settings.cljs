@@ -951,8 +951,16 @@
                                           false)}
                   "Cancel Plan"])))]]])))))
 
+(defn overview [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div "hello world"]))))
+
 (def main-component
-  {:users users
+  {:overview overview
+   :users users
    :projects projects
    :plan plan
    :containers containers
@@ -965,7 +973,7 @@
     om/IRender
     (render [_]
       (let [org-data (get-in app state/org-data-path)
-            subpage (or (get app :org-settings-subpage) :projects)]
+            subpage (or (get app :org-settings-subpage) :overview)]
         (html [:div.container-fluid.org-page
                (if-not (:loaded org-data)
                  [:div.loading-spinner common/spinner]
