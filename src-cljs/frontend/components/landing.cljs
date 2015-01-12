@@ -195,7 +195,7 @@
                                                 {:event "Auth GitHub"
                                                  :properties {:source "header-cta"}
                                                  :path (auth-url)}])}
-           "Sign Up Free"])]))))
+           (common/sign-up-text)])]))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback
                                  cta-visibility-callback
@@ -246,7 +246,7 @@
                                                                                  :properties {:source "prolog-cta"}
                                                                                  :path (auth-url)}])
                          :on-mouse-enter #(raise! owner [:prolog-cta-hovered])}
-         "Sign Up Free"]
+         (common/sign-up-text)]
         [:div.home-cover]
         [:div.home-top-shelf]
         [:div.home-slogans
@@ -469,7 +469,7 @@
                                                                                  :properties {:source "epilog-cta"}
                                                                                  :path (auth-url)}])
                          :on-mouse-enter #(raise! owner [:epilog-cta-hovered])}
-         "Sign Up Free"]
+         (common/sign-up-text)]
         [:div.home-cover]
         [:div.home-top-shelf]
         [:div.home-slogans
