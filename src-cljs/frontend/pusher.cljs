@@ -5,7 +5,6 @@
             [goog.dom.DomHelper]
             [goog.events]
             [om.core :as om :include-macros true]
-            [frontend.env :as env]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [secretary.core :as sec])

@@ -1,11 +1,11 @@
 (ns frontend.components.header
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
+            [frontend.config :as config]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
             [frontend.components.instrumentation :as instrumentation]
-            [frontend.env :as env]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -74,15 +74,16 @@
       (let [open? (get-in app state/show-admin-panel-path)
             expanded? (get-in app state/show-instrumentation-line-items-path)
             inspector? (get-in app state/show-inspector-path)
-            user-session-settings (get-in app [:render-context :user_session_settings])]
+            user-session-settings (get-in app [:render-context :user_session_settings])
+            env (aget js/window "renderContext" "env")]
         (html
          [:div.head-admin {:class (concat (when open? ["open"])
                                           (when expanded? ["expanded"]))}
           [:div.admin-tools
-           [:div.environment {:class (str "env-" (name (env/env)))
+           [:div.environment {:class (str "env-" env)
                               :role "button"
                               :on-click #(raise! owner [:show-admin-panel-toggled])}
-            (name (env/env))]
+            env]
 
            [:div.options
             [:a {:href "/admin"} "switch "]
@@ -141,9 +142,11 @@
                {:role "navigation"}
                [:ul.nav.nav-pills
                 [:li [:a {:href "/about"} "About"]]
-                [:li [:a {:href "/pricing"} "Pricing"]]
+                (when-not (config/enterprise?)
+                  [:li [:a {:href "/pricing"} "Pricing"]])
                 [:li [:a {:href "/docs"} "Documentation"]]
-                [:li [:a {:href "/jobs"} "Jobs"]]
+                (when-not (config/enterprise?)
+                  [:li [:a {:href "/jobs"} "Jobs"]])
                 [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]
              (if logged-in?
                [:div.controls.span2.offset2

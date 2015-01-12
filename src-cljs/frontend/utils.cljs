@@ -5,7 +5,6 @@
             [om.core :as om :include-macros true]
             [ajax.core :as ajax]
             [cljs-time.core :as time]
-            [frontend.env :as env]
             [goog.async.AnimationDelay]
             [goog.crypt :as crypt]
             [goog.crypt.Md5 :as md5]
@@ -40,21 +39,19 @@
    :render-colors? (parse-uri-bool (.getParameterValue parsed-uri "render-colors"))
    :invited-by (.getParameterValue parsed-uri "invited-by")})
 
-(def logging-enabled?
-  (if (nil? (:logging-enabled? initial-query-map))
-    (env/development?)
-    (:logging-enabled? initial-query-map)))
+(defn logging-enabled? []
+  (:logging-enabled? initial-query-map (aget js/window "renderContext" "logging_enabled")))
 
 (defn mlog [& messages]
-  (when logging-enabled?
+  (when (logging-enabled?)
     (.apply (.-log js/console) js/console (clj->js messages))))
 
 (defn mwarn [& messages]
-  (when logging-enabled?
+  (when (logging-enabled?)
     (.apply (.-warn js/console) js/console (clj->js messages))))
 
 (defn merror [& messages]
-  (when logging-enabled?
+  (when (logging-enabled?)
     (.apply (.-error js/console) js/console (clj->js messages))))
 
 (defn uuid

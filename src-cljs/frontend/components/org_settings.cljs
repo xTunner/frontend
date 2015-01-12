@@ -874,10 +874,17 @@
   (reify
     om/IRender
     (render [_]
-      (let [org-name (get-in app state/org-name-path)]
+      (let [org-name (get-in app state/org-name-path)
+            plan (get-in app state/org-plan-path)]
         (html
          [:div.org-cancel
           [:div.row-fluid [:fieldset [:legend "Cancel"]]]
+          [:p "If you cancel your plan, you'll stop being billed and no longer have acess to the "
+           (pluralize (pm/paid-containers plan) "paid container") " in your plan."]
+          (when (pm/freemium? plan)
+            [:p (str "However, your builds will still use your "
+                     (pluralize (pm/freemium-containers plan) "free container")
+                     " indefinitely.")])
           [:div.row-fluid
            [:h3
             {:data-bind "attr: {alt: cancelFormErrorText}"}

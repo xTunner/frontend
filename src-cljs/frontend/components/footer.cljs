@@ -1,13 +1,17 @@
-(ns frontend.components.footer)
+(ns frontend.components.footer
+  (:require [frontend.config :as config]))
+
 
 (defn footer []
   [:nav.footer-nav
    [:ul
     [:li [:a.logo {:href "/"}]]
     [:li [:a {:href "/about"} "About"]]
-    [:li [:a {:href "/pricing"} "Pricing"]]
+    (when-not (config/enterprise?)
+      [:li [:a {:href "/pricing"} "Pricing"]])
     [:li [:a {:href "/docs"} "Documentation"]]
-    [:li [:a {:href "/jobs"} "Jobs"]]
+    (when-not (config/enterprise?)
+      [:li [:a {:href "/jobs"} "Jobs"]])
     [:li [:a {:href "http://blog.circleci.com"} "Blog"]]
     [:li [:a {:href "/privacy"} "Privacy"]]
     [:li [:a {:href "/security"} "Security"]]

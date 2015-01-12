@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.env :as env]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
