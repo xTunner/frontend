@@ -45,6 +45,7 @@
   width: @aside_nav_width;
   background: @blueDarkest;
   color: fade(@white, 66);
+  overflow: scroll;
 }
 
 .app-aside-left {
@@ -75,13 +76,13 @@
   height: 100vh;
   transition: @aside_slim_speed;
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
-  overflow: hidden;
 }
 .aside-left-menu {
   .flex(0 0 @aside_menu_width);
   width: @aside_menu_width;
   box-shadow: 1px 0 @grayBoxBorder;
   position: relative;
+  overflow: hidden;
   header {
     .box-sizing(border-box);
     .flex(0 0 auto);
@@ -166,6 +167,7 @@
   background: transparent;
   white-space: nowrap;
   transition: (@aside_slim_speed / 2) ease-in-out;
+  min-height: 28px;
   &:hover,
   &:focus {
     .shadow_emboss(@blueDarker);
@@ -453,6 +455,7 @@
 .aside-user-options {
   .flex(1);
   .flexy(column);
+  overflow: scroll;
   .aside-item {
     padding: 0;
     &:hover,
