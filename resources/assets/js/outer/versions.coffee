@@ -106,8 +106,8 @@ CI.Versions =
   ant: "1.8.2"
   maven: "3.2.1"
 
-  default_python: "2.7.3"
-  python: "2.7.3"
+  default_python: "2.7.6"
+  python: "2.7.6"
   python_versions: [
      "2.6.8",
      "2.7",
