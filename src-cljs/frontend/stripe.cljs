@@ -1,6 +1,5 @@
 (ns frontend.stripe
   (:require [frontend.async :refer [put!]]
-            [frontend.env :as env]
             [frontend.utils :as utils :include-macros true]
             [goog.net.jsloader]))
 

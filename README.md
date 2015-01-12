@@ -101,3 +101,17 @@ don't need the query parameter.
 **NOTE:** login and logout will invalidate the session, so you'll need to use
 the `?om-build-id=dev` query parameter again. This will be fixed soon.
 
+
+### Browser REPL
+
+From a Clojure REPL:
+
+```clojure
+(cemerick.piggieback/cljs-repl :repl-env (frontend.core/cljs-repl-env))
+```
+
+Via vim-fireplace:
+
+```
+:Piggieback (frontend.core/cljs-repl-env)
+```
