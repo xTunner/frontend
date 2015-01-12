@@ -5,7 +5,6 @@
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
             [frontend.components.instrumentation :as instrumentation]
-            [frontend.env :as env]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -74,15 +73,16 @@
       (let [open? (get-in app state/show-admin-panel-path)
             expanded? (get-in app state/show-instrumentation-line-items-path)
             inspector? (get-in app state/show-inspector-path)
-            user-session-settings (get-in app [:render-context :user_session_settings])]
+            user-session-settings (get-in app [:render-context :user_session_settings])
+            env (aget js/window "renderContext" "env")]
         (html
          [:div.head-admin {:class (concat (when open? ["open"])
                                           (when expanded? ["expanded"]))}
           [:div.admin-tools
-           [:div.environment {:class (str "env-" (name (env/env)))
+           [:div.environment {:class (str "env-" env)
                               :role "button"
                               :on-click #(raise! owner [:show-admin-panel-toggled])}
-            (name (env/env))]
+            env]
 
            [:div.options
             [:a {:href "/admin"} "switch "]
