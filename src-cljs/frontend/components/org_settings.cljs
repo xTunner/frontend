@@ -30,34 +30,6 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html]]))
 
-(defn sidebar [{:keys [subpage plan org-name]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (letfn [(nav-links [templates]
-                (map (fn [{:keys [page text]} msg]
-                       [:li {:class (when (= page subpage) :active)}
-                        [:a {:href (str "#" (name page))} text]])
-                     (filter #(not (nil? %)) templates)))]
-        (html [:div.span3
-               [:ul.nav.nav-list.well
-                [:li.nav-header "Organization settings"]
-                [:li.divider]
-                [:li.nav-header "Overview"]
-                (nav-links [{:page :projects :text "Projects"}
-                            {:page :users :text "Users"}])
-                [:li.nav-header "Plan"]
-                (when plan
-                  (if (pm/can-edit-plan? plan org-name)
-                    (let [links [{:page :containers :text "Adjust containers"}
-                                 {:page :organizations :text "Organizations"}]
-                          links (if (pm/paid? plan)
-                                  (into links [{:page :billing :text "Billing info"}
-                                               {:page :cancel :text "Cancel"}])
-                                  links)]
-                      (nav-links links))
-                    (nav-links [{:page :plan :text "Choose plan"}])))]])))))
-
 (defn non-admin-plan [{:keys [org-name login]} owner]
   (reify
     om/IRender
@@ -974,39 +946,16 @@
    :billing billing
    :cancel cancel})
 
-(defn determine-subpage
-  "Determines which subpage we should show the user. If they have
-   a plan, then we don't want to show them the plan page; if they
-   don't have a plan, then we don't want to show them the invoices page."
-  [subpage plan org-name]
-  (cond (#{:users :projects} subpage)
-        subpage
-
-        (and plan
-             (pm/can-edit-plan? plan org-name)
-             (= subpage :plan))
-        :containers
-
-        (and plan
-             (not (pm/can-edit-plan? plan org-name))
-             (#{:containers :organizations :billing :cancel} subpage))
-        :plan
-
-        :else subpage))
-
 (defn org-settings [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [requested-subpage (get app :org-settings-subpage :projects)
-            org-data (get-in app state/org-data-path)
-            plan (get-in app state/org-plan-path)
-            subpage (determine-subpage requested-subpage plan (:name org-data))]
+      (let [org-data (get-in app state/org-data-path)
+            subpage (or (get app :org-settings-subpage) :projects)]
         (html [:div.container-fluid.org-page
                (if-not (:loaded org-data)
                  [:div.loading-spinner common/spinner]
                  [:div.row-fluid
-                  (om/build sidebar {:subpage subpage :plan plan :org-name (:name org-data)})
                   [:div.span9
                    (om/build common/flashes (get-in app state/error-message-path))
                    [:div#subpage

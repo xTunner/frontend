@@ -28,6 +28,12 @@
                :path (routes/v1-project-settings {:org username :repo project})
                :active active}))
 
+(defmethod render-crumb :org-settings
+  [{:keys [username active]}]
+  (crumb-node {:name "org settings"
+               :path (routes/v1-org-settings {:org username})
+               :active active}))
+
 (defmethod render-crumb :project-branch
   [{:keys [username project branch active]}]
   (crumb-node {:name (if branch

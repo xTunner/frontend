@@ -324,12 +324,17 @@
 (defmethod navigated-to :org-settings
   [history-imp navigation-point {:keys [subpage org] :as args} state]
   (mlog "Navigated to subpage:" subpage)
+
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point)
       (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
       (assoc :org-settings-org-name org)
+      (assoc-in state/crumbs-path [{:type :org
+                                    :username org}
+                                   {:type :org-settings
+                                    :username org}])
       (#(if (state-utils/stale-current-org? % org)
           (state-utils/reset-current-org %)
           %))))
