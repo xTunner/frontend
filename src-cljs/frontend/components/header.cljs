@@ -1,6 +1,7 @@
 (ns frontend.components.header
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
+            [frontend.config :as config]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
@@ -141,9 +142,11 @@
                {:role "navigation"}
                [:ul.nav.nav-pills
                 [:li [:a {:href "/about"} "About"]]
-                [:li [:a {:href "/pricing"} "Pricing"]]
+                (when-not (config/enterprise?)
+                  [:li [:a {:href "/pricing"} "Pricing"]])
                 [:li [:a {:href "/docs"} "Documentation"]]
-                [:li [:a {:href "/jobs"} "Jobs"]]
+                (when-not (config/enterprise?)
+                  [:li [:a {:href "/jobs"} "Jobs"]])
                 [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]
              (if logged-in?
                [:div.controls.span2.offset2

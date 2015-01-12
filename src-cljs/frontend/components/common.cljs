@@ -178,7 +178,8 @@
                        :href "/home"}
      [:figure (circle-logo)]]
     [:a {:href "/about"} "About"]
-    [:a {:href "/pricing"} "Pricing"]
+    (when-not (config/enterprise?)
+      [:a {:href "/pricing"} "Pricing"])
     [:a {:href "/docs"} "Docs"]
     [:a {:href "http://blog.circleci.com"} "Blog"]
     [:a.login {:href (auth-url)
@@ -204,11 +205,13 @@
           ; [:a {:href "/tour"} "Tour"]
           [:a {:href "/about"} "About"]
           [:a {:href "/about#contact"} "Press"]
-          [:a {:href "/jobs"} "Jobs"]
+          (when-not (config/enterprise?)
+            [:a {:href "/jobs"} "Jobs"])
           [:a {:href "http://blog.circleci.com"} "Blog"]]
          [:nav.home-footer-product
           [:h5 "Product"]
-          [:a {:href "/pricing"} "Pricing"]
+          (when-not (config/enterprise?)
+            [:a {:href "/pricing"} "Pricing"])
           [:a {:href "/docs"} "Documentation"]
           [:a {:href "/privacy"} "Privacy"]
           [:a {:href "/security"} "Security"]
