@@ -171,7 +171,8 @@ This alternative can avoid horrific Daylight Saving Time (DST) bugs.
 
 Sometimes you might need to add one or more entries to the
 `/etc/hosts` file to assign various domain names to an IP address.
-This example points to the development subdomain at the circleci hostname and IP address.
+This example points to the development subdomain at the circleci hostname and IP
+address.
 
 ```
 machine:
@@ -179,6 +180,10 @@ machine:
     dev.circleci.com: 127.0.0.1
     foobar: 1.2.3.4
 ```
+
+Hostnames [must be well formed](http://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names).
+CircleCI will only accept hostnames that contain alpha-numeric characters,
+hyphens (-) and dots (.).
 
 ### Ruby version
 
