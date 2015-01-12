@@ -110,9 +110,7 @@
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
   []
-  (if (nil? (:log-channels? utils/initial-query-map))
-    (env/development?)
-    (:log-channels? utils/initial-query-map)))
+  (:log-channels? utils/initial-query-map (aget js/window "renderContext" "log_channels")))
 
 (defn controls-handler
   [value state container]
@@ -303,11 +301,12 @@
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)
-        instrument? (env/development?)
+        instrument? (get-in @state [:render-context :instrument])
         ab-tests (get-ab-tests (:ab-test-definitions @state))]
     ;; globally define the state so that we can get to it for debugging
     (set! debug-state state)
-    (when instrument? (instrumentation/setup-component-stats!))
+    (when instrument?
+      (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
     (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
