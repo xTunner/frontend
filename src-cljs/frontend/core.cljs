@@ -317,7 +317,7 @@
       (subscribe-to-user-channel user (get-in @state [:comms :ws]))
       (analytics/init-user (:login user)))
     (analytics/track-invited-by (:invited-by utils/initial-query-map))
-    (some-> (get-in @state [:render-context :weasel_url])
-            (ws-repl/connect :verbose true))
-    (some-> (get-in @state [:render-context :figwheel_url])
-            setup-figwheel!)))
+    (when-let [weasel-url (get-in @state [:render-context :weasel_url])]
+      (ws-repl/connect weasel-url :verbose true))
+    (when-let [figwheel-url (get-in @state [:render-context :figwheel_url])]
+      (setup-figwheel! figwheel-url))))
