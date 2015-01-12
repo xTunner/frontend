@@ -115,12 +115,20 @@
                               "Free")]]
                (when (om/get-shared owner [:ab-tests :pricing_button_green])
                  [:a.pricing-action.green {:href (auth-url)
-                                           :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
-                                           :title "Sign up with Github"} "Sign Up Free"])
+                                           :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url)
+                                                                                                   :event "Auth GitHub"
+                                                                                                   :properties {:source "pricing page sign-up"
+                                                                                                                :url js/window.location.pathname}}])
+                                           :title "Sign up with Github"}
+                  (common/sign-up-text)])
                (when-not (om/get-shared owner [:ab-tests :pricing_button_green])
                  [:a.pricing-action {:href (auth-url)
-                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "pricing page sign-up" :url js/window.location.pathname}}])
-                                     :title "Sign up with Github"} "Sign Up Free"])]]
+                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url)
+                                                                                             :event "Auth GitHub"
+                                                                                             :properties {:source "pricing page sign-up"
+                                                                                                          :url js/window.location.pathname}}])
+                                     :title "Sign up with Github"}
+                  (common/sign-up-text)])]]
              [:article.pricing-features
               [:div.pricing-feature
                [:h3 "Easy Debugging"]
