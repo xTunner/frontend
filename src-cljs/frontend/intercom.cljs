@@ -20,3 +20,21 @@
 
 (defn track [event & [metadata]]
   (utils/swallow-errors (js/Intercom "trackEvent" (name event) (clj->js metadata))))
+
+(def update-period-ms
+  "Default frequency for polling Intercom for new messages"
+  (* 60 1000))
+
+(def update-interval-id
+  "Keep track of the result of any calls to setInterval for user when polling
+  intercom"
+  (atom nil))
+
+(defn start-polling
+  "Beging polling Intercom for new messages."
+  [period-ms]
+  (swap! update-interval-id
+         (fn [interval-id]
+          (js/clearInterval interval-id)
+          (js/setInterval #(js/Intercom "update")
+                          period-ms))))

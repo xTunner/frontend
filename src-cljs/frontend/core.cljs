@@ -7,6 +7,7 @@
             [goog.dom]
             [goog.dom.DomHelper]
             [frontend.ab :as ab]
+            [frontend.intercom :as intercom]
             [frontend.analytics :as analytics]
             [frontend.analytics.mixpanel :as mixpanel]
             [frontend.components.app :as app]
@@ -297,6 +298,7 @@
 (defn ^:export setup! []
   (apply-app-id-hack)
   (mixpanel/set-existing-user)
+  (intercom/start-polling intercom/update-period-ms)
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)
