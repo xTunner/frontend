@@ -26,8 +26,7 @@
   (* 60 1000))
 
 (def update-interval-id
-  "Keep track of the result of any calls to setInterval for user when polling
-  intercom"
+  "Keep track of the result of any calls to setInterval for polling Intercom"
   (atom nil))
 
 (defn start-polling
