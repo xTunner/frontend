@@ -17,7 +17,7 @@
     :email "paul@circleci.com"
     :img-path (stefon/asset-path "/img/outer/about/paul.png")
     :visible true
-    :bio [" Paul Biggar is cofounder and CEO of CircleCI. In past lives, he wrote phc, an open source PHP compiler, while doing his PhD on compilers and static analysis in Dublin. He has been accepted to YCombinator, given talks at Facebook and Google, been interviewed by the Wall Street Journal, and once (mostly) landed a backflip on skis!",
+    :bio ["Paul Biggar is cofounder and CEO of CircleCI. In past lives, he wrote phc, an open source PHP compiler, while doing his PhD on compilers and static analysis in Dublin. He has been accepted to YCombinator, given talks at Facebook and Google, been interviewed by the Wall Street Journal, and once (mostly) landed a backflip on skis!",
           "After moving to the Bay Area in 2011, Paul worked on the Firefox Javascript engine, then he co-founded CircleCI. Because it pains Paul to see so much time wasted due to inadequate developer tools, he approaches continuous integration and delivery from the perspective of developer productivity. He loves to focus on building the CircleCI product, but is currently kept so busy taking care of the business side of things that his coding fingers are getting restless."]}
     {:name "Jenneviere Villegas"
     :img-path (stefon/asset-path "/img/outer/about/jenneviere.png")
