@@ -55,7 +55,7 @@ the following `circle.yml` file to your project:
 ```
 test:
   override:
-    - xctool -scheme "My Scheme" -workspace MyWorkspace.xcworkspace -sdk iphonesimulator clean test
+    - xctool -reporter pretty -reporter junit:$CIRCLE_TEST_REPORTS/xcode/results.xml -scheme "My Scheme" -workspace MyWorkspace.xcworkspace -sdk iphonesimulator clean test
 ```
 
 See [customizing your build](#customizing-your-build) for more information about customization options.
@@ -108,7 +108,7 @@ You can also use the `sudo` command if necessary to perform customizations outsi
 
 ##Code signing and deployment
 You can build a signed app and deploy to various destinations using the customization options
-mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in 
+mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in
 the UI are encrypted and secure and can be used to store credentials related to signing and deployment.
 Contact support at [sayhi@circleci.com](mailto:sayhi@circleci.com) if you need help with code signing
 or deployment.
