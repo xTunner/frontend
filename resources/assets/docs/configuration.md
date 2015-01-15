@@ -210,11 +210,9 @@ to manage Node versions. See
 [supported Node versions](/docs/environment#nodejs)
 for a complete list. If you do not specify a version, CircleCI uses
 `{{ versions.default_node }}`.
-Note that recent versions of NVM support selecting versions through
-package.json.
-If your version of NVM supports this, we recommend you use it.
 
-Here's an example of how to set the version of Node.js to be used for your tests.
+Here's an example of how to set the version of Node.js to be used for
+your tests.
 
 ```
 machine:
