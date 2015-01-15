@@ -63,6 +63,8 @@ CI.Versions =
     "2.1.2-railsexpress",
     "2.1.3",
     "2.2.0-preview1",
+    "2.2.0-preview2",
+    "2.2.0",
     "jruby-1.7.0",
     "jruby-1.7.3",
     "jruby-1.7.4",
