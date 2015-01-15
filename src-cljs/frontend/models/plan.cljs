@@ -27,11 +27,15 @@
   (boolean (:trial plan)))
 
 (defn trial-over? [plan]
-  (or (nil? (:trial_end plan))
-      (time/after? (time/now) (time-format/parse (:trial_end plan)))))
+  (when (trial? plan)
+    (or (nil? (:trial_end plan))
+        (time/after? (time/now) (time-format/parse (:trial_end plan))))))
 
 (defn in-trial? [plan]
   (and (trial? plan) (not (trial-over? plan))))
+
+(defn enterprise? [plan]
+  (boolean (:enterprise plan)))
 
 (defn freemium-containers [plan] (or (get-in plan [:free :template :free_containers]) 0))
 (defn trial-containers [plan] (or (get-in plan [:trial :template :free_containers]) 0))
@@ -41,6 +45,11 @@
     (max (:containers_override plan)
          (:containers plan)
          (get-in plan [:paid :template :free_containers]))
+    0))
+
+(defn enterprise-containers [plan]
+  (if (:enterprise plan)
+    (:containers plan)
     0))
 
 (defn paid-plan-min-containers
@@ -57,6 +66,7 @@
   "Maximum containers that the plan has available to it"
   [plan]
   (+ (freemium-containers plan)
+     (enterprise-containers plan)
      (max (if (in-trial? plan) (trial-containers plan) 0) (paid-containers plan))))
 
 (defn max-selectable-parallelism [plan]
@@ -101,17 +111,20 @@
 
 (defn per-container-cost [plan]
   (let [template-properties (or (-> plan :paid :template)
+                                (-> plan :enterprise :template)
                                 default-template-properties)]
     (:container_cost template-properties)))
 
 (defn container-cost [plan containers]
   (let [template-properties (or (-> plan :paid :template)
+                                (-> plan :enterprise :template)
                                 default-template-properties)
         {:keys [free_containers container_cost]} template-properties]
     (max 0 (* container_cost (- containers free_containers)))))
 
 (defn cost [plan containers]
   (let [paid-plan-template (or (-> plan :paid :template)
+                               (-> plan :enterprise :template)
                                default-template-properties)
         plan-base-price (:price paid-plan-template)
         paid-plan-containers (- containers (freemium-containers plan))]

@@ -298,7 +298,7 @@
       (pm/in-trial? plan)
       [:div.calculator-preview-item
        [:strong (str "You are currently trialing a plan with " (pluralize (pm/usable-containers plan) "container") ".")]]
-      
+
       (not (or (pm/freemium? plan) (pm/paid? plan)))
       [:div.calculator-preview-item
        [:div
@@ -315,7 +315,7 @@
          [:div.calculator-preview-item "Current price grandfathered in. Updates priced as:"])))
 
      [:hr]
-     
+
      (when (pm/freemium? plan)
        [:div.calculator-preview-item
         [:div.item (str "First " (plural-multiples (pm/freemium-containers plan) "container"))]
@@ -403,9 +403,10 @@
            [:div#edit-plan {:class "pricing.page"}
             (when (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name))
-            [:fieldset
-             [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
-                           container-cost "/month each.")]]
+            (when-not (pm/enterprise? plan)
+              [:fieldset
+               [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
+                             container-cost "/month each.")]])
             [:div.main-content
              [:div.left-section
               [:div.pricing-calculator-controls
@@ -420,7 +421,7 @@
                            :type "text" :value selected-containers
                            :on-change #(utils/edit-input owner state/selected-containers-path %
                                                          :value (int (.. % -target -value)))}]
-                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))]
+                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") (when-not (pm/enterprise? plan) (str " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))))]
                   (when (not (= new-total old-total))
                     [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])
                   (when false ;; (pm/grandfathered? plan) ;; I don't
@@ -428,7 +429,7 @@
                     [:i.fa.fa-question-circle#grandfathered-tooltip-hack
                      {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
                 [:fieldset
-                 (if (pm/paid? plan)
+                 (if (or (pm/enterprise? plan) (pm/paid? plan))
                    (forms/managed-button
                     [:button.btn.btn-large.btn-primary.center
                      {:data-success-text "Saved",
@@ -454,26 +455,33 @@
                                                                          (pluralize selected-containers "container"))}])
                                        false)}
                        "Pay Now"])))
-                 (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
-                   (list
-                    (when (< old-total new-total)
-                      [:span.help-block
-                       "We'll charge your card today, for the prorated difference between your new and old plans."])
-                    (when (> old-total new-total)
-                      [:span.help-block
-                       "We'll credit your account, for the prorated difference between your new and old plans."]))
-                   (if (pm/in-trial? plan)
-                     [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                      ". Please pay for a plan by then or "
-                      (if (pm/freemium? plan)
-                        (str "you will revert to a free " (pluralize (pm/freemium-containers plan) "container") " plan.")
-                        "we will stop building your private repository pushes.")]
-                     [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
-                      " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                      " ago. Pay now to enable builds of private repositories."]))]]]]
-             
-             [:div.right-section
-              (om/build current-plan-desc app)]]]))))))
+
+                 (if (pm/enterprise? plan)
+                   ""
+                   ;; TODO: Clean up - super nested and many interactions
+                   (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                     (list
+                      (when (< old-total new-total)
+                        [:span.help-block
+                         "We'll charge your card today, for the prorated difference between your new and old plans."])
+                      (when (> old-total new-total)
+                        [:span.help-block
+                         "We'll credit your account, for the prorated difference between your new and old plans."]))
+                     (if (pm/in-trial? plan)
+                       [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                        ". Please pay for a plan by then or "
+                        (if (pm/freemium? plan)
+                          (str "you will revert to a free " (pluralize (pm/freemium-containers plan) "container") " plan.")
+                          "we will stop building your private repository pushes.")]
+                       ;; TODO: Only show for trial-plans?
+                       [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                        " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                        " ago. Pay now to enable builds of private repositories."])))]]]]
+
+             (when-not (pm/enterprise? plan)
+               ;; TODO: Show better current dashboard for enterprise
+               [:div.right-section
+                (om/build current-plan-desc app)])]]))))))
 
 
 (defn piggyback-organizations [app owner]
