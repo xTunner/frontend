@@ -2,7 +2,7 @@ CI.Versions =
   v: (v) ->
     "#{v} #{CI.Versions[v]}"
 
-  Firefox: "33.0"
+  Firefox: "34.0"
   Chrome: "38.0.2125.122"
   chromedriver: "2.12"
 
