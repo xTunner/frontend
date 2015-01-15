@@ -47,8 +47,8 @@ ssh -p 64625 ubuntu@54.221.135.43 -L 8080:localhost:3000
 ```
 
 You can now open your browser on your local machine and navigate to
-http://localhost:8080 and this will send request directly to the server
-running on port 3000 on the CircleCI container.
+`http://localhost:8080` and this will send request directly to the server
+running on port `3000` on the CircleCI container.
 
 This is a very easy way to debug things when setting up Selenium tests, for
 example.
