@@ -1061,6 +1061,11 @@
   [target message _ state]
   (update-in state (conj state/build-data-path :show-all-commits) not))
 
+(defmethod control-event :show-test-message-toggled
+  [_ _ {:keys [test-index]} state]
+  (let [test-path (concat state/tests-path [test-index :show-message])]
+    (update-in state test-path not)))
+
 (defmethod post-control-event! :doc-search-submitted
   [target message {:keys [query]} previous-state current-state]
   (let [comms (get-in current-state [:comms])]
