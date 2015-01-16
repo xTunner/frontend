@@ -23,11 +23,12 @@ Saving screenshots is straightforward: it's a built-in feature in webkit and sel
 To make this work with build artifacts, you need to save the screenshot to the
 `$CIRCLE_ARTIFACTS` directory.
 
-## Using a local browser with a HTTP server on CircleCI
+## Using a browser on your dev machine to access HTTP server on CircleCI
 
 If you are running a test that runs a HTTP server on CircleCI, sometimes it can
-be helpful to use a local browser to debug a failing test. Setting this up is
-easy with an SSH-enabled build.
+be helpful to use a browser running on your local machine to debug why a
+particular test is failing test. Setting this up is easy with an SSH-enabled
+build.
 
 First, you should run an SSH build. You will be shown the command to log into
 the build container over SSH. This command will look like this:
@@ -48,7 +49,9 @@ ssh -p 64625 ubuntu@54.221.135.43 -L 8080:localhost:3000
 
 You can now open your browser on your local machine and navigate to
 http://localhost:8080 and this will send request directly to the server
-running on port 3000 on the CircleCI container.
+running on port 3000 on the CircleCI container. You can now manually start the
+test server on the CircleCI container if it is not aleady running, and you
+should be able to access from the browser on you development machine.
 
 This is a very easy way to debug things when setting up Selenium tests, for
 example.
