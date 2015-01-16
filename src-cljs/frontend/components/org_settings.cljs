@@ -456,9 +456,8 @@
                                        false)}
                        "Pay Now"])))
 
-                 (if (pm/enterprise? plan)
-                   ""
-                   ;; TODO: Clean up - super nested and many interactions
+                 (when-not (pm/enterprise? plan)
+                   ;; TODO: Clean up conditional here - super nested and many interactions
                    (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
                      (list
                       (when (< old-total new-total)

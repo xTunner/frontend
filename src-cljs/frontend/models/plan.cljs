@@ -79,6 +79,12 @@
   ;; can-edit-plan?' return true for them
   (not (piggieback? plan org-name)))
 
+(defn transferrable-or-piggiebackable-plan? [plan]
+  (or (paid? plan)
+      ;; Trial plans shouldn't really be transferrable
+      ;; but they are piggiebackable and the UI mixes the two :(
+      (trial? plan)))
+
 ;; true  if the plan has an active Stripe discount coupon.
 ;; false if the plan is nil (not loaded yet) or has no discount applied
 (defn has-active-discount? [plan]
