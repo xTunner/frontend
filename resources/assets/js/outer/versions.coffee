@@ -164,7 +164,7 @@ CI.Versions =
     "5.6.2"
   ]
 
-  golang: '1.3'
+  golang: '1.4'
   erlang: 'r14b04'
 
   default_java_package: "oraclejdk7"
