@@ -8,6 +8,7 @@
             [frontend.components.documentation :as docs]
             [frontend.components.build-head :refer (default-tab)]
             [frontend.favicon]
+            [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
@@ -199,7 +200,9 @@
                        (gstring/format "/api/v1/project/%s/plan" project-name)
                        :project-plan
                        api-ch
-                       :context {:project-name project-name}))))
+                       :context {:project-name project-name}))
+          (when (build-model/finished? build)
+            (api/get-build-tests build api-ch))))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
                                                                              :build-num build-num})
                              :messages pusher/build-messages}]))
