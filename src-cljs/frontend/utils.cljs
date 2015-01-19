@@ -95,12 +95,9 @@
 (defn cdn-path
   "Returns path of asset in CDN"
   [path]
-  (-> js/window
-      (aget "renderContext")
-      (aget "assetsRoot")
-      (str (if (= \/ (first path))
-             path
-             (str "/" path)))))
+  (str (config/assets-root) (if (= \/ (first path))
+                              path
+                              (str "/" path))))
 
 (defn display-branch [branch]
   (-> branch name js/decodeURIComponent))
