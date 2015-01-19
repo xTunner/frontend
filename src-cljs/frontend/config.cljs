@@ -36,3 +36,9 @@
   "Full HTTP URL of GitHub API."
   []
   (aget js/window "renderContext" "githubHttpEndpoint"))
+
+(defn stripe-key
+  "Publishable key to identify our account with Stripe.
+  See: https://stripe.com/docs/tutorials/dashboard#api-keys"
+  []
+  (aget js/window "renderContext" "stripePublishableKey"))
