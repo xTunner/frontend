@@ -12,7 +12,7 @@ better test splits and finish your builds faster.
 
 ## Automatic test metadata collection
 
-If you're using our inferred test steps for RSpec, Cucumber, or Minitest, then we'll
+If you're using our inferred test steps for RSpec, Cucumber, or Minitest for Ruby or nosetests for Python then we'll
 automatically collect test metadata,
 though for RSpec and Minitest you'll need to add the necessary formatter gems to your Gemfile:
 
