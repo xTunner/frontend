@@ -111,7 +111,7 @@
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
   []
-  (:log-channels? utils/initial-query-map (aget js/window "renderContext" "log_channels")))
+  (:log-channels? utils/initial-query-map (config/log-channels?)))
 
 (defn controls-handler
   [value state container]

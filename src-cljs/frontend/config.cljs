@@ -15,3 +15,8 @@
   "Options to be passed to the Pusher client library."
   []
   (js->clj (aget js/window "renderContext" "pusher")))
+
+(defn log-channels?
+  "If true, log all messages on global core.async channels."
+  []
+  (boolean (aget js/window "renderContext" "log_channels")))
