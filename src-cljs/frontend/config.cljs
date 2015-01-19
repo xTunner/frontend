@@ -17,6 +17,11 @@
   (assoc (js->clj (aget js/window "renderContext" "pusher"))
          :key (aget js/window "renderContext" "pusherAppKey")))
 
+(defn logging-enabled?
+  []
+  "If true, log statements print to the browswer's JavaScript console."
+  (boolean (aget js/window "renderContext" "logging_enabled")))
+
 (defn log-channels?
   "If true, log all messages on global core.async channels."
   []

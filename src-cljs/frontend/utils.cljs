@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.config :as config]
             [om.core :as om :include-macros true]
             [ajax.core :as ajax]
             [cljs-time.core :as time]
@@ -40,7 +41,7 @@
    :invited-by (.getParameterValue parsed-uri "invited-by")})
 
 (defn logging-enabled? []
-  (:logging-enabled? initial-query-map (aget js/window "renderContext" "logging_enabled")))
+  (:logging-enabled? initial-query-map (config/logging-enabled?)))
 
 (defn mlog [& messages]
   (when (logging-enabled?)
