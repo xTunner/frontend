@@ -1,5 +1,6 @@
 (ns frontend.utils.github
   (:require [clojure.string :as string]
+            [frontend.config :as config]
             [goog.string :as gstring]
             [goog.string.format]
             [cemerick.url :refer [url]]))
@@ -10,9 +11,7 @@
   (js/CI.github.authUrl (clj->js scope)))
 
 (defn http-endpoint []
-  (-> js/window
-      (aget "renderContext")
-      (aget "githubHttpEndpoint")))
+  (config/github-endpoint))
 
 (defn make-avatar-url [{:keys [avatar_url gravatar_id login]} & {:keys [size] :or {size 200}}]
   "Takes a map of user/org data and returns a url for the desired size of the user's avatar

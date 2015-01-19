@@ -11,6 +11,7 @@
             [frontend.analytics :as analytics]
             [frontend.analytics.mixpanel :as mixpanel]
             [frontend.components.app :as app]
+            [frontend.config :as config]
             [frontend.controllers.controls :as controls-con]
             [frontend.controllers.navigation :as nav-con]
             [frontend.routes :as routes]
@@ -110,7 +111,7 @@
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
   []
-  (:log-channels? utils/initial-query-map (aget js/window "renderContext" "log_channels")))
+  (:log-channels? utils/initial-query-map (config/log-channels?)))
 
 (defn controls-handler
   [value state container]
@@ -201,7 +202,7 @@
   (let [comms       (:comms @state)
         container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
-        pusher-imp (pusher/new-pusher-instance)
+        pusher-imp (pusher/new-pusher-instance (config/pusher))
         controls-tap (chan)
         nav-tap (chan)
         api-tap (chan)

@@ -1,18 +1,12 @@
 (ns frontend.stripe
   (:require [frontend.async :refer [put!]]
+            [frontend.config :as config]
             [frontend.utils :as utils :include-macros true]
             [goog.net.jsloader]))
 
 ;; We may want to add StripeCheckout to externs to avoid all of the aget noise.
 
-(defn stripe-key []
-  ;; Publishable key to identify our account with Stripe:
-  ;; https://stripe.com/docs/tutorials/dashboard#api-keys"
-  (-> js/window
-      (aget "renderContext")
-      (aget "stripePublishableKey")))
-
-(defn checkout-defaults [] {:key (stripe-key)
+(defn checkout-defaults [] {:key (config/stripe-key)
                             :name "CircleCI"
                             :address false
                             :panelLabel "Pay"})

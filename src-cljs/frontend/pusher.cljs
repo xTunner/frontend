@@ -11,17 +11,13 @@
 
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-(defn pusher-key []
-  (-> js/window
-      (aget "renderContext")
-      (aget "pusherAppKey")))
-
-(defn new-pusher-instance [& {:keys [key]
-                              :or {key (pusher-key)}}]
+(defn new-pusher-instance [config]
   (aset (aget js/window "Pusher") "channel_auth_endpoint" "/auth/pusher")
-  (js/Pusher. key (clj->js {:encrypted true
-                            :auth {:params {:CSRFToken (utils/csrf-token)}}
-                            :authEndpoint "/auth/pusher"})))
+  (let [config (merge {:encrypted true
+                       :auth {:params {:CSRFToken (utils/csrf-token)}}
+                       :authEndpoint "/auth/pusher"}
+                      config)]
+    (js/Pusher. (:key config) (clj->js (dissoc config :key)))))
 
 (defn user-channel [user]
   (str "private-" (:login user)))

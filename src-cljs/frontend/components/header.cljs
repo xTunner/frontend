@@ -75,7 +75,7 @@
             expanded? (get-in app state/show-instrumentation-line-items-path)
             inspector? (get-in app state/show-inspector-path)
             user-session-settings (get-in app [:render-context :user_session_settings])
-            env (aget js/window "renderContext" "env")]
+            env (config/env)]
         (html
          [:div.head-admin {:class (concat (when open? ["open"])
                                           (when expanded? ["expanded"]))}
