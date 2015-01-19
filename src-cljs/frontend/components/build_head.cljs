@@ -274,12 +274,27 @@
      [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"} "the docs"] " for more information."]]
    "With test metadata, we can provide better insight into your build results and in some cases speed up your parallel builds by more efficiently splitting your tests between containers."])
 
+(defn test-item [test owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:li
+         (test-model/format-test-name test)
+         (when-not (string/blank? (:message test))
+           [:a {:role "button"
+                :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
+            " more info "
+            (if (:show-message test) [:i.fa.fa-caret-up] [:i.fa.fa-caret-down])])
+         (when (:show-message test)
+           [:pre (:message test)])]))))
+
 (defn build-tests-list [data owner]
   (reify
     om/IRender
     (render [_]
       (let [tests-data (:tests-data data)
-            tests (:tests tests-data)
+            tests (map-indexed #(assoc %2 :i %1) (:tests tests-data))
             sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
             failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
         (html
@@ -300,9 +315,8 @@
                     [:ol.build-tests-list
                      (for [[file tests-by-file] (group-by :file tests-by-source)]
                        (list (when file [:div.filename (str file ":")])
-                             (map (fn [test]
-                                    [:li (test-model/format-test-name test)])
-                                  (sort-by test-model/format-test-name tests-by-file))))]]))]))])))))
+                             (om/build-all test-item
+                                           (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
 
 (defn circle-yml-ad []
   [:div
