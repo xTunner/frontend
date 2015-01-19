@@ -14,7 +14,8 @@
 (defn pusher
   "Options to be passed to the Pusher client library."
   []
-  (js->clj (aget js/window "renderContext" "pusher")))
+  (assoc (js->clj (aget js/window "renderContext" "pusher"))
+         :key (aget js/window "renderContext" "pusherAppKey")))
 
 (defn log-channels?
   "If true, log all messages on global core.async channels."
