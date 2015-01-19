@@ -435,7 +435,16 @@
                [:a {:on-click #(do
                                  (raise! owner [:build-header-tab-clicked {:tab :tests}])
                                  (raise! owner [:tests-showed]))}
-                "Test Failures"]])
+                (if (= "success" (:status build))
+                  "Test Results "
+                  "Test Failures ")
+                (when-let [fail-count (some->> build-data
+                                               :tests-data
+                                               :tests
+                                               (filter #(contains? #{"failure" "error"} (:result %)))
+                                               count)]
+                  (when (not= 0 fail-count)
+                    [:span {:class "fail-count"} fail-count]))]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))

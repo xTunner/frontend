@@ -78,7 +78,12 @@
 (defmethod post-ws-event! :build/update
   [pusher-imp message {:keys [data channel-name]} previous-state current-state]
   (when-not (ignore-build-channel? current-state channel-name)
-    (frontend.favicon/set-color! (build-model/favicon-color (utils/js->clj-kw data)))))
+    (frontend.favicon/set-color! (build-model/favicon-color (utils/js->clj-kw data)))
+    (let [build (get-in current-state state/build-path)]
+      (when (and (build-model/finished? build)
+                 (empty? (get-in current-state state/tests-path)))
+        (api/get-build-tests build
+                             (get-in current-state [:comms :api]))))))
 
 (defmethod ws-event :build/new-action
   [pusher-imp message {:keys [data channel-name]} state]
