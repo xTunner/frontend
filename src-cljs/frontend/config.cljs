@@ -31,3 +31,8 @@
   "Path to root of CDN assets."
   []
   (aget js/window "renderContext" "assetsRoot"))
+
+(defn github-endpoint
+  "Full HTTP URL of GitHub API."
+  []
+  (aget js/window "renderContext" "githubHttpEndpoint"))
