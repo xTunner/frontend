@@ -179,8 +179,9 @@
         (html
          [:div
           [:div.alert {:class "alert-danger"}
-           ;; TODO: something else if you're not an admin.
            (list org-name
-                 "'s plan has been suspended! Please "
-                 [:a {:href plan-path} "update your billing info"]
-                 " in order to continue using paid containers.")]])))))
+                 "'s plan has been suspended! "
+                 (if (plan-model/admin? plan)
+                   (list "Please " [:a {:href plan-path} "update your billing info "]
+                         " in order to continue using paid containers.")
+                   (list "Please ask an administrator to update your billing info.")))]])))))
