@@ -150,3 +150,8 @@
   (and (paid? plan)
        (< (stripe-cost plan)
           (cost plan (usable-containers plan)))))
+
+(defn admin?
+  "Whether the logged-in user is an admin for this plan."
+  [plan]
+  (boolean (:admin plan)))
