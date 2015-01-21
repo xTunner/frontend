@@ -106,6 +106,27 @@ test:
 
 You can also use the `sudo` command if necessary to perform customizations outside of Homebrew.
 
+### Upgrading CocoaPods
+
+It is possible to upgrade the version of CocoaPods installed on the container
+by editing your `circle.yml` file. You will need to set the terminal ouput to
+UTF-8, and use `sudo` to install the gem.
+
+```
+machine:
+  environment:
+    # CocoaPods versions greater than 0.34 require
+    # your terminal to be using UTF-8 encoding.
+    LANG: en_US.UTF-8
+dependencies:
+  pre:
+    - sudo gem install cocoapods --version 0.35.0
+    # CocoaPods sometimes has issues using caches
+    # between different versions of CocoaPods.
+    - pod setup
+    - pod install
+```
+
 ##Code signing and deployment
 You can build a signed app and deploy to various destinations using the customization options
 mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in
@@ -131,3 +152,12 @@ Linux containers that are not available on OSX vms:
 or a few other sections will not work correctly.
 See the [customizing your build](#customizing-your-build) section for alternatives.
 
+## Software Versions
+
+The OSX container that CircleCI uses to build has the following software
+versions installed:
+
+- OS X 10.9.5 (13F34) Darwin 13.4.0
+- Xcode 6.1.1 Build version 6A2008a
+- Facebook xctool 0.2.2
+- CocoaPods 0.34.4
