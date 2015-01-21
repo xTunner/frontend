@@ -25,6 +25,9 @@
    (mixpanel/init-user login)
    (rollbar/init-user login)))
 
+(defn-analytics set-existing-user []
+  (mixpanel/set-existing-user))
+
 (defn-analytics track-dashboard []
   (mixpanel/track "Dashboard")
   (google/track-pageview "/dashboard"))
@@ -132,3 +135,30 @@
                           (filter utm?)
                           (map (fn [[key val]] [(str "last_" (name key)) val]))
                           (into {}))))
+
+(defn-analytics track-invitations [invitees context]
+  (mixpanel/track "Sent invitations" (merge {:users (map :login invitees)}
+                                            context))
+  (doseq [u invitees]
+    (mixpanel/track "Sent invitation" (merge {:login (:login u)
+                                              :id (:id u)
+                                              :email (:email u)}
+                                             context))))
+
+(defn-analytics track-invitation-prompt [context]
+  (mixpanel/track "Saw invitations prompt" {:first_green_build true
+                                            :project (:project-name context)}))
+
+
+(defn-analytics managed-track [event properties]
+  (mixpanel/managed-track event properties))
+
+(defn-analytics track-test-stack [tab]
+  (mixpanel/track "Test Stack" {:tab (name tab)}))
+
+(defn-analytics track-ab-choices [choices]
+  (let [mixpanel-choices (reduce (fn [m-choices [key value]]
+                                   ;; rename keys from :test-name to "ab_test-name"
+                                   (assoc m-choices (str "ab_" (name key)) value))
+                                 {} choices)]
+    (mixpanel/register-once mixpanel-choices)))
