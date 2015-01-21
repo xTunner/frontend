@@ -21,18 +21,13 @@ body {
     .settings {
       .flexy(center, center);
       height: @tile;
-      &:hover {
-        path {
-          stroke: @blueLight;
-        }
+      path {
+        stroke: @blueLight;
       }
-      padding-right: @baseFontSize;
+      padding: @paddingLarge;
+
       span {
-        padding-left: 0.5 * @baseFontSize;
-      }
-      svg {
-        width: @baseFontSize;
-        height: @baseFontSize;
+        padding: @paddingMini;
         path {
           stroke: @grayLight;
           &:first-child {
