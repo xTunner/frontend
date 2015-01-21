@@ -110,7 +110,8 @@ You can also use the `sudo` command if necessary to perform customizations outsi
 
 It is possible to upgrade the version of CocoaPods installed on the container
 by editing your `circle.yml` file. You will need to set the terminal ouput to
-UTF-8, and use `sudo` to install the gem.
+UTF-8, and use `sudo` to install the gem. The example below will install
+CocoaPods version 0.35.
 
 ```
 machine:
