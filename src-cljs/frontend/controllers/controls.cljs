@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs.reader :as reader]
             [frontend.analytics :as analytics]
-            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.components.forms :refer [release-button!]]
@@ -715,15 +714,7 @@
                  (get-in current-state [:comms :api])
                  :context context
                  :params invitees)
-    ;; TODO: move all of the tracking stuff into frontend.analytics and let it
-    ;;      keep track of which service to send things to
-    (mixpanel/track "Sent invitations" (merge {:users (map :login invitees)}
-                                              context))
-    (doseq [u invitees]
-      (mixpanel/track "Sent invitation" (merge {:login (:login u)
-                                                :id (:id u)
-                                                :email (:email u)}
-                                               context)))))
+    (analytics/track-invitations invitees context)))
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
@@ -1007,14 +998,15 @@
 
 (defmethod post-control-event! :home-technology-tab-selected
   [target message {:keys [tab]} previous-state current-state]
-  (mixpanel/track "Test Stack" {:tab (name tab)}))
+  (analytics/track-test-stack tab))
 
 (defmethod post-control-event! :track-external-link-clicked
   [target message {:keys [path event properties]} previous-state current-state]
   (let [redirect #(js/window.location.replace path)]
     (go (alt!
-         (mixpanel/managed-track event properties) ([v] (do (utils/mlog "tracked" v "... redirecting")
-                                                            (redirect)))
+         (analytics/managed-track event properties)
+         ([v] (do (utils/mlog "tracked" v "... redirecting")
+                (redirect)))
          (async/timeout 1000) (redirect)))))
 
 (defmethod control-event :language-testimonial-tab-selected

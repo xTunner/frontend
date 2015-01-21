@@ -1,7 +1,7 @@
 (ns frontend.ab
   (:require [goog.net.Cookies]
             [goog.crypt.Md5]
-            [frontend.analytics.mixpanel :as mixpanel]
+            [frontend.analytics :as analytics]
             [frontend.utils :as utils :include-macros true]))
 
 (def cookie-name "ab_test_user_seed")
@@ -41,18 +41,11 @@
                  {} test-definitions)
           overrides))
 
-(defn notify-mixpanel [choices]
-  (let [mixpanel-choices (reduce (fn [m-choices [key value]]
-                                   ;; rename keys from :test-name to "ab_test-name"
-                                   (assoc m-choices (str "ab_" (name key)) value))
-                                 {} choices)]
-    (mixpanel/register-once mixpanel-choices)))
-
 (defn setup! [test-definitions & {:keys [overrides] :or {overrides {}}}]
   (let [seed (or (get-user-seed)
                  (do
                    (set-user-seed!)
                    (get-user-seed)))
         choices (choose seed test-definitions :overrides overrides)]
-    (notify-mixpanel choices)
+    (analytics/track-ab-choices choices)
     choices))

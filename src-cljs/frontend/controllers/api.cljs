@@ -10,7 +10,6 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.analytics :as analytics]
-            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.favicon]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
@@ -371,9 +370,7 @@
   [target message status {:keys [resp context]} previous-state current-state]
   ;; This is not ideal, but don't see a better place to put this
   (when (first (remove :following resp))
-    (mixpanel/track "Saw invitations prompt" {:first_green_build true
-                                              :project (:project-name context)})))
-
+    (analytics/track-invitation-prompt context)))
 
 (defmethod api-event [:invite-github-users :success]
   [target message status {:keys [resp context]} state]

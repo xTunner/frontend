@@ -9,7 +9,6 @@
             [frontend.ab :as ab]
             [frontend.intercom :as intercom]
             [frontend.analytics :as analytics]
-            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.components.app :as app]
             [frontend.config :as config]
             [frontend.controllers.controls :as controls-con]
@@ -298,7 +297,7 @@
 
 (defn ^:export setup! []
   (apply-app-id-hack)
-  (mixpanel/set-existing-user)
+  (analytics/set-existing-user)
   (intercom/start-polling intercom/update-period-ms)
   (let [state (app-state)
         top-level-node (find-top-level-node)
