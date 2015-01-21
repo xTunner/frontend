@@ -30,7 +30,6 @@
 (defn settings-link [app owner]
   (when (show-settings-link? app)
     (let [navigation-data (:navigation-data app)]
-          ;; TODO: delet :fast_settings_tooltip
       (cond (:repo navigation-data) [:a.settings.project-settings
                                      {:href (routes/v1-project-settings navigation-data) }
                                      (common/ico :settings-light) "Project Settings"]
