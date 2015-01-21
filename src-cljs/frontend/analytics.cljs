@@ -8,31 +8,37 @@
             [frontend.analytics.twitter :as twitter]
             [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
+            [frontend.config :refer (analytics-enabled?)]
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.style]
             [goog.string :as gstr]))
 
+(defmacro defn-analytics [name params & body]
+  `(defn ~name ~params
+     (when (analytics-enabled?)
+       ~@body)))
 
-(defn init-user [login]
+(defn-analytics init-user [login]
   (utils/swallow-errors
    (mixpanel/init-user login)
    (rollbar/init-user login)))
 
-(defn track-dashboard []
+(defn-analytics track-dashboard []
   (mixpanel/track "Dashboard")
   (google/track-pageview "/dashboard"))
 
-(defn track-homepage []
+(defn-analytics track-homepage []
   (utils/swallow-errors
    (mixpanel/track "Outer Home Page" {"window height" (.-innerHeight js/window)})
    (google/track-pageview "/homepage")))
 
-(defn track-org-settings [org-name]
+(defn-analytics track-org-settings [org-name]
   (mixpanel/track "View Org" {:username org-name}))
 
-(defn track-build [user build]
+(defn-analytics track-build [user build]
+
   (mixpanel/track "View Build" (merge {:running (build-model/running? build)
                                        :build-num (:build_num build)
                                        :vcs-url (vcs-url/project-name (:vcs_url build))
@@ -47,81 +53,81 @@
                     {:vcs-url (vcs-url/project-name (:vcs_url build))
                      :outcome (:outcome build)})))
 
-(defn track-path [path]
+(defn-analytics track-path [path]
   (mixpanel/track-pageview path)
   (google/push path))
 
-(defn track-page [page & [props]]
+(defn-analytics track-page [page & [props]]
   (mixpanel/track page props))
 
-(defn track-pricing []
+(defn-analytics track-pricing []
   (mixpanel/register-once {:view-pricing true}))
 
-(defn track-invited-by [invited-by]
+(defn-analytics track-invited-by [invited-by]
   (mixpanel/register-once {:invited_by invited-by}))
 
-(defn track-join-code [join-code]
+(defn-analytics track-join-code [join-code]
   (when join-code (mixpanel/register-once {"join_code" join-code})))
 
-(defn track-save-containers [upgraded?]
+(defn-analytics track-save-containers [upgraded?]
   (mixpanel/track "Save Containers")
   (if upgraded?
     (intercom/track :upgraded-containers)
     (intercom/track :downgraded-containers)))
 
-(defn track-save-orgs []
+(defn-analytics track-save-orgs []
   (mixpanel/track "Save Organizations"))
 
-(defn track-collapse-nav []
+(defn-analytics track-collapse-nav []
   (mixpanel/track "aside_nav_collapsed"))
 
-(defn track-expand-nav []
+(defn-analytics track-expand-nav []
   (mixpanel/track "aside_nav_expanded"))
 
-(defn track-signup []
+(defn-analytics track-signup []
   (utils/swallow-errors
    (twitter/track-signup)
    (facebook/track-signup)
    ((aget js/window "track_signup_conversion"))))
 
-(defn track-payer [login]
+(defn-analytics track-payer [login]
   (mixpanel/track "Paid")
   (intercom/track :paid-for-plan)
   (pa/track "payer" {:orderId login})
   (twitter/track-payer)
   (adroll/record-payer))
 
-(defn track-trigger-build [build & {:keys [clear-cache? ssh?] :as extra}]
+(defn-analytics track-trigger-build [build & {:keys [clear-cache? ssh?] :as extra}]
   (mixpanel/track "Trigger Build" (merge {:vcs-url (vcs-url/project-name (:vcs_url build))
                                           :build-num (:build_num build)
                                           :retry? true}
                                          extra)))
 
-(defn track-follow-project []
+(defn-analytics track-follow-project []
   (google/track-event "Projects" "Add"))
 
-(defn track-unfollow-project []
+(defn-analytics track-unfollow-project []
   (google/track-event "Projects" "Remove"))
 
-(defn track-follow-repo []
+(defn-analytics track-follow-repo []
   (google/track-event "Repos" "Add"))
 
-(defn track-unfollow-repo []
+(defn-analytics track-unfollow-repo []
   (google/track-event "Repos" "Remove"))
 
-(defn track-message [message]
+(defn-analytics track-message [message]
   (mixpanel/track-message message))
 
-(defn track-view-page [zone]
+(defn-analytics track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
 
-(defn track-link-clicked [target]
+(defn-analytics track-link-clicked [target]
   (mixpanel/track "Track Link Clicked" {:link-class target}))
 
-(defn utm? [[key val]]
+(defn-analytics utm? [[key val]]
   (gstr/startsWith (name key) "utm"))
 
-(defn register-last-touch-utm [query-params]
+(defn-analytics register-last-touch-utm [query-params]
   (mixpanel/register (->> query-params
                           (filter utm?)
                           (map (fn [[key val]] [(str "last_" (name key)) val]))
