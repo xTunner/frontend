@@ -193,7 +193,7 @@
     {:type :subpage :href "#users" :title "Users" :subpage :users}
     {:type :heading :title "Plan"}]
    (if-not can-edit?
-     [{:type :subpage :href "#plan" :text "Choose plan" :subpage :plan}]
+     [{:type :subpage :href "#plan" :title "Choose plan" :subpage :plan}]
      (concat
       [{:type :subpage :title "Adjust containers" :href "#containers" :subpage :containers}
        {:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}]
