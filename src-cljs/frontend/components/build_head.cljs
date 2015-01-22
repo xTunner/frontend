@@ -294,7 +294,8 @@
     om/IRender
     (render [_]
       (let [tests-data (:tests-data data)
-            tests (map-indexed #(assoc %2 :i %1) (:tests tests-data))
+            tests (when (:tests tests-data)
+                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
             sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
             failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
         (html
