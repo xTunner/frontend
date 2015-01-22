@@ -215,57 +215,6 @@
      [:p
       "You can create a separate plan for " current-org-name " below."]]]])
 
-;;
-;; TODO: Kill this component when we're sure we're happy w/ the new
-;; pricing page (ie, the 'Adjust containers' used for all plans.)
-;; Leaving it for now out of cowardice.
-;;
-(defn plan [app owner]
-  (reify
-
-    ;; We're loading Checkout here because the loading status is not something
-    ;; that we can hope to serialize into the state. It will be stale when we
-    ;; move to a different browser or auto-refresh the page.
-    ;; Making the component responsible for loading Checkout seems like the best
-    ;; way to make sure it's loaded when we need it.
-    om/IInitState
-    (init-state [_]
-      {:checkout-loaded? (stripe/checkout-loaded?)
-       :checkout-loaded-chan (chan)})
-    om/IWillMount
-    (will-mount [_]
-      (let [ch (om/get-state owner [:checkout-loaded-chan])
-            checkout-loaded? (om/get-state owner [:checkout-loaded?])]
-        (utils/mlog "plan/IWillMount with Stripe checkout-loaded? " checkout-loaded?)
-        (when-not checkout-loaded?
-          (go (<! ch) ;; wait for success message
-              (utils/mlog "Stripe checkout loaded")
-              (om/set-state! owner [:checkout-loaded?] true))
-          (utils/mlog "Loading Stripe checkout")
-          (stripe/load-checkout ch))))
-    om/IWillUnmount
-    (will-unmount [_]
-      (close! (om/get-state owner [:checkout-loaded-chan])))
-
-    om/IRenderState
-    (render-state [_ {:keys [checkout-loaded?]}]
-      (let [plan (get-in app state/org-plan-path)
-            org-name (get-in app state/org-name-path)]
-        (utils/mlog "org_settings render-state Stripe checkout-loaded? " checkout-loaded?)
-        (html
-         (if-not (and plan checkout-loaded?)
-           [:div.loading-spinner common/spinner]
-
-           [:div#billing.plans.pricing.row-fluid
-            (when (pm/trial? plan)
-              (plans-trial-notification plan org-name owner))
-            (when (pm/piggieback? plan org-name)
-              (plans-piggieback-plan-notification plan org-name))
-            (om/build plans-component/plans app)
-            (shared/customers-trust)
-            (om/build plans-component/pricing-features app)
-            plans-component/pricing-faq]))))))
-
 (defn plural-multiples [num word]
   (if (> num 1)
     (pluralize num word)
@@ -919,7 +868,6 @@
   {:overview overview
    :users users
    :projects projects
-   :plan plan
    :containers containers
    :organizations organizations
    :billing billing
