@@ -192,8 +192,7 @@
 
        [:span "The " [:strong org-name] " organization has "
         (pm/pretty-trial-time plan) " left in its trial."])]
-    [:p
-     "The trial plan is equivalent to the Solo plan with 6 containers."]
+    [:p "Your trial is equivalent to a plan with" (pluralize (pm/trial-containers plan) "containers") "."]
     (when (and (not (:too_many_extensions plan))
                (> 3 (pm/days-left-in-trial plan)))
       [:p
