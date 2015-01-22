@@ -314,19 +314,17 @@
                           :title "Report Bug"
                           :data-placement "right"
                           :data-trigger "hover"
-
                           :data-bind "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
            [:i.fa.fa-bug]
            [:span "Report Bug"]]
 
-          [:a.aside-item
-           {:href "https://www.hipchat.com/gjwkHcrD5",
-            :target "_blank",
-            :data-placement "right"
-            :data-trigger "hover"
-            :title "Live Support"}
+          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
+                          :title "Support"
+                          :data-placement "right"
+                          :data-trigger "hover"
+                          :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
            [:i.fa.fa-comments]
-           [:span "Live Support"]]
+           [:span "Support"]]
 
           [:a.aside-item {:href "/add-projects",
                                        :data-placement "right"

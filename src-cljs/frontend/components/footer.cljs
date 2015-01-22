@@ -19,8 +19,6 @@
     [:li [:a {:href "/changelog"} "Changelog"]]
     [:li [:a {:href "/about#contact"} "Contact"]]
     [:li
-     [:a {:href "https://www.hipchat.com/gjwkHcrD5"} "Live Support"]]
-    [:li
      [:a.fa.fa-twitter
       {:title "Follow CircleCI on Twitter",
        :href "https://twitter.com/circleci"}]]]])
