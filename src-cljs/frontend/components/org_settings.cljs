@@ -881,14 +881,24 @@
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
        [:div.explanation
+        (when (pm/piggieback? plan org-name)
+          [:p "This organization's projects will build under "
+           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
+            (:org_name plan) "'s plan."]])
         [:p
-         (str "Your builds will be distributed across " (pm/usable-containers plan) " containers.")]
+         (str "Builds will be distributed across " (pm/usable-containers plan) " containers.")]
         (when (pm/paid? plan)
           [:p
            (str (pm/paid-containers plan) " of these are paid, at $" (pm/stripe-cost plan) "/month. ")
-           "You can "
-           [:a {:href "#containers"} "add more"]
-           " at $" container-cost " per container  for more parallelism and shorter queue times."])
+           (when (pm/admin? plan)
+             (list
+              "You can "
+              ;; make sure to link to the add-containers page of the plan's org,
+              ;; in case of piggiebacking.
+              [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                          :subpage "add-containers"})}
+               "add more"]
+              " at $" container-cost " per container for more parallelism and shorter queue times."))])
         (when  (pm/freemium? plan)
           [:p (str (pm/freemium-containers plan) " container is free, forever.")])
         [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]]]))))
