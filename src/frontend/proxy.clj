@@ -25,9 +25,13 @@
    :headers {"Content-Type" "text/plain"}
    :body (str "Cannot access backend\n" error)})
 
+(defn strip-secure-cookie [header-val]
+  (cond (string? header-val) (string/replace header-val "Secure;" "")
+        (coll? header-val) (map strip-secure-cookie header-val)))
+
 (defn strip-secure [headers]
   (if (headers "set-cookie")
-    (update-in headers ["set-cookie"] clojure.string/replace "Secure;" "")
+    (update-in headers ["set-cookie"] strip-secure-cookie)
     headers))
 
 (defn rewrite-success
