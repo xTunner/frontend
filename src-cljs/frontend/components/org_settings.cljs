@@ -42,7 +42,7 @@
                [:li
                 "Sign up for a plan from your "
                 [:a {:href (routes/v1-org-settings-subpage {:org login
-                                                            :subpage "plan"})}
+                                                            :subpage "containers"})}
                  "\"personal organization\" page"]]
                [:li
                 "Add " org-name
@@ -210,8 +210,7 @@
      [:p
       "If you're an admin in the " (:org_name plan)
       " organization, then you can change plan settings from the "
-      [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                  :subpage "plan"})}
+      [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
        (:org_name plan) " plan page"] "."]
      [:p
       "You can create a separate plan for " current-org-name " below."]]]])
