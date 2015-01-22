@@ -36,7 +36,7 @@
 
 (defn pricing [app owner]
   (reify
-    om/IDisplayName (display-name [_] "Pricing B")
+    om/IDisplayName (display-name [_] "Pricing")
     om/IInitState (init-state [_] {:drag-percent 0
                                    :dragging? false})
     om/IRenderState
