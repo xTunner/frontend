@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.components.mobile.icons :as icons]
             [frontend.state :as state]
