@@ -92,6 +92,9 @@
               [:a {:on-click #(raise! owner [:set-user-session-setting {:setting :use-local-assets
                                                                         :value (not use-local-assets)}])}
                "local assets " (if use-local-assets "off " "on ")])
+            [:a {:on-click #(raise! owner [:set-user-session-setting {:setting :use-om
+                                                                      :value false}])}
+             "om off "]
             (let [current-build-id (get user-session-settings :om_build_id "dev")]
               (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
                 [:a.menu-item
