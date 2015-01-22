@@ -70,16 +70,10 @@
             {:href
              "http://www.google.co.uk/intl/en/analytics/privacyoverview.html"}
             "Google Analytics' privacy policy"]
-           " discusses how they use this information."]
-          [:li
-           [:a {:href "http://hipchat.com/"} "Hipchat"]
-           " provides our live support channel, where we discuss support issues with customers. This is a public channel, and we do not ask customers for any private details via Hipchat, and none should ever be volunteered. Hipchat is also used for internal Circle communication. "
-           [:a
-            {:href "https://www.hipchat.com/privacy"}
-            "Hipchat's privacy policy"]
-           " discusses what information they collect, and how they protect our data and yours."]]
+           " discusses how they use this information."]]
          [:h2 "Changelog"]
          [:ul.privacy-changelog
+          [:li [:strong "January 22, 2015"] " Removed Hipchat usage."]
           [:li
            [:strong "Mar 17, 2014"]
            " Moved the security content to its own page, "

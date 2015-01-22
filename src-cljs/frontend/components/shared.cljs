@@ -198,8 +198,7 @@
                                               (goog.style/setWidth (om/get-node owner) (.-width (goog.style/getSize (om/get-node owner)))))}
          "Need Help? Contact us!"]
         [:div.light-background
-         (om/build contact-form app)
-         [:span "Or, check out our " [:a {:target "_blank", :href "https://www.hipchat.com/gjwkHcrD5"} "live support!"]]]]))))
+         (om/build contact-form app)]]))))
 
 ;; Since we can't reliably make an html5 range element look like we
 ;; want, fake it with divs for the bar, the knob and a highlight div
