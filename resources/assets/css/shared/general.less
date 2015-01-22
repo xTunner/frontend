@@ -20,17 +20,14 @@ body {
     border-bottom: solid 1px @grayBoxBorder;
     .settings {
       .flexy(center, center);
-      .tip(left);
-      width: @tile;
       height: @tile;
-      &:hover {
-        path {
-          stroke: @blueLight;
-        }
+      path {
+        stroke: @blueLight;
       }
-      svg {
-        width: (@baseFontSize * 1.5);
-        height: (@baseFontSize * 1.5);
+      padding: @paddingLarge;
+
+      span {
+        padding: @paddingMini;
         path {
           stroke: @grayLight;
           &:first-child {

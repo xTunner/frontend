@@ -29,16 +29,13 @@
 
 (defn settings-link [app owner]
   (when (show-settings-link? app)
-    (let [navigation-data (:navigation-data app)
-          fast-tooltip? (om/get-shared owner [:ab-tests :fast_settings_tooltip])]
+    (let [navigation-data (:navigation-data app)]
       (cond (:repo navigation-data) [:a.settings.project-settings
-                                     {:href (routes/v1-project-settings navigation-data)
-                                      :data-tooltip "Project Settings"}
-                                     (common/ico :settings-light)]
+                                     {:href (routes/v1-project-settings navigation-data) }
+                                     (common/ico :settings-light) "Project Settings"]
             (:org navigation-data) [:a.settings.org-settings
-                                    {:href (routes/v1-org-settings navigation-data)
-                                     :data-tooltip "Org Settings"}
-                                    (common/ico :settings-light)]
+                                    {:href (routes/v1-org-settings navigation-data)}
+                                    (common/ico :settings-light) "Organization Settings"]
             :else nil))))
 
 (defn head-user [app owner]
