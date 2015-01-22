@@ -44,3 +44,14 @@
   See: https://stripe.com/docs/tutorials/dashboard#api-keys"
   []
   (aget js/window "renderContext" "stripePublishableKey"))
+
+(defn analytics-enabled?
+  []
+  "If true, collect user analytics"
+  ;; The value should be supplied by backend
+  ;; till that happens, use enterprise? check instead
+  (let [v (aget js/window "renderContext" "analytics_enabled")]
+    (if-not (nil? v)
+      (boolean v)
+      ;; TODO: Kill this after backend populate the context value
+      (not (enterprise?)))))
