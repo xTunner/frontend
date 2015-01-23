@@ -75,8 +75,12 @@
 
 (defn usable-containers [plan project]
   (+ (plan-model/usable-containers plan)
-     (if (oss? project) 3 0)))
+     (if (oss? project) plan-model/oss-containers 0)))
+
+(defn max-parallelism [plan project]
+  (+ (plan-model/max-parallelism plan)
+     (if (oss? project) plan-model/oss-containers 0)))
 
 (defn max-selectable-parallelism [plan project]
-  (min (plan-model/max-parallelism plan)
+  (min (max-parallelism plan project)
        (usable-containers plan project)))

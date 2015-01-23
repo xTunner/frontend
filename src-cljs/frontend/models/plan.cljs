@@ -9,6 +9,8 @@
 (def default-template-properties {:price 0 :container_cost 50 :id
                                   "p18" :max_containers 1000 :free_containers 0})
 
+(def oss-containers 3)
+
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
   [plan]
