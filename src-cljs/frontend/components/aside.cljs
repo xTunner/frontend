@@ -214,11 +214,11 @@
              (= subpage :plan))
         :containers
 
-        ;; Redirect :containers, :organizations, :billing, and :cancel to the overview page
+        ;; Redirect :organizations, :billing, and :cancel to the overview page
         ;; for piggiebacked plans.
         (and plan
              (not (pm/can-edit-plan? plan org-name))
-             (#{:containers :organizations :billing :cancel} subpage))
+             (#{:organizations :billing :cancel} subpage))
         :overview
 
         :else subpage))
