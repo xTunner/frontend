@@ -389,7 +389,10 @@
             selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
             old-total (pm/stripe-cost plan)
             new-total (pm/cost plan selected-containers)
-            container-cost (pm/per-container-cost plan)]
+            container-cost (pm/per-container-cost plan)
+            piggiebacked? (pm/piggieback? plan org-name)
+            button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
+                                    selected-paid-containers)]
         (html
          (if-not plan
            (cond ;; TODO: fix; add plan
@@ -428,15 +431,17 @@
                     [:i.fa.fa-question-circle#grandfathered-tooltip-hack
                      {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
                 [:fieldset
-                 (if (or (pm/enterprise? plan) (pm/paid? plan))
+                 (if (and (pm/can-edit-plan? plan org-name) (or (pm/enterprise? plan) (pm/paid? plan)))
                    (forms/managed-button
                     [:button.btn.btn-large.btn-primary.center
                      {:data-success-text "Saved",
                       :data-loading-text "Saving...",
                       :type "submit"
-                      :on-click #(do (raise! owner [:update-containers-clicked
-                                                    {:containers selected-paid-containers}])
-                                     false)}
+                      :disabled (when-not button-clickable? "disabled")
+                      :on-click (when button-clickable?
+                                  #(do (raise! owner [:update-containers-clicked
+                                                      {:containers selected-paid-containers}])
+                                       false))}
                      "Update plan"])
                    (if-not checkout-loaded?
                      [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
@@ -446,13 +451,15 @@
                         :data-loading-text "Paying...",
                         :data-failed-text "Failed!",
                         :type "submit"
-                        :on-click #(do (raise! owner [:new-plan-clicked
-                                                      {:containers selected-paid-containers
-                                                       :paid {:template (:id pm/default-template-properties)}
-                                                       :price new-total
-                                                       :description (str "$" new-total "/month, includes "
-                                                                         (pluralize selected-containers "container"))}])
-                                       false)}
+                        :disabled (when-not button-clickable? "disabled")
+                        :on-click (when button-clickable?
+                                    #(do (raise! owner [:new-plan-clicked
+                                                        {:containers selected-paid-containers
+                                                         :paid {:template (:id pm/default-template-properties)}
+                                                         :price new-total
+                                                         :description (str "$" new-total "/month, includes "
+                                                                           (pluralize selected-containers "container"))}])
+                                         false))}
                        "Pay Now"])))
 
                  (when-not (pm/enterprise? plan)

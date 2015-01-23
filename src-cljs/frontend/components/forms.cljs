@@ -82,7 +82,8 @@
                        (if (= :loading status) common/spinner body)
                        (if (= :idle status) body new-value))
             new-attrs (-> attrs
-                          (assoc :disabled (= :loading status))
+                          ;; Don't unset 'disabled' if it's already set but not loading.
+                          (update-in [:disabled] #(or % (= :loading status)))
                           (update-in [:class] (fn [c] (cond (not= :loading status) c
                                                             (string? c) (str c " disabled")
                                                             (coll? c) (conj c "disabled")
