@@ -126,7 +126,7 @@
      "Containers are what we call the virtual machines that your tests run in. Your current plan has "
      (get-in project-data [:plan :containers])
      " containers and supports up to "
-     (plan-model/max-parallelism (:plan project-data))
+     (project-model/max-parallelism (:plan project-data) (:project project-data))
      "x paralellism."]
 
     [:p "With 16 containers you could run:"]
@@ -178,10 +178,10 @@
     (list
      [:div.parallelism-upgrades
       (if-not (plan-model/in-trial? plan)
-        (cond (> parallelism (plan-model/max-parallelism plan))
+        (cond (> parallelism (project-model/max-parallelism plan project))
               [:div.insufficient-plan
                "Your plan only allows up to "
-               (plan-model/max-parallelism plan) "x parallelism."
+               (project-model/max-parallelism plan project) "x parallelism."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "plan"})}
                 "Upgrade"]]
@@ -224,7 +224,7 @@
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
+         (for [parallelism (range 1 (max (project-model/max-parallelism plan project)
                                          (inc 24)))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
