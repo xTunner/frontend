@@ -432,7 +432,7 @@
                     [:i.fa.fa-question-circle#grandfathered-tooltip-hack
                      {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
                 [:fieldset
-                 (if (or (pm/enterprise? plan) (pm/paid? plan))
+                 (if (and (pm/can-edit-plan? plan org-name) (or (pm/enterprise? plan) (pm/paid? plan)))
                    (forms/managed-button
                     [:button.btn.btn-large.btn-primary.center
                      {:data-success-text "Saved",
