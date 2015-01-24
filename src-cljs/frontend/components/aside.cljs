@@ -203,16 +203,12 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
-(defn determine-org-settings-subpage
-  "Determines which subpage we should show the user. If they have
-   a plan, then we don't want to show them the plan page; if they
-   don't have a plan, then we don't want to show them the invoices page."
+(defn redirect-org-settings-subpage
+  "Piggiebacked plans can't go to :containers, :organizations, :billing, or :cancel.
+  Un-piggiebacked plans shouldn't be able to go to the old 'add plan' page. This function
+  selects a different page for these cases."
   [subpage plan org-name]
-  (cond (#{:users :projects} subpage)
-        ;; TODO: what does this condition do that :else subpage doesn't?
-        subpage
-
-        ;; Redirect :plan to :containers for paid plans that aren't piggiebacked.
+  (cond ;; Redirect :plan to :containers for paid plans that aren't piggiebacked.
         (and plan
              (pm/can-edit-plan? plan org-name)
              (= subpage :plan))
@@ -235,7 +231,7 @@
             plan (get-in app state/org-plan-path)
             org-data (get-in app state/org-data-path)
             org-name (:name org-data)
-            subpage (determine-org-settings-subpage (:project-settings-subpage app) plan org-name)
+            subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan org-name)
             items (org-settings-nav-items plan org-name)]
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
