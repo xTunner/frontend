@@ -39,8 +39,8 @@
 (defn enterprise? [plan]
   (boolean (:enterprise plan)))
 
-(defn freemium-containers [plan] (or (get-in plan [:free :template :free_containers]) 0))
-(defn trial-containers [plan] (or (get-in plan [:trial :template :free_containers]) 0))
+(defn freemium-containers [plan]
+  (or (get-in plan [:free :template :free_containers]) 0))
 
 (defn paid-containers [plan]
   (if (paid? plan)
@@ -48,6 +48,16 @@
          (:containers plan)
          (get-in plan [:paid :template :free_containers]))
     0))
+
+(defn trial-containers [plan]
+  (max 0
+       ;; Subtract the amount of paid containers from the number of trial containers,
+       ;; so that paid-containers + trial-containers = usable-containers for plans
+       ;; with only :paid and :trial.
+       ;; see `circle.model.plan/usable-containers` on the backend.
+       ;; TODO: fix this once that behavior changes.
+       (- (get-in plan [:trial :template :free_containers] 0)
+          (paid-containers plan))))
 
 (defn enterprise-containers [plan]
   (if (:enterprise plan)
@@ -69,7 +79,8 @@
   [plan]
   (+ (freemium-containers plan)
      (enterprise-containers plan)
-     (max (if (in-trial? plan) (trial-containers plan) 0) (paid-containers plan))))
+     (trial-containers plan)
+     (paid-containers plan)))
 
 (defn max-selectable-parallelism [plan]
   (min (max-parallelism plan)

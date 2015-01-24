@@ -877,7 +877,8 @@
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
           container-cost (pm/per-container-cost plan)
-          price (-> plan :paid :template :price)]
+          price (-> plan :paid :template :price)
+          containers (pm/usable-containers plan)]
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
        [:div.explanation
@@ -885,9 +886,12 @@
           [:p "This organization's projects will build under "
            [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
             (:org_name plan) "'s plan."]])
-        [:p
-         (str "Builds will be distributed across " (pm/usable-containers plan) " containers.")]
-        (when (pm/in-trial? plan)
+        (cond (> containers 1)
+              [:p (str "Builds will be distributed across " containers " containers.")]
+              (= containers 1)
+              [:p (str "Builds will run in a single container.")]
+              :else nil)
+        (when (> (pm/trial-containers plan) 0)
           [:p
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
