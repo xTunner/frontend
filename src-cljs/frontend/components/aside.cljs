@@ -209,17 +209,21 @@
    don't have a plan, then we don't want to show them the invoices page."
   [subpage plan org-name]
   (cond (#{:users :projects} subpage)
+        ;; TODO: what does this condition do that :else subpage doesn't?
         subpage
 
+        ;; Redirect :plan to :containers for paid plans that aren't piggiebacked.
         (and plan
              (pm/can-edit-plan? plan org-name)
              (= subpage :plan))
         :containers
 
+        ;; Redirect :containers, :organizations, :billing, and :cancel to the overview page
+        ;; for piggiebacked plans.
         (and plan
              (not (pm/can-edit-plan? plan org-name))
              (#{:containers :organizations :billing :cancel} subpage))
-        :plan
+        :overview
 
         :else subpage))
 
