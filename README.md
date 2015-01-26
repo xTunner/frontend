@@ -71,6 +71,14 @@ Second, the frontend clojurescript asset compiler:
 lein figwheel dev
 ```
 
+### Running the Karma Tests
+
+You can run the tests locally with `node_modules/karma/bin/karma start karma.dev.conf.js --single-run`.
+If you have karma-cli installed globally, you can say `karma start karma.dev.conf.js --single-run` instead.
+
+Alternatively, you can leave a karma process running (`karma start karma.dev.conf.js`) and connect to it
+and run the tests with `karma run`.
+
 ### Asset Compilation Errors
 
 If you are experiencing errors when building assets the following commands may
