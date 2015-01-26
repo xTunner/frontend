@@ -11,6 +11,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
+            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
