@@ -12,7 +12,6 @@
                          :pricing_button_green [true false]
                          :pay_now_button [true false]
                          :follow_notice [true false]
-                         :new_add_projects [:old :new :new-recency-sort]
                          :new_usage_queued_upsell [true false]}
    :changelog nil
    :environment "development"
