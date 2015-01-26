@@ -80,7 +80,7 @@ node_modules/karma/bin/karma start karma.dev.conf.js --single-run
 
 If you have karma-cli installed globally, you can say
 ````
-`karma start karma.dev.conf.js --single-run
+karma start karma.dev.conf.js --single-run
 ````
 instead.
 
