@@ -13,7 +13,7 @@ dependencies:
         timeout: 600
     # fail if there are any warnings in the cljsbuild output that *aren't* the sablano `string` thing.
     # See: https://github.com/r0man/sablono/issues/33
-    - "! grep WARNING < cljsbuild.log | grep -v '/string'"
+    - "! grep WARNING < cljsbuild.log | grep -v 'WARNING: Use of undeclared Var [a-z0-9\\.]*/string'"
     - rsync -avz --ignore-existing node1:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/production ./resources/public/cljs/: {parallel: true}
     - rsync -avz --ignore-existing node0:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/test ./resources/public/cljs/: {parallel: true}
     - lein run -m frontend.tasks.http/precompile-assets
