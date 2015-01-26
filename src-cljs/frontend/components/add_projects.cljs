@@ -197,10 +197,7 @@
         settings (:settings data)
         repos (:repos data)
         repo-filter-string (get-in settings [:add-projects :repo-filter-string])
-        show-forks (true? (get-in settings [:add-projects :show-forks]))
-        sort-order (if (= :new-recency-sort (om/get-shared owner [:ab-tests :new_add_projects]))
-                     :updated_at
-                     :name)]
+        show-forks (true? (get-in settings [:add-projects :show-forks]))]
     (html
      [:div.proj-wrapper
       (if-not (get-in settings [:add-projects :selected-org :login])
@@ -214,7 +211,7 @@
          :else [:div
                 (om/build repo-filter settings)
                 [:ul.proj-list
-                 (let [filtered-repos (sort-by sort-order (filter (fn [repo]
+                 (let [filtered-repos (sort-by :updated_at (filter (fn [repo]
                                                                     (and
                                                                      (or show-forks (not (:fork repo)))
                                                                      (gstring/caseInsensitiveContains
