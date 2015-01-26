@@ -150,9 +150,6 @@
             [:li [:a.email {:href "mailto:sayhi@circleci.com"}
                   [:i.fa.fa-envelope]
                   "sayhi@circleci.com"]]
-            [:li [:a {:href "https://www.hipchat.com/gjwkHcrD5"}
-                  [:i.fa.fa-comments]
-                  "Live Support"]]
             [:li [:a {:href "https://twitter.com/circleci"}
                   [:i.fa.fa-twitter]
                   "@circleci"]]

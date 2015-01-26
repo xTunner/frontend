@@ -221,6 +221,5 @@
           [:h5 "Contact"]
           [:a {:href "https://twitter.com/circleci"} "Twitter"]
           [:a {:href "mailto:sayhi@circleci.com"} "Email"]
-          [:a {:href "https://www.hipchat.com/gjwkHcrD5"} "Support Chat"]
           [:a {:href "/about#contact"} "Phone"]
           [:a {:href "https://goo.gl/maps/uhkLn"} "San Francisco, CA"]]]))
