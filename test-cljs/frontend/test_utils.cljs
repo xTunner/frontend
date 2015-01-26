@@ -1,7 +1,9 @@
 (ns frontend.test-utils
   (:require [clojure.string :as string]
             [om.core :as om :include-macros true]
-            [cemerick.cljs.test :as test])
+            [om.dom]
+            [cemerick.cljs.test :as test]
+            [goog.dom])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 (def test-utils js/React.addons.TestUtils)
@@ -12,6 +14,12 @@
 
 (defn render-into-document [component]
   (. test-utils (renderIntoDocument component)))
+
+(defn component->content [component args]
+  (-> (om/build component args)
+      (om.dom/render-to-str)
+      (goog.dom/htmlToDocumentFragment)
+      (.-innerText)))
 
 ;;(defn render-into-document [ommish app-state]
 ;;  (om/build ommish app-state))
