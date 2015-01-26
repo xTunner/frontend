@@ -14,7 +14,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'test-js/test-render-context.js',
-      'http://circlehost:8080/assets/js/om-dev.js.stefon',
+      'resources/public/assets/js/om-dev*.js',
       path.join(DEV_OUT, 'goog/base.js'),
       path.join(DEV_OUT, 'frontend-dev.js'),
       'test-js/require-karma.js',
