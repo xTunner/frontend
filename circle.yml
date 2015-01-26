@@ -8,9 +8,10 @@ dependencies:
   post:
     - node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
     - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
-    - case $CIRCLE_NODE_INDEX in 0) lein cljsbuild once test;; 1) lein cljsbuild once production;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) lein cljsbuild once test;; 1) lein cljsbuild once production;; esac |& tee cljsbuild.log:
         parallel: true
         timeout: 600
+    - "! grep WARNING < cljsbuild.log"
     - rsync -avz --ignore-existing node1:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/production ./resources/public/cljs/: {parallel: true}
     - rsync -avz --ignore-existing node0:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/test ./resources/public/cljs/: {parallel: true}
     - lein run -m frontend.tasks.http/precompile-assets
