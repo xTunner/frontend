@@ -12,8 +12,10 @@
             [om.core :as om :include-macros true]
             [frontend.routes :as routes]
             [om.dom :refer (render-to-str)])
-  (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var]]
+  (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var use-fixtures]]
                    [frontend.test-macros :refer [is-re]]))
+
+(use-fixtures :once test-utils/with-routes-defined)
 
 (deftest test-discount-rendering
   (let [format (fn [plan] (.-innerText (goog.dom/htmlToDocumentFragment (hiccup->html-str (org-settings/format-discount plan)))))
@@ -92,10 +94,6 @@
         (apply merge %)))
 
 (deftest overview-page-works
-  ;; TODO: figure out how to set up the routes stuff in tests.
-  ;;   (it fails with an error that's totally inscrutable because of closure compilation)
-  ;; TODO: should this be in a middleware or something?
-  (routes/define-user-routes! (async/chan) true)
   (let [overview #(test-utils/component->content
                    org-settings/overview
                    {:current-org-data {:plan %1 :name %2}})]

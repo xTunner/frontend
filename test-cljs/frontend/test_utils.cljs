@@ -3,7 +3,10 @@
             [om.core :as om :include-macros true]
             [om.dom]
             [cemerick.cljs.test :as test]
-            [goog.dom])
+            [goog.dom]
+            [secretary.core :as secretary]
+            [cljs.core.async :as async]
+            [frontend.routes :as routes])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 (def test-utils js/React.addons.TestUtils)
@@ -20,6 +23,20 @@
       (om.dom/render-to-str)
       (goog.dom/htmlToDocumentFragment)
       (.-innerText)))
+
+(def ^:dynamic *nav-ch*)
+
+(defn with-routes-defined
+  "Test middleware that sets up the secretary routes."
+  ;; TODO: maybe we should do something fancy with mocking the app state here?
+  [run-test]
+  (secretary/reset-routes!)
+  (binding [*nav-ch* (async/chan)]
+    (routes/define-user-routes! *nav-ch* true)
+    (routes/define-spec-routes! *nav-ch*)
+    (let [results (run-test)]
+      (secretary/reset-routes!)
+      results)))
 
 ;;(defn render-into-document [ommish app-state]
 ;;  (om/build ommish app-state))
