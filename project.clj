@@ -16,24 +16,23 @@
                  [cheshire "5.3.1"]
 
                  [ankha "0.1.4"]
-                 [org.clojure/clojurescript "0.0-2371"]
+                 [org.clojure/clojurescript "0.0-2760"]
                  [org.clojure/google-closure-library "0.0-20140718-946a7d39"]
                  [com.google.javascript/closure-compiler "v20140625"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.3"]
-                 [om "0.8.0-beta3"]
-                 [com.facebook/react "0.11.2"] ;; include for externs
+                 [cljsjs/react-with-addons "0.12.2-4"]
+                 [org.omcljs/om "0.8.8" :exclusions [cljsjs/react]]
                  [hiccups "0.3.0"]
                  [sablono "0.2.22"]
                  [secretary "1.2.0"]
                  [com.andrewmcveigh/cljs-time "0.1.5"]
-                 [weasel "0.4.1"] ;; repl
+                 [weasel "0.5.0"] ;; repl
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
                  [figwheel "0.1.7-SNAPSHOT"]]
 
-  :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
-            [com.cemerick/austin "0.1.4"]
+  :plugins [[lein-cljsbuild "1.0.4"]
             [lein-figwheel "0.1.7-SNAPSHOT"]]
 
   :exclusions [[org.clojure/clojure]
@@ -75,8 +74,11 @@
                                    :output-to "resources/public/cljs/test/frontend-test.js"
                                    :output-dir "resources/public/cljs/test"
                                    :optimizations :advanced
+                                   :foreign-libs [{:provides ["cljsjs.react"]
+                                                   ;; Unminified React necessary for TestUtils addon.
+                                                   :file "resources/components/react/react-with-addons.js"
+                                                   :file-min "resources/components/react/react-with-addons.js"}]
                                    :externs ["test-js/externs.js"
-                                             "src-cljs/js/react-externs.js"
                                              "src-cljs/js/pusher-externs.js"
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
@@ -89,8 +91,7 @@
                                    :output-dir "resources/public/cljs/production"
                                    :optimizations :advanced
                                    :output-wrapper false
-                                   :externs ["react/externs/react.js"
-                                             "src-cljs/js/pusher-externs.js"
+                                   :externs ["src-cljs/js/pusher-externs.js"
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
                                              "src-cljs/js/intercom-jquery-externs.js"]
