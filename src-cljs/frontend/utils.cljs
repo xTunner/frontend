@@ -13,6 +13,7 @@
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
             [goog.style]
+            [goog.dom :as dom]
             [sablono.core :as html :include-macros true])
   (:require-macros [frontend.utils :refer [inspect timing defrender]])
   (:import [goog.format EmailAddress]))
@@ -249,10 +250,23 @@
   (let [meta-el (.querySelector js/document "meta[name=description]")]
     (.setAttribute meta-el "content" description)))
 
+(defn set-canonical!
+  "Upserts a canonical URL if canonical-page is not nil, otherwise deletes the canonical rel."
+  [canonical-page]
+  (let [link-el (.querySelector js/document "link[rel=\"canonical\"]")]
+    (if (and (nil? canonical-page) (not (nil? link-el)))
+      (dom/removeNode link-el)
+      (if (nil? link-el)
+        (let [new-link-el (dom/createElement "link")]
+          (.setAttribute new-link-el "rel" "canonical")
+          (.setAttribute new-link-el "href" canonical-page)
+          (dom/appendChild (.-head js/document) new-link-el))
+        (.setAttribute link-el "href" canonical-page)))))
+
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"
   [id]
-  (when-let [node (goog.dom.getElement id)]
+  (when-let [node (dom/getElement id)]
     (let [body (.-body js/document)
           node-top (goog.style/getPageOffsetTop node)
           body-top (goog.style/getPageOffsetTop body)]

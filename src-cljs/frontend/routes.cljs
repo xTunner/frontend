@@ -177,10 +177,10 @@
   (defroute v1-root (FragmentRoute. "/") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
-      (open-to-outer! nav-ch :landing params)))
+      (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-root (FragmentRoute. "/home") {:as params}
-    (open-to-outer! nav-ch :landing params)))
+    (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
 (defn define-spec-routes! [nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]
