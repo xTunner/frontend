@@ -63,6 +63,7 @@
            "docs/git-bundle-install.md"
            "docs/git-npm-install.md"
            "docs/git-pip-install.md"
+           "docs/github-3rdparty-app-restrictions.md"
            "docs/github-permissions.md"
            "docs/github-privacy.md"
            "docs/github-security-ssh-keys.md"

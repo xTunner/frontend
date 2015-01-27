@@ -81,6 +81,7 @@ window.stefon_hack_for_om =
     "/docs/git-bundle-install.md": '(asset-path "docs/git-bundle-install.md")'
     "/docs/git-npm-install.md": '(asset-path "docs/git-npm-install.md")'
     "/docs/git-pip-install.md": '(asset-path "docs/git-pip-install.md")'
+    "/docs/github-3rdparty-app-restrictions.md": '(asset-path "docs/github-3rdparty-app-restrictions.md")'
     "/docs/github-permissions.md": '(asset-path "docs/github-permissions.md")'
     "/docs/github-privacy.md": '(asset-path "docs/github-privacy.md")'
     "/docs/github-security-ssh-keys.md": '(asset-path "docs/github-security-ssh-keys.md")'
