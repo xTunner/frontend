@@ -87,7 +87,14 @@
                     :containers 60}
          :free {:free {:template {:id "f1"
                                   :free_containers 1
-                                  :type "free"}}}}
+                                  :type "free"}}}
+         :grandfathered {:paid {:template {:id "p18"
+                                           :free_containers 0
+                                           :price 0
+                                           :container_cost 50
+                                           :type "containers"}}
+                         :containers 4
+                         :amount 200}}
         %
         (map % keys)
         (conj % {:org_name "circleci"})
@@ -129,4 +136,6 @@
       ;; so we shouldn't describe one if the paid plan is bigger then it.
       (let [text (overview (example-plan :trial :big-paid) "circleci")]
         (is (not (re-find #"provided by a trial" text)))
-        (is-re #"60 of these are paid." text)))))
+        (is-re #"60 of these are paid." text)))
+    (testing "it tells you if you're grandfathered"
+      (is-re #"grandfathered" (overview (example-plan :grandfathered) "circleci")))))
