@@ -899,20 +899,19 @@
         (when (pm/paid? plan)
           [:p
            (str (pm/paid-containers plan) " of these are paid, at $" (pm/stripe-cost plan) "/month. ")
-           (when (pm/admin? plan)
-             (if (pm/grandfathered? plan)
-               (list "We've changed our pricing model since this plan began, so its current price "
-                     "is grandfathered in. "
-                     "It would be $" (pm/cost plan (pm/usable-containers plan)) " at current prices. "
-                     "We'll switch it to the new model if you upgrade or downgrade. ")
-               (list
-                "You can "
-                ;; make sure to link to the add-containers page of the plan's org,
-                ;; in case of piggiebacking.
-                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                            :subpage "add-containers"})}
-                 "add more"]
-                " at $" container-cost " per container for more parallelism and shorter queue times.")))])
+           (if (pm/grandfathered? plan)
+             (list "We've changed our pricing model since this plan began, so its current price "
+                   "is grandfathered in. "
+                   "It would be $" (pm/cost plan (pm/usable-containers plan)) " at current prices. "
+                   "We'll switch it to the new model if you upgrade or downgrade. ")
+             (list
+              "You can "
+              ;; make sure to link to the add-containers page of the plan's org,
+              ;; in case of piggiebacking.
+              [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                          :subpage "add-containers"})}
+               "add more"]
+              " at $" container-cost " per container for more parallelism and shorter queue times."))])
         (when  (pm/freemium? plan)
           [:p (str (pm/freemium-containers plan) " container is free, forever.")])
         [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]]]))))
