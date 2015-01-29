@@ -177,11 +177,10 @@
       (let [org-name (:org_name plan)
             plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "billing"})]
         (html
-         [:div
-          [:div.alert {:class "alert-danger"}
-           (list org-name
-                 "'s plan has been suspended! "
-                 (if (plan-model/admin? plan)
-                   (list "Please " [:a {:href plan-path} "update your billing info "]
-                         " in order to continue using paid containers.")
-                   (list "Please ask an administrator to update your billing info.")))]])))))
+         [:div.alert.alert-danger.suspended-notice
+          (list org-name
+                "'s plan has been suspended! "
+                (if (plan-model/admin? plan)
+                  (list "Please " [:a {:href plan-path} "update your billing info "]
+                        " in order to continue using paid containers.")
+                  (list "Please ask an administrator to update your billing info.")))])))))
