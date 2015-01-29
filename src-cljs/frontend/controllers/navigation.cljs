@@ -185,7 +185,7 @@
           ;; Preemptively make the usage-queued API call if we're going to display the
           ;; the usage queued tab by default.
           ;; This feels like a weird bit of non-locality, but I can't think of a better solution. :(
-          (when (= :usage-queue (default-tab build))
+          (when (= :usage-queue (default-tab build scopes))
             (api/get-usage-queue build api-ch))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))

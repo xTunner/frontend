@@ -373,12 +373,15 @@
 
 (defn default-tab
   "The default tab to show in the build page head, if they have't clicked a different tab."
-  [build]
+  [build scopes]
   (cond
    ;; default to ssh-info for SSH builds
    (build-model/ssh-enabled-now? build) :ssh-info
-   ;; default to the queue tab if the build is currently usage queued.
-   (build-model/in-usage-queue? build) :usage-queue
+   ;; default to the queue tab if the build is currently usage queued, and
+   ;; the user is has the right permissions (and is logged in).
+   (and (:read-settings scopes)
+        (build-model/in-usage-queue? build))
+   :usage-queue
    ;; Otherwise, just use the first one.
    :else :commits))
 
@@ -387,11 +390,12 @@
     om/IRender
     (render [_]
       (let [build-data (:build-data data)
+            scopes (:scopes data)
             user (:user data)
             logged-in? (not (empty? user))
             build (:build build-data)
             show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
-            selected-tab (get build-data :selected-header-tab (default-tab build))
+            selected-tab (get build-data :selected-header-tab (default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -419,7 +423,7 @@
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-parameters}])}
                 "Build Parameters"]])
 
-            (when logged-in?
+            (when (has-scope :read-settings data)
               [:li {:class (when (= :usage-queue selected-tab) "active")}
                [:a#queued_explanation
                 {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
