@@ -247,7 +247,7 @@
 (defn set-page-description!
   [description]
   (let [meta-el (.querySelector js/document "meta[name=description]")]
-    (.setAttribute meta-el "content" description)))
+    (.setAttribute meta-el "content" (str description))))
 
 (defn set-canonical!
   "Upserts a canonical URL if canonical-page is not nil, otherwise deletes the canonical rel."
