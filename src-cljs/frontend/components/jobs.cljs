@@ -16,8 +16,10 @@
       (html
        [:div.jobs.page
         [:div.jobs-head
-         [:h1 "Build amazing products"]
-         [:h1 "with a great team"]]
+         [:h1
+          "Build amazing products"
+          [:br]
+          "with a great team"]]
         [:div.jobs-body
          [:div.jobs-types
           [:a {:href "#engineer"} [:i.fa.fa-code] [:h3 "Engineering"]]
