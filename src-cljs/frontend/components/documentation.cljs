@@ -76,7 +76,6 @@
 (defrender docs-title [doc]
   (html
    [:div
-    [:h1 (:title doc)]
     (when-let [last-updated (:lastUpdated doc)]
       [:p.meta [:strong "Last Updated "] last-updated])]))
 
@@ -158,10 +157,13 @@
         fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
         categories ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
-                          :reference :parallelism :privacy-security) docs)]
+                          :reference :parallelism :privacy-security) docs)
+        doc (get docs subpage)]
     (html
      [:div.docs.page
-      [:div.banner [:div.container [:h1 "Documentation"]]]
+      [:div.banner [:div.container [:h1 (if doc
+                                          (:title doc)
+                                          "Documentation")]]]
       [:div.container.content
        [:div.row
         [:aside.span3
@@ -172,4 +174,5 @@
          [:article
           (if-not subpage
             (om/build front-page app)
-            (om/build docs-subpage (get docs subpage) {:opts {:_fragment fragment}}))]]]]])))
+            (om/build docs-subpage doc {:opts {:_fragment fragment}}))]]]]])))
+
