@@ -256,7 +256,8 @@
                               :alt       "Signing up using your GitHub login lets us start really fast."}
           "You have a product to focus on, let CircleCI handle your"]
          [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."
-                              :alt       "Currently, we must request permissions in bulk."}
+                              :alt (when (om/get-shared owner [:ab-tests :mention-github-permissions])
+                                     "Currently, we must request permissions in bulk.")}
           "Continuous Integration & Deployment."]]
         [:div.home-avatars
          [:div.avatars
@@ -479,7 +480,8 @@
                               :alt       "Signing up using your GitHub login lets us start really fast."}
           "Next you'll just need to sign in using your GitHub account."]
          [:h3.slogan.context {:item-prop "Still not convinced yet? Check out our pricing."
-                              :alt       "Currently, we must request permissions in bulk."}
+                              :alt (when (om/get-shared owner [:ab-tests :mention-github-permissions])
+                                     "Currently, we must request permissions in bulk.")}
           "Still not convinced yet? Check out our "
           [:a {:href "pricing"} "pricing"]
           "."]]
