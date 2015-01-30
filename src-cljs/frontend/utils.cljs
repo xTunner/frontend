@@ -245,7 +245,6 @@
                                  "CircleCI"))))
 
 (defn set-page-description!
-  "This is an experiment... Not sure if GoogleBot looks at this after rendering."
   [description]
   (let [meta-el (.querySelector js/document "meta[name=description]")]
     (.setAttribute meta-el "content" description)))
