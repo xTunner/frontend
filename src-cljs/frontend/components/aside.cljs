@@ -3,6 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.shared :as shared]
+            [frontend.config :as config]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
@@ -13,9 +14,14 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.seq :refer [select-in]]
             [goog.style]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
+
+(defn changelog-updated-since?
+  [date]
+  (< date (config/changelog-updated-at)))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -283,7 +289,8 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [slim-aside? (get-in app state/slim-aside-path)]
+      (let [slim-aside? (get-in app state/slim-aside-path)
+            user (get-in app state/user-path)]
         (html
          [:nav.aside-left-nav
 
@@ -337,7 +344,9 @@
                           :data-trigger "hover"
                           :title "Changelog"
                           :href "/changelog"}
-           [:i.fa.fa-bell]
+           (if (changelog-updated-since? (:last_viewed_changelog user))
+             [:i.fa.fa-certificate]
+             [:i.fa.fa-bell])
            [:span "Changelog"]]
 
           [:a.aside-item.push-to-bottom {:data-placement "right"

@@ -1,6 +1,7 @@
 (ns frontend.components.changelog
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.async :refer [raise!]]
             [frontend.components.about :as about]
             [frontend.components.common :as common]
             [frontend.components.shared :as shared]
@@ -10,6 +11,9 @@
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
+
+(defn- now []
+  (.toISOString (js/Date.)))
 
 (defn changelog [app owner]
   (reify

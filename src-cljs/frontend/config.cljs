@@ -45,6 +45,11 @@
   []
   (aget js/window "renderContext" "stripePublishableKey"))
 
+(defn changelog-updated-at
+  "The date that the changelog was last updated at"
+  []
+  (aget js/window "renderContext" "changelog_updated_at"))
+
 (defn analytics-enabled?
   []
   "If true, collect user analytics"

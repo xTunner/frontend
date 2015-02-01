@@ -1,7 +1,6 @@
 (ns frontend.changelog
   (:require [goog.dom.xml :as xml]))
 
-
 (defn attr-text [item attr]
   (when-let [node (xml/selectSingleNode item attr)]
     (.-textContent node)))
