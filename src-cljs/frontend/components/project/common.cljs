@@ -93,7 +93,7 @@
             project-name (gstring/format "%s/%s" (:username project) (:reponame project))
             days (plan-model/days-left-in-trial plan)
             org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "plan"})
+            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "containers"})
             trial-notice-fn (if (plan-model/freemium? plan)
                               (if (om/get-shared owner [:ab-tests :pay_now_button])
                                 freemium-trial-html-b

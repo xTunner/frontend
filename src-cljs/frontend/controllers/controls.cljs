@@ -841,8 +841,7 @@
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
-           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org org-name
-                                                                            :subpage "plan"})}])))
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name})}])))
        (release-button! uuid (:status api-result))))))
 
 (defmethod control-event :preferences-updated
@@ -985,8 +984,7 @@
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
-           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org org-name
-                                                                            :subpage "plan"})
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name})
                                      :replace-token? true}])))
        (release-button! uuid (:status api-result))))))
 

@@ -11,7 +11,6 @@
             [frontend.components.mobile :as mobile]
             [frontend.components.mobile.ios :as ios]
             [frontend.components.add-projects :as add-projects]
-            [frontend.components.add-projects-old :as add-projects-old]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
@@ -24,6 +23,7 @@
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.pricing :as pricing]
+            [frontend.components.pricing-b :as pricing-b]
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
@@ -54,9 +54,7 @@
   (condp = (get-in app-state [:navigation-point])
     :build build-com/build
     :dashboard dashboard/dashboard
-    :add-projects (if (= (om/get-shared owner [:ab-tests :new_add_projects]) :old)
-                    add-projects-old/add-projects
-                    add-projects/add-projects)
+    :add-projects add-projects/add-projects
     :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
@@ -69,7 +67,8 @@
 
     :landing landing/home
     :about about/about
-    :pricing pricing/pricing
+    ; :pricing pricing/pricing
+    :pricing pricing-b/pricing
     :jobs jobs/jobs
     :privacy privacy/privacy
     :security security/security

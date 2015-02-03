@@ -4,6 +4,7 @@
             [frontend.async :refer [raise!]]
             [frontend.analytics.marketo :as marketo]
             [frontend.components.common :as common]
+            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
