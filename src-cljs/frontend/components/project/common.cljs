@@ -179,8 +179,9 @@
         (html
          [:div.alert.alert-danger.suspended-notice
           (list org-name
-                "'s plan has been suspended! "
+                "'s plan hasn't been paid for! "
                 (if (plan-model/admin? plan)
-                  (list "Please " [:a {:href plan-path} "update your billing info "]
-                        " in order to continue using paid containers.")
-                  (list "Please ask an administrator to update your billing info.")))])))))
+                  (list "Please " [:a {:href plan-path} "update its billing info "]
+                        " in order to restore paid containers.")
+                  (list "Please ask an administrator to update its billing info."
+                        " in order to restore paid containers.")))])))))
