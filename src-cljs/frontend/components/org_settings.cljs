@@ -909,7 +909,7 @@
               ;; make sure to link to the add-containers page of the plan's org,
               ;; in case of piggiebacking.
               [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                          :subpage "add-containers"})}
+                                                          :subpage "containers"})}
                "add more"]
               " at $" container-cost " per container for more parallelism and shorter queue times."))])
         (when  (pm/freemium? plan)
