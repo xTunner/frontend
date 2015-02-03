@@ -171,7 +171,7 @@
 
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
-  [project-data parallelism]
+  [project-data owner parallelism]
   (let [plan (:plan project-data)
         project (:project project-data)
         project-id (project-model/id project)]
@@ -181,10 +181,9 @@
         (cond (> parallelism (project-model/max-parallelism plan project))
               [:div.insufficient-plan
                "Your plan only allows up to "
-               (project-model/max-parallelism plan project) "x parallelism."
-               [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                           :subpage "plan"})}
-                "Upgrade"]]
+               (plan-model/max-parallelism plan) "x parallelism."
+               [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
+                "Contact us if you'd like more."]]
 
               (> parallelism (project-model/max-selectable-parallelism plan project))
               [:div.insufficient-containers
@@ -196,7 +195,7 @@
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
            [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                       :subpage "plan"})}
+                                                       :subpage "containers"})}
             "Add a plan"]]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
@@ -229,7 +228,7 @@
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
-            (parallelism-tile project-data parallelism)
+            (parallelism-tile project-data owner parallelism)
             [:input {:id (str "parallel_input_" parallelism)
                      :type "radio"
                      :name "parallel"

@@ -191,7 +191,7 @@
    [{:type :heading :title "Plan"}
     {:type :subpage :title "Overview" :href "#" :subpage :overview}]
    (if-not (pm/can-edit-plan? plan org-name)
-     [{:type :subpage :href "#plan" :title "Choose plan" :subpage :plan}]
+     [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
      (concat
       [{:type :subpage :title "Adjust containers" :href "#containers" :subpage :containers}]
       (when (pm/transferrable-or-piggiebackable-plan? plan)
@@ -214,11 +214,11 @@
              (= subpage :plan))
         :containers
 
-        ;; Redirect :containers, :organizations, :billing, and :cancel to the overview page
+        ;; Redirect :organizations, :billing, and :cancel to the overview page
         ;; for piggiebacked plans.
         (and plan
              (not (pm/can-edit-plan? plan org-name))
-             (#{:containers :organizations :billing :cancel} subpage))
+             (#{:organizations :billing :cancel} subpage))
         :overview
 
         :else subpage))
