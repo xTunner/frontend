@@ -9,6 +9,8 @@ Continuous Integration and Deployment with easy setup and maintenance.
 Feel free to fork and make contributions. We'll try to get them into the main
 application.
 
+Want to work with Clojure(Script) full-time? [We're hiring](https://circleci.com/jobs).
+
 
 ## Dependencies and Setup
 
