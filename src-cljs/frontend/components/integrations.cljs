@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
             [frontend.async :refer [raise!]]
-            [frontend.analytics.marketo :as marketo]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]

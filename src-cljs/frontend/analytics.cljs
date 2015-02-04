@@ -2,7 +2,6 @@
   (:require-macros [frontend.analytics :refer [deftrack]])
   (:require [frontend.analytics.adroll :as adroll]
             [frontend.analytics.google :as google]
-            [frontend.analytics.marketo :as marketo]
             [frontend.analytics.mixpanel :as mixpanel]
             [frontend.analytics.perfect-audience :as pa]
             [frontend.analytics.rollbar :as rollbar]

@@ -4,8 +4,6 @@ __adroll.record_user;
 var _gaq;
 _gaq.push;
 
-var mktoMunchkin;
-
 var mixpanel;
 mixpanel.disable;
 mixpanel.track;
