@@ -8,6 +8,7 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.ajax :as ajax]
             [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]
@@ -97,8 +98,9 @@
                                                                            :message "Please enter a valid email address."})
                                            (do
                                              (om/set-state! owner [:loading?] true)
-                                             (go (let [resp (<! (marketo/submit-munchkin-form 1036 {:Email email
-                                                                                                    :docker_use__c use-case}))]
+                                             (go (let [resp (<! (ajax/managed-form-post "/about/contact"
+                                                                                        :params {:email email
+                                                                                                 :message {:docker_use__c use-case}}))]
                                                    (if-not (= :success (:status resp))
                                                      (om/update-state! owner (fn [s]
                                                                                (merge s {:loading? false
