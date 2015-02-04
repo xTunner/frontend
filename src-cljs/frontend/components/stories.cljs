@@ -90,10 +90,10 @@
                               (do
                                 (om/set-state! owner [:loading?] true)
                                 (go (let [resp (<! (ajax/managed-form-post "/about/contact"
-                                                                                        :params {:email email
-                                                                                                 :message {:FirstName first-name
-                                                                                                           :Email email
-                                                                                                           :Company company}}))]
+                                                                            :params {:email email
+                                                                                     :message {:FirstName first-name
+                                                                                               :Email email
+                                                                                               :Company company}}))]
                                       (if-not (= :success (:status resp))
                                         (om/update-state! owner (fn [s]
                                                                   (merge s {:loading? false
