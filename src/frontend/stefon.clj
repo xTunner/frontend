@@ -11,6 +11,7 @@
            "css/app.css"
            "img/docs/heroku-step1.png"
            "img/docs/heroku-step2.png"
+           "img/logo.png"
            "img/outer/docs/artifacts_listing.png"
            "img/outer/docs/coverage_example.png"
            "img/outer/docs/ssh-build-button.png"
