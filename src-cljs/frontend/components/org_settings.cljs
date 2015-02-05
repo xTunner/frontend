@@ -520,12 +520,19 @@
                   [:th "Card type"]
                   [:th "Card Number"]
                   [:th "Expiry"]]
-                 [:tbody
-                  [:tr
-                   [:td (:name card)]
-                   [:td (:type card)]
-                   [:td "xxxx-xxxx-xxxx-" (:last4 card)]
-                   [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]]]]
+                 (if (not (empty? card))
+                   [:tbody
+                    [:tr
+                     [:td (:name card)]
+                     [:td (:type card)]
+                     [:td "xxxx-xxxx-xxxx-" (:last4 card)]
+                     [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]
+                   [:tbody
+                    [:tr
+                     [:td "N/A"]
+                     [:td "N/A"]
+                     [:td "N/A"]
+                     [:td "N/A"]]])]]]
               [:div.row-fluid
                [:div.offset1.span7
                 [:form.form-horizontal
