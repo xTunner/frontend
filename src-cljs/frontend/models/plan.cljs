@@ -45,8 +45,6 @@
 (defn freemium-containers [plan]
   (or (get-in plan [:free :template :free_containers]) 0))
 
-(defn trial-containers [plan] (or (get-in plan [:trial :template :free_containers]) 0))
-
 (defn paid-containers [plan]
   (if (paid? plan)
     (max (:containers_override plan)
