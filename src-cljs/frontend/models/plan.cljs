@@ -52,7 +52,11 @@
          (get-in plan [:paid :template :free_containers]))
     0))
 
-(defn trial-containers [plan]
+(defn trial-containers
+  "How many containers are provided by this plan's trial? Note that this finds out how many
+  containers were provided by expired trials, too. You'll need to guard by `in-trial?` if you
+  don't want this behavior."
+  [plan]
   (max 0
        ;; Subtract the amount of paid containers from the number of trial containers,
        ;; so that paid-containers + trial-containers = usable-containers for plans
