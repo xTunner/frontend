@@ -6,7 +6,9 @@
             [goog.dom]
             [secretary.core :as secretary]
             [cljs.core.async :as async]
-            [frontend.routes :as routes])
+            [frontend.routes :as routes]
+            [cljs-time.core :as time]
+            [cljs-time.format :as time-format])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 (def test-utils js/React.addons.TestUtils)
@@ -54,3 +56,41 @@
 ;; (defn find-rendered-dom-component-with-tag)
 ;; (defn scry-rendered-components-with-type)
 ;; (defn find-rendered-component-with-type)
+
+(defn example-plan [& keys]
+  (as-> {:trial {:trial {:template {:free_containers 6
+                                    :id "t1"
+                                    :price 0
+                                    :type "trial"}}
+                 :trial_end (->> 5
+                                 (time/days)
+                                 (time/from-now)
+                                 (time-format/unparse (:basic-date-time time-format/formatters)))}
+         :paid {:paid {:template {:id "p18"
+                                  :free_containers 0
+                                  :price 0
+                                  :container_cost 50
+                                  :type "containers"}}
+                :containers 4}
+         :big-paid {:paid {:template {:id "p18"
+                                      :free_containers 0
+                                      :price 0
+                                      :container_cost 50
+                                      :type "containers"}}
+                    :containers 60}
+         :free {:free {:template {:id "f1"
+                                  :free_containers 1
+                                  :type "free"}}}
+         :grandfathered {:paid {:template {:id "p18"
+                                           :free_containers 0
+                                           :price 0
+                                           :container_cost 50
+                                           :type "containers"}}
+                         :containers 4
+                         :amount 200 ;; $2
+                         }}
+        %
+        (map % keys)
+        (conj % {:org_name "circleci"})
+        (apply merge %)))
+
