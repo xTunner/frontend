@@ -62,25 +62,30 @@
                                     :id "t1"
                                     :price 0
                                     :type "trial"}}
+                 :amount 0
                  :trial_end (->> 5
                                  (time/days)
                                  (time/from-now)
                                  (time-format/unparse (:basic-date-time time-format/formatters)))}
+         :free {:free {:template {:id "f1"
+                                  :free_containers 1
+                                  :type "free"}}
+                :amount 0}
          :paid {:paid {:template {:id "p18"
                                   :free_containers 0
                                   :price 0
                                   :container_cost 50
                                   :type "containers"}}
+                :amount (* 4 5000)
                 :containers 4}
          :big-paid {:paid {:template {:id "p18"
                                       :free_containers 0
                                       :price 0
                                       :container_cost 50
                                       :type "containers"}}
+                    :amount (* 60 5000)
                     :containers 60}
-         :free {:free {:template {:id "f1"
-                                  :free_containers 1
-                                  :type "free"}}}
+
          :grandfathered {:paid {:template {:id "p18"
                                            :free_containers 0
                                            :price 0
