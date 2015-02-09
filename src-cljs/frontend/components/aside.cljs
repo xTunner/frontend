@@ -14,7 +14,6 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.seq :refer [select-in]]
             [goog.style]
-            [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))

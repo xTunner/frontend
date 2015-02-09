@@ -855,9 +855,8 @@
    "/api/v1/user/save-preferences"
    :update-preferences
    (get-in current-state [:comms :api])
-   :params {:basic_email_prefs     (get-in current-state (conj state/user-path :basic_email_prefs))
-            :selected_email        (get-in current-state (conj state/user-path :selected_email))
-            :last-viewed-changelog (get-in current-state (conj state/user-path :last-viewed-changelog))}))
+   :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
+            :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
 
 (defmethod control-event :project-preferences-updated
   [target message args state]
