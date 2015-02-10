@@ -7,5 +7,5 @@ children:
   - manually
   - unusual
   - configuration
-
+  - faq
 -->
