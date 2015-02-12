@@ -147,6 +147,7 @@
        [:div.page.shopify.stories
         [:div.stories-head
          shopify-logo
+         [:h1 "Scalable Continuous Integration with CircleCI"]
          [:blockquote
           {:cite "http://www.shopify.com"}
           [:p "We were able to rapidly grow our team and code base without fear of outgrowing CircleCI."]

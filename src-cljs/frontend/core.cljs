@@ -24,7 +24,7 @@
             [frontend.pusher :as pusher]
             [frontend.history :as history]
             [frontend.browser-settings :as browser-settings]
-            [frontend.utils :as utils :refer [mlog merror third]]
+            [frontend.utils :as utils :refer [mlog merror third set-canonical!]]
             [frontend.datetime :as datetime]
             [frontend.timer :as timer]
             [secretary.core :as sec])
@@ -132,6 +132,7 @@
      (let [previous-state @state]
        (swap! state (partial nav-con/navigated-to history navigation-point args))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state)
+       (set-canonical! (:_canonical args))
        (analytics/register-last-touch-utm query-params)
        (when-let [join (:join query-params)] (analytics/track-join-code join))
        (analytics/track-view-page (if inner? :inner :outer))))))

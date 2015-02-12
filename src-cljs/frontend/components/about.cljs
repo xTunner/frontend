@@ -138,7 +138,7 @@
        [:div#contact.contact.page
         [:div.banner
          [:div.container
-          [:h1 "Contact us"]
+          [:h2 "Contact us"]
           [:h3 "We'd love to hear from you."]]]
         [:div.container.content
          [:div.row
