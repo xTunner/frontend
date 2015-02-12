@@ -48,11 +48,6 @@
   (let [test-doc (:continuous-deployment-with-heroku test-docs)
         test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
     (om/root documentation/docs-subpage test-doc {:target test-node})
-    (is (re-find #"Last Updated"
-                 (-> test-node
-                     (sel1 "p")
-                     utils/text))
-        "Updated date renders")
     (is (= "Quick start videos"
            (-> test-node
                (sel1 "h2")
