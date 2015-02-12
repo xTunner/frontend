@@ -165,6 +165,7 @@
 (defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
    []
+   (when (and (> parallelism 1) (project-model/osx? project)) ["disabled"])
    (when (> parallelism (project-model/max-selectable-parallelism plan project)) ["disabled"])
    (when (= parallelism (get-in project-data [:project :parallel])) ["selected"])
    (when (not= 0 (mod (project-model/usable-containers plan project) parallelism)) ["bad_choice"])))
@@ -178,7 +179,16 @@
     (list
      [:div.parallelism-upgrades
       (if-not (plan-model/in-trial? plan)
-        (cond (> parallelism (project-model/max-parallelism plan project))
+        (cond (and (project-model/osx? project)
+                   (> parallelism 1))
+              ;; iOS projects should not use parallelism. We don't have the
+              ;; ability to parallelise XCode tests yet and have a limited
+              ;; number of available OSX VMs. Setting parallelism for iOS
+              ;; wastes VMs, reducing the number of builds we can run.
+              [:div.insufficient-plan
+               "iOS projects are currently limited to 1x parallelism."]
+
+              (> parallelism (project-model/max-parallelism plan project))
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
