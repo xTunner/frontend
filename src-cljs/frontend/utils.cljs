@@ -253,9 +253,9 @@
   "Upserts a canonical URL if canonical-page is not nil, otherwise deletes the canonical rel."
   [canonical-page]
   (let [link-el (.querySelector js/document "link[rel=\"canonical\"]")]
-    (if (and (nil? canonical-page) (not (nil? link-el)))
+    (if (and (nil? canonical-page) (some? link-el))
       (dom/removeNode link-el)
-      (if (nil? link-el)
+      (if (and (nil? link-el) (some? canonical-page))
         (let [new-link-el (dom/createElement "link")]
           (.setAttribute new-link-el "rel" "canonical")
           (.setAttribute new-link-el "href" canonical-page)
