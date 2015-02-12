@@ -73,12 +73,6 @@
    [:div
     (om/build-all docs-category categories)]))
 
-(defrender docs-title [doc]
-  (html
-   [:div
-    (when-let [last-updated (:lastUpdated doc)]
-      [:p.meta [:strong "Last Updated "] last-updated])]))
-
 (defrender front-page [app owner]
   (let [query-results (get-in app state/docs-articles-results-path)
         query (get-in app state/docs-articles-results-query-path)
@@ -145,7 +139,6 @@
 (defrender docs-subpage [doc owner opts]
   (html
    [:div
-    (om/build docs-title doc)
     (if-not (empty? (:children doc))
       (om/build article-list (:children doc))
       (if (:markdown doc)
