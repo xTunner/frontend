@@ -183,10 +183,10 @@
                    (> parallelism 1))
               ;; iOS projects should not use parallelism. We don't have the
               ;; ability to parallelise XCode tests yet and have a limited
-              ;; number of available OSX VMs. Settings parallelism for iOS
+              ;; number of available OSX VMs. Setting parallelism for iOS
               ;; wastes VMs, reducing the number of builds we can run.
               [:div.insufficient-plan
-               "iOS projects are limited to 1x parallelism"]
+               "iOS projects are currently limited to 1x parallelism."]
 
               (> parallelism (project-model/max-parallelism plan project))
               [:div.insufficient-plan
