@@ -4,7 +4,6 @@
 
   "common.js.stefon"
 
-  "../../components/react/react.js"
   "../../public/cljs/whitespace/frontend.js"
   "setup-frontend.coffee"
 ]
