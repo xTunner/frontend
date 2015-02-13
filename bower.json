@@ -2,7 +2,6 @@
   "name": "circle",
   "version": "0.0.0",
   "dependencies": {
-    "moment": "2.1.0",
     "bootstrap": "git://github.com/twbs/bootstrap.git#v3.3.2",
     "jquery.cookie": "1.2.0",
     "jquery": "~2.1.3",
