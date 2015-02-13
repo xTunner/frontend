@@ -127,6 +127,15 @@
   .aside-activity {
     color: @grayLight;
     position: relative;
+
+    select {
+      background-color: @white;
+    }
+
+    ul {
+      padding-left: 0;
+    }
+
     &:hover {
       .project-settings-icon {
         svg {
@@ -405,7 +414,7 @@
   width: @tile;
   height: 100%;
   background: @appBackgroundColor;
-  z-index: @zindexTooltip;
+  z-index: @zindex-tooltip;
   color: @appBackgroundColor;
   box-shadow: 1px 0 @grayBoxBorder;
   transition: (@aside_slim_speed / 2);
