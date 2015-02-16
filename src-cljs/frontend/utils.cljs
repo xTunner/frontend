@@ -252,15 +252,15 @@
 (defn set-canonical!
   "Upserts a canonical URL if canonical-page is not nil, otherwise deletes the canonical rel."
   [canonical-page]
-  (let [link-el (.querySelector js/document "link[rel=\"canonical\"]")]
-    (if (and (nil? canonical-page) (some? link-el))
-      (dom/removeNode link-el)
-      (if (and (nil? link-el) (some? canonical-page))
-        (let [new-link-el (dom/createElement "link")]
-          (.setAttribute new-link-el "rel" "canonical")
-          (.setAttribute new-link-el "href" canonical-page)
-          (dom/appendChild (.-head js/document) new-link-el))
-        (.setAttribute link-el "href" canonical-page)))))
+  (if-let [link-el (.querySelector js/document "link[rel=\"canonical\"]")]
+    (if (some? canonical-page)
+      (.setAttribute link-el "href" canonical-page)
+      (dom/removeNode link-el))
+    (when (some? canonical-page)
+      (let [new-link-el (dom/createElement "link")]
+        (.setAttribute new-link-el "rel" "canonical")
+        (.setAttribute new-link-el "href" canonical-page)
+        (dom/appendChild (.-head js/document) new-link-el)))))
 
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"
