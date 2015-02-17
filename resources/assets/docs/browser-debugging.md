@@ -27,7 +27,7 @@ To make this work with build artifacts, you need to save the screenshot to the
 
 If you are running a test that runs a HTTP server on CircleCI, sometimes it can
 be helpful to use a browser running on your local machine to debug why a
-particular test is failing test. Setting this up is easy with an SSH-enabled
+particular test is failing. Setting this up is easy with an SSH-enabled
 build.
 
 First, you should run an SSH build. You will be shown the command to log into
