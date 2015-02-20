@@ -230,19 +230,44 @@
                {})
        :children))
 
-(defn artifacts-node [artifacts {:keys [show-node-indices? admin?] :as opts}]
-  (when (seq artifacts)
-    [:ul.build-artifacts-list
-     (for [[part {:keys [artifact children]}] (sort-by first artifacts)
-           :let [text (cond
-                        (not artifact) (str part "/") ; directory
-                        show-node-indices? (str part " (" (:node_index artifact) ")")
-                        :else part)
-                 url (:url artifact)
-                 tag (if (and url (not admin?)) ; Be extra careful about XSS of admins
-                       [:a {:href (:url artifact) :target "_blank"} text]
-                       [:span text])]]
-       [:li tag (artifacts-node children opts)])]))
+(defn artifacts-node [artifacts owner {:keys [show-node-indices? admin?] :as opts}]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (when (seq artifacts)
+         [:ul.build-artifacts-list
+          (map-indexed
+           (fn node-entry [idx [part {:keys [artifact children]}]]
+             (let [directory? (not artifact)
+                   text       (cond
+                               directory?         (str part "/") ; directory
+                               show-node-indices? (str part " (" (:node_index artifact) ")")
+                               :else              part)
+                   url        (:url artifact)
+                   tag        (if (and url (not admin?)) ; Be extra careful about XSS of admins
+                                [:a {:href (:url artifact) :target "_blank"} text]
+                                [:span text])
+                   key        (keyword (str "index-" idx))
+                   closed?    (or
+                               (:ancestors-closed? opts)
+                               (om/get-state owner [key :closed?]))
+                   toggler    (fn [event]
+                                (let [key (keyword (str "index-" idx))]
+                                  (.preventDefault event)
+                                  (.stopPropagation event)
+                                  (om/update-state! owner [key :closed?] not)))]
+               [:li (when directory?
+                      [:div {:style    {:cursor  "pointer"
+                                        :display "inline"}
+                             :on-click toggler} (if closed? "▼  " "▲  ")])
+                tag
+                [:div (when closed? {:style {:display "none"}})
+                 (om/build artifacts-node
+                           children
+                           {:opts (assoc opts
+                                    :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
+           (sort-by first artifacts))])))))
 
 (defn build-artifacts-list [data owner {:keys [show-node-indices?] :as opts}]
   (reify
@@ -259,7 +284,7 @@
             (artifacts-ad)
             (if-not artifacts
               [:div.loading-spinner common/spinner]
-              (artifacts-node (artifacts-tree artifacts) node-opts)))])))))
+              (om/build artifacts-node (artifacts-tree artifacts) {:opts node-opts})))])))))
 
 (defn tests-ad [owner]
   [:div
