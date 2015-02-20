@@ -241,7 +241,7 @@
            (fn node-entry [idx [part {:keys [artifact children]}]]
              (let [directory? (not artifact)
                    text       (cond
-                               directory?         (str part "/") ; directory
+                               directory?         (str part "/")
                                show-node-indices? (str part " (" (:node_index artifact) ")")
                                :else              part)
                    url        (:url artifact)
