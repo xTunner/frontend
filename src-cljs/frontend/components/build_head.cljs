@@ -257,12 +257,14 @@
                                   (.preventDefault event)
                                   (.stopPropagation event)
                                   (om/update-state! owner [key :closed?] not)))]
-               [:li (if directory?
-                      [:div {:style    {:cursor  "pointer"
-                                        :display "inline"}
-                             :on-click toggler}
-                       (if closed? "▼  " "▲  ") tag]
-                      tag)
+               [:li.build-artifacts-node
+                (if directory?
+                  [:div.build-artifacts-toggle-children
+                   {:style    {:cursor  "pointer"
+                               :display "inline"}
+                    :on-click toggler}
+                   (if closed? "▶  " "▼  ") tag]
+                  tag)
                 [:div {:style (when closed? {:display "none"})}
                  (om/build artifacts-node
                            children
