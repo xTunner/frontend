@@ -68,20 +68,15 @@
     (render [_]
       (html
        [:div#enterprise
-        [:div.enterprise-hero
-         [:section.enterprise-hero-wrapper
-          [:article.enterprise-hero-title
-           [:h1 "Ship code at the speed of business."]
-           [:h3 "Powerful, continuous deployment, on-premises or in the cloud."]]
-          [:article.enterprise-hero-units
-           [:div.enterprise-hero-unit
-            server-image
-            [:h2 "CircleCI on-premises"]
-            [:p "Install CircleCI behind your firewall or in a private cloud for security that you control."]]
-           [:div.enterprise-hero-unit
-            cloud-image
-            [:h2 "CircleCI in the cloud"]
-            [:p "All the same great features as CircleCI's hosted offering along with SLA, role-based access control, flexible payments options and more."]]]]]
+        [:div.jumbotron
+         [:section.container
+          [:div.row
+           [:article.enterprise-hero-title
+            [:h1 "Ship code at the speed of business."]
+            [:h3 "Powerful, continuous deployment, on-premises or in the cloud."]]
+           ]
+          [:div.row
+           [:button.btn.btn-success.btn-xl "Sign up for free"]]]]
         [:div.enterprise-features
          [:section.enterprise-features-wrapper
           [:div.enterprise-feature
