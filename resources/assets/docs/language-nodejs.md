@@ -41,7 +41,7 @@ machine:
     version: 0.12
 ```
 
-Similarly, older versions of nvm don't offur support for io.js. To
+Similarly, older versions of nvm don't offer support for io.js. To
 update nvm to add support for io.js add the following to your circle.yml:
 
 ```
