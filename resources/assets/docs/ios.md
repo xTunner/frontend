@@ -17,11 +17,13 @@ and iOS-related build and test commands will be automatically inferred.
 
 Simple projects should run with minimal or no configuration. By default, CircleCI will:
 
-* **Install any Ruby gems specified in a Gemfile** - You can install a specific version of CocoaPods or other gems this way.
+* **Install any Ruby gems specified in a Gemfile** - You can install a specific
+  version of CocoaPods or other gems this way.
 * **Install any dependencies managed by [CocoaPods](http://cocoapods.org/)**
 * **Run the "test" build action for detected workspace (or project) and scheme
-from the command line using `xcodebuild`** - If a workspace is detected, it will take precedence
-over a project and be used to call `xcodebuild`. The detected settings can be overridden with [environment variables](#environment-variables)
+  from the command line using `xcodebuild`** - If a workspace is detected, it
+  will take precedence over a project and be used to call `xcodebuild`. The
+  detected settings can be overridden with [environment variables](#environment-variables)
 
 **Note:** Your scheme (what you select in the dropdown next to the
 run/stop buttons in Xcode) must be shared (there is a checkbox for this at the bottom of
@@ -30,6 +32,16 @@ If more than one scheme is present, then you should specify the
 `XCODE_SCHEME` [environment variable](/docs/environment-variables#custom). Otherwise a
 scheme will be chosen arbitrarily.
 
+### CocoaPods
+
+CircleCI will automatically detect if your project is using [CocoaPods](http://cocoapods.org/)
+to manage dependencies. If you are using CocoaPods, then we recommend that you
+check your [Pods directory into source control](http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control).
+This will ensure that you have a deterministic, reproducable build.
+
+If CircleCI finds a `Podfile` and no `Pods` directory, then we will run
+`pod install` to install the necessary dependencies in the `dependencies`
+step of your build.
 
 ##Supported build and test tools
 
@@ -66,11 +78,11 @@ work normally, though they will need to be installed and called using custom com
 See [customizing your build](#customizing-your-build) for more info.
 
 
-##Customizing your build
-While CircleCI's inferred commands will handle many common testing patterns, you also
-have a lot of flexibility to customize what happens in your build.
+## Customizing your build
+While CircleCI's inferred commands will handle many common testing patterns, you
+also have a lot of flexibility to customize what happens in your build.
 
-###Environment variables
+### Environment variables
 You can customize the behavior of CircleCI's automatic build commands by setting
 the following environment variables in a `circle.yml` file or at **Project Settings > Environment Variables** (see [here](/docs/environment-variables#custom) for more info
 about environment variables):
