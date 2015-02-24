@@ -2,7 +2,7 @@
   (:require [cemerick.cljs.test :as t]
             [frontend.test-utils :as test-utils]
             [frontend.components.build-head :as bh]
-            [frontend.utils :as utils :refer [sel1]]
+            [frontend.utils :as utils :refer [sel1 sel]]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
             [goog.dom]
@@ -15,7 +15,7 @@
 
 (deftest test-build-tree-renders
   (let [artifacts (:artifacts test-build-data)
-        tree      (bh/artifacts-tree artifacts)
+        tree      {:artifacts (bh/artifacts-tree artifacts)}
         test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
     (om/root bh/artifacts-node tree {:target test-node})
     (testing "Simple render test"
@@ -24,3 +24,34 @@
                  (sel1 ".build-artifacts-toggle-children")
                  utils/text))
           "Top level simply renders appropriate text with given data, without verification of behavior"))))
+
+(deftest test-admin-links
+  (let [artifacts           (:artifacts test-build-data)
+        non-admin-tree      {:artifacts (bh/artifacts-tree artifacts)
+                             :admin?    false}
+        non-admin-test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
+        admin-tree          {:artifacts (bh/artifacts-tree artifacts)
+                             :admin?    true}
+        admin-test-node     (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
+        art-link-count      (fn [node]
+                              (-> node
+                                  (sel ".artifact-link")
+                                  array-seq ;; Native NodeList isn't seqable
+                                  count))
+        art-dir-count      (fn [node]
+                             (-> node
+                                 (sel ".artifact-directory-text")
+                                 array-seq
+                                 count))]
+    (om/root bh/artifacts-node non-admin-tree {:target non-admin-test-node})
+    (om/root bh/artifacts-node admin-tree {:target admin-test-node})
+    (testing "Non-admin XSS links"
+      (is (pos? (art-link-count non-admin-test-node))
+          "Should be actual artifact links for non-admins")
+      (is (pos? (art-dir-count non-admin-test-node))
+          "Should be artifact directory spans for non-admins"))
+    (testing "Non-admin XSS links"
+      (is (zero? (art-link-count admin-test-node))
+          "Should be no artifact links for admins")
+      (is (pos? (art-dir-count admin-test-node))
+          "Should be artifact spans for admins"))))
