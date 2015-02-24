@@ -230,7 +230,7 @@
                {})
        :children))
 
-(defn artifacts-node [artifacts owner {:keys [show-node-indices? admin?] :as opts}]
+(defn artifacts-node [{:keys [artifacts admin?] :as data} owner {:keys [show-node-indices?] :as opts}]
   (reify
     om/IRender
     (render [_]
@@ -246,8 +246,8 @@
                                :else              part)
                    url        (:url artifact)
                    tag        (if (and url (not admin?)) ; Be extra careful about XSS of admins
-                                [:a {:href (:url artifact) :target "_blank"} text]
-                                [:span text])
+                                [:a.artifact-link {:href (:url artifact) :target "_blank"} text]
+                                [:span.artifact-directory-text text])
                    key        (keyword (str "index-" idx))
                    closed?    (or
                                (:ancestors-closed? opts)
@@ -267,7 +267,8 @@
                   tag)
                 [:div {:style (when closed? {:display "none"})}
                  (om/build artifacts-node
-                           children
+                           {:artifacts children
+                            :admin? admin?}
                            {:opts (assoc opts
                                     :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
            (sort-by first artifacts))])))))
@@ -287,7 +288,8 @@
             (artifacts-ad)
             (if-not artifacts
               [:div.loading-spinner common/spinner]
-              (om/build artifacts-node (artifacts-tree artifacts) {:opts node-opts})))])))))
+              (om/build artifacts-node {:artifacts (artifacts-tree artifacts)
+                                        :admin? (:admin (:user data))} {:opts node-opts})))])))))
 
 (defn tests-ad [owner]
   [:div
