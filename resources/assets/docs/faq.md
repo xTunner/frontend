@@ -49,7 +49,7 @@ PostgreSQL 9.4 is currently not shipped with our build containers by
 default, but you can install it manually by adding the following to your
 `circle.yml`:
 ```
-database:
+dependencies:
   pre:
     - sudo service postgresql stop && sudo apt-get remove -y
       postgresql-9.3 && sudo apt-get update && sudo apt-get install -y
