@@ -19,7 +19,7 @@
         test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
     (om/root bh/artifacts-node tree {:target test-node})
     (testing "Simple render test"
-      (is (= "▼  Container 0/"
+      (is (= "▾  Container 0/"
              (-> test-node
                  (sel1 ".build-artifacts-toggle-children")
                  utils/text))

@@ -264,7 +264,7 @@
                    {:style    {:cursor  "pointer"
                                :display "inline"}
                     :on-click toggler}
-                   (if closed? "▶  " "▼  ") tag]
+                   (if closed? "▸  " "▾  ") tag]
                   tag)
                 [:div {:style (when closed? {:display "none"})}
                  (om/build artifacts-node
