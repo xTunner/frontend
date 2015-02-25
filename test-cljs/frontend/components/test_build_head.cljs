@@ -15,11 +15,11 @@
 
 (deftest test-build-tree-renders
   (let [artifacts (:artifacts test-build-data)
-        tree      {:artifacts (bh/artifacts-tree artifacts)}
+        tree      {:artifacts (bh/artifacts-tree "Container 0" artifacts)}
         test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
     (om/root bh/artifacts-node tree {:target test-node})
     (testing "Simple render test"
-      (is (= "▼  tmp/"
+      (is (= "▼  Container 0/"
              (-> test-node
                  (sel1 ".build-artifacts-toggle-children")
                  utils/text))
@@ -27,10 +27,10 @@
 
 (deftest test-admin-links
   (let [artifacts           (:artifacts test-build-data)
-        non-admin-tree      {:artifacts (bh/artifacts-tree artifacts)
+        non-admin-tree      {:artifacts (bh/artifacts-tree "Container 0" artifacts)
                              :admin?    false}
         non-admin-test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
-        admin-tree          {:artifacts (bh/artifacts-tree artifacts)
+        admin-tree          {:artifacts (bh/artifacts-tree "Container 0" artifacts)
                              :admin?    true}
         admin-test-node     (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
         art-link-count      (fn [node]

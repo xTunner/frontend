@@ -220,9 +220,11 @@
    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
    [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "build-artifacts"})} "in our docs"] "."]])
 
-(defn artifacts-tree [artifacts]
+(defn artifacts-tree [prefix artifacts]
   (->> (for [artifact artifacts
-             :let [parts (-> artifact :path (string/split #"/"))]]
+             :let [parts (->> (-> artifact :path (string/split #"/"))
+                              (drop 3) ;; Drop the initial /tmp and /tmp/random-dir
+                              (concat [prefix]))]]
          [(vec (remove #{""} parts)) artifact])
        (reduce (fn [acc [parts artifact]]
                  (let [loc (interleave (repeat :children) parts)]
@@ -230,7 +232,7 @@
                {})
        :children))
 
-(defn artifacts-node [{:keys [artifacts admin?] :as data} owner {:keys [show-node-indices?] :as opts}]
+(defn artifacts-node [{:keys [artifacts admin?] :as data} owner opts]
   (reify
     om/IRender
     (render [_]
@@ -240,10 +242,9 @@
           (map-indexed
            (fn node-entry [idx [part {:keys [artifact children]}]]
              (let [directory? (not artifact)
-                   text       (cond
-                               directory?         (str part "/")
-                               show-node-indices? (str part " (" (:node_index artifact) ")")
-                               :else              part)
+                   text       (if directory?
+                                (str part "/")
+                                part)
                    url        (:url artifact)
                    tag        (if (and url (not admin?)) ; Be extra careful about XSS of admins
                                 [:a.artifact-link {:href (:url artifact) :target "_blank"} text]
@@ -279,17 +280,24 @@
     (render [_]
       (let [artifacts-data (:artifacts-data data)
             artifacts (:artifacts artifacts-data)
-            has-artifacts? (:has-artifacts? data)
-            node-opts {:admin? (:admin (:user data))
-                       :show-node-indices? show-node-indices?}]
+            has-artifacts? (:has-artifacts? data)]
         (html
          [:div.build-artifacts-container
           (if-not has-artifacts?
             (artifacts-ad)
             (if-not artifacts
               [:div.loading-spinner common/spinner]
-              (om/build artifacts-node {:artifacts (artifacts-tree artifacts)
-                                        :admin? (:admin (:user data))} {:opts node-opts})))])))))
+              (if show-node-indices?
+                ;; Group by container
+                (map (fn artifact-node-builder [[node-index node-artifacts]]
+                       (om/build artifacts-node {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
+                                                 :admin? (:admin (:user data))}))
+                     (->> artifacts
+                      (group-by :node_index)
+                      (sort-by first)))
+                ;; Show all artifacts
+                (om/build artifacts-node {:artifacts (artifacts-tree (str "Container 0") artifacts)
+                                          :admin? (:admin (:user data))}))))])))))
 
 (defn tests-ad [owner]
   [:div
