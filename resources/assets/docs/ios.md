@@ -167,7 +167,7 @@ See the [customizing your build](#customizing-your-build) section for alternativ
 
 ## Simulator Stability
 
-There is a Known Issue with the iOS Simulator in Xcode 6 that us documented in
+There is a Known Issue with the iOS Simulator in Xcode 6 that is documented in
 the [Xcode release notes](https://developer.apple.com/library/mac/releasenotes/DeveloperTools/RN-Xcode/Xcode_Release_Notes.pdf)
 as follows:
 
@@ -178,7 +178,7 @@ as follows:
 This issue is further discussed in a [sticky post on the official iOS developer
 forums](https://devforums.apple.com/thread/248879).
 
-When this bug occurs Xcode will output a message if the following form:
+When this bug occurs Xcode will output a message like:
 
 > Unable to run app in Simulator If you believe this error represents a bug,
 > please attach the log file at /var/folders/jm/fw86rxds0xn69sk40d18y69m0000g/T/com.apple.dt.XCTest-status/Session-2015-02-19_18:37:47-WjiMos.log
@@ -205,7 +205,7 @@ _finishWithError:Error Domain=IDEUnitTestsOperationsObserverErrorDomain Code=3 "
 ```
 
 We have found the taking the recommended action (re-trying the test) is not
-effecive. Instead, we have had good success working around this bug in the
+effective. Instead, we have had good success working around this bug in the
 simulator by using [`xctool`](https://github.com/facebook/xctool) for building
 and testing Xcode projects instead of `xcodebuild`.
 
