@@ -15,7 +15,8 @@ The reason for this is your builds run in a VM with 4GB of
 available RAM. If you go over that limit, Linux kills a process,
 somewhat arbitrarily.
 
-Hitting the RAM limit is typically a bug.
+Hitting the RAM limit typically indicates a bug, such as a process not
+freeing resources.
 
 ## Debugging
 
@@ -57,7 +58,7 @@ limit the JVM’s usage of memory by declaring the limits in the
 Note that you might want to use larger numbers depending on the other
 processes running during your build. Check the contents of your
 `memory-usage.txt` for the memory usage of the rest of the processes and
-adjust the parameters adequately.
+adjust the parameters accordingly.
 
 If your tests actually need more than 4GB of RAM, please
 [contact us](mailto:sayhi@circleci.com).
