@@ -448,7 +448,7 @@
               [:label {:placeholder "Post-dependency commands"}]
               [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
               (forms/managed-button
-               [:input {:value "Next, setup your tests",
+               [:input {:value "Next, set up your tests",
                         :type "submit"
                         :data-loading-text "Saving..."
                         :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
