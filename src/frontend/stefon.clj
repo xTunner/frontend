@@ -58,6 +58,7 @@
            "docs/environment-variables.md"
            "docs/environment.md"
            "docs/external-resources.md"
+           "docs/faq.md"
            "docs/file-ordering.md"
            "docs/filesystem.md"
            "docs/getting-started.md"
