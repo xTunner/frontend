@@ -60,6 +60,7 @@ dependencies:
       /etc/postgresql/9.4/main/pg_hba.conf
     - sudo service postgresql restart
     - sudo -u postgres createuser ubuntu -d --superuser
+    - createdb circle_test
 ```
 
 ### How do I use mysql 5.6?
