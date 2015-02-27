@@ -125,10 +125,8 @@
             [:div.navbar-header
              [:a#logo
               {:href "/"}
-              [:img
-               {:width "130",
-                :src (utils/cdn-path "/img/logo-new.svg")
-                :height "40"}]]]
+              (common/circle-logo {:width nil
+                                   :height 25})]]
             [:ul.nav.navbar-nav
              [:li [:a {:href "/about"} "About"]]
              (when-not (config/enterprise?)
@@ -138,17 +136,17 @@
                [:li [:a {:href "/jobs"} "Jobs"]])
              [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]
 
+            [:form.navbar-right.navbar-form
+             [:button#login.login-link.btn.btn-success {:href (auth-url)
+                                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                                        :title "Sign up with Github"}
+              "Sign up"]]
             [:ul.nav.navbar-nav.navbar-right
-             [:a#login.login-link {:href (auth-url)
-                                   :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
-                                   :title "Sign in with Github"}
-              "Sign in"]
-             [:span.seperator " | "]
-             [:a#login.login-link {:href (auth-url)
-                                   :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
-                                   :title "Sign up with Github"}
-              "Sign up "
-              [:i.fa.fa-github-alt]]]]]])))))
+             [:li
+              [:a#login.login-link {:href (auth-url)
+                                    :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
+                                    :title "Sign in with Github"}
+               "Sign in"]]]]]])))))
 
 (defn inner-header [app owner]
   (reify
