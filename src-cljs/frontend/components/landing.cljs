@@ -144,44 +144,6 @@
 
 (def nav-height 70)
 
-(defn nav [data owner {:keys [logged-in?]}]
-  (reify
-    om/IDisplayName (display-name [_] "Home Nav")
-    om/IRender
-    (render [_]
-      (html
-       [:nav.home-nav {:style (if (> 70 (:header-bkg-scroller data))
-                                {:background-size (str "100% " (:header-bkg-scroller data) "px")}
-                                {})
-                       :class (concat
-                               (when (:header-logo-visible data) ["logo-visible"])
-                               (when (:header-cta-visible data) ["cta-visible"])
-                               (when (:header-bkg-visible data) ["bkg-visible"])
-                               (when (:header-bkg-invisible data) ["bkg-invisible"])
-                               (when (:header-cta-invisible data) ["cta-invisible"]))}
-        [:a.promo {:href "/mobile"}
-                                        ; "What is Continuous Integration?"
-         "Mobile App Testing for iOS & Android"]
-        (if logged-in?
-          [:a.return {:href "/"} "Return to App"]
-          [:a.login {:href (auth-url)
-                     :on-click #(raise! owner [:track-external-link-clicked
-                                               {:event "Auth GitHub"
-                                                :properties {:source "header-log-in"}
-                                                :path (auth-url)}])}
-           "Log In"])
-        [:a.logo-circleci {:on-click #(raise! owner [:home-scroll-logo-clicked])}
-         [:figure (common/circle-logo)]]
-        (if logged-in?
-          [:a.return {:href "/"} "Return to App"]
-          [:a.action {:href (auth-url)
-                      :role "button"
-                      :on-click #(raise! owner [:track-external-link-clicked
-                                                {:event "Auth GitHub"
-                                                 :properties {:source "header-cta"}
-                                                 :path (auth-url)}])}
-           (str (common/sign-up-text))])]))))
-
 (defn prolog [data owner {:keys [logo-visibility-callback
                                  cta-visibility-callback
                                  prolog-visibility-callback
@@ -495,7 +457,6 @@
     (render [_]
       (html
        [:div.home.page
-        (om/build nav (om/get-state owner) {:opts {:logged-in? (get-in app state/user-path)}})
         (om/build prolog {} {:opts {:logo-visibility-callback
                                     (fn [visible?]
                                       (om/set-state! owner :header-logo-visible visible?))
