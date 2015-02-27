@@ -1,13 +1,11 @@
 (ns frontend.components.test-org-settings
   (:require [cemerick.cljs.test :as t]
             [cljs.core.async :as async]
-            [frontend.test-utils :as test-utils]
+            [frontend.test-utils :as test-utils :refer (example-plan)]
             [frontend.components.org-settings :as org-settings]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.stefon :as stefon]
-            [cljs-time.core :as time]
-            [cljs-time.format :as time-format]
             [goog.dom]
             [om.core :as om :include-macros true]
             [frontend.routes :as routes]
@@ -63,42 +61,6 @@
             (format blog-post)))
     (is (=  "Your plan includes 15% off for 3 months from coupon code sweety-high-discount"
             (format sweety-high)))))
-
-(defn example-plan [& keys]
-  (as-> {:trial {:trial {:template {:free_containers 6
-                                    :id "t1"
-                                    :price 0
-                                    :type "trial"}}
-                 :trial_end (->> 5
-                                 (time/days)
-                                 (time/from-now)
-                                 (time-format/unparse (:basic-date-time time-format/formatters)))}
-         :paid {:paid {:template {:id "p18"
-                                  :free_containers 0
-                                  :price 0
-                                  :container_cost 50
-                                  :type "containers"}}
-                :containers 4}
-         :big-paid {:paid {:template {:id "p18"
-                                      :free_containers 0
-                                      :price 0
-                                      :container_cost 50
-                                      :type "containers"}}
-                    :containers 60}
-         :free {:free {:template {:id "f1"
-                                  :free_containers 1
-                                  :type "free"}}}
-         :grandfathered {:paid {:template {:id "p18"
-                                           :free_containers 0
-                                           :price 0
-                                           :container_cost 50
-                                           :type "containers"}}
-                         :containers 4
-                         :amount 200}}
-        %
-        (map % keys)
-        (conj % {:org_name "circleci"})
-        (apply merge %)))
 
 (deftest overview-page-works
   (let [overview #(test-utils/component->content
