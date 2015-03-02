@@ -106,6 +106,7 @@
              "Test against any version of any browser with CircleCI's Enterprise SauceLabs integration. Using the Sauce Connect tunnel, you can even test applications running securely within CircleCI build containers behind your firewall. Automate your cross-browser and mobile testing."
              [:a.integration-learn-more {:href "/integrations"} "Learn more"]]]]
          [:section
+          [:img.enterprise-icon {:src (utils/cdn-path "/img/outer/enterprise/feature-phone.svg")}]
           [:h2.text-center "Learn More About CircleCI Enterprise"]
           [:div.enterprise-cta-contact
            [:form.form-horizontal
@@ -124,7 +125,7 @@
                                 :placeholder "# of Developers"}]
               [:div.telephone-info
                "Or call "
-               [:a.telephone-number {:href "#"} "415.851.5247"]
+               [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
                " for an Enterprise quote."]]]
             [:div.row
              [:div.col-xs-12.text-center
