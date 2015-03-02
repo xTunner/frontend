@@ -481,5 +481,4 @@
                                       (om/set-state! owner :header-bkg-invisible visible?))
                                     :header-overlap-callback
                                     (fn [visible-px]
-                                      (om/set-state! owner :header-bkg-scroller visible-px))}})
-        (common/footer)]))))
+                                      (om/set-state! owner :header-bkg-scroller visible-px))}})]))))

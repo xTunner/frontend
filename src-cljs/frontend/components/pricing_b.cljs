@@ -154,5 +154,4 @@
              [:article
               [:h3 "How many containers do I need?"]
               [:p "Most of our customers use about 2.5 containers per full-time developer.
-                   Every team is different however and we're happy to set you up with a trial to help you figure out how many works best for you."]]]]
-           (common/footer)])))))
+                   Every team is different however and we're happy to set you up with a trial to help you figure out how many works best for you."]]]]])))))
