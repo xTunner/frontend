@@ -52,7 +52,6 @@
                                                 (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))
                               :on-mouse-move #(when dragging?
                                                 (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))}
-           (common/nav owner)
            [:div.torso
             [:section.pricing-intro
              [:article

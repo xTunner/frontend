@@ -172,28 +172,3 @@
     "Get Started"
     "Sign Up Free"))
 
-(defn nav [owner]
-  (html
-   [:nav.outer-nav
-    [:a.logo-circleci {:on-click #(raise! owner [:home-scroll-logo-clicked])
-                       :href "/home"}
-     [:figure (circle-logo)]]
-    [:a {:href "/about"} "About"]
-    (when-not (config/enterprise?)
-      [:a {:href "/pricing"} "Pricing"])
-    [:a {:href "/docs"} "Docs"]
-    [:a {:href "http://blog.circleci.com"} "Blog"]
-    [:a.login {:href (auth-url)
-               :on-click #(raise! owner [:track-external-link-clicked
-                                         {:event "Auth GitHub"
-                                          :properties {:source "header-log-in"}
-                                          :path (auth-url)}])}
-     "Log In"]
-    [:a.action {:href (auth-url)
-                :role "button"
-                :on-click #(raise! owner [:track-external-link-clicked
-                                          {:event "Auth GitHub"
-                                           :properties {:source "header-cta"}
-                                           :path (auth-url)}])}
-     (str (sign-up-text))]]))
-
