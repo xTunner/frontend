@@ -84,8 +84,9 @@
              {:on-click #(raise! owner [:enterprise-learn-more-clicked {:source "integration"}])}
              "Learn More"]]]]
          [:section.row
-          [:h2.text-center "Integrations"]
-          [:p "CircleCI is built for unlimited flexibility. From hosting options to test frameworks or programming frameworks, we let you use the technology you need. GitHub Enterprise, Docker, SauceLabs, and many more."]]
+          [:div.col-xs-8.col-xs-offset-2
+           [:h2.text-center "Integrations"]
+           [:p "CircleCI is built for unlimited flexibility. From hosting options to test frameworks or programming frameworks, we let you use the technology you need. GitHub Enterprise, Docker, SauceLabs, and many more."]]]
          [:section.row
           [:div.col-xs-4
            [:div.integration-logo.github
