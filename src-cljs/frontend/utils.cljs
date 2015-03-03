@@ -13,6 +13,7 @@
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
             [goog.style]
+            [goog.dom :as dom]
             [sablono.core :as html :include-macros true])
   (:require-macros [frontend.utils :refer [inspect timing defrender]])
   (:import [goog.format EmailAddress]))
@@ -244,15 +245,27 @@
                                  "CircleCI"))))
 
 (defn set-page-description!
-  "This is an experiment... Not sure if GoogleBot looks at this after rendering."
   [description]
   (let [meta-el (.querySelector js/document "meta[name=description]")]
-    (.setAttribute meta-el "content" description)))
+    (.setAttribute meta-el "content" (str description))))
+
+(defn set-canonical!
+  "Upserts a canonical URL if canonical-page is not nil, otherwise deletes the canonical rel."
+  [canonical-page]
+  (if-let [link-el (.querySelector js/document "link[rel=\"canonical\"]")]
+    (if (some? canonical-page)
+      (.setAttribute link-el "href" canonical-page)
+      (dom/removeNode link-el))
+    (when (some? canonical-page)
+      (let [new-link-el (dom/createElement "link")]
+        (.setAttribute new-link-el "rel" "canonical")
+        (.setAttribute new-link-el "href" canonical-page)
+        (dom/appendChild (.-head js/document) new-link-el)))))
 
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"
   [id]
-  (when-let [node (goog.dom.getElement id)]
+  (when-let [node (dom/getElement id)]
     (let [body (.-body js/document)
           node-top (goog.style/getPageOffsetTop node)
           body-top (goog.style/getPageOffsetTop body)]
@@ -287,3 +300,14 @@
 
 (defn node-list->seqable [node-list]
   (js/Array.prototype.slice.call node-list))
+
+(defn equalize-size
+  "Given a node, will find all elements under node that satisfy selector and change
+   the size of every element so that it is the same size as the largest element."
+  [node class-name]
+  (let [items (node-list->seqable (dom/getElementsByClass class-name node))
+        sizes (map goog.style/getSize items)
+        max-width (apply max (map #(.-width %) sizes))
+        max-height (apply max (map #(.-height %) sizes))]
+    (doseq [item items]
+      (goog.style/setSize item max-width max-height))))

@@ -11,7 +11,11 @@
         js/window
         "scroll"
         (fn [event]
-          (utils/swallow-errors (cb event))))
+          ;; FIXME: Dispose doesn't actually remove the event listeners
+          ;; so we end up leaking event handlers that survive their components
+          ;; and throw interesting errors when events are triggered against unmounted components
+          (when (om/mounted? owner)
+            (utils/swallow-errors (cb event)))))
       (fn dispose [event-key]
         (goog.events/unlistenByKey event-key)))))
 

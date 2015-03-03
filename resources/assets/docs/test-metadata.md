@@ -1,7 +1,7 @@
 <!--
 
 title: Collecting test metadata
-last_updated: Dec 16, 2014
+last_updated: Feb 17, 2015
 
 -->
 
@@ -47,6 +47,22 @@ test:
   override:
     - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
     - bundle exec cucumber --format json --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber
+```
+
+### Java JUnit results with Maven Surefire Plugin
+
+If you are building a [Gradle](https://gradle.org/) or
+[Maven](http://maven.apache.org/) based project, you are more than likely using
+the [Maven Surefire plugin](http://maven.apache.org/surefire/maven-surefire-plugin/)
+to generate test reports in XML format. CircleCI makes it easy to collect these
+reports. You just need to add the followng to the `circle.yml` file in your
+project.
+
+```
+test:
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 ```
 
 ## API

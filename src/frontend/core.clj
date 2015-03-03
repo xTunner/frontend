@@ -94,7 +94,8 @@
               #"/jobs"
               #"/pricing"
               #"/privacy"
-              #"/security.*"]
+              #"/security.*"
+              #"/stories.*"]
    :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}
               "prod.circlehost" {:proto "https" :host "circleci.com"}
               "staging.circlehost" {:proto "https" :host "staging.circleci.com"}}})

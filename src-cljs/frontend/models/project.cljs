@@ -73,6 +73,9 @@
 (defn oss? [project]
   (get-in project [:feature_flags :oss]))
 
+(defn osx? [project]
+  (get-in project [:feature_flags :osx]))
+
 (defn usable-containers [plan project]
   (+ (plan-model/usable-containers plan)
      (if (oss? project) plan-model/oss-containers 0)))

@@ -127,7 +127,7 @@
   (defroute v1-ios (FragmentRoute.  "/mobile/ios") {:as params}
     (open-to-outer! nav-ch :ios (assoc params
                                   :_title "Apple iOS App Testing"
-                                  :_description "Build 5-star iOS apps by automating your development workgflow with Mobile Continuous Integration and Delivery.")))
+                                  :_description "Build 5-star iOS apps by automating your development workflow with Mobile Continuous Integration and Delivery.")))
 
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
@@ -177,10 +177,10 @@
   (defroute v1-root (FragmentRoute. "/") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
-      (open-to-outer! nav-ch :landing params)))
+      (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-root (FragmentRoute. "/home") {:as params}
-    (open-to-outer! nav-ch :landing params)))
+    (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
 (defn define-spec-routes! [nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]

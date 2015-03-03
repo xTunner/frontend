@@ -17,11 +17,13 @@ and iOS-related build and test commands will be automatically inferred.
 
 Simple projects should run with minimal or no configuration. By default, CircleCI will:
 
-* **Install any Ruby gems specified in a Gemfile** - You can install a specific version of CocoaPods or other gems this way.
+* **Install any Ruby gems specified in a Gemfile** - You can install a specific
+  version of CocoaPods or other gems this way.
 * **Install any dependencies managed by [CocoaPods](http://cocoapods.org/)**
 * **Run the "test" build action for detected workspace (or project) and scheme
-from the command line using `xcodebuild`** - If a workspace is detected, it will take precedence
-over a project and be used to call `xcodebuild`. The detected settings can be overridden with [environment variables](#environment-variables)
+  from the command line using `xcodebuild`** - If a workspace is detected, it
+  will take precedence over a project and be used to call `xcodebuild`. The
+  detected settings can be overridden with [environment variables](#environment-variables)
 
 **Note:** Your scheme (what you select in the dropdown next to the
 run/stop buttons in Xcode) must be shared (there is a checkbox for this at the bottom of
@@ -30,6 +32,16 @@ If more than one scheme is present, then you should specify the
 `XCODE_SCHEME` [environment variable](/docs/environment-variables#custom). Otherwise a
 scheme will be chosen arbitrarily.
 
+### CocoaPods
+
+CircleCI will automatically detect if your project is using [CocoaPods](http://cocoapods.org/)
+to manage dependencies. If you are using CocoaPods, then we recommend that you
+check your [Pods directory into source control](http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control).
+This will ensure that you have a deterministic, reproducable build.
+
+If CircleCI finds a `Podfile` and no `Pods` directory, then we will run
+`pod install` to install the necessary dependencies in the `dependencies`
+step of your build.
 
 ##Supported build and test tools
 
@@ -66,11 +78,11 @@ work normally, though they will need to be installed and called using custom com
 See [customizing your build](#customizing-your-build) for more info.
 
 
-##Customizing your build
-While CircleCI's inferred commands will handle many common testing patterns, you also
-have a lot of flexibility to customize what happens in your build.
+## Customizing your build
+While CircleCI's inferred commands will handle many common testing patterns, you
+also have a lot of flexibility to customize what happens in your build.
 
-###Environment variables
+### Environment variables
 You can customize the behavior of CircleCI's automatic build commands by setting
 the following environment variables in a `circle.yml` file or at **Project Settings > Environment Variables** (see [here](/docs/environment-variables#custom) for more info
 about environment variables):
@@ -152,6 +164,54 @@ Linux containers that are not available on OSX vms:
 `machine:language` (e.g. language version declarations), `machine:services`,
 or a few other sections will not work correctly.
 See the [customizing your build](#customizing-your-build) section for alternatives.
+
+## Simulator Stability
+
+There is a Known Issue with the iOS Simulator in Xcode 6 that is documented in
+the [Xcode release notes](https://developer.apple.com/library/mac/releasenotes/DeveloperTools/RN-Xcode/Xcode_Release_Notes.pdf)
+as follows:
+
+> Testing on iOS simulator may produce an error indicating that the application
+> could not be installed or launched.
+> Re-run testing or start another integration. (17733855)
+
+This issue is further discussed in a [sticky post on the official iOS developer
+forums](https://devforums.apple.com/thread/248879).
+
+When this bug occurs Xcode will output a message like:
+
+> Unable to run app in Simulator If you believe this error represents a bug,
+> please attach the log file at /var/folders/jm/fw86rxds0xn69sk40d18y69m0000g/T/com.apple.dt.XCTest-status/Session-2015-02-19_18:37:47-WjiMos.log
+
+The path and timestamp of the log file will change from run to run, but the
+location is always `$TMPDIR/com.apple.dt.XCTest-status/`.
+
+The log file will contain the following output:
+
+```
+Initializing test infrastructure.
+Creating the connection.
+Listening for proxy connection request from the test bundle (all platforms)
+Resuming the connection.
+Test connection requires daemon assistance.
+Checking test manager availability..., will wait up to 120s
+testmanagerd handled session request.
+Waiting for test process to launch.
+Launch session started, setting a disallow-finish-token on the run operation.
+Waiting for test process to check in..., will wait up to 120s
+Adding console adaptor for test process.
+Test operation failure: Unable to run app in Simulator
+_finishWithError:Error Domain=IDEUnitTestsOperationsObserverErrorDomain Code=3 "Unable to run app in Simulator" UserInfo=0x7fbb496f1c00 {NSLocalizedDescription=Unable to run app in Simulator} didCancel: 1
+```
+
+We have found the taking the recommended action (re-trying the test) is not
+effective. Instead, we have had good success working around this bug in the
+simulator by using [`xctool`](https://github.com/facebook/xctool) for building
+and testing Xcode projects instead of `xcodebuild`.
+
+If you encounter this bug when building your project on CircleCI please contact
+us through the in-app messenger or through [sayhi@circleci.com](mailto:sayhi@circleci.com).
+We will be happy to help you work around the issue.
 
 ## Software Versions
 

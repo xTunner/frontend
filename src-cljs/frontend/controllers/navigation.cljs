@@ -454,6 +454,7 @@
        doc
        (do
          (set-page-title! (:title doc))
+         (set-page-description! (:description doc))
          (scroll! params)
          (analytics/track-page "View Docs")
          (when (and (empty? (:children doc))
