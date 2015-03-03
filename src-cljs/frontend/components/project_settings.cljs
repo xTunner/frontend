@@ -584,15 +584,17 @@
             (for [chat-spec [{:service "Hipchat"
                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                           [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
-                                         [:label ;; hipchat is a special flower
-                                          {:for "hipchat-notify"}
-                                          [:input#hipchat-notify
-                                           {:type "checkbox"
-                                            :checked (:hipchat_notify settings)
-                                            ;; n.b. can't use inputs-state b/c react won't changed
-                                            ;;      checked state without a rerender
-                                            :on-change #(utils/edit-input owner (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
-                                          [:span "Show popups"]])
+                                         [:div
+                                          [:label ;; hipchat is a special flower
+                                           {:for "hipchat-notify"}
+                                           [:input#hipchat-notify
+                                            {:type "checkbox"
+                                             :checked (:hipchat_notify settings)
+                                             ;; n.b. can't use inputs-state b/c react won't changed
+                                             ;;      checked state without a rerender
+                                             :on-change #(utils/edit-input owner (conj state/project-path :hipchat_notify) %
+                                                                           :value (not (:hipchat_notify settings)))}]
+                                           [:span "Show popups"]]])
                               :inputs [{:field :hipchat_room :placeholder "Room"}
                                        {:field :hipchat_api_token :placeholder "API"}]
                               :show-fixed-failed? true
