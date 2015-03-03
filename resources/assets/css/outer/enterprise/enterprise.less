@@ -2,10 +2,67 @@
   & > .jumbotron {
     background-color: rgb(251,251,251);
     position: relative;
+    padding: 70px;
+    margin: 0;
 
     .container {
       position: relative;
       z-index: 2;
+    }
+  }
+
+  .hero-logo {
+    max-height: 70px;
+    margin-bottom: 50px;
+  }
+}
+
+.enterprise-section {
+  padding: 70px 0;
+  border-top: solid 1px @gray-lighter;
+}
+
+.enterprise-integrations {
+  margin-bottom: 70px;
+}
+
+.enterprise-story {
+  border-top: solid 1px @gray-lighter;
+  background-color: rgb(251,251,251);
+  padding: 35px 0;
+  position: relative;
+  overflow: hidden;
+
+  .story-logo {
+    width: 250px;
+    padding-bottom: 20px;
+    .center-block;
+  }
+
+  img.language {
+    position: absolute;
+    height: 200px;
+
+    &.rails-2 {
+      // height: 10%;
+      height: 200px;
+      bottom: -85px;
+      left: 0;
+    }
+
+    &.clojure-2 {
+      bottom: -140px;
+      right: -100px;
+    }
+
+    &.java-2 {
+      top: -170px;
+      right: 0;
+    }
+
+    &.php-2 {
+      bottom: -130px;
+      left: 60%;
     }
   }
 }
@@ -102,7 +159,8 @@ img.arrow {
 .integration-logo {
   border-radius: 5px 5px 0 0;
   height: 70px;
-  padding: 1em;
+  padding: 1.2em;
+  text-align: center;
 
   img {
     max-height: 35px;
