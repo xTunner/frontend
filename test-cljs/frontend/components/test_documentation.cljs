@@ -82,7 +82,7 @@
     (is (= "Ruby (2)"
            (-> rendered-component
                om/get-node
-               (sel1 "li > a")
+               (sel1 "li a")
                utils/text)))))
 
 (deftest test-article-list-rendering
