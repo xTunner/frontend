@@ -78,6 +78,10 @@
     .avatar {
       width: @avatar-size;
       float: left;
+      .fa {
+        font-size: 48px;
+        color: @redLight;
+      }
     }
 
     .other-stuff {
@@ -200,6 +204,16 @@
     }
     a {
       color: @blueLight;
+    }
+  }
+
+  .inaccessible-org-wrapper {
+    @content();
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid darken(@grayLightest, 5.7);
+    .loading-spinner {
+      margin: 1.5em auto;
     }
   }
 

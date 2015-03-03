@@ -183,6 +183,10 @@
                api-ch
                :context args)))
 
+(defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
+          (put! api-ch [:organizations (:status api-result) api-result])))))
 
 (defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state]
@@ -389,6 +393,11 @@
                  api-ch
                  :context repo))
   (analytics/track-follow-repo))
+
+
+(defmethod control-event :inaccessible-org-toggled
+  [target message {:keys [org-name value]} state]
+  (assoc-in state [:settings :add-projects :inaccessible-orgs org-name :visible?] value))
 
 
 (defmethod post-control-event! :followed-project

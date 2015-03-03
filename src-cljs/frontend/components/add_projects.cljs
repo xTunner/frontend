@@ -6,6 +6,7 @@
             [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -44,6 +45,28 @@
               :target "_blank"}
           [:i.fa.fa-github-alt ""]]]]]]]))
 
+(defn check-organizations-div
+  "Create a div just like the 'organization' fn above, but that provides a direct link
+  to the github page for someone to verify that CirclCI is approved for the orgs
+  they belong to."
+  [owner]
+  [:div.organization
+   [:div.inner
+    [:div.avatar
+     [:i.fa.fa-question-circle]]
+    [:div.other-stuff
+     [:a {:href "https://github.com/settings/connections/applications/78a2ba87f071c28e65bb"}
+      [:div.orgname
+       "Missing organizations?"
+       [:br]
+       "Check GitHub App Permissions "
+       [:i.fa.fa-external-link]]]
+     [:div.refresh {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
+                    :class "active"}
+      "Refresh GitHub org listings "
+      [:i.fa.fa-refresh]]]
+    ]])
+
 (defn organization-listing [data owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
@@ -67,6 +90,7 @@
              (map (fn [org] (organization org settings owner))
                    (filter (fn [org] (= (:login user) (:login org)))
                            (:collaborators user)))
+              (check-organizations-div owner)
               [:div
                [:h4
                 [:a
@@ -223,6 +247,73 @@
                         filtered-repos))]]))
       invite-modal])))
 
+(defn inaccessible-follows
+  "Any repo we follow where the org isn't in our set of orgs is either: an org
+  we have been removed from, or an org that turned on 3rd party app restrictions
+  and didn't enable CircleCI"
+  [user-data followed]
+  (let [org-set (set (map :login (:organizations user-data)))
+        org-set (conj org-set (:login user-data))]
+    (comment
+      (filter identity
+            (map-indexed (fn [index item]
+                           (when (not (contains? org-set (:username item)))
+                             (assoc item :index index))))))
+    (filter #(not (contains? org-set (:username %))) followed)))
+
+(defn inaccessible-repo-item [data owner]
+  (reify
+    om/IDisplayName (display-name [_] "repo-item")
+    om/IRenderState
+    (render-state [_ {:keys [building?]}]
+      (let [repo (:repo data)
+            settings (:settings data)
+            login (get-in repo [:username])]
+        (html
+         [:li.repo-unfollow
+          [:div.proj-name
+           [:span {:title (str (:reponame repo) (when (:fork repo) " (forked)"))}
+            (:reponame repo)]
+           (when (:fork repo)
+             [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
+          (managed-button
+           [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
+                                                                  :login login
+                                                                  :type type)])
+                     :data-spinner true}
+            [:span "Stop watching project"]])])))))
+
+(defn inaccessible-org-item [data owner]
+  (reify
+    om/IDisplayName (display-name [_] "org-item")
+    om/IRenderState
+    (render-state [_ {:keys [building?]}]
+      (let [repos (:repos data)
+            settings (:settings data)
+            org-name (:org-name data)
+            visible? (get-in settings [:add-projects :inaccessible-orgs org-name :visible?])]
+        (html
+         [:div.inaccessible-org
+          [:div.orgname {:on-click #(raise! owner [:inaccessible-org-toggled {:org-name org-name :value (not visible?)}])}
+           [:span {:title org-name} org-name]
+           (if visible? [:i.fa.fa-chevron-up] [:i.fa.fa-chevron-down])]
+          (when visible?
+            [:ul.proj-list
+             (map (fn [repo] (om/build inaccessible-repo-item {:repo repo :settings settings}))
+                  repos)])])))))
+
+(defn inaccessible-orgs-notice [follows settings]
+  (let [inaccessible-orgs (set (map :username follows))
+        follows-by-orgs (group-by :username follows)]
+    [:div
+     [:h2 "Warning: Access Problems"]
+     [:div.alert.error-alert
+      "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at: (link)"]
+     [:div.inaccessible-org-wrapper
+      (map (fn [org-follows] (om/build inaccessible-org-item
+                                      {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
+           (vals follows-by-orgs))]]))
+
 (defrender add-projects [data owner]
   (let [user (:current-user data)
         settings (:settings data)
@@ -230,7 +321,9 @@
         repo-key (gstring/format "%s.%s"
                                  selected-org
                                  (get-in settings [:add-projects :selected-org :type]))
-        repos (get-in user [:repos repo-key])]
+        repos (get-in user [:repos repo-key])
+        followed-inaccessible (inaccessible-follows user
+                                                    (get-in data state/projects-path))]
     (html
      [:div#add-projects
       [:header.main-head
@@ -240,6 +333,8 @@
        [:div.follow-wrapper
         (when (seq (user-model/missing-scopes user))
           (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+        (when (seq followed-inaccessible)
+          (inaccessible-orgs-notice followed-inaccessible settings))
         [:h2 "Welcome!"]
         [:h3 "You're about to set up a new project in CircleCI."]
         [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
