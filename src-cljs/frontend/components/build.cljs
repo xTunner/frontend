@@ -80,8 +80,7 @@
                             {:position :fixed
                              :top 0
                              :left (:left stick)
-                             :width (:width stick)
-                             :z-index 100})]
+                             :width (:width stick)})]
         (html [:div {:ref "wrapper" :class wrapper-class :style wrapper-style}
                [:div {:ref "content" :class content-class :style content-style}
                 content]])))

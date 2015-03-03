@@ -75,6 +75,7 @@ window.stefon_hack_for_om =
     "/docs/environment-variables.md": '(asset-path "docs/environment-variables.md")'
     "/docs/environment.md": '(asset-path "docs/environment.md")'
     "/docs/external-resources.md": '(asset-path "docs/external-resources.md")'
+    "/docs/faq.md": '(asset-path "docs/faq.md")'
     "/docs/file-ordering.md": '(asset-path "docs/file-ordering.md")'
     "/docs/filesystem.md": '(asset-path "docs/filesystem.md")'
     "/docs/getting-started.md": '(asset-path "docs/getting-started.md")'
