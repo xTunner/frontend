@@ -570,6 +570,12 @@
 
 (defn notifications [project-data owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/equalize-size (om/get-node owner) "chat-room-item"))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (utils/equalize-size (om/get-node owner) "chat-room-item"))
     om/IRender
     (render [_]
       (let [project (:project project-data)
@@ -581,7 +587,16 @@
           [:article
            [:h2 "Chatroom Integrations"]
            [:div.chat-rooms
-            (for [chat-spec [{:service "Hipchat"
+            (for [chat-spec [{:service "Slack"
+                              :doc [:p "To get your Webhook URL, visit Slack's "
+                                    [:a {:href "https://my.slack.com/services/new/circleci"}
+                                     "CircleCI Integration"]
+                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
+                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
+                              :show-fixed-failed? true
+                              :settings-keys project-model/slack-keys}
+
+                             {:service "Hipchat"
                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                           [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
                                          [:div
@@ -599,6 +614,21 @@
                                        {:field :hipchat_api_token :placeholder "API"}]
                               :show-fixed-failed? true
                               :settings-keys project-model/hipchat-keys}
+
+                             {:service "Flowdock"
+                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
+                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
+                              :show-fixed-failed? false
+                              :settings-keys project-model/flowdock-keys}
+
+                             {:service "Hall"
+                              :doc [:p "To get your Room / Group API token, go to "
+                                    [:strong "Settings > Integrations > CircleCI"]
+                                    " from within your Hall Group."]
+                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
+                              :show-fixed-failed? true
+                              :settings-keys project-model/hall-keys}
+
                              {:service "Campfire"
                               :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
                               :inputs [{:field :campfire_room :placeholder "Room"}
@@ -606,12 +636,6 @@
                                        {:field :campfire_token :placeholder "API"}]
                               :show-fixed-failed? true
                               :settings-keys project-model/campfire-keys}
-
-                             {:service "Flowdock"
-                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
-                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
-                              :show-fixed-failed? false
-                              :settings-keys project-model/flowdock-keys}
 
                              {:service "IRC"
                               :doc nil
@@ -621,23 +645,7 @@
                                        {:field :irc_username :placeholder "Username"}
                                        {:field :irc_password :placeholder "Password (optional)"}]
                               :show-fixed-failed? true
-                              :settings-keys project-model/irc-keys}
-
-                             {:service "Slack"
-                              :doc [:p "To get your Webhook URL, visit Slack's "
-                                    [:a {:href "https://my.slack.com/services/new/circleci"}
-                                     "CircleCI Integration"]
-                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
-                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
-                              :show-fixed-failed? true
-                              :settings-keys project-model/slack-keys}
-                             {:service "Hall"
-                              :doc [:p "To get your Room / Group API token, go to "
-                                    [:strong "Settings > Integrations > CircleCI"]
-                                    " from within your Hall Group."]
-                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                              :show-fixed-failed? true
-                              :settings-keys project-model/hall-keys}]]
+                              :settings-keys project-model/irc-keys}]]
               (chatroom-item project-id settings owner chat-spec))]]])))))
 
 (def status-styles

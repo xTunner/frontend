@@ -300,3 +300,14 @@
 
 (defn node-list->seqable [node-list]
   (js/Array.prototype.slice.call node-list))
+
+(defn equalize-size
+  "Given a node, will find all elements under node that satisfy selector and change
+   the size of every element so that it is the same size as the largest element."
+  [node class-name]
+  (let [items (node-list->seqable (dom/getElementsByClass class-name node))
+        sizes (map goog.style/getSize items)
+        max-width (apply max (map #(.-width %) sizes))
+        max-height (apply max (map #(.-height %) sizes))]
+    (doseq [item items]
+      (goog.style/setSize item max-width max-height))))
