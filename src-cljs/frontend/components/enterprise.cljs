@@ -50,6 +50,8 @@
          [:section.container
           [:div.row
            [:article.enterprise-hero-title.center-block
+            [:div.text-center
+             [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
             [:h1
              [:div.text-center "Ship code at the speed of business."]
              [:br]
