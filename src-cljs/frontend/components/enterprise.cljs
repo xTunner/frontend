@@ -27,6 +27,10 @@
   [:img.arrow {:class name
                :src (utils/cdn-path (str "/img/outer/enterprise/arrow-" name ".svg"))}])
 
+(defn language [name]
+  [:img.language {:class name
+                  :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
+
 (defn enterprise [app owner]
   (reify
     om/IRender
@@ -34,14 +38,14 @@
       (html
        [:div#enterprise
         [:div.jumbotron
-         (arrow "left-a-1")
-         (arrow "left-a-2")
-         (arrow "left-a-3")
-         (arrow "left-a-4")
-         (arrow "right-a-1")
-         (arrow "right-a-2")
-         (arrow "right-a-3")
-         (arrow "right-a-4")
+         (map arrow ["left-a-1"
+                     "left-a-2"
+                     "left-a-3"
+                     "left-a-4"
+                     "right-a-1"
+                     "right-a-2"
+                     "right-a-3"
+                     "right-a-4"])
          ;; [:img.arrow {:src (utils/cdn-path "/img/outer/enterprise/arrow-left-a-1.svg")}]
          [:section.container
           [:div.row
