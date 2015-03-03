@@ -91,16 +91,15 @@
   </svg>"}}])
 
 
-
 (defn home-button [{:keys [source]} owner]
-  [:a.btn.btn-primary.bold-btn {:on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
-                                                                                        :properties {:source "hero"}
-                                                                                        :path (gh-utils/auth-url)}])
-                                :href (gh-utils/auth-url)
-                                :title "Sign up with GitHub"}
+  [:a.btn.btn-xl.btn-success {:on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                                                                                      :properties {:source "hero"}
+                                                                                      :path (gh-utils/auth-url)}])
+                              :href (gh-utils/auth-url)
+                              :title "Sign up with GitHub"}
    [:i.fa.fa-github-alt]
-     [:span " Sign up with " [:strong.white "GitHub"]]
-  ])
+   [:span " Sign up with " [:strong.white "GitHub"]]
+   ])
 
 (defn contact-form
   "It's not clear how this should fit into the global state, so it's using component-local

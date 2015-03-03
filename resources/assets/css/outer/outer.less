@@ -64,41 +64,6 @@
 
   }
 
-  // high specificity, hence all the hacks
-  .btn,
-  button {
-    // &:not(.close) {
-    //   @btnBorder: @grayLighter;
-    //   border-color: @btnBorder;
-    //   border-bottom-color: darken(@btnBorder, 10%);
-    //   border: none;
-    //   text-shadow: none;
-    //   background: @circleBlue;
-    //   color: #6a93a3;
-    //   &:hover, &:focus {
-    //     background: lighten(@circleBlue, 5%);
-    //     color: white;
-    //   }
-    // }
-    // &:not(.btn-large) {
-    //   font-size: 14px;
-    //   border-radius: 3px;
-    //   line-height: 30px;
-    //   min-height: 30px;
-    // }
-    &.btn-primary {
-      background: @circleAccent;
-      color: @circleAccentText;
-      &:hover,
-      &:focus {
-        background: lighten(@circleAccent, 5%);
-      }
-      i {
-        margin-right: 7px;
-        font-size: 1.1em;
-      }
-    }
-  }
   @import "shared/banner.less";
   @import "shared/additional.less";
   @import "home/home.less";
