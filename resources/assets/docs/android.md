@@ -47,6 +47,7 @@ To accomplish this, put something like the following in your `circle.yml`:
 machine:
   environment:
     ANDROID_HOME: /home/ubuntu/android
+
 dependencies:
   cache_directories:
     - ~/.android
@@ -124,16 +125,20 @@ emulator to finish booting, and then run your tests.
 In your `circle.yml` file, it will look something like
 
 ```
+machine:
+  environment:
+    ANDROID_HOME: /home/ubuntu/android
+
 test:
   override:
-  - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
-      background: true
-      parallel: true
-  - # start your build here
-  - ./wait.sh:
-      parallel: true
-  - # install your APK
-  - # run your tests
+    - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-audio:
+        background: true
+        parallel: true
+    # start your build here
+    - ./wait.sh:
+        parallel: true
+    # install your APK
+    # run your tests
 ```
 
 ### Running your tests
