@@ -23,10 +23,8 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [clojure.string :as string]
-            [goog.dom]
             [goog.string :as gstring]
             [goog.string.format]
-            [goog.style]
             [inflections.core :as infl :refer [pluralize]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html]]))
@@ -95,25 +93,14 @@
                                                              :repo (vcs-url/repo-name vcs-url)})}
                      (vcs-url/project-name vcs-url)]])]]])]]])))))
 
-(defn equalize-size
-  "Given a node, will find all elements under node that satisfy selector and change
-   the size of every element so that it is the same size as the largest element."
-  [node class-name]
-  (let [items (utils/node-list->seqable (goog.dom/getElementsByClass class-name node))
-        sizes (map goog.style/getSize items)
-        max-width (apply max (map #(.-width %) sizes))
-        max-height (apply max (map #(.-height %) sizes))]
-    (doseq [item items]
-      (goog.style/setSize item max-width max-height))))
-
 (defn followers-container [followers owner]
   (reify
     om/IDidMount
     (did-mount [_]
-      (equalize-size (om/get-node owner) "follower-container"))
+      (utils/equalize-size (om/get-node owner) "follower-container"))
     om/IDidUpdate
     (did-update [_ _ _]
-      (equalize-size (om/get-node owner) "follower-container"))
+      (utils/equalize-size (om/get-node owner) "follower-container"))
     om/IRender
     (render [_]
       (html
