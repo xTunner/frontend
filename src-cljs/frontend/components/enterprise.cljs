@@ -118,14 +118,14 @@
           [:div.enterprise-cta-contact
            [:form.form-horizontal
             [:div.row.contact-form
-             [:div.col-xs-4.col-xs-offset-2
+             [:div.col-sm-4.col-sm-offset-2
               [:input.input-lg {:type "text"
                                 :placeholder "Company"}]
               [:input.input-lg {:type "text"
                                 :placeholder "Name"}]
               [:input.input-lg {:type "email"
                                 :placeholder "Email"}]]
-             [:div.col-xs-4
+             [:div.col-sm-4
               [:input.input-lg {:type "text"
                                 :placeholder "Phone"}]
               [:input.input-lg {:type "text"
