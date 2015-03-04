@@ -219,3 +219,29 @@ CI.Versions =
   "g++": "4.6.3-1ubuntu5"
   casperjs: "1.0.9"
   phantomjs: "1.9.8"
+
+  # you can copy-paste these from image-maker/src/circlevm/pallet/android.clj
+  android_sdk_packages: [
+    "platform-tools",
+    "build-tools-21.1.2",
+    "build-tools-20.0.0",
+    "android-21",
+    "android-20",
+    "android-19",
+    "android-18",
+    "android-17",
+    "android-16",
+    "android-15",
+    "android-10",
+    "sys-img-armeabi-v7a-android-21",
+    "sys-img-armeabi-v7a-android-20",
+    "sys-img-armeabi-v7a-android-19",
+    "sys-img-armeabi-v7a-android-18",
+    "sys-img-armeabi-v7a-android-17",
+    "sys-img-armeabi-v7a-android-16",
+    "sys-img-armeabi-v7a-android-15",
+    "extra-android-support",
+    "extra-google-google_play_services",
+    "extra-google-m2repository",
+    "extra-android-m2repository"
+    ]
