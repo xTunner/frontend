@@ -20,19 +20,19 @@
     padding: 15px;
   }
 
-  @bigNumberWidth: 25px;
-  @bigNumberPadding: 8px;
-  @bigNumberMarginRight: 8px;
+  @big-number-width: 25px;
+  @big-number-padding: 8px;
+  @big-number-margin-right: 8px;
   .big-number {
     font-size: 32px;
     font-weight: 300;
     color: @white;
     background: @blueLight;
     border-radius: 50%;
-    width: @bigNumberWidth;
-    height: @bigNumberWidth;
-    padding: @bigNumberPadding;
-    margin-right: @bigNumberMarginRight;
+    width: @big-number-width;
+    height: @big-number-width;
+    padding: @big-number-padding;
+    margin-right: @big-number-margin-right;
     display: inline-block;
     text-align: center;
     line-height: 28px;
@@ -41,7 +41,7 @@
 
   .instruction {
     display: inline-block;
-    @offset: @bigNumberWidth + (2 * @bigNumberPadding) + @bigNumberMarginRight;
+    @offset: @big-number-width + (2 * @big-number-padding) + @big-number-margin-right;
     padding-left: @offset;
     margin-left: -@offset;
     width: 100%;
