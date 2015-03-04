@@ -8,6 +8,7 @@ children:
   - language-php
   - language-java
   - language-haskell
+  - language-scala
 
 -->
 
