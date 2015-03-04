@@ -20,16 +20,19 @@
     padding: 15px;
   }
 
+  @bigNumberWidth: 25px;
+  @bigNumberPadding: 8px;
+  @bigNumberMarginRight: 8px;
   .big-number {
     font-size: 32px;
     font-weight: 300;
     color: @white;
     background: @blueLight;
     border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    padding: 8px;
-    margin-right: 10px;
+    width: @bigNumberWidth;
+    height: @bigNumberWidth;
+    padding: @bigNumberPadding;
+    margin-right: @bigNumberMarginRight;
     display: inline-block;
     text-align: center;
     line-height: 28px;
@@ -38,8 +41,9 @@
 
   .instruction {
     display: inline-block;
-    padding-left: 51px;
-    margin-left: -51px;
+    @offset: @bigNumberWidth + (2 * @bigNumberPadding) + @bigNumberMarginRight;
+    padding-left: @offset;
+    margin-left: -@offset;
     width: 100%;
     box-sizing: border-box;
     vertical-align: middle;
