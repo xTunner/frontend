@@ -55,7 +55,7 @@
     [:div.avatar
      [:i.fa.fa-question-circle]]
     [:div.other-stuff
-     [:a {:href "https://github.com/settings/connections/applications/78a2ba87f071c28e65bb"}
+     [:a {:href (gh-utils/third-party-app-restrictions-url)}
       [:div.orgname
        "Missing organizations?"
        [:br]
