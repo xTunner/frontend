@@ -31,19 +31,14 @@
 (defn organization [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)]
-    [:div.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
+    [:li.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
                         :class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
-     [:div.inner
-      [:div.avatar
-       [:img {:src (gh-utils/make-avatar-url org :size 50)
-              :height 50}]]
-      [:div.other-stuff
-       [:div.orgname
-        login
-        [:small.github-url.pull-right
-         [:a {:href (str (gh-utils/http-endpoint) "/" login)
-              :target "_blank"}
-          [:i.fa.fa-github-alt ""]]]]]]]))
+     [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
+            :height 50}]
+     [:div.orgname login]
+     [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
+                    :target "_blank"}
+      [:i.fa.fa-github-alt ""]]]))
 
 (defn check-organizations-div
   "Create a div just like the 'organization' fn above, but that provides a direct link
@@ -85,24 +80,26 @@
              [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
             [:div.organizations
              [:h4 "Your accounts"]
-             (map (fn [org] (organization org settings owner))
-                   (:organizations user))
-             (map (fn [org] (organization org settings owner))
-                   (filter (fn [org] (= (:login user) (:login org)))
-                           (:collaborators user)))
-              (check-organizations-div owner)
-              [:div
-               [:h4
-                [:a
-                 {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
-                 "Users & organizations who have made pull requests to your repos "
-                 (if show-fork-accounts?
-                   [:i.fa.fa-chevron-down ""]
-                   [:i.fa.fa-chevron-up ""])]]
+             [:ul.organizations
+               (map (fn [org] (organization org settings owner))
+                     (:organizations user))
+               (map (fn [org] (organization org settings owner))
+                     (filter (fn [org] (= (:login user) (:login org)))
+                             (:collaborators user)))
+               (check-organizations-div owner)]]
+            [:div.organizations
+             [:h4
+              [:a
+               {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
+               "Users & organizations who have made pull requests to your repos "
                (if show-fork-accounts?
-                 (map (fn [org] (organization org settings owner))
-                      (remove (fn [org] (= (:login user) (:login org)))
-                              (:collaborators user))))]]])))))
+                 [:i.fa.fa-chevron-down ""]
+                 [:i.fa.fa-chevron-up ""])]]
+             (if show-fork-accounts?
+             [:ul.organizations
+               (map (fn [org] (organization org settings owner))
+                    (remove (fn [org] (= (:login user) (:login org)))
+                            (:collaborators user)))])]])))))
 
 (def repos-explanation
   [:div.add-repos

@@ -20,33 +20,33 @@
     padding: 15px;
   }
 
-  @big-number-width: 25px;
-  @big-number-padding: 8px;
+  @big-number-width: 41px;
   @big-number-margin-right: 8px;
   .big-number {
-    font-size: 32px;
-    font-weight: 300;
-    color: @white;
-    background: @blueLight;
-    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
     width: @big-number-width;
     height: @big-number-width;
-    padding: @big-number-padding;
+    padding: 8px;
     margin-right: @big-number-margin-right;
-    display: inline-block;
-    text-align: center;
+
+    font-size: 32px;
     line-height: 28px;
-    vertical-align: middle;
+    font-weight: 300;
+    text-align: center;
+    color: @white;
+
+    background: @blueLight;
+    border-radius: 50%;
   }
 
   .instruction {
     display: inline-block;
-    @offset: @big-number-width + (2 * @big-number-padding) + @big-number-margin-right;
-    padding-left: @offset;
-    margin-left: -@offset;
-    width: 100%;
-    box-sizing: border-box;
     vertical-align: middle;
+    box-sizing: border-box;
+    @offset: @big-number-width + @big-number-margin-right;
+    width: ~"calc(100% - @{offset})";
   }
 
   h4 {
@@ -71,41 +71,9 @@
   }
 
   .org-listing {
-
-    .organizations {
-      @content();
-    };
-
     .nav-header {
       background: #d7dce3;
       color: #455C78;
-    }
-
-    @avatar-size: 48px;
-    .avatar {
-      width: @avatar-size;
-      float: left;
-      .fa {
-        font-size: 48px;
-        color: @redLight;
-      }
-    }
-
-    .other-stuff {
-      padding-left: @avatar-size + 5px;
-      min-height: @avatar-size;
-    }
-
-    img {
-      width: @avatar-size;
-      height: @avatar-size;
-      border-radius: 4px;
-    }
-
-    i {
-      width: 5%;
-      margin-right: 0;
-      padding-top: 5px;
     }
   }
 
@@ -180,38 +148,74 @@
     white-space: normal;
   }
 
-  .organization {
-    & > .inner {
-      margin: 5px 5px 5px 0;
+  ul.organizations {
+    @org-item-margin: 5px;
+
+    margin: 0;
+
+    > li {
+      position: relative;
+
+      display: inline-block;
+      box-sizing: border-box;
+      width: ~"calc(50% - @{org-item-margin})";
       padding: 5px;
+      margin: @org-item-margin @org-item-margin @org-item-margin 0;
+
       border: 1px @grayBorder solid;
       border-radius: 4px;
       cursor: pointer;
+
       @media only screen and (max-width: 960px) {
-        margin: 5px;
+        width: 100%;
       }
-    }
 
-    & > .inner:hover {
-      color: @blueLight;
-    }
+      &:hover {
+        color: @blueLight;
+      }
 
-    display: inline-block;
-    width: 50%;
+      @avatar-size: 48px;
+      @avatar-margin-right: 8px;
 
+      > img.avatar {
+        display: inline-block;
+        vertical-align: middle;
+        width: @avatar-size;
+        height: @avatar-size;
+        margin-right: @avatar-margin-right;
 
-    @media only screen and (max-width: 960px) {
-      width: 100%;
-    }
-  }
+        border-radius: 4px;
+      }
 
-  .organization.active {
-    .inner {
-      border: 1px solid @blueLight;
-      color: @blueLight;
-    }
-    a {
-      color: @blueLight;
+      > .orgname {
+        display: inline-block;
+        vertical-align: middle;
+        box-sizing: border-box;
+        @offset: @avatar-size + @avatar-margin-right;
+        width: ~"calc(100% - @{offset})";
+
+        font-size: @baseLineHeight;
+        line-height: 24px;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      > a.visit-org {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+
+      &.active {
+        color: @blueLight;
+        border-color: @blueLight;
+
+        > a.visit-org {
+          color: @blueLight;
+        }
+      }
     }
   }
 
@@ -230,15 +234,6 @@
   .add-you {
     color: @gray;
     font-weight: bold;
-  }
-
-  .orgname {
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: @baseLineHeight;
-    line-height: 24px;
   }
 
   .wordy-hr {
