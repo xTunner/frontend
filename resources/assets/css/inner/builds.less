@@ -78,10 +78,11 @@
     }
   }
 }
+
 .build-info {
   .flexy();
   table {
-    .flex(0.5 1 50%);
+    .flex(1 0 50%);
     display: block;
     line-height: 1.5em;
   }
@@ -147,12 +148,13 @@
 
 .build-actions {
   .flexy(column);
-  .flex(1 0 auto);
   padding-top: 4px; // to match space from line height in table
 
   > .actions {
     .flexy(center, flex-end);
     margin-bottom: .5em;
+
+    border-radius: 2em;
 
     > button {
       .subtleButton(@grayLight);
@@ -165,16 +167,6 @@
     &:hover > button.retry_build:not(:hover) {
       .subtleBtnTextColor(@grayLighter);
       background: @grayLighter;
-    }
-
-    > button.ssh_build {
-      border-top-right-radius: 2em;
-      border-bottom-right-radius: 2em;
-    }
-
-    > button.report_build {
-      border-top-left-radius: 2em;
-      border-bottom-left-radius: 2em;
     }
 
     > button.report_build,
