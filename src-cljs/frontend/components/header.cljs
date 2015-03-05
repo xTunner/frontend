@@ -115,46 +115,42 @@
            (when flash
              [:div#flash flash])]
           ;; TODO: Temporary hack until new header ships
-          [:div#navbar {:class (case (:navigation-point app)
-                                 :language-landing
-                                 (get-in app [:navigation-data :language])
-                                 :integrations
-                                 (name (get-in app [:navigation-data :integration]))
-                                 nil)}
+          [:div.navbar.navbar-default.navbar-static-top {:class (case (:navigation-point app)
+                                                                  :language-landing
+                                                                  (get-in app [:navigation-data :language])
+                                                                  :integrations
+                                                                  (name (get-in app [:navigation-data :integration]))
+                                                                  nil)}
            [:div.container
-            [:div.row
-             [:div.span8
-              [:a#logo.span2
-               {:href "/"}
-               [:img
-                {:width "130",
-                 :src (utils/cdn-path "/img/logo-new.svg")
-                 :height "40"}]]
-              [:nav.span6
-               {:role "navigation"}
-               [:ul.nav.nav-pills
-                [:li [:a {:href "/about"} "About"]]
-                (when-not (config/enterprise?)
-                  [:li [:a {:href "/pricing"} "Pricing"]])
-                [:li [:a {:href "/docs"} "Documentation"]]
-                (when-not (config/enterprise?)
-                  [:li [:a {:href "/jobs"} "Jobs"]])
-                [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]
-             (if logged-in?
-               [:div.controls.span2.offset2
-                [:a#login.login-link {:href "/"} "Return to App"]]
+            [:div.navbar-header
+             [:a#logo
+              {:href "/"}
+              (common/circle-logo {:width nil
+                                   :height 25})]]
+            [:ul.nav.navbar-nav
+             [:li [:a {:href "/about"} "About"]]
+             (when-not (config/enterprise?)
+               [:li [:a {:href "/pricing"} "Pricing"]])
+             [:li [:a {:href "/docs"} "Documentation"]]
+             (when-not (config/enterprise?)
+               [:li [:a {:href "/jobs"} "Jobs"]])
+             [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]
 
-               [:div.controls.span2.offset2
-                [:a#login.login-link {:href (auth-url)
-                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
-                                      :title "Sign in with Github"}
-                 "Sign in"]
-                [:span.seperator " | "]
-                [:a#login.login-link {:href (auth-url)
-                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
-                                      :title "Sign up with Github"}
-                 "Sign up "
-                 [:i.fa.fa-github-alt]]])]]]])))))
+            (if logged-in?
+              [:ul.nav.navbar-nav.navbar-right
+               [:li [:a {:href "/"} "Back to app"]]]
+              (list
+                [:form.navbar-right.navbar-form
+                 [:button#login.login-link.btn.btn-success {:href (auth-url)
+                                                            :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                                            :title "Sign up with Github"}
+                  "Sign up"]]
+                [:ul.nav.navbar-nav.navbar-right
+                 [:li
+                  [:a#login.login-link {:href (auth-url)
+                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
+                                        :title "Sign in with Github"}
+                   "Sign in"]]]))]]])))))
 
 (defn inner-header [app owner]
   (reify

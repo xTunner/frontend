@@ -1,6 +1,6 @@
 [
   "../vendor/console-shim.js" ;; TODO: necessary?
-  "../../components/jquery/jquery.min.js" ;; TODO: used by bootstrap
+  "../../components/jquery/dist/jquery.js" ;; TODO: used by bootstrap
   "../../components/jquery-placeholder/jquery.placeholder.js" ;; TODO: necessary?
   "../../components/uri.js/src/URI.min.js" ;; TODO: necessary?
   "../../components/viewport-units-buggyfill/viewport-units-buggyfill.js" ;; temporary until apple releases a fix
