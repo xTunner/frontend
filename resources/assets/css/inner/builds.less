@@ -149,28 +149,41 @@
   .flexy(column);
   .flex(1 0 auto);
   padding-top: 4px; // to match space from line height in table
-  .actions {
+
+  > .actions {
     .flexy(center, flex-end);
     margin-bottom: .5em;
-  }
-  button {
-    .subtleButton(@grayLight);
-    .aRowOfButtons(2em);
-    float: none;
-  }
-  .ssh_build {
-    border-top-right-radius: 2em;
-    border-bottom-right-radius: 2em;
-  }
-  .report_build {
-    border-top-left-radius: 2em;
-    border-bottom-left-radius: 2em;
-  }
-  .report_build,
-  .cancel_build {
-    .subtleButtonColor(@redLight, @redLight);
+
+    > button {
+      .subtleButton(@grayLight);
+      .aRowOfButtons(2em);
+      float: none;
+    }
+
+    // When a button next to the main Rebuild button is hovered, indicate that
+    // it's also a rebuild action by lightly shading the Rebuild button.
+    &:hover > button.retry_build:not(:hover) {
+      .subtleBtnTextColor(@grayLighter);
+      background: @grayLighter;
+    }
+
+    > button.ssh_build {
+      border-top-right-radius: 2em;
+      border-bottom-right-radius: 2em;
+    }
+
+    > button.report_build {
+      border-top-left-radius: 2em;
+      border-bottom-left-radius: 2em;
+    }
+
+    > button.report_build,
+    > button.cancel_build {
+      .subtleButtonColor(@redLight, @redLight);
+    }
   }
 }
+
 .build-queue {
   .cancel_build {
     .subtleButton(@grayLight);
