@@ -1,9 +1,16 @@
 .outer {
-  &#app {
-    .main-body {
-      padding: 0;
+  .btn-xl {
+    .button-size(@padding-xl-vertical, @padding-xl-horizontal, @font-size-large, @line-height-large, 36px);
+  }
+
+  // Bootstrap override
+  .navbar {
+    margin-bottom: 0;
+    .btn {
+      border-radius: 18px;
     }
   }
+
   h1,
   h2,
   h3 {
@@ -56,44 +63,7 @@
     }
 
   }
-  form {
-    margin: 20px 0 0 0;
-  }
-  // high specificity, hence all the hacks
-  .btn,
-  button {
-    // &:not(.close) {
-    //   @btnBorder: @grayLighter;
-    //   border-color: @btnBorder;
-    //   border-bottom-color: darken(@btnBorder, 10%);
-    //   border: none;
-    //   text-shadow: none;
-    //   background: @circleBlue;
-    //   color: #6a93a3;
-    //   &:hover, &:focus {
-    //     background: lighten(@circleBlue, 5%);
-    //     color: white;
-    //   }
-    // }
-    // &:not(.btn-large) {
-    //   font-size: 14px;
-    //   border-radius: 3px;
-    //   line-height: 30px;
-    //   min-height: 30px;
-    // }
-    &.btn-primary {
-      background: @circleAccent;
-      color: @circleAccentText;
-      &:hover,
-      &:focus {
-        background: lighten(@circleAccent, 5%);
-      }
-      i {
-        margin-right: 7px;
-        font-size: 1.1em;
-      }
-    }
-  }
+
   @import "shared/banner.less";
   @import "shared/additional.less";
   @import "home/home.less";
@@ -109,5 +79,5 @@
   @import "privacy/changelog.less";
   @import "stories/stories.less";
   @import "languages/languages.less";
-    @import "integrations/integrations.less";
+  @import "integrations/integrations.less";
 }

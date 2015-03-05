@@ -56,9 +56,10 @@
                                                    :stop (:stop_time build)})]]))
      [:td.recent-status-badge
       [:a
-       {:title (build-model/status-words build)
+       {:title "status"
         :href url
-        :class (build-model/status-class build)}]]
+        :class (build-model/status-class build)}
+       (build-model/status-words build)]]
      (when show-actions?
        [:td.build_actions
         (when (build-model/can-cancel? build)

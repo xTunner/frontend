@@ -52,7 +52,6 @@
                                                 (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))
                               :on-mouse-move #(when dragging?
                                                 (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))}
-           (common/nav owner)
            [:div.torso
             [:section.pricing-intro
              [:article
@@ -154,5 +153,4 @@
              [:article
               [:h3 "How many containers do I need?"]
               [:p "Most of our customers use about 2.5 containers per full-time developer.
-                   Every team is different however and we're happy to set you up with a trial to help you figure out how many works best for you."]]]]
-           (common/footer)])))))
+                   Every team is different however and we're happy to set you up with a trial to help you figure out how many works best for you."]]]]])))))
