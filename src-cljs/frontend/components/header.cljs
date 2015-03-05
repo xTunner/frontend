@@ -141,13 +141,13 @@
                [:li [:a {:href "/"} "Back to app"]]]
               (list
                 [:form.navbar-right.navbar-form
-                 [:button#login.login-link.btn.btn-success {:href (auth-url)
-                                                            :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
-                                                            :title "Sign up with Github"}
+                 [:button.login-link.btn.btn-success {:href (auth-url)
+                                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                                      :title "Sign up with Github"}
                   "Sign up"]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
-                  [:a#login.login-link {:href (auth-url)
+                  [:a.login.login-link {:href (auth-url)
                                         :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                         :title "Sign in with Github"}
                    "Sign in"]]]))]]])))))
