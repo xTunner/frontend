@@ -128,16 +128,6 @@
     width: 100%;
   }
 
-  a {
-    cursor: pointer;
-    color: @gray;
-    text-decoration: none;
-    &:hover {
-      color: @blueLight;
-      text-decoration: none;
-    }
-  }
-
   & > span {
     text-align: center;
     display: block;
@@ -146,6 +136,10 @@
 
   .tooltip {
     white-space: normal;
+  }
+
+  div.organizations {
+    margin-bottom: 20px;
   }
 
   ul.organizations {
@@ -206,6 +200,14 @@
         position: absolute;
         top: 5px;
         right: 5px;
+
+        color: @gray;
+        text-decoration: none;
+
+        &:hover {
+          color: @blueLight;
+          text-decoration: none;
+        }
       }
 
       &.active {
@@ -216,6 +218,15 @@
           color: @blueLight;
         }
       }
+    }
+  }
+
+  p.missing-org-info {
+    margin-top: 5px;
+    font-style: italic;
+
+    > a {
+      font-weight: bold;
     }
   }
 

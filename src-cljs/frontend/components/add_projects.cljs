@@ -40,27 +40,18 @@
                     :target "_blank"}
       [:i.fa.fa-github-alt ""]]]))
 
-(defn check-organizations-div
-  "Create a div just like the 'organization' fn above, but that provides a direct link
-  to the github page for someone to verify that CirclCI is approved for the orgs
-  they belong to."
+(defn missing-org-info
+  "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
   [owner]
-  [:div.organization
-   [:div.inner
-    [:div.avatar
-     [:i.fa.fa-question-circle]]
-    [:div.other-stuff
-     [:a {:href (gh-utils/third-party-app-restrictions-url)}
-      [:div.orgname
-       "Missing organizations?"
-       [:br]
-       "Check GitHub App Permissions "
-       [:i.fa.fa-external-link]]]
-     [:div.refresh {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
-                    :class "active"}
-      "Refresh GitHub org listings "
-      [:i.fa.fa-refresh]]]
-    ]])
+  [:p.missing-org-info
+   "Missing an organization? You or an admin may need to enable CircleCI for your organization in "
+   [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+    "GitHub's application permissions."]
+   " Then come back and "
+   [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
+                      :class "active"}
+    "refresh these listings"]
+   "."])
 
 (defn organization-listing [data owner]
   (reify
@@ -70,33 +61,32 @@
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
-      (let [user (:user data)
-            settings (:settings data)
-            org (:organizations user)
+      (let [{:keys [user settings]} data
             show-fork-accounts? (get-in settings [:add-projects :show-fork-accounts])]
-        (html [:div
-            [:div.overview
-             [:span.big-number "1"]
-             [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-            [:div.organizations
-             [:h4 "Your accounts"]
-             [:ul.organizations
-               (map (fn [org] (organization org settings owner))
-                     (:organizations user))
-               (map (fn [org] (organization org settings owner))
-                     (filter (fn [org] (= (:login user) (:login org)))
-                             (:collaborators user)))
-               (check-organizations-div owner)]]
-            [:div.organizations
-             [:h4
-              [:a
-               {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
-               "Users & organizations who have made pull requests to your repos "
-               (if show-fork-accounts?
-                 [:i.fa.fa-chevron-down ""]
-                 [:i.fa.fa-chevron-up ""])]]
-             (if show-fork-accounts?
-             [:ul.organizations
+        (html
+          [:div
+           [:div.overview
+            [:span.big-number "1"]
+            [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
+           [:div.organizations
+            [:h4 "Your accounts"]
+            [:ul.organizations
+             (map (fn [org] (organization org settings owner))
+                  (:organizations user))
+             (map (fn [org] (organization org settings owner))
+                  (filter (fn [org] (= (:login user) (:login org)))
+                          (:collaborators user)))]
+            (missing-org-info owner)]
+           [:div.organizations
+            [:h4
+             [:a
+              {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
+              "Users & organizations who have made pull requests to your repos "
+              (if show-fork-accounts?
+                [:i.fa.fa-chevron-down ""]
+                [:i.fa.fa-chevron-up ""])]]
+            (if show-fork-accounts?
+              [:ul.organizations
                (map (fn [org] (organization org settings owner))
                     (remove (fn [org] (= (:login user) (:login org)))
                             (:collaborators user)))])]])))))
