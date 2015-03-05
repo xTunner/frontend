@@ -19,7 +19,6 @@
     (render [_]
       (html
        [:div.mobile.ios.page
-        (common/nav owner)
         (mobile/nav :ios)
         [:section.intro.odd-section {}
          [:article {}

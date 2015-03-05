@@ -112,7 +112,7 @@
        [:div.container
         [:div.section (shared/customers-trust)]
         [:div.cta-contianer
-         [:a.bold-btn.btn.btn-primary
+         [:a.btn.btn-xl.btn-success
           {:href (gh-utils/auth-url)
            :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
                                                                    :properties {:source "shopify story"}
