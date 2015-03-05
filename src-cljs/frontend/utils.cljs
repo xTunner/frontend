@@ -271,6 +271,15 @@
           body-top (goog.style/getPageOffsetTop body)]
       (set! (.-scrollTop body) (- node-top body-top)))))
 
+(defn scroll-to-selector!
+  "Scrolls to the first element matching the selector, if node exists"
+  [selector]
+  (when-let [node (.querySelector js/document selector)]
+    (let [body (.-body js/document)
+          node-top (goog.style/getPageOffsetTop node)
+          body-top (goog.style/getPageOffsetTop body)]
+      (set! (.-scrollTop body) (- node-top body-top)))))
+
 (defn scroll!
   "Scrolls to fragment if the url had one, or scrolls to the top of the page"
   [args]
