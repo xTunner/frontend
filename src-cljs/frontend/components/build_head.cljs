@@ -632,14 +632,14 @@
                   "Rebuild"])
 
                 (forms/managed-button
-                 [:button.clear_cache_retry
+                 [:button.without_cache_retry
                   {:data-loading-text "Rebuilding",
-                   :title "Clear cache and retry",
+                   :title "Retry without cache",
                    :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
                                                                    :vcs-url vcs-url
                                                                    :build-num build-num
                                                                    :clear-cache? true}])}
-                  "& clear cache"])
+                  "without cache"])
 
                 ;; XXX Temporarily remove the ssh button for OSX builds
                 (when (not (get-in project [:feature_flags :osx]))
@@ -650,7 +650,7 @@
                      :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
                                                                    :vcs-url vcs-url
                                                                    :build-num build-num}])}
-                    "& enable ssh"]))])
+                    "with ssh"]))])
              [:div.actions
               (when logged-in? ;; no intercom for logged-out users
                 [:button.report_build
