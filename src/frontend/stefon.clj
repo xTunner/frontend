@@ -81,6 +81,7 @@
            "docs/language-php.md"
            "docs/language-python.md"
            "docs/language-ruby-on-rails.md"
+           "docs/language-scala.md"
            "docs/languages.md"
            "docs/look-at-code.md"
            "docs/manually.md"
