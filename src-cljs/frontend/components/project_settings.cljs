@@ -126,7 +126,7 @@
      "Containers are what we call the virtual machines that your tests run in. Your current plan has "
      (get-in project-data [:plan :containers])
      " containers and supports up to "
-     (project-model/max-parallelism (:plan project-data) (:project project-data))
+     (plan-model/max-parallelism (:plan project-data) (:project project-data))
      "x paralellism."]
 
     [:p "With 16 containers you could run:"]
@@ -188,7 +188,7 @@
               [:div.insufficient-plan
                "iOS projects are currently limited to 1x parallelism."]
 
-              (> parallelism (project-model/max-parallelism plan project))
+              (> parallelism (plan-model/max-parallelism plan project))
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
@@ -233,7 +233,7 @@
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (max (project-model/max-parallelism plan project)
+         (for [parallelism (range 1 (max (plan-model/max-parallelism plan project)
                                          (inc 24)))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
