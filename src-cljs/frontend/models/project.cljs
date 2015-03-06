@@ -84,6 +84,6 @@
   (+ (plan-model/max-parallelism plan)
      (if (oss? project) plan-model/oss-containers 0)))
 
-(defn max-selectable-parallelism [plan project]
+(defn buildable-parallelism [plan project]
   (min (max-parallelism plan project)
        (usable-containers plan project)))
