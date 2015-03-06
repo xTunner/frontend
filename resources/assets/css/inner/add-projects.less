@@ -20,26 +20,33 @@
     padding: 15px;
   }
 
+  @big-number-width: 40px;
+  @big-number-padding: 8px;
+  @big-number-margin-right: 8px;
   .big-number {
     font-size: 32px;
     font-weight: 300;
     color: @white;
     background: @blueLight;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    padding: 8px;
+    width: @big-number-width;
+    height: @big-number-width;
+    padding: @big-number-padding;
+    margin-right: @big-number-margin-right;
     display: inline-block;
     text-align: center;
     line-height: 28px;
-    float: left;
+    vertical-align: middle;
   }
 
   .instruction {
-    padding: 0 0 5px 0;
-    display: block;
-    margin-left: 45px;
-    margin: 0 0 0 45px;
+    display: inline-block;
+    @offset: @big-number-width + (2 * @big-number-padding) + @big-number-margin-right;
+    padding-left: @offset;
+    margin-left: -@offset;
+    width: 100%;
+    box-sizing: border-box;
+    vertical-align: middle;
   }
 
   h4 {
@@ -137,6 +144,7 @@
     box-sizing: border-box;
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
+    margin-top: 10px;
     .loading-spinner {
       margin: 1.5em auto;
     }
