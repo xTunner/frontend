@@ -105,7 +105,7 @@
                           (nil? (:output action)))
                    [:div.loading-spinner common/spinner]
 
-                   [:div#action-log-messages
+                   [:div.action-log-messages
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
                      {:on-click #(let [node (om/get-node owner)
