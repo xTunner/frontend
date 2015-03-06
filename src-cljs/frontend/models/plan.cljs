@@ -89,11 +89,6 @@
      (trial-containers plan)
      (paid-containers plan)))
 
-(defn max-selectable-parallelism [plan]
-  (min (max-parallelism plan)
-       (usable-containers plan)))
-
-
 (defn can-edit-plan? [plan org-name]
   ;; kill plan pricing page for trial plans by making
   ;; can-edit-plan?' return true for them
