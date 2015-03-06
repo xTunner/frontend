@@ -48,15 +48,16 @@
          (.getOuterHtml dom-helper))))
 
 (defn messages [messages]
-  [:div.row-fluid
-   (when (pos? (count messages))
-     (let [dom-helper (goog.dom.DomHelper.)]
-       [:div#build-messages.offset1.span10
-        (map (fn [message]
-               [:div.alert.alert-info
-                [:strong "Warning: "]
-                [:span {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]])
-             messages)]))])
+  [:div.container-fluid
+   [:div.row
+    (when (pos? (count messages))
+      (let [dom-helper (goog.dom.DomHelper.)]
+        [:div#build-messages.col-xs-offset-1.col-xs-10
+         (map (fn [message]
+                [:div.alert.alert-info
+                 [:strong "Warning: "]
+                 [:span {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]])
+              messages)]))]])
 
 ;; TODO: Why do we have ico and icon?
 (def ico-paths
