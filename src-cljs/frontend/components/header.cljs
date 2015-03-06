@@ -123,7 +123,7 @@
                                                                   nil)}
            [:div.container
             [:div.navbar-header
-             [:a#logo
+             [:a#logo.navbar-brand
               {:href "/"}
               (common/circle-logo {:width nil
                                    :height 25})]]

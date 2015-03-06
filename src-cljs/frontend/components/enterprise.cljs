@@ -49,7 +49,7 @@
     (render-state [_ {:keys [email name phone company developer-count notice loading?] :as st}]
       (let [clear-notice! #(om/set-state! owner [:notice] nil)]
         (html
-          [:form.form-horizontal
+          [:form.form-horizontal {:data-purpose "contact-form"}
            [:div.row.contact-form
             [:div.col-sm-4.col-sm-offset-2
              [:input.input-lg {:value company
@@ -158,7 +158,9 @@
              [:small "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]]
            ]
           [:div.row.text-center
-           [:button.btn.btn-success.btn-xl "Get More Info"]]]]
+           [:button.btn.btn-success.btn-xl
+            {:on-click #(utils/scroll-to-selector! "form[data-purpose='contact-form']")}
+            "Get More Info"]]]]
         ;; need this wrapper for border-top to span the full screen
         [:div.enterprise-section
          [:div.container

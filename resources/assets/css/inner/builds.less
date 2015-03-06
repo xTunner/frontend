@@ -1,3 +1,5 @@
+@import "../shared/variables.less";
+
 @sideLineWidth: 5px;
 .build-head-wrapper {
   color: @gray;
@@ -64,6 +66,7 @@
       &:hover {
         background: none; // BS RESET
         color: @blue; // BS RESET
+        border: none; // BS RESET
         box-shadow: 0 -1px @blue inset,
                     0  1px @blue;
       }
@@ -240,8 +243,10 @@
     }
   }
 }
-#action-log-messages {
+.action-log-messages {
   border-radius: 5px;
+  background: @terminal-background-color;
+
   overflow: hidden;
   width: 100%;
   .exit-code {
