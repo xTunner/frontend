@@ -34,4 +34,5 @@
     [:div.col-sm-1
      [:a.fa.fa-twitter
       {:title "Follow CircleCI on Twitter",
-       :href "https://twitter.com/circleci"}]]]])
+       :href "https://twitter.com/circleci"
+       :target "_blank"}]]]])
