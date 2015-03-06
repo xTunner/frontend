@@ -273,7 +273,7 @@
   "Scrolls to the element with given id, if node exists"
   [id]
   (when-let [node (dom/getElement id)]
-    (scroll-to-node! id)))
+    (scroll-to-node! node)))
 
 (defn scroll-to-selector!
   "Scrolls to the first element matching the selector, if node exists"
