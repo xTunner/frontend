@@ -1068,50 +1068,37 @@
   [target message {:keys [tab]} state]
   (assoc-in state state/build-header-tab-path tab))
 
-(defmethod post-control-event! :home-scroll-1st-clicked
-  [target message _ previous-state current-state]
+
+(defn scroll-home-by-offset!
+  "Scrolls down to the next section of copy on the landing page."
+  [target index]
   (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
+        vh (.-height (goog.dom/getViewportSize))
+        header-size 50]
     (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) vh]
-                         250))))
+                                #js [(.-scrollLeft body) (.-scrollTop body)]
+                                #js [(.-scrollLeft body) (+ (* index vh) header-size)]
+                                250))))
+
+(defmethod post-control-event! :home-scroll-1st-clicked
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 1))
 
 (defmethod post-control-event! :home-scroll-2nd-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 2 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 2))
 
 (defmethod post-control-event! :home-scroll-3rd-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 3 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 3))
 
 (defmethod post-control-event! :home-scroll-4th-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 4 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 4))
 
 (defmethod post-control-event! :home-scroll-5th-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 5 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 5))
 
 (defmethod post-control-event! :home-scroll-logo-clicked
   [target message _ previous-state current-state]
