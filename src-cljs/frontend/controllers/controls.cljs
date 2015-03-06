@@ -1073,11 +1073,10 @@
   "Scrolls down to the next section of copy on the landing page."
   [target index]
   (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))
-        header-size 50]
+        vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
                                 #js [(.-scrollLeft body) (.-scrollTop body)]
-                                #js [(.-scrollLeft body) (+ (* index vh) header-size)]
+                                #js [(.-scrollLeft body) (* index vh)]
                                 250))))
 
 (defmethod post-control-event! :home-scroll-1st-clicked
