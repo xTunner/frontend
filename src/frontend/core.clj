@@ -92,6 +92,7 @@
               #"/integrations.*"
               #"/invite-teammates"
               #"/jobs"
+              #"/mobile"
               #"/pricing"
               #"/privacy"
               #"/security.*"

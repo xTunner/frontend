@@ -10,7 +10,9 @@ your project. (This video assumes you already have a green build without paralle
 Check out our [getting started guide](/docs/getting-started) if you haven't setup your
 project yet.)
 
-<iframe src='//www.youtube.com/embed/rcUNKT5xd4Q?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>
+<div class="embed-responsive embed-responsive-16by9">
+  <iframe class="embed-responsive-item" src='//www.youtube.com/embed/rcUNKT5xd4Q?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>
+</div>
 
 In summary, just go to the project settings page by clicking on the gear icon in the top-right, then click "Parallelism". Then simply choose the number of parallel containers you want to use on each build.
 

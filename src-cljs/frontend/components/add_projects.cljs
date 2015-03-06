@@ -217,11 +217,11 @@
          (nil? repos) [:div.loading-spinner common/spinner]
          (not (seq repos)) [:div
                             (om/build repo-filter settings)
-                            [:ul.proj-list
+                            [:ul.proj-list.list-unstyled
                              [:li (str "No repos found for organization " (:selected-org data))]]]
          :else [:div
                 (om/build repo-filter settings)
-                [:ul.proj-list
+                [:ul.proj-list.list-unstyled
                  (let [filtered-repos (sort-by :updated_at (filter (fn [repo]
                                                                     (and
                                                                      (or show-forks (not (:fork repo)))

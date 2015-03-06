@@ -335,19 +335,19 @@
                                [:p blurb]
                                [:form
                                 [:ul
-                                 [:li
+                                 [:li.radio
                                   [:label
-                                   [:input.radio
-                                    {:type "checkbox"
+                                   [:input
+                                    {:type "radio"
                                      :checked (get feature-flags flag)
                                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
                                                                                                :flag flag
                                                                                                :value true}])}]
                                    " On"]]
-                                 [:li
+                                 [:li.radio
                                   [:label
-                                   [:input.radio
-                                    {:type "checkbox"
+                                   [:input
+                                    {:type "radio"
                                      :checked (not (get feature-flags flag))
                                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
                                                                                                :flag flag

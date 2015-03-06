@@ -98,6 +98,7 @@ window.stefon_hack_for_om =
     "/docs/language-php.md": '(asset-path "docs/language-php.md")'
     "/docs/language-python.md": '(asset-path "docs/language-python.md")'
     "/docs/language-ruby-on-rails.md": '(asset-path "docs/language-ruby-on-rails.md")'
+    "/docs/language-scala.md": '(asset-path "docs/language-scala.md")'
     "/docs/languages.md": '(asset-path "docs/languages.md")'
     "/docs/look-at-code.md": '(asset-path "docs/look-at-code.md")'
     "/docs/manually.md": '(asset-path "docs/manually.md")'
