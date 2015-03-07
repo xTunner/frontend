@@ -126,7 +126,7 @@
      "Containers are what we call the virtual machines that your tests run in. Your current plan has "
      (get-in project-data [:plan :containers])
      " containers and supports up to "
-     (project-model/max-parallelism (:plan project-data) (:project project-data))
+     (plan-model/max-parallelism (:plan project-data))
      "x paralellism."]
 
     [:p "With 16 containers you could run:"]
@@ -166,7 +166,7 @@
   (concat
    []
    (when (and (> parallelism 1) (project-model/osx? project)) ["disabled"])
-   (when (> parallelism (project-model/max-selectable-parallelism plan project)) ["disabled"])
+   (when (> parallelism (project-model/buildable-parallelism plan project)) ["disabled"])
    (when (= parallelism (get-in project-data [:project :parallel])) ["selected"])
    (when (not= 0 (mod (project-model/usable-containers plan project) parallelism)) ["bad_choice"])))
 
@@ -188,20 +188,20 @@
               [:div.insufficient-plan
                "iOS projects are currently limited to 1x parallelism."]
 
-              (> parallelism (project-model/max-parallelism plan project))
+              (> parallelism (plan-model/max-parallelism plan))
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
                [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
                 "Contact us if you'd like more."]]
 
-              (> parallelism (project-model/max-selectable-parallelism plan project))
+              (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers available."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})}
                 "Add More"]])
-        (when (> parallelism (project-model/max-selectable-parallelism plan project))
+        (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
            [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
@@ -233,7 +233,7 @@
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (max (project-model/max-parallelism plan project)
+         (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
                                          (inc 24)))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
@@ -246,7 +246,7 @@
                      :on-click #(raise! owner [:selected-project-parallelism
                                                {:project-id project-id
                                                 :parallelism parallelism}])
-                     :disabled (> parallelism (project-model/max-selectable-parallelism plan project))
+                     :disabled (> parallelism (project-model/buildable-parallelism plan project))
                      :checked (= parallelism (:parallel project))}]])])))])
 
 (defn parallel-builds [project-data owner]
