@@ -71,68 +71,7 @@
     font-size: 1em;
   }
 }
-.outer-nav {
-  .box-sizing(border-box);
-  .flexy(center);
-  .vertGradient(@white, @white);
-  position: fixed;
-  z-index: @zindex_outer_nav;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: @tile;
-  border-bottom: 1px solid @grayBoxBorder;
-  overflow: hidden;
-  a {
-    &:not(:first-of-type) {
-      &:not(:last-of-type) {
-        margin-right: 1.5em;
-      }
-    }
-  }
-  &.logo-visible {
-    .promo {
-      top: -100%;
-      opacity: 0;
-    }
-    .logo-circleci {
-      left: 0;
-      opacity: 1;
-      pointer-events: auto;
-      transition+: left @prolog_cover_fadein;
-      transition+: opacity @prolog_cover_fadein (@prolog_cover_fadeout / 2);
-    }
-  }
-  .logo-circleci {
-    padding: 0 1.5em;
-    figure {
-      margin: 0;
-      width: 6em;
-      height: 1.5em;
-    }
-    svg {
-      height: 100%;
-      fill: @grayDark;
-    }
-  }
-  .action {
-    .flexy(center, center);
-    height: auto;
-    font-size: .875em;
-    color: @black;
-    margin: 0 1.5em 0 auto;
-    padding: .5em 1em;
-    background: @white;
-    border: 1px solid @gray;
-    border-radius: (@home_action_height / 2);
-    white-space: nowrap;
-    &:hover {
-      color: @white;
-      background: @gray;
-      transition: 100ms;
-    }
-  }
-}
+
 .pricing-intro {
   margin-top: (@tile * 2);
 }
