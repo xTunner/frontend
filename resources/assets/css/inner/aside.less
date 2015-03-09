@@ -11,6 +11,8 @@
 @activity_line: (@em * 1.5);
 @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
 
+
+
 .inner {
   &.aside-slim {
     .aside-left-nav {
@@ -19,6 +21,10 @@
     }
     .app-main { margin-left: @aside_nav_slim_width + @aside_menu_width; }
     .aside-item {
+
+    background-image: url('/assets/img/highlight.svg');
+
+    background-size: 100% 100%;
       .tip(right);
       > i,
       img {

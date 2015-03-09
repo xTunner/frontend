@@ -343,9 +343,12 @@
                           :data-trigger "hover"
                           :title "Changelog"
                           :href "/changelog"}
+
+           [:img {:src "/assets/img/highlight.svg"}]
            (if (changelog-updated-since? (:last_viewed_changelog user))
              [:i.fa.fa-certificate]
              [:i.fa.fa-bell])
+
            [:span "Changelog"]]
 
           [:a.aside-item.push-to-bottom {:data-placement "right"
