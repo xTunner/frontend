@@ -1,4 +1,4 @@
-(ns frontend.components.pricing-b
+(ns frontend.components.pricing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
             [frontend.async :refer [raise!]]

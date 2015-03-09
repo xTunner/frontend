@@ -22,7 +22,7 @@
             [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
-            [frontend.components.pricing-b :as pricing]
+            [frontend.components.pricing :as pricing]
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
