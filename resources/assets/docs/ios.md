@@ -13,24 +13,33 @@ this project to be run on OSX machines rather than the usual Linux containers,
 and iOS-related build and test commands will be automatically inferred.
 
 
-##Basic setup
+## Basic setup
 
-Simple projects should run with minimal or no configuration. By default, CircleCI will:
+Simple projects should run with minimal or no configuration. By default,
+CircleCI will:
 
 * **Install any Ruby gems specified in a Gemfile** - You can install a specific
   version of CocoaPods or other gems this way.
 * **Install any dependencies managed by [CocoaPods](http://cocoapods.org/)**
 * **Run the "test" build action for detected workspace (or project) and scheme
-  from the command line using `xcodebuild`** - If a workspace is detected, it
-  will take precedence over a project and be used to call `xcodebuild`. The
+  from the command line using `xctool`** - If a workspace is detected, it
+  will take precedence over a project and be used to call `xctool`. The
   detected settings can be overridden with [environment variables](#environment-variables)
 
-**Note:** Your scheme (what you select in the dropdown next to the
-run/stop buttons in Xcode) must be shared (there is a checkbox for this at the bottom of
-the "Edit scheme" screen in Xcode) so that CircleCI can run the appropriate build action.
+See [customizing your build](#customizing-your-build) for more information about
+customization options.
+
+## Shared Schemes
+Your scheme (what you select in the dropdown next to the run/stop buttons in
+Xcode) must be shared (there is a checkbox for this at the bottom of the
+"Edit scheme" screen in Xcode) so that CircleCI can run the appropriate build
+action. After doing this you will have a new `.xcscheme` file located in the
+`xcshareddata/xcschemes` folder under your Xcode project. You will need to
+commit this file to your git repository so that CircleCI can access it.
+
 If more than one scheme is present, then you should specify the
-`XCODE_SCHEME` [environment variable](/docs/environment-variables#custom). Otherwise a
-scheme will be chosen arbitrarily.
+`XCODE_SCHEME` [environment variable](/docs/environment-variables#custom).
+Otherwise a scheme will be chosen arbitrarily.
 
 ### CocoaPods
 
@@ -58,20 +67,6 @@ via the "test" build action. The following test tools are known to work well on 
 * [Kiwi](https://github.com/kiwi-bdd/Kiwi)
 * [KIF](https://github.com/kif-framework/KIF)
 
-###xctool
-While CircleCI runs tests from the command line with the `xcodebuild` command by
-default, [xctool](https://github.com/facebook/xctool) is also pre-installed on
-CircleCI. For example you could run your build and tests with xctool by adding
-the following `circle.yml` file to your project:
-
-```
-test:
-  override:
-    - xctool -reporter pretty -reporter junit:$CIRCLE_TEST_REPORTS/xcode/results.xml -scheme "My Scheme" -workspace MyWorkspace.xcworkspace -sdk iphonesimulator clean test
-```
-
-See [customizing your build](#customizing-your-build) for more information about customization options.
-
 ###Other tools
 Popular iOS testing tools like [Appium](http://appium.io/) and [Frank](http://www.testingwithfrank.com/) should also
 work normally, though they will need to be installed and called using custom commands.
@@ -81,6 +76,55 @@ See [customizing your build](#customizing-your-build) for more info.
 ## Customizing your build
 While CircleCI's inferred commands will handle many common testing patterns, you
 also have a lot of flexibility to customize what happens in your build.
+
+## Build Commands
+CircleCI runs tests from the command line with the [`xctool`](https://github.com/facebook/xctool)
+command by default. We have found that `xctool` is more stable when testing with
+the iOS simulator than using `xcodebuild` directly.
+
+CircleCI will try to automatically build your iOS project by infering the
+workspace, project and scheme. In some cases, you may need to override the
+inferred test commands. The following command is representative of how CircleCI
+will build an iOS project:
+
+```
+test:
+  override:
+    - xctool
+      -reporter pretty
+      -reporter junit:$CIRCLE_TEST_REPORTS/xcode/results.xml
+      -reporter plain:$CIRCLE_ARTIFACTS/xctool.log
+      CODE_SIGNING_REQUIRED=NO
+      CODE_SIGN_IDENTITY=
+      PROVISIONING_PROFILE=
+      -destination 'platform=iOS Simulator,name=iPhone 6,OS=latest'
+      -sdk iphonesimulator
+      -workspace MyWorkspace.xcworkspace
+      -scheme "My Scheme"
+      build build-tests run-tests
+```
+
+In some situations you might also want to build with `xcodebuild` directly. A
+typical `xcodebuild` command line should look like this:
+
+```
+test:
+  override:
+    - set -o pipefail &&
+      xcodebuild
+        CODE_SIGNING_REQUIRED=NO
+        CODE_SIGN_IDENTITY=
+        PROVISIONING_PROFILE=
+        -sdk iphonesimulator
+        -destination 'platform=iOS Simulator,OS=8.1,name=iPhone 6'
+        -workspace MyWorkspace.xcworkspace
+        -scheme "My Scheme"
+        clean test |
+      tee $CIRCLE_ARTIFACTS/xcode_raw.log |
+      xcpretty --color --report junit --output $CIRCLE_TEST_REPORTS/xcode/results.xml
+```
+
+
 
 ### Environment variables
 You can customize the behavior of CircleCI's automatic build commands by setting
