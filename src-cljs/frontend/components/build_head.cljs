@@ -274,7 +274,7 @@
                                     :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
            (sort-by first artifacts))])))))
 
-(defn build-artifacts-list [data owner {:keys [show-node-indices?] :as opts}]
+(defn build-artifacts-list [data owner]
   (reify
     om/IRender
     (render [_]
@@ -511,8 +511,7 @@
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
-                                   :has-artifacts? (:has_artifacts build)}
-                                  {:opts {:show-node-indices? (< 1 (:parallel build))}})
+                                   :has-artifacts? (:has_artifacts build)})
 
              :config (om/build build-config {:config-string (get-in build [:circle_yml :string])})
 
