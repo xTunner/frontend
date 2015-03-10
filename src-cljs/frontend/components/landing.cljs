@@ -135,7 +135,7 @@
                 :position 3}
    :sincerely {:name "Sincerely"
                :logo ""
-               :quote "We never merge until we get that green checkmark. A pull request without CircleCi is like skydiving without a parachute."
+               :quote "We never merge until we get that green checkmark. A pull request without CircleCI is like skydiving without a parachute."
                :cite "Justin Watt"
                :cite-title "Director of Engineering"
                :cite-avatar "/img/outer/home/justin-watt.png"

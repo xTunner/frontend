@@ -23,7 +23,6 @@
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.pricing :as pricing]
-            [frontend.components.pricing-b :as pricing-b]
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
@@ -67,8 +66,7 @@
 
     :landing landing/home
     :about about/about
-    ; :pricing pricing/pricing
-    :pricing pricing-b/pricing
+    :pricing pricing/pricing
     :jobs jobs/jobs
     :privacy privacy/privacy
     :security security/security

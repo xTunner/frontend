@@ -1141,33 +1141,4 @@
     }
   }
 }
-.home-footer {
-  .flexy();
-  .justify-content(center);
-  width: 100%;
-  background: @white;
-  border-top: 1px solid @grayBoxBorder;
-  transition: (@prolog_cover_fadein * 0.8);
-  transition-timing-function: @bezier_transform;
-  overflow: hidden;
-  nav {
-    .box-sizing(border-box);
-    .flex(0 1 (@tile * 3));
-    .flexy(column);
-    padding: @home_margin_footer (@home_margin_footer * 2);
-  }
-}
-.home-footer-logo {
-  .box-sizing(border-box);
-  .flex(0 1 (@tile * 3));
-  .flexy(flex-start);
-  padding: @home_margin_footer @home_margin_footer @home_margin_footer (@home_margin_footer * 2);
-  svg {
-    width: 1em;
-    height: 1em;
-    margin: 1em 0;
-  }
-  path {
-    fill: @gray;
-  }
-}
+

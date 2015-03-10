@@ -121,7 +121,7 @@
                                                                   :integrations
                                                                   (name (get-in app [:navigation-data :integration]))
                                                                   nil)}
-           [:div.container
+           [:div.container-fluid
             [:div.navbar-header
              [:a#logo.navbar-brand
               {:href "/"}

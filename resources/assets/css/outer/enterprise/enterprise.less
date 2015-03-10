@@ -9,6 +9,18 @@
       position: relative;
       z-index: 2;
     }
+
+    h1 {
+      font-size: 64px;
+      color: @headings-color;
+    }
+
+    h3 {
+      font-size: 22px;
+      font-weight: 500;
+      color: @text-color;
+      line-height: @line-height-base;
+    }
   }
 
   .hero-logo {
@@ -19,7 +31,7 @@
 
 .enterprise-section {
   padding: 70px 0;
-  border-top: solid 1px @gray-lighter;
+  border-top: solid 1px @panel-default-border;
 }
 
 .enterprise-integrations {
@@ -30,7 +42,7 @@
 }
 
 .enterprise-story {
-  border-top: solid 1px @gray-lighter;
+  border-top: solid 1px @panel-default-border;
   background-color: rgb(251,251,251);
   padding: 35px 0;
   position: relative;
@@ -127,6 +139,11 @@ img.arrow {
     display: block;
   }
 
+  & > h3 {
+    color: @gray-dark;
+    margin-top: 40px;
+  }
+
   margin-bottom: 70px;
 }
 
@@ -145,7 +162,7 @@ img.arrow {
 }
 
 .telephone-info {
-  line-height: 50px;
+  line-height: 60px;
   margin-left: 15px;
   
   .telephone-number {
@@ -166,7 +183,7 @@ img.arrow {
   text-align: center;
 
   img {
-    max-height: 40px;
+    max-height: 35px;
   }
 
   &.github {
