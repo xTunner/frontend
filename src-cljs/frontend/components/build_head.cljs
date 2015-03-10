@@ -222,9 +222,9 @@
 
 (defn artifacts-tree [prefix artifacts]
   (->> (for [artifact artifacts
-             :let [parts (->> (-> artifact :path (string/split #"/"))
-                              (drop 3) ;; Drop the initial /tmp and /tmp/random-dir
-                              (concat [prefix]))]]
+             :let [parts (concat [prefix]
+                                 (-> (:pretty_path artifact)
+                                     (string/split #"/")))]]
          [(vec (remove #{""} parts)) artifact])
        (reduce (fn [acc [parts artifact]]
                  (let [loc (interleave (repeat :children) parts)]
@@ -285,19 +285,14 @@
          [:div.build-artifacts-container
           (if-not has-artifacts?
             (artifacts-ad)
-            (if-not artifacts
-              [:div.loading-spinner common/spinner]
-              (if show-node-indices?
-                ;; Group by container
-                (map (fn artifact-node-builder [[node-index node-artifacts]]
-                       (om/build artifacts-node {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
-                                                 :admin? (:admin (:user data))}))
-                     (->> artifacts
-                      (group-by :node_index)
-                      (sort-by first)))
-                ;; Show all artifacts
-                (om/build artifacts-node {:artifacts (artifacts-tree (str "Container 0") artifacts)
-                                          :admin? (:admin (:user data))}))))])))))
+            (if artifacts
+              (map (fn artifact-node-builder [[node-index node-artifacts]]
+                     (om/build artifacts-node {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
+                                               :admin? (:admin (:user data))}))
+                   (->> artifacts
+                        (group-by :node_index)
+                        (sort-by first)))
+              [:div.loading-spinner common/spinner]))])))))
 
 (defn tests-ad [owner]
   [:div
