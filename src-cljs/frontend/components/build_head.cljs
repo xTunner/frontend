@@ -220,9 +220,11 @@
    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
    [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "build-artifacts"})} "in our docs"] "."]])
 
-(defn artifacts-tree [artifacts]
+(defn artifacts-tree [prefix artifacts]
   (->> (for [artifact artifacts
-             :let [parts (-> artifact :path (string/split #"/"))]]
+             :let [parts (concat [prefix]
+                                 (-> (:pretty_path artifact)
+                                     (string/split #"/")))]]
          [(vec (remove #{""} parts)) artifact])
        (reduce (fn [acc [parts artifact]]
                  (let [loc (interleave (repeat :children) parts)]
@@ -230,7 +232,7 @@
                {})
        :children))
 
-(defn artifacts-node [artifacts owner {:keys [show-node-indices? admin?] :as opts}]
+(defn artifacts-node [{:keys [artifacts admin?] :as data} owner opts]
   (reify
     om/IRender
     (render [_]
@@ -240,14 +242,13 @@
           (map-indexed
            (fn node-entry [idx [part {:keys [artifact children]}]]
              (let [directory? (not artifact)
-                   text       (cond
-                               directory?         (str part "/")
-                               show-node-indices? (str part " (" (:node_index artifact) ")")
-                               :else              part)
+                   text       (if directory?
+                                (str part "/")
+                                part)
                    url        (:url artifact)
                    tag        (if (and url (not admin?)) ; Be extra careful about XSS of admins
-                                [:a {:href (:url artifact) :target "_blank"} text]
-                                [:span text])
+                                [:a.artifact-link {:href (:url artifact) :target "_blank"} text]
+                                [:span.artifact-directory-text text])
                    key        (keyword (str "index-" idx))
                    closed?    (or
                                (:ancestors-closed? opts)
@@ -263,31 +264,35 @@
                    {:style    {:cursor  "pointer"
                                :display "inline"}
                     :on-click toggler}
-                   (if closed? "▶  " "▼  ") tag]
+                   (if closed? "▸  " "▾  ") tag]
                   tag)
                 [:div {:style (when closed? {:display "none"})}
                  (om/build artifacts-node
-                           children
+                           {:artifacts children
+                            :admin? admin?}
                            {:opts (assoc opts
                                     :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
            (sort-by first artifacts))])))))
 
-(defn build-artifacts-list [data owner {:keys [show-node-indices?] :as opts}]
+(defn build-artifacts-list [data owner]
   (reify
     om/IRender
     (render [_]
       (let [artifacts-data (:artifacts-data data)
             artifacts (:artifacts artifacts-data)
-            has-artifacts? (:has-artifacts? data)
-            node-opts {:admin? (:admin (:user data))
-                       :show-node-indices? show-node-indices?}]
+            has-artifacts? (:has-artifacts? data)]
         (html
          [:div.build-artifacts-container
           (if-not has-artifacts?
             (artifacts-ad)
-            (if-not artifacts
-              [:div.loading-spinner common/spinner]
-              (om/build artifacts-node (artifacts-tree artifacts) {:opts node-opts})))])))))
+            (if artifacts
+              (map (fn artifact-node-builder [[node-index node-artifacts]]
+                     (om/build artifacts-node {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
+                                               :admin? (:admin (:user data))}))
+                   (->> artifacts
+                        (group-by :node_index)
+                        (sort-by first)))
+              [:div.loading-spinner common/spinner]))])))))
 
 (defn tests-ad [owner]
   [:div
@@ -506,8 +511,7 @@
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
-                                   :has-artifacts? (:has_artifacts build)}
-                                  {:opts {:show-node-indices? (< 1 (:parallel build))}})
+                                   :has-artifacts? (:has_artifacts build)})
 
              :config (om/build build-config {:config-string (get-in build [:circle_yml :string])})
 
