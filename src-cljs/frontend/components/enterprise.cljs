@@ -152,11 +152,9 @@
            [:article.enterprise-hero-title.center-block
             [:div.text-center
              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
-            [:h1
-             [:div.text-center "Ship code at the speed of business."]
-             [:br]
-             [:small "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]]
-           ]
+            [:h1.text-center "Ship code at the speed of business."]
+            [:h3.text-center "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]]
+           
           [:div.row.text-center
            [:button.btn.btn-success.btn-xl
             {:on-click #(utils/scroll-to-selector! "form[data-purpose='contact-form']")}
