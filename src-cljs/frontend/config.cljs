@@ -39,6 +39,11 @@
   []
   (aget js/window "renderContext" "githubHttpEndpoint"))
 
+(defn github-client-id
+  "The GitHub application client id for the app we're executing as."
+  []
+  (aget js/window "renderContext" "githubClientId"))
+
 (defn stripe-key
   "Publishable key to identify our account with Stripe.
   See: https://stripe.com/docs/tutorials/dashboard#api-keys"

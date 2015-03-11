@@ -6,6 +6,7 @@
             [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -30,19 +31,27 @@
 (defn organization [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)]
-    [:div.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
+    [:li.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
                         :class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
-     [:div.inner
-      [:div.avatar
-       [:img {:src (gh-utils/make-avatar-url org :size 50)
-              :height 50}]]
-      [:div.other-stuff
-       [:div.orgname
-        login
-        [:small.github-url.pull-right
-         [:a {:href (str (gh-utils/http-endpoint) "/" login)
-              :target "_blank"}
-          [:i.fa.fa-github-alt ""]]]]]]]))
+     [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
+            :height 50}]
+     [:div.orgname login]
+     [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
+                    :target "_blank"}
+      [:i.fa.fa-github-alt ""]]]))
+
+(defn missing-org-info
+  "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
+  [owner]
+  [:p.missing-org-info
+   "Missing an organization? You or an admin may need to enable CircleCI for your organization in "
+   [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+    "GitHub's application permissions."]
+   " Then come back and "
+   [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
+                      :class "active"}
+    "refresh these listings"]
+   "."])
 
 (defn organization-listing [data owner]
   (reify
@@ -52,33 +61,35 @@
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
-      (let [user (:user data)
-            settings (:settings data)
-            org (:organizations user)
+      (let [{:keys [user settings]} data
             show-fork-accounts? (get-in settings [:add-projects :show-fork-accounts])]
-        (html [:div
-            [:div.overview
-             [:span.big-number "1"]
-             [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-            [:div.organizations
-             [:h4 "Your accounts"]
+        (html
+          [:div
+           [:div.overview
+            [:span.big-number "1"]
+            [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
+           [:div.organizations
+            [:h4 "Your accounts"]
+            [:ul.organizations
              (map (fn [org] (organization org settings owner))
-                   (:organizations user))
+                  (:organizations user))
              (map (fn [org] (organization org settings owner))
-                   (filter (fn [org] (= (:login user) (:login org)))
-                           (:collaborators user)))
-              [:div
-               [:h4
-                [:a
-                 {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
-                 "Users & organizations who have made pull requests to your repos "
-                 (if show-fork-accounts?
-                   [:i.fa.fa-chevron-down ""]
-                   [:i.fa.fa-chevron-up ""])]]
-               (if show-fork-accounts?
-                 (map (fn [org] (organization org settings owner))
-                      (remove (fn [org] (= (:login user) (:login org)))
-                              (:collaborators user))))]]])))))
+                  (filter (fn [org] (= (:login user) (:login org)))
+                          (:collaborators user)))]
+            (missing-org-info owner)]
+           [:div.organizations
+            [:h4
+             [:a
+              {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
+              "Users & organizations who have made pull requests to your repos "
+              (if show-fork-accounts?
+                [:i.fa.fa-chevron-down ""]
+                [:i.fa.fa-chevron-up ""])]]
+            (if show-fork-accounts?
+              [:ul.organizations
+               (->> (:collaborators user)
+                    (remove (fn [org] (= (:login user) (:login org))))
+                    (map (fn [org] (organization org settings owner))))])]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -223,6 +234,73 @@
                         filtered-repos))]]))
       invite-modal])))
 
+(defn inaccessible-follows
+  "Any repo we follow where the org isn't in our set of orgs is either: an org
+  we have been removed from, or an org that turned on 3rd party app restrictions
+  and didn't enable CircleCI"
+  [user-data followed]
+  (let [org-set (set (map :login (:organizations user-data)))
+        org-set (conj org-set (:login user-data))]
+    (filter #(not (contains? org-set (:username %))) followed)))
+
+(defn inaccessible-repo-item [data owner]
+  (reify
+    om/IDisplayName (display-name [_] "repo-item")
+    om/IRenderState
+    (render-state [_ {:keys [building?]}]
+      (let [repo (:repo data)
+            settings (:settings data)
+            login (get-in repo [:username])]
+        (html
+         [:li.repo-unfollow
+          [:div.proj-name
+           [:span {:title (str (:reponame repo) (when (:fork repo) " (forked)"))}
+            (:reponame repo)]
+           (when (:fork repo)
+             [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
+          (managed-button
+           [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
+                                                                  :login login
+                                                                  :type type)])
+                     :data-spinner true}
+            [:span "Stop watching project"]])])))))
+
+(defn inaccessible-org-item [data owner]
+  (reify
+    om/IDisplayName (display-name [_] "org-item")
+    om/IRenderState
+    (render-state [_ {:keys [building?]}]
+      (let [repos (:repos data)
+            settings (:settings data)
+            org-name (:org-name data)
+            visible? (get-in settings [:add-projects :inaccessible-orgs org-name :visible?])]
+        (html
+         [:div
+          [:div.repo-filter
+           [:div.orgname {:on-click #(raise! owner [:inaccessible-org-toggled {:org-name org-name :value (not visible?)}])}
+            (if visible?
+              [:i.fa.fa-chevron-up]
+              [:i.fa.fa-chevron-down])
+            [:span {:title org-name} org-name]]]
+          (when visible?
+            [:ul.proj-list.list-unstyled
+             (map (fn [repo] (om/build inaccessible-repo-item {:repo repo :settings settings}))
+                  repos)])])))))
+
+(defn inaccessible-orgs-notice [follows settings]
+  (let [inaccessible-orgs (set (map :username follows))
+        follows-by-orgs (group-by :username follows)]
+    [:div.inaccessible-notice
+     [:h2 "Warning: Access Problems"]
+     [:p.missing-org-info
+      "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
+      [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+       "GitHub's application permissions."]]
+     [:div.inaccessible-org-wrapper
+      (map (fn [org-follows] (om/build inaccessible-org-item
+                                      {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
+           (vals follows-by-orgs))]]))
+
 (defrender add-projects [data owner]
   (let [user (:current-user data)
         settings (:settings data)
@@ -230,7 +308,9 @@
         repo-key (gstring/format "%s.%s"
                                  selected-org
                                  (get-in settings [:add-projects :selected-org :type]))
-        repos (get-in user [:repos repo-key])]
+        repos (get-in user [:repos repo-key])
+        followed-inaccessible (inaccessible-follows user
+                                                    (get-in data state/projects-path))]
     (html
      [:div#add-projects
       [:header.main-head
@@ -240,6 +320,8 @@
        [:div.follow-wrapper
         (when (seq (user-model/missing-scopes user))
           (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+        (when (seq followed-inaccessible)
+          (inaccessible-orgs-notice followed-inaccessible settings))
         [:h2 "Welcome!"]
         [:h3 "You're about to set up a new project in CircleCI."]
         [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
