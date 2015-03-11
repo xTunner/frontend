@@ -280,22 +280,25 @@
             org-name (:org-name data)
             visible? (get-in settings [:add-projects :inaccessible-orgs org-name :visible?])]
         (html
-         [:div.inaccessible-org
-          [:div.orgname {:on-click #(raise! owner [:inaccessible-org-toggled {:org-name org-name :value (not visible?)}])}
-           [:span {:title org-name} org-name]
-           (if visible? [:i.fa.fa-chevron-up] [:i.fa.fa-chevron-down])]
+         [:div
+          [:div.repo-filter
+           [:div.orgname {:on-click #(raise! owner [:inaccessible-org-toggled {:org-name org-name :value (not visible?)}])}
+            [:span {:title org-name} (str org-name " ")]
+            (if visible? [:i.fa.fa-chevron-up] [:i.fa.fa-chevron-down])]]
           (when visible?
-            [:ul.proj-list
+            [:ul.proj-list.list-unstyled
              (map (fn [repo] (om/build inaccessible-repo-item {:repo repo :settings settings}))
                   repos)])])))))
 
 (defn inaccessible-orgs-notice [follows settings]
   (let [inaccessible-orgs (set (map :username follows))
         follows-by-orgs (group-by :username follows)]
-    [:div
+    [:div.inaccessible-notice
      [:h2 "Warning: Access Problems"]
-     [:div.alert.error-alert
-      "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at: (link)"]
+     [:p.missing-org-info
+      "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
+      [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+       "GitHub's application permissions."]]
      [:div.inaccessible-org-wrapper
       (map (fn [org-follows] (om/build inaccessible-org-item
                                       {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
