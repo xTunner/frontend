@@ -87,9 +87,9 @@
                 [:i.fa.fa-chevron-up ""])]]
             (if show-fork-accounts?
               [:ul.organizations
-               (map (fn [org] (organization org settings owner))
-                    (remove (fn [org] (= (:login user) (:login org)))
-                            (:collaborators user)))])]])))))
+               (->> (:collaborators user)
+                    (remove (fn [org] (= (:login user) (:login org))))
+                    (map (fn [org] (organization org settings owner))))])]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -241,11 +241,6 @@
   [user-data followed]
   (let [org-set (set (map :login (:organizations user-data)))
         org-set (conj org-set (:login user-data))]
-    (comment
-      (filter identity
-            (map-indexed (fn [index item]
-                           (when (not (contains? org-set (:username item)))
-                             (assoc item :index index))))))
     (filter #(not (contains? org-set (:username %))) followed)))
 
 (defn inaccessible-repo-item [data owner]
@@ -283,8 +278,10 @@
          [:div
           [:div.repo-filter
            [:div.orgname {:on-click #(raise! owner [:inaccessible-org-toggled {:org-name org-name :value (not visible?)}])}
-            [:span {:title org-name} (str org-name " ")]
-            (if visible? [:i.fa.fa-chevron-up] [:i.fa.fa-chevron-down])]]
+            (if visible?
+              [:i.fa.fa-chevron-up]
+              [:i.fa.fa-chevron-down])
+            [:span {:title org-name} org-name]]]
           (when visible?
             [:ul.proj-list.list-unstyled
              (map (fn [repo] (om/build inaccessible-repo-item {:repo repo :settings settings}))
