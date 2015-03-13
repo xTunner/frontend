@@ -52,7 +52,7 @@ default, but you can install it manually by adding the following to your
 dependencies:
   pre:
     - sudo service postgresql stop && sudo apt-get remove -y
-      postgresql-9.4 && sudo apt-get update && sudo apt-get install -y
+      postgresql-9.4 && sudo apt-get update; sudo apt-get install -y
       postgresql-9.3 postgresql-contrib-9.3
     - sudo sed -i "s/\port = 5433/port = 5432/"
       /etc/postgresql/9.3/main/postgresql.conf
