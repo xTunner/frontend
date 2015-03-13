@@ -61,6 +61,7 @@ dependencies:
     - sudo service postgresql restart
     - sudo -u postgres createuser ubuntu -d --superuser
     - createdb circle_test
+    - createdb ubuntu
 ```
 
 ### How do I use mysql 5.6?
