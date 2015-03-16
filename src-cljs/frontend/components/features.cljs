@@ -39,7 +39,7 @@
      [:div.jumbotron
       [:section.container
        [:div.row
-        [:article.enterprise-hero-title.center-block
+        [:article.hero-title.center-block
          [:div.text-center
           [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
          [:h1.text-center "Improve Productivity, Reduce Risk, and Scale with CircleCI"]
@@ -96,7 +96,7 @@
       [:section.container
        [:div.row
         (ui-example "dash")]]]
-     [:div.outer-section
+     [:div.outer-section-condensed
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -159,7 +159,7 @@
      [:div.outer-section.section-dark.section-img
       [:section.container
        (ui-example "build-1")]]
-     [:div.outer-section
+     [:div.outer-section-condensed
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -202,7 +202,7 @@
      [:div.outer-section.section-dark.section-img
       [:section.container
        (ui-example "build-2")]]
-     [:div.outer-section
+     [:div.outer-section-condensed
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
