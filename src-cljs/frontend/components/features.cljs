@@ -55,39 +55,39 @@
           "Speed and Productivity"
           [:br]
           [:small "Improve your team's productivity by shipping better code, faster."]]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "parallel")
          [:h3.text-center "Fast, automatic parallelism and intelligent test splitting"]
          [:p "CircleCI is the fastest way to run your test suite no matter how large. We divide up your tests intelligently based on average execution time and run an even workload on multiple containers in parallel, all on the fastest hardware available."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "setup")
          [:h3.text-center "Quick & Easy Setup"]
          [:p "Set up CircleCI in minutes instead of days. Just sign up, add a project on GitHub, and start building and testing!"]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "github")
          [:h3.text-center "Seamless GitHub Integration"]
          [:p "View build status from GitHub or see PRs and commit messages from CircleCI."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "ui")
          [:h3.text-center "Beautiful User Experience"]
          [:p "Users love our UI."]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "fail")
          [:h3.text-center "Real-time Build Output and Detailed Test Failure Data"]
          [:p "Thorough diagnostic information makes it easier to discover the root causes of failures quickly and iterate faster."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "notification")
          [:h3.text-center "Smart Notifications"]
          [:p "In addition to standard email notifications, our chat integrations support a modern ChatOps-style workflow. Notifications let you know right away exactly which test failed so that you can fix it fast."]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "packages")
          [:h3.text-center "Inferred Test Commands and Pre-installed Packages and Services"]
          [:p "We speak your language. We know to run `npm test` if you have a test section in your `package.json`, and if you use Postgres in your Rails app, we'll make sure that a Postgres instance is spun up in your test container. Fully customizable and ready to test quickly."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "key")
          [:h3.text-center "SSH Access"]
          [:p "Don't worry about tracking down a sysadmin or a build engineer to beg them for temporary access to your CI machine. CircleCI lets any developer ssh into CI with ease to troubleshoot any issues."]]]]]
@@ -115,44 +115,44 @@
           "Scalability and Flexibility"
           [:br]
           [:small "As your team grows, CircleCI is there to scale and grow with you."]]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "scale")
          [:h3.text-center "Start free and scale without limit"]
-         [:p "Start with one build container for free, and dial up the capacity as you grow."]]
-        [:div.col-xs-5
+         [:p "Start with one build container for free, and dial up the capacity as you gfeature-row."]]
+        [:div.feature
          (common/feature-icon "free")
          [:h3.text-center "Free for OSS"]
          [:p "CircleCI supports open source projects with 3 free containers for high build throughput."]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "yaml")
          [:h3.text-center "YAML-based Config"]
          [:p "Customize your build as much as you like with a simple YAML-based config file that you check into version control."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "api")
          [:h3.text-center "RESTful API and Webhooks"]
          [:p "Use our extensive API to retrieve artifacts, check build outcomes, or trigger builds with dynamic environment variables."]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "artifacts")
          [:h3.text-center "Build Artifacts"]
          [:p "Store built binaries, code coverage reports, test output, or anything else you want as build artifacts on CircleCI. They will be easily accessible forever in the UI or through the REST API."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "key-hole")
          [:h3.text-center "Sudo Support"]
          [:p "There's a good chance you have root access on the machines you deploy to, so why should CI be any different? CircleCI provides sudo support for all commands run on builds."]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "mobile")
          [:h3.text-center "iOS and Android"]
          [:p "Test both iOS and Android versions of your mobile app and any backend services, all on CircleCI."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "docker")
          [:h3.text-center "Docker"]
          [:p "Push or pull Docker images from your build environment, or build and run containers right on CircleCI."]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "security")
          [:h3.text-center "Deployment Keys and Secrets"]
          [:p "Any sensitive information needed for tests and deployment can be securely stored and encrypted by CircleCI."]]]]]
@@ -179,22 +179,22 @@
           "Quality and Peace of Mind"
           [:br]
           [:small "Merge with confidence and reduce risk with continuous integration."]]]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "environment")
          [:h3.text-center "Clean environment for every build"]
          [:p "The CircleCI cache offers a balance of building in a \"clean room\" environment while caching dependencies for speed. The cache can be cleared on demand with much less hassle than \"resetting\" a conventional CI server."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "support")
          [:h3.text-center "Support from engineers"]
          [:p "You get support from the engineers that build the product. We've seen pretty much everything at this point, and we're happy to help you with any issues running your tests on CircleCI."]
          ]]
-       [:div.row
-        [:div.col-xs-5.col-xs-offset-1
+       [:div.feature-row
+        [:div.feature.feature-offset
          (common/feature-icon "deploy-1")
          [:h3.text-center "Continuous Deployment"]
          [:p "Stop losing sleep over \"big bang\" deployments. Reduce risk by deploying a single atomic, understandable change at a time."]]
-        [:div.col-xs-5
+        [:div.feature
          (common/feature-icon "badge")
          [:h3.text-center "Status badges for Open Source"]
          [:p "In the world of open source, status badges indicating the use of CI have become a standard of excellence for open source projects. They also serve as one more place to easily view current build status."]
