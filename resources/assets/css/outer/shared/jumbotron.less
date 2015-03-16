@@ -1,0 +1,63 @@
+/*
+A jumbotron is 
+*/
+.jumbotron {
+  background-color: rgb(251,251,251);
+  position: relative;
+  padding: 70px;
+  margin: 0;
+
+  .container {
+    position: relative;
+    z-index: 2;
+  }
+
+  h1 {
+    font-size: 64px;
+    color: @headings-color;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 500;
+    color: @text-color;
+    line-height: @line-height-base;
+  }
+}
+
+.hero-logo {
+  max-height: 70px;
+  margin-bottom: 50px;
+}
+
+.hero-title {
+  & > h1 {
+    display: block;
+  }
+
+  & > h3 {
+    color: @gray-dark;
+    margin-top: 40px;
+  }
+
+  margin-bottom: 70px;
+}
+
+.outer-section {
+  padding: 70px 0;
+  border-top: solid 1px @panel-default-border;
+
+  &.section-dark {
+    background: @gray-darker;
+  }
+
+  &.section-img {
+    padding: 70px 0 0 0;
+  }
+}
+
+.header-icon {
+  width: 65px;
+  .center-block;
+}
+

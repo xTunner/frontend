@@ -3,7 +3,7 @@
 
   @font-size-base:          16px;
   @font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
-  @font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
+  @font-size-small:         ceil((@font-size-base * 0.70)); // ~12px
 
   @font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
   @font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
@@ -97,10 +97,12 @@
   small,
   .small {
     font-size: floor((100% * @font-size-small / @font-size-base));
+    font-weight: 300;
   }
 
   @import "shared/banner.less";
   @import "shared/additional.less";
+  @import "shared/jumbotron.less";
   @import "home/home.less";
   @import "about/about.less";
   @import "blog/blog.less";
