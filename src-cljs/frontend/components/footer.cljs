@@ -18,7 +18,7 @@
      [:ul.list-unstyled
       [:li.header "Product"]
       ;; TODO: features page
-      ;; [:li [:a {:href "/features"} "Features"]]
+      [:li [:a {:href "/features"} "Features"]]
       [:li [:a {:href "/mobile"} "Mobile"]]
       [:li [:a {:href "/enterprise"} "Enterprise"]]
       (when-not (config/enterprise?)
