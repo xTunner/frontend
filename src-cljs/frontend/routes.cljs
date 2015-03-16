@@ -181,7 +181,7 @@
   (defroute v1-integrations (FragmentRoute. "/integrations/:integration") {:keys [integration] :as params}
     (open-to-outer! nav-ch :integrations (assoc params :integration (keyword integration))))
 
-  (defroute v1-changelog (FragmentRoute. "/changelog/:id") {:as params}
+  (defroute v1-changelog-individual (FragmentRoute. "/changelog/:id") {:as params}
     (open-to-outer! nav-ch :changelog params))
 
   (defroute v1-changelog (FragmentRoute. "/changelog") {:as params}
@@ -192,7 +192,7 @@
       (open-to-inner! nav-ch :dashboard params)
       (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
-  (defroute v1-root (FragmentRoute. "/home") {:as params}
+  (defroute v1-home (FragmentRoute. "/home") {:as params}
     (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
 (defn define-spec-routes! [nav-ch]
