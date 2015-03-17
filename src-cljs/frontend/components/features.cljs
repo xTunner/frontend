@@ -16,6 +16,16 @@
 (defn customer-image-src [shortname]
   (utils/cdn-path (str "/img/outer/customers/customer-" shortname ".svg")))
 
+(defn language [name]
+  [:img.background.language {:class name
+                             :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
+
+(def language-background
+  (map language ["rails-2"
+                 "clojure-2"
+                 "java-2"
+                 "php-2"]))
+
 (defn testimonial
   [{:keys [company-name company-short customer-quote employee-name employee-title]}]
   [:div.testimonial
@@ -96,7 +106,8 @@
       [:section.container
        [:div.row
         (ui-example "dash")]]]
-     [:div.outer-section-condensed
+     [:div.outer-section.outer-section-condensed
+      (list language-background)
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -159,7 +170,8 @@
      [:div.outer-section.section-dark.section-img
       [:section.container
        (ui-example "build-1")]]
-     [:div.outer-section-condensed
+     [:div.outer-section.outer-section-condensed
+      (list language-background)
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -202,7 +214,8 @@
      [:div.outer-section.section-dark.section-img
       [:section.container
        (ui-example "build-2")]]
-     [:div.outer-section-condensed
+     [:div.outer-section.outer-section-condensed
+      (list language-background)
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
