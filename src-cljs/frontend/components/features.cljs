@@ -1,9 +1,11 @@
 (ns frontend.components.features
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
+            [frontend.components.landing :as landing]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
@@ -25,6 +27,57 @@
                  "clojure-2"
                  "java-2"
                  "php-2"]))
+
+(defn practice [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Home Practice")
+    om/IRender
+    (render [_]
+      (let [selected-customer (get-in app state/customer-logo-customer-path :shopify)
+            selected-toolset (get-in app state/selected-toolset-path :languages)]
+        (html
+         [:section
+          (let [hovered-customer (om/get-state owner [:hovered-customer])
+                tools (get-in landing/customer-brands [hovered-customer :tools] #{})]
+            [:div.container-fluid
+             [:div.row
+              [:div.col-xs-4.col-xs-offset-4
+               [:div.practice-tools
+                [:article
+                 (for [[toolset template] landing/supported-tools]
+                   (html ; use html in for loops for perf
+                         [:div.supported-tools {:class (when (= selected-toolset toolset) "active")}
+                          [:div.supported-tools-upper
+                           (for [tool (:upper template)]
+                             (html
+                               [:div.supported-tool {:class (when (contains? tools tool) "hover")
+                                                     :alt (name tool)}
+                                [:figure
+                                 [:svg {:class (str "tool-logo-" (name tool))
+                                        :x "0" :y "0" :view-box "0 0 100 100"}
+                                  [:path {:d (get landing/tools-logos tool)}]]]]))]
+                          [:div.supported-tools-lower
+                           (for [tool (:lower template)]
+                             (html
+                               [:div.supported-tool {:class (when (contains? tools tool) "hover")
+                                                     :alt (name tool)}
+                                [:figure
+                                 [:svg {:class (str "tool-logo-" (name tool))
+                                        :x "0" :y "0" :view-box "0 0 100 100"}
+                                  [:path {:d (get landing/tools-logos tool)}]]]]))]]))]]]]])
+
+          [:div.practice-articles
+           [:article
+            [:h2.text-center "Devs rely on us to just work; we support the right tools."]
+            [:p
+             (for [toolset ["Languages" "databases" "queues" "browsers" "deployment"]]
+               (html
+                [:span [:a {:on-mouse-enter #(raise! owner [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "]))
+             "we support all of your tools.
+              If it runs on Linux, then it will work on CircleCI.
+              We'll even be around to help you install your own tools.
+              The best development teams in the world trust us as their continuous integration and delivery solution because of our unmatched support and our ability to scale with them.
+              We're built for teams."]]]])))))
 
 (defn testimonial
   [{:keys [company-name company-short customer-quote employee-name employee-title]}]
@@ -229,13 +282,9 @@
      [:div.outer-section
       [:section.container
        [:div.row
-        [:div.col-xs-12
-         [:h2.text-center
-          "Devs rely on us to just work. CircleCI supports your technology stack."
-          [:br]
-          [:small "Languages, Databases, Queus, Browsers, Deployment; we support all of your tools. The best teams in the world trust us as their continuous integration and delivery partner because of our unmatched support and flexibility."]]]]
-       [:div.row]]]
-     [:div.outer-section
+        [:div.col-xs-10.col-xs-offset-1
+         (om/build practice app)]]]]
+     [:div.outer-section.outer-section-condensed
       [:section.container
        [:div.col-xs-12
         [:h2.text-center "Build better code. Start shipping faster."]
