@@ -140,4 +140,4 @@ window.stefon_hack_for_om =
     "/docs/wrong-ruby-version.md": '(asset-path "docs/wrong-ruby-version.md")'
     "/docs/pushing-packages-to-packagecloud.md": '(asset-path "docs/pushing-packages-to-packagecloud.md")'
     "/docs/setting-up-parallelism.md": '(asset-path "docs/setting-up-parallelism.md")'
-    "/docs/unexpected-rake-errors.md": '(asset-path "/docs/unexpected-rake-errors.md")'
+    "/docs/unexpected-rake-errors.md": '(asset-path "docs/unexpected-rake-errors.md")'
