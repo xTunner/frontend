@@ -20,7 +20,7 @@ If you need a custom version, you can download and start it from your build. To 
 ```
 dependencies:
   post:
-    - wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.1.tar.gz
+    - wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.0.1.tar.gz
     - tar -xvf elasticsearch-1.0.1.tar.gz
     - elasticsearch-1.0.1/bin/elasticsearch: {background: true}
 ```
@@ -35,7 +35,7 @@ It's easy to install a plugin from a url, just add a command to install the plug
 ```
 dependencies:
   post:
-    - wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.1.tar.gz
+    - wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.0.1.tar.gz
     - tar -xvf elasticsearch-1.0.1.tar.gz
 
     - elasticsearch-1.0.1/bin/plugin --url https://example.com/plugin.zip --install example-plugin
@@ -59,6 +59,6 @@ dependencies:
   cache_directories:
     - elasticsearch-1.0.1 # relative to the build directory
   post:
-    - if [[ ! -e elasticsearch-1.0.1 ]]; then wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.1.tar.gz && tar -xvf elasticsearch-1.0.1.tar.gz; fi
+    - if [[ ! -e elasticsearch-1.0.1 ]]; then wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.0.1.tar.gz && tar -xvf elasticsearch-1.0.1.tar.gz; fi
     - elasticsearch-1.0.1/bin/elasticsearch: {background: true}
 ```
