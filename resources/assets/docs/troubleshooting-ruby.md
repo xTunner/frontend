@@ -11,6 +11,6 @@ children:
   - ruby-exception-during-schema-load
   - wrong-ruby-commands
   - wrong-ruby-version
-  
+  - unexpected-rake-errors
 -->
 
