@@ -31,8 +31,8 @@
                :src (utils/cdn-path (str "/img/outer/enterprise/arrow-" name ".svg"))}])
 
 (defn language [name]
-  [:img.language {:class name
-                  :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
+  [:img.background.language {:class name
+                             :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
 (defn contact-form
   [app owner opts]
