@@ -23,10 +23,10 @@
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
 (def language-background
-  (map language ["rails-2"
-                 "clojure-2"
-                 "java-2"
-                 "php-2"]))
+  (map language ["rails-1"
+                 "clojure-1"
+                 "java-1"
+                 "python-1"]))
 
 (defn practice [app owner]
   (reify
@@ -100,6 +100,12 @@
   (html
     [:div#features
      [:div.jumbotron
+      (list language-background)
+      (language "python-1")
+      (language "ruby-1")
+      (language "javascript-1")
+      (language "node-1")
+      (language "php-1")
       [:section.container
        [:div.row
         [:article.hero-title.center-block

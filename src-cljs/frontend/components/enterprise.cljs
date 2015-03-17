@@ -209,24 +209,27 @@
               "Test against any version of any browser with CircleCI's Enterprise SauceLabs integration. Using the Sauce Connect tunnel, you can even test applications running securely within CircleCI build containers behind your firewall. Automate your cross-browser and mobile testing."
               ;; TODO: add integrations page for Sauce Labs
               [:a.integration-learn-more {:href "/integrations/saucelabs"} "Learn more"]]]]]]
-        [:section.enterprise-story
-          (map language ["rails-2"
-                         "clojure-2"
-                         "java-2"
-                         "php-2"])
+        [:section.outer-section.outer-section-condensed
+          (map language ["rails-1"
+                         "clojure-1"
+                         "java-1"
+                         "php-1"])
          [:div.container
           [:div.row
            [:div.col-xs-8.col-xs-offset-2
-            [:img.story-logo {:src (utils/cdn-path "/img/outer/customers/customer-shopify.svg")}]
-            [:blockquote
-             "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining CI Infrastructure."
-             [:footer
-              [:strong "John Duff"]
-              ", Director of Engineering at "
-              [:strong "Shopify"]
-              [:br]
-              [:cite
-               [:a {:href "/stories/shopify"} "Read the Story"]]]]]]]]
+            [:div.testimonial
+             [:img.customer-header {:src (utils/cdn-path "/img/outer/customers/customer-shopify.svg")
+                                    :alt "Shopify"}]
+             [:div.customer-quote {:class "quote-shopify"}
+              [:blockquote "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining CI Infrastructure."]]
+             [:div.customer-citation
+              [:div.customer-employee-name "John Duff"]
+              [:div
+               "Director of Engineering at "
+               [:span.customer-company-name "Shopify"]
+               " – "
+               [:a.customer-story {:href "/stories/shopify"}
+                "Read the story"]]]]]]]]
 
         [:div.outer-section
          [:section.container
