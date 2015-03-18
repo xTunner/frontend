@@ -348,13 +348,10 @@
 
           [:a.aside-item.push-to-bottom {:data-placement "right"
                                          :data-trigger "hover"
-                                         :title "Expand"
-                                         :on-click #(raise! owner [:slim-aside-toggled])}
-           (if slim-aside?
-             [:i.fa.fa-long-arrow-right]
-             (list
-              [:i.fa.fa-long-arrow-left]
-              [:span "Collapse"]))]])))))
+                                         :title "Logout"
+                                         :href "/logout"}
+           [:i.fa.fa-power-off]
+           [:span "Logout"]]])))))
 
 (defn aside [app owner]
   (reify
