@@ -17,7 +17,7 @@
   ;;TODO Delete this if-let when https://github.com/circleci/circle/pull/3972 is fully deployed.
   (if-let [app-key (aget js/window "renderContext" "pusherAppKey")]
     {:key app-key}
-    (js->clj (aget js/window "renderContext" "pusher"))))
+    (js->clj (aget js/window "renderContext" "pusher") :keywordize-keys true)))
 
 (defn logging-enabled?
   []
