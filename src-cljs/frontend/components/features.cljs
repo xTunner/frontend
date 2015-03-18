@@ -92,9 +92,12 @@
      employee-title
      " at "
      [:span.customer-company-name company-name]
-     " – "
-     [:a.customer-story {:href (str "/stories/" company-short)}
-      "Read the story"]]]])
+     ;; HACK: there's only one story right now, and the others are 404ing.
+     (when (= company-short "shopify")
+       [:span
+        " – "
+        [:a.customer-story {:href (str "/stories/" company-short)}
+         "Read the story"]])]]])
 
 (defrender features [app owner]
   (html
