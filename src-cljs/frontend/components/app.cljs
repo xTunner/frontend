@@ -105,9 +105,7 @@
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
-                                       (if logged-in?
-                                         ["aside-slim"]
-                                         ["aside-nil"])
+                                       (when-not logged-in? ["aside-nil"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
                                        (when (= :landing (:navigation-point app)) ["landing"])
                                        (when (= :pricing (:navigation-point app)) ["pricing"])

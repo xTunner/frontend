@@ -1,42 +1,20 @@
 @aside_menu_width: (@tile * 3);
-@aside_nav_width: (@tile * 3);;
-@aside_nav_slim_width: @tile;
+@aside_nav_width: @tile;
 
 @em: @baseFontSize;
 @cascade_delay: 30ms;
 @aside_items: 7;
-@aside_slim_speed: 200ms;
+@aside_transition_speed: 200ms;
 @activity_color: fade(@white, 55);
 @activity_ico: (@em - 2);
 @activity_line: (@em * 1.5);
 @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
 
 .inner {
-  &.aside-slim {
-    .aside-left-nav {
-      .flex(0 0 @aside_nav_slim_width);
-      width: @aside_nav_slim_width;
-    }
-    .app-main { margin-left: @aside_nav_slim_width + @aside_menu_width; }
-    .aside-item {
-      .tip(right);
-      > i,
-      img {
-        margin-right: ((@tile - @baseFontSize) / 2);
-        transition-duration: (@aside_slim_speed * 1.5);
-      }
-      span {
-        opacity: 0;
-        visibility: hidden;
-        transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
-        pointer-events: none;
-      }
-    }
-  }
   .app-main {
     .flexy(column);
     margin-left: @aside_nav_width + @aside_menu_width;
-    transition: margin @aside_slim_speed;
+    transition: margin @aside_transition_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   }
 }
@@ -74,8 +52,6 @@
 .aside-left-menu {
   .flexy(column);
   height: 100vh;
-  transition: @aside_slim_speed;
-  transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
 }
 .aside-left-menu {
   .flex(0 0 @aside_menu_width);
@@ -83,6 +59,8 @@
   box-shadow: 1px 0 @grayBoxBorder;
   position: relative;
   overflow: hidden;
+  transition: @aside_transition_speed;
+  transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   header {
     .box-sizing(border-box);
     .flex(0 0 auto);
@@ -176,7 +154,7 @@
   .shadow_noboss();
   background: transparent;
   white-space: nowrap;
-  transition: (@aside_slim_speed / 2) ease-in-out;
+  transition: (@aside_transition_speed / 2) ease-in-out;
   min-height: 1.5em;
   &:hover,
   &:focus {
@@ -218,7 +196,7 @@
   > i {
     min-width: @baseFontSize;
     margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
-    transition: margin @aside_slim_speed;
+    transition: margin @aside_transition_speed;
   }
   img {
     @s: (@tile / 2);
@@ -226,13 +204,13 @@
     height: @s;
     margin: 0 @baseFontSize 0 ((@tile - @s) / 2);
     border-radius: (@s / 2);
-    transition: margin (@aside_slim_speed * 2);
+    transition: margin (@aside_transition_speed * 2);
     pointer-events: none;
   }
   span {
     opacity: 1;
     visibility: visible;
-    transition: visibility 0ms (@aside_slim_speed / 2), opacity (@aside_slim_speed * 2) 0ms;
+    transition: visibility 0ms (@aside_transition_speed / 2), opacity (@aside_transition_speed * 2) 0ms;
   }
 }
 .aside-activity {
@@ -418,7 +396,7 @@
   z-index: @zindex-tooltip;
   color: @appBackgroundColor;
   box-shadow: 1px 0 @grayBoxBorder;
-  transition: (@aside_slim_speed / 2);
+  transition: (@aside_transition_speed / 2);
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   overflow: hidden;
   &.open {
@@ -440,7 +418,7 @@
     font-weight: normal;
     color: @appBackgroundColor;
     white-space: nowrap;
-    transition: (@aside_slim_speed / 2);
+    transition: (@aside_transition_speed / 2);
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   }
   .close-menu {

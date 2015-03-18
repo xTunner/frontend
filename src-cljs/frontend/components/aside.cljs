@@ -278,51 +278,44 @@
                         :data-trigger "hover"
                         :title "Settings"
                         :href "/account"}
-         [:img {:src (gh-utils/make-avatar-url opts)}]
-         (:login opts)]
+         [:img {:src (gh-utils/make-avatar-url opts)}]]
 
         [:a.aside-item {:title "Documentation"
                         :data-placement "right"
                         :data-trigger "hover"
                         :href "/docs"}
-         [:i.fa.fa-copy]
-         [:span "Documentation"]]
+         [:i.fa.fa-copy]]
 
         [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
                         :title "Support"
                         :data-placement "right"
                         :data-trigger "hover"
                         :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
-         [:i.fa.fa-comments]
-         [:span "Support"]]
+         [:i.fa.fa-comments]]
 
         [:a.aside-item {:href "/add-projects",
                         :data-placement "right"
                         :data-trigger "hover"
                         :title "Add Projects"}
-         [:i.fa.fa-plus-circle]
-         [:span "Add Projects"]]
+         [:i.fa.fa-plus-circle]]
 
         [:a.aside-item {:href "/invite-teammates",
                         :data-placement "right"
                         :data-trigger "hover"
                         :title "Invite your teammates"}
-         [:i.fa.fa-user]
-         [:span "Invite your teammates"]]
+         [:i.fa.fa-user]]
 
         [:a.aside-item {:data-placement "right"
                         :data-trigger "hover"
                         :title "Changelog"
                         :href "/changelog"}
-         [:i.fa.fa-bell]
-         [:span "Changelog"]]
+         [:i.fa.fa-bell]]
 
         [:a.aside-item.push-to-bottom {:data-placement "right"
                                        :data-trigger "hover"
                                        :title "Logout"
                                        :href "/logout"}
-         [:i.fa.fa-power-off]
-         [:span "Logout"]]]))))
+         [:i.fa.fa-power-off]]]))))
 
 (defn aside [app owner]
   (reify
