@@ -114,23 +114,6 @@
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
-(defn context-menu [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:div.aside-user {:class (when (get-in app state/user-options-shown-path)
-                                   "open")}
-         [:header
-          [:h5 "Your Account"]
-          [:a.close-menu
-           {:on-click #(raise! owner [:user-options-toggled])}
-           (common/ico :fail-light)]]
-         [:div.aside-user-options
-          [:a.aside-item {:href "/account"} "Settings"]
-          [:a.aside-item {:href "/invite-teammates"} "Invite a Teammate"]
-          [:a.aside-item {:href "/logout"} "Logout"]]]))))
-
 (defn expand-menu-items [items subpage]
   (for [item items]
     (case (:type item)
@@ -257,7 +240,6 @@
          [:nav.aside-left-menu
           (om/build project-settings-menu app)
           (om/build org-settings-menu app)
-          (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
             [:header
@@ -294,12 +276,10 @@
            [:div.logomark
             (common/ico :logo)]]
 
-          [:a.aside-item {:on-click #(raise! owner [:user-options-toggled])
-                          :data-placement "right"
+          [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
                           :title "Account"
-                          :class (when (get-in app state/user-options-shown-path)
-                                  "open")}
+                          :href "/account"}
            [:img {:src (gh-utils/make-avatar-url opts)}]
            (:login opts)]
 

@@ -55,8 +55,7 @@
       (assoc :crumbs nil)
       (assoc-in state/inputs-path nil)
       (assoc-in state/error-message-path nil)
-      (assoc-in state/page-scopes-path nil)
-      (assoc-in state/user-options-shown-path false)))
+      (assoc-in state/page-scopes-path nil)))
 
 (defn merge-inputs [defaults inputs keys]
   (merge (select-keys defaults keys)
