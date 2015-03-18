@@ -168,7 +168,6 @@
 (def browser-settings-path [:settings :browser-settings])
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
-(def slim-aside-path (conj browser-settings-path :slim-aside?))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))

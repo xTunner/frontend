@@ -114,16 +114,6 @@
   ;; Lets us store this in localstorage without leaking info about the user
   (update-in state (state/project-branches-collapsed-path project-id-hash) not))
 
-(defmethod control-event :slim-aside-toggled
-  [target message {:keys [project-id]} state]
-  (update-in state state/slim-aside-path not))
-
-(defmethod post-control-event! :slim-aside-toggled
-  [target message {:keys [project-id]} previous-state current-state]
-  (if (get-in current-state state/slim-aside-path)
-    (analytics/track-expand-nav)
-    (analytics/track-collapse-nav)))
-
 (defmethod control-event :show-admin-panel-toggled
   [target message _ state]
   (update-in state state/show-admin-panel-path not))

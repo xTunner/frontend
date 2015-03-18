@@ -232,7 +232,7 @@
     om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
-      (let [slim-aside? (get-in app state/slim-aside-path)
+      (let [slim-aside? true
             show-all-branches? (get-in app state/show-all-branches-path)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)]
@@ -265,7 +265,7 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [slim-aside? (get-in app state/slim-aside-path)]
+      (let [slim-aside? true]
         (html
          [:nav.aside-left-nav
 
