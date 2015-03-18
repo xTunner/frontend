@@ -311,14 +311,6 @@
            [:span "Documentation"]]
 
           [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
-                          :title "Report Bug"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :data-bind "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
-           [:i.fa.fa-bug]
-           [:span "Report Bug"]]
-
-          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
                           :title "Support"
                           :data-placement "right"
                           :data-trigger "hover"
