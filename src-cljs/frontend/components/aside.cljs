@@ -232,8 +232,7 @@
     om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
-      (let [slim-aside? true
-            show-all-branches? (get-in app state/show-all-branches-path)
+      (let [show-all-branches? (get-in app state/show-all-branches-path)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)]
         (html
@@ -265,73 +264,72 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [slim-aside? true]
-        (html
-         [:nav.aside-left-nav
+      (html
+       [:nav.aside-left-nav
 
-          [:a.aside-item.logo  {:title "Home"
-                                :data-placement "right"
-                                :data-trigger "hover"
-                                :href "/"}
-           [:div.logomark
-            (common/ico :logo)]]
+        [:a.aside-item.logo  {:title "Home"
+                              :data-placement "right"
+                              :data-trigger "hover"
+                              :href "/"}
+         [:div.logomark
+          (common/ico :logo)]]
 
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Account"
-                          :href "/account"}
-           [:img {:src (gh-utils/make-avatar-url opts)}]
-           (:login opts)]
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Account"
+                        :href "/account"}
+         [:img {:src (gh-utils/make-avatar-url opts)}]
+         (:login opts)]
 
-          [:a.aside-item {:title "Documentation"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :href "/docs"}
-           [:i.fa.fa-copy]
-           [:span "Documentation"]]
+        [:a.aside-item {:title "Documentation"
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :href "/docs"}
+         [:i.fa.fa-copy]
+         [:span "Documentation"]]
 
-          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
-                          :title "Support"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
-           [:i.fa.fa-comments]
-           [:span "Support"]]
+        [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
+                        :title "Support"
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
+         [:i.fa.fa-comments]
+         [:span "Support"]]
 
-          [:a.aside-item {:href "/add-projects",
-                                       :data-placement "right"
+        [:a.aside-item {:href "/add-projects",
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :title "Add Projects"}
+         [:i.fa.fa-plus-circle]
+         [:span "Add Projects"]]
+
+        [:a.aside-item {:href "/invite-teammates",
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :title "Invite your teammates"}
+         [:i.fa.fa-user]
+         [:span "Invite your teammates"]]
+
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Changelog"
+                        :href "/changelog"}
+         [:i.fa.fa-bell]
+         [:span "Changelog"]]
+
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Settings"
+                        :href "/account"}
+         [:i.fa.fa-gear]
+         [:span "Settings"]]
+
+        [:a.aside-item.push-to-bottom {:data-placement "right"
                                        :data-trigger "hover"
-                                       :title "Add Projects"}
-           [:i.fa.fa-plus-circle]
-           [:span "Add Projects"]]
-
-          [:a.aside-item {:href "/invite-teammates",
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :title "Invite your teammates"}
-           [:i.fa.fa-user]
-           [:span "Invite your teammates"]]
-
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Changelog"
-                          :href "/changelog"}
-           [:i.fa.fa-bell]
-           [:span "Changelog"]]
-
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Settings"
-                          :href "/account"}
-           [:i.fa.fa-gear]
-           [:span "Settings"]]
-
-          [:a.aside-item.push-to-bottom {:data-placement "right"
-                                         :data-trigger "hover"
-                                         :title "Logout"
-                                         :href "/logout"}
-           [:i.fa.fa-power-off]
-           [:span "Logout"]]])))))
+                                       :title "Logout"
+                                       :href "/logout"}
+         [:i.fa.fa-power-off]
+         [:span "Logout"]]]))))
 
 (defn aside [app owner]
   (reify
