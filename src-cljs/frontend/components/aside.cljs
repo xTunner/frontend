@@ -276,7 +276,7 @@
 
         [:a.aside-item {:data-placement "right"
                         :data-trigger "hover"
-                        :title "Account"
+                        :title "Settings"
                         :href "/account"}
          [:img {:src (gh-utils/make-avatar-url opts)}]
          (:login opts)]
@@ -316,13 +316,6 @@
                         :href "/changelog"}
          [:i.fa.fa-bell]
          [:span "Changelog"]]
-
-        [:a.aside-item {:data-placement "right"
-                        :data-trigger "hover"
-                        :title "Settings"
-                        :href "/account"}
-         [:i.fa.fa-gear]
-         [:span "Settings"]]
 
         [:a.aside-item.push-to-bottom {:data-placement "right"
                                        :data-trigger "hover"
