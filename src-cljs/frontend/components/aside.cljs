@@ -325,12 +325,26 @@
            [:i.fa.fa-plus-circle]
            [:span "Add Projects"]]
 
+          [:a.aside-item {:href "/invite-teammates",
+                          :data-placement "right"
+                          :data-trigger "hover"
+                          :title "Invite your teammates"}
+           [:i.fa.fa-user]
+           [:span "Invite your teammates"]]
+
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
                           :title "Changelog"
                           :href "/changelog"}
            [:i.fa.fa-bell]
            [:span "Changelog"]]
+
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Settings"
+                          :href "/account"}
+           [:i.fa.fa-gear]
+           [:span "Settings"]]
 
           [:a.aside-item.push-to-bottom {:data-placement "right"
                                          :data-trigger "hover"
