@@ -257,11 +257,13 @@
     om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
-      (html
-       [:nav.aside-left-menu
-        (om/build branch-activity-list app {:opts {:login (:login opts)}})
-        (om/build project-settings-menu app)
-        (om/build org-settings-menu app)]))))
+      (let [show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)]
+        (html
+         [:nav.aside-left-menu {:class (if show-aside-menu? "visible" "hidden")
+}
+          (om/build branch-activity-list app {:opts {:login (:login opts)}})
+          (om/build project-settings-menu app)
+          (om/build org-settings-menu app)])))))
 
 (defn aside-nav [app owner opts]
   (reify
