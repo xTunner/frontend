@@ -86,6 +86,7 @@
               #"/search-articles.*"
               #"/mobile.*"
               #"/enterprise"
+              #"/features"
               #"/features.*"
               #"/gh/.*"
               #"/home"

@@ -31,8 +31,8 @@
                :src (utils/cdn-path (str "/img/outer/enterprise/arrow-" name ".svg"))}])
 
 (defn language [name]
-  [:img.language {:class name
-                  :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
+  [:img.background.language {:class name
+                             :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
 (defn contact-form
   [app owner opts]
@@ -149,7 +149,7 @@
          ;; [:img.arrow {:src (utils/cdn-path "/img/outer/enterprise/arrow-left-a-1.svg")}]
          [:section.container
           [:div.row
-           [:article.enterprise-hero-title.center-block
+           [:article.hero-title.center-block
             [:div.text-center
              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
             [:h1.text-center "Ship code at the speed of business."]
@@ -160,31 +160,28 @@
             {:on-click #(utils/scroll-to-selector! "form[data-purpose='contact-form']")}
             "Get More Info"]]]]
         ;; need this wrapper for border-top to span the full screen
-        [:div.enterprise-section
+        [:div.outer-section
          [:div.container
           [:section.row
            [:div.col-xs-4
             [:article
-             [:div.enterprise-icon
-              [:img {:src (utils/cdn-path "/img/outer/enterprise/feature-deploy-1.svg")}]]
+             (common/feature-icon "deploy-1")
              [:h2.text-center "Ship Faster"]
              [:p "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]
             ]
            [:div.col-xs-4
             [:article
-             [:div.enterprise-icon
-              [:img {:src (utils/cdn-path "/img/outer/enterprise/feature-security.svg")}]]
+             (common/feature-icon "security")
              [:h2.text-center "World Class Security"]
              [:p
               "You can run CircleCI Enterprise in your own private cloud or in ours, allowing you to maintain scalability while achieving enterprise level security."]]]
            [:div.col-xs-4
             [:article
-             [:div.enterprise-icon
-              [:img {:src (utils/cdn-path "/img/outer/enterprise/feature-time.svg")}]]
+             (common/feature-icon "time")
              [:h2.text-center "Focus on What Matters"]
              [:p
               "Time is a valuable resource, so you should focus on what moves the needle for your business. CircleCI removes the pain of managing build machines and scaling your build fleet, allowing developers to focus on what matters."]]]]]]
-         [:div.enterprise-section
+         [:div.outer-section
           [:div.container
            [:section.row
             [:div.col-xs-8.col-xs-offset-2.enterprise-integrations
@@ -211,30 +208,32 @@
              [:div.integration-text
               "Test against any version of any browser with CircleCI's Enterprise SauceLabs integration. Using the Sauce Connect tunnel, you can even test applications running securely within CircleCI build containers behind your firewall. Automate your cross-browser and mobile testing."
               ;; TODO: add integrations page for Sauce Labs
-              ; [:a.integration-learn-more {:href "/integrations"} "Learn more"]]]]]]
-              ]]]]]
-        [:section.enterprise-story
-          (map language ["rails-2"
-                         "clojure-2"
-                         "java-2"
-                         "php-2"])
+              [:a.integration-learn-more {:href "/integrations/saucelabs"} "Learn more"]]]]]]
+        [:section.outer-section.outer-section-condensed
+          (map language ["rails-1"
+                         "clojure-1"
+                         "java-1"
+                         "php-1"])
          [:div.container
           [:div.row
            [:div.col-xs-8.col-xs-offset-2
-            [:img.story-logo {:src (utils/cdn-path "/img/outer/customers/customer-shopify.svg")}]
-            [:blockquote
-             "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining CI Infrastructure."
-             [:footer
-              [:strong "John Duff"]
-              ", Director of Engineering at "
-              [:strong "Shopify"]
-              [:br]
-              [:cite
-               [:a {:href "/stories/shopify"} "Read the Story"]]]]]]]]
+            [:div.testimonial
+             [:img.customer-header {:src (utils/cdn-path "/img/outer/customers/customer-shopify.svg")
+                                    :alt "Shopify"}]
+             [:div.customer-quote {:class "quote-shopify"}
+              [:blockquote "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining CI Infrastructure."]]
+             [:div.customer-citation
+              [:div.customer-employee-name "John Duff"]
+              [:div
+               "Director of Engineering at "
+               [:span.customer-company-name "Shopify"]
+               " – "
+               [:a.customer-story {:href "/stories/shopify"}
+                "Read the story"]]]]]]]]
 
-        [:div.enterprise-section
+        [:div.outer-section
          [:section.container
-          [:img.enterprise-icon {:src (utils/cdn-path "/img/outer/enterprise/feature-phone.svg")}]
+          (common/feature-icon "phone")
           [:h2.text-center "Learn More About CircleCI Enterprise"]
           [:div.enterprise-cta-contact
            (om/build contact-form app)]]]]))))

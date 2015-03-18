@@ -1,206 +1,128 @@
 #enterprise {
-  & > .jumbotron {
+
+  .enterprise-integrations {
+    margin-bottom: 70px;
+    h2 {
+      margin-top: 0;
+    }
+  }
+
+  .enterprise-story {
+    border-top: solid 1px @panel-default-border;
     background-color: rgb(251,251,251);
+    padding: 35px 0;
     position: relative;
-    padding: 70px;
-    margin: 0;
+    overflow: hidden;
 
-    .container {
-      position: relative;
-      z-index: 2;
-    }
-
-    h1 {
-      font-size: 64px;
-      color: @headings-color;
-    }
-
-    h3 {
-      font-size: 22px;
-      font-weight: 500;
-      color: @text-color;
-      line-height: @line-height-base;
+    .story-logo {
+      .center-block;
+      width: 250px;
+      padding-bottom: 20px;
     }
   }
 
-  .hero-logo {
-    max-height: 70px;
-    margin-bottom: 50px;
-  }
-}
-
-.enterprise-section {
-  padding: 70px 0;
-  border-top: solid 1px @panel-default-border;
-}
-
-.enterprise-integrations {
-  margin-bottom: 70px;
-  h2 {
-    margin-top: 0;
-  }
-}
-
-.enterprise-story {
-  border-top: solid 1px @panel-default-border;
-  background-color: rgb(251,251,251);
-  padding: 35px 0;
-  position: relative;
-  overflow: hidden;
-
-  .story-logo {
-    width: 250px;
-    padding-bottom: 20px;
-    .center-block;
-  }
-
-  img.language {
+  img.arrow {
     position: absolute;
-    height: 200px;
 
-    &.rails-2 {
-      // height: 10%;
-      height: 200px;
-      bottom: -85px;
+    &.left-a-1 {
+      top: 0;
+      left: 0;
+      height: 20%;
+    }
+
+    &.left-a-2 {
+      height: 60%;
+      top: 0;
       left: 0;
     }
 
-    &.clojure-2 {
-      bottom: -140px;
-      right: -100px;
+    &.left-a-3 {
+      bottom: 0;
+      left: 0;
+      height: 45%;
     }
 
-    &.java-2 {
-      top: -170px;
+    &.left-a-4 {
+      bottom: 0;
+      left: 0;
+      height: 45%;
+    }
+
+    &.right-a-1 {
+      top: 0;
       right: 0;
+      height: 35%;
     }
 
-    &.php-2 {
-      bottom: -130px;
-      left: 60%;
+    &.right-a-2 {
+      top: 0;
+      right: 0;
+      height: 27%;
+    }
+
+    &.right-a-3 {
+      bottom: 0;
+      right: 0;
+      height: 65%;
+    }
+
+    &.right-a-4 {
+      bottom: 0;
+      right: 0;
+      height: 12%;
     }
   }
-}
 
-img.arrow {
-  position: absolute;
+  .enterprise-cta-contact {
+    margin-bottom: 70px;
 
-  &.left-a-1 {
-    top: 0;
-    left: 0;
-    height: 20%;
+    // redline calls for 40px between button and button of form, but inputs add 1em margin to the bottom.
+    .contact-form {
+      margin-bottom: calc(40px - 1em);
+    }
   }
 
-  &.left-a-2 {
-    height: 60%;
-    top: 0;
-    left: 0;
+  .telephone-info {
+    line-height: 60px;
+    margin-left: 15px;
+
+    .telephone-number {
+      color: @brand-success;
+    }
   }
 
-  &.left-a-3 {
-    bottom: 0;
-    left: 0;
-    height: 45%;
+  .integration-text {
+    border-radius: 0 0 5px 5px;
+    border: 1px solid @gray-lighter;
+    padding: 1em;
   }
 
-  &.left-a-4 {
-    bottom: 0;
-    left: 0;
-    height: 45%;
+  .integration-logo {
+    border-radius: 5px 5px 0 0;
+    height: 80px;
+    padding: 1.5em;
+    text-align: center;
+
+    img {
+      max-height: 35px;
+    }
+
+    &.github {
+      background-color: rgb(63,61,62);
+    }
+
+    &.docker {
+      background-color: rgb(52,123,144);
+    }
+
+    &.sauce-labs {
+      background-color: rgb(81,89,95);
+    }
   }
 
-  &.right-a-1 {
-    top: 0;
-    right: 0;
-    height: 35%;
-  }
-
-  &.right-a-2 {
-    top: 0;
-    right: 0;
-    height: 27%;
-  }
-
-  &.right-a-3 {
-    bottom: 0;
-    right: 0;
-    height: 65%;
-  }
-
-  &.right-a-4 {
-    bottom: 0;
-    right: 0;
-    height: 12%;
-  }
-}
-
-.enterprise-hero-title {
-  & > h1 {
+  .integration-learn-more {
     display: block;
+    text-align: center;
+    padding-top: 1em;
   }
-
-  & > h3 {
-    color: @gray-dark;
-    margin-top: 40px;
-  }
-
-  margin-bottom: 70px;
-}
-
-.enterprise-icon {
-  width: 65px;
-  .center-block;
-}
-
-.enterprise-cta-contact {
-  margin-bottom: 70px;
-
-  // redline calls for 40px between button and button of form, but inputs add 1em margin to the bottom.
-  .contact-form {
-    margin-bottom: calc(40px - 1em);
-  }
-}
-
-.telephone-info {
-  line-height: 60px;
-  margin-left: 15px;
-  
-  .telephone-number {
-    color: @brand-success;
-  }
-}
-
-.integration-text {
-  border-radius: 0 0 5px 5px;
-  border: 1px solid @gray-lighter;
-  padding: 1em;
-}
-
-.integration-logo {
-  border-radius: 5px 5px 0 0;
-  height: 80px;
-  padding: 1.5em;
-  text-align: center;
-
-  img {
-    max-height: 35px;
-  }
-
-  &.github {
-    background-color: rgb(63,61,62);
-  }
-
-  &.docker {
-    background-color: rgb(52,123,144);
-  }
-
-  &.sauce-labs {
-    background-color: rgb(81,89,95);
-  }
-}
-
-.integration-learn-more {
-  display: block;
-  text-align: center;
-  padding-top: 1em;
 }

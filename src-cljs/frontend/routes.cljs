@@ -175,6 +175,11 @@
                                                  :_title "Shopify's Success with Continuous Integration"
                                                  :_description "See how Shopify has scaled its Continuous Integration efforts with CircleCI and made its developer team of over 130 people more efficient.")))
 
+  (defroute v1-features (FragmentRoute. "/features") {:as params}
+    (open-to-outer! nav-ch :features (assoc params
+                                            :_title "Continuous Integration Product and Features"
+                                            :_description "Build a better product and let CircleCI handle your testing. CircleCI helps your team improve productivity with faster development, reduced risk, and better code.")))
+
   (defroute v1-languages (FragmentRoute. "/features/:language") {:as params}
     (open-to-outer! nav-ch :language-landing params))
 

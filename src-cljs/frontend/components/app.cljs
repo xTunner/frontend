@@ -8,6 +8,7 @@
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
+            [frontend.components.features :as features]
             [frontend.components.mobile :as mobile]
             [frontend.components.mobile.ios :as ios]
             [frontend.components.add-projects :as add-projects]
@@ -66,6 +67,7 @@
 
     :landing landing/home
     :about about/about
+    :features features/features
     :pricing pricing/pricing
     :jobs jobs/jobs
     :privacy privacy/privacy

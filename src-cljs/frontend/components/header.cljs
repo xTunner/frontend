@@ -128,12 +128,33 @@
               (common/circle-logo {:width nil
                                    :height 25})]]
             [:ul.nav.navbar-nav
-             [:li [:a {:href "/about"} "About"]]
+             [:li.dropdown
+              [:a {:href "/features"} "Product"]
+              [:ul.dropdown-menu
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/features"}
+                 "Features"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/mobile"}
+                 "Mobile"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/integrations/docker"}
+                 "Docker"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/enterprise"}
+                 "Enterprise"]]]]
              (when-not (config/enterprise?)
                [:li [:a {:href "/pricing"} "Pricing"]])
              [:li [:a {:href "/docs"} "Documentation"]]
-             (when-not (config/enterprise?)
-               [:li [:a {:href "/jobs"} "Jobs"]])
+             [:li [:a {:href "/about"} "About Us"]]
              [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]
 
             (if logged-in?
