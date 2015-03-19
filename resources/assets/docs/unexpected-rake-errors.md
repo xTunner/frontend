@@ -6,27 +6,55 @@ last_updated: Feb 3, 2013
 -->
 
 Sometimes in Rails projects you can see Rake throw ActionFailed errors
-which simply do not make sense. If you are using `Test::Unit`, it may
-be the problem.
+which simply do not make sense. For example:
+
+```
+** Invoke ts:start (first_time)
+** Invoke environment
+** Execute ts:start
+Started searchd successfully (pid: 35322).
+invalid option: --trace
+Test::Unit automatic runner.
+Usage: /home/ubuntu/.rvm/rubies/ruby-2.2.1/bin/rake [options] [--
+untouched arguments]
+
+Deprecated options:
+
+export RAILS_ENV="test"
+export RACK_ENV="test"
+bundle exec rake db:create db:schema:load ts:configure ts:index ts:start
+--trace
+ returned exit code 1
+```
+
+If you are using `Test::Unit`, it may be the problem.
 
 Test::Unit installs an `at_exit` handler that will automatically try to
 run the tests when the Ruby process exits. Basically, as soon as you
 require 'test/unit' it installs this handler.
-It processes all the CLI args as well at this step.
-
-So first off it tries to run after your Rake task and then tries to
-parse Rake's CLI args, which is where it breaks.
-
-The source of the error is that somewhere in the code loaded by your
-Rakefile is something that requires test/unit.
+So, it processes the CLI args when it runs at the Ruby VM exit. This is why
+Rake runs fine, then you get a help message explaining Test::Unit's CLI
+args.
 
 ## Solution
 
-An appropriate fix has been suggested [in this blog
+The best solution is to find out what's being loaded during your Rake
+tasks that require `test/unit`. We don’t think it’s a common practice,
+so we would suggest questioning whether you really need to require
+`test/unit` in those tasks. You could potentially be using symbols from
+`test/unit` even without requiring it in the code—please check that as
+well.
+
+## Workaround
+
+If you really need to require `test/unit`, we suggest following the
+fix that has been suggested [in this blog
 post](http://www.jonathanleighton.com/articles/2012/stop-test-unit-autorun/)—
-monkey-patching `Test::Unit` to disable this behavior:
+monkey-patching `Test::Unit` to disable this behavior. You can
+add the following code to your Rakefile, under the `test` task:
 
 ```
+# Rakefile
 require 'test/unit'
 
 class Test::Unit::Runner
