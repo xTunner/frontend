@@ -100,7 +100,6 @@
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
-              slim-aside? (get-in app state/slim-aside-path)
               dom-com (dominant-component app owner)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
@@ -108,7 +107,6 @@
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
-                                       (when slim-aside? ["aside-slim"])
                                        (when-not logged-in? ["aside-nil"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
                                        (when (= :landing (:navigation-point app)) ["landing"])

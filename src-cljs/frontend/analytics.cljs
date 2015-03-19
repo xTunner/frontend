@@ -74,12 +74,6 @@
 (deftrack track-save-orgs []
   (mixpanel/track "Save Organizations"))
 
-(deftrack track-collapse-nav []
-  (mixpanel/track "aside_nav_collapsed"))
-
-(deftrack track-expand-nav []
-  (mixpanel/track "aside_nav_expanded"))
-
 (deftrack track-signup []
   (utils/swallow-errors
    (twitter/track-signup)
