@@ -135,7 +135,9 @@
     om/IRender
     (render [_]
       (html
-       (om/build markdown (:markdown doc))))))
+       [:div
+        [:h1 (:title doc)]
+        (om/build markdown (:markdown doc))]))))
 
 (defrender docs-subpage [doc owner opts]
   (html
