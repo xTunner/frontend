@@ -13,7 +13,8 @@
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
+  (:import [goog.events KeyCodes]))
 
 (defn docs-search [app owner]
   (reify
@@ -44,12 +45,11 @@
            {:type "text",
             :value query
             :on-change #(utils/edit-input owner state/docs-search-path %)
-            :placeholder "What can we help you find?",
-            :name "query"}]
-          [:button {:on-click #(do (raise! owner [:doc-search-submitted {:query query}])
-                                   false)
-                    :type "submit"}
-           [:i.fa.fa-search]]])))))
+            :on-key-down #(when (= (.-keyCode %) (.-ENTER KeyCodes))
+                            (raise! owner [:doc-search-submitted {:query query}])
+                            (.preventDefault %))
+            :placeholder "What can we help you find?"
+            :name "query"}]])))))
 
 (defrender article-list [articles]
   (html
