@@ -135,13 +135,12 @@
     om/IRender
     (render [_]
       (html
-       [:div
-        [:h1 (:title doc)]
-        (om/build markdown (:markdown doc))]))))
+       (om/build markdown (:markdown doc))))))
 
 (defrender docs-subpage [doc owner opts]
   (html
    [:div
+    [:h1 (:title doc)]
     (if-not (empty? (:children doc))
       (om/build article-list (:children doc))
       (if (:markdown doc)
