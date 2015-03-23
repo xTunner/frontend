@@ -156,15 +156,13 @@
         doc (get docs subpage)]
     (html
      [:div.docs.page
-      [:div.container.content
-       [:div.row
-        [:aside.col-sm-3
-         (om/build docs-categories categories)]
-        [:div.col-sm-9
-         (when subpage
-           (om/build docs-search app))
-         [:article
-          (if-not subpage
-            (om/build front-page app)
-            (om/build docs-subpage doc {:opts {:_fragment fragment}}))]]]]])))
+      [:div.content
+       [:aside
+        (om/build docs-categories categories)]
+       [:article
+        (when subpage
+          (om/build docs-search app))
+        (if-not subpage
+          (om/build front-page app)
+          (om/build docs-subpage doc {:opts {:_fragment fragment}}))]]])))
 
