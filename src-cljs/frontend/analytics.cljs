@@ -87,7 +87,7 @@
   (twitter/track-payer)
   (adroll/record-payer))
 
-(deftrack track-trigger-build [build & {:keys [clear-cache? ssh?] :as extra}]
+(deftrack track-trigger-build [build & {:as extra}]
   (mixpanel/track "Trigger Build" (merge {:vcs-url (vcs-url/project-name (:vcs_url build))
                                           :build-num (:build_num build)
                                           :retry? true}

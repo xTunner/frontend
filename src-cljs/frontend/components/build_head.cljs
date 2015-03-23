@@ -632,7 +632,7 @@
                    :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
                                                                    :vcs-url vcs-url
                                                                    :build-num build-num
-                                                                   :clear-cache? false}])}
+                                                                   :no-cache? false}])}
                   "Rebuild"])
 
                 (forms/managed-button
@@ -642,7 +642,7 @@
                    :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
                                                                    :vcs-url vcs-url
                                                                    :build-num build-num
-                                                                   :clear-cache? true}])}
+                                                                   :no-cache? true}])}
                   "without cache"])
 
                 ;; XXX Temporarily remove the ssh button for OSX builds
