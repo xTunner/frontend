@@ -60,18 +60,21 @@
 
   }
 
-  #searchDocs {
+  .doc-search {
     ul {
       margin: 0;
     }
 
     input {
       width: 86%;
+      padding-left: 45px;
     }
 
     li.active {
       background-color: #33659c;
-      strong { color: white; }
+      strong {
+	color: white;
+      }
       color: white;
     }
 
@@ -80,20 +83,12 @@
       background-color: white;
     }
 
-    button {
-      height: 38px;
-      width: 38px;
-      font-size: 18px;
+    i.fa.fa-search {
+      position: absolute;
+      padding: 10px;
       margin-left: 5px;
-
-      i.fa.fa-search {
-        position: relative;
-        font-size: 105%;
-      }
-    }
-
-    button, input {
-      float: left;
+      font-size: 25px;
+      color: #ddd;
     }
   }
 

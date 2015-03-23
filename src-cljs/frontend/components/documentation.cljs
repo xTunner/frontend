@@ -40,8 +40,9 @@
     (render [_]
       (let [query (get-in app state/docs-search-path)]
         (html
-         [:form#searchDocs.clearfix.form-search
-          [:input#searchQuery
+         [:form.doc-search.clearfix.form-search
+          [:i.fa.fa-search]
+          [:input.form-control#searchQuery
            {:type "text",
             :value query
             :on-change #(utils/edit-input owner state/docs-search-path %)
@@ -79,7 +80,6 @@
         docs (get-in app state/docs-data-path)]
     (html
      [:div
-      [:h1 "What can we help you with?"]
       (om/build docs-search app)
       (when query-results
         [:div.article_list
