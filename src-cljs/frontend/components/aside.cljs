@@ -342,10 +342,10 @@
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"
                           :title "Changelog"
-                          :href "/changelog"}
-           (if (changelog-updated-since? (:last_viewed_changelog user))
-             [:i.fa.fa-certificate]
-             [:i.fa.fa-bell])
+                          :href "/changelog"
+                          :class (when (changelog-updated-since? (:last_viewed_changelog user))
+                                       "unread")}
+           [:i.fa.fa-bell]
            [:span "Changelog"]]
 
           [:a.aside-item.push-to-bottom {:data-placement "right"
