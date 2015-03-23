@@ -80,7 +80,6 @@
         docs (get-in app state/docs-data-path)]
     (html
      [:div
-      (om/build docs-search app)
       (when query-results
         [:div.article_list
          (if (empty? query-results)
@@ -160,8 +159,7 @@
        [:aside
         (om/build docs-categories categories)]
        [:article
-        (when subpage
-          (om/build docs-search app))
+        (om/build docs-search app)
         (if-not subpage
           (om/build front-page app)
           (om/build docs-subpage doc {:opts {:_fragment fragment}}))]]])))
