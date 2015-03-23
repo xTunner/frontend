@@ -156,9 +156,6 @@
         doc (get docs subpage)]
     (html
      [:div.docs.page
-      [:div.banner [:div.container [:h1 (if doc
-                                          (:title doc)
-                                          "Documentation")]]]
       [:div.container.content
        [:div.row
         [:aside.col-sm-3
