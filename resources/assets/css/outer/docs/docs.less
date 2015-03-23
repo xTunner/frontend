@@ -1,4 +1,4 @@
-@aside-bg: darken(@body-bg, 5%);
+@aside-bg: darken(@body-bg, 2%);
 
 .docs {
 
@@ -17,6 +17,9 @@
 
   aside {
     padding: 15px;
+    a:hover {
+      background-color: darken(@aside-bg, 5%);
+    }
   }
 
   article {
