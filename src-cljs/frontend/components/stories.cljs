@@ -112,7 +112,7 @@
        [:div.container
         [:div.section (shared/customers-trust)]
         [:div.cta-contianer
-         [:a.bold-btn.btn.btn-primary
+         [:a.btn.btn-xl.btn-success
           {:href (gh-utils/auth-url)
            :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
                                                                    :properties {:source "shopify story"}
@@ -147,6 +147,7 @@
        [:div.page.shopify.stories
         [:div.stories-head
          shopify-logo
+         [:h1 "Scalable Continuous Integration with CircleCI"]
          [:blockquote
           {:cite "http://www.shopify.com"}
           [:p "We were able to rapidly grow our team and code base without fear of outgrowing CircleCI."]

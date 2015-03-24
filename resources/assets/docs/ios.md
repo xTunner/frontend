@@ -13,23 +13,44 @@ this project to be run on OSX machines rather than the usual Linux containers,
 and iOS-related build and test commands will be automatically inferred.
 
 
-##Basic setup
+## Basic setup
 
-Simple projects should run with minimal or no configuration. By default, CircleCI will:
+Simple projects should run with minimal or no configuration. By default,
+CircleCI will:
 
-* **Install any Ruby gems specified in a Gemfile** - You can install a specific version of CocoaPods or other gems this way.
+* **Install any Ruby gems specified in a Gemfile** - You can install a specific
+  version of CocoaPods or other gems this way.
 * **Install any dependencies managed by [CocoaPods](http://cocoapods.org/)**
 * **Run the "test" build action for detected workspace (or project) and scheme
-from the command line using `xcodebuild`** - If a workspace is detected, it will take precedence
-over a project and be used to call `xcodebuild`. The detected settings can be overridden with [environment variables](#environment-variables)
+  from the command line using `xctool`** - If a workspace is detected, it
+  will take precedence over a project and be used to call `xctool`. The
+  detected settings can be overridden with [environment variables](#environment-variables)
 
-**Note:** Your scheme (what you select in the dropdown next to the
-run/stop buttons in Xcode) must be shared (there is a checkbox for this at the bottom of
-the "Edit scheme" screen in Xcode) so that CircleCI can run the appropriate build action.
+See [customizing your build](#customizing-your-build) for more information about
+customization options.
+
+## Shared Schemes
+Your scheme (what you select in the dropdown next to the run/stop buttons in
+Xcode) must be shared (there is a checkbox for this at the bottom of the
+"Edit scheme" screen in Xcode) so that CircleCI can run the appropriate build
+action. After doing this you will have a new `.xcscheme` file located in the
+`xcshareddata/xcschemes` folder under your Xcode project. You will need to
+commit this file to your git repository so that CircleCI can access it.
+
 If more than one scheme is present, then you should specify the
-`XCODE_SCHEME` [environment variable](/docs/environment-variables#custom). Otherwise a
-scheme will be chosen arbitrarily.
+`XCODE_SCHEME` [environment variable](/docs/environment-variables#custom).
+Otherwise a scheme will be chosen arbitrarily.
 
+### CocoaPods
+
+CircleCI will automatically detect if your project is using [CocoaPods](http://cocoapods.org/)
+to manage dependencies. If you are using CocoaPods, then we recommend that you
+check your [Pods directory into source control](http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control).
+This will ensure that you have a deterministic, reproducable build.
+
+If CircleCI finds a `Podfile` and no `Pods` directory, then we will run
+`pod install` to install the necessary dependencies in the `dependencies`
+step of your build.
 
 ##Supported build and test tools
 
@@ -46,31 +67,66 @@ via the "test" build action. The following test tools are known to work well on 
 * [Kiwi](https://github.com/kiwi-bdd/Kiwi)
 * [KIF](https://github.com/kif-framework/KIF)
 
-###xctool
-While CircleCI runs tests from the command line with the `xcodebuild` command by
-default, [xctool](https://github.com/facebook/xctool) is also pre-installed on
-CircleCI. For example you could run your build and tests with xctool by adding
-the following `circle.yml` file to your project:
-
-```
-test:
-  override:
-    - xctool -reporter pretty -reporter junit:$CIRCLE_TEST_REPORTS/xcode/results.xml -scheme "My Scheme" -workspace MyWorkspace.xcworkspace -sdk iphonesimulator clean test
-```
-
-See [customizing your build](#customizing-your-build) for more information about customization options.
-
 ###Other tools
 Popular iOS testing tools like [Appium](http://appium.io/) and [Frank](http://www.testingwithfrank.com/) should also
 work normally, though they will need to be installed and called using custom commands.
 See [customizing your build](#customizing-your-build) for more info.
 
 
-##Customizing your build
-While CircleCI's inferred commands will handle many common testing patterns, you also
-have a lot of flexibility to customize what happens in your build.
+## Customizing your build
+While CircleCI's inferred commands will handle many common testing patterns, you
+also have a lot of flexibility to customize what happens in your build.
 
-###Environment variables
+## Build Commands
+CircleCI runs tests from the command line with the [`xctool`](https://github.com/facebook/xctool)
+command by default. We have found that `xctool` is more stable when testing with
+the iOS simulator than using `xcodebuild` directly.
+
+CircleCI will try to automatically build your iOS project by infering the
+workspace, project and scheme. In some cases, you may need to override the
+inferred test commands. The following command is representative of how CircleCI
+will build an iOS project:
+
+```
+test:
+  override:
+    - xctool
+      -reporter pretty
+      -reporter junit:$CIRCLE_TEST_REPORTS/xcode/results.xml
+      -reporter plain:$CIRCLE_ARTIFACTS/xctool.log
+      CODE_SIGNING_REQUIRED=NO
+      CODE_SIGN_IDENTITY=
+      PROVISIONING_PROFILE=
+      -destination 'platform=iOS Simulator,name=iPhone 6,OS=latest'
+      -sdk iphonesimulator
+      -workspace MyWorkspace.xcworkspace
+      -scheme "My Scheme"
+      build build-tests run-tests
+```
+
+In some situations you might also want to build with `xcodebuild` directly. A
+typical `xcodebuild` command line should look like this:
+
+```
+test:
+  override:
+    - set -o pipefail &&
+      xcodebuild
+        CODE_SIGNING_REQUIRED=NO
+        CODE_SIGN_IDENTITY=
+        PROVISIONING_PROFILE=
+        -sdk iphonesimulator
+        -destination 'platform=iOS Simulator,OS=8.1,name=iPhone 6'
+        -workspace MyWorkspace.xcworkspace
+        -scheme "My Scheme"
+        clean test |
+      tee $CIRCLE_ARTIFACTS/xcode_raw.log |
+      xcpretty --color --report junit --output $CIRCLE_TEST_REPORTS/xcode/results.xml
+```
+
+
+
+### Environment variables
 You can customize the behavior of CircleCI's automatic build commands by setting
 the following environment variables in a `circle.yml` file or at **Project Settings > Environment Variables** (see [here](/docs/environment-variables#custom) for more info
 about environment variables):
@@ -152,6 +208,54 @@ Linux containers that are not available on OSX vms:
 `machine:language` (e.g. language version declarations), `machine:services`,
 or a few other sections will not work correctly.
 See the [customizing your build](#customizing-your-build) section for alternatives.
+
+## Simulator Stability
+
+There is a Known Issue with the iOS Simulator in Xcode 6 that is documented in
+the [Xcode release notes](https://developer.apple.com/library/mac/releasenotes/DeveloperTools/RN-Xcode/Xcode_Release_Notes.pdf)
+as follows:
+
+> Testing on iOS simulator may produce an error indicating that the application
+> could not be installed or launched.
+> Re-run testing or start another integration. (17733855)
+
+This issue is further discussed in a [sticky post on the official iOS developer
+forums](https://devforums.apple.com/thread/248879).
+
+When this bug occurs Xcode will output a message like:
+
+> Unable to run app in Simulator If you believe this error represents a bug,
+> please attach the log file at /var/folders/jm/fw86rxds0xn69sk40d18y69m0000g/T/com.apple.dt.XCTest-status/Session-2015-02-19_18:37:47-WjiMos.log
+
+The path and timestamp of the log file will change from run to run, but the
+location is always `$TMPDIR/com.apple.dt.XCTest-status/`.
+
+The log file will contain the following output:
+
+```
+Initializing test infrastructure.
+Creating the connection.
+Listening for proxy connection request from the test bundle (all platforms)
+Resuming the connection.
+Test connection requires daemon assistance.
+Checking test manager availability..., will wait up to 120s
+testmanagerd handled session request.
+Waiting for test process to launch.
+Launch session started, setting a disallow-finish-token on the run operation.
+Waiting for test process to check in..., will wait up to 120s
+Adding console adaptor for test process.
+Test operation failure: Unable to run app in Simulator
+_finishWithError:Error Domain=IDEUnitTestsOperationsObserverErrorDomain Code=3 "Unable to run app in Simulator" UserInfo=0x7fbb496f1c00 {NSLocalizedDescription=Unable to run app in Simulator} didCancel: 1
+```
+
+We have found the taking the recommended action (re-trying the test) is not
+effective. Instead, we have had good success working around this bug in the
+simulator by using [`xctool`](https://github.com/facebook/xctool) for building
+and testing Xcode projects instead of `xcodebuild`.
+
+If you encounter this bug when building your project on CircleCI please contact
+us through the in-app messenger or through [sayhi@circleci.com](mailto:sayhi@circleci.com).
+We will be happy to help you work around the issue.
 
 ## Software Versions
 

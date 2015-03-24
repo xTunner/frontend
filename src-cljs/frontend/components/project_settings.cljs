@@ -126,7 +126,7 @@
      "Containers are what we call the virtual machines that your tests run in. Your current plan has "
      (get-in project-data [:plan :containers])
      " containers and supports up to "
-     (project-model/max-parallelism (:plan project-data) (:project project-data))
+     (plan-model/max-parallelism (:plan project-data))
      "x paralellism."]
 
     [:p "With 16 containers you could run:"]
@@ -165,7 +165,8 @@
 (defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
    []
-   (when (> parallelism (project-model/max-selectable-parallelism plan project)) ["disabled"])
+   (when (and (> parallelism 1) (project-model/osx? project)) ["disabled"])
+   (when (> parallelism (project-model/buildable-parallelism plan project)) ["disabled"])
    (when (= parallelism (get-in project-data [:project :parallel])) ["selected"])
    (when (not= 0 (mod (project-model/usable-containers plan project) parallelism)) ["bad_choice"])))
 
@@ -178,20 +179,29 @@
     (list
      [:div.parallelism-upgrades
       (if-not (plan-model/in-trial? plan)
-        (cond (> parallelism (project-model/max-parallelism plan project))
+        (cond (and (project-model/osx? project)
+                   (> parallelism 1))
+              ;; iOS projects should not use parallelism. We don't have the
+              ;; ability to parallelise XCode tests yet and have a limited
+              ;; number of available OSX VMs. Setting parallelism for iOS
+              ;; wastes VMs, reducing the number of builds we can run.
+              [:div.insufficient-plan
+               "iOS projects are currently limited to 1x parallelism."]
+
+              (> parallelism (plan-model/max-parallelism plan))
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
                [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
                 "Contact us if you'd like more."]]
 
-              (> parallelism (project-model/max-selectable-parallelism plan project))
+              (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers available."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})}
                 "Add More"]])
-        (when (> parallelism (project-model/max-selectable-parallelism plan project))
+        (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
            [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
@@ -223,7 +233,7 @@
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (max (project-model/max-parallelism plan project)
+         (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
                                          (inc 24)))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
@@ -236,7 +246,7 @@
                      :on-click #(raise! owner [:selected-project-parallelism
                                                {:project-id project-id
                                                 :parallelism parallelism}])
-                     :disabled (> parallelism (project-model/max-selectable-parallelism plan project))
+                     :disabled (> parallelism (project-model/buildable-parallelism plan project))
                      :checked (= parallelism (:parallel project))}]])])))])
 
 (defn parallel-builds [project-data owner]
@@ -325,19 +335,19 @@
                                [:p blurb]
                                [:form
                                 [:ul
-                                 [:li
+                                 [:li.radio
                                   [:label
-                                   [:input.radio
-                                    {:type "checkbox"
+                                   [:input
+                                    {:type "radio"
                                      :checked (get feature-flags flag)
                                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
                                                                                                :flag flag
                                                                                                :value true}])}]
                                    " On"]]
-                                 [:li
+                                 [:li.radio
                                   [:label
-                                   [:input.radio
-                                    {:type "checkbox"
+                                   [:input
+                                    {:type "radio"
                                      :checked (not (get feature-flags flag))
                                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
                                                                                                :flag flag
@@ -438,7 +448,7 @@
               [:label {:placeholder "Post-dependency commands"}]
               [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
               (forms/managed-button
-               [:input {:value "Next, setup your tests",
+               [:input {:value "Next, set up your tests",
                         :type "submit"
                         :data-loading-text "Saving..."
                         :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
@@ -560,6 +570,12 @@
 
 (defn notifications [project-data owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/equalize-size (om/get-node owner) "chat-room-item"))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (utils/equalize-size (om/get-node owner) "chat-room-item"))
     om/IRender
     (render [_]
       (let [project (:project project-data)
@@ -571,22 +587,48 @@
           [:article
            [:h2 "Chatroom Integrations"]
            [:div.chat-rooms
-            (for [chat-spec [{:service "Hipchat"
+            (for [chat-spec [{:service "Slack"
+                              :doc [:p "To get your Webhook URL, visit Slack's "
+                                    [:a {:href "https://my.slack.com/services/new/circleci"}
+                                     "CircleCI Integration"]
+                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
+                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
+                              :show-fixed-failed? true
+                              :settings-keys project-model/slack-keys}
+
+                             {:service "Hipchat"
                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                           [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
-                                         [:label ;; hipchat is a special flower
-                                          {:for "hipchat-notify"}
-                                          [:input#hipchat-notify
-                                           {:type "checkbox"
-                                            :checked (:hipchat_notify settings)
-                                            ;; n.b. can't use inputs-state b/c react won't changed
-                                            ;;      checked state without a rerender
-                                            :on-change #(utils/edit-input owner (conj state/project-path :hipchat_notify) % :value (not (:hipchat_notify settings)))}]
-                                          [:span "Show popups"]])
+                                         [:div
+                                          [:label ;; hipchat is a special flower
+                                           {:for "hipchat-notify"}
+                                           [:input#hipchat-notify
+                                            {:type "checkbox"
+                                             :checked (:hipchat_notify settings)
+                                             ;; n.b. can't use inputs-state b/c react won't changed
+                                             ;;      checked state without a rerender
+                                             :on-change #(utils/edit-input owner (conj state/project-path :hipchat_notify) %
+                                                                           :value (not (:hipchat_notify settings)))}]
+                                           [:span "Show popups"]]])
                               :inputs [{:field :hipchat_room :placeholder "Room"}
                                        {:field :hipchat_api_token :placeholder "API"}]
                               :show-fixed-failed? true
                               :settings-keys project-model/hipchat-keys}
+
+                             {:service "Flowdock"
+                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
+                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
+                              :show-fixed-failed? false
+                              :settings-keys project-model/flowdock-keys}
+
+                             {:service "Hall"
+                              :doc [:p "To get your Room / Group API token, go to "
+                                    [:strong "Settings > Integrations > CircleCI"]
+                                    " from within your Hall Group."]
+                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
+                              :show-fixed-failed? true
+                              :settings-keys project-model/hall-keys}
+
                              {:service "Campfire"
                               :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
                               :inputs [{:field :campfire_room :placeholder "Room"}
@@ -594,12 +636,6 @@
                                        {:field :campfire_token :placeholder "API"}]
                               :show-fixed-failed? true
                               :settings-keys project-model/campfire-keys}
-
-                             {:service "Flowdock"
-                              :doc [:p "To get your API token, visit your Flowdock, then click the \"Settings\" icon on the left. On the settings tab, click \"Team Inbox\""]
-                              :inputs [{:field :flowdock_api_token :placeholder "API"}]
-                              :show-fixed-failed? false
-                              :settings-keys project-model/flowdock-keys}
 
                              {:service "IRC"
                               :doc nil
@@ -609,23 +645,7 @@
                                        {:field :irc_username :placeholder "Username"}
                                        {:field :irc_password :placeholder "Password (optional)"}]
                               :show-fixed-failed? true
-                              :settings-keys project-model/irc-keys}
-
-                             {:service "Slack"
-                              :doc [:p "To get your Webhook URL, visit Slack's "
-                                    [:a {:href "https://my.slack.com/services/new/circleci"}
-                                     "CircleCI Integration"]
-                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
-                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
-                              :show-fixed-failed? true
-                              :settings-keys project-model/slack-keys}
-                             {:service "Hall"
-                              :doc [:p "To get your Room / Group API token, go to "
-                                    [:strong "Settings > Integrations > CircleCI"]
-                                    " from within your Hall Group."]
-                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                              :show-fixed-failed? true
-                              :settings-keys project-model/hall-keys}]]
+                              :settings-keys project-model/irc-keys}]]
               (chatroom-item project-id settings owner chat-spec))]]])))))
 
 (def status-styles

@@ -10,6 +10,13 @@
                    :or {scope ["user:email" "repo"]}}]
   (js/CI.github.authUrl (clj->js scope)))
 
+(defn third-party-app-restrictions-url []
+  ;; Tried to add (config/github-client-id), but dev.circlehost:3000
+  ;; doesn't pick it up... not sure why? using aget directly for moment...
+  (str (config/github-endpoint)
+       "/settings/connections/applications/"
+       (aget js/window "renderContext" "githubClientId")))
+
 (defn http-endpoint []
   (config/github-endpoint))
 

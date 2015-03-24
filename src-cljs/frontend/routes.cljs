@@ -117,7 +117,9 @@
     (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
-    (open-to-outer! nav-ch :about params))
+    (open-to-outer! nav-ch :about (assoc params
+                                         :_title "About Us"
+                                         :_description "Learn more about the CircleCI story and why we're building the leading Continuous Integration and Deployment platform.")))
 
   (defroute v1-mobile (FragmentRoute.  "/mobile") {:as params}
     (open-to-outer! nav-ch :mobile (assoc params
@@ -127,48 +129,64 @@
   (defroute v1-ios (FragmentRoute.  "/mobile/ios") {:as params}
     (open-to-outer! nav-ch :ios (assoc params
                                   :_title "Apple iOS App Testing"
-                                  :_description "Build 5-star iOS apps by automating your development workgflow with Mobile Continuous Integration and Delivery.")))
+                                  :_description "Build 5-star iOS apps by automating your development workflow with Mobile Continuous Integration and Delivery.")))
 
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage :plans})
       (open-to-outer! nav-ch :pricing (assoc params
-                                        :_analytics-page "View Pricing Outer"
-                                        :_title "Plans and Pricing"))))
+                                             :_analytics-page "View Pricing Outer"
+                                             :_title "Pricing and Information"
+                                             :_description "Save time and cost by making your engineering team more efficient. Get started for free and see how many containers and parallelism you need to scale with your team."))))
 
   (defroute v1-jobs (FragmentRoute. "/jobs") {:as params}
     (open-to-outer! nav-ch :jobs (assoc params
-                                   :_analytics-page "View jobs"
-                                   :_title "Work at CircleCI")))
+                                        :_analytics-page "View jobs"
+                                        :_title "Search for Jobs at CircleCI"
+                                        :_description "Come work with us. Join our amazing team of highly technical engineers and business leaders to help us build great developer tools.")))
 
   (defroute v1-privacy (FragmentRoute. "/privacy") {:as params}
-    (open-to-outer! nav-ch :privacy (assoc params :_analytics-page "View Privacy")))
+    (open-to-outer! nav-ch :privacy (assoc params
+                                           :_analytics-page "View Privacy"
+                                           :_title "Privacy Policy"
+                                           :_description "Read our privacy policy to understand how we collect and use information about you.")))
 
   (defroute v1-security (FragmentRoute. "/security") {:as params}
-    (open-to-outer! nav-ch :security (assoc params :_analytics-page "View Security")))
+    (open-to-outer! nav-ch :security (assoc params
+                                            :_analytics-page "View Security"
+                                            :_title "Security Policy"
+                                            :_description "Read our security policy and guidelines and see how your data is safe with CircleCI.")))
 
   (defroute v1-security-hall-of-fame (FragmentRoute. "/security/hall-of-fame") {:as params}
     (open-to-outer! nav-ch :security-hall-of-fame (assoc params
                                                     :_title "Security Hall of Fame"
+                                                    :_description "Join our Security Hall of Fame by helping us make our platform more secure."
                                                     :_analytics-page "View Security Hall of Fame")))
 
   (defroute v1-enterprise (FragmentRoute. "/enterprise") {:as params}
     (open-to-outer! nav-ch :enterprise (assoc params
-                                         :_title "CircleCI for the enterprise")))
+                                              :_title "Enterprise Continuous Integration and Deployment"
+                                              :_description "Reduce risk with Enterprise Continuous Integration from CircleCI. Integrates seamlessly with Github Enterprise and the rest of your technology stack.")))
 
 
   ;; TODO: this should be stories/:company, but we'll wait for more stories
   (defroute v1-stories (FragmentRoute. "/stories/shopify") {:as params}
-    (open-to-outer! nav-ch :shopify-story (assoc params :_title "Shopify + CircleCI Success Story")))
+    (open-to-outer! nav-ch :shopify-story (assoc params
+                                                 :_title "Shopify's Success with Continuous Integration"
+                                                 :_description "See how Shopify has scaled its Continuous Integration efforts with CircleCI and made its developer team of over 130 people more efficient.")))
+
+  (defroute v1-features (FragmentRoute. "/features") {:as params}
+    (open-to-outer! nav-ch :features (assoc params
+                                            :_title "Continuous Integration Product and Features"
+                                            :_description "Build a better product and let CircleCI handle your testing. CircleCI helps your team improve productivity with faster development, reduced risk, and better code.")))
 
   (defroute v1-languages (FragmentRoute. "/features/:language") {:as params}
-    (open-to-outer! nav-ch :language-landing (assoc params
-                                               :_title (str "CircleCI for " (:language params)))))
+    (open-to-outer! nav-ch :language-landing params))
 
   (defroute v1-integrations (FragmentRoute. "/integrations/:integration") {:keys [integration] :as params}
     (open-to-outer! nav-ch :integrations (assoc params :integration (keyword integration))))
 
-  (defroute v1-changelog (FragmentRoute. "/changelog/:id") {:as params}
+  (defroute v1-changelog-individual (FragmentRoute. "/changelog/:id") {:as params}
     (open-to-outer! nav-ch :changelog params))
 
   (defroute v1-changelog (FragmentRoute. "/changelog") {:as params}
@@ -177,10 +195,10 @@
   (defroute v1-root (FragmentRoute. "/") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
-      (open-to-outer! nav-ch :landing params)))
+      (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
-  (defroute v1-root (FragmentRoute. "/home") {:as params}
-    (open-to-outer! nav-ch :landing params)))
+  (defroute v1-home (FragmentRoute. "/home") {:as params}
+    (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
 (defn define-spec-routes! [nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]

@@ -1,3 +1,11 @@
+#logo {
+  display: block;
+  & > svg {
+    fill: @gray-darker;
+    margin-top: -2px;
+  }
+}
+
 .breadcrumbs {
   margin-left: 1em;
   a {
@@ -119,25 +127,4 @@
     }
   }
 }
-.outer-nav {
-  a {
-    font-size: 1.1428572em; // 16px
-    &:hover {
-      i {
-        path {
-          stroke: @linkColorHover;
-          transition: stroke 200ms;
-        }
-      }
-    }
-    &:not(:hover) {
-      color: @black;
-    }
-    i {
-      path {
-        stroke: @grayDark;
-        stroke-width: 8;
-      }
-    }
-  }
-}
+

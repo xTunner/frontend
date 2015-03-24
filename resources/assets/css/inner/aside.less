@@ -1,42 +1,20 @@
 @aside_menu_width: (@tile * 3);
-@aside_nav_width: (@tile * 3);;
-@aside_nav_slim_width: @tile;
+@aside_nav_width: @tile;
 
 @em: @baseFontSize;
 @cascade_delay: 30ms;
 @aside_items: 7;
-@aside_slim_speed: 200ms;
+@aside_transition_speed: 200ms;
 @activity_color: fade(@white, 55);
 @activity_ico: (@em - 2);
 @activity_line: (@em * 1.5);
 @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
 
 .inner {
-  &.aside-slim {
-    .aside-left-nav {
-      .flex(0 0 @aside_nav_slim_width);
-      width: @aside_nav_slim_width;
-    }
-    .app-main { margin-left: @aside_nav_slim_width + @aside_menu_width; }
-    .aside-item {
-      .tip(right);
-      > i,
-      img {
-        margin-right: ((@tile - @baseFontSize) / 2);
-        transition-duration: (@aside_slim_speed * 1.5);
-      }
-      span {
-        opacity: 0;
-        visibility: hidden;
-        transition: visibility 0ms @aside_slim_speed, opacity @aside_slim_speed 0ms;
-        pointer-events: none;
-      }
-    }
-  }
   .app-main {
     .flexy(column);
     margin-left: @aside_nav_width + @aside_menu_width;
-    transition: margin @aside_slim_speed;
+    transition: margin @aside_transition_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   }
 }
@@ -55,6 +33,7 @@
   top: 0;
   a {
     outline: none;
+    text-decoration: none;
     &:not(:hover) {
       color: inherit;
     }
@@ -74,8 +53,6 @@
 .aside-left-menu {
   .flexy(column);
   height: 100vh;
-  transition: @aside_slim_speed;
-  transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
 }
 .aside-left-menu {
   .flex(0 0 @aside_menu_width);
@@ -83,6 +60,8 @@
   box-shadow: 1px 0 @grayBoxBorder;
   position: relative;
   overflow: hidden;
+  transition: @aside_transition_speed;
+  transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   header {
     .box-sizing(border-box);
     .flex(0 0 auto);
@@ -95,6 +74,7 @@
       .box-sizing(content-box);
       color: @blacken;
       -webkit-appearance: none; // gets rid of ugly shadow in safari
+      -moz-appearance: none; // gets rid of extra arrow in FF
       border: none;
       outline: none;
       margin: 0 (-@tile / 2) 0 0;
@@ -127,6 +107,15 @@
   .aside-activity {
     color: @grayLight;
     position: relative;
+
+    select {
+      background-color: @white;
+    }
+
+    ul {
+      padding-left: 0;
+    }
+
     &:hover {
       .project-settings-icon {
         svg {
@@ -167,7 +156,7 @@
   .shadow_noboss();
   background: transparent;
   white-space: nowrap;
-  transition: (@aside_slim_speed / 2) ease-in-out;
+  transition: (@aside_transition_speed / 2) ease-in-out;
   min-height: 1.5em;
 
   &:hover,
@@ -218,7 +207,7 @@
     min-width: @baseFontSize;
     margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
 
-    transition: margin @aside_slim_speed;
+    transition: margin @aside_transition_speed;
   }
 
   &.unread > i:after {
@@ -240,14 +229,14 @@
     height: @s;
     margin: 0 @baseFontSize 0 ((@tile - @s) / 2);
     border-radius: (@s / 2);
-    transition: margin (@aside_slim_speed * 2);
+    transition: margin (@aside_transition_speed * 2);
     pointer-events: none;
   }
 
   span {
     opacity: 1;
     visibility: visible;
-    transition: visibility 0ms (@aside_slim_speed / 2), opacity (@aside_slim_speed * 2) 0ms;
+    transition: visibility 0ms (@aside_transition_speed / 2), opacity (@aside_transition_speed * 2) 0ms;
   }
 }
 
@@ -301,7 +290,7 @@
           a {
             &:not(:last-child) {
               width: @activity_ico;
-              padding: 0 round((@activity_line - @activity_ico) / 2);
+              margin: 0 round((@activity_line - @activity_ico) / 2);
               transition: 100ms 100ms;
             }
             &:hover {
@@ -431,10 +420,10 @@
   width: @tile;
   height: 100%;
   background: @appBackgroundColor;
-  z-index: @zindexTooltip;
+  z-index: @zindex-tooltip;
   color: @appBackgroundColor;
   box-shadow: 1px 0 @grayBoxBorder;
-  transition: (@aside_slim_speed / 2);
+  transition: (@aside_transition_speed / 2);
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   overflow: hidden;
   &.open {
@@ -456,7 +445,7 @@
     font-weight: normal;
     color: @appBackgroundColor;
     white-space: nowrap;
-    transition: (@aside_slim_speed / 2);
+    transition: (@aside_transition_speed / 2);
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   }
   .close-menu {
@@ -464,7 +453,6 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: @em;
     height: @tile;
     padding: 0 @em;
     &:hover {

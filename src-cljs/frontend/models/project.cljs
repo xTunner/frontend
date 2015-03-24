@@ -73,14 +73,13 @@
 (defn oss? [project]
   (get-in project [:feature_flags :oss]))
 
+(defn osx? [project]
+  (get-in project [:feature_flags :osx]))
+
 (defn usable-containers [plan project]
   (+ (plan-model/usable-containers plan)
      (if (oss? project) plan-model/oss-containers 0)))
 
-(defn max-parallelism [plan project]
-  (+ (plan-model/max-parallelism plan)
-     (if (oss? project) plan-model/oss-containers 0)))
-
-(defn max-selectable-parallelism [plan project]
-  (min (max-parallelism plan project)
+(defn buildable-parallelism [plan project]
+  (min (plan-model/max-parallelism plan)
        (usable-containers plan project)))

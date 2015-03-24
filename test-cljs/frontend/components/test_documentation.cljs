@@ -48,16 +48,6 @@
   (let [test-doc (:continuous-deployment-with-heroku test-docs)
         test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
     (om/root documentation/docs-subpage test-doc {:target test-node})
-    (is (= "Continuous Deployment with Heroku"
-           (-> test-node
-               (sel1 "h1")
-               utils/text))
-        "Title renders")
-    (is (re-find #"Last Updated"
-                 (-> test-node
-                     (sel1 "p")
-                     utils/text))
-        "Updated date renders")
     (is (= "Quick start videos"
            (-> test-node
                (sel1 "h2")
@@ -73,12 +63,6 @@
   (let [test-doc (:troubleshooting-ruby test-docs)
         om-component (om/build documentation/docs-subpage test-doc)
         rendered-component (test-utils/render-into-document om-component)]
-    (is (= "Troubleshooting Ruby"
-           (-> rendered-component
-               om/get-node
-               (sel1 "h1")
-               utils/text))
-        "Title renders")
     (is (= "Do you need the latest version of Bundler?"
            (-> rendered-component
                om/get-node
@@ -98,7 +82,7 @@
     (is (= "Ruby (2)"
            (-> rendered-component
                om/get-node
-               (sel1 "li > a")
+               (sel1 "a[href='/docs/troubleshooting-ruby']")
                utils/text)))))
 
 (deftest test-article-list-rendering
@@ -124,11 +108,6 @@
         version-str "Git version: {{ versions.git }}"
         versions-str "Ruby versions:\n {{versions.ruby_versions | code-list}}\n"
         api-str "Recent builds: \n {{ api_data.recent_builds | api-endpoint }}\n"]
-    (is (= "Hey There!"  (-> markdown-str
-                             md->node
-                             (sel1 "h1")
-                             utils/text))
-        "Markdown renders")
     (is (= asset-path (-> asset-str
                           md->node
                           (sel1 "img")

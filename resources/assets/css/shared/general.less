@@ -27,10 +27,10 @@ body {
           stroke-width: 5;
         }
       }
-      padding: @paddingLarge;
+      padding: @padding-large-vertical @padding-large-horizontal;
 
       span {
-        padding: @paddingMini;
+        padding: @padding-xs-vertical @padding-xs-horizontal;
       }
       &:after {
         font-size: @baseFontSize;
@@ -54,7 +54,7 @@ body {
 }
 .main-foot {
   padding: @footerItemSize 0;
-  box-shadow: 0 1px @grayLightest inset;
+  border-top: 1px @panel-default-border solid;
   margin-top: auto;
   .logo {
     display: block;
@@ -66,11 +66,13 @@ body {
     background-repeat: no-repeat;
   }
 }
-.btn-primary {
-  @btnPrimaryBackground: #1f4d80;
-  @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
-  .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
-}
+
+// .btn-primary {
+//  @btnPrimaryBackground: #1f4d80;
+//  @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
+//  .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
+// }
+
 a {
   &:hover {
     cursor: pointer;

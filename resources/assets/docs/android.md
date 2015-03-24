@@ -2,235 +2,158 @@
 
 title: Test Android applications
 short_title: Android
-last_updated: Oct 17, 2014
 
 -->
 
-<!--
+# Android on CircleCI
 
-title: Test Android applications
-last_updated: Oct 17, 2014
+CircleCI supports building and testing Android applications.
 
--->
+### Dependencies
 
-CircleCI supports testing Android applications. The SDK is
-already installed on the VM at `/usr/local/android-sdk-linux`
+The SDK is already installed on the VM at `/usr/local/android-sdk-linux`. We export
+this path as `$ANDROID_HOME`.
 
-To save space, we don't download every android version, so you'll need to specify the versions
-you use:
+We have the following SDK packages preinstalled:
+
+{{ versions.android_sdk_packages | code-list}} 
+
+If there's an SDK package that's not here that you would like
+installed, you can install it as part of your build with:
 
 ```
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --filter "android-18"
+    - echo y | android update sdk --no-ui --all --filter "package-name""
 ```
 
-Note that if you need extended SDK components, such as build-tools, you'll
-also need to install those separately. For example:
+We also preinstall the Android NDK; it can be found at `$ANDROID_NDK`.
 
-```
-dependencies:
-  pre:
-    - echo y | android update sdk --no-ui --all --filter "build-tools-21.0.0"
-```
+`./gradlew dependencies` will also be run automatically if you have a
+Gradle wrapper checked in to the root of your repository.
 
-<h3 id="caching">Caching Android SDK components</h3>
+### Building Android Projects Manually
 
-Installing SDK components can be expensive if you do it every time, so to speed
-up your builds, it is wise to copy
-the Android SDK to your home directory and add it to the set of cached directories.
-Also, we want to have `ANDROID_HOME` point to this new location.
-
-To accomplish this, put something like the following in your `circle.yml`:
-
-```
-machine:
-  environment:
-    ANDROID_HOME: /home/ubuntu/android
-dependencies:
-  cache_directories:
-    - ~/.android
-    - ~/android
-  override:
-    - ./install-dependencies.sh
-```
-
-This references the `install-dependencies.sh`
-script. This is a script that you should write that installs
-any Android dependencies, creates any test AVDs that you'll need, etc.
-It should only do this once, so it should have a check to see
-if the cached directories already have all of your dependencies.
-
-For example, here is a basic `install-dependencies.sh`
-that installs `android-18`
-and some common tools. It also installs the x86 emulator image
-and builds an AVD called `testing`.
-(Note that if you ever change this file, you should clear your CircleCI
-cache.)
-
-```
-#!/bin/bash
-
-# Fix the CircleCI path
-export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
-
-DEPS="$ANDROID_HOME/installed-dependencies"
-
-if [ ! -e $DEPS ]; then
-  cp -r /usr/local/android-sdk-linux $ANDROID_HOME &&
-  echo y | android update sdk -u -a -t android-18 &&
-  echo y | android update sdk -u -a -t platform-tools &&
-  echo y | android update sdk -u -a -t build-tools-21.0.0 &&
-  echo y | android update sdk -u -a -t sys-img-x86-android-18 &&
-  echo y | android update sdk -u -a -t addon-google_apis-google-18 &&
-  echo n | android create avd -n testing -f -t android-18 &&
-  touch $DEPS
-fi
-```
-
-<h3 id="emulator">Starting the Android emulator</h3>
-
-For your actual tests, the first thing you should do is start up
-the emulator, as this usually takes several minutes, sadly.
-
-It's best if you can separate your actual build from installing it and
-running tests on the emulator. If at all possible, start the build, and
-then you MUST wait for the emulator to finish booting before
-installing the APK and running your tests.
-
-To wait for the emulator to boot, you need to wait for the
-`init.svc.bootanim` property to be set to `stopped`.
-
-Here's an example script for that, `wait.sh`:
-
-```
-#!/bin/bash
-
-export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
-
-while true; do
-  BOOTUP=$(adb shell getprop init.svc.bootanim | grep -oe '[a-z]\+')
-  if [[ "$BOOTUP" = "stopped" ]]; then
-    break
-  fi
-
-  echo "Got: '$BOOTUP', waiting for 'stopped'"
-  sleep 5
-done
-```
-
-Then, you need to boot up your emulator (in the background), start your build, wait for your
-emulator to finish booting, and then run your tests.
-In your `circle.yml` file, it will look something like
+If you only want to build your project you can create a debug build with
 
 ```
 test:
   override:
-  - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
-      background: true
-      parallel: true
-  - # start your build here
-  - ./wait.sh:
-      parallel: true
-  - # install your APK
-  - # run your tests
+    - ./gradlew assembleDebug
 ```
 
-### Running your tests
-
-The standard way to run tests in the Android emulator is with something like
+or build a release `.apk` and save it to [artifacts](build-artifacts) with
 
 ```
-adb logcat &
-adb wait-for-device
-adb shell am instrument -w com.myapp.test/android.test.InstrumentationTestRunner
+test:
+  override:
+    - ./gradlew assembleRelease
+    - cp -r project-name/build/outputs $CIRCLE_ARTIFACTS
 ```
 
-Unfortunately, this always succeeds, even if the tests fail.
-(There's a known bug that `adb shell` doesn't set its exit
-code to reflect the command that was run.
-See [Android issue 3254](https://code.google.com/p/android/issues/detail?id=3254).)
-
-The only way around this is to parse your test output in a script
-and check to see if your tests passed.
-For example, if the tests pass, there should be a line that looks like
-`OK (15 tests)`.
-
-Here's an example bash script that uses Python to look for that pattern,
-and exits with code 0 (success) if the success line is found, and otherwise
-with code 1 (error).
+If you start the emulator, you can install your APK on it with something lik
+the following:
 
 ```
-#!/bin/bash
-
-export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
-
-pushd YourTestApp
-
-# clear the logs
-adb logcat -c
-
-# run tests and check output
-python - << END
-import re
-import subprocess as sp
-import sys
-import threading
-import time
-
-done = False
-
-def update():
-  # prevent CircleCI from killing the process for inactivity
-  while not done:
-    time.sleep(5)
-    print "Running..."
-
-t = threading.Thread(target=update)
-t.dameon = True
-t.start()
-
-def run():
-  sp.Popen(['adb', 'wait-for-device']).communicate()
-  p = sp.Popen('adb shell am instrument -w com.myapp.test/android.test.InstrumentationTestRunner',
-               shell=True, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE)
-  return p.communicate()
-
-success = re.compile(r'OK \(\d+ tests\)')
-stdout, stderr = run()
-
-done = True
-print stderr
-print stdout
-
-if success.search(stderr + stdout):
-  sys.exit(0)
-else:
-  sys.exit(1) # make sure we fail if the test failed
-END
-
-RETVAL=$?
-
-# dump the logs
-adb logcat -d
-
-popd
-exit $RETVAL
+test:
+  override:
+    - adb install path/to/build.apk
 ```
 
 
-### Disable pre-Dexing to improve build performance
+#### Disable Pre-Dexing to Improve Build Performance
 
-By default gradle pre-dexes dependencies, converting their Java bytecode into
-Android bytecode. This speeds up development greatly since gradle only needs to
-do incremental dexing as you change code.
+By default the Gradle android plugin pre-dexes dependencies,
+converting their Java bytecode into Android bytecode. This speeds up
+development greatly since gradle only needs to do incremental dexing
+as you change code.
 
-Because CircleCI always runs clean builds this pre-dexing has no benefit, in fact
-it makes compilation slower and can also use large quantities of memory.
-We recommend [disabling
-pre-dexing](http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.)
-for Android builds on CircleCI.
+Because CircleCI always runs clean builds this pre-dexing has no
+benefit; in fact it makes compilation slower and can also use large
+quantities of memory.  We recommend
+[disabling pre-dexing][disable-pre-dexing] for Android builds on
+CircleCI.
 
+[disable-pre-dexing]: http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance
+
+### Testing Android Projects
+
+Firstly: if you have a Gradle wrapper in the root of your repository,
+we'll automatically run `./gradlew test`.
+
+<h4 id="emulator">Starting the Android Emulator</h3>
+
+Starting the android emulator can be an involved process and, unfortunately, can take
+a few minutes. You can start the emulator and wait for it to finish with something like
+the following:
+
+```
+test:
+  pre:
+    - emulator -avd circleci-android21 -no-audio -no-window:
+        background: true
+        parallel: true
+    - circle-android wait-for-boot
+```
+
+`circleci-android21` is an AVD preinstalled on the machine for Android 21 on the ARM V7 EABI.
+[You can create your own][create-avd] if this doesn't suit your purposes.
+
+[create-avd]: https://developer.android.com/tools/devices/managing-avds-cmdline.html#AVDCmdLine
+
+One important note: it's not possible to emulate Android on x86 or
+x86_64 on our build containers. The Android emulator requires KVM on
+Linux, and we can't provide it.
+
+`circle-android wait-for-boot` is a tool on our build containers that waits for the emulator
+to have finished booting. `adb wait-for-device` is not sufficient here; it only waits
+for the device's shell to be available, not for the boot process to finish. You can read more about
+this [here][starting-emulator].
+
+[starting-emulator]:https://devmaze.wordpress.com/2011/12/12/starting-and-stopping-android-emulators/
+
+
+#### Running Tests Against the Emulator
+
+The standard way to run tests in the Android emulator is with
+something like `./gradlew connectedAndroidTest`.
+
+You may also want to run commands directly with `adb shell`, after
+installing your APK on the emulator. Note however that `adb shell`
+[does not correctly forward exit codes][adb-shell-bug]. We provide
+Facebook's [`fb-adb`][fb-adb] tool on our container images to work
+around this: `fb-adb shell` *does* correctly report exit codes. You
+should prefer `fb-adb shell` over `adb shell` in CircleCI builds in
+order to prevent failing commands from being understood as passing.
+
+[adb-shell-bug]: https://code.google.com/p/android/issues/detail?id=3254
+[fb-adb]:https://github.com/facebook/fb-adb
+
+
+#### Test Metadata
+
+Many test suites for Android produce JUnit XML output. After running your tests,
+you can copy that output to `$CIRCLE_TEST_RESULTS` so that CircleCI will display
+the individual test results.
+
+### Sample circle.yml
+
+```
+test:
+  override:
+    # start the emulator
+    - emulator -avd circleci-android21 -no-audio -no-window:
+        background: true
+        parallel: true
+    # wait for it to have booted
+    - circle-android wait-for-boot
+    # run tests  against the emulator.
+    - ./gradlew connectedAndroidTest
+    # copy the build outputs to artifacts
+    - cp -r my-project/build/outputs $CIRCLE_ARTIFACTS
+    # copy the test results to the test results directory.
+    - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_RESULTS
+```
 
 Please don't hesitate to [contact us](mailto:sayhi@circleci.com)
 if you have any questions at all about how to best test Android on

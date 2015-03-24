@@ -47,7 +47,7 @@
     margin: 0;
   }
   aside {
-    width: @aside_nav_width;
+    width: @aside_menu_width;
     min-width: 200px;
     .flex(0 1.1 auto);
   }
@@ -304,7 +304,7 @@
       top: 0;
       left: 0;
       background: #555;
-      padding: .75em;
+      padding: 0.5em;
       color: @grayLightest;
       .box-sizing(border-box);
       top: 3%;
@@ -321,7 +321,7 @@
         font-size: @baseFontSize;
         display: block;
         padding: 3px;
-        margin-top: 1.5em;
+        margin-top: 0.5em;
         text-shadow: none;
       }
       &:empty {
@@ -334,7 +334,7 @@
         .circleButton();
         display: block;
         padding: 3px;
-        margin-top: 1.5em;
+        margin-top: 0.5em;
         text-shadow: none;
         font-size: @baseFontSize;
       }
@@ -377,7 +377,6 @@
   // Environment Variables Page
   .environment-variables-inner{
     margin: 2em 0;
-    max-width: @gridRowWidth;
     form {
       margin-top: 2em;
       width: 50%;
@@ -421,7 +420,6 @@
   }
   .dependencies-inner {
     margin: 2em 0;
-    max-width: @gridRowWidth;
   }
   // Tests Page
   .tests-page {
@@ -439,7 +437,6 @@
   }
   .tests-inner {
     margin: 2em 0;
-    max-width: @gridRowWidth;
     input {
       &[type="submit"] {
         .circleButton();
@@ -619,7 +616,6 @@
   }
   .sshkeys-inner {
     margin: 2em 0;
-    max-width: @gridRowWidth;
     a {
       .tableDrawerBtn();
       line-height: 1em;
@@ -654,7 +650,6 @@
       }
     }
     margin: 2em 0;
-    max-width: @gridRowWidth;
     .tooltip {
       font-size: @baseFontSize;
     }
@@ -700,7 +695,6 @@
   }
   .circle-api-page-inner, .status-page-inner {
     margin: 2em 0;
-    max-width: @gridRowWidth;
     .popover {
       width: 500px;
       top: 66px;

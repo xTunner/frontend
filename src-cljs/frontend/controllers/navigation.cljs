@@ -273,6 +273,7 @@
 (defmethod post-navigated-to! :landing
   [history-imp navigation-point _ previous-state current-state]
   (set-page-title! "Continuous Integration and Deployment")
+  (set-page-description! "Free Hosted Continuous Integration and Deployment for web and mobile applications. Build better apps and ship code faster with CircleCI.")
   (analytics/track-homepage))
 
 (defmethod post-navigated-to! :project-settings
@@ -408,6 +409,8 @@
 
 (defmethod post-navigated-to! :changelog
   [history-imp navigation-point args previous-state current-state]
+  (set-page-title! "Track CircleCI Updates")
+  (set-page-description! "Track our platform changes and updates via the CircleCI Changelog. Stay up to date with the latest in Continuous Integration.")
   (scroll! args)
   (go (let [comms (get-in current-state [:comms])
             api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
@@ -454,6 +457,7 @@
        doc
        (do
          (set-page-title! (:title doc))
+         (set-page-description! (:description doc))
          (scroll! params)
          (analytics/track-page "View Docs")
          (when (and (empty? (:children doc))
@@ -472,12 +476,23 @@
 
 (defmethod post-navigated-to! :language-landing
   [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
-  (post-default navigation-point args)
-  (analytics/track-page "View Language Landing" {:language language}))
+  (let [titles {:ruby "Ruby and Ruby on Rails CI Support"
+                :python "Python Continuous Integration"}
+        descriptions {:ruby "CircleCI makes Continuous Integration for your Ruby project simple and easy. Get started testing for free!"
+                      :python "Get started for free with Continuous Integration and Deployment for your Python projects. CircleCI integrates with any language."}]
+    (when-let [title (get titles language)]
+      (set-page-title! (get titles language)))
+    (when-let [description (get descriptions language)]
+      (set-page-description! (get descriptions language)))
+    (analytics/track-page "View Language Landing" {:language language})))
 
 (defmethod post-navigated-to! :integrations
   [history-imp navigation-point {:keys [integration] :as args} previous-state current-state]
-  (let [titles {:docker "CircleCI and Docker"
-                :heroku "Deploy to Heroku from CircleCI"
-                :saucelabs "Test with Sauce Labs on CircleCI"}]
-    (set-page-title! (get titles integration))))
+  (let [titles {:docker "Integration with Docker Containers"
+                :heroku "Integrate with Heroku Deployment"
+                :saucelabs "Sauce Labs Browser Testing"}
+        descriptions {:docker "CircleCI integrates with your Docker container so you can easily build, run, and ship your applications anywhere."
+                      :heroku "CircleCI integrates seamlessly with Heroku to provide a simple continuous delivery workflow for your organization."
+                      :saucelabs "Integrate with SauceLabs to test against hundreds of desktop and mobile browsers with Selenium WebDriver to get rid of your browser bugs."}]
+    (set-page-title! (get titles integration))
+    (set-page-description! (get descriptions integration))))

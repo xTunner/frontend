@@ -26,7 +26,6 @@
     (render [_]
       (html
        [:div.mobile.page
-        (common/nav owner)
         (nav :overview)
         [:section.intro.odd-section {}
          icons/htc

@@ -119,23 +119,6 @@
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
-(defn context-menu [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:div.aside-user {:class (when (get-in app state/user-options-shown-path)
-                                   "open")}
-         [:header
-          [:h5 "Your Account"]
-          [:a.close-menu
-           {:on-click #(raise! owner [:user-options-toggled])}
-           (common/ico :fail-light)]]
-         [:div.aside-user-options
-          [:a.aside-item {:href "/account"} "Settings"]
-          [:a.aside-item {:href "/invite-teammates"} "Invite a Teammate"]
-          [:a.aside-item {:href "/logout"} "Logout"]]]))))
-
 (defn expand-menu-items [items subpage]
   (for [item items]
     (case (:type item)
@@ -254,15 +237,13 @@
     om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
-      (let [slim-aside? (get-in app state/slim-aside-path)
-            show-all-branches? (get-in app state/show-all-branches-path)
+      (let [show-all-branches? (get-in app state/show-all-branches-path)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)]
         (html
          [:nav.aside-left-menu
           (om/build project-settings-menu app)
           (om/build org-settings-menu app)
-          (om/build context-menu app)
           [:div.aside-activity.open
            [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
             [:header
@@ -288,75 +269,60 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [slim-aside? (get-in app state/slim-aside-path)
-            user (get-in app state/user-path)]
-        (html
-         [:nav.aside-left-nav
+      (html
+       [:nav.aside-left-nav
 
-          [:a.aside-item.logo  {:title "Home"
-                                :data-placement "right"
-                                :data-trigger "hover"
-                                :href "/"}
-           [:div.logomark
-            (common/ico :logo)]]
+        [:a.aside-item.logo  {:title "Home"
+                              :data-placement "right"
+                              :data-trigger "hover"
+                              :href "/"}
+         [:div.logomark
+          (common/ico :logo)]]
 
-          [:a.aside-item {:on-click #(raise! owner [:user-options-toggled])
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :title "Account"
-                          :class (when (get-in app state/user-options-shown-path)
-                                  "open")}
-           [:img {:src (gh-utils/make-avatar-url opts)}]
-           (:login opts)]
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Settings"
+                        :href "/account"}
+         [:img {:src (gh-utils/make-avatar-url opts)}]]
 
-          [:a.aside-item {:title "Documentation"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :href "/docs"}
-           [:i.fa.fa-copy]
-           [:span "Documentation"]]
+        [:a.aside-item {:title "Documentation"
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :href "/docs"}
+         [:i.fa.fa-copy]]
 
-          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
-                          :title "Report Bug"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :data-bind "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
-           [:i.fa.fa-bug]
-           [:span "Report Bug"]]
+        [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
+                        :title "Support"
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
+         [:i.fa.fa-comments]]
 
-          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
-                          :title "Support"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
-           [:i.fa.fa-comments]
-           [:span "Support"]]
+        [:a.aside-item {:href "/add-projects",
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :title "Add Projects"}
+         [:i.fa.fa-plus-circle]]
 
-          [:a.aside-item {:href "/add-projects",
-                                       :data-placement "right"
+        [:a.aside-item {:href "/invite-teammates",
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :title "Invite your teammates"}
+         [:i.fa.fa-user]]
+
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Changelog"
+                        :href "/changelog"
+                        :class (when (changelog-updated-since? (:last_viewed_changelog user))
+                                 "unread")}
+         [:i.fa.fa-bell]]
+
+        [:a.aside-item.push-to-bottom {:data-placement "right"
                                        :data-trigger "hover"
-                                       :title "Add Projects"}
-           [:i.fa.fa-plus-circle]
-           [:span "Add Projects"]]
-
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Changelog"
-                          :href "/changelog"
-                          :class (when (changelog-updated-since? (:last_viewed_changelog user))
-                                       "unread")}
-           [:i.fa.fa-bell]
-           [:span "Changelog"]]
-
-          [:a.aside-item.push-to-bottom {:data-placement "right"
-                                         :data-trigger "hover"
-                                         :title "Expand"
-                                         :on-click #(raise! owner [:slim-aside-toggled])}
-           (if slim-aside?
-             [:i.fa.fa-long-arrow-right]
-             (list
-              [:i.fa.fa-long-arrow-left]
-              [:span "Collapse"]))]])))))
+                                       :title "Logout"
+                                       :href "/logout"}
+         [:i.fa.fa-power-off]]]))))
 
 (defn aside [app owner]
   (reify

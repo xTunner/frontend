@@ -95,7 +95,7 @@ Xvfb runs on port 99, and the appropriate `DISPLAY` environment variable has alr
 
 Selenium-based tests are able to use Chrome stable channel
 (Chrome {{ versions.Chrome }} with chromedriver {{ versions.chromedriver }}
-as of October, 2013), and Firefox {{ versions.Firefox }}.
+as of October, 2014), and Firefox {{ versions.Firefox }}.
 Chromedriver 23.0 is also available as `chromedriver23`
 
 <span class='label label-info'>Help</span>

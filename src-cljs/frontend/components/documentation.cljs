@@ -53,17 +53,17 @@
 
 (defrender article-list [articles]
   (html
-   [:ul.article_list
+   [:ul.list-unstyled
     (for [article articles]
       [:li {:id (str "list_entry_" (:slug article))}
        [:a {:href (:url article)} (:title_with_child_count article)]])]))
 
 (defrender docs-category [category]
   (html
-   [:ul.articles
+   [:ul.nav.nav-stacked
     [:li {:id (str "category_header_" (:slug category))}
-     [:h4
-      [:a {:href (:url category)} (:title category)]]]
+     [:a {:href (:url category)}
+      [:h4 (:title category)]]]
    (for [child (:children category)]
       [:li {:id (gstring/format "category_entry_%_%" (:slug category) (:slug child))}
        [:a {:href (:url child)} (:short_title_with_child_count child)]])]))
@@ -72,13 +72,6 @@
   (html
    [:div
     (om/build-all docs-category categories)]))
-
-(defrender docs-title [doc]
-  (html
-   [:div
-    [:h1 (:title doc)]
-    (when-let [last-updated (:lastUpdated doc)]
-      [:p.meta [:strong "Last Updated "] last-updated])]))
 
 (defrender front-page [app owner]
   (let [query-results (get-in app state/docs-articles-results-path)
@@ -97,14 +90,16 @@
             [:ul.query_results
              (for [result query-results]
                [:li [:a {:href (:url result)} (:title result)]])]])])
+      [:h4 "Having problems? Check these sections:"]
       [:div.row
-       [:h4 "Having problems? Check these sections"]
-       [:ul.articles.span4
-        [:h4 "Getting started"]
-        (om/build article-list (get-in docs [:gettingstarted :children]))]
-       [:ul.articles.span4
-        [:h4 "Troubleshooting"]
-        (om/build article-list (get-in docs [:troubleshooting :children]))]]])))
+       [:div.col-sm-6
+        [:ul.list-unstyled.articles.well
+         [:h4 "Getting started"]
+         (om/build article-list (get-in docs [:gettingstarted :children]))]]
+       [:div.col-sm-6
+        [:ul.list-unstyled.articles.well
+         [:h4 "Troubleshooting"]
+         (om/build article-list (get-in docs [:troubleshooting :children]))]]]])))
 
 (defn add-link-targets [node]
   (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
@@ -146,7 +141,6 @@
 (defrender docs-subpage [doc owner opts]
   (html
    [:div
-    (om/build docs-title doc)
     (if-not (empty? (:children doc))
       (om/build article-list (:children doc))
       (if (:markdown doc)
@@ -158,18 +152,22 @@
         fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
         categories ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
-                          :reference :parallelism :privacy-security) docs)]
+                          :reference :parallelism :privacy-security) docs)
+        doc (get docs subpage)]
     (html
      [:div.docs.page
-      [:div.banner [:div.container [:h1 "Documentation"]]]
+      [:div.banner [:div.container [:h1 (if doc
+                                          (:title doc)
+                                          "Documentation")]]]
       [:div.container.content
        [:div.row
-        [:aside.span3
-        (om/build docs-categories categories)]
-        [:div.offset1.span8
+        [:aside.col-sm-3
+         (om/build docs-categories categories)]
+        [:div.col-sm-9
          (when subpage
            (om/build docs-search app))
          [:article
           (if-not subpage
             (om/build front-page app)
-            (om/build docs-subpage (get docs subpage) {:opts {:_fragment fragment}}))]]]]])))
+            (om/build docs-subpage doc {:opts {:_fragment fragment}}))]]]]])))
+
