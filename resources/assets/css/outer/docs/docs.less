@@ -74,29 +74,17 @@
   }
 
   .doc-search {
-    margin: 20px 0 20px;
+    @input-width: 86%;
+    @input-left-padding: 45px;
+    @dropdown-padding: 10px;
 
-    ul {
-      margin: 0;
-    }
+    margin: 20px 0 20px;
+    position: relative;
 
     input {
-      width: 86%;
+      width: @input-width;
       margin: 0;
-      padding-left: 45px;
-    }
-
-    li.active {
-      background-color: #33659c;
-      strong {
-	color: white;
-      }
-      color: white;
-    }
-
-    li > a {
-      color: #333;
-      background-color: white;
+      padding-left: @input-left-padding;
     }
 
     i.fa.fa-search {
@@ -105,6 +93,15 @@
       margin-left: 5px;
       font-size: 25px;
       color: #ddd; // TODO: Get <input> to use bootstrap/variables, then use @input-border-color here
+    }
+
+    .typeahead {
+      margin-left: @input-left-padding - @dropdown-padding;
+      width: calc(~'@{input-width} - @{input-left-padding} * 2 + @{dropdown-padding} * 2');
+
+      a {
+	padding-left: @dropdown-padding;
+      }
     }
   }
 

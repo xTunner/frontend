@@ -20,6 +20,11 @@
   ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
                                    :reference :parallelism :privacy-security) docs))
 
+(defrender markdown [markdown]
+  (html
+   [:span {:dangerouslySetInnerHTML
+           #js {:__html  (doc-utils/render-markdown markdown)}}]))
+
 (defn docs-search [app owner]
   (reify
     om/IDidMount
@@ -47,7 +52,8 @@
          [:form.doc-search.clearfix.form-search
           [:i.fa.fa-search]
           [:input.form-control#searchQuery
-           {:type "text",
+           {:type "text"
+            :auto-complete "off"
             :value query
             :on-change #(utils/edit-input owner state/docs-search-path %)
             :on-key-down #(when (= (.-keyCode %) (.-ENTER KeyCodes))
@@ -93,7 +99,10 @@
                  [:h5 "Articles matching \"" query "\""]
                  [:ul.query_results
                   (for [result query-results]
-                    [:li [:a {:href (:url result)} (:title result)]])]]
+                    [:li
+                     [:a {:href (:url result)} (:title result)]
+;                     [:p (:snippet_text result)]
+                     ])]]
                 query
                 [:p "No articles found matching \"" [:strong query] "\""]
                 :else
@@ -129,11 +138,6 @@
                    (string/replace #"-$" "")))]
       (utils/set-html! heading
                        (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
-
-(defrender markdown [markdown]
-  (html
-   [:span {:dangerouslySetInnerHTML
-           #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
 (defn subpage-content [doc owner opts]
   (reify
