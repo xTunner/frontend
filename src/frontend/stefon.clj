@@ -112,7 +112,7 @@
            "docs/time-seconds.md"
            "docs/troubleshooting-browsers.md"
            "docs/troubleshooting-clojure.md"
-           "docs/troubleshooting-guide"
+           "docs/troubleshooting-guide.md"
            "docs/troubleshooting-haskell.md"
            "docs/troubleshooting-nodejs.md"
            "docs/troubleshooting-php.md"
