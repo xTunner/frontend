@@ -78,32 +78,41 @@
    [:div
     (om/build-all docs-category categories)]))
 
+(defn search-results [query-results owner opts]
+  (reify
+    om/IDisplayName
+    (display-name [_]
+      "query-results")
+    om/IRender
+    (render [_]
+      (let [query (:query opts)]
+        (html [:div.article_list
+               (cond
+                (seq query-results)
+                [:div
+                 [:h5 "Articles matching \"" query "\""]
+                 [:ul.query_results
+                  (for [result query-results]
+                    [:li [:a {:href (:url result)} (:title result)]])]]
+                query
+                [:p "No articles found matching \"" [:strong query] "\""]
+                :else
+                [:p "Type your query and press enter to search."])])))))
+
 (defrender front-page [app owner]
-  (let [query-results (get-in app state/docs-articles-results-path)
-        query (get-in app state/docs-articles-results-query-path)
-        docs (get-in app state/docs-data-path)]
+  (let [docs (get-in app state/docs-data-path)]
     (html
-     [:div
-      (when query-results
-        [:div.article_list
-         (if (empty? query-results)
-           [:p "No articles found matching \"" [:strong query] "\""]
-           [:div
-            [:h5 "Articles matching \"" query "\""]
-            [:ul.query_results
-             (for [result query-results]
-               [:li [:a {:href (:url result)} (:title result)]])]])])
-      [:div.front-page-categories
-       (for [category (categories docs)]
-         (when-let [slug (:slug category)]
-           [:div.front-page-category
-            [:img {:id (gstring/format "doc-image-%s" slug)
-                   :src (-> "/img/outer/docs/%s.svg" (gstring/format slug) utils/cdn-path)}]
-            [:h3 (:title category)]
-            [:ul.list-unstyled
-             [:li [:a {:href (-> category :children first :url)}
-                   (-> category :children first :title)]]
-             [:li [:a {:href (:url category)} [:em (gstring/format "%d more" (-> category :children rest count))]]]]]))]])))
+     [:div.front-page-categories
+      (for [category (categories docs)]
+        (when-let [slug (:slug category)]
+          [:div.front-page-category
+           [:img {:id (gstring/format "doc-image-%s" slug)
+                  :src (-> "/img/outer/docs/%s.svg" (gstring/format slug) utils/cdn-path)}]
+           [:h3 (:title category)]
+           [:ul.list-unstyled
+            [:li [:a {:href (-> category :children first :url)}
+                  (-> category :children first :title)]]
+            [:li [:a {:href (:url category)} [:em (gstring/format "%d more" (-> category :children rest count))]]]]]))])))
 
 (defn add-link-targets [node]
   (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
@@ -156,7 +165,9 @@
   (let [subpage (get-in app [:navigation-data :subpage])
         fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
-        doc (get docs subpage)]
+        doc (get docs subpage)
+        query (get-in app state/docs-articles-results-query-path)
+        query-results (get-in app state/docs-articles-results-path)]
     (html
      [:div.docs.page
       [:div.content
@@ -164,7 +175,7 @@
         (om/build docs-categories (categories docs))]
        [:article
         (om/build docs-search app)
-        (if-not subpage
-          (om/build front-page app)
-          (om/build docs-subpage doc {:opts {:_fragment fragment}}))]]])))
-
+        (cond
+         (= subpage :search) (om/build search-results query-results {:opts {:query query}})
+         subpage (om/build docs-subpage doc {:opts {:_fragment fragment}})
+         :else (om/build front-page app))]]])))
