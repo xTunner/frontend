@@ -261,7 +261,7 @@
                         {:react-key (project-model/id project)
                          :opts {:login (:login opts)}}))]]])))))
 
-(defn aside-nav [app owner opts]
+(defn aside-nav [app owner {user :user}]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IDidMount
@@ -283,7 +283,7 @@
                         :data-trigger "hover"
                         :title "Settings"
                         :href "/account"}
-         [:img {:src (gh-utils/make-avatar-url opts)}]]
+         [:img {:src (gh-utils/make-avatar-url user)}]]
 
         [:a.aside-item {:title "Documentation"
                         :data-placement "right"
@@ -334,5 +334,5 @@
             avatar-url (gh-utils/make-avatar-url user)]
         (html
          [:aside.app-aside-left
-          (om/build aside-nav app {:opts user})
+          (om/build aside-nav app {:opts {:user user}})
           (om/build activity app {:opts {:login login}})])))))
