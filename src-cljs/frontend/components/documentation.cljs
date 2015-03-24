@@ -16,6 +16,10 @@
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.events KeyCodes]))
 
+(defn categories [docs]
+  ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
+                                   :reference :parallelism :privacy-security) docs))
+
 (defn docs-search [app owner]
   (reify
     om/IDidMount
@@ -89,16 +93,17 @@
             [:ul.query_results
              (for [result query-results]
                [:li [:a {:href (:url result)} (:title result)]])]])])
-      [:h4 "Having problems? Check these sections:"]
-      [:div.row
-       [:div.col-sm-6
-        [:ul.list-unstyled.articles.well
-         [:h4 "Getting started"]
-         (om/build article-list (get-in docs [:gettingstarted :children]))]]
-       [:div.col-sm-6
-        [:ul.list-unstyled.articles.well
-         [:h4 "Troubleshooting"]
-         (om/build article-list (get-in docs [:troubleshooting :children]))]]]])))
+      [:div.front-page-categories
+       (for [category (categories docs)]
+         (when-let [slug (:slug category)]
+           [:div.front-page-category
+            [:img {:id (gstring/format "doc-image-%s" slug)
+                   :src (-> "/img/outer/docs/%s.svg" (gstring/format slug) utils/cdn-path)}]
+            [:h3 (:title category)]
+            [:ul.list-unstyled
+             [:li [:a {:href (-> category :chilren first :url)}
+                   (-> category :children first :title)]]
+             [:li [:a {:href (:url category)} [:em (gstring/format "%d more" (-> category :children rest count))]]]]]))]])))
 
 (defn add-link-targets [node]
   (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
@@ -151,14 +156,12 @@
   (let [subpage (get-in app [:navigation-data :subpage])
         fragment (get-in app [:navigation-data :_fragment])
         docs (get-in app state/docs-data-path)
-        categories ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
-                          :reference :parallelism :privacy-security) docs)
         doc (get docs subpage)]
     (html
      [:div.docs.page
       [:div.content
        [:aside
-        (om/build docs-categories categories)]
+        (om/build docs-categories (categories docs))]
        [:article
         (om/build docs-search app)
         (if-not subpage
