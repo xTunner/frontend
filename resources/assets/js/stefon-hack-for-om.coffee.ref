@@ -128,6 +128,7 @@ window.stefon_hack_for_om =
     "/docs/time-seconds.md": '(asset-path "docs/time-seconds.md")'
     "/docs/troubleshooting-browsers.md": '(asset-path "docs/troubleshooting-browsers.md")'
     "/docs/troubleshooting-clojure.md": '(asset-path "docs/troubleshooting-clojure.md")'
+    "/docs/troubleshooting-guide.md": '(asset-path "docs/troubleshooting-guide.md")'
     "/docs/troubleshooting-haskell.md": '(asset-path "docs/troubleshooting-haskell.md")'
     "/docs/troubleshooting-nodejs.md": '(asset-path "docs/troubleshooting-nodejs.md")'
     "/docs/troubleshooting-php.md": '(asset-path "docs/troubleshooting-php.md")'
