@@ -175,7 +175,11 @@
         (om/build docs-categories (categories docs))]
        [:article
         (om/build docs-search app)
-        (cond
-         (= subpage :search) (om/build search-results query-results {:opts {:query query}})
-         subpage (om/build docs-subpage doc {:opts {:_fragment fragment}})
-         :else (om/build front-page app))]]])))
+        (if (= subpage :search)
+          (om/build search-results query-results {:opts {:query query}})
+          [:div
+           (when query
+             [:p [:a {:href "/docs/search"} (gstring/format "Back to search results for \"%s\"" query)]])
+           (if subpage
+             (om/build docs-subpage doc {:opts {:_fragment fragment}})
+             (om/build front-page app))])]]])))
