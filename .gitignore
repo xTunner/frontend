@@ -10,6 +10,7 @@ pom.xml.asc
 /node_modules
 /resources/public/cljs
 /resources/components
+/resources/app.css.min
 /resources/assets/css/app.css
 /resources/public/assets/
 /resources/assets/docs/manifest.json
