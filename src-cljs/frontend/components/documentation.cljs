@@ -101,7 +101,7 @@
                    :src (-> "/img/outer/docs/%s.svg" (gstring/format slug) utils/cdn-path)}]
             [:h3 (:title category)]
             [:ul.list-unstyled
-             [:li [:a {:href (-> category :chilren first :url)}
+             [:li [:a {:href (-> category :children first :url)}
                    (-> category :children first :title)]]
              [:li [:a {:href (:url category)} [:em (gstring/format "%d more" (-> category :children rest count))]]]]]))]])))
 
