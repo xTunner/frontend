@@ -25,6 +25,10 @@
   }
 
   aside {
+    .active {
+      font-weight: bold;
+    }
+
     float: left;
     width: @aside-width;
 
@@ -33,7 +37,7 @@
     border-right: 1px solid @panel-default-border;
     background-color: @aside-bg;
 
-    a:hover {
+    li:hover {
       background-color: darken(@aside-bg, 5%);
     }
   }

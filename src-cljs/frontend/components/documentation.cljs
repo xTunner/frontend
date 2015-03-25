@@ -69,20 +69,19 @@
       [:li {:id (str "list_entry_" (:slug article))}
        [:a {:href (:url article)} (:title_with_child_count article)]])]))
 
-(defrender docs-category [category]
-  (html
-   [:ul.nav.nav-stacked
-    [:li {:id (str "category_header_" (:slug category))}
-     [:a {:href (:url category)}
-      [:h4 (:title category)]]]
-   (for [child (:children category)]
-      [:li {:id (gstring/format "category_entry_%_%" (:slug category) (:slug child))}
-       [:a {:href (:url child)} (:short_title_with_child_count child)]])]))
-
-(defrender docs-categories [categories]
+(defrender docs-categories [{:keys [categories selected]}]
   (html
    [:div
-    (om/build-all docs-category categories)]))
+    (for [category categories]
+      [:ul.nav.nav-stacked
+       [:li {:id (str "category_header_" (:slug category))}
+        [:a {:href (:url category)}
+         [:h4 {:class (when (= (:slug category) (:slug selected)) "active")} (:title category)]]]
+       (for [child (:children category)]
+         [:li {:id (gstring/format "category_entry_%s_%s" (:slug category) (:slug child))}
+          [:a {:href (:url child)
+               :class (when (= (:slug child) (:slug selected)) "active")}
+           (:short_title_with_child_count child)]])])]))
 
 (defn search-results [query-results owner opts]
   (reify
@@ -168,7 +167,7 @@
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
         fragment (get-in app [:navigation-data :_fragment])
-        docs (get-in app state/docs-data-path)
+        docs (-> app (get-in state/docs-data-path) (assoc-in [subpage :active] true))
         doc (get docs subpage)
         query (get-in app state/docs-articles-results-query-path)
         query-results (get-in app state/docs-articles-results-path)]
@@ -176,7 +175,7 @@
      [:div.docs.page
       [:div.content
        [:aside
-        (om/build docs-categories (categories docs))]
+        (om/build docs-categories {:categories (categories docs) :selected doc})]
        [:article
         (om/build docs-search app)
         (if (= subpage :search)
