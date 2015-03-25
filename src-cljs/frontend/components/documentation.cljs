@@ -49,7 +49,7 @@
     (render [_]
       (let [query (get-in app state/docs-search-path)]
         (html
-         [:form.doc-search.clearfix.form-search
+         [:form.doc-search
           [:i.fa.fa-search]
           [:input.form-control#searchQuery
            {:type "text"
@@ -183,7 +183,7 @@
           (om/build search-results query-results {:opts {:query query}})
           [:div
            (when query
-             [:p [:a {:href "/docs/search"} (gstring/format "Back to search results for \"%s\"" query)]])
+             [:p.back-to-search [:a {:href "/docs/search"} (gstring/format "Back to search results for \"%s\"" query)]])
            (if subpage
              (om/build docs-subpage doc {:opts {:_fragment fragment}})
              (om/build front-page app))])]]])))

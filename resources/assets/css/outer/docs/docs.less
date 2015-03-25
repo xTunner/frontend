@@ -1,13 +1,11 @@
-@aside-bg: darken(@body-bg, 2%);
-
 .docs {
+  @article-max-width: 1000px;
+  @aside-width: 400px;
+  @aside-bg: darken(@body-bg, 2%);
 
   .content {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
     padding: 0;
-    background: linear-gradient(90deg, @aside-bg, @aside-bg 50%, @body-bg 50%);
+    .clearfix;
   }
 
   .front-page-categories {
@@ -17,7 +15,7 @@
   }
 
   .front-page-category {
-    width: 310px;
+    width: 300px;
     padding: 15px;
     text-align: center;
 
@@ -27,18 +25,31 @@
   }
 
   aside {
+    float: left;
+    width: @aside-width;
+
     padding: 15px;
+
+    border-right: 1px solid @panel-default-border;
+    background-color: @aside-bg;
+
     a:hover {
       background-color: darken(@aside-bg, 5%);
     }
   }
 
+  aside.invisible {
+    flex: 0 1 auto;
+  }
+
   article {
-    padding: 15px 15px 15px 50px;
-    background-color: @body-bg;
-    border-left: 1px solid @table-border-color;
-    flex: 1 1;
-    max-width: 1000px;
+    padding: 0 50px;
+    max-width: @article-max-width;
+    margin: 0 auto;
+    @media(max-width: (@article-max-width + @aside-width * 2)) {
+      float: left;
+      width: calc(~'100vw - @{aside-width}');
+    }
 
     h2 > a, h3 > a, h4 > a, h5 > a, h6 > a {
       color: @gray-darker;
@@ -66,16 +77,18 @@
     p {
       margin-bottom: 20px;
     }
-    
+
     iframe {
       margin-bottom: 20px;
     }
 
   }
 
+
+  @search-left-padding: 45px;
+
   .doc-search {
-    @input-width: 86%;
-    @input-left-padding: 45px;
+    @input-width: 100%;
     @dropdown-padding: 10px;
 
     margin: 20px 0 20px;
@@ -84,7 +97,7 @@
     input {
       width: @input-width;
       margin: 0;
-      padding-left: @input-left-padding;
+      padding-left: @search-left-padding;
     }
 
     i.fa.fa-search {
@@ -92,17 +105,23 @@
       padding: 10px;
       margin-left: 5px;
       font-size: 25px;
-      color: #ddd; // TODO: Get <input> to use bootstrap/variables, then use @input-border-color here
+      color: #ddd;
+      // TODO: Get <input> to use bootstrap/variables, then use @input-border-color here
+
     }
 
     .typeahead {
-      margin-left: @input-left-padding - @dropdown-padding;
-      width: calc(~'@{input-width} - @{input-left-padding} * 2 + @{dropdown-padding} * 2');
+      margin-left: @search-left-padding - @dropdown-padding;
+      width: calc(~'@{input-width} - @{search-left-padding} * 2 + @{dropdown-padding} * 2');
 
       a {
 	padding-left: @dropdown-padding;
       }
     }
+  }
+
+  .back-to-search {
+    padding-left: @search-left-padding;
   }
 
   h1 {
