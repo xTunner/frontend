@@ -64,7 +64,7 @@
 
 (defrender article-list [articles]
   (html
-   [:ul.list-unstyled
+   [:ul.article-list
     (for [article articles]
       [:li {:id (str "list_entry_" (:slug article))}
        [:a {:href (:url article)} (:title_with_child_count article)]])]))
@@ -91,12 +91,12 @@
     om/IRender
     (render [_]
       (let [query (:query opts)]
-        (html [:div.article_list
+        (html [:div
                (cond
                 (seq query-results)
                 [:div
                  [:h5 "Articles matching \"" query "\""]
-                 [:ul.query_results
+                 [:ul.article-list
                   (for [result query-results]
                     [:li
                      [:a {:href (:url result)} (:title result)]
