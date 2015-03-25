@@ -38,18 +38,6 @@
     (-> (handler req)
         (response/header "Access-Control-Allow-Origin" "*"))))
 
-(defn less-override
-  "Serve LESS files instead of letting Stefon handle them. (Needed for sourcemap support)"
-  [handler]
-  (fn [req]
-    (let [path (:uri req)
-          file (or
-                 (if (= "/app.css.map" path) path)
-                 (last (re-matches #"^/((?:(?:assets/css)|components)/.*\.less)$" path)))]
-      (if file
-        (response/resource-response file)
-        (handler req)))))
-
 (defn wrap-hosted-scripts
   "Redirects to the canonical url for a hosted script if we're using stefon in development mode."
   [handler stefon-options hosted-scripts]
@@ -121,7 +109,6 @@
           (httpkit/run-server (-> (site #'routes)
                                   (stefon/asset-pipeline stefon-options)
                                   (wrap-hosted-scripts stefon-options frontend.stefon/hosted-scripts)
-                                  (less-override)
                                   (proxy/wrap-handler proxy-config)
                                   (cross-origin-everything))
                               {:port port}))

@@ -18,8 +18,6 @@
 
 (def less-dir "resources/assets/css")
 (def less-file "resources/assets/css/app.css.less")
-(def less-map "resources/app.css.map")
-(def less-map-url "/app.css.map")
 (def output-file "resources/assets/css/app.css")
 
 (def lessc-path "node_modules/.bin/lessc")
@@ -31,10 +29,7 @@
 
 (defn compile! [& {:keys [src dest minify]
                    :or {src less-file, dest output-file, minify false}}]
-  (let [standard-flags (format "--source-map-basepath=$PWD/resources --source-map=%s --source-map-url=%s --relative-urls" less-map less-map-url)
-        flags (if minify
-                (str standard-flags " --compress")
-                standard-flags)
+  (let [flags (if minify "--compress" "")
         cmd (format "%s %s %s > %s" lessc-path flags src dest)
         res (shell/sh "bash" "-c" cmd)]
     (if (not= 0 (:exit res))
