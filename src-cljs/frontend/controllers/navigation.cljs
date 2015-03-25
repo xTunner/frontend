@@ -206,7 +206,6 @@
 
 (defmethod navigated-to :add-projects
   [history-imp navigation-point args state]
-  (println "add projects")
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
