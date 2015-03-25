@@ -31,7 +31,7 @@
 
 (defn compile! [& {:keys [src dest minify]
                    :or {src less-file, dest output-file, minify false}}]
-  (let [standard-flags (format "--source-map-basepath=$PWD/resources --source-map=%s --source-map-url=%s --relative-urls" less-map less-map-url)
+  (let [standard-flags (format "--source-map-basepath=$PWD/resources --source-map=%s --source-map-url=%s" less-map less-map-url)
         flags (if minify
                 (str standard-flags " --compress")
                 standard-flags)
