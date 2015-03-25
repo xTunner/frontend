@@ -6,7 +6,9 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            [goog.string :as gstring]
+            [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
 (defn team []
@@ -163,50 +165,70 @@
             [:a {:href "mailto:press@circleci.com"} "press@circleci.com"]
             " or call Laura at +1 415 373 4089."]]]]]))))
 
+(defn customer-image-src [shortname]
+    (utils/cdn-path (gstring/format "/img/outer/about/logo-%s.svg" shortname)))
+
 (defn about [app owner]
   (reify
     om/IRender
     (render [_]
       (html
-       [:div
-        [:div.about.page
-         [:div.banner
-          [:div.container
-           [:h1 "About us"]
-           [:h3
-            "CircleCI was founded in 2011 with the mission of giving every developer state of the art automated testing and continuous integration tools."]]]
-         [:div.container.content
-          [:h2 "Meet the CircleCI Team"]
-          (map-indexed
-           (fn [i member]
-             [:div.member.row {:class (if (odd? i) "right" "left")}
-              (if (:img-path member)
-                [:img {:alt (:name member)
-                       :height 150
-                       :src (:img-path member)
-                       :width 150
-                       :class (if (odd? i) "pull-right" "pull-left")}]
-
-                placeholder-image)
-              [:div.span9
-               [:h3 (:name member)]
-               [:h4 (:role member)]
-               [:ul.clearfix
-                [:li
-                 [:a.fa.fa-envelope {:href (str "mailto:" (:email member))}]
-                 " "
-                 [:a.fa.fa-github {:href (str "https://github.com/" (:github member))}]
-                 " "
-                 [:a.fa.fa-twitter {:href (str "https://twitter.com/" (:twitter member))}]]]
-               (if (:bio member)
-                 (for [p (:bio member)]
-                   [:p p])
-                 (placeholder-bio (:name member)))]])
-           (team))
-          [:div#jobs-cta
-           [:p
-            "We're looking for amazing people to join us on this journey. Want to join the team? "]
-           [:a.btn.btn-large.btn-primary
-            {:href "/jobs"}
-            "CircleCI is hiring!"]]]]
+       [:div#about
+        [:div.jumbotron
+         common/language-background-jumbotron
+         [:section.container
+          [:div.row
+           [:article.hero-title.center-block
+            [:div.text-center
+             [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
+            [:h1.text-center "About Us"]
+            [:h3.text-center "CircleCI was founded in 2011 with the mission of giving every developer state of the art automated testing and continuous integration tools."]]]]
+         [:div.row.text-center
+          (common/sign-up-cta owner "about")]]
+        [:div.outer-section
+         [:section.container
+          [:div.row
+           [:div.fact.col-xs-4
+            [:h3.header "Born"]
+            [:p.value "2011"]
+            [:p.caption "CircleCI was founded in 2011 by " [:a {:href "/about/team"} "Paul Biggar"]]]
+           [:div.fact.col-xs-4
+            [:h3.header "Team"]
+            [:p.value "25+"]
+            [:p.caption
+             [:a {:href "/jobs"} "Join"]
+             " our growing team in downtown SF"]]
+           [:div.fact.col-xs-4
+            [:h3.header "Raised"]
+            [:p.value "$6M"]
+            [:p.caption
+             "In 2014 we raised a $6m Series A Round from "
+             [:a {:href "http://dfj.com/" :target "_blank"} "DFJ"]]]]
+          [:div.row
+           [:div.story.col-xs-12
+            [:h2 "Our story"]
+            [:p
+             "CircleCI provides development and software teams the confidence to build, test, "
+             "and deploy—quickly and consistently—across numerous platforms. Built to address "
+             "the demanding needs for today's application development environments, CircleCI "
+             "supports all types of software testing including web, mobile and container (Docker) environments."]
+            [:p
+             "CircleCI makes continuous integration and continuous deployment simple and easy for "
+             "thousands of companies like Shopify, Cisco, Sony and Trunk Club, so they can ship "
+             "better code, faster."]
+            [:p
+             "CircleCI is venture backed by Draper Fisher Jurvetson, Baseline Ventures, Harrison "
+             "Metal Capital, Data Collective, 500 Startups, SV Angel, and a collection of respected "
+             "angels including James Lindenbaum and Adam Wiggins (Heroku), Jason Seats (Slicehost), "
+             "Eric Ries (The Lean Startup), and Hiten Shah (Kissmetrics)."]]]
+          [:div.row
+           [:div.logo-container.col-sm-12
+            (for [customer ["shopify" "cisco" "sony" "trunkclub"]]
+              [:img.logo {:src (customer-image-src customer)}])]]]]
+        [:div.bottom-cta.outer-section.outer-section-condensed
+         common/language-background
+         [:h2 "Start shipping faster, build for free using CircleCI today."]
+         [:p.subheader
+          "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
+         (common/sign-up-cta owner "about")]
         (om/build contact app)]))))
