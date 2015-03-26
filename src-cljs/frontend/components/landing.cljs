@@ -142,6 +142,16 @@
                :tools #{:php :amazon :mysql :javascript}
                :position 4}))
 
+(defn language [name]
+  [:img.background.language {:class name
+                             :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
+
+(def language-background
+  (map language ["rails-1"
+                 "clojure-1"
+                 "java-1"
+                 "python-1"]))
+
 (def nav-height 70)
 
 (defn prolog [data owner {:keys [logo-visibility-callback

@@ -6,7 +6,7 @@
   .jumbotron {
     overflow: hidden;
   }
-  
+
   .feature-row {
     .make-row();
 
@@ -20,10 +20,34 @@
   .feature {
     .make-sm-column(5);
     .text-center;
+
+    &:first-child {
+      .make-sm-column-offset(1);
+    }
+  }
+}
+
+#integration {
+
+  .jumbotron {
+    overflow: hidden;
   }
 
-  .feature-offset {
-    .make-sm-column-offset(1);
+  .feature-row {
+    .make-row();
+
+    padding-top: 70px;
   }
 
+  .row + .feature-row {
+    padding-top: 40px;
+  }
+
+  .feature {
+    .make-sm-column(5);
+
+    &:first-child {
+      .make-sm-column-offset(1);
+    }
+  }
 }

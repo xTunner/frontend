@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.landing :as landing]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
@@ -169,14 +170,11 @@
                [:a {:href "/security" :title "Security"} "Learn how."]]]]]]]]]))))
 
 (def integration-data
-  {:heroku {:hero {:header [:span
-                            "Deploy to "
-                            [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg")
-                                   :alt "Heroku"
-                                   :style {:vertical-align "-35%"}}]
-                            " from CircleCI"]
+  {:heroku {:hero {:icon [:img {:src (utils/cdn-path "/img/outer/integrations/heroku-icon.svg") :alt "Heroku"}]
+                   :heading "Deploy to Heroku from CircleCI"
                    :text "Experience a simple, modern continuous delivery workflow now."}
             :bullets [{:title "Test before you deploy. Always."
+                       :icon "circle"
                        :text [:span
                               "Heroku revolutionized the way developers think about deployment. "
                               "Being able to deploy with a simple "
@@ -186,9 +184,9 @@
                               "whenever you push a commit to master, it will go through a complete "
                               "continuous delivery pipeline. All of your tests will run with our "
                               "blazing fast parallelism, and" [:em " only if they pass, "]
-                              "your code will be pushed to Heroku automatically."]
-                       :graphic [:img {:src (stefon/data-uri "/img/status-logos/success.svg")}]}
+                              "your code will be pushed to Heroku automatically."]}
                       {:title "Dead Simple Configuration"
+                       :icon "setup"
                        :text [:span
                               "The deployment of your application is configured through just a "
                               "few lines of YAML that are kept safe in your source code. All "
@@ -196,35 +194,25 @@
                               "Heroku credentials in our UI, add a simple config file like this "
                               "one into your project, and make a push. You can also easily deploy "
                               "different branches to different Heroku apps (e.g. one for staging "
-                              "and one for production)."]
-                       :graphic [:div.console
-                                 [:pre
-                                  "deployment:\n"
-                                  "  staging:\n"
-                                  "    branch: " [:span.value "master"] "\n"
-                                  "      heroku:\n"
-                                  "        appname: " [:span.value "my-app"]]]}
+                              "and one for production)."]}
                       {:title "Watch how to get started in minutes"
+                       :icon "fail"
                        :text [:span
                               "This video shows step-by-step how to configure CircleCI to test "
                               "your application and deploy to Heroku, and how CircleCI keeps "
                               "defects from getting into production. "
                               "See our docs for a "
-                              [:a {:href (str "/docs/continuous-deployment-with-heroku#part-2-multiple-environments")}
+                              [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"}
                                "followup video"]
                               " showing how to setup a more robust continuous delivery pipeline "
-                              "with staging and prod environments."]
-                       :graphic [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]}]
+                              "with staging and prod environments."]}]
             :bottom-header "Ready for world-class continuous delivery?"
             :secondary-cta [:span
                             "Or see our "
                             [:a {:href "/docs/continuous-deployment-with-heroku"}
                              "docs on deploying to Heroku."]]}
-   :saucelabs {:hero {:header [:span
-                               "Test with "
-                               [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png")
-                                      :alt "Sauce Labs" :style {:width "300px"}}]
-                               " on CircleCI"]
+   :saucelabs {:hero {:icon [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :alt "Sauce Labs"}]
+                      :heading "Test with Sauce Labs on CircleCI"
                       :text "Test against hundreds of mobile and desktop browsers."}
                :bullets [{:title "Selenium WebDriver"
                           :text [:span
@@ -281,34 +269,40 @@
     (if (= integration :docker)
       (om/build docker app)
       (let [data (get integration-data integration)]
-        (html [:div#integrations.generic
-               [:div.top-section {:class (name integration)}
-                [:div.line]
-                [:div.hero-wrapper
-                 [:div.hero
-                  [:div.integration-icon
-                   [:img {:src (utils/cdn-path "/img/outer/integrations/integration-icon.svg")}]]
-                  [:div
-                   [:h1 (get-in data [:hero :header])]
-                   [:p (get-in data [:hero :text])]]
-                  [:a {:href (gh-utils/auth-url)
-                       :role "button"
-                       :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                               :event "Auth GitHub"}])}
-                   "Sign up for CircleCI"]]]]
-               [:div.middle-section
-                (for [bullet (:bullets data)]
-                  [:div.bullet
-                   [:div.graphic
-                    (:graphic bullet)]
-                   [:div.content
-                    [:h2 (:title bullet)]
-                    [:p (:text bullet)]]])]
-               [:div.bottom-section
-                [:h2 (:bottom-header data)]
-                [:a {:href (gh-utils/auth-url)
-                       :role "button"
-                       :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                               :event "Auth GitHub"}])}
-                   "Sign up for Free"]
-                [:p (:secondary-cta data)]]])))))
+        (html [:div#integration
+               [:div.jumbotron
+                (list landing/language-background)
+                (landing/language "python-1")
+                (landing/language "ruby-1")
+                (landing/language "javascript-1")
+                (landing/language "node-1")
+                (landing/language "php-1")
+                [:section.container
+                 [:div.row
+                  [:article.hero-title.center-block
+                   [:div.text-center
+                    [:img.hero-logo (get-in data [:hero :icon])]]
+                   [:h1.text-center (get-in data [:hero :heading])]]]]
+                [:div.row.text-center
+                 (common/sign-up-cta owner (str "integrations/" (name integration)))]]
+
+               [:div.outer-section
+                [:section.container
+                 (for [row (partition-all 2 (:bullets data))]
+                   [:div.feature-row
+                    (for [bullet row]
+                      [:div.feature
+                       (common/feature-icon (:icon bullet))
+                       [:h3.text-center (:title bullet)]
+                       [:p (:text bullet)]])])]]
+
+               [:div.outer-section.outer-section-condensed
+                [:section.container
+                 [:div.col-xs-12
+                  [:h2.text-center "Ready for world-class continuous delivery?"]
+                  [:p.text-center
+                   "Or, see our docs on "
+                   [:a {:href "/docs/continuous-deployment-with-heroku"} " deploying to Heroku"]
+                   "."]
+                  [:div.text-center
+                   (common/sign-up-cta owner (str "integrations/" (name integration)))]]]]])))))

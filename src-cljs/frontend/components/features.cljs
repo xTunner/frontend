@@ -18,16 +18,6 @@
 (defn customer-image-src [shortname]
   (utils/cdn-path (str "/img/outer/customers/customer-" shortname ".svg")))
 
-(defn language [name]
-  [:img.background.language {:class name
-                             :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
-
-(def language-background
-  (map language ["rails-1"
-                 "clojure-1"
-                 "java-1"
-                 "python-1"]))
-
 (defn practice [app owner]
   (reify
     om/IDisplayName (display-name [_] "Home Practice")
@@ -103,12 +93,12 @@
   (html
     [:div#features
      [:div.jumbotron
-      (list language-background)
-      (language "python-1")
-      (language "ruby-1")
-      (language "javascript-1")
-      (language "node-1")
-      (language "php-1")
+      (list landing/language-background)
+      (landing/language "python-1")
+      (landing/language "ruby-1")
+      (landing/language "javascript-1")
+      (landing/language "node-1")
+      (landing/language "php-1")
       [:section.container
        [:div.row
         [:article.hero-title.center-block
@@ -169,7 +159,7 @@
        [:div.row
         (ui-example "dash")]]]
      [:div.outer-section.outer-section-condensed
-      (list language-background)
+      (list landing/language-background)
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -233,7 +223,7 @@
       [:section.container
        (ui-example "build-1")]]
      [:div.outer-section.outer-section-condensed
-      (list language-background)
+      (list landing/language-background)
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -277,7 +267,7 @@
       [:section.container
        (ui-example "build-2")]]
      [:div.outer-section.outer-section-condensed
-      (list language-background)
+      (list landing/language-background)
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
