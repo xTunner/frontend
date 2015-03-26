@@ -171,7 +171,13 @@
                   [:a.login.login-link {:href (auth-url)
                                         :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                         :title "Sign in with Github"}
-                   "Sign in"]]]))]]])))))
+                   "Sign in"]]]))]]
+          (when (= (:navigation-point app) :about)
+            [:div.navbar.navbar-default.navbar-static-top.subnav
+             [:div.container-fluid
+              [:ul.nav.navbar-nav
+               [:li [:a {:href "/about"} "Overview"]]
+               [:li [:a {:href "/contact"} "Contact"]]]]])])))))
 
 (defn inner-header [app owner]
   (reify

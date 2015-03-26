@@ -128,3 +128,20 @@
   }
 }
 
+.navbar-default .navbar-nav > li:hover > a {
+  color: @dropdown-link-hover-color;
+  background-color: @dropdown-link-hover-bg;
+}
+
+.subnav {
+  min-height: 0;
+  z-index: @zindex-subnav;
+  .navbar-nav {
+    margin-left: 113px; // circle logo + padding
+    > li > a {
+      font-size: 90%;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+  }
+}
