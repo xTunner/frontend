@@ -233,5 +233,4 @@
          [:h2 "Start shipping faster, build for free using CircleCI today."]
          [:p.subheader
           "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
-         (common/sign-up-cta owner "about")]
-        (om/build contact app)]))))
+         (common/sign-up-cta owner "about")]]))))

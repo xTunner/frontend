@@ -35,14 +35,15 @@
     margin-bottom: 0;
 
     .navbar-form {
-      margin-top: 17px;
-      margin-bottom: 17px;
+      margin-top: 15px;
+      margin-bottom: 15px;
     }
 
     .login-link.btn {
-      width: 100px;
-      border-radius: 18px;
-      font-size: @font-size-base;
+      width: 110px;
+      height: 40px;
+
+      border-radius: 20px;
     }
 
     .container-fluid {
@@ -89,6 +90,11 @@
     }
   }
 
+  // Hover background should override active background
+  .navbar-default .navbar-nav  > .active:hover {
+    color: @navbar-default-link-hover-color;
+    background-color: @navbar-default-link-hover-bg;
+  }
 
   // Emphasis & misc
   // -------------------------
