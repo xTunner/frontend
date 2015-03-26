@@ -182,7 +182,7 @@
             [:div.text-center
              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
             [:h1.text-center "About Us"]
-            [:h3.text-center "CircleCI was founded in 2011 with the mission of giving every developer state of the art automated testing and continuous integration tools."]]]]
+            [:h3.text-center "CircleCI was founded in 2011 with the mission of giving every developer state-of-the-art automated testing and continuous integration tools."]]]]
          [:div.row.text-center
           (common/sign-up-cta owner "about")]]
         [:div.outer-section
@@ -208,10 +208,13 @@
            [:div.story.col-xs-12
             [:h2 "Our story"]
             [:p
-             "CircleCI provides development and software teams the confidence to build, test, "
+             "CircleCI provides development teams the confidence to build, test, "
              "and deploy—quickly and consistently—across numerous platforms. Built to address "
-             "the demanding needs for today's application development environments, CircleCI "
-             "supports all types of software testing including web, mobile and container (Docker) environments."]
+             "the demanding needs of today's application development environments, CircleCI "
+             "supports every component of a modern application, including mobile apps (iOS and Android), "
+             "conventional web applications (built with platforms like Rails and Django), "
+             "browser-based apps (built with frameworks like AngularJS and Ember), "
+             "and containerized apps (built with tools like Docker)."]
             [:p
              "CircleCI makes continuous integration and continuous deployment simple and easy for "
              "thousands of companies like Shopify, Cisco, Sony and Trunk Club, so they can ship "
