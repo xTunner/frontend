@@ -128,24 +128,32 @@
   }
 }
 
-.navbar-default .navbar-nav > li {
-  &.active > a {
-    background-color: transparent !important;
+.navbar {
+
+  &, .btn, .dropdown-menu > li > a {
     font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
   }
-  &:hover.active > a,
-  &:hover > a {
-    color: @dropdown-link-hover-color;
-    background-color: @dropdown-link-hover-bg !important;
+
+  .navbar-nav {
+    > li.circle-active > a {
+      color: @dropdown-link-hover-color;
+    }
+
+    > li:hover > a {
+      color: @dropdown-link-hover-color;
+      background-color: @dropdown-link-hover-bg;
+    }
   }
 }
+
 .subnav {
   min-height: 0;
   z-index: @zindex-subnav;
   .navbar-nav {
     margin-left: 113px; // circle logo + padding
     > li > a {
-      font-size: 90%;
       padding-top: 5px;
       padding-bottom: 5px;
     }
