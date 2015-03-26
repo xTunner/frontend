@@ -135,24 +135,17 @@
     font-size: 14px;
     letter-spacing: 0.5px;
   }
-
-  .navbar-nav {
-    > li.circle-active > a {
-      color: @dropdown-link-hover-color;
-    }
-
-    > li:hover > a {
-      color: @dropdown-link-hover-color;
-      background-color: @dropdown-link-hover-bg;
-    }
-  }
 }
 
 .subnav {
   min-height: 0;
   z-index: @zindex-subnav;
+
   .navbar-nav {
-    margin-left: 113px; // circle logo + padding
+    @media (min-width: @screen-sm-min) {
+      margin-left: 113px; // circle logo + padding
+    }
+
     > li > a {
       padding-top: 5px;
       padding-bottom: 5px;

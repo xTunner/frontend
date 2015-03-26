@@ -104,7 +104,7 @@
 
 (defn maybe-active [current goal]
   {:class (when (= current goal)
-            "circle-active")})
+            "active")})
 
 (defn outer-header [app owner]
   (reify
@@ -139,7 +139,7 @@
                                                       :integrations
                                                       :enterprise}
                                                     nav-point)
-                                     "circle-active")}
+                                     "active")}
               [:a {:href "/features"} "Product"]
               [:ul.dropdown-menu
                [:li {:role "presentation"}
@@ -170,7 +170,7 @@
              [:li {:class (when (contains? #{:about
                                              :contact}
                                            nav-point)
-                            "circle-active")}
+                            "active")}
               [:a {:href "/about"} "About Us"]]
              [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]
 
