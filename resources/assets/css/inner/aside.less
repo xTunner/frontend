@@ -17,6 +17,9 @@
     transition: margin @aside_transition_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   }
+  .app-aside-left.menuless + .app-main {
+    margin-left: @aside_nav_width;
+  }
 }
 .aside-left-nav {
   .flex(0 0 @aside_nav_width);

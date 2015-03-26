@@ -83,7 +83,6 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link false}
              :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build
@@ -138,10 +137,6 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {:show-settings-link false}
-                                        ; start out false, api-events
-                                        ; will set true with
-                                        ; appropriate scopes
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :org :username org}
                                    {:type :project :username org :project repo}
@@ -213,7 +208,8 @@
   [history-imp navigation-point args state]
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point :navigation-data args :navigation-settings {})))
+      (assoc :navigation-point navigation-point
+             :navigation-data (assoc args :show-aside-menu? false))))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
@@ -232,8 +228,7 @@
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
-             :navigation-data args
-             :navigation-settings {})
+             :navigation-data (assoc args :show-aside-menu? false))
       (assoc-in [:invite-data :org] (:org args))))
 
 (defmethod post-navigated-to! :invite-teammates
@@ -254,7 +249,6 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :navigation-settings {}
              ;; TODO can we get rid of project-settings-subpage in favor of navigation-data?
              :project-settings-subpage subpage
              :project-settings-project-name project-name)

@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.landing :as landing]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
@@ -271,12 +270,7 @@
       (let [data (get integration-data integration)]
         (html [:div#integration
                [:div.jumbotron
-                (list landing/language-background)
-                (landing/language "python-1")
-                (landing/language "ruby-1")
-                (landing/language "javascript-1")
-                (landing/language "node-1")
-                (landing/language "php-1")
+                common/language-background-jumbotron
                 [:section.container
                  [:div.row
                   [:article.hero-title.center-block

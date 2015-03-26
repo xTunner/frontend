@@ -93,12 +93,7 @@
   (html
     [:div#features
      [:div.jumbotron
-      (list landing/language-background)
-      (landing/language "python-1")
-      (landing/language "ruby-1")
-      (landing/language "javascript-1")
-      (landing/language "node-1")
-      (landing/language "php-1")
+      common/language-background-jumbotron
       [:section.container
        [:div.row
         [:article.hero-title.center-block
@@ -159,7 +154,7 @@
        [:div.row
         (ui-example "dash")]]]
      [:div.outer-section.outer-section-condensed
-      (list landing/language-background)
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -223,7 +218,7 @@
       [:section.container
        (ui-example "build-1")]]
      [:div.outer-section.outer-section-condensed
-      (list landing/language-background)
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2
@@ -267,7 +262,7 @@
       [:section.container
        (ui-example "build-2")]]
      [:div.outer-section.outer-section-condensed
-      (list landing/language-background)
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-8.col-xs-offset-2

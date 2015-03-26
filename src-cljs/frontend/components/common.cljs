@@ -184,3 +184,19 @@
 (defn feature-icon [name]
   [:img.header-icon {:src (utils/cdn-path (str "/img/outer/feature-icons/feature-" name ".svg"))}])
 
+(defn language [name]
+  [:img.background.language {:class name
+                             :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
+
+(def language-background
+  (map language ["rails-1"
+                 "clojure-1"
+                 "java-1"
+                 "python-1"]))
+
+(def language-background-jumbotron
+  (concat language-background
+          (map language ["ruby-1"
+                         "javascript-1"
+                         "node-1"
+                         "php-1"])))
