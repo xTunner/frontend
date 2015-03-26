@@ -102,20 +102,25 @@
           (when (and open? expanded?)
             (om/build instrumentation/line-items (:instrumentation app)))])))))
 
+(defn maybe-active [current goal]
+  {:class (when (= current goal)
+            "active")})
+
 (defn outer-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Outer Header")
     om/IRender
     (render [_]
       (let [flash (get-in app state/flash-path)
-            logged-in? (get-in app state/user-path)]
+            logged-in? (get-in app state/user-path)
+            nav-point (:navigation-point app)]
         (html
          [:div
           [:div
            (when flash
              [:div#flash flash])]
           ;; TODO: Temporary hack until new header ships
-          [:div.navbar.navbar-default.navbar-static-top {:class (case (:navigation-point app)
+          [:div.navbar.navbar-default.navbar-static-top {:class (case nav-point
                                                                   :language-landing
                                                                   (get-in app [:navigation-data :language])
                                                                   :integrations
@@ -128,7 +133,13 @@
               (common/circle-logo {:width nil
                                    :height 25})]]
             [:ul.nav.navbar-nav
-             [:li.dropdown
+             [:li.dropdown {:class (when (contains? #{:features
+                                                      :mobile
+                                                      :ios
+                                                      :integrations
+                                                      :enterprise}
+                                                    nav-point)
+                                     "active")}
               [:a {:href "/features"} "Product"]
               [:ul.dropdown-menu
                [:li {:role "presentation"}
@@ -152,32 +163,40 @@
                      :href "/enterprise"}
                  "Enterprise"]]]]
              (when-not (config/enterprise?)
-               [:li [:a {:href "/pricing"} "Pricing"]])
-             [:li [:a {:href "/docs"} "Documentation"]]
-             [:li [:a {:href "/about"} "About Us"]]
+               [:li (maybe-active nav-point :pricing)
+                [:a {:href "/pricing"} "Pricing"]])
+             [:li (maybe-active nav-point :documentation)
+              [:a {:href "/docs"} "Documentation"]]
+             [:li {:class (when (contains? #{:about
+                                             :contact}
+                                           nav-point)
+                            "active")}
+              [:a {:href "/about"} "About Us"]]
              [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]
 
             (if logged-in?
               [:ul.nav.navbar-nav.navbar-right
                [:li [:a {:href "/"} "Back to app"]]]
               (list
-                [:form.navbar-right.navbar-form
-                 [:button.login-link.btn.btn-success {:href (auth-url)
-                                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
-                                                      :title "Sign up with Github"}
-                  "Sign up"]]
-                [:ul.nav.navbar-nav.navbar-right
-                 [:li
-                  [:a.login.login-link {:href (auth-url)
-                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
-                                        :title "Sign in with Github"}
-                   "Sign in"]]]))]]
-          (when (= (:navigation-point app) :about)
+               [:form.navbar-right.navbar-form
+                [:button.login-link.btn.btn-success {:href (auth-url)
+                                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                                     :title "Sign up with Github"}
+                 "Sign up"]]
+               [:ul.nav.navbar-nav.navbar-right
+                [:li
+                 [:a.login.login-link {:href (auth-url)
+                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
+                                       :title "Sign in with Github"}
+                  "Sign in"]]]))]]
+          (when (contains? #{:about :contact} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid
               [:ul.nav.navbar-nav
-               [:li [:a {:href "/about"} "Overview"]]
-               [:li [:a {:href "/contact"} "Contact"]]]]])])))))
+               [:li (maybe-active nav-point :about)
+                [:a {:href "/about"} "Overview"]]
+               [:li (maybe-active nav-point :contact)
+                [:a {:href "/contact"} "Contact"]]]]])])))))
 
 (defn inner-header [app owner]
   (reify

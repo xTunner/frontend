@@ -128,11 +128,17 @@
   }
 }
 
-.navbar-default .navbar-nav > li:hover > a {
-  color: @dropdown-link-hover-color;
-  background-color: @dropdown-link-hover-bg;
+.navbar-default .navbar-nav > li {
+  &.active > a {
+    background-color: transparent !important;
+    font-weight: bold;
+  }
+  &:hover.active > a,
+  &:hover > a {
+    color: @dropdown-link-hover-color;
+    background-color: @dropdown-link-hover-bg !important;
+  }
 }
-
 .subnav {
   min-height: 0;
   z-index: @zindex-subnav;
