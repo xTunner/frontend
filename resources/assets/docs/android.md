@@ -90,14 +90,15 @@ the following:
 ```
 test:
   pre:
-    - emulator -avd circleci-android21 -no-audio -no-window:
+    - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
 ```
 
-`circleci-android21` is an AVD preinstalled on the machine for Android 21 on the ARM V7 EABI.
-[You can create your own][create-avd] if this doesn't suit your purposes.
+`circleci-android22` is an AVD preinstalled on the machine for Android 22 on the ARM V7 EABI.
+There's also a corresponding `circleci-android21`; alternatively, you can 
+[can create your own][create-avd] if these don't suit your purposes.
 
 [create-avd]: https://developer.android.com/tools/devices/managing-avds-cmdline.html#AVDCmdLine
 
@@ -142,7 +143,7 @@ the individual test results.
 test:
   override:
     # start the emulator
-    - emulator -avd circleci-android21 -no-audio -no-window:
+    - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
     # wait for it to have booted
