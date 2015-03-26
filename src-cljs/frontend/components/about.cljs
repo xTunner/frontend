@@ -191,7 +191,7 @@
            [:div.fact.col-xs-4
             [:h3.header "Born"]
             [:p.value "2011"]
-            [:p.caption "CircleCI was founded in 2011 by " [:a {:href "/about/team"} "Paul Biggar"]]]
+            [:p.caption "CircleCI was founded in 2011"]]
            [:div.fact.col-xs-4
             [:h3.header "Team"]
             [:p.value "25+"]
