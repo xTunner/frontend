@@ -129,7 +129,9 @@
                                    :height 25})]]
             [:ul.nav.navbar-nav
              [:li.dropdown
-              [:a {:href "/features"} "Product"]
+              [:a {:href "/features"}
+               "Product "
+               [:i.fa.fa-caret-down]]
               [:ul.dropdown-menu
                [:li {:role "presentation"}
                 [:a {:role "menuitem"

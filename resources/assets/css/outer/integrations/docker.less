@@ -1,0 +1,88 @@
+@import "../../bootstrap/variables.less";
+
+.background.main {
+  right: 70px;
+  bottom: 0;
+  height: 40%;
+
+  @media (max-width: @screen-md-max) {
+    opacity: 0.03;
+  }
+}
+
+.background.docker-banner {
+  left: 0;
+  bottom: 0;
+  height: 100%;
+
+  @media (max-width: @screen-md-max) {
+    opacity: 0.03;
+  }
+}
+
+.outer-section-overview {
+  padding-bottom: 70px;
+  .make-xs-column(12);
+
+  > h2 {
+    margin-top: 0;
+  }
+
+  > p {
+    margin-bottom: 0;
+  }
+}
+
+.feature {
+  .make-sm-column(4);
+
+  > h3 {
+    .text-center;
+  }
+}
+
+.jumbotron {
+  position: relative;
+
+  .small-aside {
+    @media (min-width: @screen-lg-min) {
+      max-width: 70%;
+    }
+  }
+
+  .btn-cta {
+    // TODO: 11px is the lower padding on an H3– use calculated
+    // version instead of hardcoding it here.
+    margin-top: calc(40px - 11px);
+  }
+}
+
+.docker-cta {
+  position: relative;
+  .make-row;
+
+  .background {
+    bottom: 0;
+    right: 0;
+  }
+
+  > .cta-text {
+    .make-md-column(12);
+    .make-lg-column(7);
+    .make-lg-column-offset(2);
+  }
+
+  > .cta-btn {
+    .make-md-column(12);
+    .make-lg-column(3);
+
+    @media (max-width: @screen-md-max) {
+      .text-center;
+    }
+
+    @media (min-width: @screen-lg-min) {
+      .text-right;
+    }
+  }
+}
+
