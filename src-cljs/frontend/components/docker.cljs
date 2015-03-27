@@ -26,7 +26,9 @@
        [:div.diagram-content
         (map-indexed
          (fn [index [icon-name explanation]]
-           [:span
+           [:div.diagram-section
+            (if (not= index 0)
+              [:span.connector-line {:class (if (= index (+ 1 active-section-index)) "active")}])
             [:a.diagram-icon
              {:on-click #(raise! owner [:docker-diagram-index-selected index])}
              [:img {:src (utils/cdn-path
@@ -34,7 +36,12 @@
                              (str "/img/outer/docker/diagram-" icon-name ".svg")
                              (str "/img/outer/docker/diagram-" icon-name "-grey.svg")))}]]
             (if (< index (- (count diagram-structure) 1))
-              [:span.connector-line {:class (if (= index active-section-index) "active")}])])
+              [:span.connector-line {:class (if (= index active-section-index) "active")}])
+            (if (= index active-section-index)
+              [:span.active-indicator-line])
+            (if (= index active-section-index)
+              [:img.active-indicator-dot {:src (utils/cdn-path "/img/outer/docker/diagram-dot.svg")}])
+            ])
         diagram-structure)]
        [:div.diagram-annotation
         [:div.col-xs-3.text-right

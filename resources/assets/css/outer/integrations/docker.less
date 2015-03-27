@@ -21,7 +21,30 @@
 }
 
 .docker-diagram {
+  @diagram-icon-size: 65px;
+  @diagram-icon-count: 5;
+  @diagram-active-indicator-line-height: 80px;
+  @diagram-active-indicator-size: 17px;
+
   padding-top: 29px;
+
+  .diagram-section {
+    display: inline-block;
+    position: relative;
+    height: @diagram-icon-size;
+    width: ~"calc(100% / @{diagram-icon-count})";
+
+    &:first-child {
+
+      .diagram-icon {
+        margin-left: ~"calc(50% - (@{diagram-icon-size} / 2))";
+      }
+    }
+  }
+
+  .diagram-content {
+    height: calc(@diagram-icon-size + @diagram-active-indicator-size + @diagram-active-indicator-line-height);
+  }
 
   .diagram-annotation {
     .make-row;
@@ -29,8 +52,8 @@
 
   .diagram-icon {
     display: inline-block;
-    width: 65px;
-    height: 65px;
+    width: @diagram-icon-size;
+    height: @diagram-icon-size;
 
     &:after {
       
@@ -43,16 +66,29 @@
   }
 
   .connector-line {
-    width: ~"calc((100% - (5 * 65px)) / 4)";
+    width: ~"calc(50% - (@{diagram-icon-size} / 2))";
     display: inline-block;
-    position:relative;
-    top: -4px;
-    content: ' ';
-    border-top: 1px dashed #ddd;
+    border-top: 1px solid #ddd;
 
     &.active {
-      border-top: 1px dashed @brand-success;
+      border-top: 1px solid @brand-success;
     }
+  }
+
+  .active-indicator-line {
+    height: @diagram-active-indicator-line-height;
+    position: absolute;
+    display: block;
+    left: 50%;
+    top: @diagram-icon-size;
+    border-right: 1px solid @brand-success;
+  }
+
+  .active-indicator-dot {
+    height: @diagram-active-indicator-size;
+    left: ~"calc(50% - (@{diagram-active-indicator-size} / 2))";
+    top: @diagram-active-indicator-line-height + @diagram-icon-size;
+    position: absolute;
   }
 }
 
