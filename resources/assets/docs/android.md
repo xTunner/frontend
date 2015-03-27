@@ -133,7 +133,7 @@ order to prevent failing commands from being understood as passing.
 #### Test Metadata
 
 Many test suites for Android produce JUnit XML output. After running your tests,
-you can copy that output to `$CIRCLE_TEST_RESULTS` so that CircleCI will display
+you can copy that output to `$CIRCLE_TEST_REPORTS` so that CircleCI will display
 the individual test results.
 
 ### Sample circle.yml
@@ -152,7 +152,7 @@ test:
     # copy the build outputs to artifacts
     - cp -r my-project/build/outputs $CIRCLE_ARTIFACTS
     # copy the test results to the test results directory.
-    - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_RESULTS
+    - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 ```
 
 Please don't hesitate to [contact us](mailto:sayhi@circleci.com)
