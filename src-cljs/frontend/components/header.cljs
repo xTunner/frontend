@@ -102,59 +102,101 @@
           (when (and open? expanded?)
             (om/build instrumentation/line-items (:instrumentation app)))])))))
 
+(defn maybe-active [current goal]
+  {:class (when (= current goal)
+            "active")})
+
 (defn outer-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Outer Header")
     om/IRender
     (render [_]
       (let [flash (get-in app state/flash-path)
-            logged-in? (get-in app state/user-path)]
+            logged-in? (get-in app state/user-path)
+            nav-point (:navigation-point app)]
         (html
          [:div
           [:div
            (when flash
              [:div#flash flash])]
           ;; TODO: Temporary hack until new header ships
-          [:div#navbar {:class (case (:navigation-point app)
-                                 :language-landing
-                                 (get-in app [:navigation-data :language])
-                                 :integrations
-                                 (name (get-in app [:navigation-data :integration]))
-                                 nil)}
-           [:div.container
-            [:div.row
-             [:div.span8
-              [:a#logo.span2
-               {:href "/"}
-               [:img
-                {:width "130",
-                 :src (utils/cdn-path "/img/logo-new.svg")
-                 :height "40"}]]
-              [:nav.span6
-               {:role "navigation"}
-               [:ul.nav.nav-pills
-                [:li [:a {:href "/about"} "About"]]
-                (when-not (config/enterprise?)
-                  [:li [:a {:href "/pricing"} "Pricing"]])
-                [:li [:a {:href "/docs"} "Documentation"]]
-                (when-not (config/enterprise?)
-                  [:li [:a {:href "/jobs"} "Jobs"]])
-                [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]]
-             (if logged-in?
-               [:div.controls.span2.offset2
-                [:a#login.login-link {:href "/"} "Return to App"]]
+          [:div.navbar.navbar-default.navbar-static-top {:class (case nav-point
+                                                                  :language-landing
+                                                                  (get-in app [:navigation-data :language])
+                                                                  :integrations
+                                                                  (name (get-in app [:navigation-data :integration]))
+                                                                  nil)}
+           [:div.container-fluid
+            [:div.navbar-header
+             [:a#logo.navbar-brand
+              {:href "/"}
+              (common/circle-logo {:width nil
+                                   :height 25})]]
+            [:ul.nav.navbar-nav
+             [:li.dropdown {:class (when (contains? #{:features
+                                                      :mobile
+                                                      :ios
+                                                      :integrations
+                                                      :enterprise}
+                                                    nav-point)
+                                     "active")}
+              [:a {:href "/features"} "Product"]
+              [:ul.dropdown-menu
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/features"}
+                 "Features"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/mobile"}
+                 "Mobile"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/integrations/docker"}
+                 "Docker"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabindex "-1"
+                     :href "/enterprise"}
+                 "Enterprise"]]]]
+             (when-not (config/enterprise?)
+               [:li (maybe-active nav-point :pricing)
+                [:a {:href "/pricing"} "Pricing"]])
+             [:li (maybe-active nav-point :documentation)
+              [:a {:href "/docs"} "Documentation"]]
+             [:li {:class (when (contains? #{:about
+                                             :contact}
+                                           nav-point)
+                            "active")}
+              [:a {:href "/about"} "About Us"]]
+             [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]
 
-               [:div.controls.span2.offset2
-                [:a#login.login-link {:href (auth-url)
-                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
-                                      :title "Sign in with Github"}
-                 "Sign in"]
-                [:span.seperator " | "]
-                [:a#login.login-link {:href (auth-url)
-                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
-                                      :title "Sign up with Github"}
-                 "Sign up "
-                 [:i.fa.fa-github-alt]]])]]]])))))
+            (if logged-in?
+              [:ul.nav.navbar-nav.navbar-right
+               [:li [:a {:href "/"} "Back to app"]]]
+              (list
+               [:form.navbar-right.navbar-form
+                [:button.login-link.btn.btn-success {:href (auth-url)
+                                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                                     :title "Sign up with Github"}
+                 "Sign up"]]
+               [:ul.nav.navbar-nav.navbar-right
+                [:li
+                 [:a.login.login-link {:href (auth-url)
+                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
+                                       :title "Sign in with Github"}
+                  "Sign in"]]]))]]
+          (when (contains? #{:about :contact} nav-point)
+            [:div.navbar.navbar-default.navbar-static-top.subnav
+             [:div.container-fluid
+              [:ul.nav.navbar-nav
+               [:li (maybe-active nav-point :about)
+                [:a {:href "/about"} "Overview"]]
+               [:li (maybe-active nav-point :contact)
+                [:a {:href "/contact"} "Contact"]]]]])])))))
 
 (defn inner-header [app owner]
   (reify

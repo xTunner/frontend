@@ -2,6 +2,7 @@
 
 title: Troubleshooting
 children:
+  - troubleshooting-guide
   - ssh-build
   - troubleshooting-browsers
   - troubleshooting-ruby

@@ -1,3 +1,11 @@
+#logo {
+  display: block;
+  & > svg {
+    fill: @gray-darker;
+    margin-top: -2px;
+  }
+}
+
 .breadcrumbs {
   margin-left: 1em;
   a {
@@ -119,25 +127,28 @@
     }
   }
 }
-.outer-nav {
-  a {
-    font-size: 1.1428572em; // 16px
-    &:hover {
-      i {
-        path {
-          stroke: @linkColorHover;
-          transition: stroke 200ms;
-        }
-      }
+
+.navbar {
+
+  &, .btn, .dropdown-menu > li > a {
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+}
+
+.subnav {
+  min-height: 0;
+  z-index: @zindex-subnav;
+
+  .navbar-nav {
+    @media (min-width: @screen-sm-min) {
+      margin-left: 113px; // circle logo + padding
     }
-    &:not(:hover) {
-      color: @black;
-    }
-    i {
-      path {
-        stroke: @grayDark;
-        stroke-width: 8;
-      }
+
+    > li > a {
+      padding-top: 5px;
+      padding-bottom: 5px;
     }
   }
 }

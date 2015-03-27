@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [goog.dom.DomHelper]
             [goog.events]
+            [goog.Uri]
             [om.core :as om :include-macros true]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
@@ -11,13 +12,30 @@
 
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+(defn endpoint-info [ws-endpoint]
+  (let [uri (goog.Uri. ws-endpoint)]
+    {:wsHost (.getDomain uri)
+     ;; Pusher library is a bit quirky and we can submit both wsPort and wssPort :/
+     ;; encrypted is what determines which to use
+     :wsPort (.getPort uri)
+     :wssPort (.getPort uri)
+     :encrypted (= "wss" (.getScheme uri))
+     :enabledTransports ["ws"]}))
+
+(defn pusher-object-config [config]
+  (as-> config c
+    (dissoc c :key :ws_endpoint)
+    (merge {:encrypted true
+            :auth {:params {:CSRFToken (utils/csrf-token)}}
+            :authEndpoint "/auth/pusher"}
+           (when-let [endpoint (:ws_endpoint config)]
+             (endpoint-info endpoint))
+           c)))
+
 (defn new-pusher-instance [config]
   (aset (aget js/window "Pusher") "channel_auth_endpoint" "/auth/pusher")
-  (let [config (merge {:encrypted true
-                       :auth {:params {:CSRFToken (utils/csrf-token)}}
-                       :authEndpoint "/auth/pusher"}
-                      config)]
-    (js/Pusher. (:key config) (clj->js (dissoc config :key)))))
+  (let [pusher-config (pusher-object-config config)]
+    (js/Pusher. (:key config) (clj->js pusher-config))))
 
 (defn user-channel [user]
   (str "private-" (:login user)))

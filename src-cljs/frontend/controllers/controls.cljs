@@ -114,16 +114,6 @@
   ;; Lets us store this in localstorage without leaking info about the user
   (update-in state (state/project-branches-collapsed-path project-id-hash) not))
 
-(defmethod control-event :slim-aside-toggled
-  [target message {:keys [project-id]} state]
-  (update-in state state/slim-aside-path not))
-
-(defmethod post-control-event! :slim-aside-toggled
-  [target message {:keys [project-id]} previous-state current-state]
-  (if (get-in current-state state/slim-aside-path)
-    (analytics/track-expand-nav)
-    (analytics/track-collapse-nav)))
-
 (defmethod control-event :show-admin-panel-toggled
   [target message _ state]
   (update-in state state/show-admin-panel-path not))
@@ -139,10 +129,6 @@
 (defmethod control-event :show-inspector-toggled
   [target message _ state]
   (update-in state state/show-inspector-path not))
-
-(defmethod control-event :user-options-toggled
-  [target message _ state]
-  (update-in state state/user-options-shown-path not))
 
 (defmethod control-event :state-restored
   [target message path state]
@@ -183,6 +169,10 @@
                api-ch
                :context args)))
 
+(defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
+          (put! api-ch [:organizations (:status api-result) api-result])))))
 
 (defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state]
@@ -352,18 +342,18 @@
 
 
 (defmethod post-control-event! :retry-build-clicked
-  [target message {:keys [build-num build-id vcs-url clear-cache?] :as args} previous-state current-state]
+  [target message {:keys [build-num build-id vcs-url no-cache?] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)
         uuid frontend.async/*uuid*]
     (go
      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
-                                             :params (when clear-cache? {:no-cache true})))]
+                                             :params (when no-cache? {:no-cache true})))]
        (put! api-ch [:retry-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
-         (analytics/track-trigger-build (:resp api-result) :clear-cache? clear-cache?))))))
+         (analytics/track-trigger-build (:resp api-result) :no-cache? no-cache?))))))
 
 
 (defmethod post-control-event! :ssh-build-clicked
@@ -389,6 +379,11 @@
                  api-ch
                  :context repo))
   (analytics/track-follow-repo))
+
+
+(defmethod control-event :inaccessible-org-toggled
+  [target message {:keys [org-name value]} state]
+  (assoc-in state [:settings :add-projects :inaccessible-orgs org-name :visible?] value))
 
 
 (defmethod post-control-event! :followed-project
@@ -1068,50 +1063,36 @@
   [target message {:keys [tab]} state]
   (assoc-in state state/build-header-tab-path tab))
 
-(defmethod post-control-event! :home-scroll-1st-clicked
-  [target message _ previous-state current-state]
+
+(defn scroll-home-by-offset!
+  "Scrolls down to the next section of copy on the landing page."
+  [target index]
   (let [body (.-body js/document)
         vh (.-height (goog.dom/getViewportSize))]
     (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) vh]
-                         250))))
+                                #js [(.-scrollLeft body) (.-scrollTop body)]
+                                #js [(.-scrollLeft body) (* index vh)]
+                                250))))
+
+(defmethod post-control-event! :home-scroll-1st-clicked
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 1))
 
 (defmethod post-control-event! :home-scroll-2nd-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 2 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 2))
 
 (defmethod post-control-event! :home-scroll-3rd-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 3 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 3))
 
 (defmethod post-control-event! :home-scroll-4th-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 4 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 4))
 
 (defmethod post-control-event! :home-scroll-5th-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) (* 5 vh)]
-                         250))))
+  [target _ _ _ _]
+  (scroll-home-by-offset! target 5))
 
 (defmethod post-control-event! :home-scroll-logo-clicked
   [target message _ previous-state current-state]

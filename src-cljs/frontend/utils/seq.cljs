@@ -34,3 +34,10 @@
           (dissoc m k)))
       m)
     (dissoc m k)))
+
+(defn submap?
+  "True if every key and value in m1 is contained in m2"
+  [m1 m2]
+  (let [k (keys m1)]
+    (= (select-keys m2 k)
+       m1)))

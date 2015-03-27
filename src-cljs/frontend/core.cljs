@@ -7,7 +7,6 @@
             [goog.dom]
             [goog.dom.DomHelper]
             [frontend.ab :as ab]
-            [frontend.intercom :as intercom]
             [frontend.analytics :as analytics]
             [frontend.components.app :as app]
             [frontend.config :as config]
@@ -299,7 +298,6 @@
 (defn ^:export setup! []
   (apply-app-id-hack)
   (analytics/set-existing-user)
-  (intercom/start-polling intercom/update-period-ms)
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)

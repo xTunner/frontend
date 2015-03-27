@@ -16,7 +16,7 @@
                  [cheshire "5.3.1"]
 
                  [ankha "0.1.4"]
-                 [org.clojure/clojurescript "0.0-2760"]
+                 [org.clojure/clojurescript "0.0-3123"]
                  [org.clojure/google-closure-library "0.0-20140718-946a7d39"]
                  [com.google.javascript/closure-compiler "v20140625"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
@@ -25,8 +25,12 @@
                  [org.omcljs/om "0.8.8" :exclusions [cljsjs/react]]
                  [hiccups "0.3.0"]
                  [sablono "0.2.22"]
-                 [secretary "1.2.0"]
-                 [com.andrewmcveigh/cljs-time "0.1.5"]
+                 [secretary "1.2.2"]
+                 ;; Here until
+                 ;; https://github.com/andrewmcveigh/cljs-time/pull/26
+                 ;; is merged, or some similar solution for the
+                 ;; exception issue.
+                 [com.sgrove/cljs-time "0.3.5"]
                  [weasel "0.5.0"] ;; repl
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]

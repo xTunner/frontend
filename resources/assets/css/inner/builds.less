@@ -1,3 +1,5 @@
+@import "../shared/variables.less";
+
 @sideLineWidth: 5px;
 .build-head-wrapper {
   color: @gray;
@@ -64,6 +66,7 @@
       &:hover {
         background: none; // BS RESET
         color: @blue; // BS RESET
+        border: none; // BS RESET
         box-shadow: 0 -1px @blue inset,
                     0  1px @blue;
       }
@@ -78,10 +81,11 @@
     }
   }
 }
+
 .build-info {
   .flexy();
   table {
-    .flex(0.5 1 50%);
+    .flex(1 0 50%);
     display: block;
     line-height: 1.5em;
   }
@@ -147,30 +151,33 @@
 
 .build-actions {
   .flexy(column);
-  .flex(1 0 auto);
   padding-top: 4px; // to match space from line height in table
-  .actions {
+
+  > .actions {
     .flexy(center, flex-end);
     margin-bottom: .5em;
-  }
-  button {
-    .subtleButton(@grayLight);
-    .aRowOfButtons(2em);
-    float: none;
-  }
-  .ssh_build {
-    border-top-right-radius: 2em;
-    border-bottom-right-radius: 2em;
-  }
-  .report_build {
-    border-top-left-radius: 2em;
-    border-bottom-left-radius: 2em;
-  }
-  .report_build,
-  .cancel_build {
-    .subtleButtonColor(@redLight, @redLight);
+
+    border-radius: 2em;
+
+    > button {
+      .subtleButton(@grayLight);
+      .aRowOfButtons(2em);
+      float: none;
+    }
+
+    // When a button next to the main Rebuild button is hovered, indicate that
+    // it's also a rebuild action by lightly shading the Rebuild button.
+    &:hover > .retry_build:not(:hover) {
+      .subtleBtnTextColor(@whiten);
+    }
+
+    > .report_build,
+    > .cancel_build {
+      .subtleButtonColor(@redLight, @redLight);
+    }
   }
 }
+
 .build-queue {
   .cancel_build {
     .subtleButton(@grayLight);
@@ -236,8 +243,10 @@
     }
   }
 }
-#action-log-messages {
+.action-log-messages {
   border-radius: 5px;
+  background: @terminal-background-color;
+
   overflow: hidden;
   width: 100%;
   .exit-code {
@@ -803,7 +812,7 @@
     height: 10em;
     margin-bottom: 1.5em;
     .head-left {
-      min-width: 10em;
+      min-width: 15em;
       padding: 0 3em;
       .flexy();
       .align-items(center);

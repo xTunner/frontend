@@ -12,11 +12,15 @@ pipeline with CircleCI and Heroku:
 
 #### Part 1: Green builds and red builds
 
-<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>
+<div class="embed-responsive embed-responsive-16by9">
+  <iframe class="embed-responsive-item" src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>
+</div>
 
 #### Part 2: Multiple environments
 
-<iframe src='//www.youtube.com/embed/YtvKVfjKGWw?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>
+<div class="embed-responsive embed-responsive-16by9">
+  <iframe class="embed-responsive-item" src='//www.youtube.com/embed/YtvKVfjKGWw?rel=0' width='600' height='400' frameborder='0' allowfullscreen></iframe>
+</div>
 
 You can also look at the GitHub repo used in the above videos
 [here.](https://github.com/circleci/heroku-cd)

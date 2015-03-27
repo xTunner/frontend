@@ -119,23 +119,6 @@
                          :repo repo}
                         {:react-key (first branch-data)})))])))))
 
-(defn context-menu [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:div.aside-user {:class (when (get-in app state/user-options-shown-path)
-                                   "open")}
-         [:header
-          [:h5 "Your Account"]
-          [:a.close-menu
-           {:on-click #(raise! owner [:user-options-toggled])}
-           (common/ico :fail-light)]]
-         [:div.aside-user-options
-          [:a.aside-item {:href "/account"} "Settings"]
-          [:a.aside-item {:href "/invite-teammates"} "Invite a Teammate"]
-          [:a.aside-item {:href "/logout"} "Logout"]]]))))
-
 (defn expand-menu-items [items subpage]
   (for [item items]
     (case (:type item)
@@ -247,38 +230,43 @@
           [:div.aside-user-options
            (expand-menu-items items subpage)]])))))
 
-(defn activity [app owner opts]
+(defn branch-activity-list [app owner opts]
   (reify
-    om/IDisplayName (display-name [_] "Aside Activity")
+    om/IRender
+    (render [_]
+      (let [show-all-branches? (get-in app state/show-all-branches-path)
+            projects (get-in app state/projects-path)
+            settings (get-in app state/settings-path)]
+        (html
+         [:div.aside-activity.open
+          [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
+           [:header
+            [:select {:name "toggle-all-branches"
+                      :on-change #(raise! owner [:show-all-branches-toggled
+                                                 (utils/parse-uri-bool (.. % -target -value))])
+                      :value show-all-branches?}
+             [:option {:value false} "Your Branch Activity"]
+             [:option {:value true} "All Branch Activity" ]]
+            [:div.select-arrow [:i.fa.fa-caret-down]]]
+           (for [project (sort project-model/sidebar-sort projects)]
+             (om/build project-aside
+                       {:project project
+                        :settings settings}
+                       {:react-key (project-model/id project)
+                        :opts {:login (:login opts)}}))]])))))
+
+(defn aside-menu [app owner opts]
+  (reify
+    om/IDisplayName (display-name [_] "Aside Menu")
     om/IInitState (init-state [_] {:scrollbar-width 0})
     om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
-      (let [slim-aside? (get-in app state/slim-aside-path)
-            show-all-branches? (get-in app state/show-all-branches-path)
-            projects (get-in app state/projects-path)
-            settings (get-in app state/settings-path)]
-        (html
-         [:nav.aside-left-menu
-          (om/build project-settings-menu app)
-          (om/build org-settings-menu app)
-          (om/build context-menu app)
-          [:div.aside-activity.open
-           [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
-            [:header
-             [:select {:name "toggle-all-branches"
-                       :on-change #(raise! owner [:show-all-branches-toggled
-                                                  (utils/parse-uri-bool (.. % -target -value))])
-                       :value show-all-branches?}
-              [:option {:value false} "Your Branch Activity"]
-              [:option {:value true} "All Branch Activity" ]]
-             [:div.select-arrow [:i.fa.fa-caret-down]]]
-            (for [project (sort project-model/sidebar-sort projects)]
-              (om/build project-aside
-                        {:project project
-                         :settings settings}
-                        {:react-key (project-model/id project)
-                         :opts {:login (:login opts)}}))]]])))))
+      (html
+       [:nav.aside-left-menu
+        (om/build branch-activity-list app {:opts {:login (:login opts)}})
+        (om/build project-settings-menu app)
+        (om/build org-settings-menu app)]))))
 
 (defn aside-nav [app owner opts]
   (reify
@@ -288,78 +276,58 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [slim-aside? (get-in app state/slim-aside-path)
-            user (get-in app state/user-path)]
-        (html
-         [:nav.aside-left-nav
+      (html
+       [:nav.aside-left-nav
 
-          [:a.aside-item.logo  {:title "Home"
-                                :data-placement "right"
-                                :data-trigger "hover"
-                                :href "/"}
-           [:div.logomark
-            (common/ico :logo)]]
+        [:a.aside-item.logo  {:title "Home"
+                              :data-placement "right"
+                              :data-trigger "hover"
+                              :href "/"}
+         [:div.logomark
+          (common/ico :logo)]]
 
-          [:a.aside-item {:on-click #(raise! owner [:user-options-toggled])
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :title "Account"
-                          :class (when (get-in app state/user-options-shown-path)
-                                  "open")}
-           [:img {:src (gh-utils/make-avatar-url opts)}]
-           (:login opts)]
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Settings"
+                        :href "/account"}
+         [:img {:src (gh-utils/make-avatar-url opts)}]]
 
-          [:a.aside-item {:title "Documentation"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :href "/docs"}
-           [:i.fa.fa-copy]
-           [:span "Documentation"]]
+        [:a.aside-item {:title "Documentation"
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :href "/docs"}
+         [:i.fa.fa-copy]]
 
-          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
-                          :title "Report Bug"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :data-bind "tooltip: {title: 'Report Bug', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
-           [:i.fa.fa-bug]
-           [:span "Report Bug"]]
+        [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
+                        :title "Support"
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
+         [:i.fa.fa-comments]]
 
-          [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
-                          :title "Support"
-                          :data-placement "right"
-                          :data-trigger "hover"
-                          :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
-           [:i.fa.fa-comments]
-           [:span "Support"]]
+        [:a.aside-item {:href "/add-projects",
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :title "Add Projects"}
+         [:i.fa.fa-plus-circle]]
 
-          [:a.aside-item {:href "/add-projects",
-                                       :data-placement "right"
+        [:a.aside-item {:href "/invite-teammates",
+                        :data-placement "right"
+                        :data-trigger "hover"
+                        :title "Invite your teammates"}
+         [:i.fa.fa-user]]
+
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Changelog"
+                        :href "/changelog"}
+         [:i.fa.fa-bell]]
+
+        [:a.aside-item.push-to-bottom {:data-placement "right"
                                        :data-trigger "hover"
-                                       :title "Add Projects"}
-           [:i.fa.fa-plus-circle]
-           [:span "Add Projects"]]
-
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Changelog"
-                          :href "/changelog"}
-
-           [:img {:src "/assets/img/highlight.svg"}]
-           (if (changelog-updated-since? (:last_viewed_changelog user))
-             [:i.fa.fa-certificate]
-             [:i.fa.fa-bell])
-
-           [:span "Changelog"]]
-
-          [:a.aside-item.push-to-bottom {:data-placement "right"
-                                         :data-trigger "hover"
-                                         :title "Expand"
-                                         :on-click #(raise! owner [:slim-aside-toggled])}
-           (if slim-aside?
-             [:i.fa.fa-long-arrow-right]
-             (list
-              [:i.fa.fa-long-arrow-left]
-              [:span "Collapse"]))]])))))
+                                       :title "Logout"
+                                       :href "/logout"}
+         [:i.fa.fa-power-off]]]))))
 
 (defn aside [app owner]
   (reify
@@ -368,8 +336,10 @@
     (render [_]
       (let [user (get-in app state/user-path)
             login (:login user)
-            avatar-url (gh-utils/make-avatar-url user)]
+            avatar-url (gh-utils/make-avatar-url user)
+            show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)]
         (html
-         [:aside.app-aside-left
+         [:aside.app-aside-left {:class (when-not show-aside-menu? "menuless")}
           (om/build aside-nav app {:opts user})
-          (om/build activity app {:opts {:login login}})])))))
+          (when show-aside-menu?
+            (om/build aside-menu app {:opts {:login login}}))])))))

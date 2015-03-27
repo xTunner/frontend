@@ -17,7 +17,7 @@
   ;;TODO Delete this if-let when https://github.com/circleci/circle/pull/3972 is fully deployed.
   (if-let [app-key (aget js/window "renderContext" "pusherAppKey")]
     {:key app-key}
-    (js->clj (aget js/window "renderContext" "pusher"))))
+    (js->clj (aget js/window "renderContext" "pusher") :keywordize-keys true)))
 
 (defn logging-enabled?
   []
@@ -38,6 +38,11 @@
   "Full HTTP URL of GitHub API."
   []
   (aget js/window "renderContext" "githubHttpEndpoint"))
+
+(defn github-client-id
+  "The GitHub application client id for the app we're executing as."
+  []
+  (aget js/window "renderContext" "githubClientId"))
 
 (defn stripe-key
   "Publishable key to identify our account with Stripe.

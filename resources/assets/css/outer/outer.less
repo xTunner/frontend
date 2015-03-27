@@ -1,101 +1,129 @@
 .outer {
-  &#app {
-    .main-body {
-      padding: 0;
+  // Typography based on 16px as baseline rather than 14 like inner.
+
+  @font-size-base:          16px;
+  @font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
+  @font-size-small:         ceil((@font-size-base * 0.70)); // ~12px
+
+  @font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
+  @font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
+  @font-size-h3:            ceil((@font-size-base * 1.7)); // ~24px
+  @font-size-h4:            ceil((@font-size-base * 1.25)); // ~18px
+  @font-size-h5:            @font-size-base;
+  @font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
+
+  //** Unit-less `line-height` for use in components like buttons.
+  @line-height-base:        1.428571429; // 20/14
+  //** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+  @line-height-computed:    floor((@font-size-base * @line-height-base)); // ~20px
+
+  font-size: @font-size-base;
+  line-height: @line-height-base;
+
+  .btn-xl {
+    .button-size(@padding-xl-vertical, @padding-xl-horizontal, @font-size-large, @line-height-large, 36px);
+  }
+
+  .btn-cta {
+    .btn-xl;
+    .btn-success;
+    width: 220px;
+  }
+
+  // Bootstrap overrides
+  .navbar {
+    margin-bottom: 0;
+
+    .navbar-form {
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+
+    .login-link.btn {
+      width: 110px;
+      height: 40px;
+
+      border-radius: 20px;
+    }
+
+    .container-fluid {
+      padding-left: (@navbar-padding-horizontal * 2);
+      padding-right: (@navbar-padding-horizontal * 2);
     }
   }
-  h1,
-  h2,
-  h3 {
-    line-height: 40px;
-  }
-  h4,
-  h5,
-  h6 {
-    line-height: 20px;
-  }
-  h1 {
-    font-size: 44px;
-    small{
-      font-size: 24.5px;
-    }
-  }
-  h2 {
-    font-size: 30px;
-    line-height: 29px;
-    margin: 30px 0;
-    small{
-      font-size: 17.5px;
-    }
-  }
-  h3 {
-    line-height: 26px;
-    font-size: 20px;
-    small{
-      font-size: 14px;
-    }
-  }
-  h4 {
-    font-size: 17.5px;
-    small{
-      font-size: 14px;
-    }
-  }
-  h5 {
-    font-size: 14px;
-  }
-  h6 {
-    font-size: 11.9px;
-  }
+
   .content {
     padding-top: 20px;
     padding-bottom: 50px;
-
-    h2 > a, h3 > a, h4 > a, h5 > a, h6 > a {
-      color: inherit;
-    }
-
   }
-  form {
-    margin: 20px 0 0 0;
+
+  h1, .h1,
+  h2, .h2,
+  h3, .h3 {
+    margin-top: @line-height-computed;
+    margin-bottom: (@line-height-computed / 2);
   }
-  // high specificity, hence all the hacks
-  .btn,
-  button {
-    // &:not(.close) {
-    //   @btnBorder: @grayLighter;
-    //   border-color: @btnBorder;
-    //   border-bottom-color: darken(@btnBorder, 10%);
-    //   border: none;
-    //   text-shadow: none;
-    //   background: @circleBlue;
-    //   color: #6a93a3;
-    //   &:hover, &:focus {
-    //     background: lighten(@circleBlue, 5%);
-    //     color: white;
-    //   }
-    // }
-    // &:not(.btn-large) {
-    //   font-size: 14px;
-    //   border-radius: 3px;
-    //   line-height: 30px;
-    //   min-height: 30px;
-    // }
-    &.btn-primary {
-      background: @circleAccent;
-      color: @circleAccentText;
-      &:hover,
-      &:focus {
-        background: lighten(@circleAccent, 5%);
-      }
-      i {
-        margin-right: 7px;
-        font-size: 1.1em;
-      }
+  h4, .h4,
+  h5, .h5,
+  h6, .h6 {
+    margin-top: (@line-height-computed / 2);
+    margin-bottom: (@line-height-computed / 2);
+  }
+
+  h1, .h1 { font-size: @font-size-h1; }
+  h2, .h2 { font-size: @font-size-h2; }
+  h3, .h3 { font-size: @font-size-h3; }
+  h4, .h4 { font-size: @font-size-h4; }
+  h5, .h5 { font-size: @font-size-h5; }
+  h6, .h6 { font-size: @font-size-h6; }
+
+  p {
+    margin: 0 0 (@line-height-computed / 2);
+  }
+
+  .lead {
+    margin-bottom: @line-height-computed;
+    font-size: floor((@font-size-base * 1.15));
+
+    @media (min-width: @screen-sm-min) {
+      font-size: (@font-size-base * 1.5);
     }
   }
+
+  // Hover background should override active background
+  .navbar-default .navbar-nav  > .active:hover {
+    color: @navbar-default-link-hover-color;
+    background-color: @navbar-default-link-hover-bg;
+  }
+
+  // Emphasis & misc
+  // -------------------------
+
+  // Ex: (12px small font / 14px base font) * 100% = about 85%
+  small,
+  .small {
+    font-size: floor((100% * @font-size-small / @font-size-base));
+    font-weight: 300;
+  }
+
+  .dropdown:hover {
+    .dropdown-menu {
+      display: block;
+
+      padding: 0;
+
+      box-shadow: none;
+
+      & > li > a {
+        padding: 15px 20px;
+      }
+    }
+  }
+
   @import "shared/banner.less";
   @import "shared/additional.less";
+  @import "shared/jumbotron.less";
+  @import "shared/background.less";
   @import "home/home.less";
   @import "about/about.less";
   @import "blog/blog.less";
@@ -109,5 +137,6 @@
   @import "privacy/changelog.less";
   @import "stories/stories.less";
   @import "languages/languages.less";
-    @import "integrations/integrations.less";
+  @import "integrations/integrations.less";
+  @import "features/features.less";
 }

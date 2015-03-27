@@ -44,22 +44,24 @@ functionality is in the works. Keep an eye on our
 this feature is available.
 
 ## Dependencies
-### How do I use postgres 9.4?
-PostgreSQL 9.4 is currently not shipped with our build containers by
+### How do I use postgres 9.3?
+PostgreSQL 9.3 is currently not shipped with our build containers by
 default, but you can install it manually by adding the following to your
 `circle.yml`:
 ```
 dependencies:
   pre:
     - sudo service postgresql stop && sudo apt-get remove -y
-      postgresql-9.3 && sudo apt-get update && sudo apt-get install -y
-      postgresql-9.4 postgresql-contrib-9.4
+      postgresql-9.4 && sudo apt-get update; sudo apt-get install -y
+      postgresql-9.3 postgresql-contrib-9.3
     - sudo sed -i "s/\port = 5433/port = 5432/"
-      /etc/postgresql/9.4/main/postgresql.conf
-    - sudo cp /etc/postgresql/9.3/main/pg_hba.conf
-      /etc/postgresql/9.4/main/pg_hba.conf
+      /etc/postgresql/9.3/main/postgresql.conf
+    - sudo cp /etc/postgresql/9.4/main/pg_hba.conf
+      /etc/postgresql/9.3/main/pg_hba.conf
     - sudo service postgresql restart
     - sudo -u postgres createuser ubuntu -d --superuser
+    - createdb circle_test
+    - createdb ubuntu
 ```
 
 ### How do I use mysql 5.6?

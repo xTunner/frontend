@@ -26,12 +26,6 @@
   (when (not= (om/get-state owner korks) value)
     (om/set-state! owner korks value)))
 
-; (def circle-logo
-;   (html
-;    [:svg {:xmlns "http://www.w3.org/2000/svg" :x "0px" :y "0px" :viewBox "0 0 393 100" :enableBackground "new 0 0 393 100"}
-;     [:circle {:cx "48.5" :cy "50" :r "11.9"}]
-;     [:path {:d "M48.5,39.3c5.9,0,10.7,4.8,10.7,10.7s-4.8,10.7-10.7,10.7S37.8,55.9,37.8,50S42.6,39.3,48.5,39.3z M48.5,5 C27.6,5,9.9,19.3,5,38.8c-0.1,0.2-0.1,0.4-0.1,0.5c0,1.2,1,2.2,2.2,2.2h18.2c0.9,0,1.6-0.5,2-1.3v-0.1C31,32,39.1,26.4,48.6,26.4 c13,0,23.5,10.5,23.5,23.6S61.6,73.6,48.5,73.6c-9.4,0-17.6-5.6-21.4-13.7v-0.1c-0.4-0.7-1.1-1.3-2-1.3H7.1c-1.2,0-2.2,1-2.2,2.2 c0,0.2,0,0.4,0.1,0.5C9.9,80.7,27.6,95,48.5,95c24.8,0,45-20.2,45-45S73.4,5,48.5,5z M173.1,18.6c0,2.5-2,4.5-4.5,4.5 c-2.5,0-4.5-2-4.5-4.5s2-4.5,4.5-4.5C171.1,14.1,173.1,16.1,173.1,18.6z M171.9,71.3V27.6h-6.8v43.7c0,0.6,0.5,1.1,1.1,1.1h4.5 C171.5,72.4,171.9,72,171.9,71.3z M381.4,11.8c-3.7,0-6.8,3.1-6.8,6.8s3.1,6.8,6.8,6.8s6.8-3.1,6.8-6.8 C388.1,14.8,385,11.8,381.4,11.8z M386.9,27.6v43.7c0,0.6-0.5,1.1-1.1,1.1h-9c-0.6,0-1.1-0.5-1.1-1.1V27.6H386.9z M201.2,26.4 c-6.8,0.4-12.2,3.6-15.8,8.6v-6.3c0-0.6-0.5-1.1-1.1-1.1h-4.5c-0.6,0-1.1,0.5-1.1,1.1l0,0v42.7c0,0.6,0.5,1.1,1.1,1.1h4.5 c0.6,0,1.1-0.5,1.1-1.1V50c0-8.9,6.9-16.2,15.8-16.8c0.6,0,1.1-0.5,1.1-1.1v-4.5C202.3,27,201.8,26.5,201.2,26.4z M261.2,12.9h-4.5 c-0.6,0-1.1,0.5-1.1,1.1v57.2c0,0.6,0.5,1.1,1.1,1.1h4.5c0.6,0,1.1-0.5,1.1-1.1V14.1C262.3,13.5,261.8,12.9,261.2,12.9z M157.4,59 h-5.2c-0.4,0-0.7,0.2-0.9,0.5c-3.1,4.5-8.1,7.4-13.9,7.4c-9.3,0-16.8-7.6-16.8-16.8s7.6-16.8,16.8-16.8c5.9,0,10.9,3,13.9,7.4 c0.2,0.3,0.5,0.5,0.9,0.5h5.2c0.6,0,1.1-0.5,1.1-1.1c0-0.2-0.1-0.4-0.1-0.5c-3.9-7.6-11.9-13-21.1-13c-13,0-23.5,10.5-23.5,23.6 s10.5,23.6,23.6,23.6c9.2,0,17.2-5.3,21.1-13c0.1-0.2,0.1-0.4,0.1-0.5C158.5,59.5,158,59,157.4,59z M247.7,59h-5.2 c-0.4,0-0.7,0.2-0.9,0.5c-3.1,4.5-8.1,7.4-14,7.4c-9.3,0-16.8-7.6-16.8-16.8s7.6-16.8,16.8-16.8c5.9,0,10.9,3,14,7.4 c0.2,0.3,0.5,0.5,0.9,0.5h5.2c0.6,0,1.1-0.5,1.1-1.1c0-0.2,0-0.4-0.1-0.5c-3.9-7.6-11.9-13-21.1-13c-13,0-23.6,10.5-23.6,23.6 s10.5,23.6,23.6,23.6c9.2,0,17.2-5.3,21.1-13c0.1-0.2,0.1-0.4,0.1-0.5C248.8,59.5,248.3,59,247.7,59z M368.5,55.8 c-0.2-0.1-0.4-0.2-0.5-0.2l0,0h-9.7l0,0c-0.4,0-0.7,0.2-1,0.5c-2.2,3.7-6.1,6.2-10.7,6.2c-6.8,0-12.3-5.5-12.3-12.3 s5.5-12.3,12.3-12.3c4.6,0,8.6,2.5,10.7,6.2c0.2,0.4,0.5,0.5,1,0.5l0,0h9.7l0,0c0.2,0,0.4-0.1,0.5-0.2c0.5-0.3,0.6-0.8,0.5-1.3 c-3-9.5-12-16.5-22.5-16.5C333.5,26.4,323,37,323,50s10.5,23.6,23.6,23.6c10.5,0,19.4-6.9,22.5-16.5C369.1,56.6,368.9,56,368.5,55.8 z M292.6,26.4C279.6,26.4,269,37,269,50s10.5,23.6,23.6,23.6c9.2,0,17.2-5.3,21.1-13c0.1-0.2,0.1-0.4,0.1-0.5c0-0.6-0.5-1.1-1.1-1.1 h-5.2c-0.4,0-0.7,0.2-0.9,0.5c-3.1,4.5-8.1,7.4-13.9,7.4c-8.6,0-15.6-6.4-16.6-14.6H315c0.6,0,1.1-0.5,1.1-1.1c0-0.4,0-0.8,0-1.2 C316.2,37,305.6,26.4,292.6,26.4z M276.4,45.5c2-7.1,8.5-12.3,16.2-12.3c7.7,0,14.2,5.2,16.2,12.3H276.4z"}]]))
-
 (def customer-logos
   {:shopify
    (html [:svg.logo-shopify {:xmlns "http://www.w3.org/2000/svg" :x "0px" :y "0px" :viewBox "0 0 326 100" :enableBackground "new 0 0 326 100"}
@@ -115,14 +109,6 @@
              :tools #{:rails :ruby :javascript :redis :capistrano}
              ;; TODO get position from index rather than specifying manually
              :position 0}
-   ; :intercom {:name "Intercom"
-   ;            :logo ""
-   ;            :quote "We love Circle at Intercom. Having a record of the full test suite for every push makes it easy for the code reviewer."
-   ;            :cite "Ciaran Lee"
-   ;            :cite-title "CTO"
-   ;            :cite-avatar "/img/outer/home/ciaran-lee.png"
-   ;            :tools #{:ruby :rails :javascript}
-   ;            :position 1}
    :circleci {:name "CircleCI"
               :logo ""
               :quote "We test and deploy all of Circle's infrastructure on Circle. Being our own customer means we build a product our customers love."
@@ -149,7 +135,7 @@
                 :position 3}
    :sincerely {:name "Sincerely"
                :logo ""
-               :quote "We never merge until we get that green checkmark. A pull request without CircleCi is like skydiving without a parachute."
+               :quote "We never merge until we get that green checkmark. A pull request without CircleCI is like skydiving without a parachute."
                :cite "Justin Watt"
                :cite-title "Director of Engineering"
                :cite-avatar "/img/outer/home/justin-watt.png"
@@ -157,44 +143,6 @@
                :position 4}))
 
 (def nav-height 70)
-
-(defn nav [data owner {:keys [logged-in?]}]
-  (reify
-    om/IDisplayName (display-name [_] "Home Nav")
-    om/IRender
-    (render [_]
-      (html
-       [:nav.home-nav {:style (if (> 70 (:header-bkg-scroller data))
-                                {:background-size (str "100% " (:header-bkg-scroller data) "px")}
-                                {})
-                       :class (concat
-                               (when (:header-logo-visible data) ["logo-visible"])
-                               (when (:header-cta-visible data) ["cta-visible"])
-                               (when (:header-bkg-visible data) ["bkg-visible"])
-                               (when (:header-bkg-invisible data) ["bkg-invisible"])
-                               (when (:header-cta-invisible data) ["cta-invisible"]))}
-        [:a.promo {:href "/mobile"}
-                                        ; "What is Continuous Integration?"
-         "Mobile App Testing for iOS & Android"]
-        (if logged-in?
-          [:a.return {:href "/"} "Return to App"]
-          [:a.login {:href (auth-url)
-                     :on-click #(raise! owner [:track-external-link-clicked
-                                               {:event "Auth GitHub"
-                                                :properties {:source "header-log-in"}
-                                                :path (auth-url)}])}
-           "Log In"])
-        [:a.logo-circleci {:on-click #(raise! owner [:home-scroll-logo-clicked])}
-         [:figure (common/circle-logo)]]
-        (if logged-in?
-          [:a.return {:href "/"} "Return to App"]
-          [:a.action {:href (auth-url)
-                      :role "button"
-                      :on-click #(raise! owner [:track-external-link-clicked
-                                                {:event "Auth GitHub"
-                                                 :properties {:source "header-cta"}
-                                                 :path (auth-url)}])}
-           (str (common/sign-up-text))])]))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback
                                  cta-visibility-callback
@@ -509,7 +457,6 @@
     (render [_]
       (html
        [:div.home.page
-        (om/build nav (om/get-state owner) {:opts {:logged-in? (get-in app state/user-path)}})
         (om/build prolog {} {:opts {:logo-visibility-callback
                                     (fn [visible?]
                                       (om/set-state! owner :header-logo-visible visible?))
@@ -534,5 +481,4 @@
                                       (om/set-state! owner :header-bkg-invisible visible?))
                                     :header-overlap-callback
                                     (fn [visible-px]
-                                      (om/set-state! owner :header-bkg-scroller visible-px))}})
-        (common/footer)]))))
+                                      (om/set-state! owner :header-bkg-scroller visible-px))}})]))))
