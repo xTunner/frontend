@@ -255,7 +255,7 @@
             [:p.header "Call us at"]
             [:p.value [:a {:href "tel:+18005857076"} "1 800 585 7076"]]]]]]
 ;<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1576.5031953493105!2d-122.39993!3d37.78989!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858062f5233729%3A0x8e66673bca8fcf51!2s555+Market+St%2C+San+Francisco%2C+CA+94105!5e0!3m2!1sen!2sus!4v1427412433448" width="600" height="450" frameborder="0" style="border:0"></iframe>
-        [:div.outer-section.map-section
+        [:div.outer-section
          [:iframe.map {:src "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1576.5031953493105!2d-122.39993!3d37.78989!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858062f5233729%3A0x8e66673bca8fcf51!2s555+Market+St%2C+San+Francisco%2C+CA+94105!5e0!3m2!1sen!2sus!4v1427412433448"}]]
         [:div.outer-section
          [:section.container
