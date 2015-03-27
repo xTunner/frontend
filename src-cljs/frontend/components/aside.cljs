@@ -342,6 +342,7 @@
             avatar-url (gh-utils/make-avatar-url user)
             show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)]
         (html
-         [:aside.app-aside-left
+         [:aside.app-aside-left {:class (when-not show-aside-menu? "menuless")}
           (om/build aside-nav app {:opts {:user user}})
-          (om/build activity app {:opts {:login login}})])))))
+          (when show-aside-menu?
+            (om/build aside-menu app {:opts {:login login}}))])))))
