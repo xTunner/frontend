@@ -121,6 +121,11 @@
                                          :_title "About Us"
                                          :_description "Learn more about the CircleCI story and why we're building the leading Continuous Integration and Deployment platform.")))
 
+  (defroute v1-contact (FragmentRoute. "/contact") {:as params}
+    (open-to-outer! nav-ch :contact (assoc params
+                                    :_title "Contact Us"
+                                    :_description "Get in touch with CircleCI.")))
+
   (defroute v1-mobile (FragmentRoute.  "/mobile") {:as params}
     (open-to-outer! nav-ch :mobile (assoc params
                                      :_title "Mobile Continuous Integration and Mobile App Testing"

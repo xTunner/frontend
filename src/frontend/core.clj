@@ -90,6 +90,7 @@
               ;; the backend to serve HTML to bootstrap the client-side code.
               #"/"
               #"/about"
+              #"/contact"
               #"/account.*"
               #"/add-projects"
               #"/changelog.*"

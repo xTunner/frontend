@@ -29,7 +29,7 @@
       [:li [:a {:href "/docs"} "Documentation"]]
       [:li [:a {:href "/security"} "Security"]]
       [:li [:a {:href "/privacy"} "Privacy"]]
-      [:li [:a {:href "/about#contact"} "Contact Us"]]]]
+      [:li [:a {:href "/contact"} "Contact Us"]]]]
     [:div.col-sm-1
      [:a.fa.fa-twitter
       {:title "Follow CircleCI on Twitter",

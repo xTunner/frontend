@@ -225,36 +225,43 @@
           [:div.aside-user-options
            (expand-menu-items items subpage)]])))))
 
-(defn activity [app owner opts]
+(defn branch-activity-list [app owner opts]
   (reify
-    om/IDisplayName (display-name [_] "Aside Activity")
-    om/IInitState (init-state [_] {:scrollbar-width 0})
-    om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
       (let [show-all-branches? (get-in app state/show-all-branches-path)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)]
         (html
-         [:nav.aside-left-menu
-          (om/build project-settings-menu app)
-          (om/build org-settings-menu app)
-          [:div.aside-activity.open
-           [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
-            [:header
-             [:select {:name "toggle-all-branches"
-                       :on-change #(raise! owner [:show-all-branches-toggled
-                                                  (utils/parse-uri-bool (.. % -target -value))])
-                       :value show-all-branches?}
-              [:option {:value false} "Your Branch Activity"]
-              [:option {:value true} "All Branch Activity" ]]
-             [:div.select-arrow [:i.fa.fa-caret-down]]]
-            (for [project (sort project-model/sidebar-sort projects)]
-              (om/build project-aside
-                        {:project project
-                         :settings settings}
-                        {:react-key (project-model/id project)
-                         :opts {:login (:login opts)}}))]]])))))
+         [:div.aside-activity.open
+          [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
+           [:header
+            [:select {:name "toggle-all-branches"
+                      :on-change #(raise! owner [:show-all-branches-toggled
+                                                 (utils/parse-uri-bool (.. % -target -value))])
+                      :value show-all-branches?}
+             [:option {:value false} "Your Branch Activity"]
+             [:option {:value true} "All Branch Activity" ]]
+            [:div.select-arrow [:i.fa.fa-caret-down]]]
+           (for [project (sort project-model/sidebar-sort projects)]
+             (om/build project-aside
+                       {:project project
+                        :settings settings}
+                       {:react-key (project-model/id project)
+                        :opts {:login (:login opts)}}))]])))))
+
+(defn aside-menu [app owner opts]
+  (reify
+    om/IDisplayName (display-name [_] "Aside Menu")
+    om/IInitState (init-state [_] {:scrollbar-width 0})
+    om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
+    om/IRender
+    (render [_]
+      (html
+       [:nav.aside-left-menu
+        (om/build branch-activity-list app {:opts {:login (:login opts)}})
+        (om/build project-settings-menu app)
+        (om/build org-settings-menu app)]))))
 
 (defn aside-nav [app owner opts]
   (reify
@@ -324,8 +331,10 @@
     (render [_]
       (let [user (get-in app state/user-path)
             login (:login user)
-            avatar-url (gh-utils/make-avatar-url user)]
+            avatar-url (gh-utils/make-avatar-url user)
+            show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)]
         (html
-         [:aside.app-aside-left
+         [:aside.app-aside-left {:class (when-not show-aside-menu? "menuless")}
           (om/build aside-nav app {:opts user})
-          (om/build activity app {:opts {:login login}})])))))
+          (when show-aside-menu?
+            (om/build aside-menu app {:opts {:login login}}))])))))
