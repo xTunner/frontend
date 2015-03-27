@@ -1057,7 +1057,7 @@
     (go (let [api-result (<! (ajax/managed-ajax :get "/search-articles" :params {:query query}))]
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
           (when (= :success (:status api-result))
-            (put! (:nav comms) [:navigate! {:path "/docs"}]))))))
+            (put! (:nav comms) [:navigate! {:path "/docs/search"}]))))))
 
 (defmethod control-event :build-header-tab-clicked
   [target message {:keys [tab]} state]

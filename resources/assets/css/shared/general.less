@@ -79,7 +79,7 @@ a {
     text-decoration: none;
   }
 }
-input {
+input:not(.dumb) {
   @height: 3em;
   &[type="text"],
   &[type="search"],
@@ -87,7 +87,7 @@ input {
     .smart_label(@height, (@height / 2));
   }
 }
-textarea {
+textarea:not(.dumb) {
   .smart_label(13em, 3px);
 }
 .loading-spinner,

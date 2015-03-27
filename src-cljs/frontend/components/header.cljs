@@ -198,7 +198,7 @@
                [:li (maybe-active nav-point :about)
                 [:a {:href "/about"} "Overview"]]
                [:li (maybe-active nav-point :contact)
-                [:a {:href "/contact"} "Contact"]]]]])])))))
+                [:a {:href "/contact"} "Contact Us"]]]]])])))))
 
 (defn inner-header [app owner]
   (reify
