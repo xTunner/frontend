@@ -19,7 +19,7 @@
     padding: 15px;
     text-align: center;
 
-    img {
+    .logo {
       width: 65px;
     }
   }
@@ -87,7 +87,7 @@
     @input-width: 100%;
     @dropdown-padding: 10px;
 
-    margin: 20px 0 20px;
+    margin: 20px 0;
     position: relative;
 
     input {
@@ -107,9 +107,8 @@
     }
 
     .typeahead {
-      margin-left: @search-left-padding - @dropdown-padding;
-      width: calc(~'@{input-width} - @{search-left-padding} * 2 + @{dropdown-padding} * 2');
-
+      left: @search-left-padding - @dropdown-padding !important; // typeahead plugin sets "left" directly
+      right: @search-left-padding - @dropdown-padding;
       a {
 	padding-left: @dropdown-padding;
       }

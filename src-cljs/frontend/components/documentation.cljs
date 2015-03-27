@@ -113,14 +113,15 @@
      [:div.front-page-categories
       (for [category (categories docs)]
         (when-let [slug (:slug category)]
-          [:div.front-page-category
-           [:img {:id (gstring/format "doc-image-%s" slug)
-                  :src (-> "/img/outer/docs/%s.svg" (gstring/format slug) utils/cdn-path)}]
-           [:h3 (:title category)]
-           [:ul.list-unstyled
-            [:li [:a {:href (-> category :children first :url)}
-                  (-> category :children first :title)]]
-            [:li [:a {:href (:url category)} [:em (gstring/format "%d more" (-> category :children rest count))]]]]]))])))
+          (let [children (:children category)]
+            [:div.front-page-category
+             [:img.logo {:id (gstring/format "doc-image-%s" slug)
+                    :src (-> "/img/outer/docs/%s.svg" (gstring/format slug) utils/cdn-path)}]
+             [:h3 (:title category)]
+             [:ul.list-unstyled
+              [:li [:a {:href (-> children first :url)}
+                    (-> children first :title)]]
+              [:li [:a {:href (:url category)} [:em (gstring/format "%d more" (-> children rest count))]]]]])))])))
 
 (defn add-link-targets [node]
   (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
