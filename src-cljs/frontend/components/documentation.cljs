@@ -13,7 +13,17 @@
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
+  (:import [goog.events KeyCodes]))
+
+(defn categories [docs]
+  ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
+                                   :reference :parallelism :privacy-security) docs))
+
+(defrender markdown [markdown]
+  (html
+   [:div.markdown {:dangerouslySetInnerHTML
+           #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
 (defn docs-search [app owner]
   (reify
@@ -39,67 +49,79 @@
     (render [_]
       (let [query (get-in app state/docs-search-path)]
         (html
-         [:form#searchDocs.clearfix.form-search
-          [:input#searchQuery
-           {:type "text",
+         [:form.doc-search
+          [:i.fa.fa-search]
+          [:input.form-control#searchQuery
+           {:type "text"
+            :auto-complete "off"
             :value query
             :on-change #(utils/edit-input owner state/docs-search-path %)
-            :placeholder "What can we help you find?",
-            :name "query"}]
-          [:button {:on-click #(do (raise! owner [:doc-search-submitted {:query query}])
-                                   false)
-                    :type "submit"}
-           [:i.fa.fa-search]]])))))
+            :on-key-down #(when (= (.-keyCode %) (.-ENTER KeyCodes))
+                            (raise! owner [:doc-search-submitted {:query query}])
+                            (.preventDefault %))
+            :placeholder "What can we help you find?"
+            :name "query"}]])))))
 
 (defrender article-list [articles]
   (html
-   [:ul.list-unstyled
+   [:ul.article-list
     (for [article articles]
       [:li {:id (str "list_entry_" (:slug article))}
        [:a {:href (:url article)} (:title_with_child_count article)]])]))
 
-(defrender docs-category [category]
-  (html
-   [:ul.nav.nav-stacked
-    [:li {:id (str "category_header_" (:slug category))}
-     [:a {:href (:url category)}
-      [:h4 (:title category)]]]
-   (for [child (:children category)]
-      [:li {:id (gstring/format "category_entry_%_%" (:slug category) (:slug child))}
-       [:a {:href (:url child)} (:short_title_with_child_count child)]])]))
-
-(defrender docs-categories [categories]
+(defrender docs-categories [{:keys [categories selected]}]
   (html
    [:div
-    (om/build-all docs-category categories)]))
+    (for [category categories]
+      [:ul.nav.nav-stacked
+       [:li {:id (str "category_header_" (:slug category))}
+        [:a {:href (:url category)}
+         [:h4 {:class (when (= (:slug category) (:slug selected)) "active")} (:title category)]]]
+       (for [child (:children category)]
+         [:li {:id (gstring/format "category_entry_%s_%s" (:slug category) (:slug child))}
+          [:a {:href (:url child)
+               :class (when (= (:slug child) (:slug selected)) "active")}
+           (:short_title_with_child_count child)]])])]))
+
+(defn search-results [query-results owner opts]
+  (reify
+    om/IDisplayName
+    (display-name [_]
+      "query-results")
+    om/IRender
+    (render [_]
+      (let [query (:query opts)]
+        (html [:div
+               (cond
+                (seq query-results)
+                [:div
+                 [:h5 "Articles matching \"" query "\""]
+                 [:ul.article-list
+                  (for [result query-results]
+                    [:li
+                     [:a {:href (:url result)} (:title result)]
+;                     [:p (:snippet_text result)]
+                     ])]]
+                query
+                [:p "No articles found matching \"" [:strong query] "\""]
+                :else
+                [:p "Type your query and press enter to search."])])))))
 
 (defrender front-page [app owner]
-  (let [query-results (get-in app state/docs-articles-results-path)
-        query (get-in app state/docs-articles-results-query-path)
-        docs (get-in app state/docs-data-path)]
+  (let [docs (get-in app state/docs-data-path)]
     (html
-     [:div
-      [:h1 "What can we help you with?"]
-      (om/build docs-search app)
-      (when query-results
-        [:div.article_list
-         (if (empty? query-results)
-           [:p "No articles found matching \"" [:strong query] "\""]
-           [:div
-            [:h5 "Articles matching \"" query "\""]
-            [:ul.query_results
-             (for [result query-results]
-               [:li [:a {:href (:url result)} (:title result)]])]])])
-      [:h4 "Having problems? Check these sections:"]
-      [:div.row
-       [:div.col-sm-6
-        [:ul.list-unstyled.articles.well
-         [:h4 "Getting started"]
-         (om/build article-list (get-in docs [:gettingstarted :children]))]]
-       [:div.col-sm-6
-        [:ul.list-unstyled.articles.well
-         [:h4 "Troubleshooting"]
-         (om/build article-list (get-in docs [:troubleshooting :children]))]]]])))
+     [:div.front-page-categories
+      (for [category (categories docs)]
+        (when-let [slug (:slug category)]
+          (let [children (:children category)]
+            [:div.front-page-category
+             [:img.logo {:id (gstring/format "doc-image-%s" slug)
+                    :src (-> "/img/outer/docs/%s.svg" (gstring/format slug) utils/cdn-path)}]
+             [:h3 (:title category)]
+             [:ul.list-unstyled
+              [:li [:a {:href (-> children first :url)}
+                    (-> children first :title)]]
+              [:li [:a {:href (:url category)} [:em (gstring/format "%d more" (-> children rest count))]]]]])))])))
 
 (defn add-link-targets [node]
   (doseq [tag ["h2" "h3" "h3" "h4" "h5" "h6"]
@@ -116,11 +138,6 @@
                    (string/replace #"-$" "")))]
       (utils/set-html! heading
                        (gstring/format "<a id='%s' href='#%s'>%s</a>" id id title)))))
-
-(defrender markdown [markdown]
-  (html
-   [:span {:dangerouslySetInnerHTML
-           #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
 (defn subpage-content [doc owner opts]
   (reify
@@ -141,6 +158,7 @@
 (defrender docs-subpage [doc owner opts]
   (html
    [:div
+    [:h1 (:title doc)]
     (if-not (empty? (:children doc))
       (om/build article-list (:children doc))
       (if (:markdown doc)
@@ -150,24 +168,22 @@
 (defrender documentation [app owner opts]
   (let [subpage (get-in app [:navigation-data :subpage])
         fragment (get-in app [:navigation-data :_fragment])
-        docs (get-in app state/docs-data-path)
-        categories ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
-                          :reference :parallelism :privacy-security) docs)
-        doc (get docs subpage)]
+        docs (-> app (get-in state/docs-data-path) (assoc-in [subpage :active] true))
+        doc (get docs subpage)
+        query (get-in app state/docs-articles-results-query-path)
+        query-results (get-in app state/docs-articles-results-path)]
     (html
      [:div.docs.page
-      [:div.banner [:div.container [:h1 (if doc
-                                          (:title doc)
-                                          "Documentation")]]]
-      [:div.container.content
-       [:div.row
-        [:aside.col-sm-3
-         (om/build docs-categories categories)]
-        [:div.col-sm-9
-         (when subpage
-           (om/build docs-search app))
-         [:article
-          (if-not subpage
-            (om/build front-page app)
-            (om/build docs-subpage doc {:opts {:_fragment fragment}}))]]]]])))
-
+      [:div.content
+       [:aside
+        (om/build docs-categories {:categories (categories docs) :selected doc})]
+       [:article
+        (om/build docs-search app)
+        (if (= subpage :search)
+          (om/build search-results query-results {:opts {:query query}})
+          [:div
+           (when query
+             [:p.back-to-search [:a {:href "/docs/search"} (gstring/format "Back to search results for \"%s\"" query)]])
+           (if subpage
+             (om/build docs-subpage doc {:opts {:_fragment fragment}})
+             (om/build front-page app))])]]])))

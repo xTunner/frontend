@@ -1,99 +1,125 @@
 .docs {
+  @article-max-width: 1000px;
+  @aside-width: 560px;
+  @aside-bg: #fbfbfb;
 
-  .content h1 {
-    font-size: 30px;
-    line-height: 29px;
+  .content {
+    padding: 0;
+    .clearfix;
+  }
+
+  .front-page-categories {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .front-page-category {
+    width: 300px;
+    padding: 15px;
+    text-align: center;
+
+    .logo {
+      width: 60px;
+    }
+  }
+
+  aside {
+    .active {
+      font-weight: bold;
+    }
+
+    float: left;
+    width: @aside-width;
+
+    padding: 20px 70px 70px 70px;
+
+    border-right: 1px solid @panel-default-border;
+    background-color: @aside-bg;
+
+    .nav li {
+      & > a:hover, & > a:focus {
+	background: none;
+      }
+    }
+  }
+
+  aside.invisible {
+    flex: 0 1 auto;
   }
 
   article {
+    padding: 0 50px;
+    max-width: @article-max-width;
+    margin: 0 auto;
+    @media(max-width: (@article-max-width + @aside-width * 2)) {
+      float: left;
+      width: calc(~'100vw - @{aside-width}');
+    }
 
     h2 > a, h3 > a, h4 > a, h5 > a, h6 > a {
-      color: black;
+      color: @gray-darker;
+      text-decoration: none;
     }
 
-    h1 {
-      margin-bottom: 5px;
-    }
-
-    .meta {
-      padding-bottom: 20px;
-      border-bottom: 1px solid @grayLighter;
-    }
-
-    .meta strong, .meta {
-      color: @gray;
-    }
-
-    ul {
-
+    .markdown {
       li {
-        position: relative;
-        margin: 10px 0;
-
-        &:before {
-          position: absolute;
-          top: 0;
-          left: -30px;
-          color: white;
-          background: @circleBlueLight;
-          height: 20px;
-          width: 20px;
-          text-align: center;
-          font-size: 12px;
-          .border-radius(20px);
-        }
+	margin: 10px 0;
+      }
+      pre {
+	margin: 30px 0;
       }
 
+      p {
+	margin-bottom: 20px;
+      }
+      iframe {
+	margin-bottom: 20px;
+      }
     }
-
-    pre {
-      margin: 30px 0;
-    }
-
-    p {
-      margin-bottom: 20px;
-    }
-    
-    iframe {
-      margin-bottom: 20px;
-    }
-
   }
 
-  #searchDocs {
-    ul {
-      margin: 0;
+  .article-list {
+    list-style: none;
+    padding-left: 0;
+    li {
+      margin: 20px 0;
     }
+  }
+
+  @search-left-padding: 45px;
+
+  .doc-search {
+    @input-width: 100%;
+    @dropdown-padding: 10px;
+
+    margin: 20px 0;
+    position: relative;
 
     input {
-      width: 86%;
+      width: @input-width;
+      margin: 0;
+      padding-left: @search-left-padding;
     }
 
-    li.active {
-      background-color: #33659c;
-      strong { color: white; }
-      color: white;
-    }
-
-    li > a {
-      color: #333;
-      background-color: white;
-    }
-
-    button {
-      height: 38px;
-      width: 38px;
-      font-size: 18px;
+    i.fa.fa-search {
+      position: absolute;
+      padding: 10px;
       margin-left: 5px;
+      font-size: 25px;
+      color: #ddd;
+      // TODO: Get <input> to use bootstrap/variables, then use @input-border-color here
 
-      i.fa.fa-search {
-        position: relative;
-        font-size: 105%;
-      }
     }
 
-    button, input {
-      float: left;
+    .typeahead {
+      // overriding default typeahead style directly on element
+      top: 50px !important;
+      left: @search-left-padding - @dropdown-padding !important;
+      right: @search-left-padding - @dropdown-padding !important;;
+      a {
+	padding-left: @dropdown-padding;
+      }
     }
   }
 
@@ -111,11 +137,11 @@
 
   .nav {
     h4 {
-      color: @circleFont;
+      color: @gray-darker;
     }
 
     & > li > a {
-      padding: 5px 10px;
+      padding: 6px 10px;
     }
   }
 }
