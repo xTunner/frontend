@@ -1,7 +1,7 @@
 .docs {
   @article-max-width: 1000px;
-  @aside-width: 400px;
-  @aside-bg: darken(@body-bg, 2%);
+  @aside-width: 560px;
+  @aside-bg: #fbfbfb;
 
   .content {
     padding: 0;
@@ -20,7 +20,7 @@
     text-align: center;
 
     .logo {
-      width: 65px;
+      width: 60px;
     }
   }
 
@@ -32,13 +32,15 @@
     float: left;
     width: @aside-width;
 
-    padding: 15px;
+    padding: 20px 70px 70px 70px;
 
     border-right: 1px solid @panel-default-border;
     background-color: @aside-bg;
 
-    li:hover {
-      background-color: darken(@aside-bg, 5%);
+    .nav li {
+      & > a:hover, & > a:focus {
+	background: none;
+      }
     }
   }
 
@@ -79,6 +81,10 @@
 
   .article-list {
     list-style: none;
+    padding-left: 0;
+    li {
+      margin: 20px 0;
+    }
   }
 
   @search-left-padding: 45px;
@@ -107,16 +113,14 @@
     }
 
     .typeahead {
-      left: @search-left-padding - @dropdown-padding !important; // typeahead plugin sets "left" directly
-      right: @search-left-padding - @dropdown-padding;
+      // overriding default typeahead style directly on element
+      top: 50px !important;
+      left: @search-left-padding - @dropdown-padding !important;
+      right: @search-left-padding - @dropdown-padding !important;;
       a {
 	padding-left: @dropdown-padding;
       }
     }
-  }
-
-  .back-to-search {
-    padding-left: @search-left-padding;
   }
 
   h1 {
@@ -137,7 +141,7 @@
     }
 
     & > li > a {
-      padding: 5px 10px;
+      padding: 6px 10px;
     }
   }
 }
