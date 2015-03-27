@@ -405,6 +405,7 @@
   [history-imp navigation-point args previous-state current-state]
   (set-page-title! "Track CircleCI Updates")
   (set-page-description! "Track our platform changes and updates via the CircleCI Changelog. Stay up to date with the latest in Continuous Integration.")
+  (analytics/track-page "View Changelog")
   (scroll! args)
   (go (let [comms (get-in current-state [:comms])
             api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
