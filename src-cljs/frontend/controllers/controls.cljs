@@ -1114,3 +1114,8 @@
 (defmethod control-event :pricing-parallelism-clicked
   [target message {:keys [p]} state]
   (assoc-in state state/pricing-parallelism-path p))
+
+(defmethod control-event :docker-diagram-index-selected
+  [target message index state]
+  (assoc-in state state/docker-diagram-path index))
+

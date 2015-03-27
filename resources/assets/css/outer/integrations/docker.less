@@ -20,6 +20,42 @@
   }
 }
 
+.docker-diagram {
+  padding-top: 29px;
+
+  .diagram-annotation {
+    .make-row;
+  }
+
+  .diagram-icon {
+    display: inline-block;
+    width: 65px;
+    height: 65px;
+
+    &:after {
+      
+    }
+  }
+
+  .diagram-arrow {
+    margin-top: 27px;
+    height: 21px;
+  }
+
+  .connector-line {
+    width: ~"calc((100% - (5 * 65px)) / 4)";
+    display: inline-block;
+    position:relative;
+    top: -4px;
+    content: ' ';
+    border-top: 1px dashed #ddd;
+
+    &.active {
+      border-top: 1px dashed @brand-success;
+    }
+  }
+}
+
 .outer-section-overview {
   padding-bottom: 70px;
   .make-xs-column(12);
@@ -68,8 +104,8 @@
 
   > .cta-text {
     .make-md-column(12);
-    .make-lg-column(7);
-    .make-lg-column-offset(2);
+    .make-lg-column(6);
+    .make-lg-column-offset(3);
   }
 
   > .cta-btn {
@@ -78,10 +114,6 @@
 
     @media (max-width: @screen-md-max) {
       .text-center;
-    }
-
-    @media (min-width: @screen-lg-min) {
-      .text-right;
     }
   }
 }
