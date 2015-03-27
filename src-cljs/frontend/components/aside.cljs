@@ -268,7 +268,7 @@
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)]))))
 
-(defn aside-nav [app owner opts]
+(defn aside-nav [app owner {user :user}]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IDidMount
@@ -290,7 +290,7 @@
                         :data-trigger "hover"
                         :title "Settings"
                         :href "/account"}
-         [:img {:src (gh-utils/make-avatar-url opts)}]]
+         [:img {:src (gh-utils/make-avatar-url user)}]]
 
         [:a.aside-item {:title "Documentation"
                         :data-placement "right"
@@ -320,7 +320,9 @@
         [:a.aside-item {:data-placement "right"
                         :data-trigger "hover"
                         :title "Changelog"
-                        :href "/changelog"}
+                        :href "/changelog"
+                        :class (when (changelog-updated-since? (:last_viewed_changelog user))
+                                 "unread")}
          [:i.fa.fa-bell]]
 
         [:a.aside-item.push-to-bottom {:data-placement "right"
@@ -339,7 +341,6 @@
             avatar-url (gh-utils/make-avatar-url user)
             show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)]
         (html
-         [:aside.app-aside-left {:class (when-not show-aside-menu? "menuless")}
-          (om/build aside-nav app {:opts user})
-          (when show-aside-menu?
-            (om/build aside-menu app {:opts {:login login}}))])))))
+         [:aside.app-aside-left
+          (om/build aside-nav app {:opts {:user user}})
+          (om/build activity app {:opts {:login login}})])))))
