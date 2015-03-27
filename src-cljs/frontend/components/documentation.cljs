@@ -22,7 +22,7 @@
 
 (defrender markdown [markdown]
   (html
-   [:span {:dangerouslySetInnerHTML
+   [:div.markdown {:dangerouslySetInnerHTML
            #js {:__html  (doc-utils/render-markdown markdown)}}]))
 
 (defn docs-search [app owner]
