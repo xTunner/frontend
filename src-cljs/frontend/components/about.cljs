@@ -368,10 +368,10 @@
           [:div.circle
            [:div.bubble
             (:bio person)]
-           (if-let [img-path (:img-path person)]
-             [:img.pic {:src img-path}]
-             [:div.pic
-              [:img.logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]])]
+           [:div.pic
+            (if-let [img-path (:img-path person)]
+              [:img {:src img-path}]
+              [:img.logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}])]]
           [:p.name (:name person)]
           [:p.title (:role person)]])]]]
     [:div.bottom-cta.outer-section.outer-section-condensed

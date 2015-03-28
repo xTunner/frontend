@@ -55,10 +55,29 @@
       .circle {
 
 	.pic {
-	  height: 150px;
-	  width: @size;
-	  border-radius: @size / 2;
+	  position: relative;
+	  overflow:hidden;
+
 	  background-color: @gray-lighter;
+
+	  &, &::after {
+	    height: 150px;
+	    width: @size;
+	    border-radius: @size / 2;
+	  }
+
+	  &::after {
+	    content: "";
+	    position: absolute;
+	    z-index: 1;
+	    left: 0;
+	    top: 0;
+	    background-color: @black;
+	    opacity: 0;
+	  }
+	  &:hover::after {
+	    opacity: 0.3;
+	  }
 	}
 
 	.bubble {
@@ -69,13 +88,14 @@
 	  padding: 10px;
 	  opacity: 0;
 	  transition: opacity 0.2s, bottom 0.2s;
+	  z-index: 2;
 
 	  pointer-events: none;
 	  background-color: @white;
 	  border-radius: 10px;
 	  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 
-	  &:after {
+	  &::after {
 	    content: "";
 	    position: absolute;
 	    bottom: -15px;
