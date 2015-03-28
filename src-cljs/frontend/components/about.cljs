@@ -351,6 +351,8 @@
       [:div.people
        (for [person (team-data)]
          [:div.person
-          [:img.pic {:src (:img-path person)}]
+          (if-let [img-path (:img-path person)]
+            [:img.pic {:src img-path}]
+            [:div.pic [:img.missing {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]])
           [:p.name (:name person)]
           [:p.title (:role person)]])]]]]))

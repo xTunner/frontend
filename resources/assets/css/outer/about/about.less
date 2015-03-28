@@ -44,20 +44,23 @@
       text-align: center;
 
       .pic {
-	@height: 150px;
+	@size: 150px;
+	@logo-size: @size / 3;
 	height: 150px;
-	border-radius: @height / 2;
+	width: @size;
+	border-radius: @size / 2;
+	background-color: @gray-lighter;
+	.missing {
+	  opacity: 0.2;
+	  margin: (@size - @logo-size) / 2;
+	  height: @logo-size;
+	  width: @logo-size;
+	}
       }
       .name {
 	margin: 1em 0 0;
 	color: @gray-darker;
 	font-size: 110%;
-      }
-      .title {
-
-
-
-
       }
     }
   }
