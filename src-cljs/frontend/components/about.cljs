@@ -373,4 +373,12 @@
              [:div.pic
               [:img.logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]])]
           [:p.name (:name person)]
-          [:p.title (:role person)]])]]]]))
+          [:p.title (:role person)]])]]]
+    [:div.bottom-cta.outer-section.outer-section-condensed
+     common/language-background
+     [:h2 "We're Hiring"]
+     [:p.subheader "We're looking for amazing people to join us on this journey, want to join the team?"]
+     [:a.btn.btn-cta
+      {:href "/jobs"
+       :role "button"}
+      "Join Us"]]]))
