@@ -192,7 +192,7 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
-          (when (contains? #{:about :contact} nav-point)
+          (when (contains? #{:about :team :contact} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid
               [:ul.nav.navbar-nav
