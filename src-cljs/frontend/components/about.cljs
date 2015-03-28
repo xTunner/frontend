@@ -13,7 +13,7 @@
   (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-(defn team []
+(defn team-data []
   [{:name "Paul Biggar"
     :role "Founder"
     :github "pbiggar"
@@ -332,3 +332,25 @@
          [:p.subheader
           "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
          (common/sign-up-cta owner "about")]]))))
+
+(defrender team [app owner]
+  (html
+   [:div#team
+    [:div.jumbotron
+     common/language-background-jumbotron
+     [:section.container
+      [:div.row
+       [:article.hero-title.center-block
+        [:div.text-center
+         [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
+        [:h1.text-center "Meet the Team"]
+        [:h3.text-center "We love to build software that makes our customers successful."]]]]]
+    [:div.outer-section
+     [:section.container
+      [:h2.people-header "Meet the team!"]
+      [:div.people
+       (for [person (team-data)]
+         [:div.person
+          [:img.pic {:src (:img-path person)}]
+          [:p.name (:name person)]
+          [:p.title (:role person)]])]]]]))

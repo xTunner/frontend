@@ -170,7 +170,8 @@
              [:li (maybe-active nav-point :documentation)
               [:a {:href "/docs"} "Documentation"]]
              [:li {:class (when (contains? #{:about
-                                             :contact}
+                                             :contact
+                                             :team}
                                            nav-point)
                             "active")}
               [:a {:href "/about"} "About Us"]]
@@ -197,6 +198,8 @@
               [:ul.nav.navbar-nav
                [:li (maybe-active nav-point :about)
                 [:a {:href "/about"} "Overview"]]
+               [:li (maybe-active nav-point :team)
+                [:a {:href "/about/team"} "Team"]]
                [:li (maybe-active nav-point :contact)
                 [:a {:href "/contact"} "Contact Us"]]]]])])))))
 

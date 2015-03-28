@@ -16,7 +16,7 @@
     om/IRender
     (render [_]
       (let [changelog (get-in app state/changelog-path)
-            team (about/team)
+            team (about/team-data)
             show-id (:show-id changelog)]
         (html
          [:div.changelog.page
