@@ -21,26 +21,15 @@
     :email "paul@circleci.com"
     :img-path (stefon/asset-path "/img/outer/about/paul.png")
     :visible true
-    :bio ["Paul Biggar is cofounder and CEO of CircleCI. In past lives, he wrote phc, an open source PHP compiler, while doing his PhD on compilers and static analysis in Dublin. He has been accepted to YCombinator, given talks at Facebook and Google, been interviewed by the Wall Street Journal, and once (mostly) landed a backflip on skis!",
-          "After moving to the Bay Area in 2011, Paul worked on the Firefox Javascript engine, then he co-founded CircleCI. Because it pains Paul to see so much time wasted due to inadequate developer tools, he approaches continuous integration and delivery from the perspective of developer productivity. He loves to focus on building the CircleCI product, but is currently kept so busy taking care of the business side of things that his coding fingers are getting restless."]}
-    {:name "Jenneviere Villegas"
+    :bio "Before founding CircleCI, Paul worked on the Firefox Javascript engine and wrote phc, and open source PHP compiler. He did his PhD on compilers and static analysis in Dublin and is a YCombinator alumni."}
+   {:name "Jenneviere Villegas"
     :img-path (stefon/asset-path "/img/outer/about/jenneviere.png")
     :visible true
-    :role "Operations"
+    :role "Marketing"
     :github "jenneviere"
     :twitter "jenneviere"
     :email "jenneviere@circleci.com"
-    :bio ["Jenneviere moved to the Bay Area in 2010 after spending a few months there, singing and dancing, as the lead in a rock opera. She then worked as an extra on the movie Twixt, and when she realized that Mr. Coppola wasn't going to cast her as the lead in his next film, she began drowning her sorrows in hoppy IPAs and the soothing click of knitting needles. She took the black and works the Gate at That Thing In The Desert, and has only written a single line of code, ever.",
-          "Drawing from her many years' experience in her previous position as the Customer Amazement Specialist, Operations Manager, Returns Siren, and Retail Store Maven for a certain large utility kilt manufacturer, Jenneviere brings her skills as a professional pottymouth, dabbler in inappropriate and snarky humor, and cat wrangling to the team at Circle, and spends most of her time trying to keep everyone well-groomed and hairball free."]}
-   {:name "David Lowe"
-    :visible true
-    :role "Backend Developer"
-    :github "dlowe"
-    :twitter "j_david_lowe"
-    :email "dlowe@circleci.com"
-    :img-path (stefon/asset-path "/img/outer/about/david.png")
-    :bio ["David is responsible for all of the bugs. He wrote his first buggy code in BASIC with a pencil and paper, and he's been getting better at it ever since. He keeps a 1/4 acre garden and eats almost entirely home-grown veggies during the growing season. Helping to balance out the numerous times that he's lost at chess, David has won the IOCCC on 6 separate occasions. In a past life, he wrote MTA software which at one time was sending about 1% of the internet's email.",
-          "Besides being invited to speak at the Frozen Perl Conference, OIT's CSET Department, and SOU's CS Department, David co-founded the SF perl user group, the southern Oregon geek group, and the Rogue hack lab hackerspace. He drank the automated testing kool-aid years ago, and after introducing and championing (and constantly fiddling with) continuous integration tools at his last N jobs, he came to Circle, and is particularly keen on building and scaling things which would be impossible to justify for any single small company where CI isn't what they do. He splits his time between introducing new bugs, telling kids to get off his lawn, and baking pies. His current running total is roughly 1500 delicious pastry concoctions."]}
+    :bio "Jenneviere moved to the Bay Area in 2010 and was CircleCI’s first official employee. When she’s not working, she can be found dancing, singing and acting in movies, television and on stage, or drinking a hoppy IPA at That Thing In The Desert."}
    {:name "Mahmood Ali"
     :img-path (stefon/asset-path "/img/outer/about/mahmood.png")
     :visible true
@@ -48,8 +37,7 @@
     :github "notnoopci"
     :twitter "notnoop"
     :email "mahmood@circleci.com"
-    :bio ["Mahmood loves car camping, which might explain why he also likes moving as much as he does. He and his family have moved 6 times in the last 6 years, though his baby boy has been completely lazy and hasn't offered to carry a single box yet. In between relocation to new abodes, Mahmood spends the nicer Boston weather exploring bike trails and learning computer languages. He's determined that his son will know Java before he can talk.",
-          "During his time at MIT, Mahmood spoke at a few Java research conferences including Devoxx, and has pushed code to Java 8--and Java 7--compilers. He's been a speaker at OOPSLA/Splash, and is active in the open-source community. He enjoys being reminded of his in-production projects, like java-apns, every time he gets support tickets. He acknowledges his own fallibility, and aims to help the Circle team continue to bring reliable test automation to all developers. His Achilles Heel is his pair of permanently underachieving glasses."]}
+    :bio "During his time at MIT, Mahmood spoke at a few Java research conferences includingDevoxx, and has pushed code to Java 8—and Java 7—compilers. He's been a speaker at OOPSLA/Splash, and is active in the open-source community. He and his family have moved 6 times in the last 6 years."}
    {:name "Gordon Syme"
     :img-path (stefon/asset-path "/img/outer/about/gordon.png")
     :visible true
@@ -57,8 +45,7 @@
     :github "gordonsyme"
     :twitter "gordon_syme"
     :email "gordon@circleci.com"
-    :bio ["Gordon has been racing dinghies right through the winter off the coast of Ireland for the past 16-odd years, and as his oft-showcased cabinet of prize coffee mugs will tell you, he's damn good at it. When he's not busy bludgeoning a piano with his ham-fisted fingers, he spends his free time rolling down mountains on a bicycle… sometimes even the right way up. In his down time, he's a board game shark, though you won't catch him trying to buy Boardwalk or get out of jail free.",
-          "Gordon joins the team after spending significant time at Amazon building tools to monitor the entire network (he built their DWDM monitoring from the ground up). He also built a JVM bytecode recompiler to enable running applications on a clustered VM without needing re-programming effort, and has grand plans for how he's going to make waves at Circle. We're pretty sure they include company Power Grid tournaments."]}
+    :bio "Gordon joins the team after spending significant time at Amazon building tools to monitor the entire network (he built their DWDM monitoring from the ground up). When he's not hacking away on code, he spends time mountain biking and racing dinghies off the coast of Ireland."}
    {:name "Nick Gottlieb"
     :img-path (stefon/asset-path "/img/outer/about/nick.png")
     :visible true
@@ -66,21 +53,22 @@
     :github "worldsoup"
     :twitter "worldsoup"
     :email "nick@circleci.com"
-    :bio ["Nick is an aspiring merman who spends most of his time outside of the Circle office in the ocean; surfing, diving, sailing, and swimming. He lived in Japan for 3 years as a student, consultant, actor, and vagabond and wrote his senior thesis on the cultural importance of baseball in the country. He won a hackathon by building a social haiku app for iPhone (which is still in the App Store). Eventually he came back to the US and got his first ‘real job’ at a digital consultancy where he optimized conversion rates for websites that comprise hundreds of thousands of visitors and generate millions in revenue every month.",
-          "In 2012 Nick was lured to San Francisco by the prospect of hitting it big with his own startup, which crashed and burned, but he liked the place so decided to stick around. He loves the open work culture at Circle which allows him to fulfill his constant need to get-shit-done while helping developers do the same. One day he will unplug his computer and sail around the world."]}
+    :bio "Nick is an aspiring merman who spends most of his time outside of the Circle office in the ocean; surfing, diving, sailing, and swimming. He lived in Japan for 3 years as a student, consultant, actor, and vagabond and wrote his senior thesis on the cultural importance of baseball in the country."}
    {:name "Emile Snyder"
     :img-path (stefon/asset-path "/img/outer/about/emile.png")
     :visible true
     :role "Backend Developer"
     :github "esnyder"
     :twitter "emilesnyder"
-    :email "emile@circleci.com"}
+    :email "emile@circleci.com"
+    :bio "Emile co-founded the Rogue Hack Lab in Oregon and has a degree in Physics. When he’s not studying weird languages (OCaml, haskel, erlang, scala), he can be found brewing beer, baking, and reminiscing fondly on the 3-episode walk-on roll he had on Saved By The Bell."}
    {:name "Tim Dixon"
     :img-path (stefon/asset-path "/img/outer/about/tim.png")
     :visible true
     :role "Developer"
     :github "startling"
-    :email "tim@circleci.com"}
+    :email "tim@circleci.com"
+    :bio "Tim grew up in the midwest and moved to SF to work for Circle. He likes functional programming, board games, and learning on-the-fly."}
    {:name "Ian Duncan"
     :img-path (stefon/asset-path "/img/outer/about/ian.png")
     :visible true
@@ -88,51 +76,77 @@
     :github "iand675"
     :twitter "iand675"
     :email "ian@circleci.com"
-    :bio ["Ian joins the CircleCI team remotely from South Carolina. When he’s not busy coding away on CircleCI, he’s probably off hacking on his Haskell side projects or studying distributed systems with a quality microbrew in hand. He started learning Haskell in high school for some research projects, and has been hooked on functional programming ever since. Ian's always had more ideas for things to build than time on his hands, but managed to win runner up in a few entrepreneurship competitions in college for his work.",
-          "He’s particularly fond of travel, and has done two cross-country moves in 2 years. He loves getting to know foreign cultures, and has learned to speak some Japanese and French along the way. During the summer months, he spends his time bicycling, hiking, and running, and once the weather turns cold he hones his gaming skills on Dance Dance Revolution and Super Smash Bros, sits back and binge-watches television shows (currently: Castle and Brooklyn Nine-Nine), and chows down on pumpkin pie."]}
+    :bio "Ian lives in South Carolina, where he codes things for CircleCI. He’s a functional programming fanatic, and loves learning how things work. When he’s not working, he’s busy cooking delicious food."}
    {:name "Kevin Bell"
     :visible true
     :role "Developer Evangelist"
     :github "bellkev"
     :twitter "iamkevinbell"
-    :email "kevin@circleci.com"}
-   {:name "Cayenne Geis"
-    :img-path (stefon/asset-path "/img/outer/about/cayenne.png")
+    :email "kevin@circleci.com"
+    :bio "Kevin studied physics at the University of Washington, but has since discovered that software better satisfies his need for instant gratification. He dabbles in jazz piano in his free time, but fortunately for CircleCI he is much better with a computer than he is with a piano."}
+   {:name "Jim Rose"
     :visible true
-    :role "Developer"
-    :github "cayennes"
-    :email "cayenne@circleci.com"}
+    :role "COO"
+    :email "jim@circleci.com"
+    :bio "Jim co-founded Distiller.io, a continuous integration and deployment service for mobile apps, that CircleCI acquired in August 2013. Prior to Distiller, Jim founded several companies in the ecommmerce, search, and social spaces."}
+   {:name "Rob Zuber"
+    :visible true
+    :role "VP Engineering"
+    :github "z00b"
+    :email "rob@circleci.com"
+    :bio "Rob joined CircleCI through the acquisition of Distiller where he was Co-Founder and CTO. He's been involved in startups since '98, and when he's not toiling away on code he can be found snowboarding, playing guitar, and hanging out with his family."}
    {:name "Jonathan Irving"
     :img-path (stefon/asset-path "/img/outer/about/jonathan.png")
     :visible true
     :role "Developer"
     :github "j0ni"
     :twitter "j0ni"
-    :email "jonathan@circleci.com"}
+    :email "jonathan@circleci.com"
+    :bio "Jonathan studied Music and the History of Ideas, and dabbled in Parole casework before beginning his career in software. For fun he fiddles with Emacs, Clojure, Ableton Live and several guitars, jamming in his basement with his homegrown teenage rhythm section."}
+   {:name "Robin Horca"
+    :visible true
+    :role "Operations"
+    :email "robin@circleci.com"
+    :bio "Robin was a carrot in a Burning Man rock opera and used to build giant gingerbread houses for the Fairmont. She lived in Costa Rica for 4 years and will tell you all about it; again, and again, and again..."}
+   {:name "Cayenne Geis"
+    :img-path (stefon/asset-path "/img/outer/about/cayenne.png")
+    :visible true
+    :role "Developer"
+    :github "cayennes"
+    :email "cayenne@circleci.com"
+    :bio "Cayenne hails from the Boston area, and enjoys Clojure so much that she uses it for hobby projects even after writing in it all day for work. She's fond of solarized rainbow parentheses, and when she's not coding, she likes playing board games (Dominion!) and handbells."}
    {:name "Tim Reinke"
     :img-path (stefon/asset-path "/img/outer/about/timr.png")
     :visible true
     :role "Developer Success"
     :github "musicalchair"
     :twitter "timreinke"
-    :email "tim.reinke@circleci.com"}
-   {:name "Travis Vachon"
+    :email "tim.reinke@circleci.com"
+    :bio "Tim studied Electrical Engineering and enjoys programming languages, skiing, systems of all sorts, and helping people get on the same page."}
+   {:name "Mike Stearns"
     :visible true
+    :role "Marketing"
+    :email "mike@circleci.com"
+    :bio "After winning both the math and spelling bees in the 5th grade, Mike went on to work in the world of digital marketing and ecommerce. Aside from playing with his wife and daughter, Mike is the President of the San Francisco Homebrewers Guild in his spare time."}
+   {:name "Dan Beere"
+    :visible true
+    :role "Designer"
+    :email "daniel.beere@circleci.com"
+    :bio "Dan organized Ireland’s first and second Design Jam (in Limerick and Dublin, respectively) and once climbed Kilimanjaro for charity. A recent transplant from Ireland to San Francisco, he spends his free time exploring his new city."}
+   {:name "Laura Franzese"
+    :email "laura@circleci.com"
+    :role "Public Relations"
+    :bio "Laura helps the public to better understand CircleCI. Previously, she worked on strategic communications campaigns for HP, Sun Microsystems and AppDynamics, to name a few. Laura is passionate about stand-up comedy, bunny gif's and the muppets."}
+   {:name "Marc O'Morain"
+    :email "marc@circleci.com"
     :role "Developer"
-    :github "travis"
-    :twitter "tvachon"
-    :email "travis@circleci.com"}])
+    :bio "Marc is a reformed game developer, based in Dublin. He still enjoys tinkering with virtual machines and C in his spare time"}
+   {:name "Alexey Klochay"
+    :email "alexey@circleci.com"
+    :role "Support Engineer"
+    :bio "Alexey joins Circle from the sunny coasts of Spain. In between mountain biking, partying at art galleries and doing martial arts, he helps to ensure that Circle’s customers get the smoothest experience possible."}])
 
-(def placeholder-image [:svg.about-placeholder {:height "150px" :width "150px" :viewBox "0 0 150 150"}
-                        [:path.bust {:d "M-1.673,151.75v-13.856c0,0,0.901-8.505,11.143-11.142c0,0,16.495-6.022,29.415-11.646 c6.681-2.907,8.119-4.652,14.859-7.631c0,0,0.703-3.461,0.45-5.521h5.271c0,0,1.204,0.702,0-7.43c0,0-6.425-1.705-6.725-14.655 c0,0-4.825,1.625-5.121-6.224c-0.202-5.321-4.318-9.939,1.607-13.753l-3.012-8.131c0,0-6.023-32.826,11.294-28.008 c-7.305-8.734,41.409-17.465,44.574,10.24c0,0,2.256,14.958,0,25.197c0,0,7.113-0.824,2.357,12.852c0,0-2.609,9.836-6.627,7.628 c0,0,0.656,12.447-5.668,14.559c0,0,0.449,6.625,0.449,7.075l6.025,0.903c0,0-0.906,5.424,0.152,6.022c0,0,7.142,4.894,15.657,7.081 c16.414,4.212,35.837,11.44,35.837,17.766c0,0,1.659,8.435,1.659,18.673H-1.673z",
-                                     :fill "#ccc"}]])
 
-(defn placeholder-bio [name]
-  [:div.bio-coming-soon
-   [:p
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi iaculis mi ante, at mattis purus varius sed. Maecenas sollicitudin volutpat nunc eget volutpat. Fusce sollicitudin adipiscing tincidunt. Duis tincidunt quis eros id egestas. Nunc ac nisi mollis, egestas enim quis, bibendum odio. Vestibulum facilisis lorem ante, ut placerat elit pellentesque non. Maecenas blandit urna non pharetra venenatis. Quisque malesuada, tellus nec porta luctus, mi lorem mattis elit, sit amet semper neque ligula sed orci. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse eu lectus lobortis, condimentum orci faucibus, porta leo. Donec pretium sapien sit amet orci rhoncus, in suscipit erat fringilla. Donec viverra nulla dolor. Nam id libero ultricies, viverra nisi et, commodo lorem. Maecenas ac risus lobortis, pellentesque ante in, consectetur nulla."]
-   [:div.coming-soon
-    {:placeholder (str "Sorry, we're still working on " (first (str/split name #" ")) "'s bio.")}]])
 
 (defn contact-image-src [shortname]
     (utils/cdn-path (gstring/format "/img/outer/contact/contact-%s.svg" shortname)))
@@ -345,14 +359,18 @@
          [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
         [:h1.text-center "Meet the Team"]
         [:h3.text-center "We love to build software that makes our customers successful."]]]]]
-    [:div.outer-section
+    [:div.outer-section.people-section
      [:section.container
       [:h2.people-header "Meet the team!"]
       [:div.people
        (for [person (team-data)]
          [:div.person
-          (if-let [img-path (:img-path person)]
-            [:img.pic {:src img-path}]
-            [:div.pic [:img.missing {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]])
+          [:div.circle
+           [:div.bubble
+            (:bio person)]
+           (if-let [img-path (:img-path person)]
+             [:img.pic {:src img-path}]
+             [:div.pic
+              [:img.logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]])]
           [:p.name (:name person)]
           [:p.title (:role person)]])]]]]))

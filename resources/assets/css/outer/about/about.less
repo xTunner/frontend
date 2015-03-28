@@ -27,6 +27,10 @@
     overflow: hidden;
   }
 
+  .people-section {
+    overflow: visible;
+  }
+
   .people-header {
     text-align: center;
     margin-bottom: 50px;
@@ -39,18 +43,57 @@
     text-align: center;
 
     .person {
+      @size: 150px;
+      @logo-size: @size / 3;
+
       padding: 0 44px;
       margin-bottom: 45px;
+      position: relative;
+
       text-align: center;
 
-      .pic {
-	@size: 150px;
-	@logo-size: @size / 3;
-	height: 150px;
-	width: @size;
-	border-radius: @size / 2;
-	background-color: @gray-lighter;
-	.missing {
+      .circle {
+
+	.pic {
+	  height: 150px;
+	  width: @size;
+	  border-radius: @size / 2;
+	  background-color: @gray-lighter;
+	}
+
+	.bubble {
+	  position: absolute;
+	  bottom: 0;
+	  left: 0;
+	  right: 0;
+	  padding: 10px;
+	  opacity: 0;
+	  transition: opacity 0.2s, bottom 0.2s;
+
+	  pointer-events: none;
+	  background-color: @white;
+	  border-radius: 10px;
+	  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+
+	  &:after {
+	    content: "";
+	    position: absolute;
+	    bottom: -15px;
+	    left: calc(~'50% - 15px');
+	    border-width: 15px 15px 0;
+	    border-style: solid;
+	    border-color: @white transparent;
+	    width: 0;
+	  }
+	}
+
+	&:hover .bubble {
+	  bottom: 220px;
+	  opacity: 1;
+	}
+
+
+	.logo {
 	  opacity: 0.2;
 	  margin: (@size - @logo-size) / 2;
 	  height: @logo-size;
