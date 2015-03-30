@@ -319,3 +319,26 @@ specify. This will create significant performance problems because the save/load
 described above only caches
 the image layers (and thus tags) that you specify in the `docker save` command, so
 other tags will be re-pulled on every build if a tag is not specified in the FROM command.
+
+### Connecting to services outside of the container
+
+You can connect to services outside your docker container (like our
+pre-installed databases) by using the [docker0 ethernet bridge
+device](https://docs.docker.com/articles/networking/).
+
+You will also have to make services you want to connect to _listen_ to
+connections from Docker containers.
+
+For Postgres, for example, you might want to listen on `0.0.0.0`:
+
+```
+test:
+  pre:
+    - sudo bash -c "echo \"listen_addresses = '*'\" >>
+      /etc/postgresql/9.4/main/postgresql.conf"
+    - sudo bash -c "echo \"host all all 0.0.0.0/0 trust\" >>
+      /etc/postgresql/9.4/main/pg_hba.conf"
+    - sudo /etc/init.d/postgresql restart
+```
+
+The similar approach should work well with other services.
