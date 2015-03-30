@@ -90,14 +90,15 @@ the following:
 ```
 test:
   pre:
-    - emulator -avd circleci-android21 -no-audio -no-window:
+    - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
 ```
 
-`circleci-android21` is an AVD preinstalled on the machine for Android 21 on the ARM V7 EABI.
-[You can create your own][create-avd] if this doesn't suit your purposes.
+`circleci-android22` is an AVD preinstalled on the machine for Android 22 on the ARM V7 EABI.
+There's also a corresponding `circleci-android21`; alternatively, you can 
+[can create your own][create-avd] if these don't suit your purposes.
 
 [create-avd]: https://developer.android.com/tools/devices/managing-avds-cmdline.html#AVDCmdLine
 
@@ -133,7 +134,7 @@ order to prevent failing commands from being understood as passing.
 #### Test Metadata
 
 Many test suites for Android produce JUnit XML output. After running your tests,
-you can copy that output to `$CIRCLE_TEST_RESULTS` so that CircleCI will display
+you can copy that output to `$CIRCLE_TEST_REPORTS` so that CircleCI will display
 the individual test results.
 
 ### Sample circle.yml
@@ -142,7 +143,7 @@ the individual test results.
 test:
   override:
     # start the emulator
-    - emulator -avd circleci-android21 -no-audio -no-window:
+    - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
     # wait for it to have booted
@@ -152,7 +153,7 @@ test:
     # copy the build outputs to artifacts
     - cp -r my-project/build/outputs $CIRCLE_ARTIFACTS
     # copy the test results to the test results directory.
-    - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_RESULTS
+    - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 ```
 
 Please don't hesitate to [contact us](mailto:sayhi@circleci.com)

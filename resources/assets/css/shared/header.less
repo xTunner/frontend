@@ -128,3 +128,27 @@
   }
 }
 
+.navbar {
+
+  &, .btn, .dropdown-menu > li > a {
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+}
+
+.subnav {
+  min-height: 0;
+  z-index: @zindex-subnav;
+
+  .navbar-nav {
+    @media (min-width: @screen-sm-min) {
+      margin-left: 113px; // circle logo + padding
+    }
+
+    > li > a {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+  }
+}

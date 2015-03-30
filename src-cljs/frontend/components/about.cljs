@@ -6,10 +6,12 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.ajax :as ajax]
             [om.core :as om :include-macros true]
             [goog.string :as gstring]
             [goog.string.format])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+  (:require-macros [frontend.utils :refer [defrender html]]
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (defn team []
   [{:name "Paul Biggar"
@@ -132,41 +134,137 @@
    [:div.coming-soon
     {:placeholder (str "Sorry, we're still working on " (first (str/split name #" ")) "'s bio.")}]])
 
+(defn contact-image-src [shortname]
+    (utils/cdn-path (gstring/format "/img/outer/contact/contact-%s.svg" shortname)))
+
+(defn contact-form
+  "It's not clear how this should fit into the global state, so it's using component-local
+   state for now."
+  [app owner opts]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:email nil
+       :name nil
+       :message nil
+       :notice nil})
+    om/IRenderState
+    (render-state [_ {:keys [email name message notice loading?]}]
+      (let [clear-notice! #(om/set-state! owner [:notice] nil)
+            enterprise? (:enterprise? opts)]
+        (html
+         [:form.contact-us
+          [:h2.form-header "We'd love to hear from you!"]
+          [:div.row
+           [:div.form-group.col-xs-6
+            [:label.sr-only {:for "name"} "Name"]
+            [:input.dumb.form-control
+             {:value name
+              :placeholder "Name"
+              :required true
+              :class (when loading? "disabled")
+              :type "text"
+              :name "name"
+              :on-change #(do (clear-notice!) (om/set-state! owner [:name] (.. % -target -value)))}]]
+           [:div.form-group.col-xs-6
+            [:label.sr-only {:for "email"} "Email"]
+            [:input.dumb.form-control
+             {:value email
+              :placeholder "Email"
+              :class (when loading? "disabled")
+              :type "email"
+              :name "email"
+              :required true
+              :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))}]]]
+          [:div.form-group
+           [:label.sr-only {:for "message"} "Message"]
+           [:textarea.dumb.form-control.message
+            {:value message
+             :placeholder "Tell us what you're thinking..."
+             :class (when loading? "disabled")
+             :required true
+             :name "message"
+             :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))}]]
+          [:div.notice (when notice
+                         [:div {:class (:type notice)}
+                          (:message notice)])]
+          [:button.btn.btn-cta {:class (when loading? "disabled")
+                                :on-click #(do (cond
+                                                (not (and (seq name) (seq email) (seq message)))
+                                                (om/set-state! owner [:notice] {:type "error"
+                                                                                :message "All fields are required."})
+
+                                                (not (utils/valid-email? email))
+                                                (om/set-state! owner [:notice] {:type "error"
+                                                                                :message "Please enter a valid email address."})
+
+                                                :else
+                                                (do
+                                                  (om/set-state! owner [:loading?] true)
+                                                  (go (let [resp (<! (ajax/managed-form-post
+                                                                      "/about/contact"
+                                                                      :params (merge {:name name
+                                                                                      :email email
+                                                                                      :message message}
+                                                                                     (when enterprise?
+                                                                                       {:enterprise enterprise?}))))]
+                                                        (if (= (:status resp) :success)
+                                                          (om/update-state! owner (fn [s]
+                                                                                    {:name ""
+                                                                                     :email ""
+                                                                                     :message ""
+                                                                                     :loading? false
+                                                                                     :notice (:resp resp)}))
+                                                          (do
+                                                            (om/set-state! owner [:loading?] false)
+                                                            (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."})))))))
+                                               false)}
+           (if loading? "Sending..." "Send")]])))))
+
 (defn contact [app owner]
   (reify
     om/IRender
     (render [_]
       (html
-       [:div#contact.contact.page
-        [:div.banner
-         [:div.container
-          [:h2 "Contact us"]
-          [:h3 "We'd love to hear from you."]]]
-        [:div.container.content
-         [:div.row
-          [:div.span6 [:h3 "Fill the form"]
-           (om/build shared/contact-form app)]
-          [:div.span6.vcard
-           [:h3 "Don't like forms? Contact us anyway!"]
-           [:ul
-            [:li [:a.email {:href "mailto:sayhi@circleci.com"}
-                  [:i.fa.fa-envelope]
-                  "sayhi@circleci.com"]]
-            [:li [:a {:href "https://twitter.com/circleci"}
-                  [:i.fa.fa-twitter]
-                  "@circleci"]]
-            [:li.tel [:i.fa.fa-phone " 800 585-7075 / +1 415 944-3995"]]
-            [:li.adr [:i.fa.fa-globe]
-             [:a {:target "_blank", :href "https://goo.gl/maps/uhkLn"}
-              [:span.postal-code "94105"]]]]
-           [:h3 "Press Inquiries"]
-           [:p
-            "Drop a line to "
-            [:a {:href "mailto:press@circleci.com"} "press@circleci.com"]
-            " or call Laura at +1 415 373 4089."]]]]]))))
+       [:div#contact
+        [:div.jumbotron
+         common/language-background-jumbotron
+         [:section.container
+          [:div.row
+           [:article.hero-title.center-block
+            [:div.text-center
+             [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
+            [:h1.text-center "Contact Us"]]]]]
+        [:div.outer-section
+         [:section.container
+          [:div.row
+           [:div.contact.col-xs-3
+            [:img.logo {:src (contact-image-src "mail")}]
+            [:p.header "Email us at"]
+            [:p.value [:a {:href "mailto:sayhi@circleci.com"} "sayhi@circleci.com"]]]
+           [:div.contact.col-xs-3
+            [:img.logo {:src (contact-image-src "twitter")}]
+            [:p.header "Tweet us at"]
+            [:p.value [:a {:href "https://twitter.com/circleci"} "@circleci"]]]
+           [:div.contact.col-xs-3
+            [:img.logo {:src (contact-image-src "map")}]
+            [:p.header "Visit us at"]
+            [:p.value [:a {:href "https://goo.gl/maps/uhkLn"} "555 Market Street"]]]
+           [:div.contact.col-xs-3
+            [:img.logo {:src (contact-image-src "call")}]
+            [:p.header "Call us at"]
+            [:p.value [:a {:href "tel:+18005857076"} "1-800-585-7076"]]]]]]
+;<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1576.5031953493105!2d-122.39993!3d37.78989!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858062f5233729%3A0x8e66673bca8fcf51!2s555+Market+St%2C+San+Francisco%2C+CA+94105!5e0!3m2!1sen!2sus!4v1427412433448" width="600" height="450" frameborder="0" style="border:0"></iframe>
+        [:div.outer-section
+         [:iframe.map {:src "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1576.5031953493105!2d-122.39993!3d37.78989!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858062f5233729%3A0x8e66673bca8fcf51!2s555+Market+St%2C+San+Francisco%2C+CA+94105!5e0!3m2!1sen!2sus!4v1427412433448"}]]
+        [:div.outer-section
+         [:section.container
+          [:div.row
+           [:div.col-xs-6.col-xs-offset-3
+            (om/build contact-form app)]]]]]))))
 
 (defn customer-image-src [shortname]
-    (utils/cdn-path (gstring/format "/img/outer/about/logo-%s.svg" shortname)))
+  (utils/cdn-path (gstring/format "/img/outer/about/logo-%s.svg" shortname)))
 
 (defn about [app owner]
   (reify
@@ -233,5 +331,4 @@
          [:h2 "Start shipping faster, build for free using CircleCI today."]
          [:p.subheader
           "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
-         (common/sign-up-cta owner "about")]
-        (om/build contact app)]))))
+         (common/sign-up-cta owner "about")]]))))
