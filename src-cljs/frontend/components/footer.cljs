@@ -8,7 +8,7 @@
     [:div.col-sm-4.col-sm-push-1
      [:ul.list-unstyled
       [:li.header "CircleCI"]
-      [:li [:a {:href "/about"} "About"]]
+      [:li [:a {:href "/about"} "About Us"]]
       [:li [:a {:href "/about"} "Team"]]
       [:li [:a {:href "/press"} "Press"]]
       (when-not (config/enterprise?)
