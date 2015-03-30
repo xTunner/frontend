@@ -50,7 +50,7 @@
            [:a
             {:on-click #(raise! owner [:docker-diagram-index-selected (- active-section-index 1)])}
             [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-left.svg")}]])]
-        [:div.col-xs-6.text-justify
+        [:div.col-xs-6.text-center
          [:h3
           (last (nth diagram-structure active-section-index))]]
         [:div.col-xs-3.text-left
