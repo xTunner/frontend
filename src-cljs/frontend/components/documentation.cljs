@@ -178,13 +178,15 @@
        [:aside
         (om/build docs-categories {:categories (categories docs) :selected doc})]
        [:div.container-fluid.article-container
-        [:article
-         (om/build docs-search app)
-         (if (= subpage :search)
-           (om/build search-results query-results {:opts {:query query}})
-           [:div
-            (when query
-              [:p.back-to-search [:a {:href "/docs/search"} (gstring/format "Back to search results for \"%s\"" query)]])
-            (if subpage
-              (om/build docs-subpage doc {:opts {:_fragment fragment}})
-              (om/build front-page app))])]]]])))
+        [:div.row
+         [:div.col-sm-12
+          [:article
+           (om/build docs-search app)
+           (if (= subpage :search)
+             (om/build search-results query-results {:opts {:query query}})
+             [:div
+              (when query
+                [:p.back-to-search [:a {:href "/docs/search"} (gstring/format "Back to search results for \"%s\"" query)]])
+              (if subpage
+                (om/build docs-subpage doc {:opts {:_fragment fragment}})
+                (om/build front-page app))])]]]]]])))
