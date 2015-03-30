@@ -2,10 +2,13 @@
 A jumbotron is 
 */
 .jumbotron {
+  @jumbotron-base-padding: 70px;
+
   position: relative;
-  padding: 70px;
+  padding: @jumbotron-base-padding (@jumbotron-base-padding / 2);
   margin: 0;
   background-color: #fbfbfb;
+  overflow: hidden;
   z-index: 1;
 
   .container {
