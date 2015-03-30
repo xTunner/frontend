@@ -1,6 +1,7 @@
 (ns frontend.components.docker
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [goog.string :as gstring]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.features :as features]
@@ -14,11 +15,11 @@
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (defrender docker-diagram [app owner]
-  (let [diagram-structure [["github" "CircleCI checks out your code from GitHub"]
-                           ["docker" "Docker base images, or images for any dependent services can be pulled from any Docker registry"]
-                           ["circle" "CircleCI builds, runs, and tests Docker images in any configuration"]
+  (let [diagram-structure [["github" "CircleCI checks out your code from GitHub."]
+                           ["docker" "Docker base images, or images for any dependent services can be pulled from any Docker registry."]
+                           ["circle" "CircleCI builds, runs, and tests Docker images in any configuration."]
                            ["docker" "When all tests pass, built Docker images are pushed to the registry."]
-                           ["scale" "CircleCI can trigger a deployment of new images to any Docker host with an API. Images built on CircleCI are pulled from the registry into production"]]
+                           ["scale" "CircleCI can trigger a deployment of new images to any Docker host with an API. Images built on CircleCI are pulled from the registry into production."]]
         active-section-index (get-in app state/docker-diagram-path)
         diagram-elem :img.diagram-icon]
     (html
@@ -33,8 +34,8 @@
              {:on-click #(raise! owner [:docker-diagram-index-selected index])}
              [:img {:src (utils/cdn-path
                            (if (= index active-section-index)
-                             (str "/img/outer/docker/diagram-" icon-name ".svg")
-                             (str "/img/outer/docker/diagram-" icon-name "-grey.svg")))}]]
+                             (gstring/format "/img/outer/docker/diagram-%s.svg" icon-name)
+                             (gstring/format "/img/outer/docker/diagram-%s-grey.svg" icon-name)))}]]
             (if (< index (- (count diagram-structure) 1))
               [:span.connector-line {:class (if (= index active-section-index) "active")}])
             (if (= index active-section-index)
@@ -48,8 +49,7 @@
          (if (> active-section-index 0)
            [:a
             {:on-click #(raise! owner [:docker-diagram-index-selected (- active-section-index 1)])}
-            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-left.svg")}]
-            " "])]
+            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-left.svg")}]])]
         [:div.col-xs-6.text-justify
          [:h3
           (last (nth diagram-structure active-section-index))]]
@@ -57,7 +57,6 @@
          (if (< active-section-index (- (count diagram-structure) 1))
            [:a
             {:on-click #(raise! owner [:docker-diagram-index-selected (+ active-section-index 1)])}
-            " "
             [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]
        ])))
 
