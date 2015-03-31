@@ -192,7 +192,7 @@
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
-               [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
+               [:a (common/contact-support-a-info owner)
                 "Contact us if you'd like more."]]
 
               (> parallelism (project-model/buildable-parallelism plan project))
