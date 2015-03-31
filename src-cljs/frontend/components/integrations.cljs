@@ -11,6 +11,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.github :as gh-utils]
+            ;; TODO: Remove; see :allowFullscreen TODO below.
+            [goog.dom :as dom]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -97,43 +99,43 @@
   {:heroku {:hero {:icon [:img {:src (utils/cdn-path "/img/outer/integrations/heroku-icon.svg") :alt "Heroku"}]
                    :heading "Deploy to Heroku from CircleCI"
                    :text "Experience a simple, modern continuous delivery workflow now."}
-            :bullets [{:type :text
-                       :title "Test before you deploy. Always."
-                       :icon "circle"
-                       :text (list "Heroku revolutionized the way developers think about deployment. "
-                                   "Being able to deploy with a simple "
-                                   [:code "git push heroku master"]
-                                   " is an amazing thing. But setting up a proper continuous delivery "
-                                   "workflow means automating every step of the process. With CircleCI "
-                                   "whenever you push a commit to master, it will go through a complete "
-                                   "continuous delivery pipeline. All of your tests will run with our "
-                                   "blazing fast parallelism, and" [:em " only if they pass, "]
-                                   "your code will be pushed to Heroku automatically.")}
-                      {:type :text
-                       :title "Dead Simple Configuration"
-                       :icon "setup"
-                       :text (list "The deployment of your application is configured through just a "
-                                   "few lines of YAML that are kept safe in your source code. All "
-                                   "you need to do to deploy to Heroku from CircleCI is configure your "
-                                   "Heroku credentials in our UI, add a simple config file like this "
-                                   "one into your project, and make a push. You can also easily deploy "
-                                   "different branches to different Heroku apps (e.g. one for staging "
-                                   "and one for production).")}
-                      {:type :text
-                       :title "Watch how to get started in minutes"
-                       :icon "play-1"
-                       :text (list "This video shows step-by-step how to configure CircleCI to test "
-                                   "your application and deploy to Heroku, and how CircleCI keeps "
-                                   "defects from getting into production. "
-                                   "See our docs for a "
-                                   [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"}
-                                    "followup video"]
-                                   " showing how to setup a more robust continuous delivery pipeline "
-                                   "with staging and prod environments.")}
-                      {:type :video
-                       :title "Continuous deployment with CircleCI and Heroku: Part 1"
-                       :thumbnail "https://i.ytimg.com/vi/Hfs_1yuWDf4/sddefault.jpg"
-                       :video-id "Hfs_1yuWDf4"}]
+            :features [{:type :text
+                        :title "Test before you deploy. Always."
+                        :icon "circle"
+                        :text (list "Heroku revolutionized the way developers think about deployment. "
+                                    "Being able to deploy with a simple "
+                                    [:code "git push heroku master"]
+                                    " is an amazing thing. But setting up a proper continuous delivery "
+                                    "workflow means automating every step of the process. With CircleCI "
+                                    "whenever you push a commit to master, it will go through a complete "
+                                    "continuous delivery pipeline. All of your tests will run with our "
+                                    "blazing fast parallelism, and" [:em " only if they pass, "]
+                                    "your code will be pushed to Heroku automatically.")}
+                       {:type :text
+                        :title "Dead Simple Configuration"
+                        :icon "setup"
+                        :text (list "The deployment of your application is configured through just a "
+                                    "few lines of YAML that are kept safe in your source code. All "
+                                    "you need to do to deploy to Heroku from CircleCI is configure your "
+                                    "Heroku credentials in our UI, add a simple config file like this "
+                                    "one into your project, and make a push. You can also easily deploy "
+                                    "different branches to different Heroku apps (e.g. one for staging "
+                                    "and one for production).")}
+                       {:type :text
+                        :title "Watch how to get started in minutes"
+                        :icon "play-1"
+                        :text (list "This video shows step-by-step how to configure CircleCI to test "
+                                    "your application and deploy to Heroku, and how CircleCI keeps "
+                                    "defects from getting into production. "
+                                    "See our docs for a "
+                                    [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"}
+                                     "followup video"]
+                                    " showing how to setup a more robust continuous delivery pipeline "
+                                    "with staging and prod environments.")}
+                       {:type :video
+                        :title "Continuous deployment with CircleCI and Heroku: Part 1"
+                        :thumbnail "https://i.ytimg.com/vi/Hfs_1yuWDf4/sddefault.jpg"
+                        :video-id "Hfs_1yuWDf4"}]
             :bottom-header "Ready for world-class continuous delivery?"
             :secondary-cta [:span
                             "Or see our "
@@ -142,72 +144,81 @@
    :saucelabs {:hero {:icon [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :alt "Sauce Labs"}]
                       :heading "Test with Sauce Labs on CircleCI"
                       :text "Test against hundreds of mobile and desktop browsers."}
-               :bullets [{:title "Selenium WebDriver"
-                          :text (list "Sauce Labs supports automated browser tests using Selenium "
-                                      "WebDriver, a widely-adopted browser driving standard. Selenium "
-                                      "WebDriver provides a common API for programatically driving "
-                                      "browsers implemented in several popular languages, including "
-                                      "Java, Python, and Ruby. WebDriver can operate in two modes: "
-                                      "local or remote. When run locally, your tests use the Selenium "
-                                      "WebDriver library to communicate directly with a browser on the "
-                                      "same machine. When run in remote mode, your tests interact with "
-                                      "a Selenium Server, and it it is up to the server to drive the "
-                                      "browsers. Sauce Labs essentially provides a Selenium Server as a "
-                                      "service, with all kinds of browsers available to test. It has "
-                                      "some extra goodies like videos of all test runs as well.")
-                          :graphic selenium-logo}
-                         {:title "All the browsers and platforms you need"
-                          :text (list "Sauce Labs provides a huge variety of browsers and operating "
-                                      "systems. You can choose between combinations of Firefox, Chrome, "
-                                      "Safari, and Internet Explorer browsers and OSX, Windows, and "
-                                      "Linux operating systems. You can also test against mobile Safari "
-                                      "and Android browsers. Pick whatever browsers are important for "
-                                      "you, whether you need to ensure critical functionality works on "
-                                      "mobile devices or support old versions of IE. Because Selenium "
-                                      "WebDriver provides a unified interface to talk to all of these "
-                                      "browsers, you only need to write your browser tests once, and "
-                                      "you can run them on as many browsers and platforms as you want.")
-                          :graphic [:div.browsers firefox-logo safari-logo  ie-logo chrome-logo]}
-                         {:title "Test Continuously"
-                          :text (list "CircleCI automatically runs all your tests, against "
-                                      "whatever browsers you choose, every time you commit code. You "
-                                      "can configure your browser-based tests to run whenever a change "
-                                      "is made, before every deployment, or on a certain branch. A "
-                                      "Continuous Integration and Delivery workflow with CircleCI and "
-                                      "Sauce Labs ensures that browser-specific bugs affecting critical "
-                                      "functionality in your app never make it to production.")
-                          :graphic [:img {:src (utils/cdn-path "/img/outer/integrations/cycle-black.svg") :style {:width "250px" :height "250px"}}]}
-                         {:title "No public test servers required"
-                          :text (list "Sauce Labs operates browsers on a network separate from "
-                                      "CircleCI build containers, but there needs to be a way for the "
-                                      "browsers to access the web application you want to test. The "
-                                      "easiest way to do this is to simply run your server during a "
-                                      "CircleCI build and use Sauce Connect to setup a secure tunnel "
-                                      "between Sauce Labs' browsers and your build containers on "
-                                      "CircleCI. There is an in-depth example of this in "
-                                      [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."])
-                          :graphic [:div.sauce-connect [:p "Sauce" [:br] "Connect"]]}]
+               :features [{:title "Selenium WebDriver"
+                           :text (list "Sauce Labs supports automated browser tests using Selenium "
+                                       "WebDriver, a widely-adopted browser driving standard. Selenium "
+                                       "WebDriver provides a common API for programatically driving "
+                                       "browsers implemented in several popular languages, including "
+                                       "Java, Python, and Ruby. WebDriver can operate in two modes: "
+                                       "local or remote. When run locally, your tests use the Selenium "
+                                       "WebDriver library to communicate directly with a browser on the "
+                                       "same machine. When run in remote mode, your tests interact with "
+                                       "a Selenium Server, and it it is up to the server to drive the "
+                                       "browsers. Sauce Labs essentially provides a Selenium Server as a "
+                                       "service, with all kinds of browsers available to test. It has "
+                                       "some extra goodies like videos of all test runs as well.")
+                           :graphic selenium-logo}
+                          {:title "All the browsers and platforms you need"
+                           :text (list "Sauce Labs provides a huge variety of browsers and operating "
+                                       "systems. You can choose between combinations of Firefox, Chrome, "
+                                       "Safari, and Internet Explorer browsers and OSX, Windows, and "
+                                       "Linux operating systems. You can also test against mobile Safari "
+                                       "and Android browsers. Pick whatever browsers are important for "
+                                       "you, whether you need to ensure critical functionality works on "
+                                       "mobile devices or support old versions of IE. Because Selenium "
+                                       "WebDriver provides a unified interface to talk to all of these "
+                                       "browsers, you only need to write your browser tests once, and "
+                                       "you can run them on as many browsers and platforms as you want.")
+                           :graphic [:div.browsers firefox-logo safari-logo  ie-logo chrome-logo]}
+                          {:title "Test Continuously"
+                           :text (list "CircleCI automatically runs all your tests, against "
+                                       "whatever browsers you choose, every time you commit code. You "
+                                       "can configure your browser-based tests to run whenever a change "
+                                       "is made, before every deployment, or on a certain branch. A "
+                                       "Continuous Integration and Delivery workflow with CircleCI and "
+                                       "Sauce Labs ensures that browser-specific bugs affecting critical "
+                                       "functionality in your app never make it to production.")
+                           :graphic [:img {:src (utils/cdn-path "/img/outer/integrations/cycle-black.svg") :style {:width "250px" :height "250px"}}]}
+                          {:title "No public test servers required"
+                           :text (list "Sauce Labs operates browsers on a network separate from "
+                                       "CircleCI build containers, but there needs to be a way for the "
+                                       "browsers to access the web application you want to test. The "
+                                       "easiest way to do this is to simply run your server during a "
+                                       "CircleCI build and use Sauce Connect to setup a secure tunnel "
+                                       "between Sauce Labs' browsers and your build containers on "
+                                       "CircleCI. There is an in-depth example of this in "
+                                       [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."])
+                           :graphic [:div.sauce-connect [:p "Sauce" [:br] "Connect"]]}]
                :bottom-header "Want to get rid of browser bugs?"
                :secondary-cta [:span "Or see our " [:a {:href "/docs/browser-testing-with-sauce-labs"} "docs on Sauce Labs."]]}})
+
 
 (defn video-url [video-id]
   (str "https://www.youtube.com/watch?v=" video-id))
 
-(defmulti bullet :type)
+(defn video-embed-url [video-id]
+  (str "https://www.youtube.com/embed/" video-id "?autoplay=1"))
 
-(defmethod bullet :text
-  [b]
+
+(defmulti feature (fn [_ b] (:type b)))
+
+(defmethod feature :text
+  [owner b]
   [:div.feature
    (common/feature-icon (:icon b))
    [:h3.text-center (:title b)]
    [:p (:text b)]])
 
-(defmethod bullet :video
-  [b]
+(defmethod feature :video
+  [owner b]
   [:div.feature.video
-   [:a.play {:href (video-url (:video-id b))}
+   [:a.play {:href (video-url (:video-id b))
+             :on-click (fn [e]
+                         (.preventDefault e)
+                         (raise! owner [:play-video (:video-id b)]))}
     [:img.thumb {:src (:thumbnail b)}]]
    [:h3.text-center (:title b)]])
+
 
 (defrender integration [app owner]
   (let [integration (get-in app [:navigation-data :integration])]
@@ -215,11 +226,25 @@
       (om/build docker/docker app)
       (let [data (get integration-data integration)]
         (html [:div#integration
+               (if-let [video-id (get-in app state/modal-video-id-path)]
+                 [:div.modal-overlay {:on-click #(raise! owner [:close-video])}
+                  ;; TODO: Once React supports :allowFullscreen (v.0.13.1),
+                  ;; replace this hack with the :iframe below. Then remove the
+                  ;; `> div > .modal-video` selector in CSS.
+                  [:div {:dangerouslySetInnerHTML
+                         {:__html (dom/getOuterHtml
+                                    (dom/createDom "iframe" #js {:class "modal-video"
+                                                                 :src (video-embed-url video-id)
+                                                                 :allowFullscreen true}))}}]
+                  ; [:iframe.modal-video {:src (video-embed-url video-id)
+                  ;                       :allowFullscreen true}]
+                  [:button.close {:aria-label "Close"
+                                  :on-click #(raise! owner [:close-video])}]])
                [:div.jumbotron
                 common/language-background-jumbotron
                 [:section.container
                  [:div.row
-                  [:article.hero-title.center-block
+                  [:div.hero-title.center-block
                    [:div.text-center
                     [:img.hero-logo (get-in data [:hero :icon])]]
                    [:h1.text-center (get-in data [:hero :heading])]]]]
@@ -228,10 +253,10 @@
 
                [:div.outer-section
                 [:section.container
-                 (for [row (partition-all 2 (:bullets data))]
+                 (for [row (partition-all 2 (:features data))]
                    [:div.feature-row
                     (for [b row]
-                      (bullet b))])]]
+                      (feature owner b))])]]
 
                [:div.outer-section.outer-section-condensed
                 [:section.container

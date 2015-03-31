@@ -24,6 +24,7 @@
                              :show-fork-accounts false
                              :show-forks false}}
    :selected-home-technology-tab nil
+   :modal-video-id nil
    :builds-per-page 30
    :navigation-point nil
    :navigation-data nil
@@ -181,6 +182,8 @@
 (def error-data-path [:error-data])
 
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
+
+(def modal-video-id-path [:modal-video-id])
 
 (def language-testimonial-tab-path [:selected-language-testimonial-tab])
 

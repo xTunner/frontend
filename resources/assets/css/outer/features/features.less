@@ -29,6 +29,49 @@
 
 #integration {
 
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: @zindex-modal;
+
+    .flexy();
+    .flex-direction(column);
+    .align-items(center);
+    .justify-content(center);
+
+    background-color: rgba(0, 0, 0, .484375);
+
+    > div > .modal-video,
+    > .modal-video {
+      width: 560px;
+      height: 315px;
+
+      border: 4px @white solid;
+      border-radius: 5px;
+    }
+
+    > .close {
+      width: 50px;
+      height: 50px;
+      margin-top: 30px;
+
+      background-image: url('@{imgPath}/outer/video/video-close.svg');
+      background-size: 50px;
+      background-repeat: no-repeat;
+      background-position: center;
+
+      // Overiding Bootstrap's styles
+      .opacity(.5);
+      &:hover, &:focus {
+        .opacity(.8);
+        outline: none;
+      }
+    }
+  }
+
   .jumbotron {
     overflow: hidden;
   }
@@ -65,7 +108,7 @@
 
         &:focus {
           outline: none;
-          box-shadow: 0 0 5px 2px @greenDark;
+          box-shadow: 0 0 0 2px @black;
         }
 
         &:before {
