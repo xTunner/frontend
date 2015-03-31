@@ -12,8 +12,15 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
+(defn contact-support-a-info [owner & {:keys [tags]
+                                       :or {tags [:intercom-dialog-raised]}}]
+  (if (config/intercom-enabled?)
+        {:on-click #(raise! owner tags)}
+        {:href (str "mailto:" (config/support-email))
+         :target "_blank"}))
+
 (defn contact-us-inner [owner]
-  [:a {:on-click #(raise! owner [:intercom-dialog-raised])}
+  [:a (contact-support-a-info owner)
    "contact us"])
 
 (defn flashes

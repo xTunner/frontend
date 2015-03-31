@@ -33,8 +33,8 @@
           [:a {:href "/docs/troubleshooting"}
            "Check out common problems "]
           "or, if there's a problem in how CircleCI ran this build, "
-          [:a {:title "Report an error in how Circle ran this build"
-               :on-click #(raise! owner [:report-build-clicked {:build-url build-url}])}
+          [:a (merge {:title "Report an error in how Circle ran this build"}
+                     (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}]))
            "report this issue"]
           " and we'll investigate."]
 
