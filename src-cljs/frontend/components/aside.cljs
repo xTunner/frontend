@@ -3,6 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.shared :as shared]
+            [frontend.config :as config]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
@@ -16,6 +17,10 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
+
+(defn changelog-updated-since?
+  [date]
+  (< date (config/changelog-updated-at)))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -263,7 +268,7 @@
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)]))))
 
-(defn aside-nav [app owner opts]
+(defn aside-nav [app owner {user :user}]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IDidMount
@@ -285,7 +290,7 @@
                         :data-trigger "hover"
                         :title "Settings"
                         :href "/account"}
-         [:img {:src (gh-utils/make-avatar-url opts)}]]
+         [:img {:src (gh-utils/make-avatar-url user)}]]
 
         [:a.aside-item {:title "Documentation"
                         :data-placement "right"
@@ -315,7 +320,10 @@
         [:a.aside-item {:data-placement "right"
                         :data-trigger "hover"
                         :title "Changelog"
-                        :href "/changelog"}
+                        :href "/changelog"
+                        :class (when (and (om/get-shared owner [:ab-tests :highlight_changelog])
+                                          (changelog-updated-since? (:last_viewed_changelog user)))
+                                 "unread")}
          [:i.fa.fa-bell]]
 
         [:a.aside-item.push-to-bottom {:data-placement "right"
@@ -335,6 +343,6 @@
             show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)]
         (html
          [:aside.app-aside-left {:class (when-not show-aside-menu? "menuless")}
-          (om/build aside-nav app {:opts user})
+          (om/build aside-nav app {:opts {:user user}})
           (when show-aside-menu?
             (om/build aside-menu app {:opts {:login login}}))])))))

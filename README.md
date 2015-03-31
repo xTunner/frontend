@@ -102,6 +102,7 @@ help reset all cached state:
 
 ```
 lein clean
+./node_modules/bower/bin/bower install
 lein cljsbuild once
 ```
 

@@ -12,6 +12,7 @@
                          :pricing_button_green [true false]
                          :pay_now_button [true false]
                          :follow_notice [true false]
+                         :highlight_changelog [true false]
                          :new_usage_queued_upsell [true false]
                          :mention-github-permissions [true false]}
    :changelog nil
