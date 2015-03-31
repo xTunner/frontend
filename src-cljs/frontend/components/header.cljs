@@ -140,7 +140,9 @@
                                                       :enterprise}
                                                     nav-point)
                                      "active")}
-              [:a {:href "/features"} "Product"]
+              [:a {:href "/features"}
+               "Product "
+               [:i.fa.fa-caret-down]]
               [:ul.dropdown-menu
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
@@ -196,7 +198,7 @@
                [:li (maybe-active nav-point :about)
                 [:a {:href "/about"} "Overview"]]
                [:li (maybe-active nav-point :contact)
-                [:a {:href "/contact"} "Contact"]]]]])])))))
+                [:a {:href "/contact"} "Contact Us"]]]]])])))))
 
 (defn inner-header [app owner]
   (reify

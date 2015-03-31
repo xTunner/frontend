@@ -461,6 +461,9 @@
                          (gstring/format (name subpage))
                          stefon/asset-path)]
              (ajax/ajax :get url :doc-markdown api-ch :context {:subpage subpage} :format :raw))))
+       (= subpage :search)
+       (do
+         (set-page-title! "Doc Search"))
        :else
        (let [token (str (name subpage) (when (:_fragment params) (str "#" (:_fragment params))))
              rewrite-token (doc-utils/maybe-rewrite-token token)

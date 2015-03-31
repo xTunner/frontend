@@ -72,7 +72,7 @@
 
 (deftest test-categories-rendering
   (let [test-doc (:troubleshooting test-docs)
-        om-component (om/build documentation/docs-categories [test-doc])
+        om-component (om/build documentation/docs-categories {:categories [test-doc] :selected test-doc})
         rendered-component (test-utils/render-into-document om-component)]
     (is (re-find #"Troubleshooting"
            (-> rendered-component
@@ -128,4 +128,3 @@
                (sel1 "pre")
                utils/text))
         "API example renders")))
-

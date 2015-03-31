@@ -298,11 +298,11 @@
                         :href "/docs"}
          [:i.fa.fa-copy]]
 
-        [:a.aside-item {:on-click #(raise! owner [:intercom-dialog-raised])
-                        :title "Support"
-                        :data-placement "right"
-                        :data-trigger "hover"
-                        :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",}
+        [:a.aside-item (merge (common/contact-support-a-info owner)
+                              {:title "Support"
+                               :data-placement "right"
+                               :data-trigger "hover"
+                               :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",})
          [:i.fa.fa-comments]]
 
         [:a.aside-item {:href "/add-projects",

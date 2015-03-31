@@ -47,18 +47,25 @@
             concurrent-count (int (/ container-count pricing-parallelism))
             total-cost (max (* (dec container-count) 50) 0)]
         (html
-          [:div.pricing.page {:on-mouse-up #(om/set-state! owner :dragging? false)
+          [:div#pricing.page {:on-mouse-up #(om/set-state! owner :dragging? false)
                               :on-mouse-down #(when dragging?
                                                 (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))
                               :on-mouse-move #(when dragging?
                                                 (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))}
-           [:div.torso
-            [:section.pricing-intro
-             [:article
-              [:h1 "Transparent pricing, built to scale."]
-              [:h3 "The first container is free and each additional one is $50/mo. "
-                   [:a {:href "/enterprise"} "Need enterprise pricing?" ]]]
-             [:div.pricing-calculator
+           [:div.jumbotron
+            common/language-background-jumbotron
+            [:section.container
+             [:article.center-block
+              [:div.text-center
+               [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
+
+              [:h1.text-center "Transparent pricing, built to scale."]
+              [:h3.text-center "The first container is free and each additional one is $50/mo. "
+               [:br]
+               [:a {:href "/enterprise"} "Need enterprise pricing?" ]]]]]
+           [:div.outer-section
+            [:section.container.pricing-calculator
+             [:div.row
               [:div.pricing-calculator-controls
                [:div.controls-containers
                 [:h2 "Containers"]
@@ -84,73 +91,69 @@
                  [:span " parallelism."]]
                 [:div.parallelism-options
                  (for [p [1 4 8 12 16]]
-                 [:button {:on-click #(do
-                                        (raise! owner [:pricing-parallelism-clicked {:p p}])
-                                        (om/set-state! owner :drag-percent (max drag-percent (* p increment))))
-                           :class (when (= p pricing-parallelism) "active")}
-                  (str p "x")])]]]
-              [:div.pricing-calculator-preview
-               [:h5 "Estimated Cost"]
-               [:div.calculator-preview-item
-                [:div.item "Repos"]
-                [:div.value (common/ico :infinity)]]
-               [:div.calculator-preview-item
-                [:div.item "Builds"]
-                [:div.value (common/ico :infinity)]]
-               [:div.calculator-preview-item
-                [:div.item "Users"]
-                [:div.value (common/ico :infinity)]]
-               [:div.calculator-preview-item
-                [:div.item "Max Parallelism"]
-                [:div.value (str container-count)]]
-               [:div.calculator-preview-item
-                [:div.item "Concurrent Builds"]
-                [:div.value (str concurrent-count)]]
-               [:div.calculator-preview-item
-                [:div.item "Total"]
-                [:div.value (if (> total-cost 0)
-                              (str "$" total-cost)
-                              "Free")]]
-               (when (om/get-shared owner [:ab-tests :pricing_button_green])
-                 [:a.pricing-action.green {:href (auth-url)
-                                           :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url)
-                                                                                                   :event "Auth GitHub"
-                                                                                                   :properties {:source "pricing page sign-up"
-                                                                                                                :url js/window.location.pathname}}])
-                                           :title "Sign up with Github"}
-                  (common/sign-up-text)])
-               (when-not (om/get-shared owner [:ab-tests :pricing_button_green])
-                 [:a.pricing-action {:href (auth-url)
-                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url)
-                                                                                             :event "Auth GitHub"
-                                                                                             :properties {:source "pricing page sign-up"
-                                                                                                          :url js/window.location.pathname}}])
-                                     :title "Sign up with Github"}
-                  (common/sign-up-text)])]]
-             [:article.pricing-features
-              [:div.pricing-feature
-               [:h3 "Easy Debugging"]
-               [:p "When your tests are broken, we help you get them fixed. We automatically warn you about common mistakes, and document how to fix them.
-                   We provide all the information you need to reproduce an error locally.
-                   And if you still can't reproduce it, you can SSH into our VMs to debug it yourself."]]
-              [:div.pricing-feature
-               [:h3 "Continuous Deployment"]
-               [:p "If your tests work, deploy straight to staging, production, or a QA server.
-                   Deploy anywhere, including Heroku, DotCloud, EngineYard, etc, or using Capistrano, Fabric or custom commands."]]
-              [:div.pricing-feature
-               [:h3 "Personalized Notifications"]
-               [:p "You don't care what John did in his feature branch, but you care what gets pushed to master.
-                   Who cares if the tests pass yet again, you only want notifications when they fail.
-                   Circle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire, FlowDock, IRC and webhooks."]]]
-             [:article
-              [:h3 "How do containers work?"]
-              [:p "Every time you push to GitHub, we checkout your code and run your build inside of a container.
-                   If you don't have enough free containers available, then your builds queue up until other builds finish."]
-              [:p "Everyone gets their first container free and your team can run as many builds as you want with that container.
-                   More containers allows faster builds through parallellism in addition shorter queue times"]
-              [:p "Parallelism is an extremely powerful feature and allows you to dramatically speed up your test suite.
-                   CircleCI automatically splits your tests across multiple containers, finishing your build in a fraction of the time."]]
-             [:article
-              [:h3 "How many containers do I need?"]
-              [:p "Most of our customers use about 2.5 containers per full-time developer.
-                   Every team is different however and we're happy to set you up with a trial to help you figure out how many works best for you."]]]]])))))
+                   [:button {:on-click #(do
+                                          (raise! owner [:pricing-parallelism-clicked {:p p}])
+                                          (om/set-state! owner :drag-percent (max drag-percent (* p increment))))
+                             :class (when (= p pricing-parallelism) "active")}
+                    (str p "x")])]]]
+              [:div.pricing-calculator-section
+               [:div.pricing-calculator-preview
+                [:h4.text-center "Estimated Cost"]
+                [:div.calculator-preview-item
+                 [:div.item "Repos"]
+                 [:div.value (common/ico :infinity)]]
+                [:div.calculator-preview-item
+                 [:div.item "Builds"]
+                 [:div.value (common/ico :infinity)]]
+                [:div.calculator-preview-item
+                 [:div.item "Users"]
+                 [:div.value (common/ico :infinity)]]
+                [:div.calculator-preview-item
+                 [:div.item "Max Parallelism"]
+                 [:div.value (str container-count)]]
+                [:div.calculator-preview-item
+                 [:div.item "Concurrent Builds"]
+                 [:div.value (str concurrent-count)]]
+                [:div.calculator-preview-item
+                 [:div.item "Total"]
+                 [:div.value (if (> total-cost 0)
+                               (str "$" total-cost)
+                               "Free")]]
+                [:div.pricing-action
+                 (common/sign-up-cta owner "pricing")]]]]]]
+             [:article.outer-section
+              [:div.container
+               [:div.row
+                [:div.col-sm-4.pricing-feature
+                 [:h3 "Easy Debugging"]
+                 [:p "When your tests are broken, we help you get them fixed. We automatically warn you about common mistakes, and document how to fix them.
+                     We provide all the information you need to reproduce an error locally.
+                     And if you still can't reproduce it, you can SSH into our VMs to debug it yourself."]]
+                [:div.col-sm-4.pricing-feature
+                 [:h3 "Continuous Deployment"]
+                 [:p "If your tests work, deploy straight to staging, production, or a QA server.
+                     Deploy anywhere, including Heroku, DotCloud, EngineYard, etc, or using Capistrano, Fabric or custom commands."]]
+                [:div.col-sm-4.pricing-feature
+                 [:h3 "Personalized Notifications"]
+                 [:p "You don't care what John did in his feature branch, but you care what gets pushed to master.
+                     Who cares if the tests pass yet again, you only want notifications when they fail.
+                     Circle intelligently notifies you about the tests you care about, and does it over email, Hipchat, Campfire, FlowDock, IRC and webhooks."]]]]]
+              [:div.outer-section
+               [:article.container
+                [:div.row
+                 [:div.col-sm-12
+                  [:h3 "How do containers work?"]
+                  [:p "Every time you push to GitHub, we checkout your code and run your build inside of a container.
+                      If you don't have enough free containers available, then your builds queue up until other builds finish."]
+                  [:p "Everyone gets their first container free and your team can run as many builds as you want with that container.
+                      More containers allows faster builds through parallellism in addition shorter queue times"]
+                  [:p "Parallelism is an extremely powerful feature and allows you to dramatically speed up your test suite.
+                      CircleCI automatically splits your tests across multiple containers, finishing your build in a fraction of the time."]
+                  [:h3 "How many containers do I need?"]
+                  [:p "Most of our customers use about 2.5 containers per full-time developer.
+                      Every team is different however and we're happy to set you up with a trial to help you figure out how many works best for you."]]]]]
+              [:div.bottom-cta.outer-section.outer-section-condensed
+               common/language-background
+               [:h2 "Start shipping faster, build for free using CircleCI today."]
+               [:p.subheader "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
+               (common/sign-up-cta owner "about")]])))))

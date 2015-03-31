@@ -9,6 +9,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.config :refer [intercom-enabled?]]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
@@ -301,7 +302,8 @@
     [:li "For an inferred ruby test command, simply add the necessary "
      [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "formatter gem"]]
     [:li "For another inferred test runner that you'd like us to add metadata support for, "
-     [:a {:on-click #(raise! owner [:intercom-dialog-raised])} "let us know"] "."]
+     [:a (common/contact-support-a-info owner)
+      "let us know"] "."]
     [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
      [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"} "the docs"] " for more information."]]])
 
@@ -656,7 +658,8 @@
                                                                    :build-num build-num}])}
                     "with ssh"]))])
              [:div.actions
-              (when logged-in? ;; no intercom for logged-out users
+              ;; TODO: Handle when intercom isn't enabled
+              (when (and logged-in? (intercom-enabled?)) ;; no intercom for logged-out users
                 [:button.report_build
                  {:title "Report error with build",
                   :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}

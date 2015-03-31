@@ -65,3 +65,16 @@
       (boolean v)
       ;; TODO: Kill this after backend populate the context value
       (not (enterprise?)))))
+
+(defn intercom-enabled?
+  []
+  (let [v (aget js/window "renderContext" "intercom_enabled")]
+    (if-not (nil? v)
+      (boolean v)
+      ;; TODO: Kill this after backend populate the context value
+      (analytics-enabled?))))
+
+(defn support-email
+  []
+  (or (aget js/window "renderContext" "support_email")
+      "sayhi@circleci.com"))

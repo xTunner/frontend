@@ -1,0 +1,156 @@
+@import "../../bootstrap/variables.less";
+
+.background.main {
+  right: 70px;
+  bottom: 0;
+  height: 40%;
+
+  @media (max-width: @screen-md-max) {
+    opacity: 0.03;
+  }
+}
+
+.background.docker-banner {
+  left: 0;
+  bottom: 0;
+  height: 100%;
+
+  @media (max-width: @screen-md-max) {
+    opacity: 0.03;
+  }
+}
+
+.docker-diagram {
+  @diagram-icon-size: 65px;
+  @diagram-icon-count: 5;
+  @diagram-active-indicator-line-height: 80px;
+  @diagram-active-indicator-size: 17px;
+
+  padding-top: 29px;
+
+  .diagram-section {
+    display: inline-block;
+    position: relative;
+    height: @diagram-icon-size;
+    width: ~"calc(100% / @{diagram-icon-count})";
+
+    &:first-child {
+
+      .diagram-icon {
+        margin-left: ~"calc(50% - (@{diagram-icon-size} / 2))";
+      }
+    }
+  }
+
+  .diagram-content {
+    height: calc(@diagram-icon-size + @diagram-active-indicator-size + @diagram-active-indicator-line-height);
+  }
+
+  .diagram-annotation {
+    .make-row;
+  }
+
+  .diagram-icon {
+    display: inline-block;
+    width: @diagram-icon-size;
+    height: @diagram-icon-size;
+
+    &:after {
+      
+    }
+  }
+
+  .diagram-arrow {
+    margin-top: 27px;
+    height: 21px;
+  }
+
+  .connector-line {
+    width: ~"calc(50% - (@{diagram-icon-size} / 2))";
+    display: inline-block;
+    border-top: 1px solid #ddd;
+
+    &.active {
+      border-top: 1px solid @brand-success;
+    }
+  }
+
+  .active-indicator-line {
+    height: @diagram-active-indicator-line-height;
+    position: absolute;
+    display: block;
+    left: 50%;
+    top: @diagram-icon-size;
+    border-right: 1px solid @brand-success;
+  }
+
+  .active-indicator-dot {
+    height: @diagram-active-indicator-size;
+    left: ~"calc(50% - (@{diagram-active-indicator-size} / 2))";
+    top: @diagram-active-indicator-line-height + @diagram-icon-size;
+    position: absolute;
+  }
+}
+
+.outer-section-overview {
+  padding-bottom: 70px;
+  .make-xs-column(12);
+
+  > h2 {
+    margin-top: 0;
+  }
+
+  > p {
+    margin-bottom: 0;
+  }
+}
+
+.feature {
+  .make-sm-column(4);
+
+  > h3 {
+    .text-center;
+  }
+}
+
+.jumbotron {
+  position: relative;
+
+  .small-aside {
+    @media (min-width: @screen-lg-min) {
+      max-width: 70%;
+    }
+  }
+
+  .btn-cta {
+    // TODO: 11px is the lower padding on an H3– use calculated
+    // version instead of hardcoding it here.
+    margin-top: calc(40px - 11px);
+  }
+}
+
+.docker-cta {
+  position: relative;
+  .make-row;
+
+  .background {
+    bottom: 0;
+    right: 0;
+  }
+
+  > .cta-text {
+    .make-md-column(12);
+    .make-lg-column(6);
+    .make-lg-column-offset(3);
+  }
+
+  > .cta-btn {
+    .make-md-column(12);
+    .make-lg-column(3);
+
+    @media (max-width: @screen-md-max) {
+      .text-center;
+    }
+  }
+}
+
