@@ -1,8 +1,7 @@
 @import "../../bootstrap/variables.less";
 @import "../../../../components/bootstrap/less/mixins/grid.less";
 
-#features {
-
+.features {
   .jumbotron {
     overflow: hidden;
   }
@@ -23,123 +22,6 @@
 
     &:first-child {
       .make-sm-column-offset(1);
-    }
-  }
-}
-
-#integration {
-
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: @zindex-modal;
-
-    .flexy();
-    .flex-direction(column);
-    .align-items(center);
-    .justify-content(center);
-
-    background-color: rgba(0, 0, 0, .484375);
-
-    > div > .modal-video,
-    > .modal-video {
-      width: 560px;
-      height: 315px;
-
-      border: 4px @white solid;
-      border-radius: 5px;
-    }
-
-    > .close {
-      width: 50px;
-      height: 50px;
-      margin-top: 30px;
-
-      background-image: url('@{imgPath}/outer/video/video-close.svg');
-      background-size: 50px;
-      background-repeat: no-repeat;
-      background-position: center;
-
-      // Overiding Bootstrap's styles
-      .opacity(.5);
-      &:hover, &:focus {
-        .opacity(.8);
-        outline: none;
-      }
-    }
-  }
-
-  .jumbotron {
-    overflow: hidden;
-  }
-
-  .feature-row {
-    .make-row();
-
-    padding-top: 70px;
-  }
-
-  .row + .feature-row {
-    padding-top: 40px;
-  }
-
-  .feature {
-    .make-sm-column(5);
-
-    &:first-child {
-      .make-sm-column-offset(1);
-    }
-
-    &.video {
-      > a.play {
-        position: relative;
-
-        display: block;
-        width: 200px;
-        height: 200px;
-        margin-left: auto;
-        margin-right: auto;
-
-        border-radius: 50%;
-        overflow: hidden;
-
-        &:focus {
-          outline: none;
-          box-shadow: 0 0 0 2px @black;
-        }
-
-        &:before {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-
-          display: block;
-          width: 100%;
-          height: 100%;
-
-          background-image: url('@{imgPath}/outer/video/video-play-1.svg');
-          background-size: 50px;
-          background-repeat: no-repeat;
-          background-position: center;
-          background-color: rgba(0,0,0,0.3);
-          transition: background-size 50ms;
-
-          content: ' ';
-        }
-
-        &:active:before {
-          background-size: 47px;
-        }
-
-        > img.thumb {
-          width: 500px;
-        }
-      }
     }
   }
 }

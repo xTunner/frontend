@@ -229,7 +229,7 @@
     (if (= integration :docker)
       (om/build docker/docker app)
       (let [data (get integration-data integration)]
-        (html [:div#integration
+        (html [:div.features.integrations
                (if-let [video-id (get-in app state/modal-video-id-path)]
                  [:div.modal-overlay {:on-click #(raise! owner [:close-video])}
                   ;; TODO: Once React supports :allowFullscreen (v.0.13.1),

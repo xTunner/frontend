@@ -91,7 +91,7 @@
 
 (defrender features [app owner]
   (html
-    [:div#features
+    [:div.features
      [:div.jumbotron
       common/language-background-jumbotron
       [:section.container
