@@ -144,7 +144,9 @@
    :saucelabs {:hero {:icon [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :alt "Sauce Labs"}]
                       :heading "Test with Sauce Labs on CircleCI"
                       :text "Test against hundreds of mobile and desktop browsers."}
-               :features [{:title "Selenium WebDriver"
+               :features [{:type :text
+                           :title "Selenium WebDriver"
+                           :icon "fail"
                            :text (list "Sauce Labs supports automated browser tests using Selenium "
                                        "WebDriver, a widely-adopted browser driving standard. Selenium "
                                        "WebDriver provides a common API for programatically driving "
@@ -156,9 +158,10 @@
                                        "a Selenium Server, and it it is up to the server to drive the "
                                        "browsers. Sauce Labs essentially provides a Selenium Server as a "
                                        "service, with all kinds of browsers available to test. It has "
-                                       "some extra goodies like videos of all test runs as well.")
-                           :graphic selenium-logo}
-                          {:title "All the browsers and platforms you need"
+                                       "some extra goodies like videos of all test runs as well.")}
+                          {:type :text
+                           :title "All the browsers and platforms you need"
+                           :icon "fail"
                            :text (list "Sauce Labs provides a huge variety of browsers and operating "
                                        "systems. You can choose between combinations of Firefox, Chrome, "
                                        "Safari, and Internet Explorer browsers and OSX, Windows, and "
@@ -168,18 +171,20 @@
                                        "mobile devices or support old versions of IE. Because Selenium "
                                        "WebDriver provides a unified interface to talk to all of these "
                                        "browsers, you only need to write your browser tests once, and "
-                                       "you can run them on as many browsers and platforms as you want.")
-                           :graphic [:div.browsers firefox-logo safari-logo  ie-logo chrome-logo]}
-                          {:title "Test Continuously"
+                                       "you can run them on as many browsers and platforms as you want.")}
+                          {:type :text
+                           :title "Test Continuously"
+                           :icon "fail"
                            :text (list "CircleCI automatically runs all your tests, against "
                                        "whatever browsers you choose, every time you commit code. You "
                                        "can configure your browser-based tests to run whenever a change "
                                        "is made, before every deployment, or on a certain branch. A "
                                        "Continuous Integration and Delivery workflow with CircleCI and "
                                        "Sauce Labs ensures that browser-specific bugs affecting critical "
-                                       "functionality in your app never make it to production.")
-                           :graphic [:img {:src (utils/cdn-path "/img/outer/integrations/cycle-black.svg") :style {:width "250px" :height "250px"}}]}
-                          {:title "No public test servers required"
+                                       "functionality in your app never make it to production.")}
+                          {:type :text
+                           :title "No public test servers required"
+                           :icon "fail"
                            :text (list "Sauce Labs operates browsers on a network separate from "
                                        "CircleCI build containers, but there needs to be a way for the "
                                        "browsers to access the web application you want to test. The "
@@ -187,8 +192,7 @@
                                        "CircleCI build and use Sauce Connect to setup a secure tunnel "
                                        "between Sauce Labs' browsers and your build containers on "
                                        "CircleCI. There is an in-depth example of this in "
-                                       [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."])
-                           :graphic [:div.sauce-connect [:p "Sauce" [:br] "Connect"]]}]
+                                       [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."])}]
                :bottom-header "Want to get rid of browser bugs?"
                :secondary-cta [:span "Or see our " [:a {:href "/docs/browser-testing-with-sauce-labs"} "docs on Sauce Labs."]]}})
 
