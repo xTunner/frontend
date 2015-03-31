@@ -222,7 +222,7 @@ CI.Versions =
   beanstalkd: "1.4.6"
   couchbase: "2.0.0"
   couchdb: "1.3.0"
-  neo4j: "2.1.7"
+  neo4j: "2.2.0"
   rabbitmq: "3.4.4"
 
 
