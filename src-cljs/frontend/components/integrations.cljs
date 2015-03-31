@@ -96,7 +96,7 @@
                           :type "submit"}]]])))))
 
 (def integration-data
-  {:heroku {:hero {:icon [:img {:src (utils/cdn-path "/img/outer/integrations/heroku-icon.svg") :alt "Heroku"}]
+  {:heroku {:hero {:icon (utils/cdn-path "/img/outer/integrations/heroku-logo.svg")
                    :heading "Deploy to Heroku from CircleCI"
                    :text "Experience a simple, modern continuous delivery workflow now."}
             :features [{:type :text
@@ -141,7 +141,7 @@
                             "Or see our "
                             [:a {:href "/docs/continuous-deployment-with-heroku"}
                              "docs on deploying to Heroku."]]}
-   :saucelabs {:hero {:icon [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png") :alt "Sauce Labs"}]
+   :saucelabs {:hero {:icon nil
                       :heading "Test with Sauce Labs on CircleCI"
                       :text "Test against hundreds of mobile and desktop browsers."}
                :features [{:type :text
@@ -250,7 +250,8 @@
                  [:div.row
                   [:div.hero-title.center-block
                    [:div.text-center
-                    [:img.hero-logo (get-in data [:hero :icon])]]
+                    (if-let [icon-src (get-in data [:hero :icon])]
+                      [:img.hero-logo {:src icon-src}])]
                    [:h1.text-center (get-in data [:hero :heading])]]]]
                 [:div.row.text-center
                  (common/sign-up-cta owner (str "integrations/" (name integration)))]]
