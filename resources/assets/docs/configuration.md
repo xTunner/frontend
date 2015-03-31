@@ -594,6 +594,10 @@ call for the same build, except that it is wrapped in a "payload" key:
 
 ```
 
+There is also an experimental setting you can configure to specify black or whitelisting of branches
+you want to get chat channel build notifications for in the 
+[per branch build notification](#per-branch-notifications) section.
+
 <h2 id="branches">Specifying branches to build</h2>
 
 CircleCI by default tests every push to _any_ branch in the repository.
@@ -655,6 +659,46 @@ general:
     - "~/simplecov" # relative to the user's home directory
     - "test.txt" # a single file, relative to the build directory
 ```
+
+<h2 id="experimental">Experimental configuration</h2>
+
+As a way of giving early previews to users of new configuration we are considering 
+but haven't settled on, or fully developed the web UI settings for, we are adding 
+an 'experimental' section to the circle.yml
+
+<h3 id="per-branch-notifications">Per branch build notification in chat channels</h3>
+
+Right now, the only experimental setting is a black/whitelist mechanism for chat channel
+build notifications based on the branch name.
+
+The behavior of the "ignore" and "only" settings is the same as the black/whitelisting
+of branches to build; each takes a list of either strings or regexes, where regexes are
+specified with '/' around the value. 
+
+So, you can set up a blacklist of any branches starting with "dev"
+like:
+
+```
+experimental:
+  notify:
+    branches:
+      ignore:
+        - /dev.*/
+```
+
+Or a whitelist of the master branch, and any branch starting with "feature" like:
+
+```
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+        - /feature-.*/
+```
+
+You *can* combine them, but it can be tricky: we apply the blacklist first, then 
+include any branches that are whitelisted.
 
 <h2 id="help">Need anything else?</h2>
 
