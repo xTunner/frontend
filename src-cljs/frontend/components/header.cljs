@@ -146,22 +146,22 @@
               [:ul.dropdown-menu
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/features"}
                  "Features"]]
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/mobile"}
                  "Mobile"]]
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/integrations/docker"}
                  "Docker"]]
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/enterprise"}
                  "Enterprise"]]]]
              (when-not (config/enterprise?)
