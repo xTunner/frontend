@@ -594,7 +594,7 @@ call for the same build, except that it is wrapped in a "payload" key:
 
 ```
 
-There is also an experimental setting you can configure to specify black or whitelisting of branches
+There is also an experimental setting you can configure to specify black- or white-listing of branches
 you want to get chat channel build notifications for in the 
 [per branch build notification](#per-branch-notifications) section.
 
@@ -662,21 +662,22 @@ general:
 
 <h2 id="experimental">Experimental configuration</h2>
 
-As a way of giving early previews to users of new configuration we are considering 
-but haven't settled on, or fully developed the web UI settings for, we are adding 
-an 'experimental' section to the circle.yml
+As a way of giving early previews of new configuration we are considering we are adding 
+an 'experimental' section to the circle.yml. These settings are liable to change without 
+notice.
 
 <h3 id="per-branch-notifications">Per branch build notification in chat channels</h3>
 
-Right now, the only experimental setting is a black/whitelist mechanism for chat channel
+Right now, the only experimental setting is a black- and white-list mechanism for chat channel
 build notifications based on the branch name.
 
-The behavior of the "ignore" and "only" settings is the same as the black/whitelisting
-of branches to build; each takes a list of either strings or regexes, where regexes are
+The behavior of the "ignore" and "only" settings is the same as the black- and white-listing
+of branches to build. Each setting takes a list of either strings or regexes; regexes are
 specified with '/' around the value. 
 
-So, you can set up a blacklist of any branches starting with "dev"
-like:
+The following configuration will supress any chat channel build notifications 
+for any build of a branch whose names starting with "dev" or "experiment", as well as
+a branch named "sandbox"
 
 ```
 experimental:
@@ -684,9 +685,13 @@ experimental:
     branches:
       ignore:
         - /dev.*/
+        - /experiment.*/
+        - sandbox
 ```
 
-Or a whitelist of the master branch, and any branch starting with "feature" like:
+Alternatively, you can only send notifications for branches which match a whitelist. The
+following config will only send noticies for the master branch and any branch starting 
+with "feature"
 
 ```
 experimental:
@@ -697,8 +702,20 @@ experimental:
         - /feature-.*/
 ```
 
-You *can* combine them, but it can be tricky: we apply the blacklist first, then 
-include any branches that are whitelisted.
+You can combine them, in which case: only branch names which do match 
+the whitelist and do not match the blacklist get notifications, so for:
+
+```
+experimental:
+  notify:
+    branches:
+      only:
+        - /feature.*/
+      ignore:
+        - /feature\.experiment.*/
+```
+
+A branch named "feature-1" will send a notification, but "feature.experiment-1" will not.
 
 <h2 id="help">Need anything else?</h2>
 
