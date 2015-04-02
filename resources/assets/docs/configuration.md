@@ -34,7 +34,8 @@ Each section represents a _phase_ of running your tests:
 
 The `circle.yml`
 file contains another **general** section for general build-related configurations
-that are not related to a specific phase.
+that are not related to a specific phase, and an **experimental** section for early access
+previews of configuration changes under consideration.
 
 **Remember**: most projects won't need to specify anything for many of the phases.
 
@@ -594,6 +595,10 @@ call for the same build, except that it is wrapped in a "payload" key:
 
 ```
 
+There is also an experimental setting you can configure to specify black- or white-listing of branches
+you want to get chat channel build notifications for in the 
+[per branch build notification](#per-branch-notifications) section.
+
 <h2 id="branches">Specifying branches to build</h2>
 
 CircleCI by default tests every push to _any_ branch in the repository.
@@ -655,6 +660,63 @@ general:
     - "~/simplecov" # relative to the user's home directory
     - "test.txt" # a single file, relative to the build directory
 ```
+
+<h2 id="experimental">Experimental configuration</h2>
+
+Our **experimental** section is a way of giving early previews of new configuration 
+options we are considering adding. These settings are liable to change without notice.
+
+<h3 id="per-branch-notifications">Per branch build notification in chat channels</h3>
+
+The only experimental setting available at this time is a black- and white-list mechanism 
+for chat channel build notifications based on the branch name.
+
+The behavior of the "ignore" and "only" settings is the same as the black- and white-listing
+of branches to build in the [Branches section](#branches).
+Each setting takes a list of either strings or regexes; regexes are
+specified with '/' around the value. 
+
+The following configuration will supress any chat channel build notifications 
+for any build of a branch whose name starts with "dev" or "experiment", or which is
+named "sandbox":
+
+```
+experimental:
+  notify:
+    branches:
+      ignore:
+        - /dev.*/
+        - /experiment.*/
+        - sandbox
+```
+
+Alternatively, you can only send notifications for branches which match a whitelist. The
+following config will only send noticies for the master branch and any branch starting 
+with "feature":
+
+```
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+        - /feature-.*/
+```
+
+You can combine them, in which case only branch names which do match 
+the whitelist *and* do not match the blacklist get notifications. So for:
+
+```
+experimental:
+  notify:
+    branches:
+      only:
+        - /feature.*/
+      ignore:
+        - /feature\.experiment.*/
+```
+
+a branch named "feature-1" will send a notification, but "feature.experiment-1" will not.
 
 <h2 id="help">Need anything else?</h2>
 
