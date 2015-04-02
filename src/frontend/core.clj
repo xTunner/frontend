@@ -110,6 +110,7 @@
               #"/mobile"
               #"/pricing"
               #"/privacy"
+              #"/press"
               #"/security.*"
               #"/stories.*"]
    :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}

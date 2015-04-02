@@ -18,7 +18,7 @@
 
 (defn categories [docs]
   ((juxt :gettingstarted :languages :mobile :how-to :troubleshooting
-                                   :reference :parallelism :privacy-security) docs))
+         :reference :parallelism :privacy-security) docs))
 
 (defrender markdown [markdown]
   (html

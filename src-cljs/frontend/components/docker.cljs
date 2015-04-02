@@ -85,7 +85,7 @@
                                    :company-short "br"
                                    :customer-quote "With just one line of code you have access to all of the power of Docker."
                                    :employee-name "Felix Rodriguez"
-                                   :employee-title "DevOps Engineer "})
+                                   :employee-title "DevOps Engineer"})
          ]]]]
         [:div.outer-section
          [:section.container

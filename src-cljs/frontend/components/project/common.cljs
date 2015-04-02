@@ -46,19 +46,19 @@
                                 project-name org-name)
                 [:a {:href plan-path} "our plans"]
                 ").")
-          
+
           (> days 7)
           (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
                                 project-name org-name (pluralize days "day"))
                 [:a {:href plan-path} "Check out our plans"]
                 ".")
-          
+
           (> days 4)
           (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
                                 project-name org-name (pluralize days "day"))
                 [:a {:href plan-path} "Add a plan"]
                 " to keep running builds.")
-          
+
           :else
           (list (gstring/format "The %s project is covered by %s's trial which expires in %s! "
                                 project-name org-name (plan-model/pretty-trial-time plan))
@@ -71,18 +71,18 @@
        (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
              [:a.pay-now-plain-text {:href plan-path} "Please enter your payment information"]
-             " before the trial expires to continue using these containers." 
-             )]))   
+             " before the trial expires to continue using these containers."
+             )]))
 
 (defn freemium-trial-html-b [plan project project-name days org-name plan-path]
   (html
     [:div.alert {:class "alert-success"}
        (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
-             "Please enter your payment information before the trial expires to continue using these containers.    " 
-             [:a.pay-now-button {:href plan-path} 
+             "Please enter your payment information before the trial expires to continue using these containers.    "
+             [:a.pay-now-button {:href plan-path}
               [:button "Pay Now"]]
-             )])) 
+             )]))
 
 (defn trial-notice [data owner]
   (reify
