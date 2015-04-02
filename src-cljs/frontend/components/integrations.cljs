@@ -98,7 +98,7 @@
 (def integration-data
   {:heroku {:hero {:icon (utils/cdn-path "/img/outer/integrations/heroku-logo.svg")
                    :heading "Deploy to Heroku from CircleCI"
-                   :text "Experience a simple, modern continuous delivery workflow now."}
+                   :subheading "Experience a simple, modern continuous delivery workflow now."}
             :features [{:type :text
                         :title "Test before you deploy. Always."
                         :icon "circle"
@@ -143,7 +143,7 @@
                              "docs on deploying to Heroku."]]}
    :saucelabs {:hero {:icon nil
                       :heading "Test with Sauce Labs on CircleCI"
-                      :text "Test against hundreds of mobile and desktop browsers."}
+                      :subheading "Test against hundreds of mobile and desktop browsers."}
                :features [{:type :text
                            :title "Selenium WebDriver"
                            :icon "fail"
@@ -244,17 +244,19 @@
                   ;                       :allowFullscreen true}]
                   [:button.close {:aria-label "Close"
                                   :on-click #(raise! owner [:close-video])}]])
-               [:div.jumbotron
-                common/language-background-jumbotron
-                [:section.container
-                 [:div.row
-                  [:div.hero-title.center-block
-                   [:div.text-center
-                    (if-let [icon-src (get-in data [:hero :icon])]
-                      [:img.hero-logo {:src icon-src}])]
-                   [:h1.text-center (get-in data [:hero :heading])]]]]
-                [:div.row.text-center
-                 (common/sign-up-cta owner (str "integrations/" (name integration)))]]
+               (let [hero (:hero data)]
+                 [:div.jumbotron
+                  common/language-background-jumbotron
+                  [:section.container
+                   [:div.row
+                    [:div.hero-title.center-block
+                     [:div.text-center
+                      (if-let [icon-src (:icon hero)]
+                        [:img.hero-logo {:src icon-src}])]
+                     [:h1.text-center (:heading hero)]
+                     [:h3.text-center (:subheading hero)]]]]
+                  [:div.row.text-center
+                   (common/sign-up-cta owner (str "integrations/" (name integration)))]])
 
                [:div.outer-section
                 [:section.container
