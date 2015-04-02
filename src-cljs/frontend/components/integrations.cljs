@@ -101,7 +101,7 @@
                    :subheading "Experience a simple, modern continuous delivery workflow now."}
             :features [{:type :text
                         :title "Test before you deploy. Always."
-                        :icon "circle"
+                        :icon "circle-success"
                         :text (list
                                 [:p
                                  "Heroku revolutionized the way developers think about deployment. "
@@ -152,7 +152,7 @@
                       :subheading "Test against hundreds of mobile and desktop browsers."}
                :features [{:type :text
                            :title "Selenium WebDriver"
-                           :icon "fail"
+                           :icon "se-1"
                            :text [:p
                                   "Sauce Labs supports automated browser tests using Selenium "
                                   "WebDriver, a widely-adopted browser driving standard. Selenium "
@@ -168,7 +168,7 @@
                                   "some extra goodies like videos of all test runs as well."]}
                           {:type :text
                            :title "All the browsers and platforms you need"
-                           :icon "fail"
+                           :icon "environment"
                            :text [:p
                                   "Sauce Labs provides a huge variety of browsers and operating "
                                   "systems. You can choose between combinations of Firefox, Chrome, "
@@ -182,7 +182,7 @@
                                   "you can run them on as many browsers and platforms as you want."]}
                           {:type :text
                            :title "Test Continuously"
-                           :icon "fail"
+                           :icon "sudo"
                            :text [:p
                                   "CircleCI automatically runs all your tests, against "
                                   "whatever browsers you choose, every time you commit code. You "
@@ -193,7 +193,7 @@
                                   "functionality in your app never make it to production."]}
                           {:type :text
                            :title "No public test servers required"
-                           :icon "fail"
+                           :icon "server"
                            :text [:p
                                   "Sauce Labs operates browsers on a network separate from "
                                   "CircleCI build containers, but there needs to be a way for the "
