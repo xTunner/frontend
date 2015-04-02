@@ -65,7 +65,7 @@
     om/IRender
     (render [_]
       (html
-       [:div.features.integrations.docker
+       [:div.product-page.integrations.docker
         [:div.jumbotron
          [:img.background.main {:src (utils/cdn-path "/img/outer/integrations/main-docker-logo.svg")}]
          [:h1 "A modern continuous delivery process for your Docker applications."]

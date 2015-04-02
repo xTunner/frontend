@@ -1,29 +1,5 @@
-@import "../../bootstrap/variables.less";
-@import "../../../../components/bootstrap/less/mixins/grid.less";
-
-.features {
-  .jumbotron {
-    overflow: hidden;
-  }
-
-  .feature-row {
-    .make-row();
-  }
-
-  .row + .feature-row {
-    padding-top: 40px;
-  }
-
-  .feature-row + .feature-row {
-    padding-top: 70px;
-  }
-
+.product-page.features {
   .feature {
-    .make-sm-column(5);
     .text-center;
-
-    &:first-child {
-      .make-sm-column-offset(1);
-    }
   }
 }
