@@ -210,7 +210,7 @@
   [owner b]
   [:div.feature
    (common/feature-icon (:icon b))
-   [:h3.text-center (:title b)]
+   [:h4.text-center (:title b)]
    [:p (:text b)]])
 
 (defmethod feature :video
@@ -221,7 +221,7 @@
                          (.preventDefault e)
                          (raise! owner [:play-video (:video-id b)]))}
     [:img.thumb {:src (:thumbnail b)}]]
-   [:h3.text-center (:title b)]])
+   [:h4.text-center (:title b)]])
 
 
 (defrender integration [app owner]
