@@ -270,6 +270,26 @@ Please don't hesitate to [contact us](mailto:sayhi@circleci.com)
 if you have any questions at all about how to best utilize Docker on
 CircleCI.
 
+###Docker Exec
+
+If you try to run `docker exec` in our containers, you'll see an error like
+the following:
+
+```
+Unsupported: Exec is not supported by the lxc driver
+```
+
+`docker exec` won't work in our containers because we use the LXC driver
+for Docker and `docker exec` for the LXC driver hasn't been implemented.
+
+To work around this, you can the following command, customized for
+your container name and the command you want to run, using LXC
+directly:
+
+````
+sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' $MY_CONTAINER_NAME)" -- bash -c $MY_COMMAND
+````
+
 ### Caching Docker layers
 
 Docker images aren't cached automatically. At the moment, we have no good
