@@ -324,12 +324,12 @@ other tags will be re-pulled on every build if a tag is not specified in the FRO
 
 You can connect to services outside your docker container (like our
 pre-installed databases) by using the [docker0 ethernet bridge
-device](https://docs.docker.com/articles/networking/).
+device](https://docs.docker.com/articles/networking/). Just make sure
+that the outside services are listening for connections on `docker0`—the
+simplest way to ensure that is to have the services listen on `0.0.0.0`.
 
-You will also have to make services you want to connect to _listen_ to
-connections from Docker containers.
-
-For Postgres, for example, you might want to listen on `0.0.0.0`:
+For example, the following configuration will ensure that Postgres is
+available to `docker0`:
 
 ```
 test:
@@ -341,4 +341,4 @@ test:
     - sudo /etc/init.d/postgresql restart
 ```
 
-The similar approach should work well with other services.
+The similar approach would be required for any other service.
