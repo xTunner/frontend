@@ -147,7 +147,7 @@
                             "Or see our "
                             [:a {:href "/docs/continuous-deployment-with-heroku"}
                              "docs on deploying to Heroku."]]}
-   :saucelabs {:hero {:icon nil
+   :saucelabs {:hero {:icon (utils/cdn-path "/img/outer/integrations/sauce-labs-logo.svg")
                       :heading "Test with Sauce Labs on CircleCI"
                       :subheading "Test against hundreds of mobile and desktop browsers."}
                :features [{:type :text
