@@ -211,7 +211,7 @@
   (str "https://www.youtube.com/watch?v=" video-id))
 
 (defn video-embed-url [video-id]
-  (str "https://www.youtube.com/embed/" video-id "?autoplay=1"))
+  (str "https://www.youtube.com/embed/" video-id "?autohide=1&autoplay=1&modestbranding=1&rel=0&showinfo=0"))
 
 
 (defmulti feature (fn [_ b] (:type b)))
