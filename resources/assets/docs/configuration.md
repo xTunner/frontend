@@ -380,6 +380,8 @@ dependencies:
     - "~/assets/output" # relative to the user's home directory
 ```
 
+Caching happens after the dependency step, so the directories that are specified in `cache_directories` must be available before then.
+
 Caches are private, and are not shared with other projects.
 
 <h2 id="database">Database setup</h2>
