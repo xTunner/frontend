@@ -121,9 +121,10 @@
                         :text [:p
                                "The deployment of your application is configured through just a "
                                "few lines of YAML that are kept safe in your source code. All "
-                               "you need to do to deploy to Heroku from CircleCI is configure your "
-                               "Heroku credentials in our UI, add a simple config file like this "
-                               "one into your project, and make a push. You can also easily deploy "
+                               "you need to do to deploy to Heroku from CircleCI is to "
+                               [:a {:href "/docs/continuous-deployment-with-heroku"}
+                                "configure your Heroku credentials in our UI, add a simple config file to your project, and push"]
+                               ". You can also easily deploy "
                                "different branches to different Heroku apps (e.g. one for staging "
                                "and one for production)."]}
                        {:type :text
@@ -139,7 +140,7 @@
                                " showing how to setup a more robust continuous delivery pipeline "
                                "with staging and prod environments."]}
                        {:type :video
-                        :title "Continuous deployment with CircleCI and Heroku: Part 1"
+                        :title "Continuous deployment with CircleCI and Heroku"
                         :thumbnail "/img/outer/integrations/video-placeholder.svg"
                         :video-id "Hfs_1yuWDf4"}]
             :bottom-header "Ready for world-class continuous delivery?"
