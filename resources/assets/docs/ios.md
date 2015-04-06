@@ -265,4 +265,6 @@ versions installed:
 - OS X 10.9.5 (13F34) Darwin 13.4.0
 - Xcode 6.1.1 Build version 6A2008a
 - Facebook xctool 0.2.2
-- CocoaPods 0.34.4
+- CocoaPods 0.36.3
+- xcpretty 0.1.8
+- shenzhen 0.13.1
