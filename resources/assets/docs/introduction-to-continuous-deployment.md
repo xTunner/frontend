@@ -38,6 +38,29 @@ deployment:
       - ./deploy-to-staging.sh
 ```
 
+#### Regular Expressions
+You can also use regular expressions in the `branch` property.
+
+One example is to deploy branches matching a prefix, e.g. "feature-":
+```
+deployment:
+  development:
+    branch: /feature-.*/  # branches starting with "feature-"
+    commands:
+      - ./deploy-feature-branch
+```
+
+You could also run deployments for everything but the master branch:
+```
+deployment:
+  development:
+    branch: /^((?!master).)*$/  # not the master branch
+    commands:
+      - ./deploy-development
+```
+
+
+
 ### Deploy over SSH
 
 First you need to upload your SSH keys from your project's
