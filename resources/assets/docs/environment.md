@@ -229,14 +229,13 @@ We currently have a number of packages installed to help you test your backend a
 
 We have the following services automatically set up and running for your tests:
 
-*   `couchdb {{ versions.couchdb }}`
-*   `memcached {{ versions.memcached }}`
-*   `mongodb {{ versions.mongodb }}`
-*   `mysql {{ versions.mysql }}`
-*   `postgresql {{ versions.postgresql }}`
-    (including postgis 2.0 extensions)
-*   `rabbitmq {{ versions.rabbitmq }}`
-*   `redis {{ versions.redis }}`
+*   `couchdb` ({{ versions.couchdb }})
+*   `memcached` ({{ versions.memcached }})
+*   `mongodb` ({{ versions.mongodb }})
+*   `mysql` ({{ versions.mysql }})
+*   `postgresql` ({{ versions.postgresql }} with postgis 2.0 extensions)
+*   `rabbitmq` ({{ versions.rabbitmq }})
+*   `redis` ({{ versions.redis }})
 
 Both `postgres` and `mysql` are set up to use the `ubuntu`
 user, have a database called `circle_test` available, and don't require any password.
@@ -256,16 +255,16 @@ machine:
 
 The list of services that can be enabled this way is
 
-*   `beanstalkd {{ versions.beanstalkd }}`
-*   `cassandra {{ versions.cassandra }}`
-*   `couchbase-server {{ versions.couchbase }}`
-*   `elasticsearch {{ versions.elasticsearch }}`
-*   `neo4j {{ versions.neo4j }}`
-*   `riak {{ versions.riak }}`
+*   `beanstalkd` ({{ versions.beanstalkd }})
+*   `cassandra` ({{ versions.cassandra }})
+*   `couchbase-server` ({{ versions.couchbase }})
+*   `elasticsearch` ({{ versions.elasticsearch }})
+*   `neo4j` ({{ versions.neo4j }})
+*   `riak` ({{ versions.riak }})
 
 In addition to all the databases and services listed above there are two
 further services which require special handling. See the documentation for
 each of them if you need them to support your tests.
 
-*   `solr {{ versions.solr }}` - [Test with Solr](/docs/test-with-solr)
-*   `sphinx {{ versions.sphinx }}` - [Test with Sphinx](/docs/test-with-sphinx)
+*   `solr` ({{ versions.solr }}) - [Test with Solr](/docs/test-with-solr)
+*   `sphinx` ({{ versions.sphinx }}) - [Test with Sphinx](/docs/test-with-sphinx)
