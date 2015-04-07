@@ -128,7 +128,7 @@
                                "different branches to different Heroku apps (e.g. one for staging "
                                "and one for production)."]}
                        {:type :text
-                        :title "Watch how to get started in minutes"
+                        :title "Watch how to get started in minutes."
                         :icon "play-1"
                         :text [:p
                                "This video shows step-by-step how to configure CircleCI to test "
