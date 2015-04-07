@@ -245,21 +245,22 @@
             [:h3 "CircleCI logos"]
             [:a {:href "https://github.com/circleci/media/tree/master/presskit/logos"}
              [:img {:src (utils/cdn-path "/img/outer/press/badge-logo.svg")
-                    :height 150}]]
+                    :height 75}]]
             [:h3 [:small "SVG, EPS"]]]]
           [:div.col-xs-4
            [:div.well.text-center
             [:h3 "CircleCI badges"]
             [:a {:href "https://github.com/circleci/media/tree/master/presskit/badges"}
              [:img {:src (utils/cdn-path "/img/outer/press/badge-fail.svg")
-                    :height 150}]]
+                    :height 75}]]
             [:h3 [:small "SVG, EPS"]]]]
           [:div.col-xs-4
            [:div.well.text-center
             [:h3 "CircleCI headshots"]
             [:a {:href "https://github.com/circleci/media/tree/master/presskit/headshots"}
-             [:img.img-rounded {:src (stefon/asset-path "/img/outer/about/paul.png")
-                                :height 150}]]
+             [:img.img-circle {:src (stefon/asset-path "/img/outer/about/paul.png")
+                               :height 75
+                               :width 75}]]
             [:h3 [:small "PNG"]]]]]]]
        [:div.outer-section
         [:h2.text-center "CircleCI in the news"]
