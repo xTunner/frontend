@@ -229,22 +229,22 @@ We currently have a number of packages installed to help you test your backend a
 
 We have the following services automatically set up for your tests:
 
-*   `postgresql {{ versions.postgresql }}`
-    (including postgis 2.0 extensions)
-*   `mysql {{ versions.mysql }}`
-*   `mongodb {{ versions.mongodb }}`
-*   `riak {{ versions.riak }}`
-*   `cassandra {{ versions.cassandra }}`
-*   `redis {{ versions.redis }}`
-*   `memcached {{ versions.memcached }}`
-*   `sphinx {{ versions.sphinx }}`
-*   `elasticsearch {{ versions.elasticsearch }}`
-*   `solr {{ versions.solr }}`
 *   `beanstalkd {{ versions.beanstalkd }}`
+*   `cassandra {{ versions.cassandra }}`
 *   `couchbase {{ versions.couchbase }}`
 *   `couchdb {{ versions.couchdb }}`
+*   `elasticsearch {{ versions.elasticsearch }}`
+*   `memcached {{ versions.memcached }}`
+*   `mongodb {{ versions.mongodb }}`
+*   `mysql {{ versions.mysql }}`
 *   `neo4j {{ versions.neo4j }}`
+*   `postgresql {{ versions.postgresql }}`
+    (including postgis 2.0 extensions)
 *   `rabbitmq {{ versions.rabbitmq }}`
+*   `redis {{ versions.redis }}`
+*   `riak {{ versions.riak }}`
+*   `solr {{ versions.solr }}`
+*   `sphinx {{ versions.sphinx }}`
 
 Both `postgres` and `mysql` are set up to use the `ubuntu`
 user, have a database called `circle_test` available, and don't require any password.
@@ -264,10 +264,13 @@ machine:
 
 The list of services that can be enabled this way is
 
+*   `beanstalkd`
 *   `cassandra`
+*   `couchbase-server`
 *   `elasticsearch`
+*   `neo4j`
 *   `rabbitmq-server`
 *   `riak`
-*   `beanstalkd`
-*   `couchbase-server`
-*   `neo4j`
+
+Solr is also a special case. See [our instructions for testing with
+Solr](/docs/test-with-solr) if you need it for your tests.
