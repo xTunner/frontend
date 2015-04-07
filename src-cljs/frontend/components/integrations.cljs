@@ -236,10 +236,10 @@
 
 
 (defrender integration [app owner]
-  (let [integration (get-in app [:navigation-data :integration])]
-    (if (= integration :docker)
+  (let [integration-name (get-in app [:navigation-data :integration])]
+    (if (= integration-name :docker)
       (om/build docker/docker app)
-      (let [data (get integration-data integration)]
+      (let [integration (get integration-data integration-name)]
         (html [:div.product-page.integrations
                (if-let [video-id (get-in app state/modal-video-id-path)]
                  [:div.modal-overlay {:on-click #(raise! owner [:close-video])}
@@ -255,7 +255,7 @@
                   ;                       :allowFullscreen true}]
                   [:button.close {:aria-label "Close"
                                   :on-click #(raise! owner [:close-video])}]])
-               (let [hero (:hero data)]
+               (let [hero (:hero integration)]
                  [:div.jumbotron
                   common/language-background-jumbotron
                   [:section.container
@@ -267,11 +267,11 @@
                      [:h1.text-center (:heading hero)]
                      [:h3.text-center (:subheading hero)]]]]
                   [:div.row.text-center
-                   (common/sign-up-cta owner (str "integrations/" (name integration)))]])
+                   (common/sign-up-cta owner (str "integrations/" (name integration-name)))]])
 
                [:div.outer-section
                 [:section.container
-                 (for [row (partition-all 2 (:features data))]
+                 (for [row (partition-all 2 (:features integration))]
                    [:div.feature-row
                     (for [b row]
                       (feature owner b))])]]
@@ -280,9 +280,6 @@
                 [:section.container
                  [:div.col-xs-12
                   [:h2.text-center "Ready for world-class continuous delivery?"]
-                  [:p.text-center
-                   "Or, see our docs on "
-                   [:a {:href "/docs/continuous-deployment-with-heroku"} " deploying to Heroku"]
-                   "."]
+                  [:p.text-center (:secondary-cta integration)]
                   [:div.text-center
-                   (common/sign-up-cta owner (str "integrations/" (name integration)))]]]]])))))
+                   (common/sign-up-cta owner (str "integrations/" (name integration-name)))]]]]])))))
