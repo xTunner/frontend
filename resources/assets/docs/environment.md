@@ -1,7 +1,7 @@
 <!--
 
 title: Test environment
-last_updated: Jul 8, 2014
+last_updated: Apr 7, 2015
 
 -->
 
@@ -227,24 +227,16 @@ We currently have a number of packages installed to help you test your backend a
 
 <h2 id="databases">Databases and Services</h2>
 
-We have the following services automatically set up for your tests:
+We have the following services automatically set up and running for your tests:
 
-*   `beanstalkd {{ versions.beanstalkd }}`
-*   `cassandra {{ versions.cassandra }}`
-*   `couchbase {{ versions.couchbase }}`
 *   `couchdb {{ versions.couchdb }}`
-*   `elasticsearch {{ versions.elasticsearch }}`
 *   `memcached {{ versions.memcached }}`
 *   `mongodb {{ versions.mongodb }}`
 *   `mysql {{ versions.mysql }}`
-*   `neo4j {{ versions.neo4j }}`
 *   `postgresql {{ versions.postgresql }}`
     (including postgis 2.0 extensions)
 *   `rabbitmq {{ versions.rabbitmq }}`
 *   `redis {{ versions.redis }}`
-*   `riak {{ versions.riak }}`
-*   `solr {{ versions.solr }}`
-*   `sphinx {{ versions.sphinx }}`
 
 Both `postgres` and `mysql` are set up to use the `ubuntu`
 user, have a database called `circle_test` available, and don't require any password.
@@ -264,13 +256,16 @@ machine:
 
 The list of services that can be enabled this way is
 
-*   `beanstalkd`
-*   `cassandra`
-*   `couchbase-server`
-*   `elasticsearch`
-*   `neo4j`
-*   `rabbitmq-server`
-*   `riak`
+*   `beanstalkd {{ versions.beanstalkd }}`
+*   `cassandra {{ versions.cassandra }}`
+*   `couchbase-server {{ versions.couchbase }}`
+*   `elasticsearch {{ versions.elasticsearch }}`
+*   `neo4j {{ versions.neo4j }}`
+*   `riak {{ versions.riak }}`
 
-Solr is also a special case. See [our instructions for testing with
-Solr](/docs/test-with-solr) if you need it for your tests.
+In addition to all the databases and services listed above there are two
+further services which require special handling. See the documentation for
+each of them if you need them to support your tests.
+
+*   `solr {{ versions.solr }}` - [Test with Solr](/docs/test-with-solr)
+*   `sphinx {{ versions.sphinx }}` - [Test with Sphinx](/docs/test-with-sphinx)
