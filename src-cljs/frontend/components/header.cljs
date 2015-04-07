@@ -191,14 +191,16 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
-          (when (contains? #{:about :contact} nav-point)
+          (when (contains? #{:about :contact :press} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid
               [:ul.nav.navbar-nav
                [:li (maybe-active nav-point :about)
                 [:a {:href "/about"} "Overview"]]
                [:li (maybe-active nav-point :contact)
-                [:a {:href "/contact"} "Contact Us"]]]]])])))))
+                [:a {:href "/contact"} "Contact Us"]]
+               [:li (maybe-active nav-point :press)
+                [:a {:href "/press"} "Press"]]]]])])))))
 
 (defn inner-header [app owner]
   (reify

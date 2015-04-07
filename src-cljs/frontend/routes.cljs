@@ -203,7 +203,12 @@
       (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-home (FragmentRoute. "/home") {:as params}
-    (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
+    (open-to-outer! nav-ch :landing (assoc params :_canonical "/")))
+
+  (defroute v1-press (FragmentRoute. "/press") {:as params}
+    (open-to-outer! nav-ch :press (assoc params
+                                         :_title "Press Releases and Updates"
+                                         :_description "Find the latest CircleCI news and updates here."))))
 
 (defn define-spec-routes! [nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]
