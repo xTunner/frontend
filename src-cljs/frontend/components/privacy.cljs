@@ -87,20 +87,7 @@
                "http://www.google.co.uk/intl/en/analytics/privacyoverview.html"
                :target "_blank"}
               "Google Analytics' privacy policy"]
-             " discusses how they use this information."]]
-           [:h2 "Changelog"]
-           [:ul.privacy-changelog
-            [:li
-             [:span.label.label-primary "Mar 31, 2015"]
-             " Remove HipChat."]
-            [:li
-             [:span.label.label-primary "Mar 17, 2014"]
-             " Moved the security content to its own page, "
-             [:a {:href "/security"} "located here"]]
-            [:li [:span.label.label-primary "Nov 5, 2013"] " Add mixpanel; remove KissMetrics."]
-            [:li [:span.label.label-primary "Mar 10, 2013"] " Discuss Hipchat usage."]
-            [:li [:span.label.label-primary "Dec 22, 2012"] " Include KissMetrics and their privacy policy. Expand Intercom discussion."]
-            [:li [:span.label.label-primary "March 26, 2012"] " Initial version."]]]]]
+             " discusses how they use this information."]]]]]
         [:div.bottom-cta.outer-section.outer-section-condensed
          common/language-background
          [:h2 "Start shipping faster, build for free using CircleCI today."]
