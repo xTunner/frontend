@@ -125,6 +125,7 @@ window.stefon_hack_for_om =
     "/docs/status-badges.md": '(asset-path "docs/status-badges.md")'
     "/docs/test-metadata.md": '(asset-path "docs/test-metadata.md")'
     "/docs/test-with-solr.md": '(asset-path "docs/test-with-solr.md")'
+    "/docs/test-with-sphinx.md": '(asset-path "docs/test-with-sphinx.md")'
     "/docs/time-day.md": '(asset-path "docs/time-day.md")'
     "/docs/time-date.md": '(asset-path "docs/time-date.md")'
     "/docs/time-seconds.md": '(asset-path "docs/time-seconds.md")'

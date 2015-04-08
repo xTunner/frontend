@@ -109,6 +109,7 @@
            "docs/status-badges.md"
            "docs/test-metadata.md"
            "docs/test-with-solr.md"
+           "docs/test-with-sphinx.md"
            "docs/time-day.md"
            "docs/time-date.md"
            "docs/time-seconds.md"
