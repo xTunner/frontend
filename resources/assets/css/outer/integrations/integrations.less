@@ -16,7 +16,7 @@
     .align-items(center);
     .justify-content(center);
 
-    background-color: rgba(0, 0, 0, .484375);
+    background-color: rgba(0, 0, 0, 0.5);
 
     > div > .modal-video,
     > .modal-video {
@@ -38,16 +38,16 @@
       background-position: center;
 
       // Overiding Bootstrap's styles
-      .opacity(.5);
+      .opacity(0.5);
       &:hover, &:focus {
-        .opacity(.8);
+        .opacity(0.8);
         outline: none;
       }
     }
   }
 
   .feature.video {
-    > a.play {
+    > .play {
       position: relative;
 
       display: block;
@@ -79,7 +79,7 @@
         background-size: 50px;
         background-repeat: no-repeat;
         background-position: center;
-        background-color: rgba(0,0,0,0.3);
+        background-color: rgba(0, 0, 0, 0.3);
         transition: background-size 50ms;
 
         content: ' ';
