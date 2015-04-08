@@ -40,19 +40,14 @@
              [:br]
              "John, Director of Engineering, Shopify"]]]]]
 
-        #_ [:div.outer-section
-         [:section.container
-          [:h2.text-center "A better way to build and deploy applications"]
-          (om/build docker-diagram app)
-          ]]
-
         [:div.outer-section
-         [:div.stories-stats
-          [:dl
-           [:dt "Developers"] [:dd "1,300"]
-           [:dt "Funding"]    [:dd "122m"]
-           [:dt "Technology"] [:dd "Ruby"]
-           [:dt "Past Setup"] [:dd "Internal"]]]
+         [:section.container
+          [:div.stories-stats
+           [:dl
+            [:dt "Developers"] [:dd "1,300"]
+            [:dt "Funding"]    [:dd "122m"]
+            [:dt "Technology"] [:dd "Ruby"]
+            [:dt "Past Setup"] [:dd "Internal"]]]]
 
          [:section.container
           [:h2 "Background"]
