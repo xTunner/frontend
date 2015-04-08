@@ -59,9 +59,15 @@ If you have access to the backend code, you can also add this line:
 
 ### Development Processes
 
-Two processes must be running while you work.
+If you have foreman (or goreman) installed already, you can run
 
-First, start the HTTP server that will serve the compiled assets on port 3000:
+```
+foreman start
+# goreman start
+```
+
+Alternatively, you can start the process manually. First, start the HTTP
+server that will serve the compiled assets on port 3000:
 
 ```
 lein run
