@@ -26,9 +26,9 @@
   }
 }
 
-@stories_font_size: 18px;
 .stories-procedure {
   @color: @gray;
+  @text-slide: 18px;
 
   display: block;
   margin-left: auto;
@@ -36,26 +36,6 @@
 
   .slot {
     fill: @color;
-  }
-
-  .step {
-    &:hover {
-      .track,
-      .direction,
-      .pin {
-        stroke-width: 10;
-        transition: stroke-width 200ms;
-        transition-timing-function: cubic-bezier(0.5, -1, 0.5, 2);
-      }
-      p {
-        color: @color;
-        padding: 0 (@stories_font_size * 2) 0 0;
-        transition: padding 200ms, color 200ms;
-        &.right {
-          padding: 0 0 0 (@stories_font_size * 2);
-        }
-      }
-    }
   }
 
   .touch {
@@ -117,11 +97,36 @@
 
   p {
     .flexy(center);
+
     margin: 0;
-    padding: 0 @stories_font_size 0 @stories_font_size;
-    color: fade(@color, 0);
+    padding: 0;
+
+    color: @color;
     text-align: center;
+
+    opacity: 0;
     pointer-events: none;
-    transition: padding 300ms, color 300ms;
+    transition: padding 300ms, opacity 300ms;
+  }
+
+  .step:hover {
+    .track,
+    .direction,
+    .pin {
+      stroke-width: 10;
+      transition: stroke-width 200ms;
+      transition-timing-function: cubic-bezier(0.5, -1, 0.5, 2);
+    }
+
+    p {
+      opacity: 1;
+      padding-right: @text-slide;
+      transition: padding 200ms, opacity 200ms;
+
+      &.right {
+        padding-left: @text-slide;
+        padding-right: 0;
+      }
+    }
   }
 }
