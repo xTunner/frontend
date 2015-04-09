@@ -88,7 +88,8 @@
                                    :company-short "shopify"
                                    :customer-quote "One of my favorite things about CircleCI is that their team really cares about making sure their customers get maximum value out of their product."
                                    :employee-name "Arthur Neves"
-                                   :employee-title "Developer"})]]]]
+                                   :employee-title "Developer"
+                                   :read-the-story? false})]]]]
 
         [:div.outer-section
          [:section.container
@@ -110,7 +111,8 @@
                                    :company-short "shopify"
                                    :customer-quote "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customer, not maintaining CI infrasturcture."
                                    :employee-name "John Duff"
-                                   :employee-title "Director of Engineering"})]]]]
+                                   :employee-title "Director of Engineering"
+                                   :read-the-story? false})]]]]
 
         [:div.outer-section
          [:section.container

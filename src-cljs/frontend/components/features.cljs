@@ -70,7 +70,7 @@
               We're built for teams."]]]])))))
 
 (defn testimonial
-  [{:keys [company-name company-short customer-quote employee-name employee-title]}]
+  [{:keys [company-name company-short customer-quote employee-name employee-title read-the-story?] :or {read-the-story? true}}]
   [:div.testimonial
    [:img.customer-header {:src (customer-image-src company-short)
                           :alt company-name}]
@@ -82,12 +82,13 @@
      employee-title
      " at "
      [:span.customer-company-name company-name]
-     ;; HACK: there's only one story right now, and the others are 404ing.
-     (when (= company-short "shopify")
-       [:span
-        " – "
-        [:a.customer-story {:href (str "/stories/" company-short)}
-         "Read the story"]])]]])
+     (when (and read-the-story?
+                ;; HACK: there's only one story right now, and the others are 404ing.
+                (= company-short "shopify"))
+       (list
+         " – "
+         [:a.customer-story {:href (str "/stories/" company-short)}
+          "Read the story"]))]]])
 
 (defrender features [app owner]
   (html
