@@ -1,7 +1,23 @@
 #about {
 
-  .jumbotron {
-    overflow: hidden;
+  .fact {
+    padding: 0 10px;
+    text-align: center;
+
+    .header, .caption {
+      margin: 0;
+      color: @gray-dark;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.2em;
+    }
+
+    .value {
+      margin: 0;
+      color: @headings-color;
+      font-size: 64px;
+      font-weight: 300;
+    }
   }
 
   .story {
@@ -21,10 +37,6 @@
 }
 
 #team {
-
-  .jumbotron {
-    overflow: hidden;
-  }
 
   .people-section {
     overflow: visible;
@@ -60,20 +72,21 @@
 	  background-color: @gray-lighter;
 
 	  &, &::after {
-	    height: 150px;
+	    height: @size;
 	    width: @size;
 	    border-radius: @size / 2;
 	  }
 
 	  &::after {
-	    content: "";
 	    position: absolute;
 	    z-index: 1;
 	    left: 0;
 	    top: 0;
+	    content: "";
 	    background-color: @black;
 	    opacity: 0;
 	  }
+
 	  &:hover::after {
 	    opacity: 0.3;
 	  }
@@ -119,6 +132,7 @@
 	  width: @logo-size;
 	}
       }
+
       .name {
 	margin: 1em 0 0;
 	color: @gray-darker;
@@ -126,6 +140,7 @@
       }
     }
   }
+
   .bottom-cta {
     text-align: center;
 

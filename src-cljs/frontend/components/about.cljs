@@ -61,7 +61,7 @@
     :github "esnyder"
     :twitter "emilesnyder"
     :email "emile@circleci.com"
-    :bio "Emile co-founded the Rogue Hack Lab in Oregon and has a degree in Physics. When he’s not studying weird languages (OCaml, haskel, erlang, scala), he can be found brewing beer, baking, and reminiscing fondly on the 3-episode walk-on roll he had on Saved By The Bell."}
+    :bio "Emile co-founded the Rogue Hack Lab in Oregon and has a degree in Physics. When he’s not studying weird languages (OCaml, Haskell, erlang, scala), he can be found brewing beer, baking, and reminiscing fondly on the 3-episode walk-on roll he had on Saved By The Bell."}
    {:name "Tim Dixon"
     :img-path (stefon/asset-path "/img/outer/about/tim.png")
     :visible true
