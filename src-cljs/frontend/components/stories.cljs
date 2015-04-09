@@ -7,7 +7,6 @@
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
-            [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.github :as gh-utils]
