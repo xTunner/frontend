@@ -59,9 +59,15 @@ If you have access to the backend code, you can also add this line:
 
 ### Development Processes
 
-Two processes must be running while you work.
+If you have foreman (or goreman) installed already, you can run
 
-First, start the HTTP server that will serve the compiled assets on port 3000:
+```
+foreman start
+# goreman start
+```
+
+Alternatively, you can start the process manually. First, start the HTTP
+server that will serve the compiled assets on port 3000:
 
 ```
 lein run
@@ -72,6 +78,17 @@ Second, the frontend clojurescript asset compiler:
 ```
 lein figwheel dev
 ```
+
+### Viewing documentation changes
+
+To see documentation locally you have to compile the docs manifest, like:
+
+```
+lein run -m frontend.tasks.http/precompile-assets
+```
+
+If you add a new document, you will have to re-run that; but if you just change
+one of the existing documents it should show up with just a page refresh.
 
 ### Running the Karma Tests
 

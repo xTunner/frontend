@@ -11,6 +11,7 @@ children:
   - skip-a-build
   - nightly-builds
   - test-with-solr
+  - test-with-sphinx
   - browser-testing-with-sauce-labs
   - continuous-deployment-with-heroku
   - continuous-deployment-with-aws-codedeploy

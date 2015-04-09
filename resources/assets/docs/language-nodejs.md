@@ -27,31 +27,6 @@ machine:
     version: 0.10.22
 ```
 
-#### node.js 0.12 && io.js
-
-Until containers are updated (coming soon!), installing node.js v0.12.x requires a source compilation that takes ~10 minutes. If you would like to reduce this significantly (~5 seconds), add the following to your circle.yml:
-
-For node 0.12.x:
-
-```
-machine:
-  pre:
-    - curl https://raw.githubusercontent.com/creationix/nvm/v0.23.3/install.sh | bash
-  node:
-    version: 0.12
-```
-
-Similarly, older versions of nvm don't offer support for io.js. To
-update nvm to add support for io.js add the following to your circle.yml:
-
-```
-machine:
-  pre:
-    - curl https://raw.githubusercontent.com/creationix/nvm/v0.23.3/install.sh | bash
-  node:
-    version: iojs-1.2.0
-```
-
 ### Dependencies
 
 If Circle finds a `package.json`, we automatically run `npm install` to fetch

@@ -1,7 +1,7 @@
 <!--
 
 title: Test environment
-last_updated: Jul 8, 2014
+last_updated: Apr 7, 2015
 
 -->
 
@@ -227,24 +227,15 @@ We currently have a number of packages installed to help you test your backend a
 
 <h2 id="databases">Databases and Services</h2>
 
-We have the following services automatically set up for your tests:
+We have the following services automatically set up and running for your tests:
 
-*   `postgresql {{ versions.postgresql }}`
-    (including postgis 2.0 extensions)
-*   `mysql {{ versions.mysql }}`
-*   `mongodb {{ versions.mongodb }}`
-*   `riak {{ versions.riak }}`
-*   `cassandra {{ versions.cassandra }}`
-*   `redis {{ versions.redis }}`
-*   `memcached {{ versions.memcached }}`
-*   `sphinx {{ versions.sphinx }}`
-*   `elasticsearch {{ versions.elasticsearch }}`
-*   `solr {{ versions.solr }}`
-*   `beanstalkd {{ versions.beanstalkd }}`
-*   `couchbase {{ versions.couchbase }}`
-*   `couchdb {{ versions.couchdb }}`
-*   `neo4j {{ versions.neo4j }}`
-*   `rabbitmq {{ versions.rabbitmq }}`
+*   `couchdb` ({{ versions.couchdb }})
+*   `memcached` ({{ versions.memcached }})
+*   `mongodb` ({{ versions.mongodb }})
+*   `mysql` ({{ versions.mysql }})
+*   `postgresql` ({{ versions.postgresql }} with postgis 2.0 extensions)
+*   `rabbitmq` ({{ versions.rabbitmq }})
+*   `redis` ({{ versions.redis }})
 
 Both `postgres` and `mysql` are set up to use the `ubuntu`
 user, have a database called `circle_test` available, and don't require any password.
@@ -264,10 +255,16 @@ machine:
 
 The list of services that can be enabled this way is
 
-*   `cassandra`
-*   `elasticsearch`
-*   `rabbitmq-server`
-*   `riak`
-*   `beanstalkd`
-*   `couchbase-server`
-*   `neo4j`
+*   `beanstalkd` ({{ versions.beanstalkd }})
+*   `cassandra` ({{ versions.cassandra }})
+*   `couchbase-server` ({{ versions.couchbase }})
+*   `elasticsearch` ({{ versions.elasticsearch }})
+*   `neo4j` ({{ versions.neo4j }})
+*   `riak` ({{ versions.riak }})
+
+In addition to all the databases and services listed above there are two
+further services which require special handling. See the documentation for
+each of them if you need them to support your tests.
+
+*   `solr` ({{ versions.solr }}) - [Test with Solr](/docs/test-with-solr)
+*   `sphinx` ({{ versions.sphinx }}) - [Test with Sphinx](/docs/test-with-sphinx)
