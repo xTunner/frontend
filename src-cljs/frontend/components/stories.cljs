@@ -87,9 +87,9 @@
            [:div.col-xs-6.col-xs-offset-3
             (features/testimonial {:company-name "Shopify"
                                    :company-short "shopify"
-                                   :customer-quote "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customer, not maintaining CI infrasturcture."
-                                   :employee-name "John Duff"
-                                   :employee-title "Director of Engineering"})]]]]
+                                   :customer-quote "One of my favorite things about CircleCI is that their team really cares about making sure their customers get maximum value out of their product."
+                                   :employee-name "Arthur Neves"
+                                   :employee-title "Developer"})]]]]
 
         [:div.outer-section
          [:section.container
@@ -97,7 +97,25 @@
           [:p "CircleCI integrates natively with GitHub, which Shopify was already using, so set up time was minimal; it only took a few minutes to follow the rest of their repos on CircleCI and to invite the rest of their team members. Once their tests were running, they started optimizing their containers and parallelization from within the CircleCI app so that their test suite would run as quickly as possible. Once they had the tests running for all their projects, the next step was setting up Continuous Deployment."]
           [:p "CD has always been a core part of the engineering culture at Shopify, so getting deployment set up with CircleCI was essential. To streamline their CD process, Shopify used the CircleCI API to build a custom 'Ship It' tool that allows any developer to deploy with the press of a button, as long as they have a green build on CircleCI. All they had to do to build this was verify that the pull request in question returned \"outcome\" : \"success\" from the CircleCI API after merging with master, and then allow the developer to deploy."]
           [:p "This same functionality can also be accomplished without using the API by putting the deployment script directly into the circle.yml file."]
-          shared/stories-procedure]]
+
+          shared/stories-procedure
+
+          [:h2 "Results"]
+          [:p "Today, 1 year after initially switching to CircleCI, Shopify has scaled their engineering team to 130 team members who on average merge 300 pull requests and deploy 100 times per week. Thanks to CircleCI, they've managed to maintain their agile and efficient development process, with new projects being added effortlessly and everyone working off of a master branch (rather than having to maintain production and development branches). Their test suite runs faster than it ever did with their previous solution, and now that developers don't have to run tests on their local machine they can work on other projects while CircleCI runs their tests in the background. Shopify also uses CircleCI along with Capistrano to continuously deploy their application for anything from a small bug fix, to a package upgrade, to a new feature."]]]
+
+        [:div.outer-section.outer-section-condensed
+         [:section.container
+          [:div.row
+           [:div.col-xs-6.col-xs-offset-3
+            (features/testimonial {:company-name "Shopify"
+                                   :company-short "shopify"
+                                   :customer-quote "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customer, not maintaining CI infrasturcture."
+                                   :employee-name "John Duff"
+                                   :employee-title "Director of Engineering"})]]]]
+
+        [:div.outer-section
+         [:section.container
+          [:p "The Shopify team no longer has to worry about scaling their testing infrastructure, maintaining their test stack, or monitoring their deployments. They focus on building products that bring value to their customers while relying on CircleCI to ensure that they are able to get those products to market quickly and reliably."]]]
 
         [:div.outer-section.outer-section-condensed.bottom-cta-section
          common/language-background
