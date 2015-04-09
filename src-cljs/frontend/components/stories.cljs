@@ -42,12 +42,19 @@
 
         [:div.outer-section
          [:section.container
-          [:div.stories-stats
-           [:dl
-            [:dt "Developers"] [:dd "1,300"]
-            [:dt "Funding"]    [:dd "122m"]
-            [:dt "Technology"] [:dd "Ruby"]
-            [:dt "Past Setup"] [:dd "Internal"]]]]
+          [:div.row
+           [:div.fact.col-xs-3
+            [:h3.header "Developers"]
+            [:p.value "1,300"]]
+           [:div.fact.col-xs-3
+            [:h3.header "Funding"]
+            [:p.value "122m"]]
+           [:div.fact.col-xs-3
+            [:h3.header "Technology"]
+            [:p.value "Ruby"]]
+           [:div.fact.col-xs-3
+            [:h3.header "Past Setup"]
+            [:p.value "Internal"]]]]
 
          [:section.container
           [:h2 "Background"]

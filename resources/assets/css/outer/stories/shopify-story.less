@@ -3,27 +3,6 @@
     height: 70px;
   }
 
-  .stories-stats {
-    > dl {
-      .flexy(center, center, column, wrap);
-
-      @key-height: 22px;
-      @value-height: 60px;
-      height: @key-height + @value-height;
-
-      > dt {
-        font-weight: normal;
-        text-transform: uppercase;
-        height: @key-height;
-      }
-
-      > dd {
-        font-size: @value-height;
-        line-height: 1em;
-      }
-    }
-  }
-
   .feature {
     .make-sm-column(4);
     .text-center;
