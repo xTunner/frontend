@@ -1,10 +1,8 @@
-.stories {
+.product-page.stories {
   > .jumbotron .shopify-logo {
     height: 70px;
   }
-}
 
-.product-page.stories {
   .stories-stats {
     > dl {
       .flexy(center, center, column, wrap);
@@ -32,6 +30,15 @@
 
     > h3 {
       .text-center;
+    }
+  }
+
+  .bottom-cta-section {
+    // TODO: This makes the margins look better on pages with nothing between
+    // the h2 and the .cta-btn, but we should structure our markup and styles
+    // so this happens without special casing for this page.
+    h2 {
+      margin-bottom: 22px;
     }
   }
 }

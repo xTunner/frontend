@@ -92,14 +92,10 @@
           [:p "This same functionality can also be accomplished without using the API by putting the deployment script directly into the circle.yml file."]
           shared/stories-procedure]]
 
-        [:div.outer-section.outer-section-condensed
+        [:div.outer-section.outer-section-condensed.bottom-cta-section
          common/language-background
          [:section.container
           [:div.col-xs-12
            [:h2.text-center "Ready for world-class continuous delivery?"]
-           [:p.text-center [:span
-                            "Or see our "
-                            [:a {:href "/docs/continuous-deployment-with-heroku"}
-                             "docs on deploying to Heroku."]]]
            [:div.text-center
             (common/sign-up-cta owner "stories/shopify")]]]]]))))
