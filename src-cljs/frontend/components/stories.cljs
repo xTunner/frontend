@@ -34,11 +34,11 @@
            [:div.hero-title.center-block
             [:div.text-center
              shopify-logo]
-            [:h1.text-center "Shopify’s CI, with Circle CI."]
+            [:h1.text-center "Scalable Continuous Integration with CircleCI"]
             [:h3.text-center
              "“We were able to rapidly grow our team and code base without fear of outgrowing CircleCI.”"
              [:br]
-             "John, Director of Engineering, Shopify"]]]]]
+             "John Duff, Director of Engineering, Shopify"]]]]]
 
         [:div.outer-section
          [:section.container
