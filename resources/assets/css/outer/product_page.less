@@ -1,0 +1,34 @@
+@import "../bootstrap/variables.less";
+@import "../../../components/bootstrap/less/mixins/grid.less";
+
+.product-page {
+  .jumbotron {
+    overflow: hidden;
+  }
+
+  .feature-row {
+    .make-row();
+  }
+
+  .row + .feature-row {
+    padding-top: 40px;
+  }
+
+  .feature-row + .feature-row {
+    padding-top: 70px;
+  }
+
+  .feature {
+    .make-sm-column(6);
+
+    > h4 {
+      font-weight: 400;
+    }
+  }
+}
+
+.header-icon {
+  .center-block;
+  width: 65px;
+  margin-bottom: 20px;
+}

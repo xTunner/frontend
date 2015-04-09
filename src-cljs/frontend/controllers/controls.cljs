@@ -1119,3 +1119,10 @@
   [target message index state]
   (assoc-in state state/docker-diagram-path index))
 
+(defmethod control-event :play-video
+  [_ _ video-id state]
+  (assoc-in state state/modal-video-id-path video-id))
+
+(defmethod control-event :close-video
+  [_ _ _ state]
+  (assoc-in state state/modal-video-id-path nil))
