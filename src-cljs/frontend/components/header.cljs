@@ -170,7 +170,8 @@
              [:li (maybe-active nav-point :documentation)
               [:a {:href "/docs"} "Documentation"]]
              [:li {:class (when (contains? #{:about
-                                             :contact}
+                                             :contact
+                                             :team}
                                            nav-point)
                             "active")}
               [:a {:href "/about"} "About Us"]]
@@ -191,12 +192,14 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
-          (when (contains? #{:about :contact} nav-point)
+          (when (contains? #{:about :team :contact} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid
               [:ul.nav.navbar-nav
                [:li (maybe-active nav-point :about)
                 [:a {:href "/about"} "Overview"]]
+               [:li (maybe-active nav-point :team)
+                [:a {:href "/about/team"} "Team"]]
                [:li (maybe-active nav-point :contact)
                 [:a {:href "/contact"} "Contact Us"]]]]])])))))
 
