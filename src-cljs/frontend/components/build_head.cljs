@@ -664,7 +664,7 @@
                  {:title "Report error with build",
                   :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}
                  "Report"])
-              (when (build-model/can-cancel? build)
+              (when (and (build-model/can-cancel? build) (has-scope :write-settings data))
                 (forms/managed-button
                  [:button.cancel_build
                   {:data-loading-text "Canceling",
