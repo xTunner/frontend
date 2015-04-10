@@ -10,16 +10,23 @@
 
 
 (defn api-curl [endpoint]
-  (let [curl-args (if-not (= (:method endpoint) "GET")
-                    (str "-X " (:method endpoint) " ")
-                    "")
+  (let [curl-args (->> [(when-not (= (:method endpoint) "GET")
+                         (str "-X " (:method endpoint)))
+
+                       (when-let [body (:body endpoint)]
+                         (str "-d '"
+                              (string/replace body "'" "\\'")
+                              "'"))]
+
+                       (filter identity)
+                       (string/join " "))
         curl-params (if-let [params (:params endpoint)]
                       (->> params
                            (map #(str (:name %) "=" (:example %)))
                            (string/join "&")
                            (str "&"))
                       "")]
-    (gstring/format "curl %shttps://circleci.com%s?circle-token=:token%s"
+    (gstring/format "curl %s https://circleci.com%s?circle-token=:token%s"
                     curl-args (:url endpoint) curl-params)))
 
 (defn api-endpoint-filter [endpoint]
