@@ -13,17 +13,22 @@
   (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+(defn scaled-image-path [name]
+  (let [retina (> (.-devicePixelRatio js/window) 1)
+        path (gstring/format "/img/outer/about/%s%s.png" name (if retina "@2x" ""))]
+    (stefon/asset-path path)))
+
 (defn team-data []
   [{:name "Paul Biggar"
     :role "Founder"
     :github "pbiggar"
     :twitter "paulbiggar"
     :email "paul@circleci.com"
-    :img-path (stefon/asset-path "/img/outer/about/paul.png")
+    :img-path (scaled-image-path "paul")
     :visible true
     :bio "Before founding CircleCI, Paul worked on the Firefox Javascript engine and wrote phc, and open source PHP compiler. He did his PhD on compilers and static analysis in Dublin and is a YCombinator alumni."}
    {:name "Jenneviere Villegas"
-    :img-path (stefon/asset-path "/img/outer/about/jenneviere.png")
+    :img-path (scaled-image-path "jenneviere")
     :visible true
     :role "Marketing"
     :github "jenneviere"
@@ -31,7 +36,7 @@
     :email "jenneviere@circleci.com"
     :bio "Jenneviere moved to the Bay Area in 2010 and was CircleCI’s first official employee. When she’s not working, she can be found dancing, singing and acting in movies, television and on stage, or drinking a hoppy IPA at That Thing In The Desert."}
    {:name "Mahmood Ali"
-    :img-path (stefon/asset-path "/img/outer/about/mahmood.png")
+    :img-path (scaled-image-path "mahmood")
     :visible true
     :role "Backend Developer"
     :github "notnoopci"
@@ -39,7 +44,7 @@
     :email "mahmood@circleci.com"
     :bio "During his time at MIT, Mahmood spoke at a few Java research conferences includingDevoxx, and has pushed code to Java 8—and Java 7—compilers. He's been a speaker at OOPSLA/Splash, and is active in the open-source community. He and his family have moved 6 times in the last 6 years."}
    {:name "Gordon Syme"
-    :img-path (stefon/asset-path "/img/outer/about/gordon.png")
+    :img-path (scaled-image-path "gordon")
     :visible true
     :role "Backend Developer"
     :github "gordonsyme"
@@ -47,7 +52,7 @@
     :email "gordon@circleci.com"
     :bio "Gordon joins the team after spending significant time at Amazon building tools to monitor the entire network (he built their DWDM monitoring from the ground up). When he's not hacking away on code, he spends time mountain biking and racing dinghies off the coast of Ireland."}
    {:name "Nick Gottlieb"
-    :img-path (stefon/asset-path "/img/outer/about/nick.png")
+    :img-path (scaled-image-path "nick")
     :visible true
     :role "Marketing Engineer"
     :github "worldsoup"
@@ -55,7 +60,7 @@
     :email "nick@circleci.com"
     :bio "Nick is an aspiring merman who spends most of his time outside of the Circle office in the ocean; surfing, diving, sailing, and swimming. He lived in Japan for 3 years as a student, consultant, actor, and vagabond and wrote his senior thesis on the cultural importance of baseball in the country."}
    {:name "Emile Snyder"
-    :img-path (stefon/asset-path "/img/outer/about/emile.png")
+    :img-path (scaled-image-path "emile")
     :visible true
     :role "Backend Developer"
     :github "esnyder"
@@ -63,14 +68,14 @@
     :email "emile@circleci.com"
     :bio "Emile co-founded the Rogue Hack Lab in Oregon and has a degree in Physics. When he’s not studying weird languages (OCaml, Haskell, erlang, scala), he can be found brewing beer, baking, and reminiscing fondly on the 3-episode walk-on roll he had on Saved By The Bell."}
    {:name "Tim Dixon"
-    :img-path (stefon/asset-path "/img/outer/about/tim.png")
+    :img-path (scaled-image-path "tim")
     :visible true
     :role "Developer"
     :github "startling"
     :email "tim@circleci.com"
     :bio "Tim grew up in the midwest and moved to SF to work for Circle. He likes functional programming, board games, and learning on-the-fly."}
    {:name "Ian Duncan"
-    :img-path (stefon/asset-path "/img/outer/about/ian.png")
+    :img-path (scaled-image-path "ian")
     :visible true
     :role "Developer"
     :github "iand675"
@@ -96,7 +101,7 @@
     :email "rob@circleci.com"
     :bio "Rob joined CircleCI through the acquisition of Distiller where he was Co-Founder and CTO. He's been involved in startups since '98, and when he's not toiling away on code he can be found snowboarding, playing guitar, and hanging out with his family."}
    {:name "Jonathan Irving"
-    :img-path (stefon/asset-path "/img/outer/about/jonathan.png")
+    :img-path (scaled-image-path "jonathan")
     :visible true
     :role "Developer"
     :github "j0ni"
@@ -109,14 +114,14 @@
     :email "robin@circleci.com"
     :bio "Robin was a carrot in a Burning Man rock opera and used to build giant gingerbread houses for the Fairmont. She lived in Costa Rica for 4 years and will tell you all about it; again, and again, and again..."}
    {:name "Cayenne Geis"
-    :img-path (stefon/asset-path "/img/outer/about/cayenne.png")
+    :img-path (scaled-image-path "cayenne")
     :visible true
     :role "Developer"
     :github "cayennes"
     :email "cayenne@circleci.com"
     :bio "Cayenne hails from the Boston area, and enjoys Clojure so much that she uses it for hobby projects even after writing in it all day for work. She's fond of solarized rainbow parentheses, and when she's not coding, she likes playing board games (Dominion!) and handbells."}
    {:name "Tim Reinke"
-    :img-path (stefon/asset-path "/img/outer/about/timr.png")
+    :img-path (scaled-image-path "timr")
     :visible true
     :role "Developer Success"
     :github "musicalchair"
@@ -370,7 +375,7 @@
             (:bio person)]
            [:div.pic
             (if-let [img-path (:img-path person)]
-              [:img {:src img-path}]
+              [:img.headshot {:src img-path}]
               [:img.logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}])]]
           [:p.name (:name person)]
           [:p.title (:role person)]])]]]
