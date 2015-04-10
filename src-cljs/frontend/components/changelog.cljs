@@ -20,37 +20,43 @@
             show-id (:show-id changelog)]
         (html
          [:div.changelog.page
-          [:div.banner
+          [:div.jumbotron
+           common/language-background
            [:div.container
-            [:h1 "Changelog"]
-            [:h3 "What's changed in CircleCI recently"]]]
-          [:div.container.content
-           [:div.entries
-            (for [entry (:entries changelog)
-                  :let [team-member (first (filter #(= (:author entry) (:github %)) team))
-                        id (->> entry :guid (re-find #"/changelog/(.+)$") last)]
-                  :when (or (nil? show-id) (= show-id id))]
-              [:div.entry {:id id}
-               [:div.entry-main
-                [:div.entry-content
-                 [:h3.title
-                  (if show-id
-                    (:title entry)
-                    [:a {:href (str "/changelog/" id)} (:title entry)])]
-                 [:p.description {:dangerouslySetInnerHTML #js {"__html" (:description entry)}}]]
-                [:div.entry-info {:class (:type entry)}
-                 [:strong (:type entry)]
+            [:div.col-xs-12
+             [:div.text-center
+              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
+             [:h1.text-center "Changelog"]
+             [:h3.text-center "What's changed in CircleCI recently"]]]]
+          [:div.outer-section
+           [:section.container
+            [:div.entries
+             (for [entry (:entries changelog)
+                   :let [team-member (first (filter #(= (:author entry) (:github %)) team))
+                         id (->> entry :guid (re-find #"/changelog/(.+)$") last)]
+                   :when (or (nil? show-id) (= show-id id))]
+               [:div.row.entry {:id id}
+                [:div.hidden-sm.col-md-1.col-md-offset-1.entry-avatar
                  (when team-member
-                   (list " by "
-                         [:a {:href (if (:twitter team-member)
-                                      (str "https://twitter.com/" (:twitter team-member))
-                                      (str "https://github.com/" (:github team-member)))}
-                          (:name team-member)]
-                         " on"))
-                 [:a {:href (:link entry)}
-                  " " (datetime/as-time-since (:pubDate entry))]]]
-               [:div.entry-avatar
-                (when team-member
-                  [:img {:src (:img-path team-member)}])]])]
-           (when show-id
-             [:a {:href "/changelog"} "View Full Changelog"])]])))))
+                   [:img {:src (:img-path team-member)}])]
+                [:div.col-md-9.entry-main
+                 [:div.entry-content
+                  [:h3.title
+                   [:span.entry-type {:class (:type entry)} (:type entry)]
+                   "•"
+                   (if show-id
+                     (:title entry)
+                     [:a.title-text {:href (str "/changelog/" id)} (:title entry)])]
+                  [:div.entry-info
+                   [:a {:href (:link entry)}
+                    " " (datetime/as-time-since (:pubDate entry))]
+                   (when team-member
+                     (list " by "
+                           [:a {:href (if (:twitter team-member)
+                                        (str "https://twitter.com/" (:twitter team-member))
+                                        (str "https://github.com/" (:github team-member)))}
+                            (:name team-member)]))]
+                  [:p.description {:dangerouslySetInnerHTML #js {"__html" (:description entry)}}]]]])]
+            (when show-id
+              [:a {:href "/changelog"} "View Full Changelog"])]]])))))
+

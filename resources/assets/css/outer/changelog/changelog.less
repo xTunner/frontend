@@ -2,57 +2,84 @@
   // Styles specific to changelog page on outer
   @avatar: 4em;
   @spacing: ((1 / 2) * @avatar);
-  h3 {
-    margin-top: 0;
-  }
+
   strong {
     text-transform: capitalize;
   }
+
+  .outer-section {
+    padding-top: 40px;
+  }
+  
   .entry {
-    .flexy();
-    padding-bottom: @spacing;
-    box-shadow: 0 1px @grayBoxBorder;
-    margin-bottom: @spacing;
+    padding: 40px 0;
+    border-bottom: solid 1px @gray-lighter;
+
     &:first-child {
-      margin-top: @spacing;
-      padding-top: @spacing;
-      box-shadow: 0 1px @grayBoxBorder inset, 0 1px @grayBoxBorder;
+      padding-top: 0;
+    }
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
   }
+
+  .description {
+    margin: 0;
+  }
+
   .entry-info {
+    margin-bottom: 11px;
+
     font-size: @fontSizeSmall;
     color: @grayLight;
-    a {
-      &:not(:hover) {
-        color: inherit;
-      }
-    }
   }
+
   .changeTypeColor(@color) {
     strong {
       color: @color;
     }
   }
+
+  .entry-type {
+    padding-right: 0.5em;
+    text-transform: capitalize;
+  }
+
   .bugfix {
-    .changeTypeColor(@orange);
+    color: @orange;
   }
+
   .feature {
-    .changeTypeColor(@green);
+    color: @green;
   }
+
   .performance {
-    .changeTypeColor(@blue);
+    color: @blue;
   }
-  .entry-main {
-    .flex(1 1 auto);
-    margin-right: @spacing;
-  }
+
   .entry-avatar {
-    .flexy();
-    .align-items(center);
-    .flex(0 0 @avatar);
+    .hidden-xs;
+    .hidden-sm;
+
     img {
       max-height: @avatar;
       border-radius: ((1 / 2) * @avatar);
     }
+  }
+
+  .title {
+    margin-top: 0;
+
+    > a {
+      &:not(:hover) {
+        color: inherit;
+      }
+    }
+  }
+  
+  .title-text {
+    padding-left: 0.5em;
   }
 }
