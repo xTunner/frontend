@@ -141,7 +141,7 @@
                                "with staging and prod environments."]}
                        {:type :video
                         :title "Continuous deployment with CircleCI and Heroku"
-                        :thumbnail "/img/outer/integrations/video-placeholder.svg"
+                        :thumbnail (utils/cdn-path "/img/outer/integrations/video-placeholder.svg")
                         :video-id "Hfs_1yuWDf4"}]
             :bottom-header "Ready for world-class continuous delivery?"
             :secondary-cta [:span
