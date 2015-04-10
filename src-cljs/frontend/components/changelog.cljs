@@ -58,5 +58,11 @@
                             (:name team-member)]))]
                   [:p.description {:dangerouslySetInnerHTML #js {"__html" (:description entry)}}]]]])]
             (when show-id
-              [:a {:href "/changelog"} "View Full Changelog"])]]])))))
+              [:a {:href "/changelog"} "View Full Changelog"])]]
+          [:div.bottom-cta.outer-section.outer-section-condensed
+           common/language-background
+           [:h2 "Start shipping faster, build for free using CircleCI today."]
+           [:p.subheader "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
+           (common/sign-up-cta owner "changelog")
+           ]])))))
 
