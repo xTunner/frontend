@@ -20,14 +20,16 @@
 
                        (filter identity)
                        (string/join " "))
+        curl-args-padded (if (empty? curl-args) ""
+                             (str curl-args " "))
         curl-params (if-let [params (:params endpoint)]
                       (->> params
                            (map #(str (:name %) "=" (:example %)))
                            (string/join "&")
                            (str "&"))
                       "")]
-    (gstring/format "curl %s https://circleci.com%s?circle-token=:token%s"
-                    curl-args (:url endpoint) curl-params)))
+    (gstring/format "curl %shttps://circleci.com%s?circle-token=:token%s"
+                    curl-args-padded (:url endpoint) curl-params)))
 
 (defn api-endpoint-filter [endpoint]
   (hiccup->html-str
