@@ -83,6 +83,7 @@
     :email "ian@circleci.com"
     :bio "Ian lives in South Carolina, where he codes things for CircleCI. He’s a functional programming fanatic, and loves learning how things work. When he’s not working, he’s busy cooking delicious food."}
    {:name "Kevin Bell"
+    :img-path (scaled-image-path "kevin")
     :visible true
     :role "Developer Evangelist"
     :github "bellkev"
@@ -90,11 +91,13 @@
     :email "kevin@circleci.com"
     :bio "Kevin studied physics at the University of Washington, but has since discovered that software better satisfies his need for instant gratification. He dabbles in jazz piano in his free time, but fortunately for CircleCI he is much better with a computer than he is with a piano."}
    {:name "Jim Rose"
+    :img-path (scaled-image-path "jim")
     :visible true
     :role "COO"
     :email "jim@circleci.com"
     :bio "Jim co-founded Distiller.io, a continuous integration and deployment service for mobile apps, that CircleCI acquired in August 2013. Prior to Distiller, Jim founded several companies in the ecommmerce, search, and social spaces."}
    {:name "Rob Zuber"
+    :img-path (scaled-image-path "rob")
     :visible true
     :role "VP Engineering"
     :github "z00b"
@@ -109,6 +112,7 @@
     :email "jonathan@circleci.com"
     :bio "Jonathan studied Music and the History of Ideas, and dabbled in Parole casework before beginning his career in software. For fun he fiddles with Emacs, Clojure, Ableton Live and several guitars, jamming in his basement with his homegrown teenage rhythm section."}
    {:name "Robin Horca"
+    :img-path (scaled-image-path "robin")
     :visible true
     :role "Operations"
     :email "robin@circleci.com"
@@ -129,24 +133,29 @@
     :email "tim.reinke@circleci.com"
     :bio "Tim studied Electrical Engineering and enjoys programming languages, skiing, systems of all sorts, and helping people get on the same page."}
    {:name "Mike Stearns"
+    :img-path (scaled-image-path "mike")
     :visible true
     :role "Marketing"
     :email "mike@circleci.com"
     :bio "After winning both the math and spelling bees in the 5th grade, Mike went on to work in the world of digital marketing and ecommerce. Aside from playing with his wife and daughter, Mike is the President of the San Francisco Homebrewers Guild in his spare time."}
    {:name "Dan Beere"
+    :img-path (scaled-image-path "dan")
     :visible true
     :role "Designer"
     :email "daniel.beere@circleci.com"
     :bio "Dan organized Ireland’s first and second Design Jam (in Limerick and Dublin, respectively) and once climbed Kilimanjaro for charity. A recent transplant from Ireland to San Francisco, he spends his free time exploring his new city."}
    {:name "Laura Franzese"
+    :img-path (scaled-image-path "laura")
     :email "laura@circleci.com"
     :role "Public Relations"
     :bio "Laura helps the public to better understand CircleCI. Previously, she worked on strategic communications campaigns for HP, Sun Microsystems and AppDynamics, to name a few. Laura is passionate about stand-up comedy, bunny gif's and the muppets."}
    {:name "Marc O'Morain"
+    :img-path (scaled-image-path "marc")
     :email "marc@circleci.com"
     :role "Developer"
     :bio "Marc is a reformed game developer, based in Dublin. He still enjoys tinkering with virtual machines and C in his spare time"}
    {:name "Alexey Klochay"
+    :img-path (scaled-image-path "alexey")
     :email "alexey@circleci.com"
     :role "Support Engineer"
     :bio "Alexey joins Circle from the sunny coasts of Spain. In between mountain biking, partying at art galleries and doing martial arts, he helps to ensure that Circle’s customers get the smoothest experience possible."}])
