@@ -37,64 +37,6 @@
 (def firefox-logo
   [:svg.browser.firefox [:path {:d "M95,50c0,24.9-20.1,45-45,45 C25.1,95,5,74.8,5,50c0-7,1.6-13.7,4.5-19.6c0-0.2,0-0.5,0-0.7c-0.1-0.8-0.1-1.6-0.1-2.4c0,0-0.1-8.8,4.9-13.4 c0.1,1.6,0.5,3.6,1.2,4.9c1.8,2.8,3.1,3.5,3.8,4c3-1,6.6-1.2,10.8-0.2c0.4-0.4,6.6-6.5,12.3-5.1c-1.9,1.1-5.4,5-6.3,8.9 c0.1,0.2,0.2,0.5,0.4,0.8c0.1,0.2,0.3,0.4,0.4,0.7c0.8,1.1,2.1,2.2,4,2.2c7.2-0.1,7.7,0.5,7.8,1.3c0.1,1.2-0.2,2-0.5,2.6 c-0.4,0.9-1.2,1.7-1.9,2.2c-0.5,0.4-7.1,3.8-7.5,5.1c0.4,3.7-0.2,6.2-0.2,6.2s-0.3-0.4-1.1-0.8c-0.6-0.3-1.9-0.7-2.4-0.9 c-2,0.9-2.5,2.4-2.5,3.4c0,1.3,0.9,4.3,5.4,7c4.7,1.9,9,0,12.4-0.8c4.4-1.1,7.6,1,9,2.5c1.3,1.5,0.2,3.3-1.5,2.9 c-1.7-0.4-3.6,1.2-6.9,3.5c-3.2,2.2-8.8,3.1-14,1.8c13.7,15.1,37.2,11.3,38.3-10.8c0.3,0.7,0.9,1.9,1.1,3.5 c0.9-3.5,2.1-6.3,0.7-19.5c1.3,1.2,3.2,4.6,4.3,6.7c0.7-13.4-6-22.3-10-25.2c2.7,0.2,6.6,2.7,9,5C80,25,79.5,24.1,79,23.3 c-2.1-3.7-5.6-7.7-12.6-12.4c0,0,6.1,0,11.7,3.9c6,4.8,10.7,11.2,13.6,18.4C93.8,38.4,95,44.1,95,50z M72.4,11.1 C65.8,7.1,58.2,5,50,5c-13,0-24.7,5.4-32.9,14.2"}]])
 
-(defn cta-form [app owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-                {:email ""
-                 :use-case ""
-                 :notice nil
-                 :loading? false})
-    om/IRenderState
-    (render-state [_ {:keys [email use-case notice loading?]}]
-                  (let [clear-notice! #(om/set-state! owner [:notice] nil)
-                        clear-form! (fn [& [notice]]
-                                      (om/update-state! owner (fn [s]
-                                                                (merge s
-                                                                       (when notice {:notice notice})
-                                                                       {:email ""
-                                                                        :use-case ""
-                                                                        :loading? false}))))]
-                    (html
-                      [:form
-                       [:input {:name "Email",
-                                :required true
-                                :value email
-                                :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))
-                                :type "text"}]
-                       [:label {:alt "Email (required)", :placeholder "Email"}]
-                       [:textarea
-                        {:name "docker_use__c",
-                         :required true
-                         :value use-case
-                         :on-change #(do (clear-notice!) (om/set-state! owner [:use-case] (.. % -target -value)))
-                         :type "text"}]
-                       [:label {:placeholder "How do you want to use it?"}]
-                       [:div.notice
-                        (when notice
-                          [:span {:class (:type notice)} (:message notice)])]
-                       [:div.submit
-                        [:input
-                         {:value (if loading? "Submitting.." "Submit"),
-                          :class (when loading? "disabled")
-                          :on-click #(do (if (or (empty? email) (not (utils/valid-email? email)))
-                                           (om/set-state! owner [:notice] {:type "error"
-                                                                           :message "Please enter a valid email address."})
-                                           (do
-                                             (om/set-state! owner [:loading?] true)
-                                             (go (let [resp (<! (ajax/managed-form-post "/about/contact"
-                                                                                        :params {:email email
-                                                                                                 :message {:docker_use__c use-case}}))]
-                                                   (if-not (= :success (:status resp))
-                                                     (om/update-state! owner (fn [s]
-                                                                               (merge s {:loading? false
-                                                                                         :notice {:type "error"
-                                                                                                  :message "Sorry! There was an error submitting the form. Please try again or email sayhi@circleci.com."}})))
-                                                     (clear-form! {:type "success"
-                                                                   :message "Thanks! We will be in touch soon."}))))))
-                                       false)
-                          :type "submit"}]]])))))
-
 (def integration-data
   {:heroku {:hero {:icon (utils/cdn-path "/img/outer/integrations/heroku-logo.svg")
                    :heading "Deploy to Heroku from CircleCI"
@@ -277,6 +219,7 @@
                       (feature owner b))])]]
 
                [:div.outer-section.outer-section-condensed
+                common/language-background
                 [:section.container
                  [:div.col-xs-12
                   [:h2.text-center "Ready for world-class continuous delivery?"]

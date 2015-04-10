@@ -271,7 +271,7 @@
     om/IRender
     (render [_]
       (html
-       [:div#about
+       [:div#about.product-page
         [:div.jumbotron
          common/language-background-jumbotron
          [:section.container
