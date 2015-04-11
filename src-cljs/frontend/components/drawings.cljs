@@ -212,7 +212,7 @@
      [:path {:d "M1550.1,50 c0,0.1-0.1,0.1-0.1,0.1s-0.1-0.1-0.1-0.1s0.1-0.1,0.1-0.1S1550.1,49.9,1550.1,50"}]]
     [:g.draw-stats
      [:text {:transform "matrix(1 0 0 1 375.0002 130.0532)"} "Author"]
-     [:text {:transform "matrix(1 0 0 1 500.0002 130.0532)"} "Yukihiro Matsumoto"]
+     [:text {:transform "matrix(1 0 0 1 500.0002 130.0532)"} "Paul Biggar"]
      [:text {:transform "matrix(1 0 0 1 375.0002 155.0529)"} "Duration"]
      [:text {:transform "matrix(1 0 0 1 500.0002 155.0529)"} "21:34"]
      [:text {:transform "matrix(1 0 0 1 375.0002 180.0528)"} "Pull Request"]
@@ -320,7 +320,7 @@
       [:line {:x1 "0" :y1 "100" :x2 "1600" :y2 "100"}]]
      [:g.draw-stats
       [:text {:transform "matrix(1 0 0 1 50 129.364)"} "Author"]
-      [:text {:transform "matrix(1 0 0 1 175 129.5)"} "Yukihiro Matsumoto"]
+      [:text {:transform "matrix(1 0 0 1 175 129.5)"} "Paul Biggar"]
       [:text {:transform "matrix(1 0 0 1 50 154.5)"} "Duration"]
       [:text {:transform "matrix(1 0 0 1 175 154.5)"} "21:34"]
       [:text {:transform "matrix(1 0 0 1 50 179.5)"} "Pull Request"]
