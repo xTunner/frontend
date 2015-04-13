@@ -1,191 +1,94 @@
-@signup-button-height: 60px;
-@pagesize: 940px;
-
-// Mostly stolen from the new homepage
-.clear-button(@height, @width) {
-  font-size: 18px;
-  width: @width;
-  .flexy(center,center);
-  .box-sizing(border-box);
-  height: @height;
-  border-radius: @height / 2;
-  background: #fff;
-  border: 1px solid #fff;
-  color: @grayDark;
-  transition: .2s;
-  &:hover {
-    background: none;
-    color: #fff;
-    transition: .1s;
-  }
-  &:active {
-    background: #fff;
-    color: @grayDark
-  }
-}
-
-
-.brand-background(@brandLight, @brandDark) {
-  background-image: radial-gradient(50% 92%, @brandLight 29%, @brandDark 93%);
-}
-
-
-.big-skinny-font {
-  font-weight: normal;
-  font-size: 40px;
-}
-
-// TODO: Hack to use until new header ships
-#navbar.heroku, #navbar.saucelabs {
-  position: relative;
-  z-index: 1000;
-  background: transparent;
-}
-
-#integrations {
-  .flexy();
-  .flex-direction(column);
-  .justify-content(center);
-
-  &.generic {
-    .top-section {
-      .brand-background(@blueDark, @blueDarkest);
-      // Branded gradient colors
-      &.heroku {
-	.brand-background(#7C72AD, #573A7F);
-      }
-      &.saucelabs {
-	.brand-background(#4D5159, #222C34);
-      }
-
-      // TODO: Hack until new header is merged
-      margin-top: -72px;
-
-      .line {
-	width: @pagesize;
-	height: 1px;
-	margin-top: 84px;
-	margin-left: auto;
-	margin-right: auto;
-	background-image: linear-gradient(to right,
-					  rgba(255,255,255,0),
-					  rgba(255,255,255,0.5),
-					  rgba(255,255,255,0));					  
-      }
-
-      .hero-wrapper {
-	height: 500px;
-	.flexy(center, center, column);
-      }
-
-      .hero {
-	min-height: 300px;
-	text-align: center;
-	.flexy(center, space-between, column);
-	h1 {
-	  .big-skinny-font;
-	  color: #FFFFFF;
-	}
-	p {
-	  // Generated from sketch
-	  font-size: 25px;
-	  color: #FFFFFF;
-	  line-height: 23px;
-	}
-	[role="button"] {
-	  .clear-button(@signup-button-height, 220px);
-	}
-      }
-    }
-    .middle-section {
-      margin: 0 auto;
-      width: @pagesize;
-      padding: 30px;
-      code {
-	color: @grayDark;
-      }
-      .bullet {
-	.flexy(center, space-between, row);
-	&:nth-child(odd) {
-	  .flexy(center, space-between, row-reverse);
-	}
-	.content {
-	  width: 60%;
-	}
-	.graphic {
-	  .flexy(center, center, row);
-	  width: 40%;
-	  img {
-	    width: 120px;
-	  }
-
-	  // Custom graphic styles
-	  .console pre {
-	    background-color: #000;
-	    width: 210px;
-	    opacity: 0.6;
-	    color: #fff;
-	    .value {
-	      color: #0f0;
-	    }
-	  }
-	  .sauce-connect {
-	    .flexy(center, center, column);
-	    text-align: center;
-	    background: url('/img/outer/integrations/red-circle.svg');
-	    width: 150px;
-	    height: 150px;
-	    p {
-	      color: #fff;
-	      font-size: 25px;
-	      line-height: 30px;
-	      margin: 0;
-	    }
-	  }
-	  svg.selenium {
-	    width: 150px;
-	    height: 150px;
-	    stroke-width: 2px;
-	    stroke-linecap: round;
-	    stroke-join: bevel;
-	    fill: none;
-	    stroke: #2bb033;
-	  }
-	  .browsers {
-	    width: 250px;
-	  }
-	  svg.browser {
-	    width: 100px;
-	    height: 100px;
-	    stroke-width: 3px;
-	    stroke-linecap: round;
-	    stroke-linejoin: bevel;
-	    fill: none;
-	    margin: 10px;
-	    &.firefox {
-	      stroke: #E66000;
-	    }
-	    &.chrome {
-	      stroke: #db4437;
-	    }
-	    &.safari {
-	      stroke: #1280f3;
-	    }
-	    &.ie {
-	      stroke: #2672EC;
-	      // This svg is a different scale than the others
-	      stroke-width: 7px;
-	      height: 110px;
-	      width: 110px;
-	      margin: 5px;
-	    }
-	  }
-	}
-      }
-    } 
-  }
-
+.integrations {
   &.docker {
     @import "docker.less";
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: @zindex-modal;
+
+    .flexy();
+    .flex-direction(column);
+    .align-items(center);
+    .justify-content(center);
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    // TODO: remove selector with `> div`. See :allowFullscreen TODO in frontend.components.integrations/integration.
+    > div > .modal-video,
+    > .modal-video {
+      width: 848px;
+      height: 477px;
+
+      border: 6px @white solid;
+      border-radius: 5px;
+    }
+
+    > .close {
+      width: 45px;
+      height: 45px;
+      margin-top: 30px;
+
+      background-image: url('@{imgPath}/outer/video/video-close.svg');
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+
+      // Overiding Bootstrap's styles
+      .opacity(0.5);
+      &:hover, &:focus {
+        .opacity(0.8);
+        outline: none;
+      }
+    }
+  }
+
+  .feature.video {
+    > .play {
+      position: relative;
+
+      display: block;
+      width: 200px;
+      height: 200px;
+      margin-left: auto;
+      margin-right: auto;
+
+      border-radius: 50%;
+      overflow: hidden;
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px @black;
+      }
+
+      &:before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        display: block;
+        width: 100%;
+        height: 100%;
+
+        background-image: url('@{imgPath}/outer/video/video-play-1.svg');
+        background-size: 50px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: rgba(0, 0, 0, 0.3);
+        transition: background-size 50ms;
+
+        content: ' ';
+      }
+
+      &:active:before {
+        background-size: 47px;
+      }
+    }
   }
 }

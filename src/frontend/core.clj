@@ -92,6 +92,7 @@
               #"/about"
               #"/about/contact"
               #"/contact"
+              #"/about/team"
               #"/account.*"
               #"/add-projects"
               #"/changelog.*"

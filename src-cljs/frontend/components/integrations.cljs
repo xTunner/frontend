@@ -11,6 +11,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.github :as gh-utils]
+            ;; TODO: Remove; see :allowFullscreen TODO below.
+            [goog.dom :as dom]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -35,205 +37,192 @@
 (def firefox-logo
   [:svg.browser.firefox [:path {:d "M95,50c0,24.9-20.1,45-45,45 C25.1,95,5,74.8,5,50c0-7,1.6-13.7,4.5-19.6c0-0.2,0-0.5,0-0.7c-0.1-0.8-0.1-1.6-0.1-2.4c0,0-0.1-8.8,4.9-13.4 c0.1,1.6,0.5,3.6,1.2,4.9c1.8,2.8,3.1,3.5,3.8,4c3-1,6.6-1.2,10.8-0.2c0.4-0.4,6.6-6.5,12.3-5.1c-1.9,1.1-5.4,5-6.3,8.9 c0.1,0.2,0.2,0.5,0.4,0.8c0.1,0.2,0.3,0.4,0.4,0.7c0.8,1.1,2.1,2.2,4,2.2c7.2-0.1,7.7,0.5,7.8,1.3c0.1,1.2-0.2,2-0.5,2.6 c-0.4,0.9-1.2,1.7-1.9,2.2c-0.5,0.4-7.1,3.8-7.5,5.1c0.4,3.7-0.2,6.2-0.2,6.2s-0.3-0.4-1.1-0.8c-0.6-0.3-1.9-0.7-2.4-0.9 c-2,0.9-2.5,2.4-2.5,3.4c0,1.3,0.9,4.3,5.4,7c4.7,1.9,9,0,12.4-0.8c4.4-1.1,7.6,1,9,2.5c1.3,1.5,0.2,3.3-1.5,2.9 c-1.7-0.4-3.6,1.2-6.9,3.5c-3.2,2.2-8.8,3.1-14,1.8c13.7,15.1,37.2,11.3,38.3-10.8c0.3,0.7,0.9,1.9,1.1,3.5 c0.9-3.5,2.1-6.3,0.7-19.5c1.3,1.2,3.2,4.6,4.3,6.7c0.7-13.4-6-22.3-10-25.2c2.7,0.2,6.6,2.7,9,5C80,25,79.5,24.1,79,23.3 c-2.1-3.7-5.6-7.7-12.6-12.4c0,0,6.1,0,11.7,3.9c6,4.8,10.7,11.2,13.6,18.4C93.8,38.4,95,44.1,95,50z M72.4,11.1 C65.8,7.1,58.2,5,50,5c-13,0-24.7,5.4-32.9,14.2"}]])
 
-(defn cta-form [app owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-                {:email ""
-                 :use-case ""
-                 :notice nil
-                 :loading? false})
-    om/IRenderState
-    (render-state [_ {:keys [email use-case notice loading?]}]
-                  (let [clear-notice! #(om/set-state! owner [:notice] nil)
-                        clear-form! (fn [& [notice]]
-                                      (om/update-state! owner (fn [s]
-                                                                (merge s
-                                                                       (when notice {:notice notice})
-                                                                       {:email ""
-                                                                        :use-case ""
-                                                                        :loading? false}))))]
-                    (html
-                      [:form
-                       [:input {:name "Email",
-                                :required true
-                                :value email
-                                :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))
-                                :type "text"}]
-                       [:label {:alt "Email (required)", :placeholder "Email"}]
-                       [:textarea
-                        {:name "docker_use__c",
-                         :required true
-                         :value use-case
-                         :on-change #(do (clear-notice!) (om/set-state! owner [:use-case] (.. % -target -value)))
-                         :type "text"}]
-                       [:label {:placeholder "How do you want to use it?"}]
-                       [:div.notice
-                        (when notice
-                          [:span {:class (:type notice)} (:message notice)])]
-                       [:div.submit
-                        [:input
-                         {:value (if loading? "Submitting.." "Submit"),
-                          :class (when loading? "disabled")
-                          :on-click #(do (if (or (empty? email) (not (utils/valid-email? email)))
-                                           (om/set-state! owner [:notice] {:type "error"
-                                                                           :message "Please enter a valid email address."})
-                                           (do
-                                             (om/set-state! owner [:loading?] true)
-                                             (go (let [resp (<! (ajax/managed-form-post "/about/contact"
-                                                                                        :params {:email email
-                                                                                                 :message {:docker_use__c use-case}}))]
-                                                   (if-not (= :success (:status resp))
-                                                     (om/update-state! owner (fn [s]
-                                                                               (merge s {:loading? false
-                                                                                         :notice {:type "error"
-                                                                                                  :message "Sorry! There was an error submitting the form. Please try again or email sayhi@circleci.com."}})))
-                                                     (clear-form! {:type "success"
-                                                                   :message "Thanks! We will be in touch soon."}))))))
-                                       false)
-                          :type "submit"}]]])))))
-
 (def integration-data
-  {:heroku {:hero {:header [:span
-                            "Deploy to "
-                            [:img {:src (utils/cdn-path "img/outer/integrations/heroku-icon.svg")
-                                   :alt "Heroku"
-                                   :style {:vertical-align "-35%"}}]
-                            " from CircleCI"]
-                   :text "Experience a simple, modern continuous delivery workflow now."}
-            :bullets [{:title "Test before you deploy. Always."
-                       :text [:span
-                              "Heroku revolutionized the way developers think about deployment. "
-                              "Being able to deploy with a simple "
-                              [:code "git push heroku master"]
-                              " is an amazing thing. But setting up a proper continuous delivery "
-                              "workflow means automating every step of the process. With CircleCI "
-                              "whenever you push a commit to master, it will go through a complete "
-                              "continuous delivery pipeline. All of your tests will run with our "
-                              "blazing fast parallelism, and" [:em " only if they pass, "]
-                              "your code will be pushed to Heroku automatically."]
-                       :graphic [:img {:src (stefon/data-uri "/img/status-logos/success.svg")}]}
-                      {:title "Dead Simple Configuration"
-                       :text [:span
-                              "The deployment of your application is configured through just a "
-                              "few lines of YAML that are kept safe in your source code. All "
-                              "you need to do to deploy to Heroku from CircleCI is configure your "
-                              "Heroku credentials in our UI, add a simple config file like this "
-                              "one into your project, and make a push. You can also easily deploy "
-                              "different branches to different Heroku apps (e.g. one for staging "
-                              "and one for production)."]
-                       :graphic [:div.console
-                                 [:pre
-                                  "deployment:\n"
-                                  "  staging:\n"
-                                  "    branch: " [:span.value "master"] "\n"
-                                  "      heroku:\n"
-                                  "        appname: " [:span.value "my-app"]]]}
-                      {:title "Watch how to get started in minutes"
-                       :text [:span
-                              "This video shows step-by-step how to configure CircleCI to test "
-                              "your application and deploy to Heroku, and how CircleCI keeps "
-                              "defects from getting into production. "
-                              "See our docs for a "
-                              [:a {:href (str "/docs/continuous-deployment-with-heroku#part-2-multiple-environments")}
-                               "followup video"]
-                              " showing how to setup a more robust continuous delivery pipeline "
-                              "with staging and prod environments."]
-                       :graphic [:div {:dangerouslySetInnerHTML {:__html "<iframe src='//www.youtube.com/embed/Hfs_1yuWDf4?rel=0&showinfo=0' width='300' height='200' frameborder='0' allowfullscreen></iframe>"}}]}]
+  {:heroku {:hero {:icon (utils/cdn-path "/img/outer/integrations/heroku-logo.svg")
+                   :heading "Deploy to Heroku from CircleCI"
+                   :subheading "Experience a simple, modern continuous delivery workflow now."}
+            :features [{:type :text
+                        :title "Test before you deploy. Always."
+                        :icon "circle-success"
+                        :text (list
+                                [:p
+                                 "Heroku revolutionized the way developers think about deployment. "
+                                 "Being able to deploy with a simple "
+                                 [:code "git push heroku master"]
+                                 " is an amazing thing. But setting up a proper continuous delivery "
+                                 "workflow means automating every step of the process."]
+                                [:p
+                                 "With CircleCI "
+                                 "whenever you push a commit to master, it will go through a complete "
+                                 "continuous delivery pipeline. All of your tests will run with our "
+                                 "blazing fast parallelism, and" [:em " only if they pass, "]
+                                 "your code will be pushed to Heroku automatically."])}
+                       {:type :text
+                        :title "Dead Simple Configuration"
+                        :icon "setup"
+                        :text [:p
+                               "The deployment of your application is configured through just a "
+                               "few lines of YAML that are kept safe in your source code. All "
+                               "you need to do to deploy to Heroku from CircleCI is to "
+                               [:a {:href "/docs/continuous-deployment-with-heroku"}
+                                "configure your Heroku credentials in our UI, add a simple config file to your project, and push"]
+                               ". You can also easily deploy "
+                               "different branches to different Heroku apps (e.g. one for staging "
+                               "and one for production)."]}
+                       {:type :text
+                        :title "Watch how to get started in minutes."
+                        :icon "play-1"
+                        :text [:p
+                               "This video shows step-by-step how to configure CircleCI to test "
+                               "your application and deploy to Heroku, and how CircleCI keeps "
+                               "defects from getting into production. "
+                               "See our docs for a "
+                               [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"}
+                                "followup video"]
+                               " showing how to setup a more robust continuous delivery pipeline "
+                               "with staging and prod environments."]}
+                       {:type :video
+                        :title "Continuous deployment with CircleCI and Heroku"
+                        :thumbnail (utils/cdn-path "/img/outer/integrations/video-placeholder.svg")
+                        :video-id "Hfs_1yuWDf4"}]
             :bottom-header "Ready for world-class continuous delivery?"
             :secondary-cta [:span
                             "Or see our "
                             [:a {:href "/docs/continuous-deployment-with-heroku"}
                              "docs on deploying to Heroku."]]}
-   :saucelabs {:hero {:header [:span
-                               "Test with "
-                               [:img {:src (utils/cdn-path "/img/outer/integrations/sauce.png")
-                                      :alt "Sauce Labs" :style {:width "300px"}}]
-                               " on CircleCI"]
-                      :text "Test against hundreds of mobile and desktop browsers."}
-               :bullets [{:title "Selenium WebDriver"
-                          :text [:span
-                                 "Sauce Labs supports automated browser tests using Selenium "
-                                 "WebDriver, a widely-adopted browser driving standard. Selenium "
-                                 "WebDriver provides a common API for programatically driving "
-                                 "browsers implemented in several popular languages, including "
-                                 "Java, Python, and Ruby. WebDriver can operate in two modes: "
-                                 "local or remote. When run locally, your tests use the Selenium "
-                                 "WebDriver library to communicate directly with a browser on the "
-                                 "same machine. When run in remote mode, your tests interact with "
-                                 "a Selenium Server, and it it is up to the server to drive the "
-                                 "browsers. Sauce Labs essentially provides a Selenium Server as a "
-                                 "service, with all kinds of browsers available to test. It has "
-                                 "some extra goodies like videos of all test runs as well."]
-                          :graphic selenium-logo}
-                         {:title "All the browsers and platforms you need"
-                          :text [:span
-                                 "Sauce Labs provides a huge variety of browsers and operating "
-                                 "systems. You can choose between combinations of Firefox, Chrome, "
-                                 "Safari, and Internet Explorer browsers and OSX, Windows, and "
-                                 "Linux operating systems. You can also test against mobile Safari "
-                                 "and Android browsers. Pick whatever browsers are important for "
-                                 "you, whether you need to ensure critical functionality works on "
-                                 "mobile devices or support old versions of IE. Because Selenium "
-                                 "WebDriver provides a unified interface to talk to all of these "
-                                 "browsers, you only need to write your browser tests once, and "
-                                 "you can run them on as many browsers and platforms as you want."]
-                          :graphic [:div.browsers firefox-logo safari-logo  ie-logo chrome-logo]}
-                         {:title "Test Continuously"
-                          :text [:span "CircleCI automatically runs all your tests, against "
-                                 "whatever browsers you choose, every time you commit code. You "
-                                 "can configure your browser-based tests to run whenever a change "
-                                 "is made, before every deployment, or on a certain branch. A "
-                                 "Continuous Integration and Delivery workflow with CircleCI and "
-                                 "Sauce Labs ensures that browser-specific bugs affecting critical "
-                                 "functionality in your app never make it to production."]
-                          :graphic [:img {:src (utils/cdn-path "/img/outer/integrations/cycle-black.svg") :style {:width "250px" :height "250px"}}]}
-                         {:title "No public test servers required"
-                          :text [:span "Sauce Labs operates browsers on a network separate from "
-                                 "CircleCI build containers, but there needs to be a way for the "
-                                 "browsers to access the web application you want to test. The "
-                                 "easiest way to do this is to simply run your server during a "
-                                 "CircleCI build and use Sauce Connect to setup a secure tunnel "
-                                 "between Sauce Labs' browsers and your build containers on "
-                                 "CircleCI. There is an in-depth example of this in "
-                                 [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."]]
-                          :graphic [:div.sauce-connect [:p "Sauce" [:br] "Connect"]]}]
+   :saucelabs {:hero {:icon (utils/cdn-path "/img/outer/integrations/sauce-labs-logo.svg")
+                      :heading "Test with Sauce Labs on CircleCI"
+                      :subheading "Test against hundreds of mobile and desktop browsers."}
+               :features [{:type :text
+                           :title "Selenium WebDriver"
+                           :icon "se-1"
+                           :text [:p
+                                  "Sauce Labs supports automated browser tests using Selenium "
+                                  "WebDriver, a widely-adopted browser driving standard. Selenium "
+                                  "WebDriver provides a common API for programatically driving "
+                                  "browsers implemented in several popular languages, including "
+                                  "Java, Python, and Ruby. WebDriver can operate in two modes: "
+                                  "local or remote. When run locally, your tests use the Selenium "
+                                  "WebDriver library to communicate directly with a browser on the "
+                                  "same machine. When run in remote mode, your tests interact with "
+                                  "a Selenium Server, and it it is up to the server to drive the "
+                                  "browsers. Sauce Labs essentially provides a Selenium Server as a "
+                                  "service, with all kinds of browsers available to test. It has "
+                                  "some extra goodies like videos of all test runs as well."]}
+                          {:type :text
+                           :title "All the browsers and platforms you need"
+                           :icon "environment"
+                           :text [:p
+                                  "Sauce Labs provides a huge variety of browsers and operating "
+                                  "systems. You can choose between combinations of Firefox, Chrome, "
+                                  "Safari, and Internet Explorer browsers and OSX, Windows, and "
+                                  "Linux operating systems. You can also test against mobile Safari "
+                                  "and Android browsers. Pick whatever browsers are important for "
+                                  "you, whether you need to ensure critical functionality works on "
+                                  "mobile devices or support old versions of IE. Because Selenium "
+                                  "WebDriver provides a unified interface to talk to all of these "
+                                  "browsers, you only need to write your browser tests once, and "
+                                  "you can run them on as many browsers and platforms as you want."]}
+                          {:type :text
+                           :title "Test Continuously"
+                           :icon "sudo"
+                           :text [:p
+                                  "CircleCI automatically runs all your tests, against "
+                                  "whatever browsers you choose, every time you commit code. You "
+                                  "can configure your browser-based tests to run whenever a change "
+                                  "is made, before every deployment, or on a certain branch. A "
+                                  "Continuous Integration and Delivery workflow with CircleCI and "
+                                  "Sauce Labs ensures that browser-specific bugs affecting critical "
+                                  "functionality in your app never make it to production."]}
+                          {:type :text
+                           :title "No public test servers required"
+                           :icon "server"
+                           :text [:p
+                                  "Sauce Labs operates browsers on a network separate from "
+                                  "CircleCI build containers, but there needs to be a way for the "
+                                  "browsers to access the web application you want to test. The "
+                                  "easiest way to do this is to simply run your server during a "
+                                  "CircleCI build and use Sauce Connect to setup a secure tunnel "
+                                  "between Sauce Labs' browsers and your build containers on "
+                                  "CircleCI. There is an in-depth example of this in "
+                                  [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."]]}]
                :bottom-header "Want to get rid of browser bugs?"
                :secondary-cta [:span "Or see our " [:a {:href "/docs/browser-testing-with-sauce-labs"} "docs on Sauce Labs."]]}})
 
+
+(defn video-url [video-id]
+  (str "https://www.youtube.com/watch?v=" video-id))
+
+(defn video-embed-url [video-id]
+  (str "https://www.youtube.com/embed/" video-id "?autohide=1&autoplay=1&modestbranding=1&rel=0&showinfo=0"))
+
+
+(defmulti feature (fn [_ b] (:type b)))
+
+(defmethod feature :text
+  [owner b]
+  [:div.feature
+   (common/feature-icon (:icon b))
+   [:h4.text-center (:title b)]
+   (:text b)])
+
+(defmethod feature :video
+  [owner b]
+  [:div.feature.video
+   [:a.play {:href (video-url (:video-id b))
+             :on-click (fn [e]
+                         (.preventDefault e)
+                         (raise! owner [:play-video (:video-id b)]))}
+    [:img.thumb {:src (:thumbnail b)}]]
+   [:h4.text-center (:title b)]])
+
+
 (defrender integration [app owner]
-  (let [integration (get-in app [:navigation-data :integration])]
-    (if (= integration :docker)
+  (let [integration-name (get-in app [:navigation-data :integration])]
+    (if (= integration-name :docker)
       (om/build docker/docker app)
-      (let [data (get integration-data integration)]
-        (html [:div#integrations.generic
-               [:div.top-section {:class (name integration)}
-                [:div.line]
-                [:div.hero-wrapper
-                 [:div.hero
-                  [:div.integration-icon
-                   [:img {:src (utils/cdn-path "/img/outer/integrations/integration-icon.svg")}]]
-                  [:div
-                   [:h1 (get-in data [:hero :header])]
-                   [:p (get-in data [:hero :text])]]
-                  [:a {:href (gh-utils/auth-url)
-                       :role "button"
-                       :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                               :event "Auth GitHub"}])}
-                   "Sign up for CircleCI"]]]]
-               [:div.middle-section
-                (for [bullet (:bullets data)]
-                  [:div.bullet
-                   [:div.graphic
-                    (:graphic bullet)]
-                   [:div.content
-                    [:h2 (:title bullet)]
-                    [:p (:text bullet)]]])]
-               [:div.bottom-section
-                [:h2 (:bottom-header data)]
-                [:a {:href (gh-utils/auth-url)
-                       :role "button"
-                       :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                               :event "Auth GitHub"}])}
-                   "Sign up for Free"]
-                [:p (:secondary-cta data)]]])))))
+      (let [integration (get integration-data integration-name)]
+        (html [:div.product-page.integrations
+               (if-let [video-id (get-in app state/modal-video-id-path)]
+                 [:div.modal-overlay {:on-click #(raise! owner [:close-video])}
+                  ;; TODO: Once React supports :allowFullscreen (v.0.13.1),
+                  ;; replace this hack with the :iframe below. Then remove the
+                  ;; `> div > .modal-video` selector in CSS.
+                  [:div {:dangerouslySetInnerHTML
+                         {:__html (dom/getOuterHtml
+                                    (dom/createDom "iframe" #js {:class "modal-video"
+                                                                 :src (video-embed-url video-id)
+                                                                 :allowFullscreen true}))}}]
+                  ; [:iframe.modal-video {:src (video-embed-url video-id)
+                  ;                       :allowFullscreen true}]
+                  [:button.close {:aria-label "Close"
+                                  :on-click #(raise! owner [:close-video])}]])
+               (let [hero (:hero integration)]
+                 [:div.jumbotron
+                  common/language-background-jumbotron
+                  [:section.container
+                   [:div.row
+                    [:div.hero-title.center-block
+                     [:div.text-center
+                      (if-let [icon-src (:icon hero)]
+                        [:img.hero-logo {:src icon-src}])]
+                     [:h1.text-center (:heading hero)]
+                     [:h3.text-center (:subheading hero)]]]]
+                  [:div.row.text-center
+                   (common/sign-up-cta owner (str "integrations/" (name integration-name)))]])
+
+               [:div.outer-section
+                [:section.container
+                 (for [row (partition-all 2 (:features integration))]
+                   [:div.feature-row
+                    (for [b row]
+                      (feature owner b))])]]
+
+               [:div.outer-section.outer-section-condensed
+                common/language-background
+                [:section.container
+                 [:div.col-xs-12
+                  [:h2.text-center "Ready for world-class continuous delivery?"]
+                  [:p.text-center (:secondary-cta integration)]
+                  [:div.text-center
+                   (common/sign-up-cta owner (str "integrations/" (name integration-name)))]]]]])))))

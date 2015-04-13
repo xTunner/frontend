@@ -13,7 +13,10 @@
 (defmulti format-test-name source)
 
 (defmethod format-test-name :default [test]
-  (:name test))
+  (->> [[(:name test)] [(:classname test) (:file test)]]
+       (map (fn [s] (some #(when-not (string/blank? %) %) s)))
+       (filter identity)
+       (string/join " - in ")))
 
 (defmethod format-test-name "lein-test" [test]
   (str (:classname test) "/" (:name test)))

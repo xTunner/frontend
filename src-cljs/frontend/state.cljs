@@ -12,7 +12,6 @@
                          :pricing_button_green [true false]
                          :pay_now_button [true false]
                          :follow_notice [true false]
-                         :highlight_changelog [true false]
                          :new_usage_queued_upsell [true false]
                          :mention-github-permissions [true false]}
    :changelog nil
@@ -25,6 +24,7 @@
                              :show-fork-accounts false
                              :show-forks false}}
    :selected-home-technology-tab nil
+   :modal-video-id nil
    :builds-per-page 30
    :navigation-point nil
    :navigation-data nil
@@ -182,6 +182,8 @@
 (def error-data-path [:error-data])
 
 (def selected-home-technology-tab-path [:selected-home-technology-tab])
+
+(def modal-video-id-path [:modal-video-id])
 
 (def language-testimonial-tab-path [:selected-language-testimonial-tab])
 

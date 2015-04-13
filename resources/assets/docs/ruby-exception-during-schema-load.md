@@ -5,7 +5,7 @@ last_updated: Feb 3, 2013
 
 -->
 
-If your build fails during the `rake db:schema:create db:schema:load`
+If your build fails during the `rake db:create db:schema:load`
 step, there is usually a straightforward fix.
 
 ## Identifying the problem

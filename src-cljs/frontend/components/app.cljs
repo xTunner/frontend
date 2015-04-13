@@ -69,6 +69,7 @@
     :landing landing/home
     :about about/about
     :contact about/contact
+    :team about/team
     :features features/features
     :pricing pricing/pricing
     :jobs jobs/jobs

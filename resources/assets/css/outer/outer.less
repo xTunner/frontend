@@ -28,6 +28,11 @@
     .btn-xl;
     .btn-success;
     width: 220px;
+
+    // .btn-ctas already have a :focus style, so we can drop the outline.
+    &:focus {
+      outline: none;
+    }
   }
 
   // Bootstrap overrides
@@ -137,6 +142,7 @@
   @import "privacy/changelog.less";
   @import "stories/stories.less";
   @import "languages/languages.less";
+  @import "product_page.less";
   @import "integrations/integrations.less";
   @import "features/features.less";
   @import "press/press.less";
