@@ -1,7 +1,7 @@
 <!--
 
 title: Environment variables
-last_updated: Feb 2, 2013
+last_updated: Apr 13, 2015
 
 -->
 
@@ -106,6 +106,32 @@ We publish the details of the currently running build in these variables:
     The directory whose contents are automatically processed as [JUnit test metadata](/docs/test-metadata).
   </dd>
 
+</dl>
+
+### Building pull requests that come from forks
+
+When the build is a part of a pull request from a fork, these variables
+will be available:
+
+<dl>
+  <dt>
+    `CIRCLE_PR_USERNAME`
+  </dt>
+  <dd>
+    The username of the owner of the fork.
+  </dd>
+  <dt>
+    `CIRCLE_PR_REPONAME`
+  </dt>
+  <dd>
+    The name of the repository the pull request was submitted from.
+  </dd>
+  <dt>
+    `CIRCLE_PR_NUMBER`
+  </dt>
+  <dd>
+    The number of the pull request this build forms part of.
+  </dd>
 </dl>
 
 ### Parallelism
