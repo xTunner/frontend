@@ -59,7 +59,9 @@
           [:div.row
            [:div.col-xs-10.col-xs-offset-1
             [:section
-             [:h2 "Code security"]
+             [:h2
+              "Code security "
+              "(Updated: Mar 17, 2014)"]
              [:p
               "If Circle ever disclosed your code to an attacker, whether through our own error or through the error of one of our partners, we would very likely be out of business. So the security of your code base is not just important to us, it is essential to the survival of our company."]]
             [:section
