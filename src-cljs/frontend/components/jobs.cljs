@@ -31,7 +31,7 @@
              [:br]
              "with a great team"]
             [:a.btn.btn-cta
-             {:href ""}
+             {:href "https://jobs.lever.co/circleci/"}
              "View openings"]]]]]
         [:div
          [:div.row.jobs-intro-wrapper
@@ -113,5 +113,5 @@
            [:section.container
             [:div.col-xs-12.text-center
              [:h3 "We're looking for amazing people to join us on this journey. Want to join the team?"]
-             [:a.btn.btn-cta {:href ""} "View openings"]]]]
+             [:a.btn.btn-cta {:href "https://jobs.lever.co/circleci/"} "View openings"]]]]
          ]))))
