@@ -12,21 +12,36 @@ better test splits and finish your builds faster.
 
 ## Automatic test metadata collection
 
-If you're using our inferred test steps for RSpec, Cucumber, or Minitest for Ruby or nosetests for Python then we'll
-automatically collect test metadata,
-though for RSpec and Minitest you'll need to add the necessary formatter gems to your Gemfile:
+If you're using our inferred test steps for Ruby or Python then we'll
+automatically collect test metadata, though for RSpec, Minitest, and Django
+you'll need to do some configuration to to enable the formatters:
 
 For RSpec:
 
+Add this to your gemfile:
 ```
 gem 'rspec_junit_formatter', '0.2.2'
 ```
 
 For Minitest:
 
+Add this to your gemfile:
 ```
 gem 'minitest-ci', :git => 'git@github.com:circleci/minitest-ci.git'
 ```
+
+For Django:
+
+Configure your tests to run using the
+[django-nose](https://github.com/django-nose/django-nose) test runner.  We'll
+do the rest automatically.
+
+Or if you'd rather use another django test runner, and it's capable of
+producing XUnit XML files, configure it to output them to the
+`$CIRCLE_TEST_REPORTS/django` directory (you'll have to create the django
+directory if your runner doesn't create the destination directory
+automatically.)  We'll still auto-parallelize your tests, and incorporate the
+timing information.
 
 ## Metadata collection in custom test steps
 
