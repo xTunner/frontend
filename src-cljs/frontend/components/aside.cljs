@@ -321,8 +321,7 @@
                         :data-trigger "hover"
                         :title "Changelog"
                         :href "/changelog"
-                        :class (when (and (om/get-shared owner [:ab-tests :highlight_changelog])
-                                          (changelog-updated-since? (:last_viewed_changelog user)))
+                        :class (when (changelog-updated-since? (:last_viewed_changelog user))
                                  "unread")}
          [:i.fa.fa-bell]]
 

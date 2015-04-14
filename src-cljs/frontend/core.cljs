@@ -280,7 +280,7 @@
 
 (defn refresh-css! []
   (doseq [link (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass "link"))
-          :when (let [href (inspect (.getAttribute link "href"))]
+          :when (let [href (.getAttribute link "href")]
                   (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
     (.removeChild (.-parentNode link) link))
   (add-css-link "/assets/css/app.css"))

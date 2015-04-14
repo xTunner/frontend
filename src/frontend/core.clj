@@ -92,6 +92,7 @@
               #"/about"
               #"/about/contact"
               #"/contact"
+              #"/about/team"
               #"/account.*"
               #"/add-projects"
               #"/changelog.*"
@@ -110,6 +111,7 @@
               #"/mobile"
               #"/pricing"
               #"/privacy"
+              #"/press"
               #"/security.*"
               #"/stories.*"]
    :backends {"dev.circlehost" {:proto "http" :host "circlehost:8080"}

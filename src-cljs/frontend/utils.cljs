@@ -13,9 +13,10 @@
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
             [goog.style]
+            [goog.string :as gstring]
             [goog.dom :as dom]
             [sablono.core :as html :include-macros true])
-  (:require-macros [frontend.utils :refer [inspect timing defrender]])
+  (:require-macros [frontend.utils :refer [inspect timing defrender html]])
   (:import [goog.format EmailAddress]))
 
 (defn csrf-token []
@@ -326,3 +327,8 @@
         max-height (apply max (map #(.-height %) sizes))]
     (doseq [item items]
       (goog.style/setSize item max-width max-height))))
+
+(defn outer-svg
+  [short-src alt args]
+  (html [:img (merge {:src (cdn-path (gstring/format "/img/outer/%s.svg" short-src))
+                      :alt alt} args)]))

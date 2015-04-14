@@ -11,6 +11,7 @@
             [frontend.components.features :as features]
             [frontend.components.mobile :as mobile]
             [frontend.components.mobile.ios :as ios]
+            [frontend.components.press :as press]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
@@ -68,9 +69,11 @@
     :landing landing/home
     :about about/about
     :contact about/contact
+    :team about/team
     :features features/features
     :pricing pricing/pricing
     :jobs jobs/jobs
+    :press press/press
     :privacy privacy/privacy
     :security security/security
     :security-hall-of-fame security/hall-of-fame

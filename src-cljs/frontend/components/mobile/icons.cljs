@@ -3,45 +3,56 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (def app-store
-  (html [:img.app-store {:src (utils/cdn-path "/img/outer/mobile/app-store.svg")
-                         :alt "Improve App Store Rating"}]))
+  (utils/outer-svg "mobile/app-store"
+                   "Improve App Store Rating"
+                   {:class "app-store"}))
 
 (def build-env
-  (html [:img.build-env {:src (utils/cdn-path "/img/outer/mobile/build-envs.svg")
-                         :alt "Control your mobile app testing environment"}]))
+  (utils/outer-svg "mobile/build-envs"
+                   "Control your mobile app testing environment"
+                   {:class "build-env"}))
 
 (def commit
-  (html [:img.commit {:src (utils/cdn-path "/img/outer/mobile/commit.svg")
-                      :alt "Merge App code with confidence"}]))
+  (utils/outer-svg "mobile/commit"
+                   "Merge App code with confidence"
+                   {:class "commit"}))
 
 (def deploy
-  (html [:img.deploy {:src (utils/cdn-path "/img/outer/mobile/deploy.svg")
-                      :alt "Automate Mobile Continuous Deployment"}]))
+  (utils/outer-svg "mobile/deploy"
+                   "Automate Mobile Continuous Deployment"
+                   {:class "deploy"}))
 
 (def htc
-  (html [:img.htc {:src (utils/cdn-path "/img/outer/mobile/htc.svg")
-                   :alt "Mobile Android app testing"}]))
+  (utils/outer-svg "mobile/htc"
+                   "Mobile Android app testing"
+                   {:class "htc"}))
 
 (def iphone
-  (html [:img.iphone {:src (utils/cdn-path "/img/outer/mobile/iphone.svg")
-                      :alt "Mobile iPhone app testing"}]))
+  (utils/outer-svg "mobile/iphone"
+                   "Mobile iPhone app testing"
+                   {:class "iphone"}))
 
 (def nexus
-  (html [:img.nexus {:src (utils/cdn-path "/img/outer/mobile/nexus.svg")
-                     :alt "Mobile Android app testing"}]))
+  (utils/outer-svg "mobile/nexus"
+                   "Mobile Android app testing"
+                   {:class "nexus"}))
 
 (def setup
-  (html [:img.setup {:src (utils/cdn-path "/img/outer/mobile/setup.svg")
-                     :alt "Easy Continuous Integration setup"}]))
+  (utils/outer-svg "mobile/setup"
+                   "Easy Continuous Integration setup"
+                   {:class "setup"}))
 
 (def steps
-  (html [:img.steps {:src (utils/cdn-path "/img/outer/mobile/steps.svg")
-                     :alt "Mobile Continuous Integration and Deployment"}]))
+  (utils/outer-svg "mobile/steps"
+                   "Mobile Continuous Integration and Deployment"
+                   {:class "steps"}))
 
 (def testing
-  (html [:img.testing {:src (utils/cdn-path "/img/outer/mobile/testing.svg")
-                       :alt "Automate App Testing"}]))
+  (utils/outer-svg "mobile/testing"
+                   "Automate App Testing"
+                   {:class "testing"}))
 
 (def workflow
-  (html [:img.workflow {:src (utils/cdn-path "/img/outer/mobile/workflow.svg")
-                        :alt "Mobile Continuous Integration Workflow"}]))
+  (utils/outer-svg "mobile/workflow"
+                   "Mobile Continuous Integration Workflow"
+                   {:class "workflow"}))

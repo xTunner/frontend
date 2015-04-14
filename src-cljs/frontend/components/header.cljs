@@ -146,22 +146,22 @@
               [:ul.dropdown-menu
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/features"}
                  "Features"]]
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/mobile"}
                  "Mobile"]]
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/integrations/docker"}
                  "Docker"]]
                [:li {:role "presentation"}
                 [:a {:role "menuitem"
-                     :tabindex "-1"
+                     :tabIndex "-1"
                      :href "/enterprise"}
                  "Enterprise"]]]]
              (when-not (config/enterprise?)
@@ -170,7 +170,8 @@
              [:li (maybe-active nav-point :documentation)
               [:a {:href "/docs"} "Documentation"]]
              [:li {:class (when (contains? #{:about
-                                             :contact}
+                                             :contact
+                                             :team}
                                            nav-point)
                             "active")}
               [:a {:href "/about"} "About Us"]]
@@ -191,14 +192,18 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
-          (when (contains? #{:about :contact} nav-point)
+          (when (contains? #{:about :team :contact :press} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid
               [:ul.nav.navbar-nav
                [:li (maybe-active nav-point :about)
                 [:a {:href "/about"} "Overview"]]
+               [:li (maybe-active nav-point :team)
+                [:a {:href "/about/team"} "Team"]]
                [:li (maybe-active nav-point :contact)
-                [:a {:href "/contact"} "Contact Us"]]]]])])))))
+                [:a {:href "/contact"} "Contact Us"]]
+               [:li (maybe-active nav-point :press)
+                [:a {:href "/press"} "Press"]]]]])])))))
 
 (defn inner-header [app owner]
   (reify
