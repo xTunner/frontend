@@ -22,15 +22,17 @@
         [:div.jumbotron
          common/language-background-jumbotron
          [:section.container
-          [:div.row
-           [:div.]
+          [:div.row.text-center
            [:article.hero-title.center-block
             [:div.text-center
              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
             [:h1.text-center
              "Build amazing products"
              [:br]
-             "with a great team"]]]]]
+             "with a great team"]
+            [:a.btn.btn-cta
+             {:href ""}
+             "View openings"]]]]]
         [:div
          [:div.row.jobs-intro-wrapper
           [:div.col-sm-6.jobs-intro
