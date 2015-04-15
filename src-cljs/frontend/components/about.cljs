@@ -160,7 +160,7 @@
     :img-path (scaled-image-path "alexey")
     :email "alexey@circleci.com"
     :role "Support Engineer"
-    :github "applemac"
+    :github "appplemac"
     :bio "Alexey joins Circle from the sunny coasts of Spain. In between mountain biking, partying at art galleries and doing martial arts, he helps to ensure that Circle’s customers get the smoothest experience possible."}])
 
 
