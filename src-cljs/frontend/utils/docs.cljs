@@ -10,9 +10,21 @@
 
 
 (defn api-curl [endpoint]
-  (let [curl-args (if-not (= (:method endpoint) "GET")
-                    (str "-X " (:method endpoint) " ")
-                    "")
+  (let [curl-args (->> [(when-not (= (:method endpoint) "GET")
+                         (str "-X " (:method endpoint)))
+
+                        (when (:body endpoint)
+                          (str "--header \"Content-Type: application/json\""))
+
+                       (when-let [body (:body endpoint)]
+                         (str "-d '"
+                              (string/replace body "'" "\\'")
+                              "'"))]
+
+                       (filter identity)
+                       (string/join " "))
+        curl-args-padded (if (empty? curl-args) ""
+                             (str curl-args " "))
         curl-params (if-let [params (:params endpoint)]
                       (->> params
                            (map #(str (:name %) "=" (:example %)))
@@ -20,7 +32,7 @@
                            (str "&"))
                       "")]
     (gstring/format "curl %shttps://circleci.com%s?circle-token=:token%s"
-                    curl-args (:url endpoint) curl-params)))
+                    curl-args-padded (:url endpoint) curl-params)))
 
 (defn api-endpoint-filter [endpoint]
   (hiccup->html-str

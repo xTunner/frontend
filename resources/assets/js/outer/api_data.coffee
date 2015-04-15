@@ -405,6 +405,21 @@ window.circle_api_data =
       method: "POST"
       description: "Adds your Heroku API key to CircleCI, takes apikey as form param name."
 
+    add_environment_variable:
+      try_it: false
+      url: "/api/v1/project/:username/:project/envvar"
+      method: "POST"
+      description: "Creates a new environment variable"
+      body: '{"name":"foo", "value":"bar"}'
+      response: '{"name":"foo","value":"xxxx"}'
+
+    delete_environment_variable:
+      try_it: false
+      url: "/api/v1/project/:username/:project/envvar/:name"
+      method: "DELETE"
+      description: "Deletes the environment variable named ':name'"
+      response: '{"message":"ok"}'
+
     test_metadata:
       try_it: false
       url: "/api/v1/project/:username/:project/:build_num/tests"

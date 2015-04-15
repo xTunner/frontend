@@ -111,6 +111,15 @@ You can retry a build with ssh by swapping "retry" with "ssh":
 
 {{ api_data.project_build_cache | api-endpoint}}
 
+<h2 id="add-environment-variable">Add Environment Variables</h2>
+
+{{ api_data.add_environment_variable | api-endpoint}}
+
+<h2 id="delete-environment-variable">Delete Environment Variables</h2>
+
+{{ api_data.delete_environment_variable | api-endpoint}}
+
+
 ## Test Metadata
 
 {{ api_data.test_metadata | api-endpoint }}
