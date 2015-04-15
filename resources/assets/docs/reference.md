@@ -11,6 +11,7 @@ children:
   - polling-project-status
   - api
   - build-artifacts
+  - how-cache-works
   - ec2ip-and-security-group
 
 -->
