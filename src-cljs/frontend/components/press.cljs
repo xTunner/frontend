@@ -211,7 +211,7 @@
              "For media and market research analysts, please contact Laura Franzese at "
              [:a {:href "mailto:laura@circleci.com"} "laura@circleci.com"]
              " or "
-             [:a {:href "tel:+14155359076"} "415.535.9076"]
+             [:a {:href "tel:+18005857075"} "800.585.7075"]
              [:br]
              "Fast Facts - Founded in 2011 - "
              [:a {:href "/contact"} "HQ"]

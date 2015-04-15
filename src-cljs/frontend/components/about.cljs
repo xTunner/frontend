@@ -393,6 +393,5 @@
      [:h2 "We're Hiring"]
      [:p.subheader "We're looking for amazing people to join us on this journey, want to join the team?"]
      [:a.btn.btn-cta
-      {:href "/jobs"
-       :role "button"}
+      {:href "/jobs"}
       "Join Us"]]]))

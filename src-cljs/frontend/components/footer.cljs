@@ -9,7 +9,7 @@
      [:ul.list-unstyled
       [:li.header "CircleCI"]
       [:li [:a {:href "/about"} "About Us"]]
-      [:li [:a {:href "/about"} "Team"]]
+      [:li [:a {:href "/about/team"} "Team"]]
       [:li [:a {:href "/press"} "Press"]]
       (when-not (config/enterprise?)
         [:li [:a {:href "/jobs"} "Jobs"]])
