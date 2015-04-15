@@ -13,6 +13,9 @@
   (let [curl-args (->> [(when-not (= (:method endpoint) "GET")
                          (str "-X " (:method endpoint)))
 
+                        (when (:body endpoint)
+                          (str "--header \"Content-Type: application/json\""))
+
                        (when-let [body (:body endpoint)]
                          (str "-d '"
                               (string/replace body "'" "\\'")
