@@ -192,7 +192,7 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
-          (when (contains? #{:about :team :contact :press} nav-point)
+          (when (contains? #{:about :team :contact :jobs :press} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid
               [:ul.nav.navbar-nav
@@ -202,6 +202,8 @@
                 [:a {:href "/about/team"} "Team"]]
                [:li (maybe-active nav-point :contact)
                 [:a {:href "/contact"} "Contact Us"]]
+               [:li (maybe-active nav-point :jobs)
+                [:a {:href "/jobs"} "Jobs"]]
                [:li (maybe-active nav-point :press)
                 [:a {:href "/press"} "Press"]]]]])])))))
 

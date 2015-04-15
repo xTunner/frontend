@@ -5,7 +5,7 @@
     height: 350px;
 
     @media (max-width: @screen-xs-max) {
-      height: 100px;
+      height: 200px;
     }
   }
 
@@ -16,21 +16,13 @@
       @media (min-width: @screen-sm-min) {
         position: absolute;
         display: inline-block;
-        top: -18px;
+        top: -40px;
         left: 30%;
         padding: 0 5px;
         background: @body-bg;
       }
     }
 
-  }
-
-  .where-text {
-    padding-right: @grid-gutter-width;
-
-    @media (max-width: @screen-xs-max) {
-      padding-left: @grid-gutter-width;
-    }
   }
 
   .jobs-ui-example {
@@ -45,13 +37,6 @@
     }
   }
 
-  .jobs-intro {
-    padding-left: @grid-gutter-width;
-
-    @media (max-width: @screen-xs-max) {
-      padding-right: @grid-gutter-width;
-    }
-  }
 
   .jobs-intro-wrapper {
     padding-top: 70px;
@@ -60,5 +45,27 @@
 
   .map-wrapper {
     height: 350px;
+    padding-left: 0;
+
+    @media (max-width: @screen-xs-max) {
+        height: 200px;
+        padding: 0;
+    }
+  }
+
+  .job-reasons {
+      .row {
+          padding-top: 40px;
+      }
+  }
+
+  .job-cta {
+      h3 {
+          margin-bottom: 0;
+      }
+
+      .btn-cta {
+          margin-top: 40px;
+      }
   }
 }
