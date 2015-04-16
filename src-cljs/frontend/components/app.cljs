@@ -76,7 +76,7 @@
     :security security/security
     :security-hall-of-fame security/hall-of-fame
     :enterprise enterprise/enterprise
-    :shopify-story stories/shopify
+    :stories stories/story
     :language-landing language-landing/language-landing
     :integrations integrations/integration
     :changelog changelog/changelog
