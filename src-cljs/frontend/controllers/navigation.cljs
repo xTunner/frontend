@@ -494,3 +494,12 @@
                       :saucelabs "Integrate with SauceLabs to test against hundreds of desktop and mobile browsers with Selenium WebDriver to get rid of your browser bugs."}]
     (set-page-title! (get titles integration))
     (set-page-description! (get descriptions integration))))
+
+(defmethod post-navigated-to! :stories
+  [history-imp navigation-point {:keys [story] :as args} previous-state current-state]
+  (let [titles {:shopify "Shopify's Success with Continuous Integration"
+                :wit "Wit.ai's Success with Continuous Integration"}
+        descriptions {:shopify "See how Shopify has scaled its Continuous Integration efforts with CircleCI and made its developer team of over 130 people more efficient."
+                      :wit ""}]
+    (set-page-title! (get titles story))
+    (set-page-description! (get descriptions story))))

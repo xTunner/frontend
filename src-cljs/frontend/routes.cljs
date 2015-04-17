@@ -179,11 +179,8 @@
                                          :_description "Reduce risk with Enterprise Continuous Integration from CircleCI. Integrates seamlessly with Github Enterprise and the rest of your technology stack.")))
 
 
-  ;; TODO: this should be stories/:company, but we'll wait for more stories
-  (defroute v1-stories (FragmentRoute. "/stories/shopify") {:as params}
-    (open-to-outer! nav-ch :shopify-story (assoc params
-                                            :_title "Shopify's Success with Continuous Integration"
-                                            :_description "See how Shopify has scaled its Continuous Integration efforts with CircleCI and made its developer team of over 130 people more efficient.")))
+  (defroute v1-stories (FragmentRoute. "/stories/:story") [story]
+    (open-to-outer! nav-ch :stories {:story (keyword story)}))
 
   (defroute v1-features (FragmentRoute. "/features") {:as params}
     (open-to-outer! nav-ch :features (assoc params
@@ -193,8 +190,8 @@
   (defroute v1-languages (FragmentRoute. "/features/:language") {:as params}
     (open-to-outer! nav-ch :language-landing params))
 
-  (defroute v1-integrations (FragmentRoute. "/integrations/:integration") {:keys [integration] :as params}
-    (open-to-outer! nav-ch :integrations (assoc params :integration (keyword integration))))
+  (defroute v1-integrations (FragmentRoute. "/integrations/:integration") [integration]
+    (open-to-outer! nav-ch :integrations {:integration (keyword integration)}))
 
   (defroute v1-changelog-individual (FragmentRoute. "/changelog/:id") {:as params}
     (open-to-outer! nav-ch :changelog params))

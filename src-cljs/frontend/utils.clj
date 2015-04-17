@@ -45,16 +45,26 @@
          (throw e2#)))))
 
 (defmacro defrender
-  "Reifies an IRender component that only has a render function and
-   splices the body into the render function"
+  "defs a function which reifies an IRender component that only has a render
+  function and splices the body into the render function"
   [name args & body]
-  `(defn ~name ~args 
+  `(defn ~name ~args
      (reify
        om.core/IDisplayName
        (~'display-name [~'_] ~(str name))
        om.core/IRender
        (~'render [~'_] ~@body))))
 
+(defmacro defrendermethod
+  "defs a method which reifies an IRender component that only has a render
+  function and splices the body into the render function"
+  [multifn dispatch-val args & body]
+  `(defmethod ~multifn ~dispatch-val ~args
+     (reify
+       om.core/IDisplayName
+       (~'display-name [~'_] ~(str multifn " (" dispatch-val ")"))
+       om.core/IRender
+       (~'render [~'_] ~@body))))
 (defmacro html [body]
   `(if-not (:render-colors? initial-query-map)
      (html/html ~body)
