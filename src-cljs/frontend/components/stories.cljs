@@ -34,7 +34,7 @@
       [:h1.text-center heading]
       [:h3.text-center subheading]]]]])
 
-(defn story-cta [story-name]
+(defrender story-cta [story-name owner]
   [:div.outer-section.outer-section-condensed.bottom-cta-section
    common/language-background
    [:section.container
@@ -137,7 +137,7 @@
       [:section.container
        [:p "The Shopify team no longer has to worry about scaling their testing infrastructure, maintaining their test stack, or monitoring their deployments. They focus on building products that bring value to their customers while relying on CircleCI to ensure that they are able to get those products to market quickly and reliably."]]]
 
-     (story-cta "shopify")]))
+     (om/build story-cta "shopify")]))
 
 (defrendermethod story :wit
   [app owner]
@@ -183,4 +183,4 @@
 
        (om/build docker/docker-diagram app)]]
 
-     (story-cta "shopify")]))
+     (om/build story-cta "wit")]))
