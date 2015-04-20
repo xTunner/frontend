@@ -291,7 +291,7 @@
                   (when false ;; (pm/grandfathered? plan) ;; I don't
                     ;; think this is useful anymore.
                     [:i.fa.fa-question-circle#grandfathered-tooltip-hack
-                     {:title: "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
+                     {:title "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
                 [:fieldset
                  (if (and (pm/can-edit-plan? plan org-name) (or (pm/enterprise? plan) (pm/paid? plan)))
                    (forms/managed-button
