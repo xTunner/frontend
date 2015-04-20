@@ -145,7 +145,7 @@
   (html
     [:article.product-page.stories.shopify
      (story-jumbotron {:logo (utils/cdn-path "/img/outer/customers/customer-wit.svg")
-                       :heading "Continuous Delivery of Containers with Docker and CircleCI"
+                       :heading "Continuous Delivery for Containers"
                        :subheading "How Wit.ai uses CircleCI and Docker to deploy their containerized services"})
 
      [:div.outer-section
