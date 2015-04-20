@@ -35,13 +35,14 @@
       [:h3.text-center subheading]]]]])
 
 (defrender story-cta [story-name owner]
-  [:div.outer-section.outer-section-condensed.bottom-cta-section
-   common/language-background
-   [:section.container
-    [:div.col-xs-12
-     [:h2.text-center "Ready for world-class continuous delivery?"]
-     [:div.text-center
-      (common/sign-up-cta owner (str "stories/" story-name))]]]])
+  (html
+    [:div.outer-section.outer-section-condensed.bottom-cta-section
+     common/language-background
+     [:section.container
+      [:div.col-xs-12
+       [:h2.text-center "Ready for world-class continuous delivery?"]
+       [:div.text-center
+        (common/sign-up-cta owner (str "stories/" story-name))]]]]))
 
 
 (defmulti story

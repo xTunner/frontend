@@ -65,6 +65,7 @@
        (~'display-name [~'_] ~(str multifn " (" dispatch-val ")"))
        om.core/IRender
        (~'render [~'_] ~@body))))
+
 (defmacro html [body]
   `(if-not (:render-colors? initial-query-map)
      (html/html ~body)
