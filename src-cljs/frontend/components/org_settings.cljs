@@ -843,7 +843,7 @@
           [:p
            (str (pm/paid-containers plan) " of these are paid")
            (if piggiebacked? ". "
-               (list ", at " (pm/stripe-cost plan) "/month. "))
+               (list ", at $" (pm/stripe-cost plan) "/month. "))
            (if (pm/grandfathered? plan)
              (list "We've changed our pricing model since this plan began, so its current price "
                    "is grandfathered in. "
