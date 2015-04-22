@@ -94,6 +94,7 @@
          [:p "Shopify needed the ability to easily configure, customize, and debug build their machines."]]]]]
 
      [:div.outer-section.outer-section-condensed
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-6.col-xs-offset-3
@@ -117,6 +118,7 @@
        [:p "Today, 1 year after initially switching to CircleCI, Shopify has scaled their engineering team to 130 team members who on average merge 300 pull requests and deploy 100 times per week. Thanks to CircleCI, they've managed to maintain their agile and efficient development process, with new projects being added effortlessly and everyone working off of a master branch (rather than having to maintain production and development branches). Their test suite runs faster than it ever did with their previous solution, and now that developers don't have to run tests on their local machine they can work on other projects while CircleCI runs their tests in the background. Shopify also uses CircleCI along with Capistrano to continuously deploy their application for anything from a small bug fix, to a package upgrade, to a new feature."]]]
 
      [:div.outer-section.outer-section-condensed
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-6.col-xs-offset-3
@@ -150,6 +152,7 @@
        [:p "Wit.ai's platform is built with services written in Clojure, including user-facing web apps and service endpoints, as well as a Riak-backed Datomic database. As Wti.ai was scaling their platform, they ran in to a few different issues. First, different services were built, tested, and deployed in different ways. The development team was moving fast and wanted to deploy multiple times per day, but were slowed down by this operational complexity. Second, it was difficult to ensure that their production environment was always consistent with their development and test environments. Making sure that the proper binary artifacts, server OS, and configuration files were in place required additional tooling which further added to their issues around complexity."]]]
 
      [:div.outer-section.outer-section-condensed
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-6.col-xs-offset-3
