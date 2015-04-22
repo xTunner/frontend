@@ -25,15 +25,19 @@ We will automatically cache the dependencies for you if you are using
 Ruby (Rubygems), Python (pip), iOS (Pods), PHP (composer), Java
 (gradle), Scala (sbt) packages.
 
-### Caching for apt
-
-We don’t support caching for packages you install via `apt-get`. If you
-want to cache those, the best way to do it would be to download the
-`deb` packages to a directory specified in `cache_directories` and then
-install them using `dpkg`.
-
 ### Clearing the cache
 
-Normally you will not have to clear the cache, but if you feel that’s
-what you need, you can use [this API
-endpoint](https://circleci.com/docs/api#clear-cache) for that.
+The _Rebuild without cache_ button in the UI will disable the cache for
+a single build so that you could debug any problems caused by your
+dependencies.
+
+Normally you will not have to clear the cache permanently, but if you
+feel that’s what you need, you can just remove the necessary parts of
+the cache anywhere in your `circle.yml`’s `dependencies` section,
+before the cache is saved:
+
+```
+dependencies:
+  post:
+    - rm -r ~/.gradle
+```
