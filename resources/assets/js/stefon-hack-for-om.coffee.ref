@@ -153,6 +153,7 @@ window.stefon_hack_for_om =
     "/docs/ruby-exception-during-schema-load.md": '(asset-path "docs/ruby-exception-during-schema-load.md")'
     "/docs/skip-a-build.md": '(asset-path "docs/skip-a-build.md")'
     "/docs/ssh-build.md": '(asset-path "docs/ssh-build.md")'
+    "/docs/ssh-between-build-containers.md": '(asset-path "docs/ssh-between-build-containers.md")'
     "/docs/status-badges.md": '(asset-path "docs/status-badges.md")'
     "/docs/test-metadata.md": '(asset-path "docs/test-metadata.md")'
     "/docs/test-with-solr.md": '(asset-path "docs/test-with-solr.md")'
