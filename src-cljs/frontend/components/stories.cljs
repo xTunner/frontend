@@ -27,7 +27,7 @@
       [:h1.text-center heading]
       [:h3.text-center subheading]]]]])
 
-(defrender story-cta [story-name owner]
+(defrender story-cta [source owner]
   (html
     [:div.outer-section.outer-section-condensed.bottom-cta-section
      common/language-background
@@ -35,7 +35,7 @@
       [:div.col-xs-12
        [:h2.text-center "Ready for world-class continuous delivery?"]
        [:div.text-center
-        (common/sign-up-cta owner (str "stories/" story-name))]]]]))
+        (common/sign-up-cta owner source)]]]]))
 
 
 (defmulti story
@@ -131,7 +131,7 @@
        [:p "Today, 1 year after initially switching to CircleCI, Shopify has scaled their engineering team to 130 team members who on average merge 300 pull requests and deploy 100 times per week. Thanks to CircleCI, they've managed to maintain their agile and efficient development process, with new projects being added effortlessly and everyone working off of a master branch (rather than having to maintain production and development branches). Their test suite runs faster than it ever did with their previous solution, and now that developers don't have to run tests on their local machine they can work on other projects while CircleCI runs their tests in the background. Shopify also uses CircleCI along with Capistrano to continuously deploy their application for anything from a small bug fix, to a package upgrade, to a new feature."]
        [:p "The Shopify team no longer has to worry about scaling their testing infrastructure, maintaining their test stack, or monitoring their deployments. They focus on building products that bring value to their customers while relying on CircleCI to ensure that they are able to get those products to market quickly and reliably."]]]
 
-     (om/build story-cta "shopify")]))
+     (om/build story-cta "stories/shopify")]))
 
 (defrendermethod story :wit
   [app owner]
@@ -178,4 +178,4 @@
 
        (om/build docker/docker-diagram app)]]
 
-     (om/build story-cta "wit")]))
+     (om/build docker/docker-cta "stories/wit")]))

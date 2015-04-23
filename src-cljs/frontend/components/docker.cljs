@@ -41,8 +41,7 @@
             (if (= index active-section-index)
               [:span.active-indicator-line])
             (if (= index active-section-index)
-              [:img.active-indicator-dot {:src (utils/cdn-path "/img/outer/docker/diagram-dot.svg")}])
-            ])
+              [:img.active-indicator-dot {:src (utils/cdn-path "/img/outer/docker/diagram-dot.svg")}])])
         diagram-structure)]
        [:div.diagram-annotation
         [:div.col-xs-3.text-right
@@ -57,8 +56,19 @@
          (if (< active-section-index (- (count diagram-structure) 1))
            [:a
             {:on-click #(raise! owner [:docker-diagram-index-selected (+ active-section-index 1)])}
-            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]
-       ])))
+            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]])))
+
+(defrender docker-cta [source owner]
+  (html
+    [:div.outer-section.outer-section-condensed
+     [:section.container-fluid
+      [:img.background.docker-banner {:src (utils/cdn-path "/img/outer/integrations/banner-docker-logo.svg")}]
+      [:div.docker-cta
+       [:div.cta-text
+        [:h3.text-center "Start building with your Docker containers today!"]]
+       [:div.cta-btn
+        (common/sign-up-cta owner source)]]]]))
+
 
 (defn docker [app owner]
   (reify
@@ -131,12 +141,5 @@
             (common/feature-icon "docker")
             [:h3 "Continuous Delivery of your Docker images"]
             [:p "Once you have built an image and optionally pushed it to a registry, CircleCI makes it easy to deploy applications to AWS Elastic Beanstalk, Google Container Engine, CoreOS, Docker Swarm or any other host that can run Docker containers."]]]]]
-        [:div.outer-section.outer-section-condensed
-         [:section.container-fluid
-          [:img.background.docker-banner {:src (utils/cdn-path "/img/outer/integrations/banner-docker-logo.svg")}]
-          [:div.docker-cta
-           [:div.cta-text
-            [:h3.text-center "Start building with your Docker containers today!"]]
-           [:div.cta-btn
-            (common/sign-up-cta owner "docker")]]]
-         ]]))))
+
+        (om/build docker-cta "docker")]))))

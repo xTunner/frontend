@@ -76,15 +76,15 @@
 (def port 3000)
 
 (def proxy-config
-  ;; Incomplete lists of routes to proxy. Unfortuantely duplicated knowledge between
+  ;; Incomplete lists of routes to proxy. Unfortunately duplicated knowledge between
   ;; here and various places in the backend. Ultimately, this will get cleaned up
   ;; once we have production web servers separate from backend API servers.
   {:patterns [;; These are owned by the backend. Add to this list if you expect
               ;; the backend to handle these routes without frontend codebase help.
               #"/api/.*"
               #"/auth/.*"
-              #"/cc.xml"
-              #"/changelog.rss"
+              #"/cc\.xml"
+              #"/changelog\.rss"
               #"/logout"
               ;; These bootstrap the frontend.  Add to this list if you expect
               ;; the backend to serve HTML to bootstrap the client-side code.
