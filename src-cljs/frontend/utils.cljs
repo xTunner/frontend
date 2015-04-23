@@ -186,11 +186,6 @@
   [f]
   (.start (goog.async.AnimationDelay. f)))
 
-(defn strip-html
-  "Strips all html characters from the string"
-  [str]
-  (string/replace str #"[&<>\"']" ""))
-
 (defn valid-email? [str]
   (.isValidAddrSpec EmailAddress str))
 
@@ -240,10 +235,9 @@
 
 
 (defn set-page-title! [& [title]]
-  (set! (.-title js/document) (strip-html
-                               (if title
-                                 (str title  " - CircleCI")
-                                 "CircleCI"))))
+  (set! (.-title js/document) (if title
+                                (str title  " - CircleCI")
+                                "CircleCI")))
 
 (defn set-page-description!
   [description]
