@@ -20,7 +20,7 @@
                            ["circle" "CircleCI builds, runs, and tests Docker images in any configuration."]
                            ["docker" "When all tests pass, built Docker images are pushed to the registry."]
                            ["scale" "CircleCI can trigger a deployment of new images to any Docker host with an API. Images built on CircleCI are pulled from the registry into production."]]
-        active-section-index (get-in app state/docker-diagram-path)
+        active-section-index (get (om/get-state owner) :selected-index 0)
         diagram-elem :img.diagram-icon]
     (html
       [:div.docker-diagram
@@ -31,7 +31,7 @@
             (if (not= index 0)
               [:span.connector-line {:class (if (= index (+ 1 active-section-index)) "active")}])
             [:a.diagram-icon
-             {:on-click #(raise! owner [:docker-diagram-index-selected index])}
+             {:on-click #(om/set-state! owner :selected-index index)}
              [:img {:src (utils/cdn-path
                            (if (= index active-section-index)
                              (gstring/format "/img/outer/docker/diagram-%s.svg" icon-name)
