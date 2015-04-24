@@ -61,6 +61,7 @@
            "docs/faq.md"
            "docs/file-ordering.md"
            "docs/filesystem.md"
+           "docs/fork-pr-builds.md"
            "docs/getting-started.md"
            "docs/gettingstarted.md"
            "docs/git-bundle-install.md"
