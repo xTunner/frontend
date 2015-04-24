@@ -1,6 +1,6 @@
 <!--
 
-title: Branches and forks and pull requests; oh my!
+title: Building Pull Requests from forks
 short_title: Fork PR Builds
 last_updated: April 2, 2015
 
@@ -11,8 +11,9 @@ last_updated: April 2, 2015
 Suppose your repository is https://github.com/yourorg/yourproject, and someone creates a fork at
 otherdev/yourproject
 
-* If yourorg/yourproject is a public repository, by default, we will run builds on for pull requests 
-  from otherdev/yourproject under yourorg/yourproject on CircleCI
+* If yourorg/yourproject is a public repository, we will run builds on for pull requests 
+  from otherdev/yourproject under yourorg/yourproject on CircleCI, with some restrictions
+  outlined below.
 
 * UNLESS otherdev/yourproject is explicitly configured to build on CircleCI in its own right.
 
@@ -21,7 +22,7 @@ otherdev/yourproject
   yourorg/yourproject at Project settings > Experimental Settings > Project, but it will expose
   sensitive information to the fork developers.
 
-## The Gory Details
+## Details
 
 ### Security Implications of running builds for pull requests from forks
 
