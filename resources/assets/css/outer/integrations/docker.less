@@ -1,15 +1,5 @@
 @import "../../bootstrap/variables.less";
 
-.background.main {
-  right: 70px;
-  bottom: 0;
-  height: 40%;
-
-  @media (max-width: @screen-md-max) {
-    opacity: 0.03;
-  }
-}
-
 .background.docker-banner {
   left: 0;
   bottom: 0;
@@ -54,6 +44,26 @@
     // TODO: 11px is the lower padding on an H3– use calculated
     // version instead of hardcoding it here.
     margin-top: calc(40px - 11px);
+  }
+
+  // Background implemented as an after so we can set its opacity.
+  &:after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -1;
+    content: "";
+
+    background-image: url('@{imgPath}/outer/integrations/main-docker-logo.svg');
+    background-position: ~"calc(100% - 70px)" bottom;
+    background-size: auto 40%;
+    background-repeat: no-repeat;
+
+    @media (max-width: @screen-md-max) {
+      opacity: 0.03;
+    }
   }
 }
 

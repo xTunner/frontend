@@ -67,7 +67,6 @@
       (html
        [:div.product-page.integrations.docker
         [:div.jumbotron
-         [:img.background.main {:src (utils/cdn-path "/img/outer/integrations/main-docker-logo.svg")}]
          [:h1 "A modern continuous delivery process for your Docker applications."]
          [:h3.small-aside "CircleCI can support any Docker-based build, test, and deployment workflow. With complete flexibility to run any Docker commands and access public or private registries, you can ship modern applications faster and more reliably than ever before."]
          (common/sign-up-cta owner "docker")
