@@ -98,7 +98,7 @@
             [:h3 "Dev-test-production equivalence"]
             [:p "Any containers you use locally as part of your dev environment, as well as any containerized services that will be running in production, can also be run in your test environment on CircleCI. Just " [:code "docker pull"] " in anything you need."]]
            [:div.feature
-            (common/feature-icon "deploy-1")
+            (common/feature-icon "circle")
             [:h3 "Deploy any application as a single binary artifact"]
             [:p "Don't you love the thrill of making sure you have a robust set of scripts and recipes to setup the same exact same Nginx, uwsgi, and Django configuration on every production server? Of course you don't! Docker lets you specify everything from your Linux distro to config files to what executables run at startup in a Dockerfile, build all of that information into a Docker image, test it, and deploy the exact same image byte-for-byte to production."]]
            [:div.feature
@@ -130,12 +130,9 @@
             (common/feature-icon "docker")
             [:h3 "Continuous Delivery of your Docker images"]
             [:p "Once you have built an image and optionally pushed it to a registry, CircleCI makes it easy to deploy applications to AWS Elastic Beanstalk, Google Container Engine, CoreOS, Docker Swarm or any other host that can run Docker containers."]]]]]
-        [:div.outer-section.outer-section-condensed
+        [:div.outer-section.outer-section-condensed.docker-cta
          [:section.container-fluid
-          [:img.background.docker-banner {:src (utils/cdn-path "/img/outer/integrations/banner-docker-logo.svg")}]
-          [:div.docker-cta
-           [:div.cta-text
-            [:h3.text-center "Start building with your Docker containers today!"]]
-           [:div.cta-btn
-            (common/sign-up-cta owner "docker")]]]
-         ]]))))
+          [:div.cta-text
+           [:h3.text-center "Start building with your Docker containers today!"]]
+          [:div.cta-btn
+           (common/sign-up-cta owner "docker")]]]]))))

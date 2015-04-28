@@ -1,14 +1,28 @@
 @import "../../bootstrap/variables.less";
 
-.background.docker-banner {
-  left: 0;
-  bottom: 0;
-  height: 100%;
+// Background implemented as an after so we can set its opacity.
+// Important! The element this is applied to should have a z-index (so it forms
+// a stacking context). Set z-index: 0 if it doesn't already have one. We don't
+// do that in the mixin so we don't override another value.
+.background-after-element(@rules) {
+  position: relative;
 
-  @media (max-width: @screen-md-max) {
-    opacity: 0.03;
+  &:after {
+    position: absolute;
+    display: block;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -1;
+
+    content: "";
+
+    @rules();
   }
 }
+
 
 .outer-section-overview {
   padding-bottom: 70px;
@@ -46,16 +60,7 @@
     margin-top: calc(40px - 11px);
   }
 
-  // Background implemented as an after so we can set its opacity.
-  &:after {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: -1;
-    content: "";
-
+  .background-after-element({
     background-image: url('@{imgPath}/outer/integrations/main-docker-logo.svg');
     background-position: ~"calc(100% - 70px)" bottom;
     background-size: auto 40%;
@@ -64,31 +69,40 @@
     @media (max-width: @screen-md-max) {
       opacity: 0.03;
     }
-  }
+  });
 }
 
 .docker-cta {
   position: relative;
   .make-row;
 
-  .background {
-    bottom: 0;
-    right: 0;
-  }
+  z-index: 0;
 
-  > .cta-text {
-    .make-md-column(12);
-    .make-lg-column(6);
-    .make-lg-column-offset(3);
-  }
-
-  > .cta-btn {
-    .make-md-column(12);
-    .make-lg-column(3);
+  .background-after-element({
+    background-image: url('@{imgPath}/outer/integrations/banner-docker-logo.svg');
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-position: bottom left;
 
     @media (max-width: @screen-md-max) {
-      .text-center;
+      opacity: 0.03;
+    }
+  });
+
+  > section {
+    > .cta-text {
+      .make-md-column(12);
+      .make-lg-column(6);
+      .make-lg-column-offset(3);
+    }
+
+    > .cta-btn {
+      .make-md-column(12);
+      .make-lg-column(3);
+
+      @media (max-width: @screen-md-max) {
+        .text-center;
+      }
     }
   }
 }
-
