@@ -1,29 +1,5 @@
 @import "../../bootstrap/variables.less";
 
-// Background implemented as an after so we can set its opacity.
-// Important! The element this is applied to should have a z-index (so it forms
-// a stacking context). Set z-index: 0 if it doesn't already have one. We don't
-// do that in the mixin so we don't override another value.
-.background-after-element(@rules) {
-  position: relative;
-
-  &:after {
-    position: absolute;
-    display: block;
-
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: -1;
-
-    content: "";
-
-    @rules();
-  }
-}
-
-
 .outer-section-overview {
   padding-bottom: 70px;
   .make-xs-column(12);
