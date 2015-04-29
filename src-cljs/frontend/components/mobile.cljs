@@ -25,13 +25,9 @@
     om/IRender
     (render [_]
       (html
-       [:div.mobile.page
-        (nav :overview)
-        [:section.intro.odd-section {}
-         icons/htc
-         icons/iphone
-         [:article {}
-          [:h1.mobile-tagline "Mobile App Testing, Done Faster."]
+        [:div.product-page.mobile
+         [:div.jumbotron
+          [:h1 "Ship better mobile apps, faster"]
           [:p "Mobile apps live and die by their app store ratings. "
            "Nothing guarantees an app’s failure like a shipped bug and "
            "1-star reviews. Let CircleCI bring our deep knowledge and "
@@ -41,77 +37,76 @@
            [:a {:href "/mobile/ios"} "iOS"]
            " and "
            [:a {:href "/docs/android"} "Android"]
-           " applications."]]
-         [:a.home-action.signup
-          {:href (auth-url)
-           :role "button"
-           :on-click #(raise! owner [:track-external-link-clicked
-                                     {:event "Auth GitHub"
+           " applications."]
+          (common/sign-up-cta owner "mobile")]
 
-                                      :path (auth-url)}])}
-         "Sign up for free"]]
-        [:section.pitch {}
-         [:article {}
-          [:h2 "More testing, faster feedback, better releases."]
-          [:p.explain "The mobile development workflow can be frustrating and slow. "
-           "App review times add significant delays to shipping, and prevent "
-           "pushing fixes quickly to address shipped bugs and issues. It’s "
-           "important to get the app built correctly to ensure a great user "
-           "experience and better app ratings."]
-          icons/steps
-          [:div.labels
-           [:p.one "Automate Build Process"]
-           [:p.two "Create a Consistent Build Environment"]
-           [:p.three "One Click Deployment (coming soon)"]]]]
-        [:section.workflow.odd-section {}
-         [:article {}
-          [:h2 "How it works"]
-          icons/workflow
-          [:p "Every time you push new code to your project repo on GitHub, "
-           "we automatically build and test your changes to make sure you didn’t "
-           "break anything. For every green build, you can one-click deploy that "
-           "successful version via Hockey, Testflight, Crashlytics or other "
-           "over-the-air (OTA) deployment service (coming soon) to start "
-           "collecting feedback immediately with no support from engineering."]]]
-        [:section.features {}
-         [:article.feature-list
-          [:div.feature
-           icons/app-store
-           [:h3 "Improve App Store Rating"]
-           [:p "Use Continuous Integration to reduce bugs so you ship "
-            "great apps that your customers love."]]
-          [:div.feature
-           icons/testing
-           [:h3 "Automate Testing"]
-           [:p "Continuous Integration and Deployment fully automates the mobile "
-            "app delivery process and significantly simplifies and accelerates "
-            "the process of getting 5-star apps into the hands of your users."]]
-          [:div.feature
-           icons/setup
-           [:h3 "Inferred Project Setup"]
-           [:p "Easily set up projects. Just like CircleCI for web apps, we infer "
-            "your project settings without the developer having to do the setup. "
-            "You can still set up your environment using the yml."]]
-          [:div.feature
-           icons/build-env
-           [:h3 "Full Control"]
-           [:p "You have full control to customize exactly what you need, whether it's your build tool, package manager, or system dependencies. If you can do it on your server, you can do it on ours."]]
-          [:div.feature
-           icons/commit
-           [:h3 "Merge With Confidence"]
-           [:p "Monitor test status with every commit, and only merge when all the tests pass."
-            "Feel productive instead of anxious when you press \"merge\"."]]
-          [:div.feature
-           icons/deploy
-           [:h3 "Automate Deployment"]
-           [:p "Continuous Integration and Deployment fully automates the mobile "
-            "app delivery process and significantly simplifies and accelerates the "
-            "process of getting 5-star apps into the hands of your users."]]]]
-        [:section.conclusion.odd-section {}
-         [:a.signup.home-action {:href (auth-url)
-                                 :role "button"
-                                 :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
-                                                                                         :path (auth-url)}])}
-          "Sign up for free"]
-         [:h3 "Start shipping faster, build for free using CircleCI today."]
-         icons/nexus]]))))
+         [:div.outer-section
+          [:section.container
+           [:div.overview
+            [:h2.text-center "More testing, faster feedback, better releases."]
+            [:p "The mobile development workflow can be frustrating and slow. "
+             "App review times add significant delays to shipping, and prevent "
+             "pushing fixes quickly to address shipped bugs and issues. It’s "
+             "important to get the app built correctly to ensure a great user "
+             "experience and better app ratings."]
+            [:ol.steps
+             [:li "Automate Build Process"]
+             [:li "Create a Consistent Build Environment"]
+             [:li "One Click Deployment" [:br] "(coming soon)"]]]]]
+
+         [:div.outer-section.outer-section-condensed
+          [:section.container
+           [:div.how-it-works
+            [:div.explanation
+             [:h2 "How it works"]
+             [:p "Every time you push new code to your project repo on GitHub, "
+              "we automatically build and test your changes to make sure you didn’t "
+              "break anything. For every green build, you can one-click deploy that "
+              "successful version via Hockey, Testflight, Crashlytics or other "
+              "over-the-air (OTA) deployment service (coming soon) to start "
+              "collecting feedback immediately with no support from engineering."]]
+            [:div.diagram shared/stories-procedure]]]]
+
+         [:div.outer-section
+          [:section.container
+           [:div.feature-row
+            [:div.feature
+             (common/feature-icon "app-store")
+             [:h3 "Improve App Store Rating"]
+             [:p "Use Continuous Integration to reduce bugs so you ship "
+              "great apps that your customers love."]]
+            [:div.feature
+             (common/feature-icon "sudo")
+             [:h3 "Automate Testing"]
+             [:p "Continuous Integration and Deployment fully automates the mobile "
+              "app delivery process and significantly simplifies and accelerates "
+              "the process of getting 5-star apps into the hands of your users."]]
+            [:div.feature
+             (common/feature-icon "controls")
+             [:h3 "Inferred Project Setup"]
+             [:p "Easily set up projects. Just like CircleCI for web apps, we infer "
+              "your project settings without the developer having to do the setup. "
+              "You can still set up your environment using the yml."]]
+            [:div.feature
+             (common/feature-icon "setup")
+             [:h3 "Full Control"]
+             [:p "You have full control to customize exactly what you need, whether it's your build tool, package manager, or system dependencies. If you can do it on your server, you can do it on ours."]]
+            [:div.feature
+             (common/feature-icon "commit")
+             [:h3 "Merge With Confidence"]
+             [:p "Monitor test status with every commit, and only merge when all the tests pass."
+              "Feel productive instead of anxious when you press \"merge\"."]]
+            [:div.feature
+             (common/feature-icon "circle-success")
+             [:h3 "Automate Deployment"]
+             [:p "Continuous Integration and Deployment fully automates the mobile "
+              "app delivery process and significantly simplifies and accelerates the "
+              "process of getting 5-star apps into the hands of your users."]]]]]
+
+         [:div.outer-section.outer-section-condensed.mobile-cta
+          [:section.container-fluid
+           [:div.cta-text
+            [:h3.text-center "Start shipping faster, build for free using CircleCI today."]]
+           [:div.cta-btn
+            (common/sign-up-cta owner "mobile")]]]
+         ]))))
