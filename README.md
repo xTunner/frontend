@@ -9,6 +9,9 @@ Continuous Integration and Deployment with easy setup and maintenance.
 Feel free to fork and make contributions. We'll try to get them into the main
 application.
 
+Watch [@brandonbloom](https://github.com/brandonbloom)'s Clojure/West talk, [Building CircleCI's Frontend with Om](https://www.youtube.com/watch?v=LNtQPSUi1iQ), for a quick overview.
+
+
 Want to work with Clojure(Script) full-time? [We're hiring](https://circleci.com/jobs).
 
 
