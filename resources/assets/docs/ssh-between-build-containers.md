@@ -6,9 +6,9 @@ last_updated: Apr 22, 2015
 -->
 
 When running a parallel build, we’ll populate each container with SSH
-credentials for the rest of the build containers of that build.
+credentials for the other containers running the build.
 
-The containers are indexed starting at 0, so to SSH into the container 7
+The containers are indexed starting at 0, so to SSH into container 7
 from any other container you can do:
 
 ```
