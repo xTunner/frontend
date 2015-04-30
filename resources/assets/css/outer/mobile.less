@@ -56,14 +56,19 @@
 
   ol.steps {
     @circle-radius: 30px;
-    @line: 1px dashed black;
+    @diagram-color: @grayDark;
+    @line: 1px dashed @diagram-color;
     @background-color: @white;
 
     .flexy(top, space-between);
 
     position: relative;
 
-    margin-top: @circle-radius + 20px;
+
+    @margin-top: 40px;
+    // The actual margin-top is an additional @circle-radius, to position the
+    // border-top along the axis of the circles.
+    margin-top: @margin-top + @circle-radius;
     margin-bottom: -@circle-radius;
     padding: 0;
 
@@ -93,6 +98,7 @@
         margin-right: auto;
         margin-bottom: 10px;
 
+        color: @diagram-color;
         line-height: @circle-radius * 2;
 
         border: @line;
