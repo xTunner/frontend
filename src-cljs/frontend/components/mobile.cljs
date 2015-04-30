@@ -104,9 +104,7 @@
               "process of getting 5-star apps into the hands of your users."]]]]]
 
          [:div.outer-section.outer-section-condensed.mobile-cta
-          [:section.container-fluid
-           [:div.cta-text
-            [:h3.text-center "Start shipping faster, build for free using CircleCI today."]]
-           [:div.cta-btn
-            (common/sign-up-cta owner "mobile")]]]
+          [:section
+           [:h3 "Start shipping faster, build for free using CircleCI today."]
+           (common/sign-up-cta owner "mobile")]]
          ]))))
