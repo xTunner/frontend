@@ -103,7 +103,7 @@
               "app delivery process and significantly simplifies and accelerates the "
               "process of getting 5-star apps into the hands of your users."]]]]]
 
-         [:div.outer-section.outer-section-condensed.mobile-cta
+         [:div.outer-section.outer-section-condensed.wide-cta-banner
           [:section
            [:h3 "Start shipping faster, build for free using CircleCI today."]
            (common/sign-up-cta owner "mobile")]]

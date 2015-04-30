@@ -48,37 +48,9 @@
   });
 }
 
-.docker-cta {
-  position: relative;
-  .make-row;
-
-  z-index: 0;
-
-  .background-after-element({
+.wide-cta-banner:after {
     background-image: url('@{imgPath}/outer/integrations/banner-docker-logo.svg');
     background-repeat: no-repeat;
     background-size: auto 100%;
     background-position: bottom left;
-
-    @media (max-width: @screen-md-max) {
-      opacity: 0.03;
-    }
-  });
-
-  > section {
-    > .cta-text {
-      .make-md-column(12);
-      .make-lg-column(6);
-      .make-lg-column-offset(3);
-    }
-
-    > .cta-btn {
-      .make-md-column(12);
-      .make-lg-column(3);
-
-      @media (max-width: @screen-md-max) {
-        .text-center;
-      }
-    }
-  }
 }

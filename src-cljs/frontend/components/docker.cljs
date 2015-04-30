@@ -130,9 +130,7 @@
             (common/feature-icon "docker")
             [:h3 "Continuous Delivery of your Docker images"]
             [:p "Once you have built an image and optionally pushed it to a registry, CircleCI makes it easy to deploy applications to AWS Elastic Beanstalk, Google Container Engine, CoreOS, Docker Swarm or any other host that can run Docker containers."]]]]]
-        [:div.outer-section.outer-section-condensed.docker-cta
-         [:section.container-fluid
-          [:div.cta-text
-           [:h3.text-center "Start building with your Docker containers today!"]]
-          [:div.cta-btn
-           (common/sign-up-cta owner "docker")]]]]))))
+        [:div.outer-section.outer-section-condensed.wide-cta-banner
+         [:section.
+          [:h3.text-center "Start building with your Docker containers today!"]
+          (common/sign-up-cta owner "docker")]]]))))

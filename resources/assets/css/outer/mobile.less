@@ -115,53 +115,10 @@
     }
   }
 
-  .mobile-cta {
-    position: relative;
-    .make-row;
-
-    z-index: 0;
-
-    .background-after-element({
-      background-image: url('@{imgPath}/outer/mobile/footer-htc.svg');
-      background-repeat: no-repeat;
-      background-size: 225px auto;
-      background-position: bottom left;
-
-      @media (max-width: @screen-sm-max) {
-        opacity: 0.03;
-      }
-    });
-
-    > section {
-      @media (min-width: @screen-md-min) {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-left: 70px;
-        padding-right: 70px;
-
-        &:before {
-          content: "";
-          width: @btn-cta-width;
-          flex: none;
-        }
-      }
-
-      > h3 {
-        margin: 0 40px;
-        text-align: center;
-      }
-
-      > .btn-cta {
-        flex: none;
-
-        @media (max-width: @screen-sm-max) {
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          margin-top: 20px;
-        }
-      }
-    }
+  .wide-cta-banner:after {
+    background-image: url('@{imgPath}/outer/mobile/footer-htc.svg');
+    background-repeat: no-repeat;
+    background-size: 225px auto;
+    background-position: bottom left;
   }
 }
