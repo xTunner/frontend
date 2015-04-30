@@ -21,9 +21,15 @@
   line-height: @line-height-base;
 
   .btn-cta {
-    .button-size(@padding-xl-vertical, @padding-xl-horizontal, @font-size-large, @line-height-large, 36px);
     .btn-success;
+
+    padding: @padding-xl-vertical @padding-xl-horizontal;
     width: 220px;
+
+    font-size: @font-size-large;
+    line-height: @line-height-large;
+
+    border-radius: 36px;
 
     // .btn-ctas already have a :focus style, so we can drop the outline.
     &:focus {
