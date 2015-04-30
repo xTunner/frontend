@@ -144,24 +144,30 @@ Google Play Store with a simple Gradle command, for example [this plugin](https:
 
 After applying the plugin and setting up all the configuration details,
 you can use the `deployment` section of your `circle.yml` to publish the
-`apk` to the desired channel:
+`apk` to the desired channel. We suggest reading the channel from
+a property in the plugin configuration like this:
+
+```
+play {
+  track = "${track}"
+}
+```
+This will allow you to specify different deployment channels right in
+the `circle.yml`:
 
 ```
 deployment:
   production: # just a label; label names are completely up to you
     branch: master
     commands:
-      - ./gradlew publishRelease
+      - ./gradlew publishApkRelease
+        -Dorg.gradle.project.track=production
   beta:
     branch: develop
     commands:
-      - ./gradlew publishRelease
+      - ./gradlew publishApkRelease
+        -Dorg.gradle.project.track=beta
 ```
-
-To make sure that the `apk`s are pushed to the different channels
-depending on the branch, you will have to keep a different config for
-your publishing plugin in each branch.
-each branch.
 
 ### Sample circle.yml
 
