@@ -80,10 +80,13 @@ deployment:
   production:
     branch: production
     commands:
+      - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
       - git push git@heroku.com:foo-bar-123.git $CIRCLE_SHA1:refs/heads/master
       - heroku run rake db:migrate --app foo-bar-123:
           timeout: 400 # if your deploys take a long time
 ```
+
+Note the 'git fetch --unshallow' command; we do shallow clones by default, which can't always push to heroku.
 
 <h2 id="maintenance-mode">Heroku's maintenance mode</h2>
 
