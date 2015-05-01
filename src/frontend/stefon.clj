@@ -70,6 +70,7 @@
            "docs/github-permissions.md"
            "docs/github-privacy.md"
            "docs/github-security-ssh-keys.md"
+           "docs/how-cache-works.md"
            "docs/how-parallelism-works.md"
            "docs/how-to.md"
            "docs/installing-custom-software.md"
