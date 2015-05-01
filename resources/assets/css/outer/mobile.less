@@ -23,9 +23,14 @@
   }
 
   .overview {
-    .make-md-column(8);
-    .make-md-column-offset(2);
+    .make-md-column(9);
+    .make-md-column-offset(1);
     .text-center;
+
+    // Required because Bootstrap's clearfixing ::before element stops the margin from collapsing.
+    > h2:first-child {
+      margin-top: 0;
+    }
   }
 
   .how-it-works {
