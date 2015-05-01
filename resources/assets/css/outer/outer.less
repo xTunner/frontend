@@ -54,16 +54,14 @@
 
     > section {
       @media (min-width: @screen-md-min) {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        .flexy(center, space-between);
         padding-left: 70px;
         padding-right: 70px;
 
         &:before {
           content: "";
           width: @btn-cta-width;
-          flex: none;
+          .flex(none);
         }
       }
 
@@ -73,7 +71,7 @@
       }
 
       > .btn-cta {
-        flex: none;
+        .flex(none);
 
         @media (max-width: @screen-sm-max) {
           display: block;
