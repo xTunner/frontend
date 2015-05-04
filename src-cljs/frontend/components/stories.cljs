@@ -27,7 +27,7 @@
       [:h1.text-center heading]
       [:h3.text-center subheading]]]]])
 
-(defrender story-cta [story-name owner]
+(defrender story-cta [source owner]
   (html
     [:div.outer-section.outer-section-condensed.bottom-cta-section
      common/language-background
@@ -35,7 +35,7 @@
       [:div.col-xs-12
        [:h2.text-center "Ready for world-class continuous delivery?"]
        [:div.text-center
-        (common/sign-up-cta owner (str "stories/" story-name))]]]]))
+        (common/sign-up-cta owner source)]]]]))
 
 
 (defmulti story
@@ -94,6 +94,7 @@
          [:p "Shopify needed the ability to easily configure, customize, and debug build their machines."]]]]]
 
      [:div.outer-section.outer-section-condensed
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-6.col-xs-offset-3
@@ -110,13 +111,10 @@
        [:p "CircleCI integrates natively with GitHub, which Shopify was already using, so set up time was minimal; it only took a few minutes to follow the rest of their repos on CircleCI and to invite the rest of their team members. Once their tests were running, they started optimizing their containers and parallelization from within the CircleCI app so that their test suite would run as quickly as possible. Once they had the tests running for all their projects, the next step was setting up Continuous Deployment."]
        [:p "CD has always been a core part of the engineering culture at Shopify, so getting deployment set up with CircleCI was essential. To streamline their CD process, Shopify used the CircleCI API to build a custom 'Ship It' tool that allows any developer to deploy with the press of a button, as long as they have a green build on CircleCI. All they had to do to build this was verify that the pull request in question returned \"outcome\" : \"success\" from the CircleCI API after merging with master, and then allow the developer to deploy."]
        [:p "This same functionality can also be accomplished without using the API by putting the deployment script directly into the circle.yml file."]
-
-       shared/stories-procedure
-
-       [:h2 "Results"]
-       [:p "Today, 1 year after initially switching to CircleCI, Shopify has scaled their engineering team to 130 team members who on average merge 300 pull requests and deploy 100 times per week. Thanks to CircleCI, they've managed to maintain their agile and efficient development process, with new projects being added effortlessly and everyone working off of a master branch (rather than having to maintain production and development branches). Their test suite runs faster than it ever did with their previous solution, and now that developers don't have to run tests on their local machine they can work on other projects while CircleCI runs their tests in the background. Shopify also uses CircleCI along with Capistrano to continuously deploy their application for anything from a small bug fix, to a package upgrade, to a new feature."]]]
+       shared/stories-procedure]]
 
      [:div.outer-section.outer-section-condensed
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-6.col-xs-offset-3
@@ -129,9 +127,11 @@
 
      [:div.outer-section
       [:section.container
+       [:h2 "Results"]
+       [:p "Today, 1 year after initially switching to CircleCI, Shopify has scaled their engineering team to 130 team members who on average merge 300 pull requests and deploy 100 times per week. Thanks to CircleCI, they've managed to maintain their agile and efficient development process, with new projects being added effortlessly and everyone working off of a master branch (rather than having to maintain production and development branches). Their test suite runs faster than it ever did with their previous solution, and now that developers don't have to run tests on their local machine they can work on other projects while CircleCI runs their tests in the background. Shopify also uses CircleCI along with Capistrano to continuously deploy their application for anything from a small bug fix, to a package upgrade, to a new feature."]
        [:p "The Shopify team no longer has to worry about scaling their testing infrastructure, maintaining their test stack, or monitoring their deployments. They focus on building products that bring value to their customers while relying on CircleCI to ensure that they are able to get those products to market quickly and reliably."]]]
 
-     (om/build story-cta "shopify")]))
+     (om/build story-cta "stories/shopify")]))
 
 (defrendermethod story :wit
   [app owner]
@@ -150,6 +150,7 @@
        [:p "Wit.ai's platform is built with services written in Clojure, including user-facing web apps and service endpoints, as well as a Riak-backed Datomic database. As Wti.ai was scaling their platform, they ran in to a few different issues. First, different services were built, tested, and deployed in different ways. The development team was moving fast and wanted to deploy multiple times per day, but were slowed down by this operational complexity. Second, it was difficult to ensure that their production environment was always consistent with their development and test environments. Making sure that the proper binary artifacts, server OS, and configuration files were in place required additional tooling which further added to their issues around complexity."]]]
 
      [:div.outer-section.outer-section-condensed
+      common/language-background
       [:section.container
        [:div.row
         [:div.col-xs-6.col-xs-offset-3
@@ -177,4 +178,4 @@
 
        (om/build docker/docker-diagram app)]]
 
-     (om/build story-cta "wit")]))
+     (om/build docker/docker-cta "stories/wit")]))
