@@ -206,9 +206,9 @@ let us know if you need anything else installed to run your JVM language of choi
 
 ### Haskell
 
-We have the following tools installed:
+We have the following versions of GHC and tools installed:
 
-{{ versions.gch_versions | code-list }}
+{{ versions.ghc_versions | code-list }}
 *   `cabal-install-1.18`
 *   `happy-1.19.3`
 *   `alex-3.1.3`

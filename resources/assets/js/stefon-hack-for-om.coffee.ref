@@ -118,6 +118,7 @@ window.stefon_hack_for_om =
     "/docs/github-permissions.md": '(asset-path "docs/github-permissions.md")'
     "/docs/github-privacy.md": '(asset-path "docs/github-privacy.md")'
     "/docs/github-security-ssh-keys.md": '(asset-path "docs/github-security-ssh-keys.md")'
+    "/docs/how-cache-works.md": '(asset-path "docs/how-cache-works.md")'
     "/docs/how-parallelism-works.md": '(asset-path "docs/how-parallelism-works.md")'
     "/docs/how-to.md": '(asset-path "docs/how-to.md")'
     "/docs/installing-custom-software.md": '(asset-path "docs/installing-custom-software.md")'

@@ -20,7 +20,7 @@
                            ["circle" "CircleCI builds, runs, and tests Docker images in any configuration."]
                            ["docker" "When all tests pass, built Docker images are pushed to the registry."]
                            ["scale" "CircleCI can trigger a deployment of new images to any Docker host with an API. Images built on CircleCI are pulled from the registry into production."]]
-        active-section-index (get-in app state/docker-diagram-path)
+        active-section-index (get (om/get-state owner) :selected-index 0)
         diagram-elem :img.diagram-icon]
     (html
       [:div.docker-diagram
@@ -31,7 +31,7 @@
             (if (not= index 0)
               [:span.connector-line {:class (if (= index (+ 1 active-section-index)) "active")}])
             [:a.diagram-icon
-             {:on-click #(raise! owner [:docker-diagram-index-selected index])}
+             {:on-click #(om/set-state! owner :selected-index index)}
              [:img {:src (utils/cdn-path
                            (if (= index active-section-index)
                              (gstring/format "/img/outer/docker/diagram-%s.svg" icon-name)
@@ -41,8 +41,7 @@
             (if (= index active-section-index)
               [:span.active-indicator-line])
             (if (= index active-section-index)
-              [:img.active-indicator-dot {:src (utils/cdn-path "/img/outer/docker/diagram-dot.svg")}])
-            ])
+              [:img.active-indicator-dot {:src (utils/cdn-path "/img/outer/docker/diagram-dot.svg")}])])
         diagram-structure)]
        [:div.diagram-annotation
         [:div.col-xs-3.text-right
@@ -57,8 +56,15 @@
          (if (< active-section-index (- (count diagram-structure) 1))
            [:a
             {:on-click #(raise! owner [:docker-diagram-index-selected (+ active-section-index 1)])}
-            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]
-       ])))
+            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]])))
+
+(defrender docker-cta [source owner]
+  (html
+    [:div.outer-section.outer-section-condensed.wide-cta-banner.docker-banner
+     [:section.
+      [:h3.text-center "Start building with your Docker containers today!"]
+      (common/sign-up-cta owner "docker")]]))
+
 
 (defn docker [app owner]
   (reify
@@ -130,7 +136,4 @@
             (common/feature-icon "docker")
             [:h3 "Continuous Delivery of your Docker images"]
             [:p "Once you have built an image and optionally pushed it to a registry, CircleCI makes it easy to deploy applications to AWS Elastic Beanstalk, Google Container Engine, CoreOS, Docker Swarm or any other host that can run Docker containers."]]]]]
-        [:div.outer-section.outer-section-condensed.wide-cta-banner
-         [:section.
-          [:h3.text-center "Start building with your Docker containers today!"]
-          (common/sign-up-cta owner "docker")]]]))))
+        (om/build docker-cta "docker")]))))

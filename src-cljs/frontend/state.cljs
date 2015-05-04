@@ -65,7 +65,6 @@
    :invite-data {:dismiss-invite-form nil
                  :github-users nil}
    :instrumentation []
-   :docker-diagram 0
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
    :inputs nil})
 
@@ -205,5 +204,3 @@
 (def selected-toolset-path [:selected-toolset])
 
 (def pricing-parallelism-path [:pricing-parallelism])
-
-(def docker-diagram-path [:docker-diagram])

@@ -31,16 +31,15 @@ customization options.
 
 ## Xcode Version
 
-By default, CircleCI will build your project with Xcode 6.1.1. If you would like to use 6.2,
-add the following to a [circle.yml file](/docs/configuration) in the root of your repo:
+By default, CircleCI will build your project with Xcode 6.1.1. You can select 6.2 or 6.3.1
+by specifying the version in a [circle.yml file](/docs/configuration) in the root of your
+repo. For example, for 6.3.1, add the following:
 
 ```
 machine:
   xcode:
-    version: "6.2"
+    version: "6.3.1"
 ```
-
-6.3 is currently in testing and should be available soon.
 
 ## Shared Schemes
 Your scheme (what you select in the dropdown next to the run/stop buttons in
@@ -279,7 +278,8 @@ versions installed:
 - Xcode:
   - 6.1.1 Build version 6A2008a
   - 6.2 Build version 6C131e
+  - 6.3.1 Build version 6D1002
 - Facebook xctool 0.2.2
-- CocoaPods 0.36.3
+- CocoaPods 0.36.4
 - xcpretty 0.1.8
 - shenzhen 0.13.1

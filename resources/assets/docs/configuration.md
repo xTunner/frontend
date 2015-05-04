@@ -268,7 +268,7 @@ for a complete list.
 ### GHC version
 
 You can choose from a
-[number of available GHC versions](/docs/configuration#Haskell)
+[number of available GHC versions](/docs/environment#haskell)
 in your `circle.yml`:
 
 ```
