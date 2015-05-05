@@ -17,21 +17,12 @@ checked into the root of your repository.
 
 ### Version
 
-Circle has
-[several versions of sbt](/docs/environment#scala)
-available. We use `{{ versions.scala }}`
-as the default; if you'd like a particular version, you
-can specify it in your `circle.yml`:
+Circle has [several versions of Scala](/docs/environment#scala)
+available.
 
-```
-machine:
-  scala:
-    version: 0.13.0
-```
-
-You can also specify the JVM version you want to run Scala on top of by
-following [the steps described in the Java
-doc](https://circleci.com/docs/configuration#java-version).
+You can specify the JVM version you want to run Scala on top of by
+following
+[the steps described in the Java doc](https://circleci.com/docs/configuration#java-version).
 
 ### Using a custom version of sbt
 
