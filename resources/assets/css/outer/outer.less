@@ -20,66 +20,18 @@
   font-size: @font-size-base;
   line-height: @line-height-base;
 
-  @btn-cta-width: 220px;
+  .btn-xl {
+    .button-size(@padding-xl-vertical, @padding-xl-horizontal, @font-size-large, @line-height-large, 36px);
+  }
+
   .btn-cta {
+    .btn-xl;
     .btn-success;
-
-    padding: @padding-xl-vertical @padding-xl-horizontal;
-    width: @btn-cta-width;
-
-    font-size: @font-size-large;
-    line-height: @line-height-large;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-    text-transform: capitalize;
-
-    border-radius: 36px;
+    width: 220px;
 
     // .btn-ctas already have a :focus style, so we can drop the outline.
     &:focus {
       outline: none;
-    }
-  }
-
-  .wide-cta-banner {
-    position: relative;
-
-    z-index: 0;
-
-    .background-after-element({
-      @media (max-width: @screen-sm-max) {
-        opacity: 0.03;
-      }
-    });
-
-    > section {
-      @media (min-width: @screen-md-min) {
-        .flexy(center, space-between);
-        padding-left: 70px;
-        padding-right: 70px;
-
-        &:before {
-          content: "";
-          width: @btn-cta-width;
-          .flex(none);
-        }
-      }
-
-      > h3 {
-        margin: 0 40px;
-        text-align: center;
-      }
-
-      > .btn-cta {
-        .flex(none);
-
-        @media (max-width: @screen-sm-max) {
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          margin-top: 20px;
-        }
-      }
     }
   }
 
@@ -177,7 +129,6 @@
   @import "shared/additional.less";
   @import "shared/jumbotron.less";
   @import "shared/background.less";
-  @import "shared/stories_procedure.less";
   @import "home/home.less";
   @import "about/about.less";
   @import "blog/blog.less";
@@ -195,5 +146,4 @@
   @import "integrations/integrations.less";
   @import "features/features.less";
   @import "press/press.less";
-  @import "mobile.less";
 }

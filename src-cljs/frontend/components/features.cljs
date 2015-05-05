@@ -251,7 +251,7 @@
          ]]
        [:div.feature-row
         [:div.feature.feature-offset
-         (common/feature-icon "circle")
+         (common/feature-icon "deploy-1")
          [:h4.text-center "Continuous Deployment"]
          [:p "Stop losing sleep over \"big bang\" deployments. Reduce risk by deploying a single atomic, understandable change at a time."]]
         [:div.feature

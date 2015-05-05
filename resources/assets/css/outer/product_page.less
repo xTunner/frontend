@@ -113,6 +113,42 @@
       position: absolute;
     }
   }
+
+  .docker-cta {
+    position: relative;
+    .make-row;
+
+    .background {
+      bottom: 0;
+      right: 0;
+    }
+
+    > .cta-text {
+      .make-md-column(12);
+      .make-lg-column(6);
+      .make-lg-column-offset(3);
+    }
+
+    > .cta-btn {
+      .make-md-column(12);
+      .make-lg-column(3);
+
+      @media (max-width: @screen-md-max) {
+        .text-center;
+      }
+    }
+  }
+
+  .background.docker-banner {
+    left: 0;
+    bottom: 0;
+    height: 100%;
+
+    @media (max-width: @screen-md-max) {
+      opacity: 0.03;
+    }
+  }
+
 }
 
 .header-icon {
