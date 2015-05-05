@@ -165,7 +165,7 @@
           [:section.row
            [:div.col-xs-4
             [:article
-             (common/feature-icon "deploy-1")
+             (common/feature-icon "circle")
              [:h2.text-center "Ship Faster"]
              [:p "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]
             ]
