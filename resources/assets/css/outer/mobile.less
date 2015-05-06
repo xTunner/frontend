@@ -23,7 +23,7 @@
   }
 
   .overview {
-    .make-md-column(9);
+    .make-md-column(10);
     .make-md-column-offset(1);
     .text-center;
 
@@ -133,7 +133,34 @@
     // -1px to ensure bleed.
     background-position: left -1px bottom;
   }
-}
 
-@import "mobile/overview.less";
-@import "mobile/ios.less";
+  &.overview {
+    .jumbotron {
+      padding-top: 110px;
+    }
+  }
+
+  &.ios {
+    .jumbotron {
+      background-image: url('@{imgPath}/outer/mobile/ios/apple.svg');
+      background-repeat: no-repeat;
+      background-position: right 70px bottom;
+    }
+
+    .feature {
+      .make-sm-column(6);
+    }
+
+    .overview {
+      .make-md-column(8);
+      .make-md-column-offset(2);
+      margin-bottom: 105px;
+
+      a.documentation {
+        margin: auto;
+        margin-top: 40px;
+        border: 1px @green solid;
+      }
+    }
+  }
+}
