@@ -2,8 +2,6 @@
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.mobile :as mobile]
-            [frontend.components.mobile.icons :as mobile-icons]
-            [frontend.components.mobile.ios.icons :as icons]
             [frontend.utils.github :refer [auth-url]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
