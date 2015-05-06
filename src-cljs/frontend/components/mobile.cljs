@@ -13,19 +13,19 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
-(defn nav [selected]
-  [:nav.mobile {}
-   [:a.overview {:href "/mobile" :class (when (= :overview selected) "selected")}
-    [:h5 "Overview"]]
-   [:a {:href "/mobile/ios" :class (when (= :ios selected) "selected")}
-    [:h5 "iOS"]]])
+(defrender mobile-cta [source owner]
+  (html
+    [:div.outer-section.outer-section-condensed.wide-cta-banner
+     [:section
+      [:h3 "Start shipping faster, build for free using CircleCI today."]
+      (common/sign-up-cta owner "mobile")]]))
 
 (defn mobile [app owner]
   (reify
     om/IRender
     (render [_]
       (html
-        [:div.product-page.mobile
+        [:div.product-page.mobile.overview
          [:div.jumbotron
           [:h1 "Ship better mobile apps, faster"]
           [:p "Mobile apps live and die by their app store ratings. "
@@ -102,9 +102,4 @@
              [:p "Continuous Integration and Deployment fully automates the mobile "
               "app delivery process and significantly simplifies and accelerates the "
               "process of getting 5-star apps into the hands of your users."]]]]]
-
-         [:div.outer-section.outer-section-condensed.wide-cta-banner
-          [:section
-           [:h3 "Start shipping faster, build for free using CircleCI today."]
-           (common/sign-up-cta owner "mobile")]]
-         ]))))
+         (om/build mobile-cta "mobile")]))))

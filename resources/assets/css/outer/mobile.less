@@ -9,10 +9,9 @@
     background-size: @iphone-width auto, @htc-width auto;
 
     // iPhone is 50px left of HTC; HTC is one pixel offscreen to the right to ensure full bleed.
-    background-position: ~"calc(100% - @{htc-width} - 50px)" top, ~"calc(100% + 1px)" top;
+    background-position: right (@htc-width + 50px - 1px) top, right -1px top;
 
     padding: 70px;
-    padding-top: 110px;
   }
 
   .feature {
@@ -135,3 +134,6 @@
     background-position: left -1px bottom;
   }
 }
+
+@import "mobile/overview.less";
+@import "mobile/ios.less";
