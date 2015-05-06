@@ -140,13 +140,7 @@
     }
   }
 
-  &.ios {
-    .jumbotron {
-      background-image: url('@{imgPath}/outer/mobile/ios/apple.svg');
-      background-repeat: no-repeat;
-      background-position: right 70px bottom;
-    }
-
+  &.platform {
     .feature {
       .make-sm-column(6);
     }
@@ -160,6 +154,28 @@
         margin: auto;
         margin-top: 40px;
         border: 1px @green solid;
+      }
+    }
+
+    &.ios {
+      .jumbotron {
+        background-image: url('@{imgPath}/outer/mobile/apple.svg');
+        background-repeat: no-repeat;
+        background-position: right 70px bottom;
+      }
+    }
+
+    &.android {
+      .jumbotron {
+        background-image: url('@{imgPath}/outer/mobile/android.svg');
+        background-repeat: no-repeat;
+        background-position: right 70px bottom;
+        background-size: 400px auto;
+
+        > p {
+          // Make extra room for the android.
+          padding-right: 320px;
+        }
       }
     }
   }

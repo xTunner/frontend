@@ -84,6 +84,7 @@
     :documentation docs/documentation
     :mobile mobile/mobile
     :ios mobile/ios
+    :android mobile/android
 
     :error errors/error-page))
 

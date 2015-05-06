@@ -23,7 +23,7 @@
   (html
     [:div.product-page.mobile.overview
      [:div.jumbotron
-      [:h1 "Ship better mobile apps, faster"]
+      [:h1 "Ship Better Mobile Apps, Faster."]
       [:p "Mobile apps live and die by their app store ratings. "
        "Nothing guarantees an app’s failure like a shipped bug and "
        "1-star reviews. Let CircleCI bring our deep knowledge and "
@@ -32,7 +32,7 @@
        "build, test, and deploy pipeline for your "
        [:a {:href "/mobile/ios"} "iOS"]
        " and "
-       [:a {:href "/docs/android"} "Android"]
+       [:a {:href "/mobile/android"} "Android"]
        " applications."]
       (common/sign-up-cta owner "mobile")]
 
@@ -101,7 +101,7 @@
      (om/build mobile-cta "mobile")]))
 
 (defn platform [owner data]
-  [:div.product-page.mobile {:class (:name data)}
+  [:div.product-page.mobile.platform {:class (:name data)}
    [:div.jumbotron
     [:h1 (:headline data)]
     (:jumbotron-content data)
@@ -133,7 +133,7 @@
 (defrender ios [app owner]
   (html
     (platform owner {:name "ios"
-                     :headline "iOS App Testing, Done Better"
+                     :headline "iOS App Testing, Done Better."
                      :jumbotron-content [:p
                                          "Shipping your app on iOS is hard. The App Store review process is
                                          long and painful. It’s important to get your app built right the first time to avoid
@@ -161,3 +161,33 @@
                                  :description "CircleCI supports any environment that you work in and the most
                                               recent version(s) of the iOS toolchain (including XCode 6.x). You can build with
                                               xcodebuild, xctool, CocoaPods, or git submodules."}]})))
+
+(defrender android [app owner]
+  (html
+    (platform owner {:name "android"
+                     :headline "Android App Testing, Done Better."
+                     :jumbotron-content [:p
+                                         "Building and testing an Android app
+                                         isn't easy. CircleCI preinstalls the
+                                         Android SDK to help you build and test
+                                         your apps quickly. Avoid 1-star
+                                         reviews by ensuring that your apps are
+                                         bug-free the first time."]
+                     :subheadline "Faster testing, better code, better Android apps."
+                     :explanation "CircleCI will automatically build and test
+                                  your changes for your Android appeach time
+                                  you push new code to your repo on Github.
+                                  More testing leads equals less bugs. Ship
+                                  your app with confidence by continually
+                                  testing and shipping great code."
+                     :documentation {:title "Android Documentation"
+                                     :href "/docs/android"}
+                     :features-heading "The same CircleCI you love, for Android."
+                     :features [{:icon "circle"
+                                 :heading "Easy Setup"
+                                 :description "CircleCI preinstalls the Android
+                                              SDK, a number of SDK packages,
+                                              and the NDK, so you don't have to."}
+                                {:icon "xcode"
+                                 :heading "Testing Android Projects"
+                                 :description "Quickly setup the Android Emulator."}]})))
