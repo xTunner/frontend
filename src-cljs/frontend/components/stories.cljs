@@ -178,4 +178,4 @@
 
        (om/build docker/docker-diagram app)]]
 
-     (om/build docker/docker-cta "stories/wit")]))
+     (docker/docker-cta owner "stories/wit")]))

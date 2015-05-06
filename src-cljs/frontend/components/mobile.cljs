@@ -12,12 +12,11 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
-(defrender mobile-cta [source owner]
-  (html
-    [:div.outer-section.outer-section-condensed.wide-cta-banner
-     [:section
-      [:h3 "Start shipping faster, build for free using CircleCI today."]
-      (common/sign-up-cta owner source)]]))
+(defn mobile-cta [owner source]
+  [:div.outer-section.outer-section-condensed.wide-cta-banner
+   [:section
+    [:h3 "Start shipping faster, build for free using CircleCI today."]
+    (common/sign-up-cta owner source)]])
 
 (defrender mobile [app owner]
   (html
@@ -98,7 +97,7 @@
          [:p "Continuous Integration and Deployment fully automates the mobile "
           "app delivery process and significantly simplifies and accelerates the "
           "process of getting 5-star apps into the hands of your users."]]]]]
-     (om/build mobile-cta "mobile")]))
+     (mobile-cta owner "mobile")]))
 
 (defn platform [owner data]
   [:div.product-page.mobile.platform {:class (:name data)}
@@ -128,7 +127,7 @@
          (common/feature-icon (:icon feature))
          [:h3 (:heading feature)]
          [:p (:description feature)]])]]]
-   (om/build mobile-cta "mobile")])
+   (mobile-cta owner (str "mobile/" (:name data)))])
 
 (defrender ios [app owner]
   (html
