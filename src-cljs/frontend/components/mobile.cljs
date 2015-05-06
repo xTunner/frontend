@@ -17,7 +17,7 @@
     [:div.outer-section.outer-section-condensed.wide-cta-banner
      [:section
       [:h3 "Start shipping faster, build for free using CircleCI today."]
-      (common/sign-up-cta owner "mobile")]]))
+      (common/sign-up-cta owner source)]]))
 
 (defrender mobile [app owner]
   (html
@@ -100,50 +100,64 @@
           "process of getting 5-star apps into the hands of your users."]]]]]
      (om/build mobile-cta "mobile")]))
 
+(defn platform [owner data]
+  [:div.product-page.mobile {:class (:name data)}
+   [:div.jumbotron
+    [:h1 (:headline data)]
+    (:jumbotron-content data)
+    (common/sign-up-cta owner (str "mobile/" (:name data)))]
+
+   [:div.outer-section
+    [:section.container
+     [:div.overview
+      [:h2 (:subheadline data)]
+      [:p (:explanation data)]
+      (let [doc-link (:documentation data)]
+        [:a.home-action.documentation
+         {:href (:href doc-link)}
+         (:title doc-link)])]]
+
+    [:section.container
+     [:div.overview
+      [:h2 (:features-heading data)]]]
+
+    [:section.container
+     [:div.feature-row
+      (for [feature (:features data)]
+        [:div.feature
+         (common/feature-icon (:icon feature))
+         [:h3 (:heading feature)]
+         [:p (:description feature)]])]]]
+   (om/build mobile-cta "mobile")])
+
 (defrender ios [app owner]
   (html
-    [:div.product-page.mobile.ios
-     [:div.jumbotron
-      [:h1 "iOS App Testing, Done Better"]
-      [:p
-       "Shipping your app on iOS is hard. The App Store review process is
-       long and painful. It’s important to get your app built right the first time to avoid
-       bugs and those nasty 1-star reviews. Let CircleCI help your iOS app development
-       cycle with our expertise in Continuous Integration and Continuous Delivery."
-       [:br]
-       "*In beta - "
-       [:a {:href (auth-url) :on-click (common/sign-up-cta owner "mobile/ios")} "sign up"]
-       " for the pilot program by marking your project iOS and you'll automatically be added to the beta."]
-      (common/sign-up-cta owner "mobile")]
-
-     [:div.outer-section
-      [:section.container
-       [:div.overview
-        [:h2 "More testing, fewer bugs, better iOS apps."]
-        [:p "Each time you push new code to your repo on Github for your
-            iOS app, CircleCI will automatically build and test your
-            changes. More testing leads to fewer bugs. Ship your app with
-            more confidence by continuously testing to ease the pain of the
-            App Store review process."]
-        [:a.home-action.documentation
-         {:href "/docs/ios"}
-         "iOS Documentation"]]]
-
-      [:section.container
-       [:div.overview
-        [:h2 "Everything you've come to expect from CircleCI, just on OS X."]]]
-
-      [:section.container
-       [:div.feature-row
-        [:div.feature
-         (common/feature-icon "circle")
-         [:h3 "Test your app on our dedicated iOS cloud"]
-         [:p "Running a dedicated build box is expensive and time consuming.
-             Let us manage the build environment. You build great iOS apps."]]
-        [:div.feature
-         (common/feature-icon "xcode")
-         [:h3 "Automate Testing"]
-         [:p "CircleCI supports any environment that you work in and the most
-             recent version(s) of the iOS toolchain (including XCode 6.x). You can build with
-             xcodebuild, xctool, CocoaPods, or git submodules."]]]]]
-     (om/build mobile-cta "mobile")]))
+    (platform owner {:name "ios"
+                     :headline "iOS App Testing, Done Better"
+                     :jumbotron-content [:p
+                                         "Shipping your app on iOS is hard. The App Store review process is
+                                         long and painful. It’s important to get your app built right the first time to avoid
+                                         bugs and those nasty 1-star reviews. Let CircleCI help your iOS app development
+                                         cycle with our expertise in Continuous Integration and Continuous Delivery."
+                                         [:br]
+                                         "*In beta - "
+                                         [:a {:href (auth-url) :on-click (common/sign-up-cta owner "mobile/ios")} "sign up"]
+                                         " for the pilot program by marking your project iOS and you'll automatically be added to the beta."]
+                     :subheadline "More testing, fewer bugs, better iOS apps."
+                     :explanation "Each time you push new code to your repo on Github for your
+                                  iOS app, CircleCI will automatically build and test your
+                                  changes. More testing leads to fewer bugs. Ship your app with
+                                  more confidence by continuously testing to ease the pain of the
+                                  App Store review process."
+                     :documentation {:title "iOS Documentation"
+                                     :href "/docs/ios"}
+                     :features-heading "Everything you've come to expect from CircleCI, just on OS X."
+                     :features [{:icon "circle"
+                                 :heading "Test your app on our dedicated iOS cloud"
+                                 :description "Running a dedicated build box is expensive and time consuming.
+                                              Let us manage the build environment. You build great iOS apps."}
+                                {:icon "xcode"
+                                 :heading "Automate Testing"
+                                 :description "CircleCI supports any environment that you work in and the most
+                                              recent version(s) of the iOS toolchain (including XCode 6.x). You can build with
+                                              xcodebuild, xctool, CocoaPods, or git submodules."}]})))
