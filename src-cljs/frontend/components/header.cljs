@@ -192,6 +192,14 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
+          (when (contains? #{:mobile :ios} nav-point)
+            [:div.navbar.navbar-default.navbar-static-top.subnav
+             [:div.container-fluid
+              [:ul.nav.navbar-nav
+               [:li (maybe-active nav-point :mobile)
+                [:a {:href "/mobile"} "Mobile"]]
+               [:li (maybe-active nav-point :ios)
+                [:a {:href "/mobile/ios"} "iOS"]]]]])
           (when (contains? #{:about :team :contact :jobs :press} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid

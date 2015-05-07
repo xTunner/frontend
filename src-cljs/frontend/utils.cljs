@@ -321,8 +321,3 @@
         max-height (apply max (map #(.-height %) sizes))]
     (doseq [item items]
       (goog.style/setSize item max-width max-height))))
-
-(defn outer-svg
-  [short-src alt args]
-  (html [:img (merge {:src (cdn-path (gstring/format "/img/outer/%s.svg" short-src))
-                      :alt alt} args)]))

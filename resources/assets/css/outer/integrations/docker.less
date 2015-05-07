@@ -1,48 +1,58 @@
 @import "../../bootstrap/variables.less";
 
-.background.main {
-  right: 70px;
-  bottom: 0;
-  height: 40%;
+.integrations.docker {
+  .outer-section-overview {
+    padding-bottom: 70px;
+    .make-xs-column(12);
 
-  @media (max-width: @screen-md-max) {
-    opacity: 0.03;
-  }
-}
+    > h2 {
+      margin-top: 0;
+    }
 
-.outer-section-overview {
-  padding-bottom: 70px;
-  .make-xs-column(12);
-
-  > h2 {
-    margin-top: 0;
-  }
-
-  > p {
-    margin-bottom: 0;
-  }
-}
-
-.feature {
-  .make-sm-column(4);
-
-  > h3 {
-    .text-center;
-  }
-}
-
-.jumbotron {
-  position: relative;
-
-  .small-aside {
-    @media (min-width: @screen-lg-min) {
-      max-width: 70%;
+    > p {
+      margin-bottom: 0;
     }
   }
 
-  .btn-cta {
-    // TODO: 11px is the lower padding on an H3– use calculated
-    // version instead of hardcoding it here.
-    margin-top: calc(40px - 11px);
+  .feature {
+    .make-sm-column(4);
+
+    > h3 {
+      .text-center;
+    }
   }
+
+  .jumbotron {
+    position: relative;
+
+    .small-aside {
+      @media (min-width: @screen-lg-min) {
+        max-width: 70%;
+      }
+    }
+
+    .btn-cta {
+      // TODO: 11px is the lower padding on an H3– use calculated
+      // version instead of hardcoding it here.
+      margin-top: calc(40px - 11px);
+    }
+
+    .background-after-element({
+      background-image: url('@{imgPath}/outer/integrations/main-docker-logo.svg');
+      background-position: ~"calc(100% - 70px)" bottom;
+      background-size: auto 40%;
+      background-repeat: no-repeat;
+
+      @media (max-width: @screen-md-max) {
+        opacity: 0.03;
+      }
+    });
+  }
+}
+
+.wide-cta-banner.docker-banner:after {
+  background-image: url('@{imgPath}/outer/integrations/banner-docker-logo.svg');
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position: bottom left;
 }
