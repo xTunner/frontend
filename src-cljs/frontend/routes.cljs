@@ -141,6 +141,11 @@
                                   :_title "Apple iOS App Testing"
                                   :_description "Build 5-star iOS apps by automating your development workflow with Mobile Continuous Integration and Delivery.")))
 
+  (defroute v1-android (FragmentRoute.  "/mobile/android") {:as params}
+    (open-to-outer! nav-ch :android (assoc params
+                                      :_title "Android App Testing"
+                                      :_description "Build better Android apps with Mobile Continuous Integration. Get testing today!")))
+
   (defroute v1-pricing (FragmentRoute. "/pricing") {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :account {:subpage :plans})

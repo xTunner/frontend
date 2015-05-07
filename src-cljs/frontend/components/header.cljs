@@ -136,6 +136,7 @@
              [:li.dropdown {:class (when (contains? #{:features
                                                       :mobile
                                                       :ios
+                                                      :android
                                                       :integrations
                                                       :enterprise}
                                                     nav-point)
@@ -192,14 +193,16 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
-          (when (contains? #{:mobile :ios} nav-point)
+          (when (contains? #{:mobile :ios :android} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid
               [:ul.nav.navbar-nav
                [:li (maybe-active nav-point :mobile)
                 [:a {:href "/mobile"} "Mobile"]]
                [:li (maybe-active nav-point :ios)
-                [:a {:href "/mobile/ios"} "iOS"]]]]])
+                [:a {:href "/mobile/ios"} "iOS"]]
+               [:li (maybe-active nav-point :android)
+                [:a {:href "/mobile/android"} "Android"]]]]])
           (when (contains? #{:about :team :contact :jobs :press} nav-point)
             [:div.navbar.navbar-default.navbar-static-top.subnav
              [:div.container-fluid

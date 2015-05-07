@@ -58,12 +58,11 @@
             {:on-click #(raise! owner [:docker-diagram-index-selected (+ active-section-index 1)])}
             [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]])))
 
-(defrender docker-cta [source owner]
-  (html
-    [:div.outer-section.outer-section-condensed.wide-cta-banner.docker-banner
-     [:section.
-      [:h3.text-center "Start building with your Docker containers today!"]
-      (common/sign-up-cta owner "docker")]]))
+(defn docker-cta [owner source]
+  [:div.outer-section.outer-section-condensed.wide-cta-banner.docker-banner
+   [:section.
+    [:h3.text-center "Start building with your Docker containers today!"]
+    (common/sign-up-cta owner source)]])
 
 
 (defn docker [app owner]
@@ -136,4 +135,4 @@
             (common/feature-icon "docker")
             [:h3 "Continuous Delivery of your Docker images"]
             [:p "Once you have built an image and optionally pushed it to a registry, CircleCI makes it easy to deploy applications to AWS Elastic Beanstalk, Google Container Engine, CoreOS, Docker Swarm or any other host that can run Docker containers."]]]]]
-        (om/build docker-cta "docker")]))))
+        (docker-cta owner "docker")]))))
