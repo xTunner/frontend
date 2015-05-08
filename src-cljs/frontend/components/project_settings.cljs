@@ -366,16 +366,14 @@
             (describe-flag {:flag :junit
                             :title "JUnit support"
                             :blurb [:p
-                                    "We've been experimenting with better ways to display and manage "
-                                    "test result data, especially for large test suites. This adds flags "
-                                    "to some of our inferred commands to collect structured test output supplied by "
-                                    "JUnit-compatible test runners. It currently works with RSpec and Cucumber if "
-                                    "you're using our inferred test steps. For RSpec, we also require our fork of the "
-                                    "rspec_junit_formatters gem. The line you need to add to your Gemfile is: "
-                                    [:p [:code "gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'"]]
-                                    "If you're using parallelism, we'll "
-                                    "automatically use the timing data to give you better test splits. You'll also be able to "
-                                    "fetch the test data via our API at https://circleci.com/api/v1/project/:org-name/:repo-name/:build-num/tests"]})
+                                    "This flag enables collection of test data via junit xml or cucumber json files," 
+                                    " which we use to better display test results and make parallel builds more"
+                                    " efficient.  It also adds the necessary flags for collecting this to automatically"
+                                    " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
+                                    " to add the necessary formatter gem - see "
+                                    [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"}
+                                     "the docs"] " for more information."
+                                    ]})
             (describe-flag {:flag :set-github-status
                             :title "GitHub Status updates"
                             :blurb [:p
