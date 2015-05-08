@@ -19,7 +19,7 @@ though for RSpec and Minitest you'll need to add the necessary formatter gems to
 For RSpec:
 
 ```
-gem 'rspec_junit_formatter', :git => 'git@github.com:circleci/rspec_junit_formatter.git'
+gem 'rspec_junit_formatter', '0.2.2'
 ```
 
 For Minitest:
