@@ -169,6 +169,32 @@
     (utils/cdn-path (gstring/format "/img/outer/contact/contact-%s.svg" shortname)))
 
 
+(defn validated-form-control [props owner]
+  (let [check-validation
+        (fn [input]
+          (om/set-state! owner {:value (.-value input)
+                                :validation-message (.-validationMessage input)}))]
+    (reify
+      om/IInitState
+      (init-state [_]
+        {:value nil
+         :validation-message nil})
+      om/IDidMount
+      (did-mount [_]
+        (check-validation (om/get-node owner "control")))
+      om/IRenderState
+      (render-state [_ {:keys [value validation-message]}]
+        (html
+          [:div.validated-form-control
+           [(:constructor props)
+            (merge (dissoc props :constructor)
+                   {:value value
+                    :ref "control"
+                    :on-change #(check-validation (.-target %))})]
+           (when validation-message
+             [:div.validation-message validation-message])])))))
+
+
 (extend-type js/HTMLCollection
   ISeqable
   (-seq [collection] (array-seq collection 0)))
@@ -204,28 +230,31 @@
          [:h2.form-header "We'd love to hear from you!"]
          [:div.row
           [:div.form-group.col-xs-6
-           [:input.dumb.form-control
-            {:placeholder "Name"
-             :aria-label "Name"
-             :required true
-             :disabled loading?
-             :type "text"
-             :name "name"}]]
+           (om/build validated-form-control
+                     {:constructor :input.dumb.form-control
+                      :placeholder "Name"
+                      :aria-label "Name"
+                      :required true
+                      :disabled loading?
+                      :type "text"
+                      :name "name"})]
           [:div.form-group.col-xs-6
-           [:input.dumb.form-control
-            {:placeholder "Email"
-             :aria-label "Email"
-             :disabled loading?
-             :type "email"
-             :name "email"
-             :required true}]]]
+           (om/build validated-form-control
+                     {:constructor :input.dumb.form-control
+                      :placeholder "Email"
+                      :aria-label "Email"
+                      :disabled loading?
+                      :type "email"
+                      :name "email"
+                      :required true})]]
          [:div.form-group
-          [:textarea.dumb.form-control.message
-           {:placeholder "Tell us what you're thinking..."
-            :aria-label "Tell us what you're thinking..."
-            :disabled loading?
-            :required true
-            :name "message"}]]
+          (om/build validated-form-control
+                    {:constructor :textarea.dumb.form-control.message
+                     :placeholder "Tell us what you're thinking..."
+                     :aria-label "Tell us what you're thinking..."
+                     :disabled loading?
+                     :required true
+                     :name "message"})]
          [:div.notice (when notice
                         [:div {:class (:type notice)}
                          (:message notice)])]

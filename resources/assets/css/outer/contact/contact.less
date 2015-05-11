@@ -43,6 +43,12 @@
       transition: height 0.5s;
     }
 
+    input, textarea {
+      &:invalid {
+        border-color: @redLight;
+      }
+    }
+
     .message {
       resize: none;
       &:valid, &:focus {
