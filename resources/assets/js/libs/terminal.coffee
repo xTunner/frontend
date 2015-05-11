@@ -8,7 +8,7 @@ CI.terminal =
       italic: false
       bold: false
 
-    initial_state = _.extend(default_state, state)
+    initial_state = $.extend(default_state, state)
 
     trailing_raw = initial_state.trailing_raw
     trailing_out = initial_state.trailing_out
@@ -89,7 +89,7 @@ CI.terminal =
 
 
     currentState: () ->
-      _.extend
+      $.extend
         trailing_raw: trailing_raw
         trailing_out: trailing_out
       , style.currentState()

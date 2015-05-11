@@ -134,8 +134,8 @@ CI.inner.Annotated = class Annotated
         splitting[splitting.length - 1].push kid
       else
         [before, after...] = kid.data.split char
-        splitting[splitting.length - 1].push (_.extend {}, kid, {data: before})
-        after.forEach (r) => splitting.push [_.extend {}, kid, {data: r}]
+        splitting[splitting.length - 1].push ($.extend {}, kid, {data: before})
+        after.forEach (r) => splitting.push [$.extend {}, kid, {data: r}]
     return splitting
 
   # Split the piece of data spanning across a given char-wise index. Return
@@ -154,8 +154,8 @@ CI.inner.Annotated = class Annotated
       here += kid?.data?.length || 0
       if not ix and diff >= 0 and diff < kid?.data?.length
         ix = index + 1
-        splitting.push (_.extend {}, kid, { data: kid.data.slice 0, diff })
-        splitting.push (_.extend {}, kid, { data: kid.data.slice diff })
+        splitting.push ($.extend {}, kid, { data: kid.data.slice 0, diff })
+        splitting.push ($.extend {}, kid, { data: kid.data.slice diff })
       else
         splitting.push kid
     @kids = splitting
@@ -173,4 +173,4 @@ CI.inner.Annotated = class Annotated
       diff = where - here
       here += kid?.data?.length || 0
       if diff >= 0 and diff < kid?.data?.length
-        return _.extend {}, kid, { data: kid.data[diff] }
+        return $.extend {}, kid, { data: kid.data[diff] }
