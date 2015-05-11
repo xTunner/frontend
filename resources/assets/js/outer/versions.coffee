@@ -87,7 +87,7 @@ CI.Versions =
   rspec: "2.14.4"
   rake: "10.1.0"
 
-  default_node: "0.8.12"
+  default_node: "0.10.33"
   node_versions: [
      "iojs-v1.3.0",
      "iojs-v1.2.0",
@@ -111,7 +111,7 @@ CI.Versions =
      "0.8.22",
      "0.8.19",
      "0.8.12",
-     "v0.8.2"
+     "0.8.2"
   ]
 
   lein: "2.5.1"
