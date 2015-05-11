@@ -36,7 +36,8 @@
   [handler]
   (fn [req]
     (-> (handler req)
-        (response/header "Access-Control-Allow-Origin" "*"))))
+        (response/header "Access-Control-Allow-Origin" "*")
+        (response/header "Vary" "Accept-Encoding"))))
 
 (defn less-override
   "Serve LESS files instead of letting Stefon handle them. (Needed for sourcemap support)"
@@ -47,7 +48,9 @@
                  (if (= "/app.css.map" path) path)
                  (last (re-matches #"^/((?:(?:assets/css)|components)/.*\.less)$" path)))]
       (if file
-        (response/resource-response file)
+        (-> file
+            (response/resource-response)
+            (response/header "Content-Type" "text/plain; charset=utf-8"))
         (handler req)))))
 
 (defn wrap-hosted-scripts
