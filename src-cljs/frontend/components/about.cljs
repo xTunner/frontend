@@ -168,89 +168,69 @@
 (defn contact-image-src [shortname]
     (utils/cdn-path (gstring/format "/img/outer/contact/contact-%s.svg" shortname)))
 
-(defn contact-form
-  "It's not clear how this should fit into the global state, so it's using component-local
-   state for now."
-  [app owner opts]
+
+(extend-type js/HTMLCollection
+  ISeqable
+  (-seq [collection] (array-seq collection 0)))
+
+(defn contact-form [_ owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:email nil
-       :name nil
-       :message nil
-       :notice nil})
+      {:notice nil
+       :loading? false})
     om/IRenderState
-    (render-state [_ {:keys [email name message notice loading?]}]
-      (let [clear-notice! #(om/set-state! owner [:notice] nil)
-            enterprise? (:enterprise? opts)]
-        (html
-         [:form.contact-us
-          [:h2.form-header "We'd love to hear from you!"]
-          [:div.row
-           [:div.form-group.col-xs-6
-            [:label.sr-only {:for "name"} "Name"]
-            [:input.dumb.form-control
-             {:value name
-              :placeholder "Name"
-              :required true
-              :class (when loading? "disabled")
-              :type "text"
-              :name "name"
-              :on-change #(do (clear-notice!) (om/set-state! owner [:name] (.. % -target -value)))}]]
-           [:div.form-group.col-xs-6
-            [:label.sr-only {:for "email"} "Email"]
-            [:input.dumb.form-control
-             {:value email
-              :placeholder "Email"
-              :class (when loading? "disabled")
-              :type "email"
-              :name "email"
-              :required true
-              :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))}]]]
-          [:div.form-group
-           [:label.sr-only {:for "message"} "Message"]
-           [:textarea.dumb.form-control.message
-            {:value message
-             :placeholder "Tell us what you're thinking..."
-             :class (when loading? "disabled")
+    (render-state [_ {:keys [notice loading?]}]
+      (html
+        [:form.contact-us
+         {:action "/about/contact"
+          :on-submit (fn [e]
+                       (.stopPropagation e)
+                       (.preventDefault e)
+                       (let [form (.-target e)
+                             action (.-action form)
+                             params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))]
+                         (om/set-state! owner [:loading?] true)
+                         (go (let [resp (<! (ajax/managed-form-post
+                                              action
+                                              :params params))]
+                               (om/set-state! owner [:loading?] false)
+                               (if (= (:status resp) :success)
+                                 (do
+                                   (om/set-state! owner [:notice] nil)
+                                   (.reset form))
+                                 (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."}))))))}
+
+         [:h2.form-header "We'd love to hear from you!"]
+         [:div.row
+          [:div.form-group.col-xs-6
+           [:input.dumb.form-control
+            {:placeholder "Name"
+             :aria-label "Name"
              :required true
-             :name "message"
-             :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))}]]
-          [:div.notice (when notice
-                         [:div {:class (:type notice)}
-                          (:message notice)])]
-          [:button.btn.btn-cta {:class (when loading? "disabled")
-                                :on-click #(do (cond
-                                                (not (and (seq name) (seq email) (seq message)))
-                                                (om/set-state! owner [:notice] {:type "error"
-                                                                                :message "All fields are required."})
+             :disabled loading?
+             :type "text"
+             :name "name"}]]
+          [:div.form-group.col-xs-6
+           [:input.dumb.form-control
+            {:placeholder "Email"
+             :aria-label "Email"
+             :disabled loading?
+             :type "email"
+             :name "email"
+             :required true}]]]
+         [:div.form-group
+          [:textarea.dumb.form-control.message
+           {:placeholder "Tell us what you're thinking..."
+            :aria-label "Tell us what you're thinking..."
+            :disabled loading?
+            :required true
+            :name "message"}]]
+         [:div.notice (when notice
+                        [:div {:class (:type notice)}
+                         (:message notice)])]
+         [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Send")]]))))
 
-                                                (not (utils/valid-email? email))
-                                                (om/set-state! owner [:notice] {:type "error"
-                                                                                :message "Please enter a valid email address."})
-
-                                                :else
-                                                (do
-                                                  (om/set-state! owner [:loading?] true)
-                                                  (go (let [resp (<! (ajax/managed-form-post
-                                                                      "/about/contact"
-                                                                      :params (merge {:name name
-                                                                                      :email email
-                                                                                      :message message}
-                                                                                     (when enterprise?
-                                                                                       {:enterprise enterprise?}))))]
-                                                        (if (= (:status resp) :success)
-                                                          (om/update-state! owner (fn [s]
-                                                                                    {:name ""
-                                                                                     :email ""
-                                                                                     :message ""
-                                                                                     :loading? false
-                                                                                     :notice (:resp resp)}))
-                                                          (do
-                                                            (om/set-state! owner [:loading?] false)
-                                                            (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."})))))))
-                                               false)}
-           (if loading? "Sending..." "Send")]])))))
 
 (defn contact [app owner]
   (reify
@@ -292,7 +272,7 @@
          [:section.container
           [:div.row
            [:div.col-xs-6.col-xs-offset-3
-            (om/build contact-form app)]]]]]))))
+            (om/build contact-form nil)]]]]]))))
 
 (defn customer-image-src [shortname]
   (utils/cdn-path (gstring/format "/img/outer/about/logo-%s.svg" shortname)))

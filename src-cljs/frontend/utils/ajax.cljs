@@ -118,6 +118,15 @@
         clj-ajax/ajax-request)
     channel))
 
+(defn- same-origin-as-document?
+  "True iff the given URL has the same origin as the current document. Accepts
+  a relative URL (which will be resolved relative to the document's URL, and
+  should therefore have the same origin)."
+  [url]
+  (let [document-uri (js/goog.Uri.parse (.-href js/document.location))
+        other-uri (js/goog.Uri.parse url)
+        resolved-other-uri (.resolve document-uri other-uri)]
+    (.hasSameDomainAs resolved-other-uri document-uri)))
 
 ;; TODO this should be possible to do with the normal ajax function, but punting for now
 (defn managed-form-post [url & {:keys [params headers keywords?]
@@ -127,7 +136,7 @@
          :response-format (json-response-format {:keywords? keywords? :url url :method :post})
          :params params
          :headers (merge {:Accept "application/json"}
-                         (when (re-find #"^/" url)
+                         (when (same-origin-as-document? url)
                            {:X-CSRFToken (utils/csrf-token)})
                          headers)
          :handler #(put! channel (assoc % :status :success))
