@@ -5,7 +5,7 @@
   "../../components/bootstrap/js/affix.js"
   "../../components/bootstrap/js/alert.js"
   "../../components/bootstrap/js/button.js"
-  "../../components/bootstrap/js/carousel.js"
+  ;; "../../components/bootstrap/js/carousel.js"
   "../../components/bootstrap/js/collapse.js"
   "../../components/bootstrap/js/dropdown.js"
   "../../components/bootstrap/js/modal.js"
