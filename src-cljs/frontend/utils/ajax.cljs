@@ -4,7 +4,8 @@
             [cljs-time.core :as time]
             [clojure.string :as str]
             [frontend.async :refer [put!]]
-            [frontend.utils :as utils :include-macros true]))
+            [frontend.utils :as utils :include-macros true])
+  (:import [goog.net Jsonp] [goog Uri]))
 
 ;; https://github.com/JulianBirch/cljs-ajax/blob/master/src/ajax/core.cljs
 ;; copy of the default json formatter, but returns a map with json body
@@ -123,8 +124,8 @@
   a relative URL (which will be resolved relative to the document's URL, and
   should therefore have the same origin)."
   [url]
-  (let [document-uri (js/goog.Uri.parse (.-href js/document.location))
-        other-uri (js/goog.Uri.parse url)
+  (let [document-uri (Uri. (.-href js/document.location))
+        other-uri (Uri. url)
         resolved-other-uri (.resolve document-uri other-uri)]
     (.hasSameDomainAs resolved-other-uri document-uri)))
 
