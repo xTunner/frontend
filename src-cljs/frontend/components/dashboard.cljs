@@ -34,11 +34,11 @@
                                         [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
               :else
               [:div.dashboard
-               [:div.container-fluid
-                [:div.row
-                 [:div.col-xs-12
-                  (when (and plan (project-common/show-trial-notice? project plan))
-                    (om/build project-common/trial-notice current-project))]]]
+               (when (and plan (project-common/show-trial-notice? project plan))
+                 [:div.container-fluid
+                  [:div.row
+                   [:div.col-xs-12
+                    (om/build project-common/trial-notice current-project)]]])
 
                (when (plan-model/suspended? plan)
                  (om/build project-common/suspended-notice plan))
