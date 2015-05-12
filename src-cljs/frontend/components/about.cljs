@@ -170,7 +170,7 @@
 
 
 (defn validated-form-control [props owner]
-  (let [check-validation
+  (let [update-state
         (fn [input]
           (om/set-state! owner {:value (.-value input)
                                 :validation-message (.-validationMessage input)}))]
@@ -181,7 +181,8 @@
          :validation-message nil})
       om/IDidMount
       (did-mount [_]
-        (check-validation (om/get-node owner "control")))
+        ;; Update our state based on the DOM immediately (and later on-change).
+        (update-state (om/get-node owner "control")))
       om/IRenderState
       (render-state [_ {:keys [value validation-message]}]
         (html
@@ -190,7 +191,7 @@
             (merge (dissoc props :constructor)
                    {:value value
                     :ref "control"
-                    :on-change #(check-validation (.-target %))})]
+                    :on-change #(update-state (.-target %))})]
            (when validation-message
              [:div.validation-message validation-message])])))))
 
