@@ -5,7 +5,7 @@
             [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.utils :as utils :include-macros true])
-  (:import [goog.net Jsonp] [goog Uri]))
+  (:import [goog Uri]))
 
 ;; https://github.com/JulianBirch/cljs-ajax/blob/master/src/ajax/core.cljs
 ;; copy of the default json formatter, but returns a map with json body
