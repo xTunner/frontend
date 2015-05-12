@@ -203,29 +203,36 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:notice nil
+      {:show-validations? false
+       :notice nil
        :loading? false})
     om/IRenderState
-    (render-state [_ {:keys [notice loading?]}]
+    (render-state [_ {:keys [show-validations? notice loading?]}]
       (html
         [:form.contact-us
          {:action "/about/contact"
+          :class (when show-validations? "show-validations")
+          :no-validate true
           :on-submit (fn [e]
-                       (.stopPropagation e)
                        (.preventDefault e)
                        (let [form (.-target e)
                              action (.-action form)
-                             params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))]
-                         (om/set-state! owner [:loading?] true)
-                         (go (let [resp (<! (ajax/managed-form-post
-                                              action
-                                              :params params))]
-                               (om/set-state! owner [:loading?] false)
-                               (if (= (:status resp) :success)
-                                 (do
-                                   (om/set-state! owner [:notice] nil)
-                                   (.reset form))
-                                 (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."}))))))}
+                             params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))
+                             valid? (fn [f] (every? #(.checkValidity %) (.-elements f)))]
+                         (if (not (valid? form))
+                           (om/set-state! owner [:show-validations?] true)
+                           (do
+                             (om/set-state! owner [:show-validations?] false)
+                             (om/set-state! owner [:loading?] true)
+                             (go (let [resp (<! (ajax/managed-form-post
+                                                  action
+                                                  :params params))]
+                                   (om/set-state! owner [:loading?] false)
+                                   (if (= (:status resp) :success)
+                                     (do
+                                       (om/set-state! owner [:notice] nil)
+                                       (.reset form))
+                                     (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."}))))))))}
 
          [:h2.form-header "We'd love to hear from you!"]
          [:div.row

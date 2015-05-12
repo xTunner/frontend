@@ -43,9 +43,19 @@
       transition: height 0.5s;
     }
 
-    input, textarea {
-      &:invalid {
-        border-color: @redLight;
+    .validation-message {
+      display: none;
+    }
+
+    &.show-validations {
+      input, textarea {
+        &:invalid {
+          border-color: @redLight;
+        }
+      }
+
+      .validation-message {
+        display: initial;
       }
     }
 
