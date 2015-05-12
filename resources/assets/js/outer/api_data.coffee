@@ -446,3 +446,12 @@ window.circle_api_data =
           } ]
         }
         """
+
+    ssh_key:
+      url: "/api/v1/project/:username/:project/ssh-key"
+      description: "Creates an ssh key that will be used to access the external system identified by the hostname parameter for SSH key-based authentication."
+      method: "POST"
+      body: '{"hostname":"hostname","private_key":"RSA private key"}'
+      response: """
+        ""
+        """

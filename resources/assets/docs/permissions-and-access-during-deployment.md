@@ -1,13 +1,20 @@
 <!--
 
 title: Permissions and access during deployment
-last_updated: Jun 4, 2013
+last_updated: May 7, 2015
 
 -->
 
-We designed our UI so that it is easy for you to upload the SSH keys we need
-to securely deploy your projects to your production servers.
+Sometimes you need to access external systems that require SSH key-based authentication during your build. Such case includes accessing your production server for deployment or pulling dependencies from private VCS.
 
-You enter the security information (public key and private key) for deployment
-on your project's **Project Settings > SSH keys** page.
+You can add ssh private keys used to access these systems from our UI: **Project Settings > SSH Permissions** page.
 If you leave the **Hostname** field blank, the key will be used for all hosts.
+
+### Under the hood
+The ssh private keys that you add from the page are stored under the `~/.ssh` directory for the build user in the container. We also add entries to `~/.ssh/config` to specify which key is used to access which host. For example, if you add a key with the hostname `prod-server`, then `~/.ssh/id_prod-server` will be automatically created and `~/.ssh/config` will have an entry that looks like:
+
+```
+Host prod-server
+IdentitiesOnly yes
+IdentityFile /home/ubuntu/.ssh/id_prod-server
+```

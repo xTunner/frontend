@@ -11,6 +11,92 @@ The CircleCI API is a RESTy, fully-featured API that allows you to do almost any
 You can access all information and trigger all actions.
 The only thing we don't provide access to is billing functions, which must be done from the CircleCI web UI.
 
+<!-- TODO: Custom filter or something for this -->
+
+## Summary
+
+All Circle API endpoints begin with `"https://circleci.com/api/v1/"`.
+
+<dl class="dl-horizontal"></dl>
+<dt>
+  GET: /me
+</dt>
+<dd>
+  Provides information about the signed in user.
+</dd>
+<dt>
+  GET: /projects
+</dt>
+<dd>
+  List of all the projects you're following on CircleCI, with build information organized by branch.
+</dd>
+<dt>
+  GET: /project/:username/:project
+</dt>
+<dd>
+  Build summary for each of the last 30 builds for a single git repo.
+</dd>
+<dt>
+  GET: /recent-builds
+</dt>
+<dd>
+  Build summary for each of the last 30 recent builds, ordered by build_num.
+</dd>
+<dt>
+  GET: /project/:username/:project/:build_num
+</dt>
+<dd>
+  Full details for a single build. The response includes all of the fields from the build summary. This is also the payload for the [notification webhooks](/docs/configuration#notify), in which case this object is the value to a key named 'payload'.
+</dd>
+<dt>
+  GET: /project/:username/:project/:build_num/artifacts
+</dt>
+<dd>
+  List the artifacts produced by a given build.
+</dd>
+<dt>
+  POST: /project/:username/:project/:build_num/retry
+</dt>
+<dd>
+  Retries the build, returns a summary of the new build.
+</dd>
+<dt>
+  POST: /project/:username/:project/:build_num/cancel
+</dt>
+<dd>
+  Cancels the build, returns a summary of the build.
+</dd>
+<dt>
+  POST: /project/:username/:project/tree/:branch
+</dt>
+<dd>
+  Triggers a new build, returns a summary of the build. [Optional build parameters can be set using an experimental API](/docs/parameterized-builds).
+</dd>
+<dt>
+  POST: /project/:username/:project/ssh-key
+</dt>
+<dd>
+  Create an ssh key used to access external systems that require SSH key-based authentication
+</dd>
+<dt>
+  DELETE: /project/:username/:project/build-cache
+</dt>
+<dd>
+  Clears the cache for a project
+</dd>
+<dt>
+  POST: /user/ssh-key
+</dt>
+<dd>
+  Adds a CircleCI key to your Github User account.
+</dd>
+<dt>
+  POST: /user/heroku-key
+</dt>
+<dd>
+  Adds your Heroku API key to CircleCI, takes apikey as form param name.
+</dd>
+
 ## Getting started
 
 1.  Add an API token from your [account dashboard](/account/api).
@@ -126,84 +212,6 @@ You can retry a build with ssh by swapping "retry" with "ssh":
 
 <span class='label label-info'>Note:</span> [Learn how to set up your builds to collect test metadata](/docs/test-metadata)
 
+## SSH Keys
 
-<!-- TODO: Custom filter or something for this -->
-
-## Summary
-
-All Circle API endpoints begin with
-    `"https://circleci.com/api/v1/"`.
-
-<dl class="dl-horizontal"></dl>
-<dt>
-  GET: /me
-</dt>
-<dd>
-  Provides information about the signed in user.
-</dd>
-<dt>
-  GET: /projects
-</dt>
-<dd>
-  List of all the projects you're following on CircleCI, with build information organized by branch.
-</dd>
-<dt>
-  GET: /project/:username/:project
-</dt>
-<dd>
-  Build summary for each of the last 30 builds for a single git repo.
-</dd>
-<dt>
-  GET: /recent-builds
-</dt>
-<dd>
-  Build summary for each of the last 30 recent builds, ordered by build_num.
-</dd>
-<dt>
-  GET: /project/:username/:project/:build_num
-</dt>
-<dd>
-  Full details for a single build. The response includes all of the fields from the build summary. This is also the payload for the [notification webhooks](/docs/configuration#notify), in which case this object is the value to a key named 'payload'.
-</dd>
-<dt>
-  GET: /project/:username/:project/:build_num/artifacts
-</dt>
-<dd>
-  List the artifacts produced by a given build.
-</dd>
-<dt>
-  POST: /project/:username/:project/:build_num/retry
-</dt>
-<dd>
-  Retries the build, returns a summary of the new build.
-</dd>
-<dt>
-  POST: /project/:username/:project/:build_num/cancel
-</dt>
-<dd>
-  Cancels the build, returns a summary of the build.
-</dd>
-<dt>
-  POST: /project/:username/:project/tree/:branch
-</dt>
-<dd>
-  Triggers a new build, returns a summary of the build. [Optional build parameters can be set using an experimental API](/docs/parameterized-builds).
-</dd>
-<dt>
-  DELETE: /project/:username/:project/build-cache
-</dt>
-<dd>
-  Clears the cache for a project
-</dd>
-<dt>
-  POST: /user/ssh-key
-</dt>
-<dd>
-  Adds a CircleCI key to your Github User account.
-</dd>
-<dt>
-  POST: /user/heroku-key
-</dt>
-<dd>
-  Adds your Heroku API key to CircleCI, takes apikey as form param name.
-</dd>
+{{ api_data.ssh_key | api-endpoint }}
