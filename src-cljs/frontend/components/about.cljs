@@ -8,7 +8,6 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [om.core :as om :include-macros true]
-            [goog.math.Rect :as Rect]
             [goog.style :as gstyle]
             [goog.string :as gstring]
             [goog.string.format])
@@ -192,7 +191,7 @@
               goog-rects (map #(Rect. (.-left %) (.-top %) (.-width %) (.-height %)) client-rects)
               container-client-rect (.getBoundingClientRect container)
               origin-rect (Rect. (.-left container-client-rect) (.-top container-client-rect) 0 0)
-              bounding-rect (reduce Rect/boundingRect origin-rect goog-rects)]
+              bounding-rect (reduce Rect.boundingRect origin-rect goog-rects)]
           (gstyle/setHeight container (.-height bounding-rect))))
       om/IDidMount
       (did-mount [_]
