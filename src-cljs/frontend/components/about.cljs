@@ -173,39 +173,33 @@
   (contact-form/contact-form
     {:class "contact-us"
      :action "/about/contact"}
-    (fn [show-validations? notice loading?]
+    (fn [control notice loading?]
       (list
         [:h2.form-header "We'd love to hear from you!"]
         [:div.row
          [:div.form-group.col-xs-6
-          (om/build contact-form/validated-form-control
-                    {:constructor :input.dumb.form-control
-                     :show-validations? show-validations?
-                     :placeholder "Name"
-                     :aria-label "Name"
-                     :required true
-                     :disabled loading?
-                     :type "text"
-                     :name "name"})]
+          (control :input.dumb.form-control
+                   {:placeholder "Name"
+                    :aria-label "Name"
+                    :disabled loading?
+                    :required true
+                    :type "text"
+                    :name "name"})]
          [:div.form-group.col-xs-6
-          (om/build contact-form/validated-form-control
-                    {:constructor :input.dumb.form-control
-                     :show-validations? show-validations?
-                     :placeholder "Email"
+          (control :input.dumb.form-control
+                    {:placeholder "Email"
                      :aria-label "Email"
                      :disabled loading?
                      :type "email"
                      :name "email"
                      :required true})]]
         [:div.form-group
-         (om/build contact-form/validated-form-control
-                   {:constructor :textarea.dumb.form-control.message
-                    :show-validations? show-validations?
-                    :placeholder "Tell us what you're thinking..."
-                    :aria-label "Tell us what you're thinking..."
-                    :disabled loading?
-                    :required true
-                    :name "message"})]
+         (control :textarea.dumb.form-control.message
+                  {:placeholder "Tell us what you're thinking..."
+                   :aria-label "Tell us what you're thinking..."
+                   :disabled loading?
+                   :required true
+                   :name "message"})]
         [:div.notice (when notice
                        [:div {:class (:type notice)}
                         (:message notice)])]
