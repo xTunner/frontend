@@ -68,7 +68,9 @@
           [:form
            (merge
              props
-             {:class (str/join " " (filter identity [(:class props) (when show-validations? "show-validations")]))
+             {:class (str/join " " (filter identity ["contact"
+                                                     (:class props)
+                                                     (when show-validations? "show-validations")]))
               :no-validate true
               :on-submit (fn [e]
                            (.preventDefault e)

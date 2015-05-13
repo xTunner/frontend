@@ -34,50 +34,17 @@
       margin-bottom: 50px;
     }
 
-    .validated-form-control {
-      @form-control-padding: 1em;
-      padding: 0 @form-control-padding;
-
-      .form-control {
-        // Assumes the border width is 1px (which doesn't appear to be
-        // something we can reference from here).
-        height: 3em;
-        width: ~"calc(100% + (2 * (@{form-control-padding} + 2px)))";
-        margin: 0 ~"calc(-@{form-control-padding} + -2px)";
-        padding: ~"calc(@{form-control-padding} - 1px)";
-        line-height: 1em;
-        border-radius: 1.5em;
-        box-shadow: none;
-        transition: height 0.5s;
-      }
-
-      .validation-message-container {
-        transition: height 0.5s;
-        overflow: hidden;
-      }
-
-      .validation-message {
-        display: none;
-        margin-top: 4px;
-
-        font-size: @font-size-small;
-        font-weight: bold;
-        color: @redLight;
-        letter-spacing: .5px;
-        text-align: left;
-      }
+    .form-control {
+      height: 3em;
+      padding: calc(~'1em - 1px');
+      line-height: 1em;
+      border-radius: 1.5em;
+      box-shadow: none;
+      transition: height 0.5s;
     }
 
-    &.show-validations {
-      input, textarea {
-        &:invalid {
-          border-color: @redLight;
-        }
-      }
-
-      .validation-message {
-        display: block;
-      }
+    .validation-message-container {
+      padding: 0 14px;
     }
 
     .message {

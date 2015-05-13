@@ -1,0 +1,30 @@
+form.contact {
+  .validation-message-container {
+    overflow: hidden;
+
+    transition: height 0.5s;
+  }
+
+  .validation-message {
+    display: none;
+    margin-top: 4px;
+
+    font-size: @font-size-small;
+    font-weight: bold;
+    color: @redLight;
+    letter-spacing: .5px;
+    text-align: left;
+  }
+
+  &.show-validations {
+    input, textarea {
+      &:invalid {
+        border-color: @redLight;
+      }
+    }
+
+    .validation-message {
+      display: block;
+    }
+  }
+}
