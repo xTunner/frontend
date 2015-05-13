@@ -6,6 +6,7 @@ children:
   - config-sample
   - environment
   - environment-variables
+  - fork-pr-builds
   - permissions-and-access-during-deployment
   - status-badges
   - polling-project-status

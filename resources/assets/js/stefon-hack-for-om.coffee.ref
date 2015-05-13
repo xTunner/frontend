@@ -109,6 +109,7 @@ window.stefon_hack_for_om =
     "/docs/faq.md": '(asset-path "docs/faq.md")'
     "/docs/file-ordering.md": '(asset-path "docs/file-ordering.md")'
     "/docs/filesystem.md": '(asset-path "docs/filesystem.md")'
+    "/docs/fork-pr-builds.md": '(asset-path "docs/fork-pr-builds.md")'
     "/docs/getting-started.md": '(asset-path "docs/getting-started.md")'
     "/docs/gettingstarted.md": '(asset-path "docs/gettingstarted.md")'
     "/docs/git-bundle-install.md": '(asset-path "docs/git-bundle-install.md")'
