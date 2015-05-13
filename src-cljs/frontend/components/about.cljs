@@ -211,10 +211,6 @@
               [:div.validation-message validation-message])]])))))
 
 
-(extend-type js/HTMLCollection
-  ISeqable
-  (-seq [collection] (array-seq collection 0)))
-
 (defn contact-form [_ owner]
   (reify
     om/IInitState
