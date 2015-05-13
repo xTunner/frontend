@@ -34,17 +34,38 @@
       margin-bottom: 50px;
     }
 
-    .form-control {
-      height: 3em;
-      padding: calc(~'1em - 1px');
-      line-height: 1em;
-      border-radius: 1.5em;
-      box-shadow: none;
-      transition: height 0.5s;
-    }
+    .validated-form-control {
+      @form-control-padding: 1em;
+      padding: 0 @form-control-padding;
 
-    .validation-message {
-      display: none;
+      .form-control {
+        // Assumes the border width is 1px (which doesn't appear to be
+        // something we can reference from here).
+        height: 3em;
+        width: ~"calc(100% + (2 * (@{form-control-padding} + 2px)))";
+        margin: 0 ~"calc(-@{form-control-padding} + -2px)";
+        padding: ~"calc(@{form-control-padding} - 1px)";
+        line-height: 1em;
+        border-radius: 1.5em;
+        box-shadow: none;
+        transition: height 0.5s;
+      }
+
+      .validation-message-container {
+        transition: height 0.5s;
+        overflow: hidden;
+      }
+
+      .validation-message {
+        display: none;
+        margin-top: 4px;
+
+        font-size: @font-size-small;
+        font-weight: bold;
+        color: @redLight;
+        letter-spacing: .5px;
+        text-align: left;
+      }
     }
 
     &.show-validations {
@@ -55,7 +76,7 @@
       }
 
       .validation-message {
-        display: initial;
+        display: block;
       }
     }
 
