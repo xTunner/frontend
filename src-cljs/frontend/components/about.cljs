@@ -2,18 +2,16 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
             [frontend.components.common :as common]
+            [frontend.components.contact-form :as contact-form]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.ajax :as ajax]
             [om.core :as om :include-macros true]
-            [goog.style :as gstyle]
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
-  (:import [goog.math Rect]))
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (defn scaled-image-path [name]
   (let [retina (> (.-devicePixelRatio js/window) 1)
@@ -171,116 +169,48 @@
     (utils/cdn-path (gstring/format "/img/outer/contact/contact-%s.svg" shortname)))
 
 
-(defn validated-form-control [props owner]
-  (let [update-state
-        (fn [input]
-          (om/set-state! owner {:value (.-value input)
-                                :validation-message (let [msg (.-validationMessage input)]
-                                                      (when (not= "" msg)
-                                                        msg))}))]
-    (reify
-      om/IInitState
-      (init-state [_]
-        {:value nil
-         :validation-message nil})
-      om/IDidUpdate
-      (did-update [_ prev-props prev-state]
-        (let [container (om/get-node owner "validation-message-container")
-              rendered-children (filter #(not= "none" (gstyle/getComputedStyle % "display")) (.-children container))
-              client-rects (map #(.getBoundingClientRect %) rendered-children)
-              goog-rects (map #(Rect. (.-left %) (.-top %) (.-width %) (.-height %)) client-rects)
-              container-client-rect (.getBoundingClientRect container)
-              origin-rect (Rect. (.-left container-client-rect) (.-top container-client-rect) 0 0)
-              bounding-rect (reduce Rect.boundingRect origin-rect goog-rects)]
-          (gstyle/setHeight container (.-height bounding-rect))))
-      om/IDidMount
-      (did-mount [_]
-        ;; Update our state based on the DOM immediately (and later on-change).
-        (update-state (om/get-node owner "control")))
-      om/IRenderState
-      (render-state [_ {:keys [value validation-message]}]
-        (html
-          [:div.validated-form-control
-           [(:constructor props)
-            (merge (dissoc props :constructor :show-validations?)
-                   {:value value
-                    :ref "control"
-                    :on-change #(update-state (.-target %))})]
-           [:div {:class "validation-message-container" :ref "validation-message-container"}
-            (when validation-message
-              [:div.validation-message validation-message])]])))))
-
-
-(defn contact-form [_ owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:show-validations? false
-       :notice nil
-       :loading? false})
-    om/IRenderState
-    (render-state [_ {:keys [show-validations? notice loading?]}]
-      (html
-        [:form.contact-us
-         {:action "/about/contact"
-          :class (when show-validations? "show-validations")
-          :no-validate true
-          :on-submit (fn [e]
-                       (.preventDefault e)
-                       (let [form (.-target e)
-                             action (.-action form)
-                             params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))
-                             valid? (fn [f] (every? #(.checkValidity %) (.-elements f)))]
-                         (if (not (valid? form))
-                           (om/set-state! owner [:show-validations?] true)
-                           (do
-                             (om/set-state! owner [:show-validations?] false)
-                             (om/set-state! owner [:loading?] true)
-                             (go (let [resp (<! (ajax/managed-form-post
-                                                  action
-                                                  :params params))]
-                                   (om/set-state! owner [:loading?] false)
-                                   (if (= (:status resp) :success)
-                                     (do
-                                       (om/set-state! owner [:notice] nil)
-                                       (.reset form))
-                                     (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."}))))))))}
-
-         [:h2.form-header "We'd love to hear from you!"]
-         [:div.row
-          [:div.form-group.col-xs-6
-           (om/build validated-form-control
-                     {:constructor :input.dumb.form-control
-                      :show-validations? show-validations?
-                      :placeholder "Name"
-                      :aria-label "Name"
-                      :required true
-                      :disabled loading?
-                      :type "text"
-                      :name "name"})]
-          [:div.form-group.col-xs-6
-           (om/build validated-form-control
-                     {:constructor :input.dumb.form-control
-                      :show-validations? show-validations?
-                      :placeholder "Email"
-                      :aria-label "Email"
-                      :disabled loading?
-                      :type "email"
-                      :name "email"
-                      :required true})]]
-         [:div.form-group
-          (om/build validated-form-control
-                    {:constructor :textarea.dumb.form-control.message
+(def contact-form
+  (contact-form/contact-form
+    {:class "contact-us"
+     :action "/about/contact"}
+    (fn [show-validations? notice loading?]
+      (list
+        [:h2.form-header "We'd love to hear from you!"]
+        [:div.row
+         [:div.form-group.col-xs-6
+          (om/build contact-form/validated-form-control
+                    {:constructor :input.dumb.form-control
                      :show-validations? show-validations?
-                     :placeholder "Tell us what you're thinking..."
-                     :aria-label "Tell us what you're thinking..."
-                     :disabled loading?
+                     :placeholder "Name"
+                     :aria-label "Name"
                      :required true
-                     :name "message"})]
-         [:div.notice (when notice
-                        [:div {:class (:type notice)}
-                         (:message notice)])]
-         [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Send")]]))))
+                     :disabled loading?
+                     :type "text"
+                     :name "name"})]
+         [:div.form-group.col-xs-6
+          (om/build contact-form/validated-form-control
+                    {:constructor :input.dumb.form-control
+                     :show-validations? show-validations?
+                     :placeholder "Email"
+                     :aria-label "Email"
+                     :disabled loading?
+                     :type "email"
+                     :name "email"
+                     :required true})]]
+        [:div.form-group
+         (om/build contact-form/validated-form-control
+                   {:constructor :textarea.dumb.form-control.message
+                    :show-validations? show-validations?
+                    :placeholder "Tell us what you're thinking..."
+                    :aria-label "Tell us what you're thinking..."
+                    :disabled loading?
+                    :required true
+                    :name "message"})]
+        [:div.notice (when notice
+                       [:div {:class (:type notice)}
+                        (:message notice)])]
+        [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Send")]))))
+
 
 
 (defn contact [app owner]
