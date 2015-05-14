@@ -28,6 +28,21 @@
             [:div.loading-spinner common/spinner]
             [:code (om/build ankha/inspector build-state)])])))))
 
+(defn fleet-state [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Admin Build State")
+    om/IRender
+    (render [_]
+      (let [fleet-state (get-in app state/fleet-state-path)]
+        (html
+         [:section {:style {:padding-left "10px"}}
+          [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
+          " / "
+          [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]
+          (if-not fleet-state
+            [:div.loading-spinner common/spinner]
+            [:code (om/build ankha/inspector fleet-state)])])))))
+
 (defn admin [app owner]
   (reify
     om/IRender

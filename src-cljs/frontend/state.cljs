@@ -190,6 +190,8 @@
 
 (def build-state-path [:build-state])
 
+(def fleet-state-path [:fleet-state])
+
 (def error-message-path [:error-message])
 
 (def inputs-path [:inputs])

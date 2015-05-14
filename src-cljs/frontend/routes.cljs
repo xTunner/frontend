@@ -42,6 +42,8 @@
     (open-to-inner! nav-ch :dashboard {:deployments true}))
   (defroute v1-admin-build-state "/admin/build-state" []
     (open-to-inner! nav-ch :build-state {:admin true}))
+  (defroute v1-admin-fleet-state "/admin/fleet-state" []
+    (open-to-inner! nav-ch :fleet-state {:admin true}))
   (defroute v1-admin "/admin" []
     (open-to-inner! nav-ch :admin {:admin true})))
 

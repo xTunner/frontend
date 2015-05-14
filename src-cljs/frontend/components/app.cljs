@@ -62,6 +62,7 @@
 
     :admin admin/admin
     :build-state admin/build-state
+    :fleet-state admin/fleet-state
 
     :loading loading
 

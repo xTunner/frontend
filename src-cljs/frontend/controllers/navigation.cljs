@@ -130,6 +130,15 @@
     (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
   (set-page-title! "Build State"))
 
+(defmethod post-navigated-to! :fleet-state
+  [history-imp navigation-point args previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when-not (seq (get-in current-state state/projects-path))
+      (api/get-projects api-ch))
+    (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state api-ch))
+  (set-page-title! "Fleet State"))
+
+
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
   (mlog "navigated-to :build with args " args)
