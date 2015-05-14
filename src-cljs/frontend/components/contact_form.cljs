@@ -7,14 +7,24 @@
                    [frontend.utils :refer [html]])
   (:import [goog.math Rect]))
 
+(defn- validation-message [control]
+  (let [validity (.-validity control)]
+    (cond
+      (.-valid validity) nil
+      (.-valueMissing validity) "Please fill out this field."
+
+      (.-typeMismatch validity)
+      (case (.-type control)
+        "email" "Please enter a valid email address.")
+
+      ;; Default to the message provided by the browser.
+      :else (.-validationMessage control))))
 
 (defn- form-control [props owner]
   (let [update-state
-        (fn [input]
-          (om/set-state! owner {:value (.-value input)
-                                :validation-message (let [msg (.-validationMessage input)]
-                                                      (when (not= "" msg)
-                                                        msg))}))]
+        (fn [control]
+          (om/set-state! owner {:value (.-value control)
+                                :validation-message (validation-message control)}))]
     (reify
       om/IInitState
       (init-state [_]
@@ -83,6 +93,9 @@
                             (.preventDefault e)
                             (let [form (.-target e)
                                   action (.-action form)
+                                  ;; NOTE: HTMLFormElement.elements returns the form's *listed* elements; we really want
+                                  ;; the *submittable* elements. Here, we assume they're the same.
+                                  ;; https://html.spec.whatwg.org/multipage/forms.html#categories
                                   params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))
                                   filtered-params (params-filter params)
                                   valid? (fn [f] (every? #(.checkValidity %) (.-elements f)))]
