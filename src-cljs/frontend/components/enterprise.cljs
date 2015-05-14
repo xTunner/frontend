@@ -55,12 +55,13 @@
                      {:type "text"
                       :name "company"
                       :required true
-                      :class (when loading? "disabled")
+                      :disabled loading?
                       :placeholder "Company"})]
            [:div.col-sm-6
             (control :input.input-lg
                      {:type "text"
                       :name "phone"
+                      :disabled loading?
                       :placeholder "Phone"})]]
           [:div.row
            [:div.col-sm-6
@@ -68,12 +69,13 @@
                      {:type "text"
                       :name "name"
                       :required true
-                      :class (when loading? "disabled")
+                      :disabled loading?
                       :placeholder "Name"})]
            [:div.col-sm-6
             (control :input.input-lg
                      {:type "text"
                       :name "developer-count"
+                      :disabled loading?
                       :placeholder "# of Developers"})]]
           [:div.row
            [:div.col-sm-6
@@ -81,7 +83,7 @@
                      {:type "email"
                       :name "email"
                       :require true
-                      :class (when loading? "disabled")
+                      :disabled loading?
                       :placeholder "Email"})]
            [:div.col-sm-6
             [:div.telephone-info
