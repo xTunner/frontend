@@ -40,6 +40,11 @@
     {:id "contact-form"
      :class "form-horizontal"
      :action "/about/contact"}
+    {:params-filter (fn [{:strs [name email company phone developer-count]}]
+                      {:name name
+                       :email email
+                       :message (gstr/format "Company: %s\nPhone: %s\nDeveloper count: %s" company phone developer-count)
+                       :enterprise true})}
     (fn [control notice loading?]
       (list
         [:div.row.contact-form

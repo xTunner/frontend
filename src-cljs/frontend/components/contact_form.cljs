@@ -47,57 +47,65 @@
             (when validation-message
               [:div.validation-message validation-message])]])))))
 
-(defn contact-form [props children-f]
+(defn contact-form
   "Returns a function which reifys an Om component (that is, returns something
   you'd pass to om.core/build). props is a map of attributes to give to the
   form. children-f is a function which takes three arguments:
 
   - A function to create form controls.
   - A notice to display to the user, such as an error (or nil if there's no message).
-  - A boolean indicating whether the form is waiting for a response from the server."
-  (fn [_ owner]
-    (reify
-      om/IInitState
-      (init-state [_]
-        {:show-validations? false
-         :notice nil
-         :loading? false})
-      om/IRenderState
-      (render-state [_ {:keys [show-validations? notice loading?]}]
-        (html
-          [:form
-           (merge
-             props
-             {:class (str/join " " (filter identity ["contact"
-                                                     (:class props)
-                                                     (when show-validations? "show-validations")]))
-              :no-validate true
-              :on-submit (fn [e]
-                           (.preventDefault e)
-                           (let [form (.-target e)
-                                 action (.-action form)
-                                 params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))
-                                 valid? (fn [f] (every? #(.checkValidity %) (.-elements f)))]
-                             (if (not (valid? form))
-                               (om/set-state! owner [:show-validations?] true)
-                               (do
-                                 (om/set-state! owner [:show-validations?] false)
-                                 (om/set-state! owner [:loading?] true)
-                                 (go (let [resp (<! (ajax/managed-form-post
-                                                      action
-                                                      :params params))]
-                                       (om/set-state! owner [:loading?] false)
-                                       (if (= (:status resp) :success)
-                                         (do
-                                           (om/set-state! owner [:notice] nil)
-                                           (.reset form))
-                                         (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."}))))))))})
+  - A boolean indicating whether the form is waiting for a response from the server.
 
-           (let [control
-                 (fn [constructor props]
-                   (om/build form-control
-                             (merge
-                               {:constructor constructor
-                                :show-validations? show-validations?}
-                               props)))]
-             (children-f control notice loading?))])))))
+  Optionally, if a :params-filter is given, it will be called when the form is
+  submitted with a map of the params the form would normally submit. It should
+  return a map of params for the form to actually submit. Both maps should have
+  string keys and values."
+  ([props children-f] (contact-form props {} children-f))
+  ([props {:keys [params-filter] :or {params-filter identity}} children-f]
+   (fn [_ owner]
+     (reify
+       om/IInitState
+       (init-state [_]
+         {:show-validations? false
+          :notice nil
+          :loading? false})
+       om/IRenderState
+       (render-state [_ {:keys [show-validations? notice loading?]}]
+         (html
+           [:form
+            (merge
+              props
+              {:class (str/join " " (filter identity ["contact"
+                                                      (:class props)
+                                                      (when show-validations? "show-validations")]))
+               :no-validate true
+               :on-submit (fn [e]
+                            (.preventDefault e)
+                            (let [form (.-target e)
+                                  action (.-action form)
+                                  params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))
+                                  filtered-params (params-filter params)
+                                  valid? (fn [f] (every? #(.checkValidity %) (.-elements f)))]
+                              (if (not (valid? form))
+                                (om/set-state! owner [:show-validations?] true)
+                                (do
+                                  (om/set-state! owner [:show-validations?] false)
+                                  (om/set-state! owner [:loading?] true)
+                                  (go (let [resp (<! (ajax/managed-form-post
+                                                       action
+                                                       :params filtered-params))]
+                                        (om/set-state! owner [:loading?] false)
+                                        (if (= (:status resp) :success)
+                                          (do
+                                            (om/set-state! owner [:notice] nil)
+                                            (.reset form))
+                                          (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."}))))))))})
+
+            (let [control
+                  (fn [constructor props]
+                    (om/build form-control
+                              (merge
+                                {:constructor constructor
+                                 :show-validations? show-validations?}
+                                props)))]
+              (children-f control notice loading?))]))))))
