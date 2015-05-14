@@ -67,6 +67,14 @@ body {
   }
 }
 
+#statuspage-bar {
+  visibility: hidden;
+
+  &.statusnotok {
+    visibility: visible;
+  }
+}
+
 // .btn-primary {
 //  @btnPrimaryBackground: #1f4d80;
 //  @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
@@ -145,6 +153,7 @@ button [spinner], button [data-spinner]{
     width: 100px;
   }
 }
+
 #sticky-help-link {
   bottom: 0;
   border: 1px solid @black;
