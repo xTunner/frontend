@@ -134,19 +134,19 @@
                                   filtered-params (params-filter params)
                                   valid? (fn [f] (every? #(.checkValidity %) (.-elements f)))]
                               (if (not (valid? form))
-                                (om/set-state! owner [:show-validations?] true)
+                                (om/set-state! owner :show-validations? true)
                                 (do
-                                  (om/set-state! owner [:show-validations?] false)
-                                  (om/set-state! owner [:loading?] true)
+                                  (om/update-state! owner #(merge % {:notice nil
+                                                                     :show-validations? false
+                                                                     :loading? false}))
                                   (go (let [resp (<! (ajax/managed-form-post
                                                        action
                                                        :params filtered-params))]
-                                        (om/set-state! owner [:loading?] false)
+                                        (om/set-state! owner :loading? false)
                                         (if (= (:status resp) :success)
                                           (do
-                                            (om/set-state! owner [:notice] nil)
                                             (.reset form))
-                                          (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."}))))))))})
+                                          (om/set-state! owner :notice {:type "error" :message "Sorry! There was an error sending your message."}))))))))})
 
             (let [control
                   (fn [constructor props]
