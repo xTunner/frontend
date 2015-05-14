@@ -81,8 +81,16 @@
       margin-bottom: calc(40px - 1em);
     }
 
-    .validation-message-container {
-      padding: 0 19px;
+    .validated-form-control {
+      margin-bottom: 1em;
+
+      > input {
+        margin-bottom: 0;
+      }
+
+      > .validation-message-container {
+        padding: 0 19px;
+      }
     }
   }
 

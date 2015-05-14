@@ -43,38 +43,46 @@
     (fn [control notice loading?]
       (list
         [:div.row.contact-form
-         [:div.col-sm-4.col-sm-offset-2
-          (control :input.input-lg
-                   {:type "text"
-                    :name "company"
-                    :required true
-                    :class (when loading? "disabled")
-                    :placeholder "Company"})
-          (control :input.input-lg
-                   {:type "text"
-                    :name "name"
-                    :required true
-                    :class (when loading? "disabled")
-                    :placeholder "Name"})
-          (control :input.input-lg
-                   {:type "email"
-                    :name "email"
-                    :require true
-                    :class (when loading? "disabled")
-                    :placeholder "Email"})]
-         [:div.col-sm-4
-          (control :input.input-lg
-                   {:type "text"
-                    :name "phone"
-                    :placeholder "Phone"})
-          (control :input.input-lg
-                   {:type "text"
-                    :name "developer-count"
-                    :placeholder "# of Developers"})
-          [:div.telephone-info
-           "Or call "
-           [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
-           " for an Enterprise quote."]]]
+         [:div.col-sm-8.col-sm-offset-2
+          [:div.row
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "company"
+                      :required true
+                      :class (when loading? "disabled")
+                      :placeholder "Company"})]
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "phone"
+                      :placeholder "Phone"})]]
+          [:div.row
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "name"
+                      :required true
+                      :class (when loading? "disabled")
+                      :placeholder "Name"})]
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "developer-count"
+                      :placeholder "# of Developers"})]]
+          [:div.row
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "email"
+                      :name "email"
+                      :require true
+                      :class (when loading? "disabled")
+                      :placeholder "Email"})]
+           [:div.col-sm-6
+            [:div.telephone-info
+             "Or call "
+             [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
+             " for an Enterprise quote."]]]]]
         [:div.row
          [:div.col-xs-12.text-center
           [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Get More Info")]]]))))
