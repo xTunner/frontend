@@ -7,6 +7,48 @@
                    [frontend.utils :refer [html]])
   (:import [goog.math Rect]))
 
+(defn- update-height
+  "Calculates a bounding box for the rendered children of container, then sets
+  the height of container to encompass those children."
+  [container]
+  (let [rendered-children (filter #(not= "none" (gstyle/getComputedStyle % "display")) (.-children container))
+        child-client-rects (map #(.getBoundingClientRect %) rendered-children)
+        child-goog-rects (map #(Rect. (.-left %) (.-top %) (.-width %) (.-height %)) child-client-rects)
+        container-client-rect (.getBoundingClientRect container)
+        origin-goog-rect (Rect. (.-left container-client-rect) (.-top container-client-rect) 0 0)
+        bounding-rect (reduce Rect.boundingRect origin-goog-rect child-goog-rects)]
+    (gstyle/setHeight container (.-height bounding-rect))))
+
+(defn transitionable-height
+  "A div whose height will be set explicitly to the height of its contents,
+  emulating height: auto. This allows CSS transitions to work correctly with
+  the height property.
+
+  Accepts a class name as :class and a child or list of children as :children.
+
+  To animate the height, apply a transition property. You'll also want to hide
+  the overflow. For example:
+
+  .my-transitionable-height-element {
+    overflow: hidden;
+    transition: height 0.5s;
+  }"
+  [props owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (update-height (om/get-node owner)))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (update-height (om/get-node owner)))
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         {:class (:class props)}
+         (:children props)]))))
+
+
 (defn- validation-message [control]
   (let [validity (.-validity control)]
     (cond
@@ -30,16 +72,6 @@
       (init-state [_]
         {:value nil
          :validation-message nil})
-      om/IDidUpdate
-      (did-update [_ prev-props prev-state]
-        (let [container (om/get-node owner "validation-message-container")
-              rendered-children (filter #(not= "none" (gstyle/getComputedStyle % "display")) (.-children container))
-              client-rects (map #(.getBoundingClientRect %) rendered-children)
-              goog-rects (map #(Rect. (.-left %) (.-top %) (.-width %) (.-height %)) client-rects)
-              container-client-rect (.getBoundingClientRect container)
-              origin-rect (Rect. (.-left container-client-rect) (.-top container-client-rect) 0 0)
-              bounding-rect (reduce Rect.boundingRect origin-rect goog-rects)]
-          (gstyle/setHeight container (.-height bounding-rect))))
       om/IDidMount
       (did-mount [_]
         ;; Update our state based on the DOM immediately (and later on-change).
@@ -53,9 +85,11 @@
                    {:value value
                     :ref "control"
                     :on-change #(update-state (.-target %))})]
-           [:div {:class "validation-message-container" :ref "validation-message-container"}
-            (when validation-message
-              [:div.validation-message validation-message])]])))))
+           (om/build transitionable-height
+                     {:class "validation-message-container"
+                      :children (html
+                                  (when validation-message
+                                    [:div.validation-message validation-message]))})])))))
 
 (defn contact-form
   "Returns a function which reifys an Om component (that is, returns something

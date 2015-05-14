@@ -200,9 +200,12 @@
                    :disabled loading?
                    :required true
                    :name "message"})]
-        [:div.notice (when notice
-                       [:div {:class (:type notice)}
-                        (:message notice)])]
+        (om/build contact-form/transitionable-height
+                  {:class "notice"
+                   :children (html
+                               (when notice
+                                 [:div {:class (:type notice)}
+                                  (:message notice)]))})
         [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Send")]))))
 
 

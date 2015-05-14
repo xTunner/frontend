@@ -90,9 +90,12 @@
              "Or call "
              [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
              " for an Enterprise quote."]]]]]
-        [:div.notice (when notice
-                       [:div {:class (:type notice)}
-                        (:message notice)])]
+        (om/build contact-form/transitionable-height
+                  {:class "notice"
+                   :children (html
+                               (when notice
+                                 [:div {:class (:type notice)}
+                                  (:message notice)]))})
         [:div.row
          [:div.col-xs-12.text-center
           [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Get More Info")]]]))))
