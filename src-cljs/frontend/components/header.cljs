@@ -6,6 +6,7 @@
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
             [frontend.components.instrumentation :as instrumentation]
+            [frontend.components.statuspage :as statuspage]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -229,6 +230,7 @@
          [:header.main-head (when logged-out? {:class "guest"})
           (when admin?
             (om/build head-admin app))
+          (om/build statuspage/statuspage app)
           (when logged-out?
             (om/build outer-header app))
           (when (seq (get-in app state/crumbs-path))
