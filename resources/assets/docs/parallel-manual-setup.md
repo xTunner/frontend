@@ -89,6 +89,10 @@ across all nodes equally.
 
 <h3 id="auto-balancing">Automatic balancing with manual parallel setup</h3>
 
+With some of the inferred test commands we [automatically
+balance](http://blog.circleci.com/announcing-automatic-test-balancing/)
+the tests so that the total execution time is minimised.
+
 If you are overriding the default test command as explained above and
 still want the tests to be automatically balanced, you’ll need to make
 sure that the [test metadata](https://circleci.com/docs/test-metadata)
@@ -105,6 +109,22 @@ test:
         files:
           - spec/unit/sample.rb   # can be a direct path to file
           - spec/**/*.rb          # or a glob (ruby globs)
+```
+
+The same principle applies to Cucumber tests—to enable automatic test
+balancing when you manually specify the Cucumber command you would
+include the following in your `circle.yml`:
+
+```
+test:
+  override:
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+    - bundle exec cucumber
+      --format json
+      --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber:
+      parallel: true
+      files:
+        - spec/feature/*.feature
 ```
 
 <h3 id="manual-balancing">Balancing</h3>
