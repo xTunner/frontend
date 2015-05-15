@@ -87,7 +87,27 @@ Obviously, this is slightly limited because it's hard-coded to
 only work with two nodes, and the test time might not balance
 across all nodes equally.
 
-<h3 id="balancing">Balancing</h3>
+<h3 id="auto-balancing">Automatic balancing with manual parallel setup</h3>
+
+If you are overriding the default test command as explained above and
+still want the tests to be automatically balanced, you’ll need to make
+sure that the [test metadata](https://circleci.com/docs/test-metadata)
+is collected properly. For example, you would modify the initial RSpec
+command like this to include the RSpec Junit formatter:
+
+```
+test:
+  override:
+    - bundle exec rspec
+      --format RspecJunitFormatter
+      --out $CIRCLE_ARTIFACTS/rspec.xml:
+        parallel: true
+        files:
+          - spec/unit/sample.rb   # can be a direct path to file
+          - spec/**/*.rb          # or a glob (ruby globs)
+```
+
+<h3 id="manual-balancing">Balancing</h3>
 
 A more powerful version evenly splits all test files across N nodes. We recommend you write a script that does something like:
 
