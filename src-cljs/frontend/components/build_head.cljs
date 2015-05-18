@@ -442,6 +442,7 @@
             scopes (:scopes data)
             user (:user data)
             logged-in? (not (empty? user))
+            admin? (:admin user)
             build (:build build-data)
             show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
             selected-tab (get build-data :selected-header-tab (default-tab build scopes))
@@ -512,7 +513,7 @@
                   (when (not= 0 fail-count)
                     [:span {:class "fail-count"} fail-count]))]])
 
-            (when (build-model/finished? build)
+            (when (and admin? (build-model/finished? build))
               [:li {:class (when (= :build-time-viz selected-tab) "active")}
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
                 "Build Timing"]])

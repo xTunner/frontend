@@ -91,6 +91,6 @@
         scale (-> js/d3 (.-time) (.scale))]
     (.attr svg "width" svg-width)
     (-> scale (.domain #js [d0, d1]) (.range #js [0, (* 0.8 svg-width)]))
-    (println "scale maps [" d0 ", " d1 "] -> [" (scale d0) ", " (scale d1))
+    (println "scale maps [" d0 ", " d1 "] -> [" (scale d0) ", " (scale d1) "]")
 
     (chart-build svg scale build)))
