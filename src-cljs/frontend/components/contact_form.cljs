@@ -1,5 +1,6 @@
 (ns frontend.components.contact-form
   (:require [clojure.string :as str]
+            [cljs.core.async :refer [put! chan <! close!]]
             [frontend.utils.ajax :as ajax]
             [goog.style :as gstyle]
             [om.core :as om :include-macros true])
@@ -77,13 +78,14 @@
         ;; Update our state based on the DOM immediately (and later on-change).
         (update-state (om/get-node owner "control")))
       om/IRenderState
-      (render-state [_ {:keys [value validation-message]}]
+      (render-state [_ {:keys [value validation-message focus] :as state}]
         (html
           [:div.validated-form-control
            [(:constructor props)
             (merge (dissoc props :constructor :show-validations?)
                    {:value value
                     :ref "control"
+                    :on-focus #(put! focus %)
                     :on-change #(update-state (.-target %))})]
            (om/build transitionable-height
                      {:class "validation-message-container"
@@ -112,9 +114,22 @@
        (init-state [_]
          {:show-validations? false
           :notice nil
-          :loading? false})
+          :loading? false
+          :success? false
+          :focus (chan)})
+       om/IWillMount
+       (will-mount [_]
+         ;; If a field gets focus, switch out of the :success? state (and back to normal).
+         (let [focus (om/get-state owner :focus)]
+           (go-loop []
+               (when (<! focus)
+                 (om/set-state! owner :success? false)
+                 (recur)))))
+       om/IWillUnmount
+       (will-unmount [_]
+         (close! (om/get-state owner :focus)))
        om/IRenderState
-       (render-state [_ {:keys [show-validations? notice loading?]}]
+       (render-state [_ {:keys [show-validations? notice loading? success? focus]}]
          (html
            [:form
             (merge
@@ -138,13 +153,14 @@
                                 (do
                                   (om/update-state! owner #(merge % {:notice nil
                                                                      :show-validations? false
-                                                                     :loading? false}))
+                                                                     :loading? true}))
                                   (go (let [resp (<! (ajax/managed-form-post
                                                        action
                                                        :params filtered-params))]
                                         (om/set-state! owner :loading? false)
                                         (if (= (:status resp) :success)
                                           (do
+                                            (om/set-state! owner :success? true)
                                             (.reset form))
                                           (om/set-state! owner :notice {:type "error" :message "Sorry! There was an error sending your message."}))))))))})
 
@@ -154,5 +170,6 @@
                               (merge
                                 {:constructor constructor
                                  :show-validations? show-validations?}
-                                props)))]
-              (children-f control notice loading?))]))))))
+                                props)
+                              {:init-state {:focus focus}}))]
+              (children-f control notice loading? success?))]))))))

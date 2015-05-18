@@ -10,6 +10,8 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
+            [goog.dom :as gdom]
+            [goog.events :as events]
             [goog.string :as gstr]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html inspect]]
@@ -35,6 +37,35 @@
   [:img.background.language {:class name
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
+(defn morphing-button [{:keys [loading? success?]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-success? false})
+    om/IDidUpdate
+    (did-update [_ {was-success? :success? :as prev-props} prev-state]
+      (let [success? (om/get-props owner :success?)]
+        (when (and (not was-success?) success?)
+          (events/listenOnce (gdom/getElementByClass "spinner" (om/get-node owner))
+                             #js ["animationiteration" "webkitAnimationIteration"]
+                             #(om/set-state! owner :show-success? true)))
+        (when (and was-success? (not success?))
+          (events/listenOnce (gdom/getElementByClass "btn" (om/get-node owner))
+                             #js ["transitionend" "webkitTransitionEnd"]
+                             #(om/set-state! owner :show-success? false)))))
+    om/IRenderState
+    (render-state [_ {:keys [show-success?]}]
+      (html
+        [:div.morphing-button
+         (js/console.log "render:" #js {"success?" success? "show-success?" show-success?})
+         (if show-success?
+           (common/ico :pass)
+           (common/ico :spinner))
+         [:button.btn.btn-cta
+          {:type "submit"
+           :disabled (or loading? success?)}
+          "Get More Info"]]))))
+
 (def contact-form
   (contact-form/contact-form
     {:id "contact-form"
@@ -45,7 +76,7 @@
                        :email email
                        :message (gstr/format "Company: %s\nPhone: %s\nDeveloper count: %s" company phone developer-count)
                        :enterprise true})}
-    (fn [control notice loading?]
+    (fn [control notice loading? success?]
       (list
         [:div.row.contact-form
          [:div.col-sm-8.col-sm-offset-2
@@ -98,7 +129,12 @@
                                   (:message notice)]))})
         [:div.row
          [:div.col-xs-12.text-center
-          [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Get More Info")]]]))))
+          (om/build morphing-button {:loading? loading? :success? success?})
+          [:div.success-message
+           {:class (when success? "success")}
+           "Thank you for submitting your information."
+           [:br]
+           "Someone from our Enterprise team will contact you within one business day."]]]))))
 
 (defn enterprise [app owner]
   (reify
