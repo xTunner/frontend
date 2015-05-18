@@ -36,26 +36,39 @@
   visibility: hidden;
   height: 0px;
   
-  padding: 5px;
-  color: @black;
-  background-color: @white;
+  padding: @alert-padding;
 
   &.minor {
     visibility: visible;
     height: auto;
-    background-color: @yellowStatus;
+    background-color: @alert-warning-bg;
+    @color: @alert-warning-text;
+    color: @color;
+    h4 {
+      color: @color;
+    }
   }
 
   &.major {
     visibility: visible;
     height: auto;
-    background-color: @orangeLight;
+    background-color: @alert-danger-bg;
+    @color: @alert-danger-text;
+    color: @color;
+    h4 {
+      color: @color;
+    }
   }
 
   &.critical {
     visibility: visible;
     height: auto;
-    background-color: @redLighter;
+    background-color: @alert-danger-bg;
+    @color: @alert-danger-text;
+    color: @color;
+    h4 {
+      color: @color;
+    }
   }
 }
 

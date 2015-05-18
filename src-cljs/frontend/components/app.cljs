@@ -28,7 +28,6 @@
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
             [frontend.components.shared :as shared]
-            [frontend.components.statuspage :as statuspage]
             [frontend.components.stories :as stories]
             [frontend.components.language-landing :as language-landing]
             [frontend.components.landing :as landing]
@@ -119,7 +118,6 @@
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-              
               (when (and inner? logged-in?)
                 (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
               [:main.app-main {:ref "app-main"}
