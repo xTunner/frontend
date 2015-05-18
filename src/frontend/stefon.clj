@@ -108,6 +108,7 @@
            "docs/ruby-exception-during-schema-load.md"
            "docs/skip-a-build.md"
            "docs/ssh-build.md"
+           "docs/ssh-between-build-containers.md"
            "docs/status-badges.md"
            "docs/test-metadata.md"
            "docs/test-with-solr.md"
