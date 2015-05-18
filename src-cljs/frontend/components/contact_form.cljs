@@ -1,7 +1,10 @@
 (ns frontend.components.contact-form
   (:require [clojure.string :as str]
             [cljs.core.async :refer [put! chan <! close!]]
+            [frontend.components.common :as common]
             [frontend.utils.ajax :as ajax]
+            [goog.dom :as gdom]
+            [goog.events :as events]
             [goog.style :as gstyle]
             [om.core :as om :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
@@ -92,6 +95,15 @@
                                   (when validation-message
                                     [:div.validation-message validation-message]))})])))))
 
+(defn- reset-form
+  "Because the fields are backed by stateful components, we can't just reset
+  the form, we also need to inform the components that it needs to observe the
+  change."
+  [form]
+  (.reset form)
+  (doseq [element (.-elements form)]
+    (.dispatchEvent element (js/Event. "input" #js {:bubbles true}))))
+
 (defn contact-form
   "Returns a function which reifys an Om component (that is, returns something
   you'd pass to om.core/build). props is a map of attributes to give to the
@@ -148,8 +160,7 @@
                                         (if (= (:status resp) :success)
                                           (do
                                             (om/set-state! owner :form-state :success)
-                                            ;; Not clear why this delay is needed, but without it the reset just doesn't happen.
-                                            (js/setTimeout #(.reset form) 10))
+                                            (reset-form form))
                                           (do
                                             (om/set-state! owner :form-state :idle)
                                             (om/set-state! owner :notice {:type "error" :message "Sorry! There was an error sending your message."})))))))))})
@@ -162,3 +173,34 @@
                                  :show-validations? show-validations?}
                                 props)))]
               (children-f control notice form-state))]))))))
+
+(defn morphing-button [{:keys [text form-state]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:button-available true
+       :icon-state :loading})
+    om/IWillReceiveProps
+    (will-receive-props [_ {next-form-state :form-state}]
+      (om/set-state! owner :button-available (= :idle next-form-state))
+
+      (when (not= :idle next-form-state)
+        (let [form-state (om/get-props owner :form-state)]
+          (if (= :loading form-state)
+            ;; When form-state was :loading, wait for the spinner to finish its animation before displaying next state.
+            (events/listenOnce (gdom/getElementByClass "spinner" (om/get-node owner))
+                               #js ["animationiteration" "webkitAnimationIteration"]
+                               #(om/set-state! owner :icon-state next-form-state))
+            (om/set-state! owner :icon-state next-form-state)))))
+    om/IRenderState
+    (render-state [_ {:keys [button-available icon-state]}]
+      (html
+        [:div.morphing-button
+         (case icon-state
+           :loading (common/ico :spinner)
+           :success (common/ico :pass)
+           nil)
+         [:button.btn.btn-cta
+          {:type "submit"
+           :disabled (not button-available)}
+          text]]))))

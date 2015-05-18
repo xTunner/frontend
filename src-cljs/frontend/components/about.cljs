@@ -187,12 +187,12 @@
                     :name "name"})]
          [:div.form-group.col-xs-6
           (control :input.dumb.form-control
-                    {:placeholder "Email"
-                     :aria-label "Email"
-                     :disabled (= :loading form-state)
-                     :type "email"
-                     :name "email"
-                     :required true})]]
+                   {:placeholder "Email"
+                    :aria-label "Email"
+                    :disabled (= :loading form-state)
+                    :type "email"
+                    :name "email"
+                    :required true})]]
         [:div.form-group
          (control :textarea.dumb.form-control.message
                   {:placeholder "Tell us what you're thinking..."
@@ -206,9 +206,10 @@
                                (when notice
                                  [:div {:class (:type notice)}
                                   (:message notice)]))})
-        [:button.btn.btn-cta
-         {:type "submit" :disabled (= :loading form-state)}
-         (if (= :loading form-state) "Sending..." "Send")]))))
+        (om/build contact-form/morphing-button {:text "Send" :form-state form-state})
+        [:div.success-message
+         {:class (when (= :success form-state) "success")}
+         "Thanks for getting in touch!"]))))
 
 
 

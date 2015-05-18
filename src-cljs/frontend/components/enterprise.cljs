@@ -10,8 +10,6 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
-            [goog.dom :as gdom]
-            [goog.events :as events]
             [goog.string :as gstr]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html inspect]]
@@ -37,36 +35,6 @@
   [:img.background.language {:class name
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
-(defn morphing-button [{:keys [form-state]} owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:button-available true
-       :icon-state :loading})
-    om/IWillReceiveProps
-    (will-receive-props [_ {next-form-state :form-state}]
-      (om/set-state! owner :button-available (= :idle next-form-state))
-
-      (when (not= :idle next-form-state)
-        (let [form-state (om/get-props owner :form-state)]
-          (if (= :loading form-state)
-            ;; When form-state was :loading, wait for the spinner to finish its animation before displaying next state.
-            (events/listenOnce (gdom/getElementByClass "spinner" (om/get-node owner))
-                               #js ["animationiteration" "webkitAnimationIteration"]
-                               #(om/set-state! owner :icon-state next-form-state))
-            (om/set-state! owner :icon-state next-form-state)))))
-    om/IRenderState
-    (render-state [_ {:keys [button-available icon-state]}]
-      (html
-        [:div.morphing-button
-         (case icon-state
-           :loading (common/ico :spinner)
-           :success (common/ico :pass)
-           nil)
-         [:button.btn.btn-cta
-          {:type "submit"
-           :disabled (not button-available)}
-          "Get More Info"]]))))
 
 (def contact-form
   (contact-form/contact-form
@@ -131,7 +99,7 @@
                                   (:message notice)]))})
         [:div.row
          [:div.col-xs-12.text-center
-          (om/build morphing-button {:form-state form-state})
+          (om/build contact-form/morphing-button {:text "Get More Info" :form-state form-state})
           [:div.success-message
            {:class (when (= :success form-state) "success")}
            "Thank you for submitting your information."
