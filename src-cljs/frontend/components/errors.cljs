@@ -31,7 +31,7 @@
              401 [:p
                   [:b [:a {:href (gh-utils/auth-url)
                            :on-click #(raise! owner [:track-external-link-clicked
-                                                     {:event "Auth GitHub"
+                                                     {:event "login_click"
                                                       :properties {:source "401"
                                                                    :url js/window.location.pathname}
                                                       :path (gh-utils/auth-url)}])}

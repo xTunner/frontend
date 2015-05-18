@@ -184,13 +184,13 @@
               (list
                [:form.navbar-right.navbar-form
                 [:button.login-link.btn.btn-success {:href (auth-url)
-                                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "signup_click" :properties {:source "header sign-up" :url js/window.location.pathname}}])
                                                      :title "Sign up with Github"}
                  "Sign up"]]
                [:ul.nav.navbar-nav.navbar-right
                 [:li
                  [:a.login.login-link {:href (auth-url)
-                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "Auth GitHub" :properties {:source "header sign-in" :url js/window.location.pathname}}])
+                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
           (when (contains? #{:mobile :ios :android} nav-point)

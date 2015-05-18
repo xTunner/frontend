@@ -56,7 +56,7 @@
                          :title "Built For Python"
                          :icon (utils/cdn-path "/img/outer/languages/gear-icon.svg")}
                         {:feature "CircleCI intelligently determines the best way to run your tests using 'nosetests', 'tox', or Django. We also provide complete flexibility to override our inferred commands with your own custom commands via the circle.yml."
-                         :title "Intelligent Test Running"  
+                         :title "Intelligent Test Running"
                          :icon (utils/cdn-path "/img/outer/languages/book-icon.svg")}
                         {:feature "CircleCI makes setting up Continuous Delivery for your Python application simple and easy. We offer first-class support for deployment to platforms like Heroku, Elastic Beanstalk, and Google App Engine as well as using tools like Fabric, Ansible, Salt, and others."
                          :title "Easy Continuous Delivery"
@@ -164,7 +164,7 @@
             [:div.center-text
              [:a.languages-cta-button
               {:href (auth-url)
-               :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+               :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
                                                                        :properties {:source (:language template)}
                                                                        :path (auth-url)}])}
               [:i.fa.fa-github]

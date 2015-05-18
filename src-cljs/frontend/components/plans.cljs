@@ -47,7 +47,7 @@
 
           [:a {:href (gh-utils/auth-url)
                :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                       :event "Auth GitHub"
+                                                                       :event "signup_click"
                                                                        :properties {:source "pricing-business"}}])}
            [:span "Start 14-day Free Trial"]])]]))))
 
