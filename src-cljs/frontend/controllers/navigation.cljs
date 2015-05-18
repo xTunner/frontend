@@ -477,9 +477,9 @@
         descriptions {:ruby "CircleCI makes Continuous Integration for your Ruby project simple and easy. Get started testing for free!"
                       :python "Get started for free with Continuous Integration and Deployment for your Python projects. CircleCI integrates with any language."}]
     (when-let [title (get titles language)]
-      (set-page-title! (get titles language)))
+      (set-page-title! title))
     (when-let [description (get descriptions language)]
-      (set-page-description! (get descriptions language)))))
+      (set-page-description! description))))
 
 (defmethod post-navigated-to! :integrations
   [history-imp navigation-point {:keys [integration] :as args} previous-state current-state]
