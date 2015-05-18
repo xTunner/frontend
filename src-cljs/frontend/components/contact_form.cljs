@@ -148,7 +148,8 @@
                                         (if (= (:status resp) :success)
                                           (do
                                             (om/set-state! owner :form-state :success)
-                                            (.reset form))
+                                            ;; Not clear why this delay is needed, but without it the reset just doesn't happen.
+                                            (js/setTimeout #(.reset form) 10))
                                           (do
                                             (om/set-state! owner :form-state :idle)
                                             (om/set-state! owner :notice {:type "error" :message "Sorry! There was an error sending your message."})))))))))})
