@@ -41,30 +41,31 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:show-success? false})
-    om/IDidUpdate
-    (did-update [_ {prev-form-state :form-state} _]
-      (let [form-state (om/get-props owner :form-state)]
-        (when (and (not= :success prev-form-state)
-                   (= :success form-state))
-          (events/listenOnce (gdom/getElementByClass "spinner" (om/get-node owner))
-                             #js ["animationiteration" "webkitAnimationIteration"]
-                             #(om/set-state! owner :show-success? true)))
-        (when (and (= :success prev-form-state)
-                   (not= :success form-state))
-          (events/listenOnce (gdom/getElementByClass "btn" (om/get-node owner))
-                             #js ["transitionend" "webkitTransitionEnd"]
-                             #(om/set-state! owner :show-success? false)))))
+      {:button-available true
+       :icon-state :loading})
+    om/IWillReceiveProps
+    (will-receive-props [_ {next-form-state :form-state}]
+      (om/set-state! owner :button-available (= :idle next-form-state))
+
+      (when (not= :idle next-form-state)
+        (let [form-state (om/get-props owner :form-state)]
+          (if (= :loading form-state)
+            ;; When form-state was :loading, wait for the spinner to finish its animation before displaying next state.
+            (events/listenOnce (gdom/getElementByClass "spinner" (om/get-node owner))
+                               #js ["animationiteration" "webkitAnimationIteration"]
+                               #(om/set-state! owner :icon-state next-form-state))
+            (om/set-state! owner :icon-state next-form-state)))))
     om/IRenderState
-    (render-state [_ {:keys [show-success?]}]
+    (render-state [_ {:keys [button-available icon-state]}]
       (html
         [:div.morphing-button
-         (if show-success?
-           (common/ico :pass)
-           (common/ico :spinner))
+         (case icon-state
+           :loading (common/ico :spinner)
+           :success (common/ico :pass)
+           nil)
          [:button.btn.btn-cta
           {:type "submit"
-           :disabled (contains? #{:loading :success} form-state)}
+           :disabled (not button-available)}
           "Get More Info"]]))))
 
 (def contact-form
