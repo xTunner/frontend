@@ -113,10 +113,9 @@
        (init-state [_]
          {:show-validations? false
           :notice nil
-          :loading? false
-          :success? false})
+          :form-state :idle})
        om/IRenderState
-       (render-state [_ {:keys [show-validations? notice loading? success?]}]
+       (render-state [_ {:keys [show-validations? notice form-state]}]
          (html
            [:form
             (merge
@@ -125,8 +124,8 @@
                                                       (:class props)
                                                       (when show-validations? "show-validations")]))
                :no-validate true
-               ;; If a field gets focus, switch out of the :success? state (and back to normal).
-               :on-focus #(om/set-state! owner :success? false)
+               ;; If a field gets focus, switch out of the :success state and back to idle.
+               :on-focus #(om/set-state! owner :form-state :idle)
                :on-submit (fn [e]
                             (.preventDefault e)
                             (let [form (.-target e)
@@ -142,16 +141,17 @@
                                 (do
                                   (om/update-state! owner #(merge % {:notice nil
                                                                      :show-validations? false
-                                                                     :loading? true}))
+                                                                     :form-state :loading}))
                                   (go (let [resp (<! (ajax/managed-form-post
                                                        action
                                                        :params filtered-params))]
-                                        (om/set-state! owner :loading? false)
                                         (if (= (:status resp) :success)
                                           (do
-                                            (om/set-state! owner :success? true)
+                                            (om/set-state! owner :form-state :success)
                                             (.reset form))
-                                          (om/set-state! owner :notice {:type "error" :message "Sorry! There was an error sending your message."}))))))))})
+                                          (do
+                                            (om/set-state! owner :form-state :idle)
+                                            (om/set-state! owner :notice {:type "error" :message "Sorry! There was an error sending your message."})))))))))})
 
             (let [control
                   (fn [constructor props]
@@ -160,4 +160,4 @@
                                 {:constructor constructor
                                  :show-validations? show-validations?}
                                 props)))]
-              (children-f control notice loading? success?))]))))))
+              (children-f control notice form-state))]))))))

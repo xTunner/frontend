@@ -37,19 +37,21 @@
   [:img.background.language {:class name
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
-(defn morphing-button [{:keys [loading? success?]} owner]
+(defn morphing-button [{:keys [form-state]} owner]
   (reify
     om/IInitState
     (init-state [_]
       {:show-success? false})
     om/IDidUpdate
-    (did-update [_ {was-success? :success? :as prev-props} prev-state]
-      (let [success? (om/get-props owner :success?)]
-        (when (and (not was-success?) success?)
+    (did-update [_ {prev-form-state :form-state} _]
+      (let [form-state (om/get-props owner :form-state)]
+        (when (and (not= :success prev-form-state)
+                   (= :success form-state))
           (events/listenOnce (gdom/getElementByClass "spinner" (om/get-node owner))
                              #js ["animationiteration" "webkitAnimationIteration"]
                              #(om/set-state! owner :show-success? true)))
-        (when (and was-success? (not success?))
+        (when (and (= :success prev-form-state)
+                   (not= :success form-state))
           (events/listenOnce (gdom/getElementByClass "btn" (om/get-node owner))
                              #js ["transitionend" "webkitTransitionEnd"]
                              #(om/set-state! owner :show-success? false)))))
@@ -57,13 +59,12 @@
     (render-state [_ {:keys [show-success?]}]
       (html
         [:div.morphing-button
-         (js/console.log "render:" #js {"success?" success? "show-success?" show-success?})
          (if show-success?
            (common/ico :pass)
            (common/ico :spinner))
          [:button.btn.btn-cta
           {:type "submit"
-           :disabled (or loading? success?)}
+           :disabled (contains? #{:loading :success} form-state)}
           "Get More Info"]]))))
 
 (def contact-form
@@ -76,7 +77,7 @@
                        :email email
                        :message (gstr/format "Company: %s\nPhone: %s\nDeveloper count: %s" company phone developer-count)
                        :enterprise true})}
-    (fn [control notice loading? success?]
+    (fn [control notice form-state]
       (list
         [:div.row.contact-form
          [:div.col-sm-8.col-sm-offset-2
@@ -86,13 +87,13 @@
                      {:type "text"
                       :name "company"
                       :required true
-                      :disabled loading?
+                      :disabled (= :loading form-state)
                       :placeholder "Company"})]
            [:div.col-sm-6
             (control :input.input-lg
                      {:type "text"
                       :name "phone"
-                      :disabled loading?
+                      :disabled (= :loading form-state)
                       :placeholder "Phone"})]]
           [:div.row
            [:div.col-sm-6
@@ -100,13 +101,13 @@
                      {:type "text"
                       :name "name"
                       :required true
-                      :disabled loading?
+                      :disabled (= :loading form-state)
                       :placeholder "Name"})]
            [:div.col-sm-6
             (control :input.input-lg
                      {:type "text"
                       :name "developer-count"
-                      :disabled loading?
+                      :disabled (= :loading form-state)
                       :placeholder "# of Developers"})]]
           [:div.row
            [:div.col-sm-6
@@ -114,7 +115,7 @@
                      {:type "email"
                       :name "email"
                       :require true
-                      :disabled loading?
+                      :disabled (= :loading form-state)
                       :placeholder "Email"})]
            [:div.col-sm-6
             [:div.telephone-info
@@ -129,9 +130,9 @@
                                   (:message notice)]))})
         [:div.row
          [:div.col-xs-12.text-center
-          (om/build morphing-button {:loading? loading? :success? success?})
+          (om/build morphing-button {:form-state form-state})
           [:div.success-message
-           {:class (when success? "success")}
+           {:class (when (= :success form-state) "success")}
            "Thank you for submitting your information."
            [:br]
            "Someone from our Enterprise team will contact you within one business day."]]]))))

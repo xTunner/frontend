@@ -173,7 +173,7 @@
   (contact-form/contact-form
     {:class "contact-us"
      :action "/about/contact"}
-    (fn [control notice loading?]
+    (fn [control notice form-state]
       (list
         [:h2.form-header "We'd love to hear from you!"]
         [:div.row
@@ -181,7 +181,7 @@
           (control :input.dumb.form-control
                    {:placeholder "Name"
                     :aria-label "Name"
-                    :disabled loading?
+                    :disabled (= :loading form-state)
                     :required true
                     :type "text"
                     :name "name"})]
@@ -189,7 +189,7 @@
           (control :input.dumb.form-control
                     {:placeholder "Email"
                      :aria-label "Email"
-                     :disabled loading?
+                     :disabled (= :loading form-state)
                      :type "email"
                      :name "email"
                      :required true})]]
@@ -197,7 +197,7 @@
          (control :textarea.dumb.form-control.message
                   {:placeholder "Tell us what you're thinking..."
                    :aria-label "Tell us what you're thinking..."
-                   :disabled loading?
+                   :disabled (= :loading form-state)
                    :required true
                    :name "message"})]
         (om/build contact-form/transitionable-height
@@ -206,7 +206,9 @@
                                (when notice
                                  [:div {:class (:type notice)}
                                   (:message notice)]))})
-        [:button.btn.btn-cta {:type "submit" :disabled loading?} (if loading? "Sending..." "Send")]))))
+        [:button.btn.btn-cta
+         {:type "submit" :disabled (= :loading form-state)}
+         (if (= :loading form-state) "Sending..." "Send")]))))
 
 
 
