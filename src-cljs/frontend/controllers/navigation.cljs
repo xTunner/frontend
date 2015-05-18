@@ -405,7 +405,6 @@
   [history-imp navigation-point args previous-state current-state]
   (set-page-title! "Track CircleCI Updates")
   (set-page-description! "Track our platform changes and updates via the CircleCI Changelog. Stay up to date with the latest in Continuous Integration.")
-  (analytics/track-page "View Changelog")
   (scroll! args)
   (go (let [comms (get-in current-state [:comms])
             api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
@@ -454,7 +453,6 @@
          (set-page-title! (:title doc))
          (set-page-description! (:description doc))
          (scroll! params)
-         (analytics/track-page "View Docs")
          (when (and (empty? (:children doc))
                     (not (:markdown doc)))
            (let [url (-> "/docs/%s.md"
@@ -479,10 +477,9 @@
         descriptions {:ruby "CircleCI makes Continuous Integration for your Ruby project simple and easy. Get started testing for free!"
                       :python "Get started for free with Continuous Integration and Deployment for your Python projects. CircleCI integrates with any language."}]
     (when-let [title (get titles language)]
-      (set-page-title! (get titles language)))
+      (set-page-title! title))
     (when-let [description (get descriptions language)]
-      (set-page-description! (get descriptions language)))
-    (analytics/track-page "View Language Landing" {:language language})))
+      (set-page-description! description))))
 
 (defmethod post-navigated-to! :integrations
   [history-imp navigation-point {:keys [integration] :as args} previous-state current-state]
