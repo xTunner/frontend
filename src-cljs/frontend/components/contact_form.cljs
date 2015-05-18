@@ -78,14 +78,13 @@
         ;; Update our state based on the DOM immediately (and later on-change).
         (update-state (om/get-node owner "control")))
       om/IRenderState
-      (render-state [_ {:keys [value validation-message focus] :as state}]
+      (render-state [_ {:keys [value validation-message] :as state}]
         (html
           [:div.validated-form-control
            [(:constructor props)
             (merge (dissoc props :constructor :show-validations?)
                    {:value value
                     :ref "control"
-                    :on-focus #(put! focus %)
                     :on-change #(update-state (.-target %))})]
            (om/build transitionable-height
                      {:class "validation-message-container"
@@ -115,21 +114,9 @@
          {:show-validations? false
           :notice nil
           :loading? false
-          :success? false
-          :focus (chan)})
-       om/IWillMount
-       (will-mount [_]
-         ;; If a field gets focus, switch out of the :success? state (and back to normal).
-         (let [focus (om/get-state owner :focus)]
-           (go-loop []
-               (when (<! focus)
-                 (om/set-state! owner :success? false)
-                 (recur)))))
-       om/IWillUnmount
-       (will-unmount [_]
-         (close! (om/get-state owner :focus)))
+          :success? false})
        om/IRenderState
-       (render-state [_ {:keys [show-validations? notice loading? success? focus]}]
+       (render-state [_ {:keys [show-validations? notice loading? success?]}]
          (html
            [:form
             (merge
@@ -138,6 +125,8 @@
                                                       (:class props)
                                                       (when show-validations? "show-validations")]))
                :no-validate true
+               ;; If a field gets focus, switch out of the :success? state (and back to normal).
+               :on-focus #(om/set-state! owner :success? false)
                :on-submit (fn [e]
                             (.preventDefault e)
                             (let [form (.-target e)
@@ -170,6 +159,5 @@
                               (merge
                                 {:constructor constructor
                                  :show-validations? show-validations?}
-                                props)
-                              {:init-state {:focus focus}}))]
+                                props)))]
               (children-f control notice loading? success?))]))))))
