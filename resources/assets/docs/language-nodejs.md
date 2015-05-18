@@ -40,6 +40,26 @@ dependencies:
     - npm install --dev
 ```
 
+### npm authentication
+
+If you need to authenticate with `npm` before downloading the
+dependencies, you could store the `npm` credentials in the
+[secure environment
+variables](https://circleci.com/docs/environment-variables#setting-environment-variables-for-all-commands-without-adding-them-to-git)
+and then use the following script to perform the authentication:
+
+```
+#!/bin/bash
+set -o nounset
+set -o errexit
+
+npm login <<!
+$NPM_USERNAME
+$NPM_PASSWORD
+$NPM_EMAIL
+!
+```
+
 ### Databases
 
 We have pre-installed more than a dozen [databases and queues](/docs/environment#databases),
