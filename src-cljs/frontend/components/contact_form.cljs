@@ -148,7 +148,7 @@
                                   params (into {} (map (juxt #(.-name %) #(.-value %)) (.-elements form)))
                                   filtered-params (params-filter params)
                                   valid? (fn [f] (every? #(.checkValidity %) (.-elements f)))]
-                              (if (not (valid? form))
+                              (if-not (valid? form)
                                 (om/set-state! owner :show-validations? true)
                                 (do
                                   (om/update-state! owner #(merge % {:notice nil
