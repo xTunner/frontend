@@ -122,9 +122,9 @@ test:
     - bundle exec cucumber
       --format json
       --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber:
-      parallel: true
-      files:
-        - spec/feature/*.feature
+        parallel: true
+        files:
+          - spec/feature/*.feature
 ```
 
 <h3 id="manual-balancing">Balancing</h3>
