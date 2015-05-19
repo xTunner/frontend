@@ -35,12 +35,12 @@
 #statuspage-bar {
   visibility: hidden;
   height: 0px;
-  
-  padding: @alert-padding;
+  padding: 0px;
 
   &.minor {
     visibility: visible;
     height: auto;
+    padding: @alert-padding;
     background-color: @alert-warning-bg;
     @color: @alert-warning-text;
     color: @color;
@@ -52,6 +52,7 @@
   &.major {
     visibility: visible;
     height: auto;
+    padding: @alert-padding;
     background-color: @alert-danger-bg;
     @color: @alert-danger-text;
     color: @color;
@@ -63,6 +64,7 @@
   &.critical {
     visibility: visible;
     height: auto;
+    padding: @alert-padding;
     background-color: @alert-danger-bg;
     @color: @alert-danger-text;
     color: @color;
