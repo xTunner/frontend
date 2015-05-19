@@ -31,6 +31,47 @@
   .button_outline(@green, (@tile / 2));
   margin-right: 1em;
 }
+
+#statuspage-bar {
+  visibility: hidden;
+  height: 0px;
+  
+  padding: @alert-padding;
+
+  &.minor {
+    visibility: visible;
+    height: auto;
+    background-color: @alert-warning-bg;
+    @color: @alert-warning-text;
+    color: @color;
+    h4 {
+      color: @color;
+    }
+  }
+
+  &.major {
+    visibility: visible;
+    height: auto;
+    background-color: @alert-danger-bg;
+    @color: @alert-danger-text;
+    color: @color;
+    h4 {
+      color: @color;
+    }
+  }
+
+  &.critical {
+    visibility: visible;
+    height: auto;
+    background-color: @alert-danger-bg;
+    @color: @alert-danger-text;
+    color: @color;
+    h4 {
+      color: @color;
+    }
+  }
+}
+
 .head-admin {
   @color: fade(@white, 50);
   background: @grayDarker;
