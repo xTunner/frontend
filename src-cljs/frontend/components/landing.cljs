@@ -189,7 +189,7 @@
         [:a.home-action {:href (auth-url)
                          :role "button"
                          :ref "prolog-cta"
-                         :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                         :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
                                                                                  :properties {:source "prolog-cta"}
                                                                                  :path (auth-url)}])
                          :on-mouse-enter #(raise! owner [:prolog-cta-hovered])}
@@ -413,7 +413,7 @@
         [:a.home-action {:href (auth-url)
                          :ref "epilog-cta"
                          :role "button"
-                         :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                         :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
                                                                                  :properties {:source "epilog-cta"}
                                                                                  :path (auth-url)}])
                          :on-mouse-enter #(raise! owner [:epilog-cta-hovered])}

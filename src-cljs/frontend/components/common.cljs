@@ -183,7 +183,7 @@
 (defn sign-up-cta [owner source]
   [:a.btn.btn-cta {:href (auth-url)
                    :role "button"
-                   :on-click #(raise! owner [:track-external-link-clicked {:event "Auth GitHub"
+                   :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
                                                                            :properties {:source source}
                                                                            :path (auth-url)}])}
    (str (sign-up-text))])
