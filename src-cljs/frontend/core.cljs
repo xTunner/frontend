@@ -16,6 +16,7 @@
             [frontend.controllers.api :as api-con]
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.errors :as errors-con]
+            [frontend.extensions]
             [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
             [goog.events]

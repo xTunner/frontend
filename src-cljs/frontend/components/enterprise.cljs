@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.contact-form :as contact-form]
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
@@ -34,102 +35,76 @@
   [:img.background.language {:class name
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
-(defn contact-form
-  [app owner opts]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:company nil
-       :email nil
-       :phone nil
-       :developer-count nil
-       :name nil
-       :notice nil})
-    om/IRenderState
-    (render-state [_ {:keys [email name phone company developer-count notice loading?] :as st}]
-      (let [clear-notice! #(om/set-state! owner [:notice] nil)]
-        (html
-          [:form.form-horizontal {:data-purpose "contact-form"}
-           [:div.row.contact-form
-            [:div.col-sm-4.col-sm-offset-2
-             [:input.input-lg {:value company
-                               :type "text"
-                               :name "company"
-                               :required true
-                               :class (when loading? "disabled")
-                               :on-change #(do
-                                             (clear-notice!)
-                                             (om/set-state! owner [:company] (.. % -target -value))
-                                             true)
-                               :placeholder "Company"}]
-             [:input.input-lg {:value name
-                               :type "text"
-                               :name "name"
-                               :required true
-                               :class (when loading? "disabled")
-                               :on-change #(do
-                                             (clear-notice!)
-                                             (om/set-state! owner [:name] (.. % -target -value)))
-                               :placeholder "Name"}]
-             [:input.input-lg {:value email
-                               :type "email"
-                               :name "email"
-                               :require true
-                               :class (when loading? "disabled")
-                               :on-change #(do
-                                             (clear-notice!)
-                                             (om/set-state! owner [:email] (.. % -target -value)))
-                               :placeholder "Email"}]]
-            [:div.col-sm-4
-             [:input.input-lg {:value phone
-                               :type "text"
-                               :name "phone"
-                               :on-change #(do
-                                             (clear-notice!)
-                                             (om/set-state! owner [:phone] (.. % -target -value)))
-                               :placeholder "Phone"}]
-             [:input.input-lg {:value developer-count
-                               :type "text"
-                               :name "developer-count"
-                               :on-change #(do
-                                             (clear-notice!)
-                                             (om/set-state! owner [:developer-count] (.. % -target -value)))
-                               :placeholder "# of Developers"}]
-             [:div.telephone-info
-              "Or call "
-              [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
-              " for an Enterprise quote."]]]
-           [:div.row
-            [:div.col-xs-12.text-center
-             [:button.btn.btn-cta
-              {:on-click #(do (cond
-                                (not (utils/valid-email? email))
-                                (om/set-state! owner [:notice] {:type "error"
-                                                                :message "Please enter a valid email address."})
 
-                                :else
-                                (do
-                                  (om/set-state! owner [:loading?] true)
-                                  (go (let [resp (<! (ajax/managed-form-post
-                                                       "/about/contact"
-                                                       :params (merge {:name name
-                                                                       :email email
-                                                                       :message (gstr/format "Company: %s\nPhone: %s\nDeveloper count: %s" company phone developer-count)
-                                                                       :enterprise true})))]
-                                        (if (= (:status resp) :success)
-                                          (om/update-state! owner (fn [s]
-                                                                    {:name ""
-                                                                     :email ""
-                                                                     :phone ""
-                                                                     :company ""
-                                                                     :developer-count ""
-                                                                     :loading? false
-                                                                     :notice (:resp resp)}))
-                                          (do
-                                            (om/set-state! owner [:loading?] false)
-                                            (om/set-state! owner [:notice] {:type "error" :message "Sorry! There was an error sending your message."})))))))
-                              false)}
-              (if loading? "Sending..." "Get More Info")]]]])))))
+(def contact-form
+  (contact-form/contact-form-builder
+    {:id "contact-form"
+     :class "form-horizontal"
+     :action "/about/contact"}
+    {:params-filter (fn [{:strs [name email company phone developer-count]}]
+                      {:name name
+                       :email email
+                       :message (gstr/format "Company: %s\nPhone: %s\nDeveloper count: %s" company phone developer-count)
+                       :enterprise true})}
+    (fn [control notice form-state]
+      (list
+        [:div.row.contact-form
+         [:div.col-sm-8.col-sm-offset-2
+          [:div.row
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "company"
+                      :required true
+                      :disabled (= :loading form-state)
+                      :placeholder "Company"})]
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "phone"
+                      :disabled (= :loading form-state)
+                      :placeholder "Phone"})]]
+          [:div.row
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "name"
+                      :required true
+                      :disabled (= :loading form-state)
+                      :placeholder "Name"})]
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "text"
+                      :name "developer-count"
+                      :disabled (= :loading form-state)
+                      :placeholder "# of Developers"})]]
+          [:div.row
+           [:div.col-sm-6
+            (control :input.input-lg
+                     {:type "email"
+                      :name "email"
+                      :require true
+                      :disabled (= :loading form-state)
+                      :placeholder "Email"})]
+           [:div.col-sm-6
+            [:div.telephone-info
+             "Or call "
+             [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
+             " for an Enterprise quote."]]]]]
+        (om/build contact-form/transitionable-height
+                  {:class "notice"
+                   :children (html
+                               (when notice
+                                 [:div {:class (:type notice)}
+                                  (:message notice)]))})
+        [:div.row
+         [:div.col-xs-12.text-center
+          (om/build contact-form/morphing-button {:text "Get More Info" :form-state form-state})
+          [:div.success-message
+           {:class (when (= :success form-state) "success")}
+           "Thank you for submitting your information."
+           [:br]
+           "Someone from our Enterprise team will contact you within one business day."]]]))))
 
 (defn enterprise [app owner]
   (reify
@@ -154,11 +129,9 @@
              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
             [:h1.text-center "Ship code at the speed of business."]
             [:h3.text-center "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]]
-           
+
           [:div.row.text-center
-           [:button.btn.btn-cta
-            {:on-click #(utils/scroll-to-selector! "form[data-purpose='contact-form']")}
-            "Get More Info"]]]]
+           [:a.btn.btn-cta {:href "#contact-form"} "Get More Info"]]]]
         ;; need this wrapper for border-top to span the full screen
         [:div.outer-section
          [:div.container
@@ -236,4 +209,4 @@
           (common/feature-icon "phone")
           [:h2.text-center "Learn More About CircleCI Enterprise"]
           [:div.enterprise-cta-contact
-           (om/build contact-form app)]]]]))))
+           (om/build contact-form nil)]]]]))))
