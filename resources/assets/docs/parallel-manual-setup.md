@@ -104,7 +104,7 @@ test:
   override:
     - bundle exec rspec
       --format RspecJunitFormatter
-      --out $CIRCLE_ARTIFACTS/rspec.xml:
+      --out $CIRCLE_TEST_REPORTS/rspec.xml:
         parallel: true
         files:
           - spec/unit/sample.rb   # can be a direct path to file
