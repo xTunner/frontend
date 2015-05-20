@@ -388,15 +388,17 @@
                                     "builds to use them and let others see your builds, both through the "
                                     "web UI and the API."]})
             (describe-flag {:flag :build-fork-prs
-                            :title "Project fork pull requests"
+                            :title "Permissive building of fork pull requests"
                             :blurb '([:p
+                                      "Run builds of fork pull request changes with this project's configuration. "
                                       "CircleCI will automatically update the commit status shown on GitHub's "
-                                      "pull request page. Builds will be run using the parent repository's plan "
-                                      "and will be able to access the parent project's environment settings."]
+                                      "pull request page."]
                                        [:p
-                                        "If you have SSH keys or AWS credentials stored in your project settings and "
+                                        "There are serious security concerns with this setting (see "
+                                        [:a {:href "/docs/fork-pr-builds"} "the documentation"] " for details.) "
+                                        "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                         "untrusted forks can make pull requests against your repo, then this option "
-                                       "isn't for you!"])})
+                                        "isn't for you!"])})
            (describe-flag {:flag :osx
                            :title "Build iOS project"
                            :blurb [:p
