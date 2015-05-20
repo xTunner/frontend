@@ -36,12 +36,28 @@
       (let [fleet-state (get-in app state/fleet-state-path)]
         (html
          [:section {:style {:padding-left "10px"}}
-          [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
-          " / "
-          [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]
+          [:header
+           [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
+           " / "
+           [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
           (if-not fleet-state
             [:div.loading-spinner common/spinner]
-            [:code (om/build ankha/inspector fleet-state)])])))))
+            [:table
+             [:thead
+              [:tr
+               [:th "Instance ID"]
+               [:th "Instance Type"]
+               [:th "Boot Time"]
+               [:th "Busy Containers"]
+               [:th "State"]]]
+             [:tbody
+              (for [instance fleet-state]
+                [:tr
+                 [:td (:instance_id instance)]
+                 [:td (:ec2_instance_type instance)]
+                 [:td (:boot_time instance)]
+                 [:td (:busy instance) " / " (:total instance)]
+                 [:td (:state instance)]])]])])))))
 
 (defn admin [app owner]
   (reify
