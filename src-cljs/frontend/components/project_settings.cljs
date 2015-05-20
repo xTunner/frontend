@@ -390,8 +390,7 @@
             (describe-flag {:flag :build-fork-prs
                             :title "Permissive building of fork pull requests"
                             :blurb '([:p
-                                      "When a pull request is submitted against this project from a fork "
-                                      "run a build of the PR changes with this project's configuration."
+                                      "Run builds of fork pull request changes with this project's configuration. "
                                       "CircleCI will automatically update the commit status shown on GitHub's "
                                       "pull request page."]
                                        [:p
@@ -399,7 +398,7 @@
                                         [:a {:href "/docs/fork-pr-builds"} "the documentation"] " for details.) "
                                         "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                         "untrusted forks can make pull requests against your repo, then this option "
-                                       "isn't for you!"])})
+                                        "isn't for you!"])})
            (describe-flag {:flag :osx
                            :title "Build iOS project"
                            :blurb [:p
