@@ -15,6 +15,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.visualization.build :as viz-build]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -209,6 +210,19 @@
              [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
               "Read our doc on interacting with the browser over VNC"]
              "."]]))))))
+
+(defn build-time-visualization [build owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (-> js/console (.log "did-mount calling get-node"))
+      (let [el (om/get-node owner)]
+        (viz-build/visualize-timing! el build)))
+    om/IRender
+    (render [_]
+      (js/console.log "build-time-visualization render called")
+      (html
+       [:div.build-time-visualization]))))
 
 (defn cleanup-artifact-path [path]
   (-> path
@@ -428,6 +442,7 @@
             scopes (:scopes data)
             user (:user data)
             logged-in? (not (empty? user))
+            admin? (:admin user)
             build (:build build-data)
             show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
             selected-tab (get build-data :selected-header-tab (default-tab build scopes))
@@ -498,6 +513,11 @@
                   (when (not= 0 fail-count)
                     [:span {:class "fail-count"} fail-count]))]])
 
+            (when (and admin? (build-model/finished? build))
+              [:li {:class (when (= :build-time-viz selected-tab) "active")}
+               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
+                "Build Timing"]])
+            
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [:li {:class (when (= :artifacts selected-tab) "active")}
@@ -511,6 +531,8 @@
 
              :tests (om/build build-tests-list build-data)
 
+             :build-time-viz (om/build build-time-visualization build)
+             
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
