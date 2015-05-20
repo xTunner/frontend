@@ -170,7 +170,7 @@
 
 
 (def contact-form
-  (contact-form/contact-form
+  (contact-form/contact-form-builder
     {:class "contact-us"
      :action "/about/contact"}
     (fn [control notice form-state]

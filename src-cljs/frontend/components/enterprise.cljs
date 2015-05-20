@@ -37,7 +37,7 @@
 
 
 (def contact-form
-  (contact-form/contact-form
+  (contact-form/contact-form-builder
     {:id "contact-form"
      :class "form-horizontal"
      :action "/about/contact"}

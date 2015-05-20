@@ -104,7 +104,7 @@
   (doseq [element (.-elements form)]
     (.dispatchEvent element (js/Event. "input" #js {:bubbles true}))))
 
-(defn contact-form
+(defn contact-form-builder
   "Returns a function which reifys an Om component (that is, returns something
   you'd pass to om.core/build). props is a map of attributes to give to the
   form. children-f is a function which takes three arguments:
@@ -117,7 +117,7 @@
   submitted with a map of the params the form would normally submit. It should
   return a map of params for the form to actually submit. Both maps should have
   string keys and values."
-  ([props children-f] (contact-form props {} children-f))
+  ([props children-f] (contact-form-builder props {} children-f))
   ([props {:keys [params-filter] :or {params-filter identity}} children-f]
    (fn [_ owner]
      (reify
