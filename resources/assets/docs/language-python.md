@@ -69,6 +69,10 @@ test:
     - ./my_testing_script.sh
 ```
 
+We can automatically parallelize both standard python tests run with nose and
+django tests.  However, the mechanisms to collect the tests only see
+class-style tests, not bare-function nose-style tests.
+
 ### Deployment
 
 CircleCI has [first-class support for deployment](/docs/configuration#deployment)
