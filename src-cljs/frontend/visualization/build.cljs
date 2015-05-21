@@ -13,15 +13,15 @@
     (str min "m:" secs "s")))
 
 (defn max-action-end-time [step]
-  (let [end-times (map (fn [action] (js/Date. (.-end_time action)))
-                       (.-actions step))
+  (let [end-times (map (fn [action] (js/Date. (aget action "end_time")))
+                       (aget step "actions"))
         max-et (apply max end-times)]
     ;;(println "max-action-end-time (max " end-times ") == " max-et)
     max-et))
 
 (defn max-action-run-time-millis [step]
-  (let [run-times (map (fn [action] (.-run_time_millis action))
-                       (.-actions step))
+  (let [run-times (map (fn [action] (aget action "run_time_millis"))
+                       (aget step "actions"))
         max-rt (apply max run-times)]
     ;;(println "max-run-time-millis (max " run-times ") == " max-rt)
     max-rt))
@@ -55,28 +55,28 @@
                        (.enter))]
          ;; the time bar
          (-> group
-             (.append "a") (.attr #js {"xlink:href" #(.-output_url %)})
+             (.append "a") (.attr #js {"xlink:href" #(aget % "output_url")})
              (.append "rect")
-             (.attr #js {"x" #(scale (js/Date. (.-start_time %)))
-                         "y" #(* (+ bar-height bar-pad) (.-index %))
-                         "width" #(- (scale (js/Date. (.-end_time %))) (scale (js/Date. (.-start_time %))))
+             (.attr #js {"x" #(scale (js/Date. (aget % "start_time")))
+                         "y" #(* (+ bar-height bar-pad) (aget % "index"))
+                         "width" #(- (scale (js/Date. (aget % "end_time"))) (scale (js/Date. (aget % "start_time"))))
                          "height" bar-height
-                         "fill" #(status->color (.-status %))}))
+                         "fill" #(status->color (aget % "status"))}))
          ;; the start tick
          (-> group
              (.append "rect")
-             (.attr #js {"x" #(scale (js/Date. (.-start_time %)))
-                         "y" #(* (+ bar-height bar-pad) (.-index %))
+             (.attr #js {"x" #(scale (js/Date. (aget % "start_time")))
+                         "y" #(* (+ bar-height bar-pad) (aget % "index"))
                          "width" 0.1
                          "height" (+ 1 bar-height)
                          "stroke" "black"
                          "stroke-width" 0.5})))))
 
     (-> svg (.selectAll "text") (.data (clj->js long-actions)) (.enter) (.append "text")
-        (.text #(str (.-name %) " (" (millis->min-secs (max-action-run-time-millis %)) ")"))
-        (.attr #js {"x" #(scale (js/Date. (-> % (.-actions) (aget 0) (.-start_time))))
+        (.text #(str (aget % "name") " (" (millis->min-secs (max-action-run-time-millis %)) ")"))
+        (.attr #js {"x" #(scale (js/Date. (-> % (aget "actions") (aget 0) (aget "start_time"))))
                     "y" (fn [step, i] (+ text-height chart-height (* text-height i)))
-                    "fill" (fn [step, i] (if (= "config" (-> step (.-actions) (aget 0) (.-source)))
+                    "fill" (fn [step, i] (if (= "config" (-> step (aget "actions") (aget 0) (aget "source")))
                                           "black"
                                           "grey"))
                     }))))
@@ -85,7 +85,6 @@
   (let [org-repo-build (-> build :vcs_url)
         svg-width 900
         svg (-> js/d3 (.select elem) (.append "svg") (.attr #js {"x" 0 "y" 0}))
-        scale (-> (js/d3.time.scale.))
         d0 (js/Date. (:start_time build))
         d1 (js/Date. (:stop_time build))
         scale (-> js/d3 (.-time) (.scale))]
