@@ -42,7 +42,11 @@
            [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
           (if-not fleet-state
             [:div.loading-spinner common/spinner]
-            [:table
+            ;; FIXME: This table shouldn't really be .recent-builds-table; it's
+            ;; a hack to steal a bit of styling from the builds table until we
+            ;; properly address the styling for this table and admin tools in
+            ;; general.
+            [:table.recent-builds-table
              [:thead
               [:tr
                [:th "Instance ID"]
@@ -55,7 +59,7 @@
                 [:tr
                  [:td (:instance_id instance)]
                  [:td (:ec2_instance_type instance)]
-                 [:td (:boot_time instance)]
+                 [:td (datetime/long-datetime (:boot_time instance))]
                  [:td (:busy instance) " / " (:total instance)]
                  [:td (:state instance)]])]])])))))
 
