@@ -178,7 +178,7 @@
         [:div.feature.feature-offset
          (common/feature-icon "scale")
          [:h4.text-center "Start free and scale without limit"]
-         [:p "Start with one build container for free, and dial up the capacity as you gfeature-row."]]
+         [:p "Start with one build container for free, and dial up the capacity as you grow."]]
         [:div.feature
          (common/feature-icon "free")
          [:h4.text-center "Free for OSS"]
