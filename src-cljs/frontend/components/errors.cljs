@@ -40,7 +40,12 @@
              404 (if (and (not logged-in?) maybe-login-page?)
                    [:div
                     [:p "We're sorry; either that page doesn't exist or you need to be logged in to view it."]
-                    [:p [:b [:a {:href (gh-utils/auth-url)} "Login here"] " to view this page with your GitHub permissions."]]]
+                    [:p [:b [:a {:href (gh-utils/auth-url)
+                                 :on-click #(raise! owner [:track-external-link-clicked
+                                                           {:event "login_click"
+                                                            :properties {:source "404"
+                                                                         :url js/window.location.pathname}
+                                                            :path (gh-utils/auth-url)}])} "Login here"] " to view this page with your GitHub permissions."]]]
                    [:p "We're sorry, but that page doesn't exist."])
              500 [:p "We're sorry, but something broke"]
              "Something completely unexpected happened")]])))))
