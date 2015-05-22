@@ -33,6 +33,28 @@ Anyone that is a GitHub collaborator on a project employing user keys
 can access your repositories as you.
 Beware of someone stealing your code.
 
+<h2 id="security">Machine user keys</h2>
+
+A [machine user](https://developer.github.com/guides/managing-deploy-keys/#machine-users) is a Github user which you create only for automated tasks, they are not intended to be used by a human.
+
+You can add a machine user's SSH key to your projects on CircleCI and use that key as the *Checkout SSH key* for these projects, instead of using deploy keys or your own SSH keys.
+
+The main benefit of using a machine user's SSH key instead of a regular user's key is that you can lock down the machine user's access to just the repos that it _needs_ to access.
+
+Here are the steps to set a machine user's SSH key as a checkout key for your project.
+
+- First, you need to login to Github as the machine user.
+
+- Go to https://circleci.com and sign in. Github will ask you to authorize CircleCI to access the machine user's account, so click on the **Authorize application** button.
+
+- Go to https://circleci.com/add-projects and follow the projects you want the machine user to have access to.
+
+- Once followed, go to the ** Project Settings > Checkout SSH keys ** page and then click on the ***Authorize w/GitHub*** button. That gives us permission to create and upload SSH keys to GitHub on behalf of the machine user.
+
+- Finally, click the ***Create and add XXXX user key*** button on the same page.
+
+That's it. Now CircleCI will use the machine user's SSH key for any git commands run during your builds.
+
 <h2 id="error-messages">User key access-related error messages</h2>
 
 Here are common errors that indicate you need to add a user key.
