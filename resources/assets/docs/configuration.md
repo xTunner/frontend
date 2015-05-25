@@ -598,7 +598,7 @@ call for the same build, except that it is wrapped in a "payload" key:
 ```
 
 There is also an experimental setting you can configure to specify black- or white-listing of branches
-you want to get chat channel build notifications for in the 
+you want to get chat channel build notifications for in the
 [per branch build notification](#per-branch-notifications) section.
 
 <h2 id="branches">Specifying branches to build</h2>
@@ -665,20 +665,20 @@ general:
 
 <h2 id="experimental">Experimental configuration</h2>
 
-Our **experimental** section is a way of giving early previews of new configuration 
+Our **experimental** section is a way of giving early previews of new configuration
 options we are considering adding. These settings are liable to change without notice.
 
 <h3 id="per-branch-notifications">Per branch build notification in chat channels</h3>
 
-The only experimental setting available at this time is a black- and white-list mechanism 
+The only experimental setting available at this time is a black- and white-list mechanism
 for chat channel build notifications based on the branch name.
 
 The behavior of the "ignore" and "only" settings is the same as the black- and white-listing
 of branches to build in the [Branches section](#branches).
 Each setting takes a list of either strings or regexes; regexes are
-specified with '/' around the value. 
+specified with '/' around the value.
 
-The following configuration will supress any chat channel build notifications 
+The following configuration will supress any chat channel build notifications
 for any build of a branch whose name starts with "dev" or "experiment", or which is
 named "sandbox":
 
@@ -693,7 +693,7 @@ experimental:
 ```
 
 Alternatively, you can only send notifications for branches which match a whitelist. The
-following config will only send noticies for the master branch and any branch starting 
+following config will only send notices for the master branch and any branch starting
 with "feature":
 
 ```
@@ -705,7 +705,7 @@ experimental:
         - /feature-.*/
 ```
 
-You can combine them, in which case only branch names which do match 
+You can combine them, in which case only branch names which do match
 the whitelist *and* do not match the blacklist get notifications. So for:
 
 ```
