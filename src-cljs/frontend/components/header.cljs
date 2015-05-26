@@ -81,9 +81,8 @@
             env]
 
            [:div.options
-            [:a {:href "/admin"} "switch "]
+            [:a {:href "/admin/switch"} "switch "]
             [:a {:href "/admin/build-state"} "build state "]
-            [:a {:href "/admin/fleet-state"} "fleet state "]
             [:a {:href "/admin/recent-builds"} "builds "]
             [:a {:href "/admin/deployments"} "deploys "]
             (let [use-local-assets (get user-session-settings :use_local_assets)]

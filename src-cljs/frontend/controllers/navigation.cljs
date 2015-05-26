@@ -512,3 +512,17 @@
                       :wit ""}]
     (set-page-title! (get titles story))
     (set-page-description! (get descriptions story))))
+
+(defmethod navigated-to :admin-settings
+  [history-imp navigation-point args state]
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point)))
+
+(defmethod navigated-to :admin-settings
+  [history-imp navigation-point {:keys [subpage] :as args} state]
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point
+             :navigation-data args
+             :admin-settings-subpage subpage)))

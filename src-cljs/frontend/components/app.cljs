@@ -60,9 +60,9 @@
     :org-settings org-settings/org-settings
     :account account/account
 
-    :admin admin/admin
+    :admin-settings admin/admin-settings
     :build-state admin/build-state
-    :fleet-state admin/fleet-state
+    :switch admin/switch
 
     :loading loading
 

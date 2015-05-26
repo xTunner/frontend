@@ -63,7 +63,8 @@
                  [:td (:busy instance) " / " (:total instance)]
                  [:td (:state instance)]])]])])))))
 
-(defn admin [app owner]
+
+(defn switch [app owner]
   (reify
     om/IRender
     (render [_]
@@ -79,3 +80,16 @@
                     :type "hidden"}]
            [:button.btn.btn-primary {:value "Switch user", :type "submit"}
             "Switch user"]]]]]))))
+
+(defn admin-settings [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [subpage (:admin-settings-subpage app)]
+        (html
+         [:div#admin-settings
+            [:div.admin-settings-inner
+             [:div#subpage
+              (case subpage
+                :fleet-state (om/build fleet-state app)
+                "Admin!")]]])))))
