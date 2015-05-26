@@ -84,3 +84,8 @@ need to test the patched version thoroughly before making it available
 in our containers. Keep an eye on our
 [changelog](https://circleci.com/changelog) to be notified as soon as
 Docker 1.5 starts shipping with our build containers by default.
+
+## Projects
+### How can I delete my project?
+You just need to unfollow the project in the project settings. Once the last follower has stopped following the project, CircleCI will stop building.
+Please contact us if you want to purge the project data from our database.
