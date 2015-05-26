@@ -274,7 +274,7 @@ We will be happy to help you work around the issue.
 The OSX container that CircleCI uses to build has the following software
 versions installed:
 
-- OS X 10.9.5 (13F34) Darwin 13.4.0
+- OS X 10.10.3 (14D136) Darwin 14.3.0
 - Xcode:
   - 6.1.1 Build version 6A2008a
   - 6.2 Build version 6C131e
