@@ -163,8 +163,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            subpage (or (:project-settings-subpage app) :overview)]
+      (let [subpage (:project-settings-subpage app :overview)]
         (html
           [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
            [:header
@@ -234,8 +233,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            plan (get-in app state/org-plan-path)
+      (let [plan (get-in app state/org-plan-path)
             org-data (get-in app state/org-data-path)
             org-name (:name org-data)
             subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan org-name)

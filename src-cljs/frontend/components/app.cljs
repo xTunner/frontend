@@ -51,7 +51,7 @@
     (render [_] (html [:div.loading-spinner common/spinner]))))
 
 (defn dominant-component [app-state owner]
-  (condp = (get-in app-state [:navigation-point])
+  (case (:navigation-point app-state)
     :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
