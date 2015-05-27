@@ -14,49 +14,57 @@
   (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-(defrender docker-diagram [app owner]
-  (let [diagram-structure [["github" "CircleCI checks out your code from GitHub."]
-                           ["docker" "Docker base images, or images for any dependent services can be pulled from any Docker registry."]
-                           ["circle" "CircleCI builds, runs, and tests Docker images in any configuration."]
-                           ["docker" "When all tests pass, built Docker images are pushed to the registry."]
-                           ["scale" "CircleCI can trigger a deployment of new images to any Docker host with an API. Images built on CircleCI are pulled from the registry into production."]]
-        active-section-index (get (om/get-state owner) :selected-index 0)
-        diagram-elem :img.diagram-icon]
-    (html
-      [:div.docker-diagram
-       [:div.diagram-content
-        (map-indexed
-         (fn [index [icon-name explanation]]
-           [:div.diagram-section
-            (if (not= index 0)
-              [:span.connector-line {:class (if (= index (+ 1 active-section-index)) "active")}])
-            [:a.diagram-icon
-             {:on-click #(om/set-state! owner :selected-index index)}
-             [:img {:src (utils/cdn-path
-                           (if (= index active-section-index)
-                             (gstring/format "/img/outer/docker/diagram-%s.svg" icon-name)
-                             (gstring/format "/img/outer/docker/diagram-%s-grey.svg" icon-name)))}]]
-            (if (< index (- (count diagram-structure) 1))
-              [:span.connector-line {:class (if (= index active-section-index) "active")}])
-            (if (= index active-section-index)
-              [:span.active-indicator-line])
-            (if (= index active-section-index)
-              [:img.active-indicator-dot {:src (utils/cdn-path "/img/outer/docker/diagram-dot.svg")}])])
-        diagram-structure)]
-       [:div.diagram-annotation
-        [:div.col-xs-3.text-right
-         (if (> active-section-index 0)
-           [:a
-            {:on-click #(raise! owner [:docker-diagram-index-selected (- active-section-index 1)])}
-            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-left.svg")}]])]
-        [:div.col-xs-6.text-center
-         [:h3
-          (last (nth diagram-structure active-section-index))]]
-        [:div.col-xs-3.text-left
-         (if (< active-section-index (- (count diagram-structure) 1))
-           [:a
-            {:on-click #(raise! owner [:docker-diagram-index-selected (+ active-section-index 1)])}
-            [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]])))
+(let [diagram-structure [["github" "CircleCI checks out your code from GitHub."]
+                         ["docker" "Docker base images, or images for any dependent services can be pulled from any Docker registry."]
+                         ["circle" "CircleCI builds, runs, and tests Docker images in any configuration."]
+                         ["docker" "When all tests pass, built Docker images are pushed to the registry."]
+                         ["scale" "CircleCI can trigger a deployment of new images to any Docker host with an API. Images built on CircleCI are pulled from the registry into production."]]
+      last-section-index (dec (count diagram-structure))]
+  (defn docker-diagram [app owner]
+    (reify
+      om/IDisplayName
+      (display-name [_] "Docker Diagram")
+      om/IInitState
+      (init-state [_]
+        {:selected-index 0})
+      om/IRenderState
+      (render-state [_ {active-section-index :selected-index}]
+        (html
+          [:div.docker-diagram
+           [:div.diagram-content
+            (map-indexed
+              (fn [index [icon-name explanation]]
+                [:div.diagram-section
+                 (when-not (= 0 index)
+                   [:span.connector-line {:class (when (= (inc active-section-index) index) "active")}])
+                 [:a.diagram-icon
+                  {:on-click #(om/set-state! owner :selected-index index)}
+                  [:img {:src (utils/cdn-path
+                                (if (= active-section-index index)
+                                  (gstring/format "/img/outer/docker/diagram-%s.svg" icon-name)
+                                  (gstring/format "/img/outer/docker/diagram-%s-grey.svg" icon-name)))}]]
+                 (when-not (= last-section-index index)
+                   [:span.connector-line {:class (when (= active-section-index index) "active")}])
+                 (when (= active-section-index index)
+                   (list
+                     [:span.active-indicator-line]
+                     [:img.active-indicator-dot {:src (utils/cdn-path "/img/outer/docker/diagram-dot.svg")}]))])
+              diagram-structure)]
+           [:div.diagram-annotation
+            [:div.col-xs-3.text-right
+             (when-not (= 0 active-section-index)
+               [:a
+                {:on-click #(om/update-state! owner :selected-index dec)}
+                [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-left.svg")}]])]
+            [:div.col-xs-6.text-center
+             [:h3
+              (last (nth diagram-structure active-section-index))]]
+            [:div.col-xs-3.text-left
+             (when-not (= last-section-index active-section-index)
+               [:a
+                {:on-click #(om/update-state! owner :selected-index inc)}
+                [:img.diagram-arrow {:src (utils/cdn-path "/img/outer/docker/diagram-arrow-right.svg")}]])]]])))))
+
 
 (defn docker-cta [owner source]
   [:div.outer-section.outer-section-condensed.wide-cta-banner.docker-banner
