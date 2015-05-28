@@ -137,6 +137,38 @@ Many test suites for Android produce JUnit XML output. After running your tests,
 you can copy that output to `$CIRCLE_TEST_REPORTS` so that CircleCI will display
 the individual test results.
 
+#### Deploying to Google Play Store
+
+There are a few plugins for Gradle that allow you to push your `apk` to
+Google Play Store with a simple Gradle command, for example [this plugin](https://github.com/Triple-T/gradle-play-publisher).
+
+After applying the plugin and setting up all the configuration details,
+you can use the `deployment` section of your `circle.yml` to publish the
+`apk` to the desired channel. We suggest reading the channel from
+a property in the plugin configuration like this:
+
+```
+play {
+  track = "${track}"
+}
+```
+This will allow you to specify different deployment channels right in
+the `circle.yml`:
+
+```
+deployment:
+  production: # just a label; label names are completely up to you
+    branch: master
+    commands:
+      - ./gradlew publishApkRelease
+        -Dorg.gradle.project.track=production
+  beta:
+    branch: develop
+    commands:
+      - ./gradlew publishApkRelease
+        -Dorg.gradle.project.track=beta
+```
+
 ### Sample circle.yml
 
 ```
