@@ -127,7 +127,7 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
+    (api/get-build-state api-ch))
   (set-page-title! "Build State"))
 
 (defmethod post-navigated-to! :fleet-state
@@ -135,7 +135,7 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state api-ch))
+    (api/get-fleet-state :fleet-state api-ch))
   (set-page-title! "Fleet State"))
 
 

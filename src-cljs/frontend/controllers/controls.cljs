@@ -1030,23 +1030,19 @@
 
 (defmethod control-event :refresh-admin-build-state-clicked
   [target message _ state]
-  (let [s (assoc-in state state/build-state-path nil)]
-    (get-in s state/build-state-path)
-    s))
+  (get-in s state/build-state-path))
 
 (defmethod post-control-event! :refresh-admin-build-state-clicked
   [target message _ previous-state current-state]
-  (ajax/ajax :get "/api/v1/admin/build-state" :build-state (get-in current-state [:comms :api])))
+  (api/get-build-state (get-in current-state [:comms :api])))
 
 (defmethod control-event :refresh-admin-fleet-state-clicked
   [target message _ state]
-  (let [s (assoc-in state state/fleet-state-path nil)]
-    (get-in s state/fleet-state-path)
-    s))
+  (assoc-in state state/fleet-state-path nil))
 
 (defmethod post-control-event! :refresh-admin-fleet-state-clicked
   [target message _ previous-state current-state]
-  (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state (get-in current-state [:comms :api])))
+  (api/get-fleet-state (get-in current-state [:comms :api])))
 
 (defmethod control-event :clear-error-message-clicked
   [target message _ state]
