@@ -1030,7 +1030,7 @@
 
 (defmethod control-event :refresh-admin-build-state-clicked
   [target message _ state]
-  (get-in s state/build-state-path))
+  (assoc-in state state/build-state-path nil))
 
 (defmethod post-control-event! :refresh-admin-build-state-clicked
   [target message _ previous-state current-state]
