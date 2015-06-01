@@ -130,15 +130,6 @@
     (api/get-build-state api-ch))
   (set-page-title! "Build State"))
 
-(defmethod post-navigated-to! :fleet-state
-  [history-imp navigation-point args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
-    (when-not (seq (get-in current-state state/projects-path))
-      (api/get-projects api-ch))
-    (api/get-fleet-state :fleet-state api-ch))
-  (set-page-title! "Fleet State"))
-
-
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
   (mlog "navigated-to :build with args " args)
@@ -514,15 +505,17 @@
     (set-page-description! (get descriptions story))))
 
 (defmethod navigated-to :admin-settings
-  [history-imp navigation-point args state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point)))
-
-(defmethod navigated-to :admin-settings
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
              :admin-settings-subpage subpage)))
+
+(defmethod post-navigated-to! :admin-settings
+  [history-imp navigation-point {:keys [subpage]} previous-state current-state]
+  (js/console.log subpage)
+  (when (= :fleet-state subpage)
+    (let [api-ch (get-in current-state [:comms :api])]
+      (api/get-fleet-state api-ch))
+    (set-page-title! "Fleet State")))
