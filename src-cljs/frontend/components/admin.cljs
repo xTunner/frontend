@@ -33,7 +33,7 @@
     om/IDisplayName (display-name [_] "Admin Build State")
     om/IRender
     (render [_]
-      (let [fleet-state (get-in app state/fleet-state-path)]
+      (let [fleet-state (sort-by :instance_id (get-in app state/fleet-state-path))]
         (html
          [:section {:style {:padding-left "10px"}}
           [:header
@@ -55,13 +55,16 @@
                [:th "Busy Containers"]
                [:th "State"]]]
              [:tbody
-              (for [instance fleet-state]
+              (if (seq fleet-state)
+                (for [instance fleet-state]
+                  [:tr
+                   [:td (:instance_id instance)]
+                   [:td (:ec2_instance_type instance)]
+                   [:td (datetime/long-datetime (:boot_time instance))]
+                   [:td (:busy instance) " / " (:total instance)]
+                   [:td (:state instance)]])
                 [:tr
-                 [:td (:instance_id instance)]
-                 [:td (:ec2_instance_type instance)]
-                 [:td (datetime/long-datetime (:boot_time instance))]
-                 [:td (:busy instance) " / " (:total instance)]
-                 [:td (:state instance)]])]])])))))
+                 [:td "No available masters"]])]])])))))
 
 
 (defn switch [app owner]
