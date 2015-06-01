@@ -167,49 +167,100 @@
                   (om/build-all commit-line (drop 3 (map #(assoc % :build build)
                                                          (:all_commit_details build)))))))])])))))
 
-(defn ssh-ad [build owner]
-  (let [build-id (build-model/id build)
-        vcs-url (:vcs_url build)
-        build-num (:build_num build)]
-    [:div.ssh-ad
-     [:p "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on."]
-     (forms/managed-button
-      [:button.ssh_build
-       {:data-loading-text "Starting SSH build...",
-        :title "Retry with SSH in VM",
-        :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                      :vcs-url vcs-url
-                                                      :build-num build-num}])}
-       "Retry this build with SSH enabled"])
-     [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."]]))
-
-(defn build-ssh [build owner]
+(defn ssh-enabled-note
+  "Note that SSH has been enabled for the build, with list of users"
+  [[current-user? someone-else?] owner]
   (reify
     om/IRender
     (render [_]
-      (let [nodes (:node build)]
+      (html [:p (->> [(when current-user? "you")
+                      (when someone-else? "someone other than you")]
+                     (filter identity)
+                     (string/join " and ")
+                     (#(str % " enabled SSH for this build."))
+                     (string/capitalize))]))))
+
+(defn ssh-buttons
+  "Show the enable-SSH button(s) for the SSH tab
+
+  Includes the button to SSH to the current build if it is still running, and
+  the current user hasn't already enabled SSH for themselves; always shows the
+  button to rebuild with SSH enabled (for the current user.)
+
+  Assumes that the user has permission to SSH to the build (=> these should be
+  shown)"
+  [build owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [build-info {:build-id (build-model/id build)
+                        :vcs-url (:vcs_url build)
+                        :build-num (:build_num build)}]
         (html
-         (if-not (build-model/ssh-enabled-now? build)
-           (ssh-ad build owner)
-           [:div.ssh-info-container
-            [:div.build-ssh-title
-             [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-             [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
-            [:div.build-ssh-list
-             [:dl.dl-horizontal
-              (map (fn [node i]
-                     (list
-                      [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
-                      [:dd {:class (when (:ssh_enabled node) "connected")}
-                       [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
-                       (when-not (:ssh_enabled node)
-                         [:span.loading-spinner common/spinner])]))
-                   nodes (range))]]
-            [:div.build-ssh-doc
-             "Debugging Selenium browser tests? "
-             [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-              "Read our doc on interacting with the browser over VNC"]
-             "."]]))))))
+          [:div
+           (if-not (build-model/finished? build)
+             (forms/managed-button
+               [:button.ssh_build
+                {:data-loading-text "Adding your SSH keys..."
+                 :title "Enable SSH for this build"
+                 :on-click #(raise! owner [:ssh-current-build-clicked build-info])}
+                "Enable SSH for this build"])
+             (forms/managed-button
+               [:button.ssh_build
+                {:data-loading-text "Starting SSH build..."
+                 :title "Retry with SSH in VM"
+                 :on-click #(raise! owner [:ssh-build-clicked build-info])}
+                "Retry this build with SSH enabled"]))])))))
+
+(defn ssh-ad
+  "Note about why you might want to SSH into a build and buttons to do so"
+  [build owner]
+    [:div.ssh-ad
+     [:p "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on."]
+     (om/build ssh-buttons build)
+     [:p "This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time time investigate."]
+     [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."]])
+
+(defn ssh-instructions
+  "Instructions for SSHing into a build that you can SSH into"
+  [build owner]
+  (let [nodes (:node build)]
+    (html
+      [:div.ssh-info-container
+       [:div.build-ssh-title
+        [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
+        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
+       [:div.build-ssh-list
+        [:dl.dl-horizontal
+         (map (fn [node i]
+                (list
+                  [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
+                  [:dd {:class (when (:ssh_enabled node) "connected")}
+                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
+                   (when-not (:ssh_enabled node)
+                     [:span.loading-spinner common/spinner])]))
+              nodes (range))]]
+       [:div.build-ssh-doc
+        "Debugging Selenium browser tests? "
+        [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+         "Read our doc on interacting with the browser over VNC"]
+        "."]])))
+
+(defn build-ssh [{:keys [build user]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [for-current-user? (build-model/current-user-ssh? build user)
+            for-someone-else? (build-model/someone-else-ssh? build user)]
+        (html
+          [:div
+           (when (seq (:ssh_users build))
+             (om/build ssh-enabled-note [for-current-user? for-someone-else?]))
+           (if for-current-user?
+             (cond
+               (build-model/ssh-enabled-now? build) (ssh-instructions build owner)
+               (build-model/finished? build) (ssh-ad build owner))
+             (ssh-ad build owner))])))))
 
 (defn build-time-visualization [build owner]
   (reify
@@ -444,7 +495,6 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            show-ssh-info? (and (has-scope :write-settings data) (build-model/ssh-enabled-now? build))
             selected-tab (get build-data :selected-header-tab (default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
@@ -494,7 +544,7 @@
                        (not (get-in project [:feature_flags :osx])))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
-                "SSH info"]])
+                "Debug via SSH"]])
 
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
@@ -544,7 +594,7 @@
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
                                                  :plan plan})
-             :ssh-info (om/build build-ssh build))]])))))
+             :ssh-info (om/build build-ssh {:build build :user user}))]])))))
 
 (defn build-head [data owner]
   (reify
@@ -562,7 +612,10 @@
             plan (get-in data [:project-data :plan])
             user (:user data)
             logged-in? (not (empty? user))
-            config-data (:config-data build-data)]
+            config-data (:config-data build-data)
+            build-info {:build-id (build-model/id build)
+                        :vcs-url (:vcs_url build)
+                        :build-num (:build_num build)}]
         (html
          [:div.build-head-wrapper
           [:div.build-head
@@ -688,13 +741,13 @@
                  "Report"])
               (when (and (build-model/can-cancel? build) (has-scope :write-settings data))
                 (forms/managed-button
-                 [:button.cancel_build
-                  {:data-loading-text "Canceling",
-                   :title "Cancel this build",
-                   :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                    :vcs-url vcs-url
-                                                                    :build-num build-num}])}
-                  "Cancel"]))]]
-            [:div.no-user-actions]]
+                  [:button.cancel_build
+                   {:data-loading-text "Canceling",
+                    :title "Cancel this build",
+                    :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num}])}
+                   "Cancel"]))]]
+[:div.no-user-actions]]
 
            (om/build build-sub-head data)]])))))

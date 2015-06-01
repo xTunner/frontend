@@ -1,7 +1,6 @@
 <!--
 
 title: SSH access to builds
-last_updated: Feb 2, 2013
 
 -->
 
@@ -11,21 +10,34 @@ and so on.
 
 You can do that with CircleCI!
 
-Near the upper right corner of each build page, you'll find an
-'enable ssh' button:
+There are two ways to enable remote SSH access, depending on whether you want
+to create a new build or ssh to an existing one.
 
-![](asset://img/outer/docs/ssh-build-button.png)
+To enable SSH access for a running build, go to the 'Debug via SSH' tab and
+click the 'Enable SSH for this build' button.
 
-Clicking this button will start a new build with remote SSH
-access enabled. After a few moments on the new build, you'll
-see a section labeled 'SSH Info'. Inside this section,
-you will find the host and port information:
+![](asset://img/outer/docs/ssh-build-button-current.png)
+
+To start a fresh build with SSH enabled, for example if you want to debug a
+build that has already finished, click the 'with ssh' button alongside
+'Rebuild':
+
+![](asset://img/outer/docs/ssh-build-button-rebuild.png)
+
+In either case, host and port information will be available in the 'Debug via
+SSH tab':
 
 ![](asset://img/outer/docs/ssh-build-details.png)
 
 Now you can ssh to the running build (using the same ssh key
 that you use for GitHub) to perform whatever troubleshooting
-you need to. **Your build commands will run as usual.**
+you need to.
+
+**Your build commands will run as usual, with the exception of deployment**,
+which will be skipped unless it has already started.  Commands run via ssh can
+affect deployment and make it unpredictable.  Also, in most cases when there is
+a reason to debug a build, the issue would itself prevent deployment from going
+as expected.
 
 After the build commands run, the build output will show another
 special section labeled 'Wait for SSH', which repeats the host and

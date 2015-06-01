@@ -6,7 +6,6 @@
             [frontend.api :as api]
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
-            [frontend.components.build-head :refer (default-tab)]
             [frontend.favicon]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
@@ -177,10 +176,9 @@
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
             (analytics/track-build current-user build))
-          ;; Preemptively make the usage-queued API call if we're going to display the
-          ;; the usage queued tab by default.
-          ;; This feels like a weird bit of non-locality, but I can't think of a better solution. :(
-          (when (= :usage-queue (default-tab build scopes))
+          ;; Preemptively make the usage-queued API call if the build is in the
+          ;; usage queue and the user has access to the info
+          (when (and (:read-settings scopes) (build-model/in-usage-queue? build))
             (api/get-usage-queue build api-ch))
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))

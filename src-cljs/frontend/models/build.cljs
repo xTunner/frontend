@@ -151,12 +151,23 @@
   (and (not= "canceled" (:status build))
        (#{"not_running" "running" "queued" "scheduled"} (:lifecycle build))))
 
-(defn ssh-enabled-now? [build]
-  (and (:ssh_enabled build)
+(defn current-user-ssh?
+  "Whether the given user has SSH access to the build"
+  [build user]
+  (->> build :ssh_users (map :github_id) (some #{(:github_id user)})))
+
+(defn someone-else-ssh?
+  "Whether a user other than the given one has SSH access to the build"
+  [build user]
+  (->> build :ssh_users (map :github_id) (not-any? #{(:github_id user)})))
+
+(defn ssh-enabled-now?
+  "Whether anyone can currently SSH into the build"
+  [build]
+  (and (seq (:ssh_users build))
        (:node build)
        (or (running? build)
            (every? :ssh_enabled (:node build)))))
-
 
 (defn display-build-invite [build]
   (:is_first_green_build build))
