@@ -102,9 +102,7 @@ command like this to include the RSpec Junit formatter:
 ```
 test:
   override:
-    - bundle exec rspec
-      --format RspecJunitFormatter
-      --out $CIRCLE_TEST_REPORTS/rspec.xml:
+    - bundle exec rspec --format RspecJunitFormatter --out $CIRCLE_TEST_REPORTS/rspec.xml:
         parallel: true
         files:
           - spec/unit/sample.rb   # can be a direct path to file
@@ -119,9 +117,7 @@ include the following in your `circle.yml`:
 test:
   override:
     - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
-    - bundle exec cucumber
-      --format json
-      --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber:
+    - bundle exec cucumber --format json --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber:
         parallel: true
         files:
           - spec/feature/*.feature
