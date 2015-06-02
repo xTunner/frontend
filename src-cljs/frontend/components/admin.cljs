@@ -28,7 +28,46 @@
             [:div.loading-spinner common/spinner]
             [:code (om/build ankha/inspector build-state)])])))))
 
-(defn admin [app owner]
+(defn fleet-state [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Admin Build State")
+    om/IRender
+    (render [_]
+      (let [fleet-state (sort-by :instance_id (get-in app state/fleet-state-path))]
+        (html
+         [:section {:style {:padding-left "10px"}}
+          [:header
+           [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
+           " / "
+           [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
+          (if-not fleet-state
+            [:div.loading-spinner common/spinner]
+            ;; FIXME: This table shouldn't really be .recent-builds-table; it's
+            ;; a hack to steal a bit of styling from the builds table until we
+            ;; properly address the styling for this table and admin tools in
+            ;; general.
+            [:table.recent-builds-table
+             [:thead
+              [:tr
+               [:th "Instance ID"]
+               [:th "Instance Type"]
+               [:th "Boot Time"]
+               [:th "Busy Containers"]
+               [:th "State"]]]
+             [:tbody
+              (if (seq fleet-state)
+                (for [instance fleet-state]
+                  [:tr
+                   [:td (:instance_id instance)]
+                   [:td (:ec2_instance_type instance)]
+                   [:td (datetime/long-datetime (:boot_time instance))]
+                   [:td (:busy instance) " / " (:total instance)]
+                   [:td (:state instance)]])
+                [:tr
+                 [:td "No available masters"]])]])])))))
+
+
+(defn switch [app owner]
   (reify
     om/IRender
     (render [_]
@@ -44,3 +83,16 @@
                     :type "hidden"}]
            [:button.btn.btn-primary {:value "Switch user", :type "submit"}
             "Switch user"]]]]]))))
+
+(defn admin-settings [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [subpage (:admin-settings-subpage app)]
+        (html
+         [:div#admin-settings
+            [:div.admin-settings-inner
+             [:div#subpage
+              (case subpage
+                :fleet-state (om/build fleet-state app)
+                "Admin!")]]])))))

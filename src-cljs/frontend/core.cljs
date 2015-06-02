@@ -321,5 +321,6 @@
     (analytics/track-invited-by (:invited-by utils/initial-query-map))
     (when-let [weasel-url (get-in @state [:render-context :weasel_url])]
       (ws-repl/connect weasel-url :verbose true))
-    (when-let [figwheel-url (get-in @state [:render-context :figwheel_url])]
+    (setup-figwheel! "ws://localhost:3449/figwheel-ws")
+    #_(when-let [figwheel-url (get-in @state [:render-context :figwheel_url])]
       (setup-figwheel! figwheel-url))))

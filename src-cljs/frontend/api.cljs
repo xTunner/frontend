@@ -63,3 +63,9 @@
              :build-tests
              api-ch
              :context (build-model/id build)))
+
+(defn get-build-state [api-ch]
+  (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
+
+(defn get-fleet-state [api-ch]
+  (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state api-ch))

@@ -39,6 +39,7 @@
    :project-settings-project-name nil
    :org-settings-subpage nil
    :org-settings-org-name nil
+   :admin-settings-subpage nil
    :dashboard-data {:branch nil
                     :repo nil
                     :org nil}
@@ -189,6 +190,8 @@
 (def changelog-path [:changelog])
 
 (def build-state-path [:build-state])
+
+(def fleet-state-path [:fleet-state])
 
 (def error-message-path [:error-message])
 

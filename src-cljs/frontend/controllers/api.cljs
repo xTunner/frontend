@@ -562,6 +562,10 @@
   [target message status {:keys [resp]} state]
   (assoc-in state state/build-state-path resp))
 
+(defmethod api-event [:fleet-state :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/fleet-state-path resp))
+
 (defmethod api-event [:docs-articles :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (get-in state state/docs-search-path) (:query resp))

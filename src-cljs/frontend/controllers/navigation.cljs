@@ -126,7 +126,7 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
+    (api/get-build-state api-ch))
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
@@ -498,3 +498,19 @@
                       :wit ""}]
     (set-page-title! (get titles story))
     (set-page-description! (get descriptions story))))
+
+(defmethod navigated-to :admin-settings
+  [history-imp navigation-point {:keys [subpage] :as args} state]
+  (-> state
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point
+             :navigation-data args
+             :admin-settings-subpage subpage)))
+
+(defmethod post-navigated-to! :admin-settings
+  [history-imp navigation-point {:keys [subpage]} previous-state current-state]
+  (js/console.log subpage)
+  (when (= :fleet-state subpage)
+    (let [api-ch (get-in current-state [:comms :api])]
+      (api/get-fleet-state api-ch))
+    (set-page-title! "Fleet State")))

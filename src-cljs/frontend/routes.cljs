@@ -36,14 +36,21 @@
     (str url (when page (str "?page=" page)))))
 
 (defn define-admin-routes! [nav-ch]
+  (defroute v1-admin-switch "/admin/switch" []
+    (open-to-inner! nav-ch :switch {:admin true}))
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
     (open-to-inner! nav-ch :dashboard {:admin true}))
   (defroute v1-admin-deployments "/admin/deployments" []
     (open-to-inner! nav-ch :dashboard {:deployments true}))
   (defroute v1-admin-build-state "/admin/build-state" []
     (open-to-inner! nav-ch :build-state {:admin true}))
+
   (defroute v1-admin "/admin" []
-    (open-to-inner! nav-ch :admin {:admin true})))
+    (open-to-inner! nav-ch :admin-settings {:admin true
+                                            :subpage nil}))
+  (defroute v1-admin-fleet-state "/admin/fleet-state" []
+    (open-to-inner! nav-ch :admin-settings {:admin true
+                                            :subpage :fleet-state})))
 
 
 ;; Creates a route that will ignore fragments and add them to params as {:_fragment "#fragment"}

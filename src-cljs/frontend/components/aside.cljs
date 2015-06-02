@@ -163,8 +163,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            subpage (or (:project-settings-subpage app) :overview)]
+      (let [subpage (:project-settings-subpage app :overview)]
         (html
           [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
            [:header
@@ -191,6 +190,25 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
+(defn admin-settings-nav-items [data owner]
+  (let [navigation-data (:navigation-data data)]
+    [{:type :subpage :href "/admin" :title "Overview" :subpage nil}
+     {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}]))
+
+(defn admin-settings-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [subpage (:project-settings-subpage app :overview)]
+        (html
+          [:div.aside-user {:class (when (= :admin-settings (:navigation-point app)) "open")}
+           [:header
+            [:h5 "Admin Settings"]
+            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+             (common/ico :fail-light)]]
+           [:div.aside-user-options
+            (expand-menu-items (admin-settings-nav-items app owner) subpage)]])))))
+
 (defn redirect-org-settings-subpage
   "Piggiebacked plans can't go to :containers, :organizations, :billing, or :cancel.
   Un-piggiebacked plans shouldn't be able to go to the old 'add plan' page. This function
@@ -215,8 +233,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [controls-ch (om/get-shared owner [:comms :controls])
-            plan (get-in app state/org-plan-path)
+      (let [plan (get-in app state/org-plan-path)
             org-data (get-in app state/org-data-path)
             org-name (:name org-data)
             subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan org-name)
@@ -266,7 +283,8 @@
        [:nav.aside-left-menu
         (om/build branch-activity-list app {:opts {:login (:login opts)}})
         (om/build project-settings-menu app)
-        (om/build org-settings-menu app)]))))
+        (om/build org-settings-menu app)
+        (om/build admin-settings-menu app)]))))
 
 (defn aside-nav [app owner {user :user}]
   (reify
@@ -324,6 +342,13 @@
                         :class (when (changelog-updated-since? (:last_viewed_changelog user))
                                  "unread")}
          [:i.fa.fa-bell]]
+
+        (when (:admin user)
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Admin"
+                          :href "/admin"}
+           [:i.fa.fa-cogs]])
 
         [:a.aside-item.push-to-bottom {:data-placement "right"
                                        :data-trigger "hover"
