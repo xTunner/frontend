@@ -1,12 +1,13 @@
 <!--
 
-title: Continuous Deployment to IBM Bluemix
+title: Continuous Deployment to IBM Bluemix and Pivotal Web Service
 last_updated: Oct 1, 2014
 
 -->
 
-Bluemix is a PaaS offering from IBM. It is pretty straightforward
-to use the [Cloud Foundry command line tool 'cf'](https://github.com/cloudfoundry/cli) to deploy to it from CircleCI.
+Bluemix is a PaaS offering from IBM, and PWS is a PaaS offering from
+Pivotal. It is pretty straightforward
+to use the [Cloud Foundry command line tool 'cf'](https://github.com/cloudfoundry/cli) to deploy to both of those platforms from CircleCI.
 
 ## Quickstart
 
@@ -88,3 +89,21 @@ deployment:
     commands:
       - cf push
 ```
+
+### Deploying to Pivotal Web Service
+
+Deploying to PWS is similar to the Bluemix deployment. Given that you
+chnage the names of the variables where the credentials are stored to
+`$PWS_USER` and `$PWS_PASSWORD`, the configuration in the `test: post`
+section will look like this:
+
+```
+test:
+  post:
+    - cf api https://api.run.pivotal.io
+    - cf auth $PWS_USER $PWS_PASSWORD
+    - cf target -o $PWS_USER -s dev
+    - cf a
+```
+
+The rest of the steps don’t need to be changed.
