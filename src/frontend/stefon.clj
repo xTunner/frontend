@@ -130,5 +130,6 @@
            "docs/what-happens.md"
            "docs/wrong-ruby-commands.md"
            "docs/wrong-ruby-version.md"
+           "docs/unexpected-rake-errors.md"
            "docs/manifest.json"]
           (map :path hosted-scripts)))
