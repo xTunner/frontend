@@ -52,7 +52,9 @@ limit the JVM’s usage of memory by declaring the limits in the
 `JAVA_OPTS` environment variable, like this:
 
 ```
-  set JAVA_OPTS="-Xms256m -Xmx512m"
+machine:
+  environment:
+    JAVA_OPTS: "-Xms256m -Xmx512m"
 ```
 
 Note that you might want to use larger numbers depending on the other
