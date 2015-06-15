@@ -28,6 +28,44 @@
             [:div.loading-spinner common/spinner]
             [:code (om/build ankha/inspector build-state)])])))))
 
+(defn switch [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.container-fluid
+        [:div.row-fluid
+         [:div.span9
+          [:p "Switch user"]
+          [:form.form-inline {:method "post", :action "/admin/switch-user"}
+           [:input.input-medium {:name "login", :type "text"}]
+           [:input {:value (utils/csrf-token)
+                    :name "CSRFToken",
+                    :type "hidden"}]
+           [:button.btn.btn-primary {:value "Switch user", :type "submit"}
+            "Switch user"]]]]]))))
+
+(defn overview [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Admin Build State")
+    om/IRender
+    (render [_]
+      (html
+        [:section {:style {:padding-left "10px"}}
+         [:h1 "CircleCI Version Info"]
+         [:p
+          "You are running "
+          [:b
+           "CircleCI "
+           (if-let [enterprise-version (get-in app [:render-context :enterprise_version])]
+             (list
+               "Enterprise "
+               enterprise-version)
+             (list
+               "in "
+               (:environment app)))]
+          "."]]))))
+
 (defn fleet-state [app owner]
   (reify
     om/IDisplayName (display-name [_] "Admin Build State")
@@ -67,23 +105,6 @@
                  [:td "No available masters"]])]])])))))
 
 
-(defn switch [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       [:div.container-fluid
-        [:div.row-fluid
-         [:div.span9
-          [:p "Switch user"]
-          [:form.form-inline {:method "post", :action "/admin/switch-user"}
-           [:input.input-medium {:name "login", :type "text"}]
-           [:input {:value (utils/csrf-token)
-                    :name "CSRFToken",
-                    :type "hidden"}]
-           [:button.btn.btn-primary {:value "Switch user", :type "submit"}
-            "Switch user"]]]]]))))
-
 (defn admin-settings [app owner]
   (reify
     om/IRender
@@ -95,4 +116,4 @@
              [:div#subpage
               (case subpage
                 :fleet-state (om/build fleet-state app)
-                "Admin!")]]])))))
+                (om/build overview app))]]])))))
