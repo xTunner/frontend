@@ -2,7 +2,7 @@ CI.Versions =
   v: (v) ->
     "#{v} #{CI.Versions[v]}"
 
-  Firefox: "36.0"
+  Firefox: "38.0"
   Chrome: "38.0.2125.122"
   chromedriver: "2.12"
 
@@ -152,7 +152,7 @@ CI.Versions =
   virtualenv: "13.0.3"
 
   default_php: "5.3.10-1ubuntu3.7"
-  php: "5.3.10-1ubuntu3.5"
+  php: "5.3.10-1ubuntu3.18"
   php_versions: [
     "5.6.5"
     "5.6.2"
