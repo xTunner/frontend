@@ -1004,11 +1004,14 @@
 
 (defmethod post-control-event! :track-external-link-clicked
   [target message {:keys [path event properties]} previous-state current-state]
-  (let [redirect #(js/window.location.replace path)]
-    (go (alt!
-          (analytics/managed-track event properties) ([v] (do (utils/mlog "tracked" v "... redirecting")
-                                                              (redirect)))
-          (async/timeout 5000) (redirect)))))
+  (let [redirect #(js/window.location.replace path)
+        track-ch (analytics/managed-track event properties)]
+    (if track-ch
+      (go (alt!
+            track-ch ([v] (do (utils/mlog "tracked" v "... redirecting")
+                              (redirect)))
+            (async/timeout 5000) (redirect)))
+      (redirect))))
 
 (defmethod control-event :language-testimonial-tab-selected
   [target message {:keys [index]} state]
