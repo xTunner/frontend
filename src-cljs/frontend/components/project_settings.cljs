@@ -522,7 +522,7 @@
                    :type "checkbox"}]
           [:span "Fixed/Failed Only"]
           [:i.fa.fa-question-circle {:id (str "fixed-failed-input-tooltip-hack-" id)
-                                     :title "Only send notifications for builds that fail or fix the tests. Otherwise, send a notification for every build."}]])))))
+                                     :title "Only send notifications for builds that fail or fix the tests and the first build on a new branch. Otherwise, send a notification for every build."}]])))))
 
 (defn chatroom-item [project-id settings owner
                      {:keys [service doc inputs show-fixed-failed? top-section-content settings-keys]}]
