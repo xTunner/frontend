@@ -236,6 +236,7 @@ We have the following services automatically set up and running for your tests:
 *   `postgresql` ({{ versions.postgresql }} with postgis 2.0 extensions)
 *   `rabbitmq` ({{ versions.rabbitmq }})
 *   `redis` ({{ versions.redis }})
+*   `zookeeper` ({{ versions.zookeeper }})
 
 Both `postgres` and `mysql` are set up to use the `ubuntu`
 user, have a database called `circle_test` available, and don't require any password.

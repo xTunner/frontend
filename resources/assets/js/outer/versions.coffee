@@ -224,6 +224,7 @@ CI.Versions =
   couchdb: "1.3.0"
   neo4j: "2.2.0"
   rabbitmq: "3.4.4"
+  zookeeper: "3.3.5"
 
 
   git: "1.8.5.6"
