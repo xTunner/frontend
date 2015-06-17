@@ -107,6 +107,20 @@
   {:class (when (= current goal)
             "active")})
 
+(defn outer-subheader [nav-maps nav-point]
+  (map
+   #(when (-> %
+              keys
+              set
+              (contains? nav-point))
+      [:div.navbar.navbar-default.navbar-static-top.subnav
+       [:div.container-fluid
+        [:ul.nav.navbar-nav
+         (for [[point {:keys [path title]}] %]
+           [:li (maybe-active nav-point point)
+            [:a {:href path} title]])]]])
+   nav-maps))
+
 (defn outer-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Outer Header")
@@ -173,7 +187,9 @@
               [:a {:href "/docs"} "Documentation"]]
              [:li {:class (when (contains? #{:about
                                              :contact
-                                             :team}
+                                             :team
+                                             :jobs
+                                             :press}
                                            nav-point)
                             "active")}
               [:a {:href "/about"} "About Us"]]
@@ -194,30 +210,24 @@
                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header sign-in" :url js/window.location.pathname}}])
                                        :title "Sign in with Github"}
                   "Sign in"]]]))]]
-          (when (contains? #{:mobile :ios :android} nav-point)
-            [:div.navbar.navbar-default.navbar-static-top.subnav
-             [:div.container-fluid
-              [:ul.nav.navbar-nav
-               [:li (maybe-active nav-point :mobile)
-                [:a {:href "/mobile"} "Mobile"]]
-               [:li (maybe-active nav-point :ios)
-                [:a {:href "/mobile/ios"} "iOS"]]
-               [:li (maybe-active nav-point :android)
-                [:a {:href "/mobile/android"} "Android"]]]]])
-          (when (contains? #{:about :team :contact :jobs :press} nav-point)
-            [:div.navbar.navbar-default.navbar-static-top.subnav
-             [:div.container-fluid
-              [:ul.nav.navbar-nav
-               [:li (maybe-active nav-point :about)
-                [:a {:href "/about"} "Overview"]]
-               [:li (maybe-active nav-point :team)
-                [:a {:href "/about/team"} "Team"]]
-               [:li (maybe-active nav-point :contact)
-                [:a {:href "/contact"} "Contact Us"]]
-               [:li (maybe-active nav-point :jobs)
-                [:a {:href "/jobs"} "Jobs"]]
-               [:li (maybe-active nav-point :press)
-                [:a {:href "/press"} "Press"]]]]])])))))
+          (outer-subheader
+           [{:mobile {:path "/mobile"
+                       :title "Mobile"}
+              :ios {:path "/mobile/ios"
+                    :title "iOS"}
+              :android {:path "/mobile/android"
+                        :title "Android"}}
+            {:about {:path "/about"
+                     :title "Overview"}
+             :team {:path "/about/team"
+                    :title "Team"}
+             :contact {:path "/contact"
+                       :title "Contact Us"}
+             :jobs {:path "/jobs"
+                    :title "Jobs"}
+             :press {:path "/press"
+                     :title "Press"}}]
+           nav-point)])))))
 
 (defn inner-header [app owner]
   (reify
