@@ -35,9 +35,9 @@
                     :type "email"
                     :value email
                     :id (str login "-email")}]
-           [:label {:for (str login "-email")}
+           [:label.no-email {:for (str login "-email") :title "We could not retrieve this teammate's email address because it has been set as private."}
             [:i.fa.fa-exclamation-circle]
-            " Fix Email"]]
+            " Click to add an email address."]]
           [:label.invite-select {:id (str login "-label")
                                  :for (str login "-checkbox")}
            [:input {:type "checkbox"
