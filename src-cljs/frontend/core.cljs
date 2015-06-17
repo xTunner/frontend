@@ -241,6 +241,9 @@
 (defn ^:export toggle-admin []
   (swap! debug-state update-in [:current-user :admin] not))
 
+(defn ^:export toggle-dev-admin []
+  (swap! debug-state update-in [:current-user :dev-admin] not))
+
 (defn ^:export explode []
   (swallow-errors
     (assoc [] :deliberate :exception)))

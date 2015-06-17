@@ -224,7 +224,9 @@
     om/IDisplayName (display-name [_] "Inner Header")
     om/IRender
     (render [_]
-      (let [admin? (get-in app [:current-user :admin])
+      (let [admin? (if (config/enterprise?)
+                     (get-in app [:current-user :dev-admin])
+                     (get-in app [:current-user :admin]))
             logged-out? (not (get-in app state/user-path))]
         (html
          [:header.main-head (when logged-out? {:class "guest"})
