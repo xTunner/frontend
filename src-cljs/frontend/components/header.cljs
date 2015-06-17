@@ -226,7 +226,13 @@
              :jobs {:path "/jobs"
                     :title "Jobs"}
              :press {:path "/press"
-                     :title "Press"}}]
+                     :title "Press"}}
+            {:enterprise {:path "/enterprise"
+                          :title "Overview"}
+             :azure {:path "/enterprise/azure"
+                     :title "Azure"}
+             :aws {:path "/enterprise/aws"
+                   :title "AWS"}}]
            nav-point)])))))
 
 (defn inner-header [app owner]
