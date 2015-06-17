@@ -227,3 +227,9 @@
           [:h2.text-center "Learn More About CircleCI Enterprise"]
           [:div.enterprise-cta-contact
            (om/build contact-form nil)]]]]))))
+
+(defrender enterprise-azure [app owner]
+  (html [:p "Hey there!"]))
+
+(defrender enterprise-aws [app owner]
+  (html [:p "Hello!"]))

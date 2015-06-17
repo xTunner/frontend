@@ -78,6 +78,8 @@
     :security security/security
     :security-hall-of-fame security/hall-of-fame
     :enterprise enterprise/enterprise
+    :azure enterprise/enterprise-azure
+    :aws enterprise/enterprise-aws
     :stories stories/story
     :language-landing language-landing/language-landing
     :integrations integrations/integration
