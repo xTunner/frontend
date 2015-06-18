@@ -24,7 +24,14 @@ installed, you can install it as part of your build with:
 ```
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --all --filter "package-name""
+    - echo y | android update sdk --no-ui --all --filter "package-name"
+```
+
+We're currently missing the Google API addons, but these will come pre-installed in a future release. In the meantime, you can install them like so:
+```
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-addon-google_apis-google-21,addon-google_apis-google-21
 ```
 
 We also preinstall the Android NDK; it can be found at `$ANDROID_NDK`.
