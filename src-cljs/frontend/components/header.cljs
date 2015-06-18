@@ -230,7 +230,8 @@
          [:header.main-head (when logged-out? {:class "guest"})
           (when admin?
             (om/build head-admin app))
-          (om/build statuspage/statuspage app)
+          (when (config/statuspage-header-enabled?)
+            (om/build statuspage/statuspage app))
           (when logged-out?
             (om/build outer-header app))
           (when (seq (get-in app state/crumbs-path))
