@@ -74,6 +74,11 @@
       ;; TODO: Kill this after backend populate the context value
       (analytics-enabled?))))
 
+(defn statuspage-header-enabled?
+  "If true, we should show statuspage alerts with incidents activated"
+  []
+  (not (enterprise?)))
+
 (defn support-email
   []
   (or (aget js/window "renderContext" "support_email")
