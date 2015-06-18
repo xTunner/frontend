@@ -39,7 +39,7 @@ is accessible to anyone who can push code which triggers the build (eg., that pe
 include commands in circle.yml to echo the data to the terminal and see it on the build page.) 
 So in this special case of running builds for fork PRs, we have to be careful.
 
-There are 4 kinds of configuration data that we would normally use in a build which we suppress
+There are 5 kinds of configuration data that we would normally use in a build which we suppress
 for builds triggered by pull requests from forks:
 
 1. **Environment variables configured via the web UI**
@@ -48,6 +48,11 @@ for builds triggered by pull requests from forks:
    Non-sensitive environment variables for your project can be set 
    in circle.yml; values configured via the web UI are stored encrypted at rest and
    injected into the build environment during regular builds.
+
+   The variables configured via the `circle.yml` will be available in
+   the fork PR builds (as they have access to the same `circle.yml` file);
+   the values configured through the UI will not be visible to the fork
+   PRs.
 
    <span class='label label-info'>Note:</span> If the same key is set in both, the web UI value overrides the circle.yml one.
 
@@ -71,7 +76,7 @@ for builds triggered by pull requests from forks:
 4. **AWS permissions**
    (configured in Project settings > Permissions > AWS Permissions)
 
-   This configuration gets stored in files in ~/.aws/ and would allow hostile code to perform actions through AWS API calls.
+   This configuration gets stored in files in ~/.aws/ and would allow hostile code to perform actions through AWS API calls. This file is not made available to the fork PR builds.
 
 5. **Deployment credentials**
 
