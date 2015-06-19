@@ -4,6 +4,9 @@
             [frontend.datetime :refer [unix-timestamp]]
             [frontend.utils :as utils :include-macros true]))
 
+(defn get-property [prop]
+  (js/mixpanel.get_property prop))
+
 (defn track [event & [props]]
   (utils/swallow-errors (js/mixpanel.track event (clj->js (merge {:event_time (unix-timestamp)} props)))))
 

@@ -1,6 +1,7 @@
 (ns frontend.components.enterprise
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.contact-form :as contact-form]
@@ -38,73 +39,89 @@
 
 (def contact-form
   (contact-form/contact-form-builder
-    {:id "contact-form"
-     :class "form-horizontal"
-     :action "/about/contact"}
-    {:params-filter (fn [{:strs [name email company phone developer-count]}]
-                      {:name name
-                       :email email
-                       :message (gstr/format "Company: %s\nPhone: %s\nDeveloper count: %s" company phone developer-count)
-                       :enterprise true})}
-    (fn [control notice form-state]
-      (list
-        [:div.row.contact-form
-         [:div.col-sm-8.col-sm-offset-2
-          [:div.row
-           [:div.col-sm-6
-            (control :input.input-lg
-                     {:type "text"
-                      :name "company"
-                      :required true
-                      :disabled (= :loading form-state)
-                      :placeholder "Company"})]
-           [:div.col-sm-6
-            (control :input.input-lg
-                     {:type "text"
-                      :name "phone"
-                      :disabled (= :loading form-state)
-                      :placeholder "Phone"})]]
-          [:div.row
-           [:div.col-sm-6
-            (control :input.input-lg
-                     {:type "text"
-                      :name "name"
-                      :required true
-                      :disabled (= :loading form-state)
-                      :placeholder "Name"})]
-           [:div.col-sm-6
-            (control :input.input-lg
-                     {:type "text"
-                      :name "developer-count"
-                      :disabled (= :loading form-state)
-                      :placeholder "# of Developers"})]]
-          [:div.row
-           [:div.col-sm-6
-            (control :input.input-lg
-                     {:type "email"
-                      :name "email"
-                      :require true
-                      :disabled (= :loading form-state)
-                      :placeholder "Email"})]
-           [:div.col-sm-6
-            [:div.telephone-info
-             "Or call "
-             [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
-             " for an Enterprise quote."]]]]]
-        (om/build contact-form/transitionable-height
-                  {:class "notice"
-                   :children (html
-                               (when notice
-                                 [:div {:class (:type notice)}
-                                  (:message notice)]))})
+   {:id "contact-form"
+    :class "form-horizontal"
+    :action "/about/contact"}
+   {:params-filter (fn [{:strs [name email company phone developer-count]}]
+                     {:name name
+                      :email email
+                      :message (->> {"Company" company
+                                     "Phone" phone
+                                     "Developer count" developer-count
+                                     "Form URL" js/location.href
+                                     "Initial referrer" (mixpanel/get-property "$initial_referrer")
+                                     "UTM medium" (mixpanel/get-property "utm_medium")
+                                     "UTM source" (mixpanel/get-property "utm_source")
+                                     "UTM campaign" (mixpanel/get-property "utm_campaign")
+                                     "UTM content" (mixpanel/get-property "utm_content")
+                                     "UTM term" (mixpanel/get-property "utm_term")}
+                                    (map (fn [[k v]] (gstr/format "%s: %s" k (or v "not set"))))
+                                    (str/join "\n"))
+                      :enterprise true})
+    :success-hook (fn [{:keys [email]}]
+                    (mixpanel/track "enterprise_form_submitted"
+                                    {:url js/location.href
+                                     :email email}))}
+   (fn [control notice form-state]
+     (list
+      [:div.row.contact-form
+       [:div.col-sm-8.col-sm-offset-2
         [:div.row
-         [:div.col-xs-12.text-center
-          (om/build contact-form/morphing-button {:text "Get More Info" :form-state form-state})
-          [:div.success-message
-           {:class (when (= :success form-state) "success")}
-           "Thank you for submitting your information."
-           [:br]
-           "Someone from our Enterprise team will contact you within one business day."]]]))))
+         [:div.col-sm-6
+          (control :input.input-lg
+                   {:type "text"
+                    :name "company"
+                    :required true
+                    :disabled (= :loading form-state)
+                    :placeholder "Company"})]
+         [:div.col-sm-6
+          (control :input.input-lg.blue-focus-border
+                   {:type "text"
+                    :name "phone"
+                    :disabled (= :loading form-state)
+                    :placeholder "Phone"})]]
+        [:div.row
+         [:div.col-sm-6
+          (control :input.input-lg
+                   {:type "text"
+                    :name "name"
+                    :required true
+                    :disabled (= :loading form-state)
+                    :placeholder "Name"})]
+         [:div.col-sm-6
+          (control :input.input-lg
+                   {:type "text"
+                    :name "developer-count"
+                    :required true
+                    :disabled (= :loading form-state)
+                    :placeholder "# of Developers"})]]
+        [:div.row
+         [:div.col-sm-6
+          (control :input.input-lg
+                   {:type "email"
+                    :name "email"
+                    :required true
+                    :disabled (= :loading form-state)
+                    :placeholder "Email"})]
+         [:div.col-sm-6
+          [:div.telephone-info
+           "Or call "
+           [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
+           " for an Enterprise quote."]]]]]
+      (om/build contact-form/transitionable-height
+                {:class "notice"
+                 :children (html
+                            (when notice
+                              [:div {:class (:type notice)}
+                               (:message notice)]))})
+      [:div.row
+       [:div.col-xs-12.text-center
+        (om/build contact-form/morphing-button {:text "Get More Info" :form-state form-state})
+        [:div.success-message
+         {:class (when (= :success form-state) "success")}
+         "Thank you for submitting your information."
+         [:br]
+         "Someone from our Enterprise team will contact you within one business day."]]]))))
 
 (defn enterprise [app owner]
   (reify

@@ -116,9 +116,11 @@
   Optionally, if a :params-filter is given, it will be called when the form is
   submitted with a map of the params the form would normally submit. It should
   return a map of params for the form to actually submit. Both maps should have
-  string keys and values."
+  string keys and values. Also, if :success-hook is given, it will be called
+  after a successful form submission with the final submitted params."
   ([props children-f] (contact-form-builder props {} children-f))
-  ([props {:keys [params-filter] :or {params-filter identity}} children-f]
+  ([props {:keys [params-filter success-hook]
+           :or {params-filter identity success-hook identity}} children-f]
    (fn [_ owner]
      (reify
        om/IInitState
@@ -160,6 +162,7 @@
                                         (if (= (:status resp) :success)
                                           (do
                                             (om/set-state! owner :form-state :success)
+                                            (success-hook filtered-params)
                                             (reset-form form))
                                           (do
                                             (om/set-state! owner :form-state :idle)
