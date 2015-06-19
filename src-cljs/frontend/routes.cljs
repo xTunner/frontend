@@ -190,6 +190,15 @@
                                          :_title "Enterprise Continuous Integration and Deployment"
                                          :_description "Reduce risk with Enterprise Continuous Integration from CircleCI. Integrates seamlessly with Github Enterprise and the rest of your technology stack.")))
 
+  (defroute v1-enterprise-aws (FragmentRoute. "/enterprise/aws") {:as params}
+    (open-to-outer! nav-ch :aws (assoc params
+                                         :_title "CircleCI Enterprise on AWS"
+                                         :_description "Run CircleCI Enterprise on the same AWS infrastructure you use for everything else. Integrates seamlessly with GitHub Enterprise on AWS.")))
+
+  (defroute v1-enterprise-azure (FragmentRoute. "/enterprise/azure") {:as params}
+    (open-to-outer! nav-ch :azure (assoc params
+                                         :_title "CircleCI Enterprise on Azure"
+                                         :_description "Install CircleCI Enterprise in your own Microsoft Azure account. Integrates with GitHub Enterprise on Azure and Active Directory authentication.")))
 
   (defroute v1-stories (FragmentRoute. "/stories/:story") [story]
     (open-to-outer! nav-ch :stories {:story (keyword story)}))

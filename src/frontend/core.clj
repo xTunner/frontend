@@ -103,7 +103,7 @@
               #"/autocomplete.*"
               #"/search-articles.*"
               #"/mobile.*"
-              #"/enterprise"
+              #"/enterprise.*"
               #"/features"
               #"/features.*"
               #"/gh/.*"
