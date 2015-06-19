@@ -52,7 +52,9 @@
                                      "Initial referrer" (mixpanel/get-property "$initial_referrer")
                                      "UTM medium" (mixpanel/get-property "utm_medium")
                                      "UTM source" (mixpanel/get-property "utm_source")
-                                     "UTM campaign" (mixpanel/get-property "utm_campaign")}
+                                     "UTM campaign" (mixpanel/get-property "utm_campaign")
+                                     "UTM content" (mixpanel/get-property "utm_content")
+                                     "UTM term" (mixpanel/get-property "utm_term")}
                                     (map (fn [[k v]] (gstr/format "%s: %s" k (or v "not set"))))
                                     (str/join "\n"))
                       :enterprise true})
