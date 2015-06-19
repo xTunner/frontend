@@ -237,9 +237,8 @@
           [:section.container
            [:div.row
             [:article.hero-title.center-block
-             [:div.text-center
-              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-windows.svg")}]]
-             [:h1.text-center "Next-Generation CI and CD on Microsoft Azure"]
+             [:h1.text-center "Next-Generation CI and CD on"
+              [:img.inline-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-windows.png")}]]
              [:h3.text-center "Access all of the functionality of CircleCI with all of the security and control of your own Virtual Network."]]]
 
            [:div.row.text-center
@@ -276,15 +275,16 @@
             (om/build contact-form nil)]]]]))
 
 (defrender enterprise-aws [app owner]
-    (html [:div#enterprise
+  (html [:div#enterprise
          [:div.jumbotron
           enterprise-bg
           [:section.container
            [:div.row
             [:article.hero-title.center-block
-             [:div.text-center
-              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-aws.svg")}]]
-             [:h1.text-center "Next-Generation CI and CD on AWS"]
+             [:div.text-center]
+             [:h1.text-center "Next-Generation CI and CD on"
+              [:img.inline-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-aws.svg")
+                                 :style {:margin-left "20px"}}]]
              [:h3.text-center "Everything you love about CircleCI combined with everything you love about AWS, all on your own Virtual Private Cloud."]]]
 
            [:div.row.text-center
@@ -297,7 +297,7 @@
               (common/feature-icon "github")
               [:h2.text-center "Integrates with GitHub Enterprise"]
               [:p.text-center "CircleCI has worked seamlessly with GitHub from the very beginning, and the same is true for CircleCI Enterprise."]]]
-           [:div.col-xs-6
+            [:div.col-xs-6
              [:article
               (common/feature-icon "aws")
               [:h2.text-center "CircleCI knows AWS"]
