@@ -76,6 +76,7 @@
           (control :input.input-lg
                    {:type "text"
                     :name "phone"
+                    :required true
                     :disabled (= :loading form-state)
                     :placeholder "Phone"})]]
         [:div.row
@@ -90,6 +91,7 @@
           (control :input.input-lg
                    {:type "text"
                     :name "developer-count"
+                    :required true
                     :disabled (= :loading form-state)
                     :placeholder "# of Developers"})]]
         [:div.row
@@ -97,7 +99,7 @@
           (control :input.input-lg
                    {:type "email"
                     :name "email"
-                    :require true
+                    :required true
                     :disabled (= :loading form-state)
                     :placeholder "Email"})]
          [:div.col-sm-6
