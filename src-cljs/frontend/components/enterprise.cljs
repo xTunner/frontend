@@ -250,7 +250,7 @@
              [:article
               (common/feature-icon "github")
               [:h2.text-center "Works with GitHub Enterprise"]
-              [:p.text-center "CircleCI has integrated seamlessly with GitHub from the very beginning, and CircleCI Enterprise is no different."]]]
+              [:p.text-center "CircleCI has integrated seamlessly with GitHub from the very beginning, and CircleCI Enterprise is no different. Sign in with GitHub Enterprise, view build status right from PR pages, and quickly navigate from builds on CircleCI to corresponding commits and PRs on GitHub Enterprise."]]]
             [:div.col-xs-6
              [:article
               (common/feature-icon "key-hole")
@@ -261,12 +261,12 @@
              [:article
               (common/feature-icon "circle")
               [:h2.text-center "We come to you"]
-              [:p "Run your own CircleCI installation together with your existing Azure infrastructure."]]]
+              [:p.text-center "Run your own CircleCI installation together with your existing Azure infrastructure. You've invested time, money, and people in your cloud infrastructure. CircleCI Enterprise on Azure makes those investments pay dividends by integrating seemlessly with your existing setup."]]]
             [:div.col-xs-6
              [:article
               (common/feature-icon "security")
               [:h2.text-center "Security first"]
-              [:p.text-center "CircleCI runs in your own VPC, where you have control over security and network settings"]]]]]]
+              [:p.text-center "CircleCI runs in your own VPC, where you have control over security and network settings.  Now you don't have to choose between using state-of-the-art CI and CD tools and complying with your company security policies."]]]]]]
          [:div.outer-section
           [:section.container
            (common/feature-icon "phone")
@@ -296,24 +296,24 @@
              [:article
               (common/feature-icon "github")
               [:h2.text-center "Integrates with GitHub Enterprise"]
-              [:p.text-center "CircleCI has worked seamlessly with GitHub from the very beginning, and the same is true for CircleCI Enterprise."]]]
+              [:p.text-center "CircleCI has worked seamlessly with GitHub from the very beginning, and the same is true for CircleCI Enterprise. Enjoy the same PR status intgegration and navigation from CircleCI builds to GitHub commits that is available on circleci.com."]]]
             [:div.col-xs-6
              [:article
               (common/feature-icon "aws")
               [:h2.text-center "CircleCI knows AWS"]
               [:p.text-center
-               "The public CircleCI.com offering itself runs on AWS, so you can take advantage of our extensive experience with AWS machines."]]]]
+               "The public CircleCI.com offering itself runs on AWS, so you can take advantage of our extensive experience with AWS machines. We've run literally millions of builds using CircleCI AWS hardware, and we can help you choose the best hardware for any workload."]]]]
            [:section.row.extra-row
             [:div.col-xs-6
              [:article
               (common/feature-icon "circle")
               [:h2.text-center "Don't go anywhere"]
-              [:p.text-center "You can run your own CircleCI installation right on your existing AWS account."]]]
+              [:p.text-center "You can run your own CircleCI installation right on your existing AWS account. Whether you manage your infrastructure with AWS CloudFormation, Chef, Puppet, Terraform, or none of the above, we'll meet you where you are and integrate seemlessly with your setup."]]]
             [:div.col-xs-6
              [:article
               (common/feature-icon "security")
               [:h2.text-center "Built for Security"]
-              [:p.text-center "CircleCI runs in your own Virtual Private Cloud, where everything from firewall settings to IAM privileges are under your control."]]]]]]
+              [:p.text-center "CircleCI runs in your own Virtual Private Cloud, where everything from firewall settings to IAM privileges are under your control. CircleCI only requires a few simple resource types and network settings, so you can get started quickly and securely."]]]]]]
          [:div.outer-section
           [:section.container
            (common/feature-icon "phone")
