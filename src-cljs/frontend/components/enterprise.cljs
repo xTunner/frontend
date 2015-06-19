@@ -75,10 +75,9 @@
                     :disabled (= :loading form-state)
                     :placeholder "Company"})]
          [:div.col-sm-6
-          (control :input.input-lg
+          (control :input.input-lg.blue-focus-border
                    {:type "text"
                     :name "phone"
-                    :required true
                     :disabled (= :loading form-state)
                     :placeholder "Phone"})]]
         [:div.row

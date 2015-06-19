@@ -73,6 +73,11 @@ body {
 //  .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
 // }
 
+// Provide a way to force blue border without worrying about .smart_label
+.blue-focus-border:focus {
+  border-color: @blueLighter !important; // BS RESET = "!important"
+}
+
 a {
   &:hover {
     cursor: pointer;
