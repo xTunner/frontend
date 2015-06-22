@@ -44,7 +44,7 @@ when constructing status badge URLs. For example, the badge for a branch called 
 We recommend creating specific, narrowly scoped API tokens. In fact, we created a whole
 class of tokens just for this purpose: tokens which give read-only access to the build
 status of a single project, and nothing else. You can create and manage these tokens from
-the **Project settings &gt; API Tokens** page of any project.
+the **Project Settings &gt; API Permissions** page of any project.
 
 If you prefer, it is also possible to use a user's API token as the circle-token. These
 tokens are very powerful, so only do that in a trusted environment!
