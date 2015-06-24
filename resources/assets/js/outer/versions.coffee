@@ -60,6 +60,7 @@ CI.Versions =
     "2.0.0-p576",
     "2.0.0-p594",
     "2.0.0-p598",
+    "2.0.0-p645",
     "2.1.0",
     "2.1.0-p0",
     "2.1.1",
@@ -68,9 +69,11 @@ CI.Versions =
     "2.1.3",
     "2.1.4",
     "2.1.5",
+    "2.1.6",
     "2.2.0-preview1",
     "2.2.0-preview2",
     "2.2.0",
+    "2.2.2",
     "jruby-1.7.19",
     "jruby-1.7.18",
     "jruby-1.7.16",
@@ -82,7 +85,8 @@ CI.Versions =
     "rbx-2.2.10",
     "rbx-2.5.2"
     ]
-  bundler: "1.7.13"
+  rvm: "1.26.10"
+  bundler: "1.9.5"
   cucumber: "1.2.0"
   rspec: "2.14.4"
   rake: "10.1.0"
@@ -144,8 +148,8 @@ CI.Versions =
     "pypy-2.3.1",
     "pypy-2.4.0"
   ]
-  pip: "6.0.8"
-  virtualenv: "12.0.7"
+  pip: "7.0.3"
+  virtualenv: "13.0.3"
 
   default_php: "5.3.10-1ubuntu3.7"
   php: "5.3.10-1ubuntu3.5"
@@ -215,14 +219,14 @@ CI.Versions =
   mongodb: "2.4.13"
   riak: "1.4.8-1"
   cassandra: "2.1.3"
-  redis: "2.8.19"
+  redis: "3.0.2"
   memcached: "1.4.13"
   sphinx: "2.0.4-release"
   elasticsearch: "0.90.2"
   beanstalkd: "1.4.6"
   couchbase: "2.0.0"
   couchdb: "1.3.0"
-  neo4j: "2.2.0"
+  neo4j: "2.2.2"
   rabbitmq: "3.4.4"
   zookeeper: "3.3.5"
 
