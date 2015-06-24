@@ -133,7 +133,7 @@
          [:div
           [:div
            (when flash
-             [:div#flash flash])]
+             [:div#flash {:dangerouslySetInnerHTML {:__html flash}}])]
           ;; TODO: Temporary hack until new header ships
           [:div.navbar.navbar-default.navbar-static-top {:class (case nav-point
                                                                   :language-landing
