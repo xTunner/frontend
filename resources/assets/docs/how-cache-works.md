@@ -1,16 +1,32 @@
 <!--
 
 title: How cache works
-last_updated: Aug 15, 2015
+last_updated: Jun 25, 2015
 
 -->
 
 The cache takes care of saving the state of your dependencies between
 builds, therefore making the builds run faster.
 
-CircleCI will cache all the directories you specify in the
-`dependencies: cache_directories` section of your `circle.yml`, plus
-the directories we determine via inference.
+### What is cached?
+
+There are two collections of directories which are cached.
+
+1. The directories which you specify in the `dependencies: cache_directories`
+   section of your `circle.yml`
+2. The directories used by the following languages and dependency managers:
+
+   - Bower
+   - Bundler
+   - Cabal
+   - CocoaPods
+   - Ivy
+   - Go
+   - Gradle
+   - Maven
+   - NPM
+   - Play
+   - Virtualenv
 
 ### Per-branch cache
 
@@ -18,12 +34,6 @@ Each branch of your project will have a separate cache. If it is the
 very first build for a branch, the cache from the default branch on
 GitHub (normally `master`) will be used. If there is no cache for
 `master`, the cache from other branches will be used.
-
-### Caching via inference
-
-We will automatically cache the dependencies for you if you are using
-Ruby (Rubygems), Python (pip), iOS (Pods), PHP (composer), Java
-(gradle), Scala (sbt) packages.
 
 ### Clearing the cache
 
