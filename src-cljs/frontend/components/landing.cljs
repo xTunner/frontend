@@ -424,9 +424,9 @@
          [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"
                               :alt       "Let's just authorize first."}
           "So, ready to ship faster?"]
-         [:h3.slogan.context {:item-prop "Next you'll just need to sign in using your GitHub account."
+         [:h3.slogan.context {:item-prop "Next you'll just need to log in using your GitHub account."
                               :alt       "Signing up using your GitHub login lets us start really fast."}
-          "Next you'll just need to sign in using your GitHub account."]
+          "Next you'll just need to log in using your GitHub account."]
          [:h3.slogan.context {:item-prop "Still not convinced yet? Check out our pricing."
                               :alt (when (om/get-shared owner [:ab-tests :mention-github-permissions])
                                      "Currently, we must request permissions in bulk.")}
