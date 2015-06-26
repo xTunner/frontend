@@ -22,7 +22,7 @@
            [:div.container
             [:h1 status]
             [:h3 (str (condp = status
-                        401 "Login required"
+                        401 "Log in required"
                         404 "Page not found"
                         500 "Internal server error"
                         "Something unexpected happened"))]]]
@@ -35,8 +35,8 @@
                                                       :properties {:source "401"
                                                                    :url js/window.location.pathname}
                                                       :path (gh-utils/auth-url)}])}
-                       "Login here"]]
-                  " to view this page"]
+                       "Log in"]]
+                  " here to view this page"]
              404 (if (and (not logged-in?) maybe-login-page?)
                    [:div
                     [:p "We're sorry; either that page doesn't exist or you need to be logged in to view it."]
@@ -45,7 +45,7 @@
                                                            {:event "login_click"
                                                             :properties {:source "404"
                                                                          :url js/window.location.pathname}
-                                                            :path (gh-utils/auth-url)}])} "Login here"] " to view this page with your GitHub permissions."]]]
+                                                            :path (gh-utils/auth-url)}])} "Log in"] " here to view this page with your GitHub permissions."]]]
                    [:p "We're sorry, but that page doesn't exist."])
              500 [:p "We're sorry, but something broke"]
              "Something completely unexpected happened")]])))))
