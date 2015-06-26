@@ -45,7 +45,7 @@ Here are the steps to set a machine user's SSH key as a checkout key for your pr
 
 - First, you need to login to Github as the machine user.
 
-- Go to https://circleci.com and sign in. Github will ask you to authorize CircleCI to access the machine user's account, so click on the **Authorize application** button.
+- Go to https://circleci.com and log in. Github will ask you to authorize CircleCI to access the machine user's account, so click on the **Authorize application** button.
 
 - Go to https://circleci.com/add-projects and follow the projects you want the machine user to have access to.
 

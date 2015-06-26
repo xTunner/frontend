@@ -203,13 +203,13 @@
                 [:button.login-link.btn.btn-success {:href (auth-url)
                                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "signup_click" :properties {:source "header sign-up" :url js/window.location.pathname}}])
                                                      :title "Sign up with Github"}
-                 "Sign up"]]
+                 "Sign Up"]]
                [:ul.nav.navbar-nav.navbar-right
                 [:li
                  [:a.login.login-link {:href (auth-url)
-                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header sign-in" :url js/window.location.pathname}}])
-                                       :title "Sign in with Github"}
-                  "Sign in"]]]))]]
+                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
+                                       :title "Log In with Github"}
+                  "Log In"]]]))]]
           (outer-subheader
            [{:mobile {:path "/mobile"
                        :title "Mobile"}
