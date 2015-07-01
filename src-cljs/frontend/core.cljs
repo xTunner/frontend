@@ -121,7 +121,7 @@
      (let [previous-state @state]
        (swap! state (partial controls-con/control-event container (first value) (second value)))
        (controls-con/post-control-event! container (first value) (second value) previous-state @state)))
-   (analytics/track-message (first value))))
+   (analytics/track-message (first value) state)))
 
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
