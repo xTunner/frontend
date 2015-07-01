@@ -8,6 +8,7 @@
             [frontend.analytics.twitter :as twitter]
             [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
@@ -117,6 +118,17 @@
   (when-not (contains? ignored-control-messages message)
     (mixpanel/track (name message)
                     (tracking-properties message state))))
+
+(defn page-properties []
+  {:url  js/location.href
+   :title js/document.title})
+
+(defmethod tracking-properties :intercom-dialog-raised [_ state]
+  (page-properties))
+
+(defmethod tracking-properties :report-build-clicked [_ state]
+  (merge (page-properties)
+         (build-properties (get-in @state state/build-path))))
 
 (deftrack track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
