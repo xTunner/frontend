@@ -200,9 +200,9 @@
                [:li [:a {:href "/"} "Back to app"]]]
               [:ul.nav.navbar-nav.navbar-right
                [:li
-                [:a {:href (auth-url)
-                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
-                     :title "Log In with Github"}
+                [:a.login.login-link {:href (auth-url)
+                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
+                                      :title "Log In with Github"}
                  "Log In"]]
                [:li
                 [:button.login-link.btn.btn-success {:href (auth-url)
