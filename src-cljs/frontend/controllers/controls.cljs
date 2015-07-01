@@ -1010,7 +1010,8 @@
       (go (alt!
             track-ch ([v] (do (utils/mlog "tracked" v "... redirecting")
                               (redirect)))
-            (async/timeout 5000) (redirect)))
+            (async/timeout 1000) (do (utils/mlog "timing out waiting for analytics. redirecting.")
+                                     (redirect))))
       (redirect))))
 
 (defmethod control-event :language-testimonial-tab-selected
