@@ -34,16 +34,19 @@
 (deftrack track-org-settings [org-name]
   (mixpanel/track "View Org" {:username org-name}))
 
+(defn build-properties [build]
+  (merge {:running (build-model/running? build)
+          :build-num (:build_num build)
+          :vcs-url (vcs-url/project-name (:vcs_url build))
+          :oss (boolean (:oss build))
+          :outcome (:outcome build)}
+         (when (:stop_time build)
+           {:elapsed_hours (/ (- (.getTime (js/Date.))
+                                 (.getTime (js/Date. (:stop_time build))))
+                              1000 60 60)})))
+
 (deftrack track-build [user build]
-  (mixpanel/track "View Build" (merge {:running (build-model/running? build)
-                                       :build-num (:build_num build)
-                                       :vcs-url (vcs-url/project-name (:vcs_url build))
-                                       :oss (boolean (:oss build))
-                                       :outcome (:outcome build)}
-                                      (when (:stop_time build)
-                                        {:elapsed_hours (/ (- (.getTime (js/Date.))
-                                                              (.getTime (js/Date. (:stop_time build))))
-                                                           1000 60 60)})))
+  (mixpanel/track "View Build" (build-properties build))
   (when (and (:oss build) (build-model/owner? build user))
     (intercom/track :viewed-self-triggered-oss-build
                     {:vcs-url (vcs-url/project-name (:vcs_url build))
