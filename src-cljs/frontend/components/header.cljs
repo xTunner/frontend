@@ -198,18 +198,17 @@
             (if logged-in?
               [:ul.nav.navbar-nav.navbar-right
                [:li [:a {:href "/"} "Back to app"]]]
-              (list
-               [:form.navbar-right.navbar-form
+              [:ul.nav.navbar-nav.navbar-right
+               [:li
+                [:a {:href (auth-url)
+                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
+                     :title "Log In with Github"}
+                 "Log In"]]
+               [:li
                 [:button.login-link.btn.btn-success {:href (auth-url)
                                                      :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "signup_click" :properties {:source "header sign-up" :url js/window.location.pathname}}])
                                                      :title "Sign up with Github"}
-                 "Sign Up"]]
-               [:ul.nav.navbar-nav.navbar-right
-                [:li
-                 [:a.login.login-link {:href (auth-url)
-                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
-                                       :title "Log In with Github"}
-                  "Log In"]]]))]]
+                 "Sign Up"]]])]]
           (outer-subheader
            [{:mobile {:path "/mobile"
                        :title "Mobile"}
