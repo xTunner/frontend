@@ -320,7 +320,7 @@
                               {:title "Support"
                                :data-placement "right"
                                :data-trigger "hover"
-                               :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}, click: $root.raiseIntercomDialog",})
+                               :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
          [:i.fa.fa-comments]]
 
         [:a.aside-item {:href "/add-projects",
