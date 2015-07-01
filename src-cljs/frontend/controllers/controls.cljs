@@ -1010,7 +1010,7 @@
       (go (alt!
             track-ch ([v] (do (utils/mlog "tracked" v "... redirecting")
                               (redirect)))
-            (async/timeout 5000) (do (utils/mlog "timing out waiting for analytics. redirecting.")
+            (async/timeout 1000) (do (utils/mlog "timing out waiting for analytics. redirecting.")
                                      (redirect))))
       (redirect))))
 
