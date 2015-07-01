@@ -105,8 +105,11 @@
 (deftrack track-unfollow-repo []
   (google/track-event "Repos" "Remove"))
 
+(def ignored-control-messages #{:edited-input :toggled-input :clear-inputs})
+
 (deftrack track-message [message]
-  (mixpanel/track-message message))
+  (when-not (contains? ignored-control-messages message)
+    (mixpanel/track (name message))))
 
 (deftrack track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
