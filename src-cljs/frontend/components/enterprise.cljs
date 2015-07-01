@@ -45,17 +45,19 @@
    {:params-filter (fn [{:strs [name email company phone developer-count]}]
                      {:name name
                       :email email
-                      :message (->> {"Company" company
-                                     "Phone" phone
-                                     "Developer count" developer-count
-                                     "Form URL" js/location.href
-                                     "Initial referrer" (mixpanel/get-property "$initial_referrer")
-                                     "UTM medium" (mixpanel/get-property "utm_medium")
-                                     "UTM source" (mixpanel/get-property "utm_source")
-                                     "UTM campaign" (mixpanel/get-property "utm_campaign")
-                                     "UTM content" (mixpanel/get-property "utm_content")
-                                     "UTM term" (mixpanel/get-property "utm_term")}
-                                    (map (fn [[k v]] (gstr/format "%s: %s" k (or v "not set"))))
+                      :message (->> [["Company" company]
+                                     ["Phone" phone]
+                                     ["Developer count" developer-count]
+                                     []
+                                     ["Form URL" js/location.href]
+                                     ["Initial referrer" (mixpanel/get-property "$initial_referrer")]
+                                     []
+                                     ["UTM medium" (mixpanel/get-property "utm_medium")]
+                                     ["UTM source" (mixpanel/get-property "utm_source")]
+                                     ["UTM campaign" (mixpanel/get-property "utm_campaign")]
+                                     ["UTM content" (mixpanel/get-property "utm_content")]
+                                     ["UTM term" (mixpanel/get-property "utm_term")]]
+                                    (map (fn [[k v]] (if k (gstr/format "%s: %s" k (or v "not set")) "")))
                                     (str/join "\n"))
                       :enterprise true})
     :success-hook (fn [{:keys [email]}]
