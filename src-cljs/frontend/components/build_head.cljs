@@ -657,7 +657,10 @@
                [:th "Status"]
                [:td
                 [:span.build-status {:class (:status build)}
-                 (build-model/status-words build)]]]
+                 (build-model/status-words build)]
+                (when-let [canceler (and (= (:status build) "canceled")
+                                         (:canceler build))]
+                  [:span.build-canceler (str "(by " canceler ")")])]]
               [:tr
                (when (:usage_queued_at build)
                  (list [:th "Queued"]
