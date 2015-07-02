@@ -9,7 +9,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
-            [frontend.config :refer [intercom-enabled?]]
+            [frontend.config :refer [intercom-enabled? github-endpoint]]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
@@ -660,7 +660,12 @@
                  (build-model/status-words build)]
                 (when-let [canceler (and (= (:status build) "canceled")
                                          (:canceler build))]
-                  [:span.build-canceler (str "(by " canceler ")")])]]
+                  [:span.build-canceler
+                   (list "by "
+                         [:a {:href (str (github-endpoint) "/" (:login canceler))}
+                          (if (not-empty (:name canceler))
+                            (:name canceler)
+                            (:login canceler))])])]]
               [:tr
                (when (:usage_queued_at build)
                  (list [:th "Queued"]
