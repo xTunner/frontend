@@ -131,7 +131,7 @@ test:
         -destination 'platform=iOS Simulator,OS=8.1,name=iPhone 6'
         -workspace MyWorkspace.xcworkspace
         -scheme "My Scheme"
-        clean test |
+        clean build test |
       tee $CIRCLE_ARTIFACTS/xcode_raw.log |
       xcpretty --color --report junit --output $CIRCLE_TEST_REPORTS/xcode/results.xml
 ```
