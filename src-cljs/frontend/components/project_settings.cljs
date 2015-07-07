@@ -621,14 +621,6 @@
                               :show-fixed-failed? false
                               :settings-keys project-model/flowdock-keys}
 
-                             {:service "Hall"
-                              :doc [:p "To get your Room / Group API token, go to "
-                                    [:strong "Settings > Integrations > CircleCI"]
-                                    " from within your Hall Group."]
-                              :inputs [{:field :hall_room_api_token :placeholder "API"}]
-                              :show-fixed-failed? true
-                              :settings-keys project-model/hall-keys}
-
                              {:service "Campfire"
                               :doc [:p "To get your API token, visit your company Campfire, then click \"My info\". Note that if you use your personal API token, campfire won't show the notifications to you!"]
                               :inputs [{:field :campfire_room :placeholder "Room"}
