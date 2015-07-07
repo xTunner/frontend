@@ -61,3 +61,19 @@ Note that you might want to use larger numbers depending on the other
 processes running during your build. Check the contents of your
 `memory-usage.txt` for the memory usage of the rest of the processes and
 adjust the parameters accordingly.
+
+## Out of memory errors in Android builds
+
+Gradle does not respect the `$JAVA_OPTS` variable,
+so for Android builds you should limit the JVM’s heap by adding the
+`$GRADLE_OPTS` variable with the following contents to your
+`circle.yml` file:
+
+```
+machine:
+  environment:
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+```
+
+If your tests actually need more than 4GB of RAM, please
+[contact us](mailto:sayhi@circleci.com).
