@@ -61,6 +61,3 @@ Note that you might want to use larger numbers depending on the other
 processes running during your build. Check the contents of your
 `memory-usage.txt` for the memory usage of the rest of the processes and
 adjust the parameters accordingly.
-
-If your tests actually need more than 4GB of RAM, please
-[contact us](mailto:sayhi@circleci.com).
