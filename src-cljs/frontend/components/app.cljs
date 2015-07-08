@@ -135,7 +135,7 @@
                (when-not (config/enterprise?)
                  [:footer.main-foot
                   (footer/footer)])
-               (when-not logged-in?
+               (when-not (or logged-in? (config/enterprise?))
                  (om/build shared/sticky-help-link app))]])))))))
 
 
