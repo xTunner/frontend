@@ -33,6 +33,7 @@
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
+            [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -131,8 +132,9 @@
                (om/build header/header app-without-container-data)
                [:div.main-body
                 (om/build dom-com app)]
-               [:footer.main-foot
-                (footer/footer)]
+               (when-not (config/enterprise?)
+                 [:footer.main-foot
+                  (footer/footer)])
                (when-not logged-in?
                  (om/build shared/sticky-help-link app))]])))))))
 
