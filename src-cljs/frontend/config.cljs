@@ -79,6 +79,16 @@
   []
   (not (enterprise?)))
 
+(defn footer-enabled?
+  "Whether we should show the site-wide footer."
+  []
+  (not (enterprise?)))
+
+(defn help-tab-enabled?
+  "Whether we should show the 'Need Help?' tab at the bottom of the screen."
+  []
+  (not (enterprise?)))
+
 (defn support-email
   []
   (or (aget js/window "renderContext" "support_email")
