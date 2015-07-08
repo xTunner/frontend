@@ -132,10 +132,10 @@
                (om/build header/header app-without-container-data)
                [:div.main-body
                 (om/build dom-com app)]
-               (when-not (config/enterprise?)
+               (when (config/footer-enabled?)
                  [:footer.main-foot
                   (footer/footer)])
-               (when-not (or logged-in? (config/enterprise?))
+               (when (and (config/help-tab-enabled?) (not logged-in?))
                  (om/build shared/sticky-help-link app))]])))))))
 
 
