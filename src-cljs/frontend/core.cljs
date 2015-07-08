@@ -121,7 +121,7 @@
      (let [previous-state @state]
        (swap! state (partial controls-con/control-event container (first value) (second value)))
        (controls-con/post-control-event! container (first value) (second value) previous-state @state)))
-   (analytics/track-message (first value))))
+   (analytics/track-message (first value) state)))
 
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
@@ -299,6 +299,21 @@
     :jsload-callback (fn [& _] (reinstall-om!))
     :on-cssload (fn [files] (refresh-css!))))
 
+(defn track-intercom-widget! [state]
+  (when (config/intercom-enabled?)
+    ;; wait a little bit for the intercom widget to load and install itself
+    (js/setTimeout
+     (fn []
+       (when-let [launcher (goog.dom/getElement "intercom-launcher")]
+         (goog.events/listen
+          launcher
+          goog.events.EventType.CLICK
+          (fn []
+            ;; this matches the :intercom-dialog-raised control event
+            ;; raised by the Support aside
+            (analytics/track-message "intercom-dialog-raised" state)))))
+     5000)))
+
 (defn ^:export setup! []
   (apply-app-id-hack)
   (analytics/set-existing-user)
@@ -312,6 +327,7 @@
     (when instrument?
       (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
+    (track-intercom-widget! state)
     (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context

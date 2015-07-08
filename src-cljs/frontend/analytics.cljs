@@ -8,6 +8,7 @@
             [frontend.analytics.twitter :as twitter]
             [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
@@ -34,16 +35,19 @@
 (deftrack track-org-settings [org-name]
   (mixpanel/track "View Org" {:username org-name}))
 
+(defn build-properties [build]
+  (merge {:running (build-model/running? build)
+          :build-num (:build_num build)
+          :vcs-url (vcs-url/project-name (:vcs_url build))
+          :oss (boolean (:oss build))
+          :outcome (:outcome build)}
+         (when (:stop_time build)
+           {:elapsed_hours (/ (- (.getTime (js/Date.))
+                                 (.getTime (js/Date. (:stop_time build))))
+                              1000 60 60)})))
+
 (deftrack track-build [user build]
-  (mixpanel/track "View Build" (merge {:running (build-model/running? build)
-                                       :build-num (:build_num build)
-                                       :vcs-url (vcs-url/project-name (:vcs_url build))
-                                       :oss (boolean (:oss build))
-                                       :outcome (:outcome build)}
-                                      (when (:stop_time build)
-                                        {:elapsed_hours (/ (- (.getTime (js/Date.))
-                                                              (.getTime (js/Date. (:stop_time build))))
-                                                           1000 60 60)})))
+  (mixpanel/track "View Build" (build-properties build))
   (when (and (:oss build) (build-model/owner? build user))
     (intercom/track :viewed-self-triggered-oss-build
                     {:vcs-url (vcs-url/project-name (:vcs_url build))
@@ -105,8 +109,26 @@
 (deftrack track-unfollow-repo []
   (google/track-event "Repos" "Remove"))
 
-(deftrack track-message [message]
-  (mixpanel/track-message message))
+(defmulti tracking-properties (fn [message state] message))
+(defmethod tracking-properties :default [_ _] {})
+
+(def ignored-control-messages #{:edited-input :toggled-input :clear-inputs})
+
+(deftrack track-message [message state]
+  (when-not (contains? ignored-control-messages message)
+    (mixpanel/track (name message)
+                    (tracking-properties message state))))
+
+(defn page-properties []
+  {:url  js/location.href
+   :title js/document.title})
+
+(defmethod tracking-properties :intercom-dialog-raised [_ state]
+  (page-properties))
+
+(defmethod tracking-properties :report-build-clicked [_ state]
+  (merge (page-properties)
+         (build-properties (get-in @state state/build-path))))
 
 (deftrack track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
