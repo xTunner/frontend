@@ -8,7 +8,8 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html]])
+  (:import [goog Uri]))
 
 (defn invitees
   "Filters users to invite and returns only fields needed by invitation API"
@@ -129,8 +130,9 @@
                         (remove :circle_member (:github-users invite-data))
                         {:opts {:org-name (:org invite-data)}}) ]
              [:div.org-invites
-               [:h3 "Invite your teammates"]
-               [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
-               [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]
-               [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]]
-             )])))))
+              [:h3 "Invite your teammates"]
+              [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
+              (let [current-uri (Uri. js/location.href)
+                    root-uri (.resolve current-uri (Uri. "/"))]
+                [:p [:input {:value root-uri :type "text"}]])
+              [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]])])))))
