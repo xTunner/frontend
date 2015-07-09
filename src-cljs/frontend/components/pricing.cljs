@@ -84,10 +84,14 @@
                 [:p
                  [:span "You can run "]
                  [:strong {:class (when (> concurrent-count 9) "double-digits")} (str concurrent-count)]
-                 [:span " concurrent builds with "]
+                 [:span " concurrent build"]
+                 [:span (if (> concurrent-count 1) "s") ] 
+                 [:span " with "]
                  [:strong {:class (when (> container-count 9) "double-digits")} (str container-count)]
-                 [:span " containers and "]
-                 [:strong (str pricing-parallelism)]
+                 [:span " container"]
+                 [:span (if (> container-count 1) "s") ] 
+                 [:span "  and "]
+                 [:strong (str pricing-parallelism "x")]
                  [:span " parallelism."]]
                 [:div.parallelism-options
                  (for [p [1 4 8 12 16]]
