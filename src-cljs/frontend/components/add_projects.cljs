@@ -73,9 +73,7 @@
             [:ul.organizations
              (map (fn [org] (organization org settings owner))
                   (:organizations user))
-             (map (fn [org] (organization org settings owner))
-                  (filter (fn [org] (= (:login user) (:login org)))
-                          (:collaborators user)))]
+             (organization user settings owner)]
             (missing-org-info owner)]
            [:div.organizations
             [:h4
@@ -338,4 +336,3 @@
                          :repos repos
                          :selected-org selected-org
                          :settings settings})]]]])))
-
