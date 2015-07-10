@@ -148,7 +148,7 @@
               (common/circle-logo {:width nil
                                    :height 25})]]
             [:ul.nav.navbar-nav
-              (when-not (config/enterprise?)
+             (when-not (config/show-marketing-pages?)
                [:li.dropdown {:class (when (contains? #{:features
                                                         :mobile
                                                         :ios
@@ -185,7 +185,7 @@
                 [:a {:href "/pricing"} "Pricing"]])
              [:li (maybe-active nav-point :documentation)
               [:a {:href "/docs"} "Documentation"]]
-             (when-not (config/enterprise?)
+             (when-not (config/show-marketing-pages?)
                [:li {:class (when (contains? #{:about
                                                :contact
                                                :team
