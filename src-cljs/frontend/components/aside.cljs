@@ -101,7 +101,7 @@
                                                            :repo repo})
                        :title (project-model/project-name project)}
              (project-model/project-name project)]
-            (when-not collapse-branches?
+            (when (and (project-model/can-read-settings? project) (not collapse-branches?))
              [:a.project-settings-icon {:href (routes/v1-project-settings {:org org :repo repo})
                                         :title (str "Settings for " org "/" repo)}
               (common/ico :settings-light)])

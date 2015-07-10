@@ -97,7 +97,9 @@
 (defmethod api-event [:projects :success]
   [target message status args state]
   (mlog "projects success")
-  (assoc-in state [:projects] (:resp args)))
+  (->> (:resp args)
+       (map (fn [project] (update project :scopes #(set (map keyword %)))))
+       (assoc-in state [:projects])))
 
 (defmethod api-event [:me :success]
   [target message status args state]

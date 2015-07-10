@@ -83,3 +83,6 @@
 (defn buildable-parallelism [plan project]
   (min (plan-model/max-parallelism plan)
        (usable-containers plan project)))
+
+(defn can-read-settings? [project]
+  (-> project :scopes :read-settings))
