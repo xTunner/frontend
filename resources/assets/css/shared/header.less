@@ -33,45 +33,31 @@
 }
 
 #statuspage-bar {
-  visibility: hidden;
-  height: 0px;
-  padding: 0px;
+  &.none {
+    visibility: hidden;
+    height: 0px;
+    padding: 0px;
+  }
+
+  .status-page-color(@color, @background-color) {
+    visibility: visible;
+    height: auto;
+    padding: @alert-padding;
+    background-color: @background-color;
+    color: @color;
+    h4 { color: @color; }
+    a  { color: @color; }
+  }
 
   &.minor {
-    visibility: visible;
-    height: auto;
-    padding: @alert-padding;
-    background-color: @alert-warning-bg;
-    @color: @alert-warning-text;
-    color: @color;
-    h4 {
-      color: @color;
-    }
+    .status-page-color(@alert-warning-text, @alert-warning-bg);
   }
 
-  &.major {
-    visibility: visible;
-    height: auto;
-    padding: @alert-padding;
-    background-color: @alert-danger-bg;
-    @color: @alert-danger-text;
-    color: @color;
-    h4 {
-      color: @color;
-    }
-  }
-
+  &.major,
   &.critical {
-    visibility: visible;
-    height: auto;
-    padding: @alert-padding;
-    background-color: @alert-danger-bg;
-    @color: @alert-danger-text;
-    color: @color;
-    h4 {
-      color: @color;
-    }
+    .status-page-color(@alert-danger-text, @alert-danger-bg);
   }
+
 }
 
 .head-admin {
