@@ -21,10 +21,10 @@ gem "rails", :git => "git://github.com/rails/rails.git"
 ```
 
 If the repository is public, just change the dependency to use a
-`http` url:
+`https` url:
 
 ```
-gem "rails", :git => "http://github.com/rails/rails"
+gem "rails", :git => "https://github.com/rails/rails"
 ```
 
 If the repository is private, you will need to enable user keys
