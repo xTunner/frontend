@@ -280,17 +280,6 @@
                     :href (str path "?t=" (.getTime (js/Date.)))})]
     (.appendChild (.-head js/document) link)))
 
-(defn refresh-css! []
-  (doseq [link (utils/node-list->seqable (goog.dom/getElementsByTagNameAndClass "link"))
-          :when (let [href (.getAttribute link "href")]
-                  (re-find #"/assets/css/app.*?\.css(?:\.less)?" href))]
-    (.removeChild (.-parentNode link) link))
-  (add-css-link "/assets/css/app.css"))
-
-(defn update-ui! []
-  (reinstall-om!)
-  (refresh-css!))
-
 (defn track-intercom-widget! [state]
   (when (config/intercom-enabled?)
     ;; wait a little bit for the intercom widget to load and install itself
