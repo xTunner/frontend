@@ -72,7 +72,7 @@
              (when-not (:lethal config)
                (if (:failed build)
                  " These may be causing your build to fail! We recommend that you fix them as soon as possible."
-                 " These may lead to unexpected behavior and may cause your build to fail soon. We recommend that you fix them as soonas possible."))]
+                 " These may lead to unexpected behavior and may cause your build to fail soon. We recommend that you fix them as soon as possible."))]
             [:p
              "You may want to look at "
              [:a {:href "/docs/configuration"} "our docs"]
