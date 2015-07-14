@@ -3,7 +3,7 @@
   :url "https://circleci.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
                  [inflections "0.8.2"]
 
                  [org.clojars.dwwoelfel/stefon "0.5.0-3198d1b33637d6bd79c7415b01cff843891ebfd4"]
@@ -16,8 +16,7 @@
                  [cheshire "5.3.1"]
 
                  [ankha "0.1.4"]
-                 [org.clojure/clojurescript "0.0-3123"]
-                 [org.clojure/google-closure-library "0.0-20140718-946a7d39"]
+                 [org.clojure/clojurescript "0.0-3308"]
                  [com.google.javascript/closure-compiler "v20140625"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.3"]
@@ -31,13 +30,12 @@
                  ;; is merged, or some similar solution for the
                  ;; exception issue.
                  [com.sgrove/cljs-time "0.3.5"]
-                 [weasel "0.5.0"] ;; repl
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
-                 [figwheel "0.1.7-SNAPSHOT"]]
+                 [org.clojure/tools.reader "0.9.2"]]
 
-  :plugins [[lein-cljsbuild "1.0.4"]
-            [lein-figwheel "0.1.7-SNAPSHOT"]]
+  :plugins [[lein-cljsbuild "1.0.6"]
+            [lein-figwheel "0.3.7"]]
 
   :exclusions [[org.clojure/clojure]
                [org.clojure/clojurescript]]
@@ -60,6 +58,7 @@
   :figwheel {:css-dirs ["resources/assets/css"]}
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs" "test-cljs"]
+                        :figwheel true
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none

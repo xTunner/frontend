@@ -1,8 +1,6 @@
 (ns frontend.core
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
-            [weasel.repl :as ws-repl]
-            [figwheel.client :as fw :include-macros true]
             [clojure.string :as string]
             [goog.dom]
             [goog.dom.DomHelper]
@@ -293,12 +291,6 @@
   (reinstall-om!)
   (refresh-css!))
 
-(defn setup-figwheel! [url]
-  (fw/watch-and-reload
-    :websocket-url url
-    :jsload-callback (fn [& _] (reinstall-om!))
-    :on-cssload (fn [files] (refresh-css!))))
-
 (defn track-intercom-widget! [state]
   (when (config/intercom-enabled?)
     ;; wait a little bit for the intercom widget to load and install itself
@@ -337,8 +329,4 @@
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws]))
       (analytics/init-user (:login user)))
-    (analytics/track-invited-by (:invited-by utils/initial-query-map))
-    (when-let [weasel-url (get-in @state [:render-context :weasel_url])]
-      (ws-repl/connect weasel-url :verbose true))
-    (when-let [figwheel-url (get-in @state [:render-context :figwheel_url])]
-      (setup-figwheel! figwheel-url))))
+    (analytics/track-invited-by (:invited-by utils/initial-query-map))))
