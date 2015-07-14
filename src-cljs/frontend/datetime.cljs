@@ -174,7 +174,7 @@
         now (server-now)
         ago (.floor js/Math (/ (- now time) 1000))]
     (cond (< ago minute) "just now"
-          (< ago hour) (str ago "m ago")
+          (< ago hour) (str (int (/ ago minute)) "m ago")
           (< ago day) (time-format/unparse (time-format/formatter "h:mma") (from-long time))
           (< ago (* 2 day)) "yesterday"
           (< ago year) (time-format/unparse (time-format/formatter "MMM d") (from-long time))
