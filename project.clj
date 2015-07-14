@@ -58,7 +58,7 @@
   :figwheel {:css-dirs ["resources/assets/css"]}
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs" "test-cljs"]
-                        :figwheel true
+                        :figwheel {:on-jsload "frontend.core/reinstall-om!"}
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none
