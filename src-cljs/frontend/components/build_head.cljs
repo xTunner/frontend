@@ -9,7 +9,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
-            [frontend.config :refer [intercom-enabled? github-endpoint]]
+            [frontend.config :refer [intercom-enabled? github-endpoint env]]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
@@ -298,7 +298,7 @@
                {})
        :children))
 
-(defn artifacts-node [{:keys [artifacts admin?] :as data} owner opts]
+(defn artifacts-node [{:keys [artifacts show-artifact-links?] :as data} owner opts]
   (reify
     om/IRender
     (render [_]
@@ -312,7 +312,7 @@
                                 (str part "/")
                                 part)
                    url        (:url artifact)
-                   tag        (if (and url (not admin?)) ; Be extra careful about XSS of admins
+                   tag        (if (and url show-artifact-links?)
                                 [:a.artifact-link {:href (:url artifact) :target "_blank"} text]
                                 [:span.artifact-directory-text text])
                    key        (keyword (str "index-" idx))
@@ -335,10 +335,16 @@
                 [:div {:style (when closed? {:display "none"})}
                  (om/build artifacts-node
                            {:artifacts children
-                            :admin? admin?}
+                            :show-artifact-links? show-artifact-links?}
                            {:opts (assoc opts
                                     :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
            (sort-by first artifacts))])))))
+
+(defn should-show-artifact-links?
+  ;; Be extra careful about XSS in production environment
+  [env admin?]
+  (or (not= env "production")
+      (not admin?)))
 
 (defn build-artifacts-list [data owner]
   (reify
@@ -354,7 +360,7 @@
             (if artifacts
               (map (fn artifact-node-builder [[node-index node-artifacts]]
                      (om/build artifacts-node {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
-                                               :admin? (:admin (:user data))}))
+                                               :show-artifact-links? (should-show-artifact-links? (env) (:admin (:user data)))}))
                    (->> artifacts
                         (group-by :node_index)
                         (sort-by first)))
@@ -567,7 +573,7 @@
               [:li {:class (when (= :build-time-viz selected-tab) "active")}
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
                 "Build Timing"]])
-            
+
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [:li {:class (when (= :artifacts selected-tab) "active")}
@@ -582,7 +588,7 @@
              :tests (om/build build-tests-list build-data)
 
              :build-time-viz (om/build build-time-visualization build)
-             
+
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})

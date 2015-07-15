@@ -28,10 +28,10 @@
 (deftest test-admin-links
   (let [artifacts           (:artifacts test-build-data)
         non-admin-tree      {:artifacts (bh/artifacts-tree "Container 0" artifacts)
-                             :admin?    false}
+                             :show-artifact-links?    true}
         non-admin-test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
         admin-tree          {:artifacts (bh/artifacts-tree "Container 0" artifacts)
-                             :admin?    true}
+                             :show-artifact-links?    false}
         admin-test-node     (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
         art-link-count      (fn [node]
                               (-> node
@@ -55,3 +55,10 @@
           "Should be no artifact links for admins")
       (is (pos? (art-dir-count admin-test-node))
           "Should be artifact spans for admins"))))
+
+(deftest should-show-artifact-links-honors-production?
+  (is (bh/should-show-artifact-links? "production" false))
+  (is (not (bh/should-show-artifact-links? "production" true)))
+
+  (is (bh/should-show-artifact-links? "development" false))
+  (is (bh/should-show-artifact-links? "development" true)))
