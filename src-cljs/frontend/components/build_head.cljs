@@ -9,7 +9,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
-            [frontend.config :refer [intercom-enabled? github-endpoint env]]
+            [frontend.config :refer [intercom-enabled? github-endpoint env enterprise?]]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
@@ -30,7 +30,7 @@
   (scope (:scopes data)))
 
 (defn show-additional-containers-offer? [plan build]
-  (when (and plan build)
+  (when (and plan build (not (enterprise?)))
     (let [usage-queued-ms (build-model/usage-queued-time build)
           run-queued-ms (build-model/run-queued-time build)]
       ;; more than 10 seconds waiting for other builds, and
