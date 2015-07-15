@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [inflections "0.8.2"]
 
-                 [org.clojars.dwwoelfel/stefon "0.5.0-3198d1b33637d6bd79c7415b01cff843891ebfd4"]
+                 [org.clojars.dwwoelfel/stefon "0.5.0-3198d1b33637d6bd79c7415b01cff843891ebfd4"
+                  :exclusions [com.google.javascript/closure-compiler]]
                  [compojure "1.1.8"]
                  [ring/ring "1.2.2"]
                  [http-kit "2.1.18"]
@@ -17,7 +18,6 @@
 
                  [ankha "0.1.4"]
                  [org.clojure/clojurescript "0.0-3308"]
-                 [com.google.javascript/closure-compiler "v20140625"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.3"]
                  [cljsjs/react-with-addons "0.12.2-4"]
