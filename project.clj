@@ -16,20 +16,19 @@
                  [com.cemerick/url "0.1.1"]
                  [cheshire "5.3.1"]
 
-                 [ankha "0.1.4"]
+                 ;; Prerelease version to avoid conflict with cljs.core/record?
+                 ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
+                 [ankha "0.1.5.1-64423e"]
                  [org.clojure/clojurescript "0.0-3308"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [cljs-ajax "0.3.3"]
+                 [cljs-ajax "0.3.13"]
                  [cljsjs/react-with-addons "0.12.2-4"]
                  [org.omcljs/om "0.8.8" :exclusions [cljsjs/react]]
                  [hiccups "0.3.0"]
                  [sablono "0.2.22"]
                  [secretary "1.2.2"]
-                 ;; Here until
-                 ;; https://github.com/andrewmcveigh/cljs-time/pull/26
-                 ;; is merged, or some similar solution for the
-                 ;; exception issue.
-                 [com.sgrove/cljs-time "0.3.5"]
+                 [com.andrewmcveigh/cljs-time "0.3.10"]
+
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
                  [org.clojure/tools.reader "0.9.2"]]
