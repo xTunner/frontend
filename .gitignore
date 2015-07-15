@@ -7,6 +7,7 @@ pom.xml.asc
 *.class
 /.lein-*
 /.nrepl-port
+/figwheel_server.log
 /node_modules
 /resources/public/cljs
 /resources/components
