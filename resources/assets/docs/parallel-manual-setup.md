@@ -116,7 +116,8 @@ include the following in your `circle.yml`:
 ```
 test:
   override:
-    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber:
+        parallel: true
     - bundle exec cucumber --format json --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber:
         parallel: true
         files:
