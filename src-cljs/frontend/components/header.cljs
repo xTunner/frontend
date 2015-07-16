@@ -148,53 +148,52 @@
               (common/circle-logo {:width nil
                                    :height 25})]]
             [:ul.nav.navbar-nav
-             (when-not (config/show-marketing-pages?)
-               [:li.dropdown {:class (when (contains? #{:features
-                                                        :mobile
-                                                        :ios
-                                                        :android
-                                                        :integrations
-                                                        :enterprise}
-                                                      nav-point)
-                                       "active")}
-                [:a {:href "/features"}
-                 "Product "
-                 [:i.fa.fa-caret-down]]
-                [:ul.dropdown-menu
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/features"}
-                   "Features"]]
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/mobile"}
-                   "Mobile"]]
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/integrations/docker"}
-                   "Docker"]]
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/enterprise"}
-                   "Enterprise"]]]]
+             [:li.dropdown {:class (when (contains? #{:features
+                                                      :mobile
+                                                      :ios
+                                                      :android
+                                                      :integrations
+                                                      :enterprise}
+                                                    nav-point)
+                                     "active")}
+              [:a {:href "/features"}
+               "Product "
+               [:i.fa.fa-caret-down]]
+              [:ul.dropdown-menu
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabIndex "-1"
+                     :href "/features"}
+                 "Features"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabIndex "-1"
+                     :href "/mobile"}
+                 "Mobile"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabIndex "-1"
+                     :href "/integrations/docker"}
+                 "Docker"]]
+               [:li {:role "presentation"}
+                [:a {:role "menuitem"
+                     :tabIndex "-1"
+                     :href "/enterprise"}
+                 "Enterprise"]]]]
+             (when-not (config/enterprise?)
                [:li (maybe-active nav-point :pricing)
                 [:a {:href "/pricing"} "Pricing"]])
              [:li (maybe-active nav-point :documentation)
               [:a {:href "/docs"} "Documentation"]]
-             (when-not (config/show-marketing-pages?)
-               [:li {:class (when (contains? #{:about
-                                               :contact
-                                               :team
-                                               :jobs
-                                               :press}
-                                             nav-point)
-                              "active")}
-                [:a {:href "/about"} "About Us"]]
-               [:li [:a {:href "http://blog.circleci.com"} "Blog"]])]
+             [:li {:class (when (contains? #{:about
+                                             :contact
+                                             :team
+                                             :jobs
+                                             :press}
+                                           nav-point)
+                            "active")}
+              [:a {:href "/about"} "About Us"]]
+             [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]
 
             (if logged-in?
               [:ul.nav.navbar-nav.navbar-right

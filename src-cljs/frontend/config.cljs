@@ -89,11 +89,6 @@
   []
   (not (enterprise?)))
 
-(defn show-marketing-pages?
-  "Whether we should show links to marketing pages in the site header."
-  []
-  (not (enterprise?)))
-
 (defn support-email
   []
   (or (aget js/window "renderContext" "support_email")
