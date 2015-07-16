@@ -40,7 +40,6 @@ In this example, we will run `bundle exec rspec` in all nodes appended with
 roughly `1/N` of the files on each VM.
 
 By default, the file arguments will be appended to the end of the command.
-Support for positional arguments is coming very soon.
 
 <h2 id="env-splitting">Using environment variables</h2>
 
