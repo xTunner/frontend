@@ -33,7 +33,7 @@ Anyone that is a GitHub collaborator on a project employing user keys
 can access your repositories as you.
 Beware of someone stealing your code.
 
-<h2 id="security">Machine user keys</h2>
+<h2 id="machine-user-keys">Machine user keys</h2>
 
 A [machine user](https://developer.github.com/guides/managing-deploy-keys/#machine-users) is a Github user which you create only for automated tasks, they are not intended to be used by a human.
 
