@@ -527,7 +527,7 @@ upload the keys to CircleCI.
 CircleCI's UI enables you to do this on your project's **Project Settings > SSH keys** page.
 Add and then submit the one or more SSH keys needed
 for deploying to your machines. If you leave the **Hostname** field blank,
-the public key will be used for all hosts.
+the private key will be used for all hosts.
 
 <h3 id="heroku-extra">Heroku</h3>
 
