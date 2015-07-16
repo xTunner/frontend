@@ -10,6 +10,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
+            [frontend.config :as config]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
@@ -123,11 +124,20 @@
    [:div.mini-faq-item
     [:h3 "What are containers?"]
     [:p
-     "Containers are what we call the virtual machines that your tests run in. Your current plan has "
-     (get-in project-data [:plan :containers])
-     " containers and supports up to "
-     (plan-model/max-parallelism (:plan project-data))
-     "x paralellism."]
+     "Containers are what we call the virtual machines that your tests run in. "
+     (if (config/enterprise?)
+       (list
+        "You currently have "
+        (get-in project-data [:plan :containers])
+        " containers and can use up to "
+        (plan-model/max-parallelism (:plan project-data))
+        "x parallelism.")
+       (list
+        "Your current plan has "
+        (get-in project-data [:plan :containers])
+        " containers and supports up to "
+        (plan-model/max-parallelism (:plan project-data))
+        "x parallelism."))]
 
     [:p "With 16 containers you could run:"]
     [:ul
@@ -233,8 +243,7 @@
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
-                                         (inc 24)))]
+         (for [parallelism (range 1 (inc (max 24 (plan-model/max-parallelism plan))))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
