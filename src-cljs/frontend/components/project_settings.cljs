@@ -243,8 +243,7 @@
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (max (plan-model/max-parallelism plan)
-                                         (inc 24)))]
+         (for [parallelism (range 1 (inc (max 24 (plan-model/max-parallelism plan))))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
