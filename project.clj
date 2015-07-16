@@ -34,7 +34,8 @@
                  [org.clojure/tools.reader "0.9.2"]]
 
   :plugins [[lein-cljsbuild "1.0.6"]
-            [lein-figwheel "0.3.7"]]
+            [lein-figwheel "0.3.7"]
+            [cider/cider-nrepl "0.9.1"]]
 
   :exclusions [[org.clojure/clojure]
                [org.clojure/clojurescript]]
@@ -54,7 +55,9 @@
 
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs/"]
 
-  :figwheel {:css-dirs ["resources/assets/css"]}
+  :figwheel {:css-dirs ["resources/assets/css"]
+             :nrepl-port 7888}
+
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs" "test-cljs"]
                         :figwheel {:on-jsload "frontend.core/reinstall-om!"}
