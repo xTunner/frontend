@@ -14,6 +14,7 @@
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.components.project.common :as project-common]
+            [frontend.config :as config]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
@@ -304,7 +305,9 @@
                                   #(do (raise! owner [:update-containers-clicked
                                                       {:containers selected-paid-containers}])
                                        false))}
-                     "Update plan"])
+                     (if (config/enterprise?)
+                       "Save changes"
+                       "Update plan")])
                    (if-not checkout-loaded?
                      [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
                      (forms/managed-button
