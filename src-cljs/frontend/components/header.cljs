@@ -204,11 +204,12 @@
                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
                                       :title "Log In with Github"}
                  "Log In"]]
-               [:li
-                [:button.login-link.btn.btn-success {:href (auth-url)
-                                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "signup_click" :properties {:source "header sign-up" :url js/window.location.pathname}}])
-                                                     :title "Sign up with Github"}
-                 "Sign Up"]]])]]
+               (list
+                 [:li
+                  [:button.login-link.btn.btn-success {:href (auth-url)
+                                                       :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "signup_click" :properties {:source "header sign-up" :url js/window.location.pathname}}])
+                                                       :title "Sign up with Github"}
+                   "Sign Up"]])])]]
           (outer-subheader
            [{:mobile {:path "/mobile"
                        :title "Mobile"}
