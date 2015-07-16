@@ -1,4 +1,5 @@
 (ns frontend.utils
+  (:refer-clojure :exclude [uuid])
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]

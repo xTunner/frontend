@@ -149,14 +149,10 @@ the `?om-build-id=dev` query parameter again. This will be fixed soon.
 
 ### Browser REPL
 
-From a Clojure REPL:
+Figwheel runs its own bREPL, which you'll see on the terminal at your `lein figwheel dev`. You can also run an additional bREPL over nREPL to connect Cider (or similar) to it. First, connect to the nREPL at localhost:7888. (This port is defined in project.clj.) Then, at the Cider REPL:
 
 ```clojure
-(cemerick.piggieback/cljs-repl :repl-env (frontend.core/cljs-repl-env))
+(figwheel-sidecar.repl/cljs-repl "dev")
 ```
 
-Via vim-fireplace:
-
-```
-:Piggieback (frontend.core/cljs-repl-env)
-```
+Unfortunately for vim-fireplace, Figwheel doesn't expose the repl-env to pass to `:Piggieback` in any nice way. (If you'd like to work on making it possible, have a look at `figwheel-sidecar.repl/repl-env`. Unfortunately, it takes an entire build map as an argument, rather than just a build ID, as `figwheel-sidecar.repl/cljs-repl` does.) However, you can still run an out-of-browser Rhino REPL using `:Piggieback` (which vim-fireplace will probably run for you automatically.)

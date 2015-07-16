@@ -3,10 +3,11 @@
   :url "https://circleci.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
                  [inflections "0.8.2"]
 
-                 [org.clojars.dwwoelfel/stefon "0.5.0-3198d1b33637d6bd79c7415b01cff843891ebfd4"]
+                 [org.clojars.dwwoelfel/stefon "0.5.0-3198d1b33637d6bd79c7415b01cff843891ebfd4"
+                  :exclusions [com.google.javascript/closure-compiler]]
                  [compojure "1.1.8"]
                  [ring/ring "1.2.2"]
                  [http-kit "2.1.18"]
@@ -15,29 +16,26 @@
                  [com.cemerick/url "0.1.1"]
                  [cheshire "5.3.1"]
 
-                 [ankha "0.1.4"]
-                 [org.clojure/clojurescript "0.0-3123"]
-                 [org.clojure/google-closure-library "0.0-20140718-946a7d39"]
-                 [com.google.javascript/closure-compiler "v20140625"]
+                 ;; Prerelease version to avoid conflict with cljs.core/record?
+                 ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
+                 [ankha "0.1.5.1-64423e"]
+                 [org.clojure/clojurescript "0.0-3308"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [cljs-ajax "0.3.3"]
+                 [cljs-ajax "0.3.13"]
                  [cljsjs/react-with-addons "0.12.2-4"]
                  [org.omcljs/om "0.8.8" :exclusions [cljsjs/react]]
                  [hiccups "0.3.0"]
                  [sablono "0.2.22"]
                  [secretary "1.2.2"]
-                 ;; Here until
-                 ;; https://github.com/andrewmcveigh/cljs-time/pull/26
-                 ;; is merged, or some similar solution for the
-                 ;; exception issue.
-                 [com.sgrove/cljs-time "0.3.5"]
-                 [weasel "0.5.0"] ;; repl
+                 [com.andrewmcveigh/cljs-time "0.3.10"]
+
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
-                 [figwheel "0.1.7-SNAPSHOT"]]
+                 [org.clojure/tools.reader "0.9.2"]]
 
-  :plugins [[lein-cljsbuild "1.0.4"]
-            [lein-figwheel "0.1.7-SNAPSHOT"]]
+  :plugins [[lein-cljsbuild "1.0.6"]
+            [lein-figwheel "0.3.7"]
+            [cider/cider-nrepl "0.9.1"]]
 
   :exclusions [[org.clojure/clojure]
                [org.clojure/clojurescript]]
@@ -57,9 +55,12 @@
 
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs/"]
 
-  :figwheel {:css-dirs ["resources/assets/css"]}
+  :figwheel {:css-dirs ["resources/assets/css"]
+             :nrepl-port 7888}
+
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs" "test-cljs"]
+                        :figwheel {:on-jsload "frontend.core/reinstall-om!"}
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none
