@@ -862,9 +862,10 @@
               (when-not piggiebacked?
                 (list " at $" container-cost " per container"))
               " for more parallelism and shorter queue times."))])
-        (when  (pm/freemium? plan)
+        (when (pm/freemium? plan)
           [:p (str (pm/freemium-containers plan) " container is free, forever.")])
-        [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]]]))))
+        (when-not (config/enterprise?)
+          [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."])]]))))
 
 (def main-component
   {:overview overview
