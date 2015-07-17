@@ -202,34 +202,34 @@
         "Show forks"]]])))
 
 (defrender main [data owner]
-  (let [user (:current-user data)
+  (let [user (:user data)
         settings (:settings data)
         repos (:repos data)
         repo-filter-string (get-in settings [:add-projects :repo-filter-string])
         show-forks (true? (get-in settings [:add-projects :show-forks]))]
     (html
      [:div.proj-wrapper
-      (if-not (get-in settings [:add-projects :selected-org :login])
-        repos-explanation
-        (cond
-         (nil? repos) [:div.loading-spinner common/spinner]
-         (not (seq repos)) [:div
-                            (om/build repo-filter settings)
-                            [:ul.proj-list.list-unstyled
-                             [:li (str "No repos found for organization " (:selected-org data))]]]
-         :else [:div
-                (om/build repo-filter settings)
-                [:ul.proj-list.list-unstyled
-                 (let [filtered-repos (sort-by :updated_at (filter (fn [repo]
-                                                                    (and
-                                                                     (or show-forks (not (:fork repo)))
-                                                                     (gstring/caseInsensitiveContains
-                                                                       (:name repo)
-                                                                       repo-filter-string)))
-                                                                  repos))]
-                   (map (fn [repo] (om/build repo-item {:repo repo
-                                                        :settings settings}))
-                        filtered-repos))]]))
+      (if-let [selected-login (get-in settings [:add-projects :selected-org :login])]
+        (if (nil? repos)
+          ;; TODO: put this loading spinner somewhere else, and have a better notion of loading
+          ;; for the paginated repos api.
+          [:div.loading-spinner common/spinner]
+           [:div
+            (om/build repo-filter settings)
+            [:ul.proj-list.list-unstyled
+             (let [;; we display a repo if it belongs to this org, matches the filter string,
+                   ;; and matches the fork settings.
+                   display? (fn [repo]
+                              (and
+                               (or show-forks (not (:fork repo)))
+                               (= (:username repo) selected-login )
+                               (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
+                   filtered-repos (->> repos (filter display?) (sort-by :updated_at))]
+               (if (empty? filtered-repos)
+                 [:li (str "No repos found for organization " (:selected-org data))]
+                 (for [repo filtered-repos]
+                   (om/build repo-item {:repo repo :settings settings}))))]])
+        repos-explanation)
       invite-modal])))
 
 (defn inaccessible-follows
@@ -301,12 +301,9 @@
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
+        repos (:repos user)
         settings (:settings data)
         selected-org (get-in settings [:add-projects :selected-org :login])
-        repo-key (gstring/format "%s.%s"
-                                 selected-org
-                                 (get-in settings [:add-projects :selected-org :type]))
-        repos (get-in user [:repos repo-key])
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
     (html

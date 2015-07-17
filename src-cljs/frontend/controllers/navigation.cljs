@@ -201,7 +201,6 @@
                              :messages pusher/build-messages}]))
   (set-page-title! (str project-name " #" build-num)))
 
-
 (defmethod navigated-to :add-projects
   [history-imp navigation-point args state]
   (-> state
@@ -211,12 +210,12 @@
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
+  (println "making api requests.")
   (let [api-ch (get-in current-state [:comms :api])]
-    (when-not (seq (get-in current-state state/projects-path))
-      (api/get-projects api-ch))
-    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
-          (put! api-ch [:organizations (:status api-result) api-result])))
-    (ajax/ajax :get "/api/v1/user/collaborator-accounts" :collaborators api-ch))
+    ;; load orgs, collaborators, and repos.
+    (api/get-orgs api-ch)
+    (api/get-repos api-ch)
+    (api/get-collaborators api-ch))
   (set-page-title! "Add projects")
   (analytics/track-signup))
 

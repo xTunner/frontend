@@ -159,15 +159,7 @@
 
 (defmethod post-control-event! :selected-add-projects-org
   [target message args previous-state current-state]
-  (let [login (:login args)
-        type (:type args)
-        api-ch (get-in current-state [:comms :api])]
-    (utils/scroll-to-id! "project-listing")
-    (ajax/ajax :get
-               (gstring/format "/api/v1/user/%s/%s/repos" (name type) login)
-               :repos
-               api-ch
-               :context args)))
+  (utils/scroll-to-id! "project-listing"))
 
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]

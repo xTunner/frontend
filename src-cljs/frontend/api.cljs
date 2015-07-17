@@ -11,6 +11,23 @@
 (defn get-projects [api-ch]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch))
 
+(defn get-repos [api-ch & {:keys [page]
+                           :or {page 1}}]
+  (ajax/ajax :get (str "/api/v1/user/repos?page=" page)
+             :repos
+             api-ch
+             :context {:page page}))
+
+(defn get-orgs [api-ch]
+  (ajax/ajax :get (str "/api/v1/user/organizations")
+             :organizations
+             api-ch))
+
+(defn get-collaborators [api-ch]
+  (ajax/ajax :get "/api/v1/user/collaborator-accounts"
+             :collaborators
+             api-ch))
+
 (defn get-usage-queue [build api-ch]
   (ajax/ajax :get
              (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"

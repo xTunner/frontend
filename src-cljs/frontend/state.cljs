@@ -131,14 +131,8 @@
 (def user-tokens-path (conj user-path :tokens))
 (def user-collaborators-path (conj user-path :collaborators))
 
-(defn repos-path
-  "Path for a given set of repos (e.g. all heavybit repos). Login is the username,
-   type is :user or :org"
-  [login type] (conj user-path :repos (str login "." type)))
-
-(defn repo-path [login type repo-index]
-  (conj (repos-path login type) repo-index))
-
+(def repos-path (conj user-path :repos))
+(defn repo-path [repo-index] (conj repos-path repo-index))
 
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
