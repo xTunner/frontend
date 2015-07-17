@@ -96,7 +96,7 @@ You'll need to add `COVERALLS_REPO_TOKEN` to your CircleCI
 [environment variables](https://circleci.com/docs/environment-variables).
 
 Coveralls will automatically handle the merging of coverage stats in
-parallel build.
+parallel builds.
 
 ###Code Climate
 
