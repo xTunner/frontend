@@ -95,9 +95,8 @@ If you're a Coveralls customer, follow
 You'll need to add `COVERALLS_REPO_TOKEN` to your CircleCI
 [environment variables](https://circleci.com/docs/environment-variables).
 
-Coveralls does not currently support CircleCI's parallelization.
-[Contact us](mailto:sayhi@circleci.com)
-if you'd like to use this.
+Coveralls will automatically handle the merging of coverage stats in
+parallel builds.
 
 ###Code Climate
 
