@@ -84,7 +84,13 @@
                [:button {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url
                                                                         :project-id project-id}])
                          :data-loading-text "Unfollowing..."}
-                "Unfollow"]))
+                "Unfollow"])
+              (forms/managed-button
+               [:button {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                              :project-id project-id}])
+                         :data-loading-text "Stopping Builds..."
+                         :data-success-text "Builds Stopped"}
+                "Stop Building on Circle"]))
              (list
               [:h2 "You're not following this repo"]
               [:p
