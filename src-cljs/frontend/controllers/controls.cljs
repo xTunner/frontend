@@ -430,8 +430,8 @@
 (defmethod post-control-event! :stopped-building-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/stop-building" (vcs-url/project-name vcs-url))
+    (button-ajax :delete
+                 (gstring/format "/api/v1/project/%s/enable" (vcs-url/project-name vcs-url))
                  :stop-building-project
                  api-ch
                  :context {:project-id project-id}))
