@@ -131,10 +131,9 @@
             (str (time/in-minutes trial-interval) " minutes")))))
 
 (defn per-container-cost [plan]
-  (let [template-properties (or (-> plan :paid :template)
-                                (-> plan :enterprise :template)
-                                default-template-properties)]
-    (:container_cost template-properties)))
+  (or (-> plan :paid :template :container_cost)
+      (-> plan :enterprise :template :container_cost)
+      (:container_cost default-template-properties)))
 
 (defn container-cost [plan containers]
   (let [template-properties (or (-> plan :paid :template)
