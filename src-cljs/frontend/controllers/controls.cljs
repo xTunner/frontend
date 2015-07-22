@@ -427,6 +427,15 @@
                  :context {:project-id project-id}))
   (analytics/track-unfollow-project))
 
+(defmethod post-control-event! :stopped-building-project
+  [target message {:keys [vcs-url project-id]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (button-ajax :delete
+                 (gstring/format "/api/v1/project/%s/enable" (vcs-url/project-name vcs-url))
+                 :stop-building-project
+                 api-ch
+                 :context {:project-id project-id}))
+  (analytics/track-stop-building-project))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll

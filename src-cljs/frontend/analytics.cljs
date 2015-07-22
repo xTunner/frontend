@@ -103,6 +103,9 @@
 (deftrack track-unfollow-project []
   (google/track-event "Projects" "Remove"))
 
+(deftrack track-stop-building-project []
+  (google/track-event "Projects" "Stop Building"))
+
 (deftrack track-follow-repo []
   (google/track-event "Repos" "Add"))
 

@@ -406,6 +406,12 @@
     state
     (assoc-in state (conj state/project-path :followed) false)))
 
+(defmethod api-event [:stop-building-project :success]
+  [target message status {:keys [resp context]} state]
+  (let [updated-state
+        (update-in state state/projects-path (fn [projects] (remove #(= (:project-id context) (project-model/id %)) projects)))]
+    (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-root)}])
+    updated-state))
 
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
