@@ -79,6 +79,7 @@ window.stefon_hack_for_om =
     "/img/outer/docs/ssh-build-button-current.png": '(asset-path "img/outer/docs/ssh-build-button-current.png")'
     "/img/outer/docs/ssh-build-button-rebuild.png": '(asset-path "img/outer/docs/ssh-build-button-rebuild.png")'
     "/img/outer/docs/ssh-build-details.png": '(asset-path "img/outer/docs/ssh-build-details.png")'
+    "/docs/adding-read-write-deployment-key.md": '(asset-path "docs/adding-read-write-deployment-key.md")'
     "/docs/api.md": '(asset-path "docs/api.md")'
     "/docs/android.md": '(asset-path "docs/android.md")'
     "/docs/background-process.md": '(asset-path "docs/background-process.md")'
