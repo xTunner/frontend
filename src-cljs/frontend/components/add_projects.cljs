@@ -81,6 +81,9 @@
                          (let [org-names (->> user :organizations (cons user) (map :login) set)
                                in-orgs? (comp org-names :login)]
                            (->> repos (map :owner) (remove in-orgs?) (set)))))]
+           (when (:repos-loading user)
+             [:div.orgs-loading
+              [:div.loading-spinner common/spinner]])
            (missing-org-info owner)]])))))
 
 (def repos-explanation
