@@ -32,6 +32,7 @@
            "img/status-logos/logo.svg"
            "img/outer/stories/john.jpg"
            "img/outer/stories/arthur.jpg"
+           "docs/adding-read-write-deployment-key.md"
            "docs/android.md"
            "docs/api.md"
            "docs/background-process.md"
