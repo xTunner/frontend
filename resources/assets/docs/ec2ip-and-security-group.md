@@ -8,7 +8,8 @@ last_updated: Jun 19, 2013
 You may need Circle's AWS information if you have a firewalled server that you need to access as part of your builds.
 
 Circle is hosted in EC2's US East region, so our Amazon
-[EC2 public IP address ranges](https://forums.aws.amazon.com/ann.jspa?annID=1701)
+[EC2 public IP address
+ranges](http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html)
 are there.
 (Be aware that this link can sometimes be broken when Amazon make updates.
 In such cases, you can usually access the list via the service's
