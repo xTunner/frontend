@@ -1,20 +1,20 @@
 (ns frontend.components.add-projects
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.datetime :as datetime]
-            [frontend.models.user :as user-model]
-            [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.datetime :as datetime]
+            [frontend.models.repo :as repo-model]
+            [frontend.models.user :as user-model]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [clojure.string :as string]
             [goog.string :as gstring]
-            [goog.string.format])
+            [goog.string.format]
+            [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
@@ -203,6 +203,7 @@
 
 (defrender main [data owner]
   (let [user (:user data)
+        loading-repos? (:repos-loading user)
         settings (:settings data)
         repos (:repos data)
         repo-filter-string (get-in settings [:add-projects :repo-filter-string])
@@ -210,25 +211,25 @@
     (html
      [:div.proj-wrapper
       (if-let [selected-login (get-in settings [:add-projects :selected-org :login])]
-        (if (nil? repos)
-          ;; TODO: put this loading spinner somewhere else, and have a better notion of loading
-          ;; for the paginated repos api.
-          [:div.loading-spinner common/spinner]
-           [:div
-            (om/build repo-filter settings)
-            [:ul.proj-list.list-unstyled
-             (let [;; we display a repo if it belongs to this org, matches the filter string,
-                   ;; and matches the fork settings.
-                   display? (fn [repo]
-                              (and
-                               (or show-forks (not (:fork repo)))
-                               (= (:username repo) selected-login )
-                               (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-                   filtered-repos (->> repos (filter display?) (sort-by :updated_at))]
-               (if (empty? filtered-repos)
-                 [:li (str "No repos found for organization " (:selected-org data))]
-                 (for [repo filtered-repos]
-                   (om/build repo-item {:repo repo :settings settings}))))]])
+        (let [;; we display a repo if it belongs to this org, matches the filter string,
+              ;; and matches the fork settings.
+              display? (fn [repo]
+                         (and
+                          (or show-forks (not (:fork repo)))
+                          (= (:username repo) selected-login )
+                          (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
+              filtered-repos (->> repos (filter display?) (sort-by :updated_at))]
+          [:div (om/build repo-filter settings)
+           (if (empty? filtered-repos)
+             (if loading-repos?
+               [:div.loading-spinner common/spinner]
+               [:div.add-repos
+                (if repo-filter-string
+                  (str "No matching repos for organization " (:selected-org data))
+                  (str "No repos found for organization " (:selected-org data)))])
+             [:ul.proj-list.list-unstyled
+              (for [repo filtered-repos]
+                (om/build repo-item {:repo repo :settings settings}))])])
         repos-explanation)
       invite-modal])))
 

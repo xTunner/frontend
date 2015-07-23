@@ -206,7 +206,10 @@
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
-             :navigation-data (assoc args :show-aside-menu? false))))
+             :navigation-data (assoc args :show-aside-menu? false))
+      ;; force a reload of repos.
+      (assoc-in state/repos-path [])
+      (assoc-in state/repos-loading-path true)))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]

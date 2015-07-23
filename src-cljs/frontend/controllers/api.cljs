@@ -170,11 +170,14 @@
 
 (defmethod api-event [:repos :success]
   [target message status args state]
-  ;; fetch the next page.
-  (when (not-empty (:resp args))
+  (if (empty? (:resp args))
+    ;; this is the last api request, update the loading flag.
+    (assoc-in state state/repos-loading-path false)
+    ;; otherwise trigger a fetch for the next page, and return the state
+    ;; with the items we got here added.
     (let [page (-> args :context :page)]
-      (api/get-repos (get-in state [:comms :api]) :page (inc page))))
-  (update-in state state/repos-path #(into % (:resp args))))
+      (api/get-repos (get-in state [:comms :api]) :page (inc page))
+      (update-in state state/repos-path #(into % (:resp args))))))
 
 (defmethod api-event [:organizations :success]
   [target message status args state]
