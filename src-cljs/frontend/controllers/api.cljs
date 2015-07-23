@@ -183,11 +183,6 @@
   [target message status args state]
   (assoc-in state state/user-organizations-path (:resp args)))
 
-
-(defmethod api-event [:collaborators :success]
-  [target message status args state]
-  (assoc-in state state/user-collaborators-path (:resp args)))
-
 (defmethod api-event [:tokens :success]
   [target message status args state]
   (print "Tokens received: " args)

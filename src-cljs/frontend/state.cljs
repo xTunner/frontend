@@ -21,7 +21,6 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}
-                             :show-fork-accounts false
                              :show-forks false}}
    :selected-home-technology-tab nil
    :modal-video-id nil
@@ -129,7 +128,6 @@
 ;; TODO we probably shouldn't be storing repos in the user...
 (def user-organizations-path (conj user-path :organizations))
 (def user-tokens-path (conj user-path :tokens))
-(def user-collaborators-path (conj user-path :collaborators))
 
 (def repos-path (conj user-path :repos))
 (defn repo-path [repo-index] (conj repos-path repo-index))

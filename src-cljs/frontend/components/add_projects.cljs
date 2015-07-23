@@ -61,8 +61,7 @@
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
-      (let [{:keys [user settings repos]} data
-            show-fork-accounts? (get-in settings [:add-projects :show-fork-accounts])]
+      (let [{:keys [user settings repos]} data]
         (html
          [:div
           [:div.overview
@@ -82,20 +81,7 @@
                          (let [org-names (->> user :organizations (cons user) (map :login) set)
                                in-orgs? (comp org-names :login)]
                            (->> repos (map :owner) (remove in-orgs?) (set)))))]
-           (missing-org-info owner)]
-          [:div.organizations
-           [:h4
-            [:a
-             {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
-             "Users & organizations who have made pull requests to your repos "
-             (if show-fork-accounts?
-               [:i.fa.fa-chevron-down ""]
-               [:i.fa.fa-chevron-up ""])]]
-           (if show-fork-accounts?
-             [:ul.organizations
-              (->> (:collaborators user)
-                   (remove (fn [org] (= (:login user) (:login org))))
-                   (map (fn [org] (organization org settings owner))))])]])))))
+           (missing-org-info owner)]])))))
 
 (def repos-explanation
   [:div.add-repos
