@@ -61,33 +61,41 @@
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
-      (let [{:keys [user settings]} data
+      (let [{:keys [user settings repos]} data
             show-fork-accounts? (get-in settings [:add-projects :show-fork-accounts])]
         (html
-          [:div
-           [:div.overview
-            [:span.big-number "1"]
-            [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-           [:div.organizations
-            [:h4 "Your accounts"]
-            [:ul.organizations
-             (map (fn [org] (organization org settings owner))
-                  (:organizations user))
-             (organization user settings owner)]
-            (missing-org-info owner)]
-           [:div.organizations
-            [:h4
-             [:a
-              {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
-              "Users & organizations who have made pull requests to your repos "
-              (if show-fork-accounts?
-                [:i.fa.fa-chevron-down ""]
-                [:i.fa.fa-chevron-up ""])]]
-            (if show-fork-accounts?
-              [:ul.organizations
-               (->> (:collaborators user)
-                    (remove (fn [org] (= (:login user) (:login org))))
-                    (map (fn [org] (organization org settings owner))))])]])))))
+         [:div
+          [:div.overview
+           [:span.big-number "1"]
+           [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
+          [:div.organizations
+           [:h4 "Your accounts"]
+           [:ul.organizations
+            (map (fn [org] (organization org settings owner))
+                 ;; here we display you, then all of your organizations, then all of the owners of
+                 ;; repos that aren't organizations and aren't you. We do it this way because the
+                 ;; organizations route is much faster than the repos route. We show them
+                 ;; in this order (rather than e.g. putting the whole thing into a set)
+                 ;; so that new ones don't jump up in the middle as they're loaded.
+                 (concat [user]
+                         (:organizations user)
+                         (let [org-names (->> user :organizations (cons user) (map :login) set)
+                               in-orgs? (comp org-names :login)]
+                           (->> repos (map :owner) (remove in-orgs?) (set)))))]
+           (missing-org-info owner)]
+          [:div.organizations
+           [:h4
+            [:a
+             {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
+             "Users & organizations who have made pull requests to your repos "
+             (if show-fork-accounts?
+               [:i.fa.fa-chevron-down ""]
+               [:i.fa.fa-chevron-up ""])]]
+           (if show-fork-accounts?
+             [:ul.organizations
+              (->> (:collaborators user)
+                   (remove (fn [org] (= (:login user) (:login org))))
+                   (map (fn [org] (organization org settings owner))))])]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -325,7 +333,8 @@
         [:hr]
         [:div.org-listing
          (om/build organization-listing {:user user
-                                         :settings settings})]
+                                         :settings settings
+                                         :repos repos})]
         [:hr]
         [:div#project-listing.project-listing
          [:div.overview
