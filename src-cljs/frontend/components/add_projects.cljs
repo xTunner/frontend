@@ -197,6 +197,7 @@
       [:div.checkbox.pull-right.fork-filter
        [:label
         [:input {:type "checkbox"
+                 :checked (-> settings :add-projects :show-forks)
                  :name "Show forks"
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
