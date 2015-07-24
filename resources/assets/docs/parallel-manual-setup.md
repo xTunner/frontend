@@ -144,7 +144,7 @@ done
 test-runner ${files[@]}
 ```
 
-This script partitions the test files into N equally sized buckets, and calls "test-runner" on the bucket for this machine.
+This script partitions the test files into N equally sized buckets, and calls "test-runner" on the bucket for this machine. Note that you will still need to include `parallel: true` in `circle.yml` with this script.
 
 ## Contact Us
 
