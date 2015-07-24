@@ -216,7 +216,7 @@
                           (or show-forks (not (:fork repo)))
                           (= (:username repo) selected-login )
                           (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-              filtered-repos (->> repos (filter display?) (sort-by :updated_at))]
+              filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
           [:div (om/build repo-filter settings)
            (if (empty? filtered-repos)
              (if loading-repos?
