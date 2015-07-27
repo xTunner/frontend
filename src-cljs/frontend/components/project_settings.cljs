@@ -375,7 +375,7 @@
             (describe-flag {:flag :junit
                             :title "JUnit support"
                             :blurb [:p
-                                    "This flag enables collection of test data via junit xml or cucumber json files," 
+                                    "This flag enables collection of test data via junit xml or cucumber json files,"
                                     " which we use to better display test results and make parallel builds more"
                                     " efficient.  It also adds the necessary flags for collecting this to automatically"
                                     " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
@@ -413,7 +413,15 @@
                            :blurb [:p
                                    "If this option is selected, then CircleCI will run builds for this project "
                                    "on Mac OSX rather than Linux. Select this if you have an iOS application "
-                                   "that you want to build using CircleCI."]})]]])))))
+                                   "that you want to build using CircleCI."]})
+            (describe-flag {:flag :smart-cocoapods-caching
+                           :title "Smart CocoaPods Caching"
+                           :blurb [:p
+                                   "Enable aggressive caching of CocoaPods to remove the need to call the `pod install`
+                                   command on every build. This feature is under active development and might cause
+                                   spurious build failures from time to time."]})
+
+            ]]])))))
 
 (defn dependencies [project-data owner]
   (reify
