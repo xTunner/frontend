@@ -95,7 +95,6 @@
                (cond
                 (seq query-results)
                 [:div
-                 [:h5 "Articles matching \"" query "\""]
                  [:ul.article-list
                   (for [result query-results]
                     [:li
