@@ -1,20 +1,20 @@
 (ns frontend.components.add-projects
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.datetime :as datetime]
-            [frontend.models.user :as user-model]
-            [frontend.models.repo :as repo-model]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.datetime :as datetime]
+            [frontend.models.repo :as repo-model]
+            [frontend.models.user :as user-model]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [clojure.string :as string]
             [goog.string :as gstring]
-            [goog.string.format])
+            [goog.string.format]
+            [om.core :as om :include-macros true]
+            [om.dom :as dom :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
@@ -61,33 +61,30 @@
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
-      (let [{:keys [user settings]} data
-            show-fork-accounts? (get-in settings [:add-projects :show-fork-accounts])]
+      (let [{:keys [user settings repos]} data]
         (html
-          [:div
-           [:div.overview
-            [:span.big-number "1"]
-            [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-           [:div.organizations
-            [:h4 "Your accounts"]
-            [:ul.organizations
-             (map (fn [org] (organization org settings owner))
-                  (:organizations user))
-             (organization user settings owner)]
-            (missing-org-info owner)]
-           [:div.organizations
-            [:h4
-             [:a
-              {:on-click #(raise! owner [:toggled-input {:path [:settings :add-projects :show-fork-accounts]}])}
-              "Users & organizations who have made pull requests to your repos "
-              (if show-fork-accounts?
-                [:i.fa.fa-chevron-down ""]
-                [:i.fa.fa-chevron-up ""])]]
-            (if show-fork-accounts?
-              [:ul.organizations
-               (->> (:collaborators user)
-                    (remove (fn [org] (= (:login user) (:login org))))
-                    (map (fn [org] (organization org settings owner))))])]])))))
+         [:div
+          [:div.overview
+           [:span.big-number "1"]
+           [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
+          [:div.organizations
+           [:h4 "Your accounts"]
+           [:ul.organizations
+            (map (fn [org] (organization org settings owner))
+                 ;; here we display you, then all of your organizations, then all of the owners of
+                 ;; repos that aren't organizations and aren't you. We do it this way because the
+                 ;; organizations route is much faster than the repos route. We show them
+                 ;; in this order (rather than e.g. putting the whole thing into a set)
+                 ;; so that new ones don't jump up in the middle as they're loaded.
+                 (concat [user]
+                         (:organizations user)
+                         (let [org-names (->> user :organizations (cons user) (map :login) set)
+                               in-orgs? (comp org-names :login)]
+                           (->> repos (map :owner) (remove in-orgs?) (set)))))]
+           (when (:repos-loading user)
+             [:div.orgs-loading
+              [:div.loading-spinner common/spinner]])
+           (missing-org-info owner)]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -197,39 +194,41 @@
       [:div.checkbox.pull-right.fork-filter
        [:label
         [:input {:type "checkbox"
+                 :checked (-> settings :add-projects :show-forks)
                  :name "Show forks"
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
 
 (defrender main [data owner]
-  (let [user (:current-user data)
+  (let [user (:user data)
+        loading-repos? (:repos-loading user)
         settings (:settings data)
         repos (:repos data)
         repo-filter-string (get-in settings [:add-projects :repo-filter-string])
         show-forks (true? (get-in settings [:add-projects :show-forks]))]
     (html
      [:div.proj-wrapper
-      (if-not (get-in settings [:add-projects :selected-org :login])
-        repos-explanation
-        (cond
-         (nil? repos) [:div.loading-spinner common/spinner]
-         (not (seq repos)) [:div
-                            (om/build repo-filter settings)
-                            [:ul.proj-list.list-unstyled
-                             [:li (str "No repos found for organization " (:selected-org data))]]]
-         :else [:div
-                (om/build repo-filter settings)
-                [:ul.proj-list.list-unstyled
-                 (let [filtered-repos (sort-by :updated_at (filter (fn [repo]
-                                                                    (and
-                                                                     (or show-forks (not (:fork repo)))
-                                                                     (gstring/caseInsensitiveContains
-                                                                       (:name repo)
-                                                                       repo-filter-string)))
-                                                                  repos))]
-                   (map (fn [repo] (om/build repo-item {:repo repo
-                                                        :settings settings}))
-                        filtered-repos))]]))
+      (if-let [selected-login (get-in settings [:add-projects :selected-org :login])]
+        (let [;; we display a repo if it belongs to this org, matches the filter string,
+              ;; and matches the fork settings.
+              display? (fn [repo]
+                         (and
+                          (or show-forks (not (:fork repo)))
+                          (= (:username repo) selected-login )
+                          (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
+              filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
+          [:div (om/build repo-filter settings)
+           (if (empty? filtered-repos)
+             (if loading-repos?
+               [:div.loading-spinner common/spinner]
+               [:div.add-repos
+                (if repo-filter-string
+                  (str "No matching repos for organization " (:selected-org data))
+                  (str "No repos found for organization " (:selected-org data)))])
+             [:ul.proj-list.list-unstyled
+              (for [repo filtered-repos]
+                (om/build repo-item {:repo repo :settings settings}))])])
+        repos-explanation)
       invite-modal])))
 
 (defn inaccessible-follows
@@ -301,12 +300,9 @@
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
+        repos (:repos user)
         settings (:settings data)
         selected-org (get-in settings [:add-projects :selected-org :login])
-        repo-key (gstring/format "%s.%s"
-                                 selected-org
-                                 (get-in settings [:add-projects :selected-org :type]))
-        repos (get-in user [:repos repo-key])
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
     (html
@@ -326,7 +322,8 @@
         [:hr]
         [:div.org-listing
          (om/build organization-listing {:user user
-                                         :settings settings})]
+                                         :settings settings
+                                         :repos repos})]
         [:hr]
         [:div#project-listing.project-listing
          [:div.overview

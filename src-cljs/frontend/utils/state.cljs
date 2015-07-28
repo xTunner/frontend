@@ -45,10 +45,12 @@
        (not= org-name (get-in state state/org-name-path))))
 
 (defn find-repo-index
-  "Path for a given repo. Login is the username, type is user or org, name is the repo name."
-   [state login type repo-name]
-   (when-let [repos (get-in state (state/repos-path login type))]
-     (find-index #(= repo-name (:name %)) repos)))
+  "Path for a given repo. Login is the username, name is the repo name."
+   [state login repo-name]
+   (when-let [repos (get-in state state/repos-path)]
+     (find-index #(and (= repo-name (:name %))
+                       (= login (:username login)))
+                 repos)))
 
 (defn clear-page-state [state]
   (-> state

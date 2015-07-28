@@ -21,7 +21,6 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}
-                             :show-fork-accounts false
                              :show-forks false}}
    :selected-home-technology-tab nil
    :modal-video-id nil
@@ -129,16 +128,11 @@
 ;; TODO we probably shouldn't be storing repos in the user...
 (def user-organizations-path (conj user-path :organizations))
 (def user-tokens-path (conj user-path :tokens))
-(def user-collaborators-path (conj user-path :collaborators))
 
-(defn repos-path
-  "Path for a given set of repos (e.g. all heavybit repos). Login is the username,
-   type is :user or :org"
-  [login type] (conj user-path :repos (str login "." type)))
+(def repos-path (conj user-path :repos))
+(defn repo-path [repo-index] (conj repos-path repo-index))
 
-(defn repo-path [login type repo-index]
-  (conj (repos-path login type) repo-index))
-
+(def repos-loading-path (conj user-path :repos-loading))
 
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))

@@ -168,23 +168,20 @@
       state
       (update-in state state/build-path merge (:resp args)))))
 
-
 (defmethod api-event [:repos :success]
   [target message status args state]
-  ;; prevent delayed api responses if the user has moved on
-  (let [login (get-in args [:context :login])
-        type (get-in args [:context :type])]
-    (assoc-in state (state/repos-path login type) (:resp args))))
-
+  (if (empty? (:resp args))
+    ;; this is the last api request, update the loading flag.
+    (assoc-in state state/repos-loading-path false)
+    ;; otherwise trigger a fetch for the next page, and return the state
+    ;; with the items we got here added.
+    (let [page (-> args :context :page)]
+      (api/get-repos (get-in state [:comms :api]) :page (inc page))
+      (update-in state state/repos-path #(into % (:resp args))))))
 
 (defmethod api-event [:organizations :success]
   [target message status args state]
   (assoc-in state state/user-organizations-path (:resp args)))
-
-
-(defmethod api-event [:collaborators :success]
-  [target message status args state]
-  (assoc-in state state/user-collaborators-path (:resp args)))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]
@@ -441,10 +438,9 @@
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
-  (let [{:keys [login type]} context] ; don't pull out :name, to avoid overshadowing
-    (if-let [repo-index (state-utils/find-repo-index state login type (:name context))]
-      (assoc-in state (conj (state/repo-path login type repo-index) :following) true)
-      state)))
+  (if-let [repo-index (state-utils/find-repo-index state (:login context) (:name context))]
+    (assoc-in state (conj (state/repo-path repo-index) :following) true)
+    state))
 
 (defmethod post-api-event! [:follow-repo :success]
   [target message status args previous-state current-state]
@@ -466,10 +462,9 @@
 
 (defmethod api-event [:unfollow-repo :success]
   [target message status {:keys [resp context]} state]
-  (let [{:keys [login type]} context] ; don't pull out :name, to avoid overshadowing
-    (if-let [repo-index (state-utils/find-repo-index state login type (:name context))]
-      (assoc-in state (conj (state/repo-path login type repo-index) :following) false)
-      state)))
+  (if-let [repo-index (state-utils/find-repo-index state (:login context)  (:name context))]
+    (assoc-in state (conj (state/repo-path repo-index) :following) false)
+    state))
 
 
 (defmethod post-api-event! [:unfollow-repo :success]
