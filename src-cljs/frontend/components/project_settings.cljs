@@ -288,51 +288,52 @@
             new-env-var-value (:new-env-var-value inputs)
             project-id (project-model/id project)]
         (html
-         [:section
-          [:article
-           [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
-           [:div.environment-variables-inner
-            [:p
-             "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
-             "The values can be any bash expression and can reference other variables, such as setting "
-             [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."
-             " To disable string substitution you need to escape the " [:code "$"]
-             " characters by prefixing them with " [:code "\\"] "."
-             " For example, a crypt'ed password like " [:code "$1$O3JMY.Tw$AdLnLjQ/5jXF9.MTp3gHv/"]
-             " would be entered as " [:code "\\$1\\$O3JMY.Tw\\$AdLnLjQ/5jXF9.MTp3gHv/"] "."]
-            [:form
-             [:input#env-var-name
-              {:required true, :type "text", :value new-env-var-name
-               :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]
-             [:label {:placeholder "Name"}]
-             [:input#env-var-value
-              {:required true, :type "text", :value new-env-var-value
-               :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]
-             [:label {:placeholder "Value"}]
-             (forms/managed-button
-              [:input {:data-failed-text "Failed",
-                       :data-success-text "Added",
-                       :data-loading-text "Adding...",
-                       :value "Save variables",
-                       :type "submit"
-                       :on-click #(do
-                                    (raise! owner [:created-env-var {:project-id project-id}])
-                                    false)}])]
-            (when-let [env-vars (seq (:envvars project-data))]
-              [:table
-               [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
-               [:tbody
-                (for [{:keys [name value]} env-vars]
-                  [:tr
-                   [:td {:title name} name]
-                   [:td {:title value} value]
-                   [:td
-                    [:a
-                     {:title "Remove this variable?",
-                      :on-click #(raise! owner [:deleted-env-var {:project-id project-id
-                                                                  :env-var-name name}])}
-                     [:i.fa.fa-times-circle]
-                     [:span " Remove"]]]])]])]]])))))
+          [:section
+           [:article
+            [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
+            [:div.environment-variables-inner
+             [:p
+              "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
+              "The values can be any bash expression and can reference other variables, such as setting "
+              [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
+
+             [:p
+              " To disable string substitution you need to escape the " [:code "$"]
+              " characters by prefixing them with " [:code "\\"] "."
+              " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "." ]
+             [:form
+              [:input#env-var-name
+               {:required true, :type "text", :value new-env-var-name
+                :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]
+              [:label {:placeholder "Name"}]
+              [:input#env-var-value
+               {:required true, :type "text", :value new-env-var-value
+                :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]
+              [:label {:placeholder "Value"}]
+              (forms/managed-button
+                [:input {:data-failed-text "Failed",
+                         :data-success-text "Added",
+                         :data-loading-text "Adding...",
+                         :value "Save variables",
+                         :type "submit"
+                         :on-click #(do
+                                      (raise! owner [:created-env-var {:project-id project-id}])
+                                      false)}])]
+             (when-let [env-vars (seq (:envvars project-data))]
+               [:table
+                [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
+                [:tbody
+                 (for [{:keys [name value]} env-vars]
+                   [:tr
+                    [:td {:title name} name]
+                    [:td {:title value} value]
+                    [:td
+                     [:a
+                      {:title "Remove this variable?",
+                       :on-click #(raise! owner [:deleted-env-var {:project-id project-id
+                                                                   :env-var-name name}])}
+                      [:i.fa.fa-times-circle]
+                      [:span " Remove"]]]])]])]]])))))
 
 (defn experiments [project-data owner]
   (reify
@@ -381,7 +382,7 @@
             (describe-flag {:flag :junit
                             :title "JUnit support"
                             :blurb [:p
-                                    "This flag enables collection of test data via junit xml or cucumber json files," 
+                                    "This flag enables collection of test data via junit xml or cucumber json files,"
                                     " which we use to better display test results and make parallel builds more"
                                     " efficient.  It also adds the necessary flags for collecting this to automatically"
                                     " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
