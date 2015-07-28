@@ -136,9 +136,6 @@
 (deftrack track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
 
-(deftrack track-link-clicked [target]
-  (mixpanel/track "Track Link Clicked" {:link-class target}))
-
 (deftrack utm? [[key val]]
   (gstr/startsWith (name key) "utm"))
 
