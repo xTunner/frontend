@@ -864,7 +864,7 @@
               " for more parallelism and shorter queue times."))])
         (when (pm/freemium? plan)
           [:p (str (pm/freemium-containers plan) " container is free, forever.")])
-        (when-not (config/enterprise?)
+        (when-not (pm/enterprise? plan)
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."])]]))))
 
 (def main-component
