@@ -15,6 +15,7 @@
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
+            [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
@@ -67,7 +68,7 @@
 
     :loading loading
 
-    :landing landing/home
+    :landing (if (config/enterprise?) enterprise-landing/home landing/home)
     :about about/about
     :contact about/contact
     :team about/team
