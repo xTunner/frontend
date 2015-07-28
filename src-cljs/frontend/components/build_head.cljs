@@ -689,12 +689,12 @@
                                                                    :stop (or (:queued_at build) (:stop_time build))})
                                " waiting for builds to finish"])]))
                (when (build-model/author-isnt-committer build)
-                 [:th "Committer"]
-                 [:td
-                  (if-not (:committer_email build)
-                    [:span (build-model/committer build)]
-                    [:a {:href (str "mailto:" (:committer_email build))}
-                     (build-model/committer build)])])]
+                 (list [:th "Committer"]
+                       [:td
+                        (if-not (:committer_email build)
+                          [:span (build-model/committer build)]
+                          [:a {:href (str "mailto:" (:committer_email build))}
+                           (build-model/committer build)])]))]
               [:tr
                [:th "Parallelism"]
                [:td
