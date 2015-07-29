@@ -37,6 +37,12 @@
   (or (not= committer_email author_email)
       (not= committer_name author_name)))
 
+(defn ui-user [build]
+  (let [user (:user build)]
+    (if (not-empty (:name user))
+       (:name user)
+       (:login user))))
+
 (defn status-icon [build]
   (cond (= "success" (:outcome build)) "fa-check"
         (= "running" (:status build)) "fa-refresh"
