@@ -3,6 +3,7 @@
             [frontend.models.project :as proj]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as github]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -35,6 +36,12 @@
 (defn author-isnt-committer [{:keys [committer_email author_email committer_name author_name] :as build}]
   (or (not= committer_email author_email)
       (not= committer_name author_name)))
+
+(defn ui-user [build]
+  (let [user (:user build)]
+    (if (not-empty (:name user))
+       (:name user)
+       (:login user))))
 
 (defn status-icon [build]
   (cond (= "success" (:outcome build)) "fa-check"
@@ -131,21 +138,6 @@
         (#{"queued" "not_running" "scheduled" "retried"} (:status build)) "grey"
         ;; undefined is the default dark blue
         :else "undefined"))
-
-(defn why-in-words [build]
-  (condp = (:why build)
-    "github" (str "GitHub push by " (get-in build [:user :login]))
-    "edit" "Edit of the project settings"
-    "first-build" "First build"
-    "retry" (str "Manual retry of build " (:retry_of build))
-    "ssh" (gstring/format "Retry of build %s, with SSH enabled" (:retry_of build))
-    "auto-retry" (gstring/format "Auto-retry of build %s" (:retry_of build))
-    "trigger" (if (:user build)
-                (gstring/format "%s on CircleCI.com" (get-in build [:user :login]))
-                "CircleCI.com")
-    (if (:job_name build)
-      (:job_name build)
-      "unknown")))
 
 (defn can-cancel? [build]
   (and (not= "canceled" (:status build))
