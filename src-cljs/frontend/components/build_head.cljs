@@ -620,17 +620,17 @@
                                retry-id)}
      retry-id]))
 
-(defn why-in-words [build]
+(defn trigger-html [build]
   (let [user-link (link-to-user build)
         commit-link (link-to-commit build)
         retry-link (link-to-retry-source build)]
     (condp = (:why build)
-      "github" (list user-link " pushed " commit-link)
-      "edit" (list user-link " updated the project settings")
-      "first-build" (list user-link " triggered the first build")
-      "retry" (list user-link " retried " retry-link)
-      "ssh" (list user-link " retried " retry-link " with SSH")
-      "auto-retry" (list "Auto-retry of " retry-link)
+      "github" (list user-link " (pushed " commit-link ")")
+      "edit" (list user-link " (updated project settings)")
+      "first-build" (list user-link " (first build)")
+      "retry" (list user-link " (retried " retry-link ")")
+      "ssh" (list user-link " (retried " retry-link " with SSH)")
+      "auto-retry" (list "CircleCI (auto-retry of " retry-link ")")
       "trigger" (if (:user build)
                   (list user-link " on CircleCI.com")
                   "CircleCI.com")
@@ -665,8 +665,8 @@
             [:table
              [:tbody
               [:tr
-               [:th "Why"]
-               [:td (why-in-words build)]
+               [:th "Triggered by"]
+               [:td (trigger-html build)]
                [:th "Started"]
                [:td (when (:start_time build)
                       {:title (datetime/full-datetime (:start_time build))})
