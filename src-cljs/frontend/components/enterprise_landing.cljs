@@ -22,7 +22,7 @@
           [:div.row
            [:article.hero-title.center-block
             [:div.text-center enterprise-logo]
-            [:h1.text-center "Welcome to CircleCI"]
-            [:h3.text-center "Click below to get started."]]]]]
-        [:div.row.text-center
-         (common/sign-up-cta owner "enterprise-landing")]]))))
+            [:h1.text-center "Welcome to CircleCI"]]]]
+         [:div.row.text-center
+          (common/sign-up-cta owner "enterprise-landing")]]
+        [:div.outer-section]]))))
