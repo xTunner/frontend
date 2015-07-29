@@ -90,7 +90,7 @@
           [:th "Revision"]
           (when show-branch?
             [:th "Branch"])
-          [:th "User"]
+          [:th "Triggered by"]
           [:th "Log"]
           [:th.condense "Started at"]
           [:th.condense "Length"]
