@@ -602,9 +602,10 @@
                                                  :plan plan})
              :ssh-info (om/build build-ssh {:build build :user user}))]])))))
 
+
 (defn link-to-user [build]
   (when-let [user (:user build)]
-    [:a {:href (gh-utils/login-url (:login user))}
+    [:a {:href (github/login-url (:login user))}
      (if (not-empty (:name user))
        (:name user)
        (:login user))]))
@@ -631,9 +632,9 @@
       "first-build" (list user-link " triggered the first build")
       "retry" (list user-link " retried " retry-link)
       "ssh" (list user-link " retried " retry-link " with SSH")
-      "auto-retry" (gstring/format "Auto-retry of build %s " retry-link)
+      "auto-retry" (list "Auto-retry of " retry-link)
       "trigger" (if (:user build)
-                  (gstring/format "%s on CircleCI.com " user-link)
+                  (list user-link " on CircleCI.com")
                   "CircleCI.com")
       (if (:job_name build)
         (:job_name build)
@@ -667,7 +668,7 @@
              [:tbody
               [:tr
                [:th "Why"]
-               [:td (build-model/why-in-words build)]
+               [:td (why-in-words build)]
                [:th "Started"]
                [:td (when (:start_time build)
                       {:title (datetime/full-datetime (:start_time build))})
