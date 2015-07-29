@@ -602,6 +602,43 @@
                                                  :plan plan})
              :ssh-info (om/build build-ssh {:build build :user user}))]])))))
 
+(defn link-to-user [build]
+  (when-let [user (:user build)]
+    [:a {:href (gh-utils/login-url (:login user))}
+     (if (not-empty (:name user))
+       (:name user)
+       (:login user))]))
+
+(defn link-to-commit [build]
+  [:a {:href (:compare build)}
+   (take 7 (:vcs_revision build))])
+
+(defn link-to-retry-source [build]
+  (when-let [retry-id (:retry_of build)]
+    [:a {:href (gstring/format "/gh/%s/%s/%d"
+                               (:username build)
+                               (:reponame build)
+                               retry-id)}
+     retry-id]))
+
+(defn why-in-words [build]
+  (let [user-link (link-to-user build)
+        commit-link (link-to-commit build)
+        retry-link (link-to-retry-source build)]
+    (condp = (:why build)
+      "github" (list user-link " pushed " commit-link)
+      "edit" (list user-link " updated the project settings")
+      "first-build" (list user-link " triggered the first build")
+      "retry" (list user-link " retried " retry-link)
+      "ssh" (list user-link " retried " retry-link " with SSH")
+      "auto-retry" (gstring/format "Auto-retry of %s" retry-link)
+      "trigger" (if (:user build)
+                  (gstring/format "% on CircleCI.com" user-link)
+                  "CircleCI.com")
+      (if (:job_name build)
+        (:job_name build)
+        "unknown"))))
+
 (defn build-head [data owner]
   (reify
     om/IRender
@@ -630,7 +667,7 @@
              [:tbody
               [:tr
                [:th "Why"]
-               [:td (build-model/why-in-words build)]
+               [:td (why-in-words build)]
                [:th "Started"]
                [:td (when (:start_time build)
                       {:title (datetime/full-datetime (:start_time build))})
