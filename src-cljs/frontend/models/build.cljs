@@ -3,6 +3,7 @@
             [frontend.models.project :as proj]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as github]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -132,20 +133,42 @@
         ;; undefined is the default dark blue
         :else "undefined"))
 
+(defn link-to-user [build]
+  (when-let [user (:user build)]
+    [:a {:href (github/login-url (:login user))}
+     (if (not-empty (:name user))
+       (:name user)
+       (:login user))]))
+
+(defn link-to-commit [build]
+  [:a {:href (:compare build)}
+   (take 7 (:vcs_revision build))])
+
+(defn link-to-retry-source [build]
+  (when-let [retry-id (:retry_of build)]
+    [:a {:href (gstring/format "/gh/%s/%s/%d"
+                               (:username build)
+                               (:reponame build)
+                               retry-id)}
+     retry-id]))
+
 (defn why-in-words [build]
-  (condp = (:why build)
-    "github" (str "GitHub push by " (get-in build [:user :login]))
-    "edit" "Edit of the project settings"
-    "first-build" "First build"
-    "retry" (str "Manual retry of build " (:retry_of build))
-    "ssh" (gstring/format "Retry of build %s, with SSH enabled" (:retry_of build))
-    "auto-retry" (gstring/format "Auto-retry of build %s" (:retry_of build))
-    "trigger" (if (:user build)
-                (gstring/format "%s on CircleCI.com" (get-in build [:user :login]))
-                "CircleCI.com")
-    (if (:job_name build)
-      (:job_name build)
-      "unknown")))
+  (let [user-link (link-to-user build)
+        commit-link (link-to-commit build)
+        retry-link (link-to-retry-source build)]
+    (condp = (:why build)
+      "github" (list user-link " pushed " commit-link)
+      "edit" (list user-link " updated the project settings")
+      "first-build" (list user-link " triggered the first build")
+      "retry" (list user-link " retried " retry-link)
+      "ssh" (list user-link " retried " retry-link " with SSH")
+      "auto-retry" (gstring/format "Auto-retry of build %s " retry-link)
+      "trigger" (if (:user build)
+                  (gstring/format "%s on CircleCI.com " user-link)
+                  "CircleCI.com")
+      (if (:job_name build)
+        (:job_name build)
+        "unknown"))))
 
 (defn can-cancel? [build]
   (and (not= "canceled" (:status build))
