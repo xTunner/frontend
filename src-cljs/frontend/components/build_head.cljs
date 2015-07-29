@@ -605,10 +605,8 @@
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
-    [:a {:href (github/login-url (:login user))}
-     (if (not-empty (:name user))
-       (:name user)
-       (:login user))]))
+    [:a {:href (gh-utils/login-url (:login user))}
+     (build-model/ui-user build)]))
 
 (defn link-to-commit [build]
   [:a {:href (:compare build)}
