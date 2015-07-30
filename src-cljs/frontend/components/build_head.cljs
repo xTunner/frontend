@@ -736,9 +736,7 @@
                          (map (fn [url] [:a {:href url} "#"
                                          (let [n (re-find #"/\d+$" url)]
                                            (if n (subs n 1) "?"))])
-                              urls))]))
-               ]
-
+                              urls))]))]
 
             [:tr
              [:th "Author"]
@@ -752,10 +750,7 @@
                         (if-not (:committer_email build)
                           [:span (build-model/committer build)]
                           [:a {:href (str "mailto:" (:committer_email build))}
-                           (build-model/committer build)])]))]
-
-              ]]
-
+                           (build-model/committer build)])]))]]]
 
             [:div.build-actions
              (when (has-scope :write-settings data)
