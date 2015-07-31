@@ -83,8 +83,7 @@ for builds triggered by pull requests from forks:
    Currently we offer streamlined configuration to facilitate deployment to Heroku and 
    CodeDeploy. Any credentials you configure here will not be made available to fork PR builds.
 
-#### CircleCI will only run builds of pull requests from forks for public GitHub repositories by 
-default. 
+#### CircleCI will only run builds of pull requests from forks for public GitHub repositories by default. 
 
 We do this because of the **Checkout keys** issue above; we can't use a generic user key to 
 check out your code for a private repository.
