@@ -104,7 +104,8 @@ documentation has information about the following issues and problems:
 *   [Git errors during a bundle install](/docs/git-bundle-install)
 *   [rake db:schema:load fails](/docs/ruby-exception-during-schema-load)
 *   [CircleCI is running the Ruby commands not specified in the config](/docs/not-specified-ruby-commands)
-*   [CircleCI uses the wrong Ruby version](/docs/wrong-ruby-version)
+*   [CircleCI uses the wrong Ruby
+    version](/docs/not-recognized-ruby-version)
 
 If you are still having trouble, please [contact us](mailto:sayhi@circleci.com)
 and we will be happy to help.

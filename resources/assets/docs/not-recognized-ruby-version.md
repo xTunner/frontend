@@ -1,6 +1,6 @@
 <!--
 
-title: CircleCI uses the wrong Ruby version
+title: CircleCI does not recognize the Ruby version
 last_updated: Feb 3, 2013
 
 -->

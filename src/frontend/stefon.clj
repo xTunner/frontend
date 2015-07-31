@@ -96,6 +96,8 @@
            "docs/missing-file.md"
            "docs/mobile.md"
            "docs/nightly-builds.md"
+           "docs/not-specified-ruby-commands.md"
+           "docs/not-recognized-ruby-version.md"
            "docs/oom.md"
            "docs/parallel-manual-setup.md"
            "docs/parallelism.md"
@@ -131,8 +133,6 @@
            "docs/troubleshooting.md"
            "docs/unusual.md"
            "docs/what-happens.md"
-           "docs/not-specified-ruby-commands.md"
-           "docs/wrong-ruby-version.md"
            "docs/unexpected-rake-errors.md"
            "docs/manifest.json"]
           (map :path hosted-scripts)))

@@ -10,7 +10,7 @@ children:
   - git-bundle-install
   - ruby-exception-during-schema-load
   - not-specified-ruby-commands
-  - wrong-ruby-version
+  - not-recognized-ruby-version
   - unexpected-rake-errors
 -->
 

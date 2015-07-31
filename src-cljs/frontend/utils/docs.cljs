@@ -137,7 +137,7 @@
     "common-problems#time-seconds" "time-seconds"
     "common-problems#requires-admin" "requires-admin"
     "common-problems#oom" "oom"
-    "common-problems#wrong-ruby-version" "wrong-ruby-version"
+    "common-problems#not-recognized-ruby-version" "not-recognized-ruby-version"
     "common-problems#dont-run" "dont-run"
     "common-problems#git-bundle-install" "git-bundle-install"
     "common-problems#git-pip-install" "git-pip-install"
