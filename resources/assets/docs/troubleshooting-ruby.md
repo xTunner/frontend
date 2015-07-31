@@ -9,7 +9,7 @@ children:
   - capybara-timeout
   - git-bundle-install
   - ruby-exception-during-schema-load
-  - wrong-ruby-commands
+  - not-specified-ruby-commands
   - wrong-ruby-version
   - unexpected-rake-errors
 -->

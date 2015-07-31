@@ -141,7 +141,7 @@
     "common-problems#dont-run" "dont-run"
     "common-problems#git-bundle-install" "git-bundle-install"
     "common-problems#git-pip-install" "git-pip-install"
-    "common-problems#wrong-commands" "wrong-commands"
+    "common-problems#not-specified-commands" "not-specified-ruby-commands"
     "common-problems#bundler-latest" "bundler-latest"
     "common-problems#capybara-timeout" "capybara-timeout"
     "common-problems#clojure-12" "clojure-12"
@@ -156,7 +156,7 @@
     "faq#external-resources" "external-resources"
     "faq#cant-follow" "cant-follow"
 
-    "wrong-commands" "wrong-ruby-commands"
+    "wrong-commands" "not-specified-ruby-commands"
     "configure-php" "language-php"
     "reference-api" "api"
     "reference-api#build" "api#build"

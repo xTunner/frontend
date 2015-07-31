@@ -131,7 +131,7 @@
            "docs/troubleshooting.md"
            "docs/unusual.md"
            "docs/what-happens.md"
-           "docs/wrong-ruby-commands.md"
+           "docs/not-specified-ruby-commands.md"
            "docs/wrong-ruby-version.md"
            "docs/unexpected-rake-errors.md"
            "docs/manifest.json"]
