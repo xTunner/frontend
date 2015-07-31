@@ -4,7 +4,7 @@ title: Troubleshooting Ruby
 short_title: Ruby
 children:
   - bundler-latest
-  - rspec-wrong-exit-code
+  - rspec-exit-codes
   - ruby-debugger-problems
   - capybara-timeout
   - git-bundle-install
