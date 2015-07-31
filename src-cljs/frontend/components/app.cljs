@@ -34,6 +34,7 @@
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
+            [frontend.components.signup :as signup]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
             [frontend.state :as state]
@@ -91,6 +92,8 @@
     :ios mobile/ios
     :android mobile/android
 
+    :signup signup/signup
+
     :error errors/error-page))
 
 (defn app* [app owner {:keys [reinstall-om!]}]
@@ -109,7 +112,8 @@
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
-              dom-com (dominant-component app owner)]
+              dom-com (dominant-component app owner)
+              show-header-and-footer? (not= :signup (:navigation-point app))]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -130,10 +134,11 @@
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
-               (om/build header/header app-without-container-data)
+               (when show-header-and-footer?
+                 (om/build header/header app-without-container-data))
                [:div.main-body
                 (om/build dom-com app)]
-               (when (config/footer-enabled?)
+               (when (and show-header-and-footer? (config/footer-enabled?))
                  [:footer.main-foot
                   (footer/footer)])
                (when (and (config/help-tab-enabled?) (not logged-in?))

@@ -163,10 +163,7 @@
             [:div.cta-divider]
             [:div.center-text
              [:a.languages-cta-button
-              {:href (auth-url)
-               :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
-                                                                       :properties {:source (:language template)}
-                                                                       :path (auth-url)}])}
+              {:href "/signup"}
               [:i.fa.fa-github]
               " Sign up with GitHub"]
              [:div.language-cta-trial "14-day free trial"]]]]])))))

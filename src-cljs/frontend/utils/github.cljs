@@ -9,10 +9,10 @@
 (defn http-endpoint []
   (config/github-endpoint))
 
-;; TODO: this behavior was buried in coffeescript.  figure out if it's still what we want.
+;; TODO: except for the addition of signup, this behavior was buried in coffeescript.  figure out if it's still what we want for the rest.
 (defn check-outer-pages
   [url]
-  (if (re-find #"/(docs|about|privacy|pricing|integrations|features|home|mobile)" url)
+  (if (re-find #"/(signup|docs|about|privacy|pricing|integrations|features|home|mobile)" url)
     "/"
     url))
 

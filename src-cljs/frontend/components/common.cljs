@@ -181,11 +181,8 @@
     "Sign Up Free"))
 
 (defn sign-up-cta [owner source]
-  [:a.btn.btn-cta {:href (auth-url)
-                   :role "button"
-                   :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
-                                                                           :properties {:source source}
-                                                                           :path (auth-url)}])}
+  [:a.btn.btn-cta {:href "/signup"
+                   :role "button"}
    (str (sign-up-text))])
 
 (defn feature-icon [name]

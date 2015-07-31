@@ -114,6 +114,7 @@
               #"/pricing"
               #"/privacy"
               #"/press"
+              #"/signup"
               #"/security.*"
               #"/stories.*"]
    :backends {"dev.circlehost" {:proto "http" :host "dev.circlehost:8080"}

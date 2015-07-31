@@ -186,12 +186,9 @@
     (render [_]
       (html
        [:section.home-prolog {:ref "home-prolog"}
-        [:a.home-action {:href (auth-url)
+        [:a.home-action {:href "/signup"
                          :role "button"
                          :ref "prolog-cta"
-                         :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
-                                                                                 :properties {:source "prolog-cta"}
-                                                                                 :path (auth-url)}])
                          :on-mouse-enter #(raise! owner [:prolog-cta-hovered])}
          (str (common/sign-up-text))]
         [:div.home-cover]
@@ -410,12 +407,9 @@
     (render [_]
       (html
        [:section.home-epilog {:ref "home-epilog"}
-        [:a.home-action {:href (auth-url)
+        [:a.home-action {:href "/signup"
                          :ref "epilog-cta"
                          :role "button"
-                         :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
-                                                                                 :properties {:source "epilog-cta"}
-                                                                                 :path (auth-url)}])
                          :on-mouse-enter #(raise! owner [:epilog-cta-hovered])}
          (str (common/sign-up-text))]
         [:div.home-cover]

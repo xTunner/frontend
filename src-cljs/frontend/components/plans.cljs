@@ -45,10 +45,7 @@
                                                              :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])
 
-          [:a {:href (gh-utils/auth-url)
-               :on-click #(raise! owner [:track-external-link-clicked {:path (gh-utils/auth-url)
-                                                                       :event "signup_click"
-                                                                       :properties {:source "pricing-business"}}])}
+          [:a {:href "/signup"}
            [:span "Start 14-day Free Trial"]])]]))))
 
 (def pricing-enterprise
