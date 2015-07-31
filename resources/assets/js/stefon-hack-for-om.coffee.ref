@@ -153,7 +153,7 @@ window.stefon_hack_for_om =
     "/docs/privacy-security.md": '(asset-path "docs/privacy-security.md")'
     "/docs/reference.md": '(asset-path "docs/reference.md")'
     "/docs/requires-admin.md": '(asset-path "docs/requires-admin.md")'
-    "/docs/rspec-wrong-exit-code.md": '(asset-path "docs/rspec-wrong-exit-code.md")'
+    "/docs/rspec-exit-codes.md": '(asset-path "docs/rspec-exit-codes.md")'
     "/docs/ruby-debugger-problems.md": '(asset-path "docs/ruby-debugger-problems.md")'
     "/docs/ruby-exception-during-schema-load.md": '(asset-path "docs/ruby-exception-during-schema-load.md")'
     "/docs/skip-a-build.md": '(asset-path "docs/skip-a-build.md")'

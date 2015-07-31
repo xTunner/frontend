@@ -107,7 +107,7 @@
            "docs/pushing-packages-to-packagecloud.md"
            "docs/reference.md"
            "docs/requires-admin.md"
-           "docs/rspec-wrong-exit-code.md"
+           "docs/rspec-exit-codes.md"
            "docs/ruby-debugger-problems.md"
            "docs/ruby-exception-during-schema-load.md"
            "docs/skip-a-build.md"
