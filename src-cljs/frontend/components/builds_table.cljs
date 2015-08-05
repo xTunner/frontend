@@ -29,9 +29,9 @@
          {:title (build-model/branch-in-words build)
           :href url}
          (-> build build-model/branch-in-words (utils/trim-middle 23))]])
-     [:td.recent-author
+     [:td.recent-user
       [:a
-       {:title (build-model/author build)
+       {:title (build-model/ui-user build)
         :href url}
        (build-model/author build)]]
      [:td.recent-log
@@ -90,7 +90,7 @@
           [:th "Revision"]
           (when show-branch?
             [:th "Branch"])
-          [:th "Author"]
+          [:th "Triggered by"]
           [:th "Log"]
           [:th.condense "Started at"]
           [:th.condense "Length"]

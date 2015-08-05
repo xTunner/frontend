@@ -60,7 +60,7 @@ for builds triggered by pull requests from forks:
    (configured in Project settings > Permissions > Checkout SSH keys)
 
    In normal circumstances, we use either a per project deploy key or a GitHub user key to check 
-   out the code during a build. Deploy keys are read/write keys for the project, while a user
+   out the code during a build. Deploy keys are keys valid for a specific project only, while a user
    key can be used to act as that user on GitHub.
 
    For safe fork PR builds, we use a user key associated with a machine GitHub user that 
@@ -83,8 +83,7 @@ for builds triggered by pull requests from forks:
    Currently we offer streamlined configuration to facilitate deployment to Heroku and 
    CodeDeploy. Any credentials you configure here will not be made available to fork PR builds.
 
-#### CircleCI will only run builds of pull requests from forks for public GitHub repositories by 
-default. 
+#### CircleCI will only run builds of pull requests from forks for public GitHub repositories by default. 
 
 We do this because of the **Checkout keys** issue above; we can't use a generic user key to 
 check out your code for a private repository.
