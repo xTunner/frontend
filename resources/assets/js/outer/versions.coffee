@@ -3,8 +3,8 @@ CI.Versions =
     "#{v} #{CI.Versions[v]}"
 
   Firefox: "38.0"
-  Chrome: "38.0.2125.122"
-  chromedriver: "2.12"
+  Chrome: "43.0.2357.130"
+  chromedriver: "2.16"
 
 
   default_ruby: "1.9.3-p448"
