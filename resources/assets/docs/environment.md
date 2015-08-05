@@ -189,7 +189,7 @@ You can specify the following JVM versions in your `circle.yml` file:
 
 ### Scala
 
-We track <a>http://typesafe.artifactoryonline.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/</a> for recent Scala releases:
+We track <a>http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/</a> for recent Scala releases:
 
 {{ versions.scala_versions | code-list }}
 
