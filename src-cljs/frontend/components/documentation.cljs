@@ -99,7 +99,7 @@
                   (for [result query-results]
                     [:li
                      [:a {:href (:url result)} (:title result)]
-;                     [:p (:snippet_text result)]
+                     [:p {:dangerouslySetInnerHTML {:__html  (:snippet_text result)}}]
                      ])]]
                 query
                 [:p "No articles found matching \"" [:strong query] "\""]
