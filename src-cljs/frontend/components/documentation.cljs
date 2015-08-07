@@ -11,6 +11,8 @@
             [frontend.utils.docs :as doc-utils]
             [goog.dom]
             [goog.string :as gstring]
+            [goog.string.html :as ghtml]
+            goog.string.html.htmlSanitize
             [goog.string.format])
   (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]])
@@ -99,7 +101,7 @@
                   (for [result query-results]
                     [:li
                      [:a {:href (:url result)} (:title result)]
-;                     [:p (:snippet_text result)]
+                     [:p {:dangerouslySetInnerHTML {:__html  (ghtml/htmlSanitize (:snippet_text result))}}]
                      ])]]
                 query
                 [:p "No articles found matching \"" [:strong query] "\""]
