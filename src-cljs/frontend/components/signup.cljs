@@ -9,9 +9,12 @@
     om/IRender
     (render [_]
       (html
+       [:section
         [:div#signup
+         [:h1 "Authorize with GitHub first."]
+         [:h3 "Signup up using your GitHub login"]
          [:a.btn.btn-cta {:href (gh-util/auth-url :destination "/")
                           :on-click #(raise! owner [:track-external-link-clicked
                                                     {:event "signup_click"
                                                      :path (gh-util/auth-url :destination "/")}])}
-          "Authorize with Github"]]))))
+          "Authorize with GitHub"]]]))))
