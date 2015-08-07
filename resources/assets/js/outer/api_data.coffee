@@ -316,7 +316,6 @@ window.circle_api_data =
       response: """
         {
           "author_name": "Allen Rohner",
-          "feature_flags": {},
           "build_url": "https://circleci.com/gh/circleci/mongofinil/54",
           "reponame": "mongofinil",
           "failed": null,
