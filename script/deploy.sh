@@ -11,9 +11,8 @@ fi
 export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
 
 # Distribute built public files and publish the sha1 of this branch.
-dist_tgz=$DEPLOY_S3_BUCKET/dist/$CIRCLE_SHA1.tgz
-tar -cz resources/public/ | aws put --http $dist_tgz
-echo $CIRCLE_SHA1 | aws put --http $DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
+tar -cz resources/public/ | aws s3 cp - s3://$DEPLOY_S3_BUCKET/dist/$CIRCLE_SHA1.tgz
+echo $CIRCLE_SHA1 | aws s3 cp - s3://$DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
 
 # Check for matching branch name on backend or create one from production branch.
 export KEYPATH="$HOME/.ssh/id_frontend-private"
