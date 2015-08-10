@@ -243,6 +243,10 @@
             display: none;
           }
         }
+        &:not(.disabled) + .disabled .insufficient-containers {
+          .translate(0);
+          opacity: 1;
+        }
         > span {
           background: transparent;
           color: @blockColor;
