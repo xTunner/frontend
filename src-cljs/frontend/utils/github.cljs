@@ -24,10 +24,9 @@
         auth-protocol (aget js/window "renderContext" "auth_protocol")
         redirect (-> (str auth-protocol "://" auth-host)
                      (url  "auth/github")
-                     (assoc :query (merge {"CSRFToken" (utils/csrf-token)
-                                           "return-to" (check-outer-pages
-                                                         (str js/window.location.pathname
-                                                              js/window.location.hash))}
+                     (assoc :query (merge {"return-to" (check-outer-pages
+                                                        (str js/window.location.pathname
+                                                             js/window.location.hash))}
                                           (when (not= auth-host js/window.location.host)
                                             {"delegate" js/window.location.host})))
                      (assoc :protocol (or (aget js/window "renderContext" "auth_protocol")
@@ -35,6 +34,7 @@
                      str)]
     (-> (url (http-endpoint) "login/oauth/authorize")
         (assoc :query {"redirect_uri" redirect
+                       "state" (utils/github-csrf-token)
                        "scope" (string/join "," scope)
                        "client_id" (aget js/window "renderContext" "githubClientId")})
         str)))
