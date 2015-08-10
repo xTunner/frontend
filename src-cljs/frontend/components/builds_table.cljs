@@ -26,9 +26,9 @@
      (when show-branch?
        [:td
         [:a
-         {:title (build-model/branch-in-words build)
+         {:title (build-model/vcs-ref-name build)
           :href url}
-         (-> build build-model/branch-in-words (utils/trim-middle 23))]])
+         (-> build build-model/vcs-ref-name (utils/trim-middle 23))]])
      [:td.recent-user
       [:a
        {:title (build-model/ui-user build)
