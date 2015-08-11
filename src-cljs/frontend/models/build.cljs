@@ -22,10 +22,11 @@
   (when (:vcs_revision build)
     (gstring/format "%s/commit/%s" (:vcs_url build) (:vcs_revision build))))
 
-(defn branch-in-words [build]
-  (if-let [branch (:branch build)]
-    (.replace branch (js/RegExp. "^remotes\\/origin\\/") "")
-    "unknown"))
+(defn vcs-ref-name [build]
+  (cond
+    (:branch build) (.replace (:branch build) (js/RegExp. "^remotes\\/origin\\/") "")
+    (:vcs_tag build) (:vcs_tag build)
+    :else "unknown"))
 
 (defn author [build]
   (or (:author_name build) (:author_email build)))
