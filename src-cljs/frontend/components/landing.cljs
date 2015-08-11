@@ -193,15 +193,11 @@
         [:div.home-cover]
         [:div.home-top-shelf]
         [:div.home-slogans
-         [:h1.slogan.proverb {:item-prop "Ship better code, faster."
-                              :alt       "Let's just authorize first."}
+         [:h1.slogan.proverb {:item-prop "Ship better code, faster."}
           "Ship better code, faster."]
-         [:h3.slogan.context {:item-prop "You have a product to focus on, let CircleCI handle your"
-                              :alt       "Signing up using your GitHub login lets us start really fast."}
+         [:h3.slogan.context {:item-prop "You have a product to focus on, let CircleCI handle your"}
           "You have a product to focus on, let CircleCI handle your"]
-         [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."
-                              :alt (when (om/get-shared owner [:ab-tests :mention-github-permissions])
-                                     "Currently, we must request permissions in bulk.")}
+         [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."}
           "Continuous Integration & Deployment."]]
         [:div.home-avatars
          [:div.avatars
@@ -408,22 +404,17 @@
        [:section.home-epilog {:ref "home-epilog"}
         [:a.home-action {:href "/signup"
                          :ref "epilog-cta"
-                         :role "button"
-                         :on-mouse-enter #(raise! owner [:epilog-cta-hovered])}
+                         :role "button"}
          (str (common/sign-up-text))]
         [:div.home-cover]
         [:div.home-top-shelf]
         [:div.home-slogans
-         [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"
-                              :alt       "Let's just authorize first."}
+         [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"}
           "So, ready to ship faster?"]
-         [:h3.slogan.context {:item-prop "Next you'll just need to log in using your GitHub account."
-                              :alt       "Signing up using your GitHub login lets us start really fast."}
+         [:h3.slogan.context {:item-prop "Next you'll just need to log in using your GitHub account."}
           "Next you'll just need to log in using your GitHub account."]
-         [:h3.slogan.context {:item-prop "Still not convinced yet? Check out our pricing."
-                              :alt (when (om/get-shared owner [:ab-tests :mention-github-permissions])
-                                     "Currently, we must request permissions in bulk.")}
-          "Still not convinced yet? Check out our "
+         [:h3.slogan.context {:item-prop "Still not convinced? Check out our pricing."}
+          "Still not convinced? Check out our "
           [:a {:href "pricing"} "pricing"]
           "."]]
         [:div.home-avatars
