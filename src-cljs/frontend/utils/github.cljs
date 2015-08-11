@@ -1,39 +1,14 @@
 (ns frontend.utils.github
   (:require [clojure.string :as string]
             [frontend.config :as config]
-            [frontend.utils :as utils]
             [goog.string :as gstring]
             [goog.string.format]
             [cemerick.url :refer [url]]))
 
-(defn http-endpoint []
-  (config/github-endpoint))
-
-;; TODO: this behavior was buried in coffeescript.  figure out if it's still what we want.
-(defn check-outer-pages
-  [url]
-  (if (re-find #"/(docs|about|privacy|pricing|integrations|features|home|mobile)" url)
-    "/"
-    url))
-
+;; TODO convert CI.github
 (defn auth-url [& {:keys [scope]
                    :or {scope ["user:email" "repo"]}}]
-  (let [auth-host (aget js/window "renderContext" "auth_host")
-        redirect (-> (url auth-host "auth/github")
-                     (assoc :query (merge {"CSRFToken" (utils/csrf-token)
-                                           "return-to" (check-outer-pages
-                                                         (str js/window.location.pathname
-                                                              js/window.location.hash))}
-                                          (when (not= auth-host js/window.location.host)
-                                            {"delegate" js/window.location.host})))
-                     (assoc :protocol (or (aget js/window "renderContext" "auth_protocol")
-                                          "https"))
-                     str)]
-    (-> (url (http-endpoint) "login/oauth/authorize")
-        (assoc :query {"redirect_uri" redirect
-                       "scope" (string/join "," scope)
-                       "client_id" (aget js/window "renderContext" "githubClientId")})
-        str)))
+  (js/CI.github.authUrl (clj->js scope)))
 
 (defn third-party-app-restrictions-url []
   ;; Tried to add (config/github-client-id), but dev.circlehost:3000
@@ -41,6 +16,9 @@
   (str (config/github-endpoint)
        "/settings/connections/applications/"
        (aget js/window "renderContext" "githubClientId")))
+
+(defn http-endpoint []
+  (config/github-endpoint))
 
 (defn login-url [login]
   (str (http-endpoint) "/" login))
