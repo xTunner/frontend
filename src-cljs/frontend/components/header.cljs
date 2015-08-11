@@ -208,8 +208,7 @@
                                       :title "Log In with Github"}
                  "Log In"]]
                [:li
-                [:button.login-link.btn.btn-success.navbar-btn {:href "/signup"
-                                                                :title "Sign up with Github"}
+                [:a.signup-link.btn.btn-success.navbar-btn {:href "/signup"}
                  "Sign Up"]]])]]
           (outer-subheader
             [{:mobile {:path "/mobile"

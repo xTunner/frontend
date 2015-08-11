@@ -188,8 +188,7 @@
        [:section.home-prolog {:ref "home-prolog"}
         [:a.home-action {:href "/signup"
                          :role "button"
-                         :ref "prolog-cta"
-                         :on-mouse-enter #(raise! owner [:prolog-cta-hovered])}
+                         :ref "prolog-cta"}
          (str (common/sign-up-text))]
         [:div.home-cover]
         [:div.home-top-shelf]

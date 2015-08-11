@@ -18,7 +18,7 @@
           [:div.col-md-1]
           [:div.authorize-instructions.col-md-5
            [:h1 "Authorize with GitHub first."]
-           [:p.github-signup-exp "Signup up using your GitHub login helps us start really fast."]
+           [:p.github-signup-exp "Signing up using your GitHub login helps us start really fast."]
            [:h5 (common/ico :check-icon) "Access to email address"]
            [:h5 (common/ico :check-icon) "Read and write access to public repository"]
            [:h5 (common/ico :check-icon) "Read and write access to private repository"]

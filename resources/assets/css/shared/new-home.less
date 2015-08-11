@@ -1,4 +1,3 @@
-
 @bezier_fadein: cubic-bezier(0.445, 0.05, 0.55, 0.95);
 @bezier_transform: cubic-bezier(0.39, 0.575, 0.565, 1);
 
@@ -302,7 +301,6 @@
   .context:nth-of-type(1) { .animation(prolog-up @prolog_open_duration @bezier_fadein (@prolog_open_delay * 1) both); }
   .context:nth-of-type(2) { .animation(prolog-up @prolog_open_duration @bezier_fadein (@prolog_open_delay * 2) both); }
   .home-bottom-shelf      { .animation(prolog-up @prolog_open_duration @bezier_fadein @prolog_open_duration both); }
-  .home-action            { .animation(prolog-action @prolog_open_duration @bezier_fadein); }
 }
 
 .home-prolog {
@@ -487,80 +485,11 @@
   height: @home_action_height;
   border: 1px solid @white;
   border-radius: (@home_action_height / 2);
-  transition+: color @prolog_cover_fadeout;
-  transition+: background @prolog_cover_fadeout;
-  transition+: border-color @prolog_cover_fadeout @prolog_cover_fadeout;
-  transition-timing-function: @bezier_fadein;
   &:hover {
 // Button
     color: @white;
     background: @grayDark;
     border-color: @grayBoxBorder;
-    transition+: color @prolog_cover_fadein @prolog_cover_fadeout;
-    transition+: background @prolog_cover_fadein @prolog_cover_fadeout;
-    transition+: border-color 0ms 0ms;
-// Cover
-    ~ .home-cover {
-      width: 100%;
-      height: 100%;
-      left: 0;
-      top: 0;
-      opacity: 1;
-      border-radius: 0;
-      transition+: width @prolog_cover_fadein;
-      transition+: height @prolog_cover_fadein;
-      transition+: left @prolog_cover_fadein;
-      transition+: top @prolog_cover_fadein;
-      transition+: border-radius (@prolog_cover_fadein / 2);
-      transition+: opacity 0ms;
-    }
-// Logos
-    ~ .home-avatars {
-      i.ico {
-        path {
-          fill: @grayDark;
-          transition: @prolog_cover_fadein;
-        }
-      }
-      .avatar-circle {
-        top: ((@tile / 4) + 10px);
-        left: ((@tile / 4) + 10px);
-        transition: @prolog_cover_fadein;
-      }
-      .avatar-github {
-        opacity: 1;
-        transition: @prolog_cover_fadein @prolog_cover_fadeout;
-      }
-    }
-// Taglines
-    ~ .home-slogans {
-      .proverb {
-        &:before {
-          top: -@prolog_h1_font;
-          opacity: 0;
-          transition: (@prolog_cover_fadein * .3);
-        }
-        &:after {
-          top: 0;
-          opacity: 1;
-          transition: top @prolog_cover_fadein,
-                      opacity @prolog_cover_fadein (@prolog_cover_fadeout * .5);
-        }
-      }
-      .context {
-        &:before {
-          top: -@prolog_h3_line;
-          opacity: 0;
-          transition: (@prolog_cover_fadein * .3);
-        }
-        &:after {
-          top: 0;
-          opacity: 1;
-          transition: top @prolog_cover_fadein,
-                      opacity @prolog_cover_fadein (@prolog_cover_fadeout * .5);
-        }
-      }
-    }
   }
 }
 .home-purpose {
@@ -1140,4 +1069,3 @@
     }
   }
 }
-
