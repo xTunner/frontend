@@ -132,13 +132,12 @@ A more powerful version evenly splits all test files across N nodes. We recommen
 
 i=0
 files=()
-for file in $(find ./test -name "*.py" | sort)
-do
+for testfile in $(find ./test -name "*.py" | sort); do
   if [ $(($i % $CIRCLE_NODE_TOTAL)) -eq $CIRCLE_NODE_INDEX ]
   then
-    files+=" $file"
+    files+=" $testfile"
   fi
-  ((i++))
+  ((i=i+1))
 done
 
 test-runner ${files[@]}

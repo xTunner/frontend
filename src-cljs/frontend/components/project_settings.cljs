@@ -214,7 +214,7 @@
 
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
-               "Not enough containers available."
+               "Not enough containers for " parallelism "x."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})}
                 "Add More"]])

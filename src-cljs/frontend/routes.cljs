@@ -1,11 +1,7 @@
 (ns frontend.routes
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [frontend.async :refer [put!]]
-            [goog.events :as events]
-            [frontend.models.project :as proj-mod]
-            [frontend.utils.docs :as doc-utils]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.config :as config]
             [secretary.core :as sec :include-macros true :refer-macros [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
@@ -119,9 +115,13 @@
     (logout! nav-ch))
 
   (defroute v1-doc "/docs" []
-    (open-to-outer! nav-ch :documentation {}))
+    (if (config/enterprise?)
+      (.replace js/location "https://circleci.com/docs")
+      (open-to-outer! nav-ch :documentation {})))
   (defroute v1-doc-subpage (FragmentRoute. "/docs/:subpage") {:keys [subpage] :as params}
-    (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage))))
+    (if (config/enterprise?)
+      (.replace js/location (str "https://circleci.com/docs/" subpage))
+      (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage)))))
 
   (defroute v1-about (FragmentRoute. "/about") {:as params}
     (open-to-outer! nav-ch :about (assoc params
