@@ -28,7 +28,7 @@
                                        {:event "signup_click"
                                         :path (gh-util/auth-url :destination "/")}])}
             (common/ico :github) "Authorize with GitHub"]]
-          [:div.github-example.col-md-6
+          [:div.github-example.col-md-5
            [:img {:src (stefon/asset-path "/img/outer/signup/github-example.png")}]
            [:p "What you'll see next"]]]
          [:div.row.footer
