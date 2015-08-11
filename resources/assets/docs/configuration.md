@@ -519,6 +519,48 @@ deployment:
       - ./deploy_master.sh
 ```
 
+### Tags
+
+In addition to deploying based on `branch`, you can deploy based on tags.
+
+
+Normally, pushing a tag will not run a build.  If there is a
+deployment configuration with a `tag` property that matches the name
+of the tag you created, we will run the build and the deployment
+section that matches.
+
+[Cutting a release on
+Github](https://help.github.com/articles/creating-releases/) creates a
+tag and follows the same rules.
+
+In the below example, pushing a tag named `release-v1.05` would
+trigger a build & deployment.  Pushing a tag `qa-9502` would not
+trigger a build.
+
+```
+deployment:
+  release:
+    tag: /release-.*/
+    owner: circleci
+    commands:
+      - ./deploy_master.sh
+```
+
+
+Similar to the `branch` property, the `tag` property can be an exact
+string or regex.  It can also be a list of exact matches or regexes.
+
+A popular convention is to create tags like `v1.2.3` for the 1.2.3
+version of your software.  The following regex will implement that
+pattern:
+
+```
+/v[0-9]+(\.[0-9]+)*/
+```
+
+`v1`, `v1.2`, and `v1.2.3` (and so on) all match.
+
+
 ### SSH Keys
 
 If deploying to your servers requires SSH access, you'll need to
