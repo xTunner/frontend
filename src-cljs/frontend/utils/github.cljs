@@ -42,9 +42,6 @@
        "/settings/connections/applications/"
        (aget js/window "renderContext" "githubClientId")))
 
-(defn http-endpoint []
-  (config/github-endpoint))
-
 (defn login-url [login]
   (str (http-endpoint) "/" login))
 
