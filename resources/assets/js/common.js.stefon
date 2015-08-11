@@ -13,6 +13,7 @@
   "module_setup.coffee" ;; necessary, for now
   "libs/asset-path.coffee" ;; Used by docs
   "libs/existing-user-heuristics.coffee"
+  "libs/github.coffee"
   "libs/terminal.coffee"
   "libs/phantomjs-hack.js" ;; previously provided by ko, defines Function.prototype.bind
                            ;; should be able to remove after upgrading om/react
