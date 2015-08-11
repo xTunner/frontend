@@ -1,5 +1,6 @@
 (ns frontend.components.plans
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.models.plan :as plan-model]
@@ -45,7 +46,8 @@
                                                              :description (str "$" price "/month, includes " (pluralize containers "container"))}])}
             "Start Now"])
 
-          [:a {:href "/signup"}
+          [:a {:href "/signup"
+               :on-mouse-up #(analytics/track-signup-click)}
            [:span "Start 14-day Free Trial"]])]]))))
 
 (def pricing-enterprise

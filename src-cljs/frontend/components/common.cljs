@@ -1,5 +1,6 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -183,7 +184,8 @@
 
 (defn sign-up-cta [owner source]
   [:a.btn.btn-cta {:href "/signup"
-                   :role "button"}
+                   :role "button"
+                   :on-mouse-up #(analytics/track-signup-click)}
    (str (sign-up-text))])
 
 (defn feature-icon [name]

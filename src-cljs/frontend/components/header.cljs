@@ -1,6 +1,7 @@
 (ns frontend.components.header
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.config :as config]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
@@ -208,7 +209,7 @@
                                       :title "Log In with Github"}
                  "Log In"]]
                [:li
-                [:a.signup-link.btn.btn-success.navbar-btn {:href "/signup"}
+                [:a.signup-link.btn.btn-success.navbar-btn {:href "/signup" :on-mouse-up #(analytics/track-signup-click)}
                  "Sign Up"]]])]]
           (outer-subheader
             [{:mobile {:path "/mobile"

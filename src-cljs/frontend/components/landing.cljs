@@ -1,6 +1,7 @@
 (ns frontend.components.landing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
@@ -188,7 +189,8 @@
        [:section.home-prolog {:ref "home-prolog"}
         [:a.home-action {:href "/signup"
                          :role "button"
-                         :ref "prolog-cta"}
+                         :ref "prolog-cta"
+                         :on-mouse-up #(analytics/track-signup-click)}
          (str (common/sign-up-text))]
         [:div.home-cover]
         [:div.home-top-shelf]
@@ -404,7 +406,8 @@
        [:section.home-epilog {:ref "home-epilog"}
         [:a.home-action {:href "/signup"
                          :ref "epilog-cta"
-                         :role "button"}
+                         :role "button"
+                         :on-mouse-up #(analytics/track-signup-click)}
          (str (common/sign-up-text))]
         [:div.home-cover]
         [:div.home-top-shelf]

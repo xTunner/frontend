@@ -2,6 +2,7 @@
   (:require [frontend.components.common :as common]
             [frontend.utils.github :as gh-util]
             [frontend.utils :as utils :include-macros true]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.stefon :as stefon]
             [om.core :as om :include-macros true])
@@ -25,7 +26,8 @@
            [:a.btn.btn-cta.authorize-button
             {:href (gh-util/auth-url :destination "/")
              :on-click #(raise! owner [:track-external-link-clicked
-                                       {:event "signup_click"
+                                       {:event "oauth_authorize_click"
+                                        :properties {"oauth_provider" "github"}
                                         :path (gh-util/auth-url :destination "/")}])}
             (common/ico :github) "Authorize with GitHub"]]
           [:div.github-example.col-md-5

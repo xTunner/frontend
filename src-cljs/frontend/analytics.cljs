@@ -170,3 +170,6 @@
                                    (assoc m-choices (str "ab_" (name key)) value))
                                  {} choices)]
     (mixpanel/register-once mixpanel-choices)))
+
+(deftrack track-signup-click []
+  (mixpanel/track "signup_click"))
