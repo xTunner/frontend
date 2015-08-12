@@ -18,8 +18,12 @@
 
 (defn auth-url [& {:keys [scope]
                    :or {scope ["user:email" "repo"]}}]
-  (let [auth-host (aget js/window "renderContext" "auth_host")
-        redirect (-> (url auth-host "auth/github")
+  (let [;; auth-host and auth-protocol indicate the circle host that
+        ;; will handle the oauth redirect
+        auth-host (aget js/window "renderContext" "auth_host")
+        auth-protocol (aget js/window "renderContext" "auth_protocol")
+        redirect (-> (str auth-protocol "://" auth-host)
+                     (url  "auth/github")
                      (assoc :query (merge {"CSRFToken" (utils/csrf-token)
                                            "return-to" (check-outer-pages
                                                          (str js/window.location.pathname
