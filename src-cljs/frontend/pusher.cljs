@@ -20,7 +20,10 @@
      :wsPort (.getPort uri)
      :wssPort (.getPort uri)
      :encrypted (= "wss" (.getScheme uri))
-     :enabledTransports ["ws"]}))
+     :enabledTransports ["ws"]
+
+     ;; If using a custom endpoint - don't send connection stats to pusher
+     :disableStats true}))
 
 (defn pusher-object-config [config]
   (as-> config c
