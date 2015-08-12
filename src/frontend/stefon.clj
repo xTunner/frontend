@@ -1,7 +1,9 @@
 (ns frontend.stefon)
 
 (def hosted-scripts [{:path "js/hosted/intercom2.js"
-                      :url "https://widget.intercom.io/widget/vnk4oztr"}])
+                      :url "https://widget.intercom.io/widget/vnk4oztr"}
+                     {:path "js/hosted/pusher.min.js"
+                      :url "https://js.pusher.com/2.2/pusher.min.js"}])
 
 (def asset-roots ["resources/assets"])
 
