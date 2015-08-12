@@ -48,10 +48,10 @@
             total-cost (max (* (dec container-count) 50) 0)]
         (html
           [:div#pricing.page {:on-mouse-up #(om/set-state! owner :dragging? false)
-                              :on-mouse-down #(when dragging?
-                                                (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))
-                              :on-mouse-move #(when dragging?
-                                                (om/set-state! owner :drag-percent (calculate-drag-percent owner %)))}
+                              :on-mouse-move #(if (zero? (.-buttons %))
+                                                (om/set-state! owner :dragging? false)
+                                                (when dragging?
+                                                  (om/set-state! owner :drag-percent (calculate-drag-percent owner %))))}
            [:div.jumbotron
             common/language-background-jumbotron
             [:section.container
