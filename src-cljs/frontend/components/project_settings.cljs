@@ -1,6 +1,7 @@
 (ns frontend.components.project-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
@@ -216,7 +217,8 @@
               [:div.insufficient-containers
                "Not enough containers for " parallelism "x."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                           :subpage "containers"})}
+                                                           :subpage "containers"})
+                    :on-click #(analytics/track "add-more-containers-clicked" {})}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial

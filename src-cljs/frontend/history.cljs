@@ -94,7 +94,6 @@
                                  (= (.. js/window -location -hostname)
                                     (.-hostname target))
                                  (not (or (new-window-click? %) (= (.-target target) "_blank"))))
-                        (.stopPropagation %)
                         (.preventDefault %)
                         (if (and (route-fragment location)
                                  (path-matches? (.getToken history-imp) new-token))

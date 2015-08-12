@@ -161,6 +161,9 @@
 (deftrack managed-track [event properties]
   (mixpanel/managed-track event properties))
 
+(deftrack track [event properties]
+  (mixpanel/track event properties))
+
 (deftrack track-test-stack [tab]
   (mixpanel/track "Test Stack" {:tab (name tab)}))
 
