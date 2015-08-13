@@ -25,38 +25,64 @@
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)]
         (html
-         (cond (nil? builds) [:div.loading-spinner-big common/spinner]
-              (and (empty? builds)
-                   projects
-                   (empty? projects)) [:div
-                                       [:h2 "You don't have any projects in CircleCI!"]
-                                       [:p "Why don't you add a repository or two on the "
-                                        [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
-              :else
-              [:div.dashboard
-               (when (and plan (project-common/show-trial-notice? project plan))
-                 [:div.container-fluid
-                  [:div.row
-                   [:div.col-xs-12
-                    (om/build project-common/trial-notice current-project)]]])
+         (cond (nil? builds)
+               [:div.loading-spinner-big common/spinner]
 
-               (when (plan-model/suspended? plan)
-                 (om/build project-common/suspended-notice plan))
+               (and (empty? builds)
+                    projects
+                    (empty? projects))
+               [:div
+                [:h2 "You don't have any projects in CircleCI!"]
+                [:p "Why don't you add a repository or two on the "
+                 [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
 
-               (om/build builds-table/builds-table builds {:opts {:show-actions? false
-                                                                  :show-branch? (not (:branch nav-data))
-                                                                  :show-project? (not (:repo nav-data))}})
-               [:div.recent-builds-pager
-                [:a
-                 {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))
-                  ;; no newer builds if you're on the first page
-                  :class (when (zero? page) "disabled")}
-                 [:i.fa.fa-long-arrow-left]
-                 [:span " Newer builds"]]
-                [:a
-                 {:href (routes/v1-dashboard-path (assoc nav-data :page (inc page)))
-                  ;; no older builds if you have less builds on the page than an
-                  ;; API call returns
-                  :class (when (> builds-per-page (count builds)) "disabled")}
-                 [:span "Older builds "]
-                 [:i.fa.fa-long-arrow-right]]]]))))))
+               :else
+               [:div.dashboard
+                [:.build-diagnostics
+                 [:.diagnostics-header
+                  [:.icon
+                   [:i.fa.fa-tachometer]]
+                  [:.body
+                   [:span.title "Build Diagnostics"]
+                   "You have "
+                   [:a "23 repos"]
+                   " that could be faster."]
+                  [:div
+                   [:i.fa.fa-chevron-down]]]
+                 [:ul.diagnostics
+                  [:li
+                   [:.icon
+                    [:i.fa.fa-clock-o]]
+                   [:.body
+                    [:b.repo-name "karldotter/pairup"]
+                    " could be faster because average queue times is "
+                    [:b.time "10 minutes"]
+                    "."]
+                   [:div
+                    [:a "Add More Containers"]]]]]
+                (when (and plan (project-common/show-trial-notice? project plan))
+                      [:div.container-fluid
+                       [:div.row
+                        [:div.col-xs-12
+                         (om/build project-common/trial-notice current-project)]]])
+
+                (when (plan-model/suspended? plan)
+                  (om/build project-common/suspended-notice plan))
+
+                (om/build builds-table/builds-table builds {:opts {:show-actions? false
+                                                                   :show-branch? (not (:branch nav-data))
+                                                                   :show-project? (not (:repo nav-data))}})
+                [:div.recent-builds-pager
+                 [:a
+                  {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))
+                   ;; no newer builds if you're on the first page
+                   :class (when (zero? page) "disabled")}
+                  [:i.fa.fa-long-arrow-left]
+                  [:span " Newer builds"]]
+                 [:a
+                  {:href (routes/v1-dashboard-path (assoc nav-data :page (inc page)))
+                   ;; no older builds if you have less builds on the page than an
+                   ;; API call returns
+                   :class (when (> builds-per-page (count builds)) "disabled")}
+                  [:span "Older builds "]
+                  [:i.fa.fa-long-arrow-right]]]]))))))
