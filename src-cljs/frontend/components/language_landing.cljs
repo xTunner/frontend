@@ -1,6 +1,7 @@
 (ns frontend.components.language-landing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.plans :as plans-component]
@@ -163,10 +164,8 @@
             [:div.cta-divider]
             [:div.center-text
              [:a.languages-cta-button
-              {:href (auth-url)
-               :on-click #(raise! owner [:track-external-link-clicked {:event "signup_click"
-                                                                       :properties {:source (:language template)}
-                                                                       :path (auth-url)}])}
+              {:href "/signup"
+               :on-mouse-up #(analytics/track-signup-click)}
               [:i.fa.fa-github]
               " Sign up with GitHub"]
              [:div.language-cta-trial "14-day free trial"]]]]])))))

@@ -231,7 +231,10 @@
   (defroute v1-press (FragmentRoute. "/press") {:as params}
     (open-to-outer! nav-ch :press (assoc params
                                          :_title "Press Releases and Updates"
-                                         :_description "Find the latest CircleCI news and updates here."))))
+                                         :_description "Find the latest CircleCI news and updates here.")))
+
+  (defroute v1-signup (FragmentRoute. "/signup") {:as params}
+    (open-to-outer! nav-ch :signup params)))
 
 (defn define-spec-routes! [nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]

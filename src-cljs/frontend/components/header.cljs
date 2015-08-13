@@ -1,6 +1,7 @@
 (ns frontend.components.header
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.config :as config]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
@@ -208,34 +209,32 @@
                                       :title "Log In with Github"}
                  "Log In"]]
                [:li
-                [:button.login-link.btn.btn-success.navbar-btn {:href (auth-url)
-                                                     :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "signup_click" :properties {:source "header sign-up" :url js/window.location.pathname}}])
-                                                     :title "Sign up with Github"}
+                [:a.signup-link.btn.btn-success.navbar-btn {:href "/signup" :on-mouse-up #(analytics/track-signup-click)}
                  "Sign Up"]]])]]
           (outer-subheader
-           [{:mobile {:path "/mobile"
+            [{:mobile {:path "/mobile"
                        :title "Mobile"}
               :ios {:path "/mobile/ios"
                     :title "iOS"}
               :android {:path "/mobile/android"
                         :title "Android"}}
-            {:about {:path "/about"
-                     :title "Overview"}
-             :team {:path "/about/team"
-                    :title "Team"}
-             :contact {:path "/contact"
-                       :title "Contact Us"}
-             :jobs {:path "/jobs"
-                    :title "Jobs"}
-             :press {:path "/press"
-                     :title "Press"}}
-            {:enterprise {:path "/enterprise"
-                          :title "Overview"}
-             :azure {:path "/enterprise/azure"
-                     :title "Azure"}
-             :aws {:path "/enterprise/aws"
-                   :title "AWS"}}]
-           nav-point)])))))
+             {:about {:path "/about"
+                      :title "Overview"}
+              :team {:path "/about/team"
+                     :title "Team"}
+              :contact {:path "/contact"
+                        :title "Contact Us"}
+              :jobs {:path "/jobs"
+                     :title "Jobs"}
+              :press {:path "/press"
+                      :title "Press"}}
+             {:enterprise {:path "/enterprise"
+                           :title "Overview"}
+              :azure {:path "/enterprise/azure"
+                      :title "Azure"}
+              :aws {:path "/enterprise/aws"
+                    :title "AWS"}}]
+            nav-point)])))))
 
 (defn inner-header [app owner]
   (reify
