@@ -135,13 +135,27 @@
     .status {
       .icon_style(transparent, @activity_ico);
       i.ico {
-        &.busy-light svg {stroke: @blueLight;}
-        &.pass-light svg {stroke: @green;}
-        &.fail-light svg {stroke: @redLight;}
-        &.hold-light svg {stroke: @gray;}
-        &.stop-light svg {stroke: @orange;}
-        &.none-light svg {stroke: @white;}
-        [class$="-light"] {stroke-width: 10;}
+        &.busy-light svg {
+          stroke: @blueLight;
+        }
+        &.pass-light svg {
+          stroke: @green;
+        }
+        &.fail-light svg {
+          stroke: @redLight;
+        }
+        &.hold-light svg {
+          stroke: @gray;
+        }
+        &.stop-light svg {
+          stroke: @orange;
+        }
+        &.none-light svg {
+          stroke: @white;
+        }
+        [class$="-light"] {
+          stroke-width: 10;
+        }
       }
     }
     .project {
