@@ -112,8 +112,9 @@
 (defn ico [ico-name]
   (let [template (get ico-templates ico-name)]
     (html
-     [:i {:class (str "ico "(name ico-name))}
-      [:svg {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"}
+     [:i {:class "ico"}
+      [:svg {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
+             :class (name ico-name)}
        (for [path (:paths template)]
          (html [:path {:class (name path) :d (get ico-paths path)}]))]])))
 

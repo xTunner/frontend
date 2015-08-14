@@ -134,27 +134,15 @@
     }
     .status {
       .icon_style(transparent, @activity_ico);
-      i.ico {
-        &.busy-light svg {
-          stroke: @blueLight;
-        }
-        &.pass-light svg {
-          stroke: @green;
-        }
-        &.fail-light svg {
-          stroke: @redLight;
-        }
-        &.hold-light svg {
-          stroke: @gray;
-        }
-        &.stop-light svg {
-          stroke: @orange;
-        }
-        &.none-light svg {
-          stroke: @white;
-        }
-        [class$="-light"] {
-          stroke-width: 10;
+      i {
+        &.ico {
+          .busy-light {stroke: @blueLight;}
+          .pass-light {stroke: @green;}
+          .fail-light {stroke: @redLight;}
+          .hold-light {stroke: @gray;}
+          .stop-light {stroke: @orange;}
+          .none-light {stroke: @white;}
+          [class$="-light"] {stroke-width: 10;}
         }
       }
     }
@@ -351,16 +339,20 @@
         height: @em *2;
         padding: 5px; // got this from trial and error
         &:hover {
-          .ico.repo > svg {
-            fill: @linkColorHover;
+          .ico {
+            .repo {
+              fill: @linkColorHover;
+            }
           }
         }
         .ico {
           width: 100%;
           height: 100%;
         }
-        .ico.repo > svg {
-          fill: @grayDark;
+        .ico {
+          .repo {
+            fill: @grayDark;
+          }
         }
       }
       &.title {
