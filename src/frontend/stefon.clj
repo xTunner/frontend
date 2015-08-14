@@ -97,7 +97,7 @@
            "docs/mobile.md"
            "docs/nightly-builds.md"
            "docs/not-specified-ruby-commands.md"
-           "docs/not-recognized-ruby-version.md"
+           "docs/unrecognized-ruby-version.md"
            "docs/oom.md"
            "docs/parallel-manual-setup.md"
            "docs/parallelism.md"

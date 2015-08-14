@@ -137,7 +137,7 @@
     "common-problems#time-seconds" "time-seconds"
     "common-problems#requires-admin" "requires-admin"
     "common-problems#oom" "oom"
-    "common-problems#not-recognized-ruby-version" "not-recognized-ruby-version"
+    "common-problems#wrong-ruby-version" "unrecognized-ruby-version"
     "common-problems#dont-run" "dont-run"
     "common-problems#git-bundle-install" "git-bundle-install"
     "common-problems#git-pip-install" "git-pip-install"
@@ -157,6 +157,10 @@
     "faq#cant-follow" "cant-follow"
 
     "wrong-commands" "not-specified-ruby-commands"
+    "wrong-ruby-version" "unrecognized-ruby-version"
+    "not-recognized-ruby-version" "unrecognized-ruby-version"
+    "rspec-wrong-exit-code" "rspec-exit-codes"
+
     "configure-php" "language-php"
     "reference-api" "api"
     "reference-api#build" "api#build"
