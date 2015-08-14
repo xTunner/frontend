@@ -54,7 +54,7 @@ limit the JVM’s usage of memory by declaring the limits in the
 ```
 machine:
   environment:
-    JAVA_OPTS: "-Xms256m -Xmx512m"
+    _JAVA_OPTIONS: "-Xms512m -Xmx1024m"
 ```
 
 Note that you might want to use larger numbers depending on the other
