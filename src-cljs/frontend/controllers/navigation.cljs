@@ -101,8 +101,8 @@
                                                      :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
               scopes (:scopes api-resp)
-              _ (mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
               comms (get-in current-state [:comms])]
+          (mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
           (condp = (:status api-resp)
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
             :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
