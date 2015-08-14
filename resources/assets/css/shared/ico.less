@@ -5,24 +5,24 @@ i {
       width: @baseFontSize;
       height: @baseFontSize;
       // &.busy-light,
-      &.spinner {
-        .animation(clockwise 600ms infinite linear);
-      }
-      &.spinner {
-        .animation-bezier(0.42, 0, 0.58, 1);
-      }
       fill: none;
     }
-    .ico-logo {
+
+    &.spinner svg {
+      .animation(clockwise 600ms infinite linear);
+      .animation-bezier(0.42, 0, 0.58, 1);
+      fill: @grayLightest;
+    }
+    &.ico-logo svg {
       fill: @blueDark;
     }
-    .ico-pass {
+    &.ico-pass svg {
       fill: @green;
     }
-    .ico-fail {
+    &.ico-fail svg {
       fill: @redLight;
     }
-    .ico-queued {
+    &.ico-queued svg {
       fill: @grayLight;
     }
     .slim_circle {
