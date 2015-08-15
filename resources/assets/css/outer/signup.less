@@ -6,32 +6,29 @@
         margin-top: 0;
     }
 
+    .authorize-instructions {
+        i.ico {
+            margin-right: 10px;
+        }
+    }
+
     i.ico {
 
         display: inline;
-        &.check-icon {
-            margin-right: 10px;
-
-            svg {
-                height: 15px;
-                width: 20px;
-                stroke: #292;
-                fill: #292;
-                stroke-width: 1;
-            }
+        .check-icon {
+            height: 15px;
+            width: 20px;
+            stroke: #292;
+            fill: #292;
+            stroke-width: 1;
         }
 
-        &.github {
-            svg {
-                width: 20px;
-                height: 20px;
-                fill: white;
-                stroke: white;
-                stroke-width: 1;
-            }
-            position: relative;
-            left: -9px;
-            top: -2px;
+        .github {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            stroke: white;
+            stroke-width: 1;
         }
     }
 
@@ -46,10 +43,16 @@
         height: 50px;
         width: 250px;
 
+        i.ico {
+            position: relative;
+            left: -9px;
+            top: -2px;
+        }
+
         span {
             position: relative;
             top: -5px;
-            left: -2px;
+            left: -9px;
             font-size: 18px;
         }
     }
