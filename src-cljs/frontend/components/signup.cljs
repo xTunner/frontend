@@ -19,10 +19,7 @@
           [:div.col-md-1]
           [:div.authorize-instructions.col-md-5
            [:h1 "Authorize with GitHub first."]
-           [:p.github-signup-exp "Signing up using your GitHub login helps us start really fast."]
-           [:h5 (common/ico :check-icon) "Access to email address"]
-           [:h5 (common/ico :check-icon) "Read and write access to public repository"]
-           [:h5 (common/ico :check-icon) "Read and write access to private repository"]
+           [:p.github-signup-exp "Signing up using your GitHub login helps you start quickly."]
            [:a.btn.btn-cta.authorize-button
             {:href (gh-util/auth-url :destination "/")
              :on-click #(raise! owner [:track-external-link-clicked
