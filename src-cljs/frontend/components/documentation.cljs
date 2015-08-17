@@ -52,7 +52,6 @@
       (let [query (get-in app state/docs-search-path)]
         (html
          [:form.doc-search
-          [:i.fa.fa-search]
           [:input.form-control#searchQuery
            {:type "text"
             :auto-complete "off"
@@ -97,6 +96,7 @@
                (cond
                 (seq query-results)
                 [:div
+                 (when query [:p.articles-query "Articles matching \""query"\""])
                  [:ul.article-list
                   (for [result query-results]
                     [:li

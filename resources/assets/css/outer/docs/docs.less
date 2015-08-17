@@ -27,19 +27,20 @@
     }
 
     width: @aside-width;
+    min-width: 320px;
     -webkit-flex-grow: 0;
     -webkit-flex-shrink: 0;
     flex-grow: 0;
     flex-shrink: 0;
 
-    padding: 20px 70px 70px 70px;
+    padding: 20px;
 
     border-right: 1px solid @panel-default-border;
     background-color: @aside-bg;
 
     .nav li {
       & > a:hover, & > a:focus {
-	background: none;
+        background: none;
       }
     }
   }
@@ -47,7 +48,8 @@
   .article-container {
     max-width: 1400px;
     width: 100%;
-    padding: 0 50px;
+
+    padding: 0 40px;
   }
 
   article {
@@ -60,19 +62,23 @@
 
     .markdown {
       li {
-	margin: 10px 0;
+        margin: 10px 0;
       }
       pre {
-	margin: 30px 0;
+        margin: 30px 0;
       }
 
       p {
-	margin-bottom: 20px;
+        margin-bottom: 20px;
       }
       iframe {
-	margin-bottom: 20px;
+        margin-bottom: 20px;
       }
     }
+  }
+
+  .articles-query {
+      color: @gray-darker;
   }
 
   .article-list {
@@ -89,23 +95,17 @@
     @input-width: 100%;
     @dropdown-padding: 10px;
 
-    margin: 20px 0;
+    margin: 40px 0;
     position: relative;
 
     input {
       width: @input-width;
       margin: 0;
-      padding-left: @search-left-padding;
-    }
-
-    i.fa.fa-search {
-      position: absolute;
-      padding: 10px;
-      margin-left: 5px;
-      font-size: 25px;
-      color: #ddd;
-      // TODO: Get <input> to use bootstrap/variables, then use @input-border-color here
-
+      border-color: #99bcdb;
+      box-shadow: 0 0 0 3px #cbddec !important;
+      transition-duration: 200ms;
+      color: @gray-dark;
+      font-size: 16px;
     }
 
     .typeahead {
@@ -114,7 +114,7 @@
       left: @search-left-padding - @dropdown-padding !important;
       right: @search-left-padding - @dropdown-padding !important;;
       a {
-	padding-left: @dropdown-padding;
+        padding-left: @dropdown-padding;
       }
     }
   }
