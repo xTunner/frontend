@@ -52,7 +52,6 @@
       (let [query (get-in app state/docs-search-path)]
         (html
          [:form.doc-search
-          [:i.fa.fa-search]
           [:input.form-control#searchQuery
            {:type "text"
             :auto-complete "off"
@@ -97,11 +96,12 @@
                (cond
                 (seq query-results)
                 [:div
+                 (when query [:p.articles-query "Articles matching \""query"\""])
                  [:ul.article-list
                   (for [result query-results]
                     [:li
                      [:a {:href (:url result)} (:title result)]
-                     [:p {:dangerouslySetInnerHTML {:__html  (ghtml/htmlSanitize (:snippet_text result))}}]
+                     [:p {:dangerouslySetInnerHTML {:__html  (str (ghtml/htmlSanitize (:snippet_text result))"&hellip;")}}]
                      ])]]
                 query
                 [:p "No articles found matching \"" [:strong query] "\""]
