@@ -108,7 +108,7 @@
          [:div.col-sm-6
           [:div.telephone-info
            "Or call "
-           [:a.telephone-number {:href "tel:+14158515247"} "415.851.5247"]
+           [:a.telephone-number {:href "tel:+14155800944"} "415.580.0944"]
            " for an Enterprise quote."]]]]]
       (om/build contact-form/transitionable-height
                 {:class "notice"
