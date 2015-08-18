@@ -85,3 +85,9 @@
 
 (defn can-read-settings? [project]
   (-> project :scopes :read-settings))
+
+(defn feature-flags [project]
+  (:feature_flags project))
+
+(defn feature-enabled? [project feature]
+  (get-in project [:feature_flags :oss]))
