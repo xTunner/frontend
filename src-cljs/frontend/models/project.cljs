@@ -90,4 +90,4 @@
   (:feature_flags project))
 
 (defn feature-enabled? [project feature]
-  (get-in project [:feature_flags :oss]))
+  (get-in project [:feature_flags feature]))
