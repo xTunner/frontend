@@ -107,17 +107,23 @@
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
             :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
             (put! (:errors comms) [:api-error api-resp]))
-          (when (and (:repo args) (:read-settings scopes))
+          (when (:repo args)
             (ajax/ajax :get
-                       (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
-                       :project-settings
+                       (gstring/format "/api/v1/project/%s/%s/build-diagnostics" (:org args) (:repo args))
+                       :project-build-diagnostics
                        api-ch
                        :context {:project-name (str (:org args) "/" (:repo args))})
-            (ajax/ajax :get
-                       (gstring/format "/api/v1/project/%s/%s/plan" (:org args) (:repo args))
-                       :project-plan
-                       api-ch
-                       :context {:project-name (str (:org args) "/" (:repo args))})))))
+            (when (:read-settings scopes)
+              (ajax/ajax :get
+                         (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
+                         :project-settings
+                         api-ch
+                         :context {:project-name (str (:org args) "/" (:repo args))})
+              (ajax/ajax :get
+                         (gstring/format "/api/v1/project/%s/%s/plan" (:org args) (:repo args))
+                         :project-plan
+                         api-ch
+                         :context {:project-name (str (:org args) "/" (:repo args))}))))))
   (analytics/track-dashboard)
   (set-page-title!))
 

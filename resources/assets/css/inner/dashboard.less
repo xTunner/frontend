@@ -15,7 +15,7 @@
 }
 
 .build-diagnostics {
-  > .diagnostics-header, > .diagnostics li {
+  > .diagnostics-header, .diagnostics > li {
     .flexy();
     padding: 10px 15px;
     box-shadow: inset 0px -1px rgba(0, 0, 0, 0.05);
@@ -57,9 +57,25 @@
     }
   }
 
-  > .diagnostics {
+  .diagnostics {
     padding: 0;
     list-style: none;
+    overflow: hidden;
+    max-height: 10000px;
+
+    // Wait for the chevron to turn before revealing.
+    transition: max-height 1ms .2s;
+  }
+
+  &.collapsed {
+    .diagnostics {
+      max-height: 0;
+      transition: none;
+    }
+
+    .fa.fa-chevron-down {
+      .rotate(180);
+    }
   }
 }
 

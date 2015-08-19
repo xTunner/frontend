@@ -44,6 +44,7 @@
                     :org nil}
    :current-project-data {:project nil
                           :plan nil
+                          :build-diagnostics nil
                           :settings {}
                           :tokens nil
                           :checkout-keys nil
@@ -104,6 +105,7 @@
 
 (def project-data-path [:current-project-data])
 (def project-plan-path (conj project-data-path :plan))
+(def project-build-diagnostics-path (conj project-data-path :build-diagnostics))
 (def project-tokens-path (conj project-data-path :tokens))
 (def project-checkout-keys-path (conj project-data-path :checkout-keys))
 (def project-envvars-path (conj project-data-path :envvars))
