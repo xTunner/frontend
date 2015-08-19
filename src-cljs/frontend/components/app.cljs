@@ -122,7 +122,7 @@
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
-                                       (when (feature/enabled-in-query-string? :perfect) ["future-perfect"])
+                                       (when (feature/enabled? :perfect) ["future-perfect"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
                                        (when (= :landing (:navigation-point app)) ["landing"])
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))}
