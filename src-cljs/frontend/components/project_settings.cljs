@@ -4,6 +4,7 @@
             [frontend.analytics :as analytics]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
@@ -346,7 +347,7 @@
             project-id (project-model/id project)
             project-name (vcs-url/project-name (:vcs_url project))
             ;; This project's feature flags
-            feature-flags (:feature_flags project)
+            feature-flags (project-model/feature-flags project)
             describe-flag (fn [{:keys [flag title blurb]}]
                             (when (contains? (set (keys feature-flags)) flag)
                               [:li
@@ -690,7 +691,7 @@
 
 (defn status-badges [project-data owner]
   (let [project (:project project-data)
-        oss (get-in project [:feature_flags :oss])
+        oss (feature/enabled-for-project? project :oss)
         ;; Get branch selection or the empty string for the default branch.
         branches (branch-names project-data)
         branch (get-in project-data [:status-badges :branch])

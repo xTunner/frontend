@@ -11,3 +11,4 @@ goog.require('frontend.utils_test');
 goog.require('frontend.controllers.controls_test');
 goog.require('frontend.controllers.ws_test');
 goog.require('frontend.models.test_plan');
+goog.require('frontend.models.test_feature');

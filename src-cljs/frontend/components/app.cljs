@@ -37,6 +37,7 @@
             [frontend.components.signup :as signup]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
+            [frontend.models.feature :as feature]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
@@ -121,6 +122,7 @@
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
+                                       (when (feature/enabled? :ui-v2) ["ui-v2"])
                                        ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
                                        (when (= :landing (:navigation-point app)) ["landing"])
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))}

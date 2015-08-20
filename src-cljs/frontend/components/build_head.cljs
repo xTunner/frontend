@@ -5,6 +5,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
+            [frontend.models.feature :as feature]
             [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -547,7 +548,7 @@
 
             ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
-                       (not (get-in project [:feature_flags :osx])))
+                       (not (feature/enabled-for-project? project :osx)))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
                [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
                 "Debug via SSH"]])
@@ -780,7 +781,7 @@
                   "without cache"])
 
                 ;; XXX Temporarily remove the ssh button for OSX builds
-                (when (not (get-in project [:feature_flags :osx]))
+                (when (not (feature/enabled-for-project? project :osx))
                   (forms/managed-button
                    [:button.ssh_build
                     {:data-loading-text "Rebuilding",
