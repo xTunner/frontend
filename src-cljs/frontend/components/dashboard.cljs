@@ -1,5 +1,6 @@
 (ns frontend.components.dashboard
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
@@ -11,50 +12,50 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn build-diagnostics [{:keys [diagnostics project]} owner]
+(defn build-diagnostics [{:keys [data project]} owner]
   (reify
     om/IDisplayName (display-name [_] "Build Diagnostics")
-    om/IInitState
-    (init-state [_]
-      {:collapsed? false})
-    om/IRenderState
-    (render-state [_ {:keys [collapsed?]}]
-      (if (empty? diagnostics)
-        nil
-        (html
-         [:.build-diagnostics
-          {:class (when collapsed? "collapsed")}
-          [:.diagnostics-header
-           {:on-click #(om/update-state! owner :collapsed? not)}
-           [:.icon
-            [:i.fa.fa-tachometer]]
-           [:.body
-            [:span.title "Build Diagnostics"]
-            "Tired of waiting for your builds to start?"]
-           [:div
-            [:i.fa.fa-chevron-down]]]
-          [:ul.diagnostics
-           (for [diagnostic diagnostics
-                 ;; When we have more than one type of diagnostic, we should
-                 ;; switch on :type, perhaps with a multimethod. For now, we
-                 ;; filter for the only :type we know of.
-                 :when (= "long-usage-queue" (:type diagnostic))]
-             [:li
-              [:.icon
-               [:i.fa.fa-clock-o]]
-              [:.body
-               [:b.repo-name (project-model/project-name project)]
-               " could be faster because its average queue time is "
-               [:b.time (-> diagnostic
-                            :avg_usage_queue_wait_ms
-                            (/ 60000)
-                            Math/round) " minutes"]
-               "."]
-              [:div
-               [:a {:href (routes/v1-project-settings-subpage {:org (:username project)
-                                                               :repo (:reponame project)
-                                                               :subpage "parallel-builds"})}
-                "Add More Containers"]]])]])))))
+    om/IRender
+    (render [_]
+      (let [diagnostics (get-in data state/project-build-diagnostics-path)
+            project-id-hash (utils/md5 (project-model/id project))
+            collapsed? (get-in data (state/project-build-diagnostics-collapsed-path project-id-hash))]
+        (if (empty? diagnostics)
+          nil
+          (html
+           [:.build-diagnostics
+            {:class (when collapsed? "collapsed")}
+            [:.diagnostics-header
+             {:on-click #(raise! owner [:collapse-build-diagnostics-toggled {:project-id-hash project-id-hash}])}
+             [:.icon
+              [:i.fa.fa-tachometer]]
+             [:.body
+              [:span.title "Build Diagnostics"]
+              "Tired of waiting for your builds to start?"]
+             [:div
+              [:i.fa.fa-chevron-down]]]
+            [:ul.diagnostics
+             (for [diagnostic diagnostics
+                   ;; When we have more than one type of diagnostic, we should
+                   ;; switch on :type, perhaps with a multimethod. For now, we
+                   ;; filter for the only :type we know of.
+                   :when (= "long-usage-queue" (:type diagnostic))]
+               [:li
+                [:.icon
+                 [:i.fa.fa-clock-o]]
+                [:.body
+                 [:b.repo-name (project-model/project-name project)]
+                 " could be faster because its average queue time is "
+                 [:b.time (-> diagnostic
+                              :avg_usage_queue_wait_ms
+                              (/ 60000)
+                              Math/floor) " minutes"]
+                 "."]
+                [:div
+                 [:a {:href (routes/v1-project-settings-subpage {:org (:username project)
+                                                                 :repo (:reponame project)
+                                                                 :subpage "parallel-builds"})}
+                  "Add More Containers"]]])]]))))))
 (defn dashboard [data owner]
   (reify
     om/IDisplayName (display-name [_] "Dashboard")
@@ -82,8 +83,8 @@
 
                :else
                [:div.dashboard
-                (om/build build-diagnostics {:diagnostics (get-in data state/project-build-diagnostics-path)
-                                             :project project})
+                (when project
+                  (om/build build-diagnostics {:data data :project project}))
                 (when (and plan (project-common/show-trial-notice? project plan))
                   [:div.container-fluid
                    [:div.row
