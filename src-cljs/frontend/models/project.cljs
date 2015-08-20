@@ -20,10 +20,13 @@
 (defn default-branch? [branch-name project]
   (= (name branch-name) (:default_branch project)))
 
+(defn- personal-branch-helper [project login branch pushers]
+  (or (default-branch? branch project)
+      (some #{login} pushers)))
+
 (defn personal-branch? [user project branch-data]
   (let [[branch-name build-info] branch-data]
-    (or (default-branch? branch-name project)
-        (some #{(:login user)} (:pusher_logins build-info)))))
+    (personal-branch-helper project (:login user) branch-name (:pusher_logins build-info))))
 
 (defn branch-builds [project branch-name-kw]
   (let [build-data (get-in project [:branches branch-name-kw])]
@@ -61,6 +64,32 @@
           l-last-build -1
           r-last-build 1
           :else (compare (lower-case (:vcs_url l)) (lower-case (:vcs_url r))))))
+
+(defn most-recent-activity-time [{:as branch-data :keys [running_builds recent_builds]}]
+  (let [running (:added-at (first running_builds))
+        complete (:added-at (first recent_builds))]
+    (or running complete)))
+
+(defn project->project-per-branch [project]
+  (map
+   (fn [[branch branch-data]]
+     (-> project
+         (assoc :current-branch branch)
+         (assoc :pusher_logins (:pusher_logins branch-data))
+         (assoc :recent-activity-time (js/Date.parse (most-recent-activity-time branch-data)))
+         (update :branches select-keys [branch])))
+   (:branches project)))
+
+(defn sort-branches-by-recency [projects]
+  (->> projects
+      (mapcat project->project-per-branch)
+      (sort-by :recent-activity-time >)))
+
+(defn personal-recent-project? [login recent-project]
+  (personal-branch-helper recent-project
+                          login
+                          (:current-branch recent-project)
+                          (:pusher_logins recent-project)))
 
 (defn id [project]
   (:vcs_url project))
