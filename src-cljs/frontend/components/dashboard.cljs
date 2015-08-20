@@ -1,5 +1,6 @@
 (ns frontend.components.dashboard
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -52,9 +53,9 @@
                               Math/floor) " minutes"]
                  "."]
                 [:div
-                 [:a {:href (routes/v1-project-settings-subpage {:org (:username project)
-                                                                 :repo (:reponame project)
-                                                                 :subpage "parallel-builds"})}
+                 [:a {:href (routes/v1-org-settings-subpage {:org (:username project)
+                                                             :subpage "containers"})
+                      :on-click #(analytics/track "build-diagnostics-add-more-containers-clicked")}
                   "Add More Containers"]]])]]))))))
 (defn dashboard [data owner]
   (reify

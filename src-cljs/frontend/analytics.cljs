@@ -112,26 +112,30 @@
 (deftrack track-unfollow-repo []
   (google/track-event "Repos" "Remove"))
 
-(defmulti tracking-properties (fn [message state] message))
-(defmethod tracking-properties :default [_ _] {})
+(defmulti tracking-properties (fn [message args state] message))
+(defmethod tracking-properties :default [_ _ _] {})
 
 (def ignored-control-messages #{:edited-input :toggled-input :clear-inputs})
 
-(deftrack track-message [message state]
+(deftrack track-message [message args state]
   (when-not (contains? ignored-control-messages message)
     (mixpanel/track (name message)
-                    (tracking-properties message state))))
+                    (tracking-properties message args state))))
 
 (defn page-properties []
   {:url  js/location.href
    :title js/document.title})
 
-(defmethod tracking-properties :intercom-dialog-raised [_ state]
+(defmethod tracking-properties :intercom-dialog-raised [_ args state]
   (page-properties))
 
-(defmethod tracking-properties :report-build-clicked [_ state]
+(defmethod tracking-properties :report-build-clicked [_ args state]
   (merge (page-properties)
          (build-properties (get-in @state state/build-path))))
+
+(defmethod tracking-properties :collapse-build-diagnostics-toggled [_ {:keys [project-id-hash]} state]
+  ;; Include whether the toggle collapsed the build diagnostics (true) or to expanded them (false).
+  {:collapsed (get-in @state (state/project-build-diagnostics-collapsed-path project-id-hash))})
 
 (deftrack track-view-page [zone]
   (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
@@ -161,8 +165,15 @@
 (deftrack managed-track [event properties]
   (mixpanel/managed-track event properties))
 
-(deftrack track [event properties]
+(deftrack track* [event properties]
   (mixpanel/track event properties))
+
+(defn track
+  "Simple passthrough to mixpanel/track. Defined in terms of track* because
+  deftrack doesn't handle multiple arities, and can't without a whole lot of
+  effort."
+  ([event] (track* event {}))
+  ([event properties] (track* event properties)))
 
 (deftrack track-test-stack [tab]
   (mixpanel/track "Test Stack" {:tab (name tab)}))

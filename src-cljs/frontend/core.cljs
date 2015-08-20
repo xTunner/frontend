@@ -119,7 +119,7 @@
      (let [previous-state @state]
        (swap! state (partial controls-con/control-event container (first value) (second value)))
        (controls-con/post-control-event! container (first value) (second value) previous-state @state)))
-   (analytics/track-message (first value) state)))
+   (analytics/track-message (first value) (second value) state)))
 
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
@@ -292,7 +292,7 @@
           (fn []
             ;; this matches the :intercom-dialog-raised control event
             ;; raised by the Support aside
-            (analytics/track-message "intercom-dialog-raised" state)))))
+            (analytics/track-message {} "intercom-dialog-raised" state)))))
      5000)))
 
 (defn ^:export setup! []
