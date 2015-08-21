@@ -1,4 +1,7 @@
 @aside_menu_width: (@tile * 3);
+
+@new_aside_menu_width: 285px;
+
 @aside_nav_width: @tile;
 
 @em: @baseFontSize;
@@ -19,6 +22,11 @@
     transition: margin @aside_transition_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   }
+
+  .app-main.new-app-main-margin {
+    margin-left: @aside_nav_width + @new_aside_menu_width;
+  }
+
   .app-aside-left.menuless + .app-main {
     margin-left: @aside_nav_width;
   }
@@ -60,6 +68,13 @@
   .flexy(column);
   height: 100vh;
 }
+
+.aside-left-menu.new-aside-left-menu-width {
+  width: @new_aside_menu_width;
+  .flex(0 0 @new_aside_menu_width);
+}
+
+
 .aside-left-menu {
   .flex(0 0 @aside_menu_width);
   width: @aside_menu_width;
@@ -70,20 +85,22 @@
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   header {
     .box-sizing(border-box);
-    .flex(0 0 auto);
-    .flexy(center, space-between);
     height: @tile;
     border-bottom: solid 1px @grayBoxBorder;
     padding: @em 0;
     position: relative;
+    display: block;
+    width: 100%;
 
     .toggle-sorting {
         float: left;
+        display: inline-block;
         padding-left: @em;
     }
     .toggle-all-branches {
         float: right;
         padding-right: @em;
+        display: inline-block;
     }
 
     select {
@@ -102,7 +119,8 @@
       }
     }
     .select-arrow {
-      .flexy();
+      display: inline-block;
+      margin-left: 10px;
       color: @blacken;
       text-align: center;
       pointer-events: none;

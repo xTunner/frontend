@@ -6,6 +6,7 @@
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
             [frontend.routes :as routes]
@@ -258,6 +259,10 @@
         branch (:current-branch project)]
     (utils/md5 (str project-id branch))))
 
+(def aside-width 210)
+(def new-aside-width 285)
+
+
 (defn branch-activity-list [app owner opts]
   (reify
     om/IRender
@@ -272,7 +277,10 @@
                                      identity)]
         (html
          [:div.aside-activity.open
-          [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
+          [:div.wrapper {:style {:width (str (+ (if (feature/enabled? :new-aside-menu-width)
+                                                  new-aside-width
+                                                  aside-width)
+                                                (om/get-state owner :scrollbar-width)) "px")}}
            [:header
             [:select {:name "toggle-sorting"
                       :on-change #(raise! owner [:sort-branches-toggled
@@ -323,7 +331,10 @@
     om/IRender
     (render [_]
       (html
-       [:nav.aside-left-menu
+       [:nav
+        {:class [(when (feature/enabled? :new-aside-menu-width)
+                   "new-aside-left-menu-width")
+                 "aside-left-menu"]}
         (om/build branch-activity-list app {:opts {:login (:login opts)}})
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
