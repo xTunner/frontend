@@ -219,7 +219,7 @@
                "Not enough containers for " parallelism "x."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})
-                    :on-click #(analytics/track "add-more-containers-clicked" {})}
+                    :on-click #(analytics/track "add-more-containers-clicked")}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial

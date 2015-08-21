@@ -44,6 +44,7 @@
                     :org nil}
    :current-project-data {:project nil
                           :plan nil
+                          :build-diagnostics nil
                           :settings {}
                           :tokens nil
                           :checkout-keys nil
@@ -104,6 +105,7 @@
 
 (def project-data-path [:current-project-data])
 (def project-plan-path (conj project-data-path :plan))
+(def project-build-diagnostics-path (conj project-data-path :build-diagnostics))
 (def project-tokens-path (conj project-data-path :tokens))
 (def project-checkout-keys-path (conj project-data-path :checkout-keys))
 (def project-envvars-path (conj project-data-path :envvars))
@@ -166,6 +168,7 @@
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
+(defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 
 (def account-subpage-path [:account-settings-subpage])
