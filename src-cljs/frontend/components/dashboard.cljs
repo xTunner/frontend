@@ -7,6 +7,7 @@
             [frontend.components.project.common :as project-common]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -85,7 +86,8 @@
 
                :else
                [:div.dashboard
-                (when project
+                (when (and (feature/enabled? :build-diagnostics)
+                           project)
                   (om/build build-diagnostics {:data data :project project}))
                 (when (and plan (project-common/show-trial-notice? project plan))
                   [:div.container-fluid
