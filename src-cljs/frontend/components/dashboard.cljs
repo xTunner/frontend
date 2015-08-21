@@ -57,6 +57,7 @@
                                                              :subpage "containers"})
                       :on-click #(analytics/track "build-diagnostics-add-more-containers-clicked")}
                   "Add More Containers"]]])]]))))))
+
 (defn dashboard [data owner]
   (reify
     om/IDisplayName (display-name [_] "Dashboard")
