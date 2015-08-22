@@ -36,13 +36,16 @@
   (-> (get-in-cookie feature)
       feature-flag-value-true?))
 
-(defn enable-in-cookie [feature]
+;; export so we can set this using javascript in production
+(defn ^:export enable-in-cookie [feature]
   (cookies/set (feature-flag-key-name feature) "true"))
 
-(defn disable-in-cookie [feature]
+;; export so we can set this using javascript in production
+(defn ^:export disable-in-cookie [feature]
   (cookies/set (feature-flag-key-name feature) "false"))
 
-(defn enabled?
+;; export so we can set this using javascript in production
+(defn ^:export enabled?
   "If a feature is enabled or disabled in the query string, use that
   value, otherwise look in a cookie for the feature. Returns false by
   default."
