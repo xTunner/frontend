@@ -55,10 +55,11 @@
 
 (defn wrap-handler [handler options]
   (fn [req]
-    (if (some #(re-matches % (:uri req)) (:patterns options))
-      (with-channel req channel
-        (request (proxy-request req options)
-                 (fn [response]
-                   (let [rewrite (if (:error response) rewrite-error rewrite-success)]
-                     (send! channel (rewrite response))))))
-      (handler req))))
+    (let [local-response (handler req)]
+      (if (not= 404 (:status local-response))
+        local-response
+        (with-channel req channel
+          (request (proxy-request req options)
+                   (fn [response]
+                     (let [rewrite (if (:error response) rewrite-error rewrite-success)]
+                       (send! channel (rewrite response))))))))))

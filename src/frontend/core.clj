@@ -81,43 +81,7 @@
   ;; Incomplete lists of routes to proxy. Unfortunately duplicated knowledge between
   ;; here and various places in the backend. Ultimately, this will get cleaned up
   ;; once we have production web servers separate from backend API servers.
-  {:patterns [;; These are owned by the backend. Add to this list if you expect
-              ;; the backend to handle these routes without frontend codebase help.
-              #"/api/.*"
-              #"/auth/.*"
-              #"/cc\.xml"
-              #"/changelog\.rss"
-              #"/logout"
-              ;; These bootstrap the frontend.  Add to this list if you expect
-              ;; the backend to serve HTML to bootstrap the client-side code.
-              #"/"
-              #"/about"
-              #"/about/contact"
-              #"/contact"
-              #"/about/team"
-              #"/account.*"
-              #"/add-projects"
-              #"/changelog.*"
-              #"(?!^/docs/manifest-dev\.json$)^/docs.*$"
-              #"/autocomplete.*"
-              #"/search-articles.*"
-              #"/mobile.*"
-              #"/enterprise.*"
-              #"/features"
-              #"/features.*"
-              #"/gh/.*"
-              #"/home"
-              #"/integrations.*"
-              #"/invite-teammates"
-              #"/jobs"
-              #"/mobile"
-              #"/pricing"
-              #"/privacy"
-              #"/press"
-              #"/signup"
-              #"/security.*"
-              #"/stories.*"]
-   :backends {"dev.circlehost" {:proto "http" :host "dev.circlehost:8080"}
+  {:backends {"dev.circlehost" {:proto "http" :host "dev.circlehost:8080"}
               "prod.circlehost" {:proto "https" :host "circleci.com"}
               "staging.circlehost" {:proto "https" :host "staging.circleci.com"}}})
 
