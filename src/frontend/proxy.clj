@@ -3,8 +3,9 @@
             [org.httpkit.server :refer [with-channel send!]]
             [org.httpkit.client :refer [request]]))
 
-(defn proxy-request [req {:keys [backends] :as options}]
-  (let [backend (get backends (:server-name req))]
+(defn proxy-request [req {:keys [backends backends-fallback] :as options}]
+  (let [backend (or (get backends (:server-name req))
+                    (backends-fallback (:server-name req)))]
     (assert backend)
     {:url (str (:proto backend) "://"
                (:host backend)

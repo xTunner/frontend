@@ -77,13 +77,21 @@
 
 (def port 3000)
 
+(defn backend-fallback
+  "helper for finding appropriate backend, assumes that the `*.circlehost` prefix
+  matches the DNS for env on circleci.com"
+  [server-name]
+  (when-let [env (second (re-matches #"(.*).circlehost" server-name))]
+    {:proto "https" :host (format "%s.circleci.com" env)}))
+
 (def proxy-config
   ;; Incomplete lists of routes to proxy. Unfortunately duplicated knowledge between
   ;; here and various places in the backend. Ultimately, this will get cleaned up
   ;; once we have production web servers separate from backend API servers.
   {:backends {"dev.circlehost" {:proto "http" :host "dev.circlehost:8080"}
               "prod.circlehost" {:proto "https" :host "circleci.com"}
-              "staging.circlehost" {:proto "https" :host "staging.circleci.com"}}})
+              "staging.circlehost" {:proto "https" :host "staging.circleci.com"}}
+   :backends-fallback backend-fallback})
 
 (defn start-server []
   (stop-server)
