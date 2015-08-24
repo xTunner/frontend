@@ -56,11 +56,14 @@
 
 (defn wrap-handler [handler options]
   (fn [req]
-    (let [local-response (handler req)]
-      (if (not= 404 (:status local-response))
-        local-response
+    (or (when (and (contains? #{:get :head} (:request-method req))
+                   (nil? (:body req)))
+          ;; local frontend doesn't really handle POSTs and avoid consuming request body
+          (let [local-response (handler req)]
+            (when (not= 404 (:status local-response))
+              local-response)))
         (with-channel req channel
           (request (proxy-request req options)
                    (fn [response]
                      (let [rewrite (if (:error response) rewrite-error rewrite-success)]
-                       (send! channel (rewrite response))))))))))
+                       (send! channel (rewrite response)))))))))
