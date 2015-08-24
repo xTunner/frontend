@@ -373,6 +373,7 @@
    [:ul
     [:li "For an inferred ruby test command, simply add the necessary "
      [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "formatter gem"]]
+    [:li "Python should work automatically, except for django you'll need to " [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "use django-nose"] "."]
     [:li "For another inferred test runner that you'd like us to add metadata support for, "
      [:a (common/contact-support-a-info owner)
       "let us know"] "."]
