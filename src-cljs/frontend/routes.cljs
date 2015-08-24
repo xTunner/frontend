@@ -46,7 +46,10 @@
                                             :subpage nil}))
   (defroute v1-admin-fleet-state "/admin/fleet-state" []
     (open-to-inner! nav-ch :admin-settings {:admin true
-                                            :subpage :fleet-state})))
+                                            :subpage :fleet-state}))
+  (defroute v1-admin-license "/admin/license" []
+    (open-to-inner! nav-ch :admin-settings {:admin true
+                                            :subpage :license})))
 
 
 ;; Creates a route that will ignore fragments and add them to params as {:_fragment "#fragment"}
