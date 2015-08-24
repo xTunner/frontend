@@ -3,14 +3,19 @@
             [org.httpkit.server :refer [with-channel send!]]
             [org.httpkit.client :refer [request]]))
 
-(defn proxy-request [req {:keys [backends] :as options}]
-  (let [backend (get backends (:server-name req))]
+(defn query-string-with-om-build-id [req]
+  (cond
+    (:query-string req) (str "?om-build-id=dev&" (:query-string req))
+    (= :get (:request-method req)) "?om-build-id=dev"
+    :else nil))
+
+(defn proxy-request [req {:keys [backend-lookup-fn] :as options}]
+  (let [backend (backend-lookup-fn req)]
     (assert backend)
     {:url (str (:proto backend) "://"
                (:host backend)
                (:uri req)
-               (when-let [q (:query-string req)]
-                 (str "?" q)))
+               (query-string-with-om-build-id req))
      :timeout 30000 ;ms
      :method (:request-method req)
      :headers (assoc (:headers req)
@@ -55,10 +60,14 @@
 
 (defn wrap-handler [handler options]
   (fn [req]
-    (if (some #(re-matches % (:uri req)) (:patterns options))
-      (with-channel req channel
-        (request (proxy-request req options)
-                 (fn [response]
-                   (let [rewrite (if (:error response) rewrite-error rewrite-success)]
-                     (send! channel (rewrite response))))))
-      (handler req))))
+    (or (when (and (contains? #{:get :head} (:request-method req))
+                   (nil? (:body req)))
+          ;; local frontend doesn't really handle POSTs and avoid consuming request body
+          (let [local-response (handler req)]
+            (when (not= 404 (:status local-response))
+              local-response)))
+        (with-channel req channel
+          (request (proxy-request req options)
+                   (fn [response]
+                     (let [rewrite (if (:error response) rewrite-error rewrite-success)]
+                       (send! channel (rewrite response)))))))))
