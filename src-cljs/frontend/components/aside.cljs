@@ -193,7 +193,8 @@
 (defn admin-settings-nav-items [data owner]
   (let [navigation-data (:navigation-data data)]
     [{:type :subpage :href "/admin" :title "Overview" :subpage nil}
-     {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}]))
+     {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
+     {:type :subpage :href "/admin/license" :title "License" :subpage :license}]))
 
 (defn admin-settings-menu [app owner]
   (reify

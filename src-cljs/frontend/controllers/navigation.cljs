@@ -521,4 +521,8 @@
   (when (= :fleet-state subpage)
     (let [api-ch (get-in current-state [:comms :api])]
       (api/get-fleet-state api-ch))
-    (set-page-title! "Fleet State")))
+    (set-page-title! "Fleet State"))
+  (when (= :license subpage)
+    (let [api-ch (get-in current-state [:comms :api])]
+      (api/get-license api-ch))
+    (set-page-title! "License")))

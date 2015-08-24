@@ -190,6 +190,8 @@
 
 (def fleet-state-path [:fleet-state])
 
+(def license-path [:license])
+
 (def error-message-path [:error-message])
 
 (def inputs-path [:inputs])

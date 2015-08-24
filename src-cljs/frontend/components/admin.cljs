@@ -105,6 +105,22 @@
                  [:td "No available masters"]])]])])))))
 
 
+(defn license [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "License Info")
+    om/IRender
+    (render [_]
+      (html
+        [:section {:style {:padding-left "10px"}}
+         [:h1 "License Info"]
+         (let [license (get-in app state/license-path)]
+           (if-not license
+             [:div.loading-spinner common/spinner]
+             (list
+              [:p "License Type: " [:b (:type license)]]
+              [:p "License Status: " [:b (:status license)]]
+              [:p "Expiry date: " [:b (datetime/medium-date (:expiry_date license))]])))]))))
+
 (defn admin-settings [app owner]
   (reify
     om/IRender
@@ -116,4 +132,5 @@
              [:div#subpage
               (case subpage
                 :fleet-state (om/build fleet-state app)
+                :license (om/build license app)
                 (om/build overview app))]]])))))
