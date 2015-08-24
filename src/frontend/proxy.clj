@@ -3,6 +3,12 @@
             [org.httpkit.server :refer [with-channel send!]]
             [org.httpkit.client :refer [request]]))
 
+(defn query-string-with-om-build-id [req]
+  (cond
+    (:query-string req) (str "?om-build-id=dev&" (:query-string req))
+    (= :get (:request-method req)) "?om-build-id=dev"
+    :else nil))
+
 (defn proxy-request [req {:keys [backends backends-fallback] :as options}]
   (let [backend (or (get backends (:server-name req))
                     (backends-fallback (:server-name req)))]
@@ -10,8 +16,7 @@
     {:url (str (:proto backend) "://"
                (:host backend)
                (:uri req)
-               (when-let [q (:query-string req)]
-                 (str "?" q)))
+               (query-string-with-om-build-id req))
      :timeout 30000 ;ms
      :method (:request-method req)
      :headers (assoc (:headers req)
