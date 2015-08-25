@@ -74,41 +74,59 @@
     .flexy(center, space-between);
     height: @tile;
     border-bottom: solid 1px @grayBoxBorder;
-    padding: @em;
+    padding: @em 0;
     position: relative;
+
+    .toggle-sorting {
+        float: left;
+        padding-left: @em;
+    }
+    .toggle-all-branches {
+        float: right;
+        padding-right: @em;
+    }
+
     select {
       .box-sizing(content-box);
-      color: @blacken;
+      color: @grayDark;
       -webkit-appearance: none; // gets rid of ugly shadow in safari
       -moz-appearance: none; // gets rid of extra arrow in FF
       border: none;
       outline: none;
-      margin: 0 (-@tile / 2) 0 0;
-      padding: @em 0 @em @em;
+      margin: 0 0 0 @em;
+      padding: @em 0 @em 0;
       height: @em;
       line-height: @em;
       &:hover {
-        color: @blueLight;
-        + .select-arrow {
-          color: @blueLight;
-        }
+        cursor: pointer;
       }
     }
     .select-arrow {
       .flexy();
       color: @blacken;
       text-align: center;
-      position: absolute;
-      width: @em;
-      height: @em;
-      top: 28px;
-      right: 28px;
       pointer-events: none;
-      i {
-        width: @em;
-        line-height: round(@em * .9);
-      }
     }
+
+    input[type=radio] {
+        display: none;
+        &:checked + label {
+            background-color: rgba(0,0,0, 0.1);
+            border-radius: 3px;
+        }
+    }
+
+    label.radio {
+        display: inline-block;
+        font-weight: normal;
+        color: @grayDark;
+        margin-left: 10px;
+        width: 40px;
+        text-align: center;
+        height: @activity_line;
+        line-height: @activity_line;
+    }
+
   }
   .aside-activity {
     color: @grayLight;
@@ -316,7 +334,7 @@
       }
     }
     &:not(:first-of-type) {
-      margin: 0 1em;
+      margin: 0 @em;
     }
   }
   .project {
@@ -416,6 +434,14 @@
         padding-left: round((@activity_line - @activity_ico) / 2);
       }
     }
+  }
+  .when {
+    .flexy(left, flex-start);
+    height: @activity_line;
+    line-height: @activity_line;
+    font-family: @monoFontFamily;
+    font-size: @fontSizeMini;
+    color: @grayLight;
   }
 }
 .aside-user {

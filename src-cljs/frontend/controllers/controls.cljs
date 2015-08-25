@@ -109,10 +109,14 @@
   [target message value state]
   (assoc-in state state/show-all-branches-path value))
 
+(defmethod control-event :sort-branches-toggled
+  [target message value state]
+  (assoc-in state state/sort-branches-by-recency-path value))
+
 (defmethod control-event :collapse-branches-toggled
-  [target message {:keys [project-id project-id-hash]} state]
+  [target message {:keys [collapse-group-id]} state]
   ;; Lets us store this in localstorage without leaking info about the user
-  (update-in state (state/project-branches-collapsed-path project-id-hash) not))
+  (update-in state (state/project-branches-collapsed-path collapse-group-id) not))
 
 (defmethod control-event :collapse-build-diagnostics-toggled
   [target message {:keys [project-id-hash]} state]

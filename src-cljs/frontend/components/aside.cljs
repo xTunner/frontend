@@ -4,6 +4,7 @@
             [frontend.components.common :as common]
             [frontend.components.shared :as shared]
             [frontend.config :as config]
+            [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
@@ -77,13 +78,9 @@
     om/IRender
     (render [_]
       (let [login (:login opts)
-            project (:project data)
-            settings (:settings data)
-            project-id (project-model/id project)
-            ;; lets us store collapse branches in localstorage without leaking info
-            project-id-hash (utils/md5 project-id)
+            {:keys [project settings collapse-group-id show-activity-time?]} data
             show-all-branches? (get-in data state/show-all-branches-path)
-            collapse-branches? (get-in data (state/project-branches-collapsed-path project-id-hash))
+            collapse-branches? (get-in data (state/project-branches-collapsed-path collapse-group-id))
             vcs-url (:vcs_url project)
             org (vcs-url/org-name vcs-url)
             repo (vcs-url/repo-name vcs-url)
@@ -93,8 +90,7 @@
           [:li
            [:div.project {:role "button"}
             [:a.toggle {:title "show/hide"
-                        :on-click #(raise! owner [:collapse-branches-toggled {:project-id project-id
-                                                                              :project-id-hash project-id-hash}])}
+                        :on-click #(raise! owner [:collapse-branches-toggled {:collapse-group-id collapse-group-id}])}
              (common/ico :repo)]
 
             [:a.title {:href (routes/v1-project-dashboard {:org org
@@ -113,11 +109,17 @@
                                    (filter branches-filter)
                                    ;; alphabetize
                                    (sort-by first))]
-              (om/build branch
-                        {:branch-data branch-data
-                         :org org
-                         :repo repo}
-                        {:react-key (first branch-data)})))])))))
+              (list
+               (om/build branch
+                         {:branch-data branch-data
+                          :org org
+                          :repo repo}
+                         {:react-key (first branch-data)})
+               (when show-activity-time?
+                 [:li.when
+                  (om/build common/updating-duration
+                            {:start (project-model/most-recent-activity-time (second branch-data))}
+                            {:opts {:formatter datetime/time-ago}})]))))])))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -248,29 +250,69 @@
           [:div.aside-user-options
            (expand-menu-items items subpage)]])))))
 
+(defn collapse-group-id [project]
+  "Computes a hash of the project id.  Includes the :current-branch if
+  available.  The hashing is performed because this data is stored on
+  the client side and we don't want to leak data"
+  (let [project-id (project-model/id project)
+        branch (:current-branch project)]
+    (utils/md5 (str project-id branch))))
+
 (defn branch-activity-list [app owner opts]
   (reify
     om/IRender
     (render [_]
       (let [show-all-branches? (get-in app state/show-all-branches-path)
+            sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path)
             projects (get-in app state/projects-path)
-            settings (get-in app state/settings-path)]
+            settings (get-in app state/settings-path)
+            recent-projects-filter (if (and sort-branches-by-recency?
+                                            (not show-all-branches?))
+                                     (partial project-model/personal-recent-project? (:login opts))
+                                     identity)]
         (html
          [:div.aside-activity.open
           [:div.wrapper {:style {:width (str (+ 210 (om/get-state owner :scrollbar-width)) "px")}}
            [:header
-            [:select {:name "toggle-all-branches"
-                      :on-change #(raise! owner [:show-all-branches-toggled
+            [:select {:name "toggle-sorting"
+                      :on-change #(raise! owner [:sort-branches-toggled
                                                  (utils/parse-uri-bool (.. % -target -value))])
-                      :value show-all-branches?}
-             [:option {:value false} "Your Branch Activity"]
-             [:option {:value true} "All Branch Activity" ]]
-            [:div.select-arrow [:i.fa.fa-caret-down]]]
-           (for [project (sort project-model/sidebar-sort projects)]
+                      :value sort-branches-by-recency?}
+             [:option {:value false} "By Repo"]
+             [:option {:value true} "Recent" ]]
+            [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/dropdown-arrow.svg")}]]
+
+            [:div.toggle-all-branches
+             [:input {:id "my-branches"
+                      :name "toggle-all-branches"
+                      :type "radio"
+                      :value "false"
+                      :checked (not show-all-branches?)
+                      :react-key "toggle-all-branches-my-branches"
+                      :on-change #(raise! owner [:show-all-branches-toggled false])}]
+             [:label.radio {:for "my-branches"}
+              "Mine"]
+             [:input {:id "all-branches"
+                      :name "toggle-all-branches"
+                      :type "radio"
+                      :value "true"
+                      :checked show-all-branches?
+                      :react-key "toggle-all-branches-all-branches"
+                      :on-change #(raise! owner [:show-all-branches-toggled true])}]
+             [:label.radio {:for "all-branches"}
+              "All"]]]
+           (for [project (if sort-branches-by-recency?
+                           (->> projects
+                                project-model/sort-branches-by-recency
+                                (filter recent-projects-filter)
+                                (take 100))
+                           (sort project-model/sidebar-sort projects))]
              (om/build project-aside
                        {:project project
-                        :settings settings}
-                       {:react-key (project-model/id project)
+                        :settings settings
+                        :collapse-group-id (collapse-group-id project)
+                        :show-activity-time? sort-branches-by-recency?}
+                       {:react-key (collapse-group-id project)
                         :opts {:login (:login opts)}}))]])))))
 
 (defn aside-menu [app owner opts]
