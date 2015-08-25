@@ -137,6 +137,16 @@
                                     set ;; careful not to add the same message twice
                                     (clojure.set/union new-messages)))))))
 
+(defmethod post-ws-event! :build/test-results
+  [pusher-imp message {:keys [data channel-name]} state]
+  ;; this event forces a fetch on all of the test results, which is a little weird.
+  ;; but test results are large and we can't fit them all in pusher messages,
+  ;; and we get them all at once anyway.
+  [pusher-imp message {:keys [data channel-name]} state]
+  (let [build (get-in state state/build-path)]
+    (with-swallow-ignored-build-channels state channel-name
+      (let [api-chan (get-in state [:comms :api])]
+        (api/get-build-tests build api-chan)))))
 
 (defmethod post-ws-event! :subscribe
   [pusher-imp message {:keys [channel-name messages context]} previous-state current-state]
