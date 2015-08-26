@@ -76,14 +76,23 @@
      (-> project
          (assoc :current-branch branch)
          (assoc :pusher_logins (:pusher_logins branch-data))
-         (assoc :recent-activity-time (js/Date.parse (most-recent-activity-time branch-data)))
+         (assoc :recent-activity-time (if-let [time (most-recent-activity-time branch-data)]
+                                        (js/Date.parse time)
+                                        :not-built))
          (update :branches select-keys [branch])))
    (:branches project)))
+
+(defn recent-project-was-built? [recent-project]
+  (not= :not-built (:recent-activity-time recent-project)))
 
 (defn sort-branches-by-recency [projects]
   (->> projects
       (mapcat project->project-per-branch)
-      (sort-by :recent-activity-time >)))
+      (filter recent-project-was-built?)
+      (sort-by :recent-activity-time (fn [a b]
+                                       (compare b a)))))
+
+
 
 (defn personal-recent-project? [login recent-project]
   (personal-branch-helper recent-project
