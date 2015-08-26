@@ -93,10 +93,10 @@ and `libwebkit (2.2.1-1ubuntu4)` pre-installed, for Capybara and other headless 
 
 Xvfb runs on port 99, and the appropriate `DISPLAY` environment variable has already been set.
 
-Selenium-based tests are able to use Chrome stable channel
-(Chrome {{ versions.Chrome }} with chromedriver {{ versions.chromedriver }}
-as of October, 2014), and Firefox {{ versions.Firefox }}.
-Chromedriver 23.0 is also available as `chromedriver23`
+Selenium-based tests are able to use Chrome stable channel (Chrome
+{{ versions.Chrome }} with chromedriver {{ versions.chromedriver }}), and
+Firefox {{ versions.Firefox }}. Chromedriver 23.0 is also available as
+`chromedriver23`
 
 <span class='label label-info'>Help</span>
 [Check out our browser debugging docs.](/docs/troubleshooting-browsers)
