@@ -83,72 +83,79 @@
   overflow: hidden;
   transition: @aside_transition_speed;
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
-  header {
-    .box-sizing(border-box);
-    height: @tile;
-    border-bottom: solid 1px @grayBoxBorder;
-    padding: @em 0;
-    position: relative;
-    display: block;
-    width: 100%;
-
-    .toggle-sorting {
-        float: left;
-        display: inline-block;
-        padding-left: @em;
-    }
-    .toggle-all-branches {
-        float: right;
-        padding-right: @em;
-        display: inline-block;
-    }
-
-    select {
-      .box-sizing(content-box);
-      color: @grayDark;
-      -webkit-appearance: none; // gets rid of ugly shadow in safari
-      -moz-appearance: none; // gets rid of extra arrow in FF
-      border: none;
-      outline: none;
-      margin: 0 0 0 @em;
-      padding: @em 0 @em 0;
-      height: @em;
-      line-height: @em;
-      &:hover {
-        cursor: pointer;
-      }
-    }
-    .select-arrow {
-      display: inline-block;
-      margin-left: 10px;
-      color: @blacken;
-      text-align: center;
-      pointer-events: none;
-    }
-
-    input[type=radio] {
-        display: none;
-        &:checked + label {
-            background-color: rgba(0,0,0, 0.1);
-            border-radius: 3px;
-        }
-    }
-
-    label.radio {
-        display: inline-block;
-        font-weight: normal;
-        color: @grayDark;
-        margin-left: 10px;
-        width: 40px;
-        text-align: center;
-        height: @activity_line;
-        line-height: @activity_line;
-    }
-
-  }
   .aside-activity {
     color: @grayLight;
     position: relative;
+    header {
+      .box-sizing(border-box);
+      height: @tile;
+      border-bottom: solid 1px @grayBoxBorder;
+      padding: @em;
+      position: relative;
+      display: block;
+      width: 100%;
+
+      select {
+        color: @grayDark;
+        display: inline-block;
+        -webkit-appearance: none; // gets rid of ugly shadow in safari
+        -moz-appearance: none; // gets rid of extra arrow in FF
+        border: none;
+        outline: none;
+        margin: 0;
+        padding: (@em - 2)  0 @em 0;
+        vertical-align: middle;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+      .toggle-sorting {
+          float: left;
+      }
+
+      .toggle-all-branches {
+          float: right;
+      }
+      .select-arrow {
+        position: relative;
+        display: inline-block;
+        margin-left: 10px;
+        color: @blacken;
+        text-align: center;
+        pointer-events: none;
+      }
+
+      .select-arrow img {
+        position: relative;
+        top: -1px;
+      }
+
+      input[type=radio] {
+          display: none;
+          &:checked + label {
+              background-color: rgba(0,0,0, 0.1);
+              border-radius: 3px;
+          }
+      }
+
+      label.radio {
+          display: inline-block;
+          font-weight: normal;
+          color: @grayDark;
+          margin-left: 10px;
+          text-align: center;
+          width: 40px;
+          height: @activity_line;
+          line-height: @activity_line;
+          cursor: pointer;
+          &:hover {
+            cursor: pointer;
+          }
+
+      }
+
+    }
 
     select {
       background-color: @white;
@@ -490,6 +497,7 @@
   header {
     .flex(0 0 auto);
     .justify-content(center);
+    padding: 0;
   }
   h5 {
     font-weight: normal;
@@ -497,6 +505,11 @@
     white-space: nowrap;
     transition: (@aside_transition_speed / 2);
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+    width: 100%;
+    text-align: center;
+    height: @tile;
+    line-height: @tile;
+    margin: 0;
   }
   .close-menu {
     .flexy(center);
