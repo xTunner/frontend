@@ -280,16 +280,15 @@
           [:div.wrapper {:style {:width (str (+ (if (feature/enabled? :new-aside-menu-width)
                                                   new-aside-width
                                                   aside-width)
-                                                (:scrollbar-width opts)) "px")}}
+                                                (om/get-state owner :scrollbar-width)) "px")}}
            [:header
-            [:div.toggle-sorting
-             [:select {:name "toggle-sorting"
-                       :on-change #(raise! owner [:sort-branches-toggled
-                                                  (utils/parse-uri-bool (.. % -target -value))])
-                       :value sort-branches-by-recency?}
-              [:option {:value false} "By Repo"]
-              [:option {:value true} "Recent" ]]
-             [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/dropdown-arrow.svg")}]]]
+            [:select {:name "toggle-sorting"
+                      :on-change #(raise! owner [:sort-branches-toggled
+                                                 (utils/parse-uri-bool (.. % -target -value))])
+                      :value sort-branches-by-recency?}
+             [:option {:value false} "By Repo"]
+             [:option {:value true} "Recent" ]]
+            [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/dropdown-arrow.svg")}]]
 
             [:div.toggle-all-branches
              [:input {:id "my-branches"
@@ -336,8 +335,7 @@
         {:class [(when (feature/enabled? :new-aside-menu-width)
                    "new-aside-left-menu-width")
                  "aside-left-menu"]}
-        (om/build branch-activity-list app {:opts {:login (:login opts)
-                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})
+        (om/build branch-activity-list app {:opts {:login (:login opts)}})
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)]))))
