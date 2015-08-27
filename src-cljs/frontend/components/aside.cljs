@@ -289,7 +289,7 @@
                        :value sort-branches-by-recency?}
               [:option {:value false} "By Repo"]
               [:option {:value true} "Recent" ]]
-             [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/dropdown-arrow.svg")}]]]
+             [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/icons/UI-DropdownArrow.svg")}]]]
 
             [:div.toggle-all-branches
              [:input {:id "my-branches"
