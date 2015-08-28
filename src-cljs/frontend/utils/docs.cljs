@@ -141,7 +141,7 @@
     "common-problems#dont-run" "dont-run"
     "common-problems#git-bundle-install" "git-bundle-install"
     "common-problems#git-pip-install" "git-pip-install"
-    "common-problems#not-specified-commands" "not-specified-ruby-commands"
+    "common-problems#wrong-commands" "not-specified-ruby-commands"
     "common-problems#bundler-latest" "bundler-latest"
     "common-problems#capybara-timeout" "capybara-timeout"
     "common-problems#clojure-12" "clojure-12"
