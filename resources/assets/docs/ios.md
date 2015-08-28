@@ -2,7 +2,7 @@
 
 title: Test iOS applications
 short_title: iOS
-last_updated: December 17, 2014
+last_updated: August 28, 2015
 
 -->
 
@@ -31,14 +31,14 @@ customization options.
 
 ## Xcode Version
 
-By default, CircleCI will build your project with Xcode 6.1.1. You can select 6.2 or 6.3.1
+By default, CircleCI will build your project with Xcode 6.2. You can select 6.3.1 or 6.4
 by specifying the version in a [circle.yml file](/docs/configuration) in the root of your
-repo. For example, for 6.3.1, add the following:
+repo. For example, for 6.4, add the following:
 
 ```
 machine:
   xcode:
-    version: "6.3.1"
+    version: "6.4"
 ```
 
 ## Shared Schemes
@@ -179,7 +179,7 @@ You can also use the `sudo` command if necessary to perform customizations outsi
 It is possible to upgrade the version of CocoaPods installed on the container
 by editing your `circle.yml` file. You will need to set the terminal ouput to
 UTF-8, and use `sudo` to install the gem. The example below will install
-CocoaPods version 0.35.
+CocoaPods version 0.38.2.
 
 ```
 machine:
@@ -189,7 +189,7 @@ machine:
     LANG: en_US.UTF-8
 dependencies:
   pre:
-    - sudo gem install cocoapods --version 0.35.0
+    - sudo gem install cocoapods --version 0.38.2
     # CocoaPods sometimes has issues using caches
     # between different versions of CocoaPods.
     - pod setup
@@ -276,9 +276,9 @@ versions installed:
 
 - OS X 10.10.3 (14D136) Darwin 14.3.0
 - Xcode:
-  - 6.1.1 Build version 6A2008a
   - 6.2 Build version 6C131e
   - 6.3.1 Build version 6D1002
+  - 6.4 Build version 6E35b
 - Facebook xctool 0.2.2
 - CocoaPods 0.36.4
 - xcpretty 0.1.8
