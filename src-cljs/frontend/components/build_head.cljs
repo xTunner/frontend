@@ -119,12 +119,13 @@
     (render [_]
       (html
        [:div
-        [:span {:title body
-                :id (str "commit-line-tooltip-hack-" commit)
-                :dangerouslySetInnerHTML {:__html (-> subject
-                                                      (gstring/htmlEscape)
-                                                      (linkify)
-                                                      (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]
+        [:span.commit-message
+         {:title body
+          :id (str "commit-line-tooltip-hack-" commit)
+          :dangerouslySetInnerHTML {:__html (-> subject
+                                                (gstring/htmlEscape)
+                                                (linkify)
+                                                (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]
         [:a.sha-one {:href commit_url
                      :title commit}
          " "
