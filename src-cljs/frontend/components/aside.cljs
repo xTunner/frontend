@@ -277,7 +277,7 @@
                                      identity)]
         (html
          [:div.aside-activity.open
-          [:div.wrapper {:style {:width (str (+ (if (feature/enabled? :new-aside-menu-width)
+          [:div.wrapper {:style {:width (str (+ (if (feature/enabled? :ui-v2)
                                                   new-aside-width
                                                   aside-width)
                                                 (:scrollbar-width opts)) "px")}}
@@ -333,7 +333,7 @@
     (render [_]
       (html
        [:nav
-        {:class [(when (feature/enabled? :new-aside-menu-width)
+        {:class [(when (feature/enabled? :ui-v2)
                    "new-aside-left-menu-width")
                  "aside-left-menu"]}
         (om/build branch-activity-list app {:opts {:login (:login opts)

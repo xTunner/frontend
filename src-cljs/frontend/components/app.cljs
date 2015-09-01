@@ -132,7 +132,7 @@
               (when (and inner? logged-in?)
                 (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
               [:main.app-main {:ref "app-main"
-                               :class (when (feature/enabled? :new-aside-menu-width)
+                               :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
