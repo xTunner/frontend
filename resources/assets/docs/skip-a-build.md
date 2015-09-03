@@ -30,5 +30,5 @@ Date:   Wed Jan 23 16:30:24 2013 -0800
     add "Skip a build" doc
 ```
 
-Note that if the commits were in the opposite order, then the push would have been built. Currently `[ci skip]` does not support fork PR.
+Note that if the commits were in the opposite order, then the push would have been built. Currently `[ci skip]` does not support fork PRs.
 
