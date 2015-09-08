@@ -45,7 +45,7 @@
 (defrendermethod story :shopify
   [app owner]
   (html
-    [:article.product-page.stories.shopify
+    [:article.product-page.stories
      (story-jumbotron {:logo (utils/cdn-path "/img/outer/customers/logo-shopify.svg")
                        :heading "Scalable Continuous Integration with CircleCI"
                        :subheading (list
@@ -136,7 +136,7 @@
 (defrendermethod story :wit
   [app owner]
   (html
-    [:article.product-page.stories.shopify
+    [:article.product-page.stories
      (story-jumbotron {:logo (utils/cdn-path "/img/outer/customers/customer-wit.svg")
                        :heading "Continuous Delivery for Containers"
                        :subheading "How Wit.ai uses CircleCI and Docker to deploy their containerized services"})
@@ -183,7 +183,7 @@
 (defrendermethod story :learnzillion
   [app owner]
   (html
-   [:article.product-page.stories.shopify
+   [:article.product-page.stories
     (story-jumbotron {:logo (utils/cdn-path "/img/outer/customers/customer-learnzillion.png")
                       :heading "Fast, Automated Browser Testing"
                       :subheading "How LearnZillion uses CircleCI to fully automate their QA process"})
@@ -225,7 +225,7 @@
 (defrendermethod story :sony
   [app owner]
   (html
-   [:article.product-page.stories.shopify
+   [:article.product-page.stories
     (story-jumbotron {:heading "Continuous Delivery with Golang and Docker"
                       :subheading "How Sony Japan continuously deploys microservices built with Go and Docker in minutes"})
 
