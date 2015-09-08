@@ -179,3 +179,45 @@
        (om/build docker/docker-diagram app)]]
 
      (docker/docker-cta owner "stories/wit")]))
+
+(defrendermethod story :learnzillion
+  [app owner]
+  (html
+   [:article.product-page.stories.shopify
+    (story-jumbotron {:logo (utils/cdn-path "/img/outer/customers/customer-learnzillion.png")
+                      :heading "Fast, Automated Browser Testing"
+                      :subheading "How LearnZillion uses CircleCI to fully automate their QA process"})
+
+    [:div.outer-section
+     [:section.container
+      [:h2 "Background"]
+      [:p "LearnZillion is building the world's first free digital curriculum, developed by veteran teachers from K-12 schools. Their app consists of custom content management for their curriculum lessons, and, like any complex application, it has grown to require a number of data stores, queues and more."]
+      [:p "In addition to Rails, LearnZillion uses Postgres, Redis, Memcached, and Resque on the backend, and RSpec for unit tests. They use Knockout for their frontend. Browser tests use Selenium, Capybara, and Cucumber."]
+      [:h2 "Life Before CircleCI"]
+      [:p "LearnZillion's CI process consisted of a laptop under a desk running TeamCity, and they were constantly dealing with environment and OS issues. Additionally, the functional QA test process was entirely manual and time consuming. Releases were done every 2-4 weeks by the engineer on-call. “At that interval, the engineer deploying code couldn’t have known all the intricacies of what was being deployed,” said Ian Lotinsky, VP of Engineering at LearnZillion. “It was downright dangerous.” Deployments were often done late at night to reduce the impact of unexpected issues too. “We needed to move to continuous delivery.”"]]]
+    [:div.outer-section.outer-section-condensed
+     common/language-background
+     [:section.container
+      [:div.row
+       [:div.col-xs-6.col-xs-offset-3
+        (features/testimonial {:company-name "LearnZillion"
+                               :company-short "learnzillion"
+                               :customer-quote "CircleCI is great because blah, blah, blah..."
+                               :employee-name "Ian Lotinsky"
+                               :employee-title "VP Engineering"
+                               :image-src (utils/cdn-path "/img/outer/customers/customer-learnzillion.png")
+                               :read-the-story? false})]]]]
+    [:div.outer-section
+     [:section.container
+      [:h2 "The New Flow"]
+      [:p "With CircleCI, LearnZillion now runs all of its tests rapidly on every branch and sees the results right in their GitHub Pull Requests before merging new features into master. In addition to thorough unit testing powered by CircleCI, LearnZillion’s QA lead, Manpreet Komal, has built a suite of browser tests that he calls AutoQA, which are maintained in its own repository by Manpreet and his team."]
+      [:div.row
+       [:img.col-xs-8.col-xs-offset-2 {:src (utils/cdn-path "/img/outer/customers/learnzillion-screenshot.png")}]]
+      [:p "Using CircleCI's and GitHub's APIs, LearnZillion engineer Ron Warholic set up a second CircleCI process where any changes to either the Rails application code or the AutoQA browser test suite trigger a rerun of the AutoQA browser tests. The tests execute on CircleCI build containers and point to LearnZillion's staging environment. AutoQA deploys the appropriate application and AutoQA branches to a staging environment, prepares the database, and then runs the browser tests against that staging environment. Developers then see two status entries in GitHub Pull Requests, one for the Rails unit tests and another for the AutoQA functional test suite."]
+      [:p "Now LearnZillion doesn't have to worry about maintaining their own CI infrastructure. They can deploy confidently several times a day, and they can get new features in the hands of their users in a fraction of the time."]]]
+    [:div.bottom-cta.outer-section.outer-section-condensed
+     common/language-background
+     [:h2 "Start shipping faster, build for free using CircleCI today."]
+     [:p.subheader
+      "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
+     (common/sign-up-cta owner "stories/learnzillion")]]))

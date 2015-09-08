@@ -70,9 +70,10 @@
               We're built for teams."]]]])))))
 
 (defn testimonial
-  [{:keys [company-name company-short customer-quote employee-name employee-title read-the-story?] :or {read-the-story? true}}]
+  [{:keys [company-name company-short customer-quote employee-name employee-title read-the-story? image-src] :or {read-the-story? true}}]
   [:div.testimonial
-   [:img.customer-header {:src (customer-image-src company-short)
+   [:img.customer-header {:src (or image-src
+                                (customer-image-src company-short))
                           :alt company-name}]
    [:div.customer-quote {:class (str "quote-" company-short)}
     [:blockquote customer-quote]]
