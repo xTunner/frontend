@@ -221,3 +221,57 @@
      [:p.subheader
       "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
      (common/sign-up-cta owner "stories/learnzillion")]]))
+
+(defrendermethod story :sony
+  [app owner]
+  (html
+   [:article.product-page.stories.shopify
+    (story-jumbotron {:heading "Continuous Delivery with Golang and Docker"
+                      :subheading "How Sony Japan continuously deploys microservices built with Go and Docker in minutes"})
+
+    [:div.outer-section
+     [:section.container
+      [:h2 "Introduction"]
+      [:p "Shipping high-quality software has been key to Sony's success for decades. Now more than ever, with the ubiquity of Wi-Fi and mobile internet in a dizzying array of devices, and with dozens of cloud services to manage, it's vital that Sony developers can build, test, and deploy business-critical applications quickly and reliably."]
+      [:p
+       "There are a number of different teams within Sony that depend on CircleCI for CI and CD, but this will be a deep-dive on one project developed at Sony Japan that provides shared services such as authentication and user management for a variety of web applications, such as "
+       [:a {:href "https://playmemoriesonline.com/"}
+        "PlayMemories"]
+       ", the cross-platform, cloud-based photo sharing service. The project is called Next Generation Core, or NG-Core for short, and it is made up of [Docker](link)-based microservices written in"
+       [:a {:href "https://golang.org/"}
+        "Go"]]
+      [:h2 "The Old Way"]
+      [:p "While the new NG-Core team, led by Yoshiyuki Mineo, was able to start their project from scratch using some very modern tools, older projects in the organization had used a very different software development process. They were million-line Java monoliths that could take up to 4 days to deploy to production app servers based on instructions written in a spreadsheet and handed off to an operations team."]]]
+    [:div.outer-section.outer-section-condensed
+     common/language-background
+     [:section.container
+      [:div.row
+       [:div.col-xs-6.col-xs-offset-3
+        (features/testimonial {:company-name "Sony"
+                               :company-short "learnzillion"
+                               :customer-quote "Our old deployment process involved a spreadsheet of instructions and people to run them and took days. The new process has been fully automated from the start with CircleCI and Docker and takes only ~20 minutes."
+                               :employee-name "Tomoki Kobayakawa"
+                               :employee-title "Deputy General Manager"
+                               :image? false
+                               :read-the-story? false})]]]]
+    [:div.outer-section
+     [:section.container
+      [:h2 "The New Way"]
+      [:p "The NG-Core services are written in Go, packaged into Docker containers, pushed to Docker Hub, then deployed to AWS Elastic Beanstalk. In detail, the process looks like this:"
+       [:ol
+        [:li "The developer commits and pushes to GitHub"]
+        [:li "CircleCI receives a hook from GitHub, triggering a build"]
+        [:li "CircleCI pulls down the latest code, compiles the Go binaries, and creates a deployable image with"
+         [:code "docker build"]]
+        [:li "Unit and integration tests are run, including some tests that use the final Docker image"]
+        [:li "The Docker image is pushed to Docker Hub, and a new deployment is triggered on Elastic Beanstalk"]
+        [:li "A final live system test is run after the deployment"]]
+       "The entire build and test processes each take about 5 minutes, and when deployments are triggered they take about an additional 10 minutes. The NG-Core team started development using this process in May of 2014 and has been in production since January 2015, and they are extremely happy with the setup."]
+      [:h2 "Takeaways"]
+      [:p "Applications deployed \"the old way\" went through a slow, manual process that involved lots of precarious, in-place manipulation of production resources, taking days to go from a developer to production. Now, with CircleCI and Docker, deployment of the NG-Core services is fully automated, takes an immutable infrastructure approach, and can take a git push into production in about 20 minutes. This means more frequent deployments and greater velocity for the team."]]]
+    [:div.bottom-cta.outer-section.outer-section-condensed
+     common/language-background
+     [:h2 "Start shipping faster, build for free using CircleCI today."]
+     [:p.subheader
+      "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
+     (common/sign-up-cta owner "stories/sony")]]))
