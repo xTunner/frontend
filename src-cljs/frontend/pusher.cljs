@@ -54,7 +54,8 @@
                      :build/update-action
                      :build/append-action
                      :build/update
-                     :build/add-messages])
+                     :build/add-messages
+                     :build/test-results])
 
 ;; TODO: use the same event names on the backend as we do on the frontend
 (def event-translations
@@ -63,6 +64,7 @@
    :build/append-action "appendAction"
    :build/update "updateObservables"
    :build/add-messages "maybeAddMessages"
+   :build/test-results "fetchTestResults"
    ;; this is kind of special, it can call any function on the old window.VM
    ;; luckily, it only calls refreshBuildState
    :refresh "call"})
