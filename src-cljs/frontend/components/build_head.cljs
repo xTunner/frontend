@@ -114,7 +114,10 @@
     om/IDidMount
     (did-mount [_]
       (when (seq body)
-        (utils/tooltip (str "#commit-line-tooltip-hack-" commit) {:placement "bottom" :animation false})))
+        (utils/tooltip (str "#commit-line-tooltip-hack-" commit)
+                       {:placement "bottom"
+                        :animation false
+                        :viewport "#build-log-container"})))
     om/IRender
     (render [_]
       (html
