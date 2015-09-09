@@ -114,7 +114,7 @@
               keys
               set
               (contains? nav-point))
-      [:div.navbar.navbar-default.navbar-static-top.subnav
+      [:div.navbar.navbar-default.navbar-fixed-top.subnav
        [:div.container-fluid
         [:ul.nav.navbar-nav
          (for [[point {:keys [path title]}] %]
@@ -135,13 +135,12 @@
           [:div
            (when flash
              [:div#flash {:dangerouslySetInnerHTML {:__html flash}}])]
-          ;; TODO: Temporary hack until new header ships
-          [:div.navbar.navbar-default.navbar-static-top {:class (case nav-point
-                                                                  :language-landing
-                                                                  (get-in app [:navigation-data :language])
-                                                                  :integrations
-                                                                  (name (get-in app [:navigation-data :integration]))
-                                                                  nil)}
+          [:div.navbar.navbar-default.navbar-fixed-top {:class (case nav-point
+                                                                 :language-landing
+                                                                 (get-in app [:navigation-data :language])
+                                                                 :integrations
+                                                                 (name (get-in app [:navigation-data :integration]))
+                                                                 nil)}
            [:div.container-fluid
             [:div.navbar-header
              [:a#logo.navbar-brand
