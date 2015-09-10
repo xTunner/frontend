@@ -1,4 +1,6 @@
 .inner {
+  display: flex;
+
   background-color: @appBackgroundColor;
   p {
     > a {
@@ -18,6 +20,11 @@
 
   &.ui-v2 {
     font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: @background-color-v2;
+  }
+
+  .app-dominant {
+    display: flex;
   }
 
   @import "terminal.less";

@@ -9,6 +9,7 @@
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.statuspage :as statuspage]
             [frontend.models.project :as project-model]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -53,7 +54,7 @@
           [:div.head-user
            [:div.breadcrumbs
             (when (seq crumbs-data)
-              [:a {:title "home", :href "/"} [:i.fa.fa-home] " "])
+              [:a {:title "home", :href "/"} (if (feature/enabled? :ui-v2) "Builds " (list [:i.fa.fa-home] " "))])
             (crumbs/crumbs crumbs-data)]
            (when (show-follow-project-button? app)
              (forms/managed-button

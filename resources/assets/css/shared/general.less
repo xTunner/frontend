@@ -17,9 +17,10 @@ body {
 
 .app-main {
   position: relative;
-  min-height: 100vh;
-  z-index: @zindex-app-main;
+  height: 100vh;
+  width: 100%;
 }
+
 .main-head {
   .flexy(column);
   .head-user {
@@ -55,6 +56,10 @@ body {
   }
 }
 .main-body {
+  height: 100vh;
+  width: 100%;
+  overflow: scroll;
+
   .loading-spinner-big {
     @reserved_height: (@tile * 2);
     .flexy(center, center);
