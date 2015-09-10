@@ -2,7 +2,7 @@ CI.Versions =
   v: (v) ->
     "#{v} #{CI.Versions[v]}"
 
-  Firefox: "38.0"
+  Firefox: "38.0.5"
   Chrome: "43.0.2357.130"
   chromedriver: "2.16"
 
@@ -135,6 +135,7 @@ CI.Versions =
     "2.7.7",
     "2.7.8",
     "2.7.9",
+    "2.7.10",
     "3.1.5",
     "3.2",
     "3.2.5",
@@ -144,9 +145,11 @@ CI.Versions =
     "3.4.0",
     "3.4.1",
     "3.4.2",
+    "3.4.3",
     "pypy-2.2.1",
     "pypy-2.3.1",
-    "pypy-2.4.0"
+    "pypy-2.4.0",
+    "pypy-2.5.0"
   ]
   pip: "7.0.3"
   virtualenv: "13.0.3"
@@ -218,8 +221,8 @@ CI.Versions =
   mysql: "5.5.41"
   mongodb: "2.4.13"
   riak: "1.4.8-1"
-  cassandra: "2.1.3"
-  redis: "3.0.2"
+  cassandra: "2.2.0"
+  redis: "3.0.3"
   memcached: "1.4.13"
   sphinx: "2.0.4-release"
   elasticsearch: "0.90.2"
@@ -279,3 +282,7 @@ CI.Versions =
     "extra-google-m2repository",
     "extra-android-m2repository"
   ]
+
+  heroku: "3.40.9"
+  awscli: "1.7.44"
+  gcloud: "0.9.70"

@@ -238,7 +238,7 @@ We have the following services automatically set up and running for your tests:
 *   `redis` ({{ versions.redis }})
 *   `zookeeper` ({{ versions.zookeeper }})
 
-Both `postgres` and `mysql` are set up to use the `ubuntu`
+Both `postgresql` and `mysql` are set up to use the `ubuntu`
 user, have a database called `circle_test` available, and don't require any password.
 The other databases should not need any specific username or password, and should just work.
 
@@ -269,3 +269,11 @@ each of them if you need them to support your tests.
 
 *   `solr` ({{ versions.solr }}) - [Test with Solr](/docs/test-with-solr)
 *   `sphinx` ({{ versions.sphinx }}) - [Test with Sphinx](/docs/test-with-sphinx)
+
+## Integration Tools
+
+Following integration tools are pre-installed.
+
+*   `heroku/heroku-toolbelt` ({{ versions.heroku }})
+*   `awscli` ({{ versions.awscli }})
+*   `gcloud` ({{ versions.gcloud }})
