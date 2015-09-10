@@ -82,13 +82,33 @@
 
 }
 
+.environment {
+  .flexy(center, center);
+  position: fixed;
+  color: @white;
+  bottom: 0;
+  right: 120px;
+  width: @tile * 1.5;
+  height: 3em;
+  border-radius: 4px 4px 0 0;
+  z-index: 9001; // see intercom hack in shame.less
+  background: @orange;
+  &.env-production  { background: @redLight;  }
+  &.env-staging     { background: @orange;    }
+  &.env-development { background: @blueLight; }
+  &.env-test        { background: @green;     }
+  &.env-dwwoelfel   { background: #500000;  }
+}
+
 .head-admin {
   @color: fade(@white, 50);
   background: @grayDarker;
   color: @color;
+
   &:not(.open) {
-    margin-top: -@tile;
+    display: none;
   }
+
   &.expanded {
     .admin-tools {
       .metrics {
@@ -102,9 +122,11 @@
       color: @white;
     }
   }
+
   [role="button"] {
     cursor: pointer;
   }
+
   .admin-tools {
     height: @tile;
     line-height: 200%;
@@ -125,23 +147,6 @@
         margin: 0 1em 0 3px;
       }
     }
-  }
-  .environment {
-    .flexy(center, center);
-    position: fixed;
-    color: @white;
-    bottom: 0;
-    right: 120px;
-    width: @tile * 1.5;
-    height: 3em;
-    border-radius: 4px 4px 0 0;
-    z-index: 9001; // see intercom hack in shame.less
-    background: @orange;
-    &.env-production  { background: @redLight;  }
-    &.env-staging     { background: @orange;    }
-    &.env-development { background: @blueLight; }
-    &.env-test        { background: @green;     }
-    &.env-dwwoelfel   { background: #500000;  }
   }
   .options {
     margin-left: 1em;
