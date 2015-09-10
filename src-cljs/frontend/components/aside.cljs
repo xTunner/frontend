@@ -307,11 +307,8 @@
                      :on-change #(raise! owner [:show-all-branches-toggled true])}]
             [:label.radio {:for "all-branches"}
              "All"]]]
-          [:div.wrapper {:style {:width (str (+ (if (feature/enabled? :ui-v2)
-                                                  new-aside-width
-                                                  aside-width)
-                                                (:scrollbar-width opts)) "px")}}
 
+          [:div.projects
            (for [project (if sort-branches-by-recency?
                            (->> projects
                                 project-model/sort-branches-by-recency

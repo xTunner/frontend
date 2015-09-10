@@ -297,7 +297,6 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 400ms, background 400ms, visibility 0ms 1000ms, height 200ms ease-in-out;
-  height: 0%;
   &.open {
     opacity: 1;
     visibility: visible;
@@ -307,7 +306,8 @@
       height: 100vh; // needed to fix safari bug preventing accordion from opening up
     }
   }
-  .wrapper {
+
+  .projects {
     overflow-x: hidden;
     overflow-y: scroll;
 
