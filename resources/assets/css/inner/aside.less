@@ -79,6 +79,8 @@
   width: @aside_menu_width;
   box-shadow: 1px 0 @grayBoxBorder;
   overflow: hidden;
+
+  background-color: @white;
   transition: @aside_transition_speed;
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
 
@@ -498,8 +500,13 @@
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   overflow: hidden;
   &.open {
+
+    &.ui-v2 {
+      width: @new_aside_menu_width;
+    }
+
+    width: @aside_menu_width;
     left: 0;
-    width: 100%;
     color: @gray;
     h5 {
       color: @black;
