@@ -278,39 +278,40 @@
                                      identity)]
         (html
          [:div.aside-activity.open
+          [:header
+           [:div.toggle-sorting
+            [:select {:name "toggle-sorting"
+                      :on-change #(raise! owner [:sort-branches-toggled
+                                                 (utils/parse-uri-bool (.. % -target -value))])
+                      :value sort-branches-by-recency?}
+             [:option {:value false} "By Repo"]
+             [:option {:value true} "Recent" ]]
+            [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/icons/UI-DropdownArrow.svg")}]]]
+
+           [:div.toggle-all-branches
+            [:input {:id "my-branches"
+                     :name "toggle-all-branches"
+                     :type "radio"
+                     :value "false"
+                     :checked (not show-all-branches?)
+                     :react-key "toggle-all-branches-my-branches"
+                     :on-change #(raise! owner [:show-all-branches-toggled false])}]
+            [:label.radio {:for "my-branches"}
+             "Mine"]
+            [:input {:id "all-branches"
+                     :name "toggle-all-branches"
+                     :type "radio"
+                     :value "true"
+                     :checked show-all-branches?
+                     :react-key "toggle-all-branches-all-branches"
+                     :on-change #(raise! owner [:show-all-branches-toggled true])}]
+            [:label.radio {:for "all-branches"}
+             "All"]]]
           [:div.wrapper {:style {:width (str (+ (if (feature/enabled? :ui-v2)
                                                   new-aside-width
                                                   aside-width)
                                                 (:scrollbar-width opts)) "px")}}
-           [:header
-            [:div.toggle-sorting
-             [:select {:name "toggle-sorting"
-                       :on-change #(raise! owner [:sort-branches-toggled
-                                                  (utils/parse-uri-bool (.. % -target -value))])
-                       :value sort-branches-by-recency?}
-              [:option {:value false} "By Repo"]
-              [:option {:value true} "Recent" ]]
-             [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/icons/UI-DropdownArrow.svg")}]]]
 
-            [:div.toggle-all-branches
-             [:input {:id "my-branches"
-                      :name "toggle-all-branches"
-                      :type "radio"
-                      :value "false"
-                      :checked (not show-all-branches?)
-                      :react-key "toggle-all-branches-my-branches"
-                      :on-change #(raise! owner [:show-all-branches-toggled false])}]
-             [:label.radio {:for "my-branches"}
-              "Mine"]
-             [:input {:id "all-branches"
-                      :name "toggle-all-branches"
-                      :type "radio"
-                      :value "true"
-                      :checked show-all-branches?
-                      :react-key "toggle-all-branches-all-branches"
-                      :on-change #(raise! owner [:show-all-branches-toggled true])}]
-             [:label.radio {:for "all-branches"}
-              "All"]]]
            (for [project (if sort-branches-by-recency?
                            (->> projects
                                 project-model/sort-branches-by-recency
@@ -343,7 +344,7 @@
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)]))))
 
-(defn aside-nav [app owner {user :user}]
+(defn aside-nav [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IDidMount
@@ -351,74 +352,77 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (html
-       [:nav.aside-left-nav
+      (let [user (get-in app state/user-path)
+            avatar-url (gh-utils/make-avatar-url user)]
 
-        [:a.aside-item.logo  {:title "Home"
-                              :data-placement "right"
-                              :data-trigger "hover"
-                              :href "/"}
-         [:div.logomark
-          (common/ico :logo)]]
+        (html
+          [:nav.aside-left-nav
 
-        [:a.aside-item {:data-placement "right"
-                        :data-trigger "hover"
-                        :title "Settings"
-                        :href "/account"}
-         [:img {:src (gh-utils/make-avatar-url user)}]]
+           [:a.aside-item.logo {:title "Home"
+                                :data-placement "right"
+                                :data-trigger "hover"
+                                :href "/"}
+            [:div.logomark
+             (common/ico :logo)]]
 
-        [:a.aside-item {:title "Documentation"
-                        :data-placement "right"
-                        :data-trigger "hover"
-                        :href "/docs"}
-         [:i.fa.fa-copy]]
+           [:a.aside-item {:data-placement "right"
+                           :data-trigger "hover"
+                           :title "Settings"
+                           :href "/account"}
+            [:img {:src avatar-url}]]
 
-        [:a.aside-item (merge (common/contact-support-a-info owner)
-                              {:title "Support"
-                               :data-placement "right"
-                               :data-trigger "hover"
-                               :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
-         [:i.fa.fa-comments]]
+           [:a.aside-item {:title "Documentation"
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :href "/docs"}
+            [:i.fa.fa-copy]]
 
-        [:a.aside-item {:href "/add-projects",
-                        :data-placement "right"
-                        :data-trigger "hover"
-                        :title "Add Projects"}
-         [:i.fa.fa-plus-circle]]
+           [:a.aside-item (merge (common/contact-support-a-info owner)
+                                 {:title "Support"
+                                  :data-placement "right"
+                                  :data-trigger "hover"
+                                  :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
+            [:i.fa.fa-comments]]
 
-        [:a.aside-item {:href "/invite-teammates",
-                        :data-placement "right"
-                        :data-trigger "hover"
-                        :title "Invite your teammates"}
-         [:i.fa.fa-user]]
+           [:a.aside-item {:href "/add-projects",
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "Add Projects"}
+            [:i.fa.fa-plus-circle]]
 
-        [:a.aside-item {:data-placement "right"
-                        :data-trigger "hover"
-                        :title "Changelog"
-                        :href "/changelog"
-                        :class (when (changelog-updated-since? (:last_viewed_changelog user))
-                                 "unread")}
-         [:i.fa.fa-bell]]
+           [:a.aside-item {:href "/invite-teammates",
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "Invite your teammates"}
+            [:i.fa.fa-user]]
 
-        (when (feature/enabled? :insights)
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Insights"
-                          :href "/build-insights"}
-           [:i.fa.fa-bar-chart-o]])
+           [:a.aside-item {:data-placement "right"
+                           :data-trigger "hover"
+                           :title "Changelog"
+                           :href "/changelog"
+                           :class (when (changelog-updated-since? (:last_viewed_changelog user))
+                                    "unread")}
+            [:i.fa.fa-bell]]
 
-        (when (:admin user)
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Admin"
-                          :href "/admin"}
-           [:i.fa.fa-cogs]])
+           (when (feature/enabled? :insights)
+             [:a.aside-item {:data-placement "right"
+                             :data-trigger "hover"
+                             :title "Insights"
+                             :href "/build-insights"}
+              [:i.fa.fa-bar-chart-o]])
 
-        [:a.aside-item.push-to-bottom {:data-placement "right"
-                                       :data-trigger "hover"
-                                       :title "Logout"
-                                       :href "/logout"}
-         [:i.fa.fa-power-off]]]))))
+           (when (:admin user)
+             [:a.aside-item {:data-placement "right"
+                             :data-trigger "hover"
+                             :title "Admin"
+                             :href "/admin"}
+              [:i.fa.fa-cogs]])
+
+           [:a.aside-item.push-to-bottom {:data-placement "right"
+                                          :data-trigger "hover"
+                                          :title "Logout"
+                                          :href "/logout"}
+            [:i.fa.fa-power-off]]])))))
 
 (defn aside [app owner]
   (reify
@@ -439,3 +443,4 @@
             (om/build license/license-banner license))
           (when show-aside-menu?
             (om/build aside-menu app {:opts {:login login}}))])))))
+

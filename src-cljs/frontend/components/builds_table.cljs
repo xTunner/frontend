@@ -5,6 +5,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -75,11 +76,11 @@
                                                                 :build-num build-num}])}
               "Cancel"])))])]))
 
-(defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
-                                  :or {show-branch? true
-                                       show-project? true}}]
+(defn builds-table-v1 [builds owner {:keys [show-actions? show-branch? show-project?]
+                                     :or {show-branch? true
+                                          show-project? true}}]
   (reify
-    om/IDisplayName (display-name [_] "Builds Table")
+    om/IDisplayName (display-name [_] "Builds Table V1")
     om/IRender
     (render [_]
       (html
@@ -102,3 +103,111 @@
                                    :show-branch? show-branch?
                                    :show-project? show-project?})
               builds)]]))))
+
+(defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
+  (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
+    [:div.build {:class (when (:dont_build build) "dont_build")}
+     [:div.col-xs-2
+      [:div.recent-status-badge
+       [:a
+        {:title "status"
+         :href url
+         :class (build-model/status-class build)}
+        (build-model/status-words build)]]
+      
+      
+      (when show-actions?
+        [:td.build_actions
+         (when (build-model/can-cancel? build)
+           (let [build-id (build-model/id build)
+                 vcs-url (:vcs_url build)
+                 build-num (:build_num build)]
+             ;; TODO: how are we going to get back to the correct build in the app-state?
+             ;;       Not a problem here, b/c the websocket will be updated, but something to think about
+             (forms/managed-button
+               [:button.cancel_build
+                {:on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num}])}
+                "Cancel"])))])]
+     [:div.col-xs-10
+      [:div.container-fluid
+       [:div.row
+        [:div.col-xs-6
+         [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+              :href url}
+
+          (when show-project?
+            (str (:username build) " / " (:reponame build) " "))
+
+          (when (and show-project? show-branch?) " / ")
+
+          (when show-branch?
+            [:a
+             {:title (build-model/vcs-ref-name build)
+              :href url}
+             (-> build build-model/vcs-ref-name)])
+          " #"
+          (:build_num build)]]
+
+        [:div.col-xs-1
+
+         (if-not (:vcs_revision build)
+           [:a {:href url}]
+           [:a {:title (build-model/github-revision build)
+                :href url}
+            (build-model/github-revision build)])]
+
+        [:div.col-xs-2.recent-user
+         [:a
+          {:title (build-model/ui-user build)
+           :href url}
+          (build-model/author build)]]
+
+        (if (or (not (:start_time build))
+                (= "not_run" (:status build)))
+          [:div.col-xs-4 " "]
+          (list [:div.col-xs-2.recent-time
+                 [:a
+                  {:title  (datetime/full-datetime (js/Date.parse (:start_time build)))
+                   :href url}
+                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
+                  " ago"]]
+                [:div.col-xs-1.recent-time
+                 [:a
+                  {:title (build-model/duration build)
+                   :href url}
+                  (om/build common/updating-duration {:start (:start_time build)
+                                                      :stop (:stop_time build)})]]))
+        ]
+       [:div.row
+        [:div.col-xs-12
+         [:a.recent-log
+          {:title (:body build)
+           :href url}
+          (:subject build)]]]]]
+     
+     
+     
+     
+     ]))
+
+(defn builds-table-v2 [builds owner {:keys [show-actions? show-branch? show-project?]
+                                     :or {show-branch? true
+                                          show-project? true}}]
+  (reify
+    om/IDisplayName (display-name [_] "Builds Table V2")
+    om/IRender
+    (render [_]
+      (html
+       [:div.container-fluid
+        (map #(build-row-v2 % owner {:show-actions? show-actions?
+                                     :show-branch? show-branch?
+                                     :show-project? show-project?})
+             builds)]))))
+
+(defn builds-table [builds owner opts]
+  (if (feature/enabled? :ui-v2)
+    (builds-table-v2 builds owner opts)
+    (builds-table-v1 builds owner opts)))
+
