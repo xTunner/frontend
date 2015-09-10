@@ -194,7 +194,7 @@
       [:p "LearnZillion is building the world's first free digital curriculum, developed by veteran teachers from K-12 schools. Their app consists of custom content management for their curriculum lessons, and, like any complex application, it has grown to require a number of data stores, queues and more."]
       [:p "In addition to Rails, LearnZillion uses Postgres, Redis, Memcached, and Resque on the backend, and RSpec for unit tests. They use Knockout for their frontend. Browser tests use Selenium, Capybara, and Cucumber."]
       [:h2 "Life Before CircleCI"]
-      [:p "LearnZillion's CI process consisted of a laptop under a desk running TeamCity, and they were constantly dealing with environment and OS issues. Additionally, the functional QA test process was entirely manual and time consuming. Releases were done every 2-4 weeks by the engineer on-call. “At that interval, the engineer deploying code couldn’t have known all the intricacies of what was being deployed,” said Ian Lotinsky, VP of Engineering at LearnZillion. “It was downright dangerous.” Deployments were often done late at night to reduce the impact of unexpected issues too. “We needed to move to continuous delivery.”"]]]
+      [:p "LearnZillion's CI process consisted of a laptop under a desk running TeamCity, and they were constantly dealing with environment and OS issues. Additionally, the functional QA test process was entirely manual and time consuming. Releases were done every 2-4 weeks by the engineer on-call. “At that interval, the engineer deploying code couldn’t have known all the intricacies of what was being deployed,” said Ian Lotinsky, CTO of Engineering at LearnZillion. “It was downright dangerous.” Deployments were often done late at night to reduce the impact of unexpected issues too. “We needed to move to continuous delivery.”"]]]
     [:div.outer-section.outer-section-condensed
      common/language-background
      [:section.container
@@ -202,9 +202,9 @@
        [:div.col-xs-6.col-xs-offset-3
         (features/testimonial {:company-name "LearnZillion"
                                :company-short "learnzillion"
-                               :customer-quote "CircleCI is great because blah, blah, blah..."
+                               :customer-quote "CircleCI makes our products better by allowing us to spend more energy testing them and less time managing a home-grown testing infrastructure."
                                :employee-name "Ian Lotinsky"
-                               :employee-title "VP Engineering"
+                               :employee-title "CTO"
                                :image-src (utils/cdn-path "/img/outer/customers/customer-learnzillion.png")
                                :read-the-story? false})]]]]
     [:div.outer-section
@@ -237,11 +237,12 @@
        "There are a number of different teams within Sony that depend on CircleCI for CI and CD, but this will be a deep-dive on one project developed at Sony Japan that provides shared services such as authentication and user management for a variety of web applications, such as "
        [:a {:href "https://playmemoriesonline.com/"}
         "PlayMemories"]
-       ", the cross-platform, cloud-based photo sharing service. The project is called Next Generation Core, or NG-Core for short, and it is made up of [Docker](link)-based microservices written in"
+       ", the cross-platform, cloud-based photo sharing service. The project is called Next Generation Core, or NG-Core for short, and it is made up of "
+       [:a {:href "https://www.docker.com/"} "Docker"] "-based microservices written in "
        [:a {:href "https://golang.org/"}
-        "Go"]]
+        "Go"] "."]
       [:h2 "The Old Way"]
-      [:p "While the new NG-Core team, led by Yoshiyuki Mineo, was able to start their project from scratch using some very modern tools, older projects in the organization had used a very different software development process. They were million-line Java monoliths that could take up to 4 days to deploy to production app servers based on instructions written in a spreadsheet and handed off to an operations team."]]]
+      [:p "While the new NG-Core team, led by Yoshiyuki Mineo, started the project from scratch using some very modern tools, older projects in the organization had used a very different software development process. They were million-line Java monoliths that could take up to 4 days to deploy to production app servers based on instructions written in a spreadsheet and handed off to an operations team."]]]
     [:div.outer-section.outer-section-condensed
      common/language-background
      [:section.container
@@ -250,7 +251,7 @@
         (features/testimonial {:company-name "Sony"
                                :company-short "learnzillion"
                                :customer-quote "Our old deployment process involved a spreadsheet of instructions and people to run them and took days. The new process has been fully automated from the start with CircleCI and Docker and takes only ~20 minutes."
-                               :employee-name "Tomoki Kobayakawa"
+                               :employee-name "Tomoaki Kobayakawa"
                                :employee-title "Deputy General Manager"
                                :image? false
                                :read-the-story? false})]]]]
