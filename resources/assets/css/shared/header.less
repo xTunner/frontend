@@ -9,7 +9,17 @@
 .ui-v2 {
   .breadcrumbs {
     font-size: 20px;
-    color: @gray-light-v2;
+
+    a {
+      &:not(:hover) {
+        color: @gray-light-v2;
+      }
+
+      &:not(:first-child):before {
+        content: '»';
+        color: @gray-light-v2;
+      }
+    }
   }
 }
 
@@ -31,20 +41,6 @@
     }
     &:last-child{
       pointer-events: none;
-    }
-  }
-}
-
-.ui-v2 {
-  .breadcrumbs {
-    a {
-      &:not(:first-child) {
-        &:before {
-          content: '»';
-          color: @grayLight;
-          margin-right: 3px; // from trial and error
-        }
-      }
     }
   }
 }
