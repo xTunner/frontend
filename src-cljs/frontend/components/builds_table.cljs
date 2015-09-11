@@ -107,7 +107,7 @@
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (when (:dont_build build) "dont_build")}
-     [:div.col-xs-2
+     [:div.status-area
       [:div.recent-status-badge
        [:a
         {:title "status"

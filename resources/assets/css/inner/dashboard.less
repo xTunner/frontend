@@ -22,7 +22,7 @@
   > .diagnostics-header, .diagnostics > li {
     .flexy();
     padding: 10px 15px;
-    box-shadow: inset 0px -1px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 -1px rgba(0, 0, 0, 0.05);
 
     > .icon {
       width: 18px;
@@ -104,9 +104,7 @@
     .row;
 
     min-height: 75px;
-
     margin-bottom: 5px;
-    padding: 10px;
 
     background-color: @white;
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.10);
@@ -188,6 +186,49 @@
     color: @gray;
     cursor: default;
     pointer-events: none;
+  }
+}
+
+.ui-v2 {
+  .recent-status-badge {
+    @lighten-ratio: 75%;
+
+    a {
+      border-radius: 40px;
+      height: 25px;
+      font-size: 11px;
+      font-weight: 300;
+      line-height: 20px;
+      text-transform: uppercase;
+      color: @black;
+      background: fadeout(@brand-cancelled-v2, @lighten-ratio);
+
+      &.pass {
+        background: fadeout(@brand-success-v2, @lighten-ratio);
+      }
+
+      &.fail {
+        background: fadeout(@brand-danger-v2, @lighten-ratio);
+      }
+
+      &.busy {
+        background: fadeout(@brand-primary-v2, @lighten-ratio);
+      }
+
+      &.stop {
+        background: fadeout(@brand-warning-v2, @lighten-ratio);
+      }
+    }
+  }
+
+  .build {
+    display: flex;
+  }
+
+  .status-area {
+    width: 125px;
+    padding: 10px;
+    box-shadow: inset -1px 0 rgba(0, 0, 0, 0.05);
   }
 }
 
