@@ -306,9 +306,6 @@
                                                     (get-in data state/projects-path))]
     (html
      [:div#add-projects
-      [:header.main-head
-       [:div.head-user
-        [:h1 "Add Projects"]]]
       [:div#follow-contents
        [:div.follow-wrapper
         (when (seq (user-model/missing-scopes user))
