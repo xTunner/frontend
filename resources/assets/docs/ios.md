@@ -31,14 +31,14 @@ customization options.
 
 ## Xcode Version
 
-By default, CircleCI will build your project with Xcode 6.2. You can select 6.3.1 or 6.4
+By default, CircleCI will build your project with Xcode 6.3.1. You can select 6.4 or 7.0
 by specifying the version in a [circle.yml file](/docs/configuration) in the root of your
-repo. For example, for 6.4, add the following:
+repo. For example, for 7.0, add the following:
 
 ```
 machine:
   xcode:
-    version: "6.4"
+    version: "7.0"
 ```
 
 ## Shared Schemes
@@ -276,9 +276,9 @@ versions installed:
 
 - OS X 10.10.3 (14D136) Darwin 14.3.0
 - Xcode:
-  - 6.2 Build version 6C131e
   - 6.3.1 Build version 6D1002
   - 6.4 Build version 6E35b
+  - 7.0 Build version 7A218
 - Facebook xctool 0.2.2
 - CocoaPods 0.36.4
 - xcpretty 0.1.8
