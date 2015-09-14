@@ -6,8 +6,7 @@
             [fs]
             [stefon.core :as stefon]
             [stefon.manifest]
-            [cheshire.core :as json]
-            [org.httpkit.client :as http]))
+            [cheshire.core :as json]))
 
 (def stefon-options {:asset-roots frontend.stefon/asset-roots
                      :precompiles frontend.stefon/precompiles
@@ -16,22 +15,17 @@
                      :mode :production})
 
 (defn update-hosted-scripts [scripts]
-  (loop [tries 0]
-    (let [result (try
-                   (doseq [script scripts]
-                     (println (format "Updating %s" script))
-                     (let [response @(http/get (:url script) {:as :text})]
-                       (assert (= (:status response) 200))
-                       (spit (str "resources/assets/" (:path script)) (:body response))))
-                   :success
-                   (catch Exception e
-                     (if (> 3 tries)
-                       :retry
-                       :fail)))]
-      (condp = result
-        :success :success
-        :retry (recur (inc tries))
-        (throw (Exception. "Couldn't compile hosted scripts"))))))
+  (doseq [script scripts]
+    (println (format "Updating %s" script))
+    (loop [tries 3]
+      (when-not (try
+                  (spit (str "resources/assets/" (:path script))
+                        (slurp (:url script)))
+                  true
+                  (catch Exception e
+                    (when (zero? tries)
+                      (throw (ex-info "Couldn't update hosted script" script e)))))
+        (recur (dec tries))))))
 
 (defn generate-doc-manifest []
   (let [doc-root "resources/assets/docs"
