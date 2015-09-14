@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [frontend.async :refer [put!]]
             [frontend.config :as config]
-            [secretary.core :as sec :include-macros true :refer-macros [defroute]])
+            [secretary.core :as sec :refer-macros [defroute]])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 
