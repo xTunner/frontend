@@ -8,8 +8,8 @@
             [goog.string.format]
             [secretary.core :as sec]))
 
-(defn get-projects [api-ch]
-  (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch))
+(defn get-projects [api-ch & {:as context}]
+  (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
 
 (defn get-repos [api-ch & {:keys [page]
                            :or {page 1}}]

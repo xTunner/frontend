@@ -238,11 +238,8 @@
 
 (defmethod post-navigated-to! :insights
   [history-imp navigation-point _ previous-state current-state]
-  (println "le- making api requests.")
   (let [api-ch (get-in current-state [:comms :api])]
-    ;; load orgs, collaborators, and repos.
-    (api/get-orgs api-ch)
-    (api/get-repos api-ch))
+    (api/get-projects api-ch :get-recent-builds true))
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :invite-teammates

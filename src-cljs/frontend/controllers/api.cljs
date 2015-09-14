@@ -95,9 +95,15 @@
 
 
 (defmethod api-event [:projects :success]
-  [target message status args state]
-  (mlog "projects success")
-  (->> (:resp args)
+  [target message status {:keys [context resp]} state]
+  (when (:get-recent-builds context)
+    (let [api-ch (get-in state [:comms :api])]
+      (doseq [project resp]
+        (api/get-dashboard-builds {:org (:username project)
+                                   :repo (:reponame project)
+                                   :branch (:default_branch project)}
+                                  api-ch))))
+  (->> resp
        (map (fn [project] (update project :scopes #(set (map keyword %)))))
        (assoc-in state state/projects-path)))
 
