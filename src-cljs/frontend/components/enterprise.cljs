@@ -148,9 +148,10 @@
            [:article.hero-title.center-block
             [:div.text-center
              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
-            [:h1.text-center "Ship code at the speed of business."]
-            [:h3.text-center "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]]
-
+            [:h1.text-center "CircleCI power behind your firewall"]
+            [:h3.text-center "CircleCI Enterprise delivers the same "
+              [:a {:href "/features"} "Continuous Integration and Deployment platform that developers love" ]
+              " with the added security and configurability that comes from running inside your private cloud or data center."]]]
           [:div.row.text-center
            [:a.btn.btn-cta {:href "#contact-form"} "Get More Info"]]]]
         ;; need this wrapper for border-top to span the full screen
@@ -161,48 +162,38 @@
             [:article
              (common/feature-icon "circle")
              [:h2.text-center "Ship Faster"]
-             [:p "The same Continuous Integration and Deployment platform that developers love, with added security for the enterprise. CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]
+             [:p "With all the modern, powerful, and easily managed "
+              [:a {:href "/features"} "CircleCi.com features"]
+              " trusted by tens of thousands of developers, CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]
             ]
            [:div.col-xs-4
             [:article
              (common/feature-icon "security")
-             [:h2.text-center "World Class Security"]
+             [:h2.text-center "World-Class Security"]
              [:p
-              "You can run CircleCI Enterprise in your own private cloud or in ours, allowing you to maintain scalability while achieving enterprise level security."]]]
+              "CircleCI Enterprise runs in your private cloud or data center and can integrate directly with your GitHub Enterprise installation, giving you peace of mind that your software assets are secured and regulatory requirements are met."]]]
            [:div.col-xs-4
             [:article
-             (common/feature-icon "time")
-             [:h2.text-center "Focus on What Matters"]
+             (common/feature-icon "controls")
+             [:h2.text-center "Total Control"]
              [:p
-              "Time is a valuable resource, so you should focus on what moves the needle for your business. CircleCI removes the pain of managing build machines and scaling your build fleet, allowing developers to focus on what matters."]]]]]]
+              "With CircleCI Enterprise you can customize your build environment and optimize the underlying compute power specifically for your builds."]]]]]]
          [:div.outer-section
           [:div.container
            [:section.row
-            [:div.col-xs-8.col-xs-offset-2.enterprise-integrations
-             [:h2.text-center "Integrations"]
-             [:p "CircleCI is built for unlimited flexibility. From hosting options to test frameworks or programming frameworks, we let you use the technology you need. GitHub Enterprise, Docker, SauceLabs, and many more."]]]
+            [:div.col-xs-8.col-xs-offset-2.enterprise-section
+             [:h2.text-center "Supported Deployment Platforms"]
+              [:p "CircleCI Enterprise is currently available for deployment on "
+               [:a {:href "/enterprise/aws"} "AWS"]
+               " and "
+               [:a {:href "/enterprise/azure"} "Azure"]
+               ". Support for others such as VMware and OpenStack will be available soon. "
+               [:a {:href "#contact-form"} "Get in touch"]
+               " to let us know what deployment environment you would like to see available next."]]]
            [:section.row
-            [:div.col-xs-4
-             [:div.integration-logo.github
-              [:img {:src (utils/cdn-path "/img/outer/enterprise/integration-github-1.svg")}]]
-             [:div.integration-text
-              "Enjoy all of the benefits of CircleCI's rich GitHub integration with your own GitHub Enterprise instance. Authenticate against GitHub Enterprise, see the status of CircleCI builds from your PR pages on GitHub Enterprise, and easily navigate to specific GitHub PRs and commits from CircleCI build pages."
-              ;; TODO: add integrations page for GitHub
-              ; [:a.integration-learn-more {:href "/integrations"} "Learn more"]
-              ]]
-            [:div.col-xs-4
-             [:div.integration-logo.docker
-              [:img {:src (utils/cdn-path "/img/outer/enterprise/integration-docker-1.svg")}]]
-             [:div.integration-text
-              "CircleCI Enterprise supports all of the container-oriented features Docker has to offer. Pull down base images from any registry, build your own Dockerfiles right in CircleCI, link containers together and run integration tests, and push built Docker images to production - all driven by CircleCI's simple yaml-based configuration and intuitive UI."
-              [:a.integration-learn-more {:href "/integrations/docker"} "Learn more"]]]
-            [:div.col-xs-4
-             [:div.integration-logo.sauce-labs
-              [:img {:src (utils/cdn-path "/img/outer/enterprise/integration-sauce-1.png")}]]
-             [:div.integration-text
-              "Test against any version of any browser with CircleCI's Enterprise SauceLabs integration. Using the Sauce Connect tunnel, you can even test applications running securely within CircleCI build containers behind your firewall. Automate your cross-browser and mobile testing."
-              ;; TODO: add integrations page for Sauce Labs
-              [:a.integration-learn-more {:href "/integrations/saucelabs"} "Learn more"]]]]]]
+            [:div.col-xs-8.col-xs-offset-2.enterprise-section
+             [:h2.text-center "Integrations"]
+             [:p "CircleCI is built for unlimited flexibility. From hosting options to test frameworks or programming frameworks, we let you use the technology you need. GitHub Enterprise, Docker, SauceLabs, and many more."]]]]]
         [:section.outer-section.outer-section-condensed
           (map language ["rails-1"
                          "clojure-1"
@@ -229,6 +220,8 @@
          [:section.container
           (common/feature-icon "phone")
           [:h2.text-center "Learn More About CircleCI Enterprise"]
+          [:div.col-xs-8.col-xs-offset-2
+           [:p "CircleCI Enterprise is available for a free, no obligation, 30 day trial.   Simply fill out the form below to reach out, tell us a little about your team, and we will follow-up to provide you with access and a trial key."]]
           [:div.enterprise-cta-contact
            (om/build contact-form nil)]]]]))))
 
