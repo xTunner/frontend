@@ -129,6 +129,7 @@
         (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "stop"
         (= "success" (:outcome build)) "pass"
         (= "running" (:status build)) "busy"
+        (= "queued" (:status build)) "queued"
         :else nil))
 
 (defn favicon-color [build]
