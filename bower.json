@@ -18,5 +18,8 @@
   },
   "devDependencies": {
     "jquery-mockjax": "1.5.3"
+  },
+  "resolutions": {
+    "jquery": "e-tag:553fb284-"
   }
 }
