@@ -228,6 +228,23 @@
   (analytics/track-signup))
 
 
+(defmethod navigated-to :insights
+  [history-imp navigation-point args state]
+  (-> state
+      (assoc :navigation-point navigation-point)
+      state-utils/clear-page-state
+      (assoc :navigation-point navigation-point
+             :navigation-data (assoc args :show-aside-menu? false))))
+
+(defmethod post-navigated-to! :insights
+  [history-imp navigation-point _ previous-state current-state]
+  (println "le- making api requests.")
+  (let [api-ch (get-in current-state [:comms :api])]
+    ;; load orgs, collaborators, and repos.
+    (api/get-orgs api-ch)
+    (api/get-repos api-ch))
+  (set-page-title! "Insights"))
+
 (defmethod navigated-to :invite-teammates
   [history-imp navigation-point args state]
   (-> state

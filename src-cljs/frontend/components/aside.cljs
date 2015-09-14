@@ -399,6 +399,12 @@
                                  "unread")}
          [:i.fa.fa-bell]]
 
+        [:a.aside-item {:data-placement "right"
+                        :data-trigger "hover"
+                        :title "Insights"
+                        :href "/insights"}
+         [:i.fa.fa-bar-chart-o]]
+
         (when (:admin user)
           [:a.aside-item {:data-placement "right"
                           :data-trigger "hover"

@@ -105,6 +105,8 @@
                                               :repo repo}))
   (defroute v1-add-projects "/add-projects" []
     (open-to-inner! nav-ch :add-projects {}))
+  (defroute v1-insights "/insights" []
+    (open-to-inner! nav-ch :insights {}))
   (defroute v1-invite-teammates "/invite-teammates" []
     (open-to-inner! nav-ch :invite-teammates {}))
   (defroute v1-invite-teammates-org "/invite-teammates/organization/:org" [org]

@@ -12,6 +12,7 @@
             [frontend.components.mobile :as mobile]
             [frontend.components.press :as press]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.insights :as insights]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
@@ -59,6 +60,7 @@
     :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
+    :insights insights/insights
     :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
