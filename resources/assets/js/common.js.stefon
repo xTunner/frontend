@@ -1,8 +1,8 @@
 [
   "../vendor/console-shim.js" ;; TODO: necessary?
-  "../../components/jquery/dist/jquery.js" ;; TODO: used by bootstrap
-  "../../components/bootstrap3-typeahead/bootstrap3-typeahead.js" ;; docs typeahead
-  "../../components/jquery-placeholder/jquery.placeholder.js" ;; TODO: necessary?
+  "../../components/jquery/index.js" ;; TODO: used by bootstrap
+  "../../components/bootstrap3-typeahead/bootstrap3-typeahead.min.js" ;; docs typeahead
+  "../../components/jquery-placeholder/jquery.placeholder.min.js" ;; TODO: necessary?
   "../../components/uri.js/src/URI.min.js" ;; TODO: necessary?
   "../../components/viewport-units-buggyfill/viewport-units-buggyfill.js" ;; temporary until apple releases a fix
   "../../components/marked/lib/marked.js" ;; used by docs
