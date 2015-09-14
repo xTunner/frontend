@@ -25,16 +25,16 @@
                                            :sort_title "Ruby"
                                            :title "Troubleshooting Ruby"
                                            :url "/docs/troubleshooting-ruby"
-                                           :children [:bundler-latest :rspec-wrong-exit-code]}
+                                           :children [:bundler-latest :rspec-exit-codes]}
                     :bundler-latest {:slug "bundler_latest"
                                      :sort_title "Do you need the latest version of Bundler?"
                                      :title "Do you need the latest version of Bundler?"
                                      :url "/docs/bundler-latest"
                                      :lastUpdated "Feb 3, 2013"}
-                    :rspec-wrong-exit-code {:slug "rspec_wrong_exit_code"
+                    :rspec-exit-codes {:slug "rspec_exit_codes"
                                             :sort_title "RSpec is failing but CircleCI reports my tests have passed"
                                             :title "RSpec is failing but CircleCI reports my tests have passed"
-                                            :url "/docs/rspec-wrong-exit-code"
+                                            :url "/docs/rspec-exit-codes"
                                             :lastUpdated "Dec 20, 2013"}})
 
 (def test-docs

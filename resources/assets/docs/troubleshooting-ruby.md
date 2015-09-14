@@ -4,13 +4,13 @@ title: Troubleshooting Ruby
 short_title: Ruby
 children:
   - bundler-latest
-  - rspec-wrong-exit-code
+  - rspec-exit-codes
   - ruby-debugger-problems
   - capybara-timeout
   - git-bundle-install
   - ruby-exception-during-schema-load
-  - wrong-ruby-commands
-  - wrong-ruby-version
+  - not-specified-ruby-commands
+  - unrecognized-ruby-version
   - unexpected-rake-errors
 -->
 
