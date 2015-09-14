@@ -225,10 +225,28 @@
     display: flex;
   }
 
+  @build-padding: 10px;
+
   .status-area {
-    width: 125px;
-    padding: 10px;
+    flex: 0 0 125px;
+    padding: @build-padding;
     box-shadow: inset -1px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .build-info {
+    padding: @build-padding;
+  }
+
+  .build-info-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .metadata {
+    display: flex;
+  }
+
+  .metadata-item {
+    padding-right: @build-padding;
   }
 }
 

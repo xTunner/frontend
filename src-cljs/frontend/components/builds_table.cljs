@@ -130,35 +130,35 @@
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
                 "Cancel"])))])]
-     [:div.col-xs-10
-      [:div.container-fluid
-       [:div.row
-        [:div.col-xs-6
-         [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
-              :href url}
+     [:div.build-info
+      [:div.build-info-header
+       [:div.contextual-identifier
+        [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+             :href url}
 
-          (when show-project?
-            (str (:username build) " / " (:reponame build) " "))
+         (when show-project?
+           (str (:username build) " / " (:reponame build) " "))
 
-          (when (and show-project? show-branch?) " / ")
+         (when (and show-project? show-branch?) " / ")
 
-          (when show-branch?
-            [:a
-             {:title (build-model/vcs-ref-name build)
-              :href url}
-             (-> build build-model/vcs-ref-name)])
-          " #"
-          (:build_num build)]]
+         (when show-branch?
+           [:a
+            {:title (build-model/vcs-ref-name build)
+             :href url}
+            (-> build build-model/vcs-ref-name)])
+         " #"
+         (:build_num build)]]
 
-        [:div.col-xs-1
+       [:div.metadata
 
+        [:div.metadata-item
          (if-not (:vcs_revision build)
            [:a {:href url}]
            [:a {:title (build-model/github-revision build)
                 :href url}
             (build-model/github-revision build)])]
 
-        [:div.col-xs-2.recent-user
+        [:div.metadata-item.recent-user
          [:a
           {:title (build-model/ui-user build)
            :href url}
@@ -166,31 +166,24 @@
 
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
-          [:div.col-xs-4 " "]
-          (list [:div.col-xs-2.recent-time
+          [:div " "]
+          (list [:div.metadata-item.recent-time
                  [:a
                   {:title  (datetime/full-datetime (js/Date.parse (:start_time build)))
                    :href url}
                   (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
                   " ago"]]
-                [:div.col-xs-1.recent-time
+                [:div.metadata-item.recent-time
                  [:a
                   {:title (build-model/duration build)
                    :href url}
                   (om/build common/updating-duration {:start (:start_time build)
-                                                      :stop (:stop_time build)})]]))
-        ]
-       [:div.row
-        [:div.col-xs-12
-         [:a.recent-log
-          {:title (:body build)
-           :href url}
-          (:subject build)]]]]]
-     
-     
-     
-     
-     ]))
+                                                      :stop (:stop_time build)})]]))]]
+      [:div.recent-commit-msg
+       [:a.recent-log
+        {:title (:body build)
+         :href url}
+        (:subject build)]]]]))
 
 (defn builds-table-v2 [builds owner {:keys [show-actions? show-branch? show-project?]
                                      :or {show-branch? true
@@ -200,11 +193,11 @@
     om/IRender
     (render [_]
       (html
-       [:div.container-fluid
-        (map #(build-row-v2 % owner {:show-actions? show-actions?
-                                     :show-branch? show-branch?
-                                     :show-project? show-project?})
-             builds)]))))
+        [:div.container-fluid
+         (map #(build-row-v2 % owner {:show-actions? show-actions?
+                                      :show-branch? show-branch?
+                                      :show-project? show-project?})
+              builds)]))))
 
 (defn builds-table [builds owner opts]
   (if (feature/enabled? :ui-v2)
