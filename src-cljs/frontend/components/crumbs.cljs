@@ -16,6 +16,11 @@
   [attrs]
   (crumb-node attrs))
 
+(defmethod render-crumb :dashboard
+  [attrs]
+  (crumb-node {:name "Builds"
+               :path (routes/v1-dashboard-path {})}))
+
 (defmethod render-crumb :project
   [{:keys [username project active]}]
   (crumb-node {:name project
@@ -61,6 +66,26 @@
   (crumb-node {:name "organization settings"
                :path (routes/v1-org-settings {:org username})
                :active active}))
+
+(defmethod render-crumb :add-projects
+  [attrs]
+  (crumb-node {:name "Add Projects"
+               :path (routes/v1-add-projects)}))
+
+(defmethod render-crumb :invite-teammates
+  [attrs]
+  (crumb-node {:name "Invite Teammates"
+               :path (routes/v1-invite-teammates)}))
+
+(defmethod render-crumb :account
+  [attrs]
+  (crumb-node {:name "Account"
+               :path (routes/v1-account)}))
+
+(defmethod render-crumb :settings-base
+  [attrs]
+  (crumb-node {:name "Settings"
+               :active false}))
 
 (defn crumbs [crumbs-data]
   (map render-crumb crumbs-data))

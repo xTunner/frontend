@@ -143,7 +143,8 @@
       (assoc :navigation-point navigation-point
              :navigation-data args
              :project-settings-project-name project-name)
-      (assoc-in state/crumbs-path [{:type :org :username org}
+      (assoc-in state/crumbs-path [{:type :dashboard}
+                                   {:type :org :username org}
                                    {:type :project :username org :project repo}
                                    {:type :project-branch :username org :project repo}
                                    {:type :build :username org :project repo
@@ -215,7 +216,8 @@
              :navigation-data (assoc args :show-aside-menu? false))
       ;; force a reload of repos.
       (assoc-in state/repos-path [])
-      (assoc-in state/repos-loading-path true)))
+      (assoc-in state/repos-loading-path true)
+      (assoc-in state/crumbs-path [{:type :add-projects}])))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
@@ -248,7 +250,8 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data (assoc args :show-aside-menu? false))
-      (assoc-in [:invite-data :org] (:org args))))
+      (assoc-in [:invite-data :org] (:org args))
+      (assoc-in state/crumbs-path [{:type :invite-teammates}])))
 
 (defmethod post-navigated-to! :invite-teammates
   [history-imp navigation-point args previous-state current-state]
@@ -271,12 +274,10 @@
              ;; TODO can we get rid of project-settings-subpage in favor of navigation-data?
              :project-settings-subpage subpage
              :project-settings-project-name project-name)
-      (assoc-in state/crumbs-path [{:type :org
+      (assoc-in state/crumbs-path [{:type :settings-base}
+                                   {:type :org
                                     :username org}
                                    {:type :project
-                                    :username org
-                                    :project repo}
-                                   {:type :project-settings
                                     :username org
                                     :project repo}])
       (#(if (state-utils/stale-current-project? % project-name)
@@ -348,9 +349,8 @@
       (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
       (assoc :org-settings-org-name org)
-      (assoc-in state/crumbs-path [{:type :org
-                                    :username org}
-                                   {:type :org-settings
+      (assoc-in state/crumbs-path [{:type :settings-base}
+                                   {:type :org
                                     :username org}])
       (#(if (state-utils/stale-current-org? % org)
           (state-utils/reset-current-org %)
@@ -441,7 +441,8 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point)
       (assoc :navigation-data args)
-      (assoc :account-settings-subpage subpage)))
+      (assoc :account-settings-subpage subpage)
+      (assoc-in state/crumbs-path [{:type :account}])))
 
 (defmethod post-navigated-to! :account
   [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]

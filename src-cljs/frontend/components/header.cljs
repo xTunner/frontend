@@ -53,8 +53,8 @@
         (html
           [:div.head-user
            [:div.breadcrumbs
-            (when (seq crumbs-data)
-              [:a {:title "home", :href "/"} (if (feature/enabled? :ui-v2) "Builds " (list [:i.fa.fa-home] " "))])
+            (when (and (not (feature/enabled? :ui-v2) (seq crumbs-data)))
+              [:a {:title "home", :href "/"} :i.fa.fa-home " "])
             (crumbs/crumbs crumbs-data)]
            (when (show-follow-project-button? app)
              (forms/managed-button
