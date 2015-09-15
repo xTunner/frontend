@@ -159,26 +159,20 @@
             (build-model/github-revision build)])]
 
         [:div.metadata-item.recent-user
-         [:a
-          {:title (build-model/ui-user build)
-           :href url}
-          (build-model/author build)]]
+         {:title (build-model/ui-user build)}
+          (build-model/author build)]
 
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
           [:div " "]
           (list [:div.metadata-item.recent-time
-                 [:a
-                  {:title  (datetime/full-datetime (js/Date.parse (:start_time build)))
-                   :href url}
-                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
-                  " ago"]]
+                 {:title  (datetime/full-datetime (js/Date.parse (:start_time build))) }
+                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
+                  " ago"]
                 [:div.metadata-item.recent-time
-                 [:a
-                  {:title (build-model/duration build)
-                   :href url}
-                  (om/build common/updating-duration {:start (:start_time build)
-                                                      :stop (:stop_time build)})]]))]]
+                 {:title (build-model/duration build)}
+                 (om/build common/updating-duration {:start (:start_time build)
+                                                     :stop (:stop_time build)})]))]]
       [:div.recent-commit-msg
        [:a.recent-log
         {:title (:body build)

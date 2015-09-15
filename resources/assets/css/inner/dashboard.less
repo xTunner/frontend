@@ -239,18 +239,42 @@
 
   .build-info {
     padding: @build-padding;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .recent-commit-msg a {
+      color: @gray-lighter-v2;
+      font-size: 11px;
+    }
   }
 
   .build-info-header {
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
   }
+
+  .contextual-identifier {
+    margin-right: auto;
+    font-size: 13px;
+
+    & > a {
+      color: @gray-light-v2;
+    }
+  }
+
   .metadata {
     display: flex;
   }
 
   .metadata-item {
     padding-right: @build-padding;
+    color: @gray-light-v2;
+    font-size: 12px;
+  }
+
+  .recent-time {
+    font-family: @brand-sans-serif-v2;
   }
 }
 
