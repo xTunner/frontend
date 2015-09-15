@@ -104,6 +104,9 @@
                                    :show-project? show-project?})
               builds)]]))))
 
+(defn dashboard-icon [name]
+  [:img.dashboard-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
+
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (when (:dont_build build) "dont_build")}
@@ -150,27 +153,31 @@
          (:build_num build)]]
 
        [:div.metadata
-
         [:div.metadata-item
          (if-not (:vcs_revision build)
            [:a {:href url}]
-           [:a {:title (build-model/github-revision build)
-                :href url}
-            (build-model/github-revision build)])]
+           (list (dashboard-icon "Builds-CommitNumber")
+                 [:a {:title (build-model/github-revision build)
+                      :href url}
+                  (build-model/github-revision build)]))]
 
         [:div.metadata-item.recent-user
          {:title (build-model/ui-user build)}
+          (dashboard-icon "Builds-Author")
           (build-model/author build)]
 
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
-          [:div " "]
+          (list [:div.metadata-item " "]
+                [:div.metadata-item " "])
           (list [:div.metadata-item.recent-time
                  {:title  (datetime/full-datetime (js/Date.parse (:start_time build))) }
+                 (dashboard-icon "Builds-StartTime")
                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
                   " ago"]
                 [:div.metadata-item.recent-time
                  {:title (build-model/duration build)}
+                 (dashboard-icon "Builds-Duration")
                  (om/build common/updating-duration {:start (:start_time build)
                                                      :stop (:stop_time build)})]))]]
       [:div.recent-commit-msg
