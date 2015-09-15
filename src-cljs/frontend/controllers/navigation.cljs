@@ -228,14 +228,14 @@
   (analytics/track-signup))
 
 
-(defmethod navigated-to :insights
+(defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
   (-> state
       (assoc :navigation-point navigation-point)
       state-utils/clear-page-state
       (assoc-in state/projects-path [])))
 
-(defmethod post-navigated-to! :insights
+(defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (api/get-projects api-ch :get-recent-builds true))

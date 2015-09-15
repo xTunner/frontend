@@ -402,7 +402,7 @@
         [:a.aside-item {:data-placement "right"
                         :data-trigger "hover"
                         :title "Insights"
-                        :href "/insights"}
+                        :href "/build-insights"}
          [:i.fa.fa-bar-chart-o]]
 
         (when (:admin user)

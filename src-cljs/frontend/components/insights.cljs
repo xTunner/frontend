@@ -18,7 +18,7 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
-(defrender insights [data owner]
+(defrender build-insights [data owner]
   (html
    [:div#insights
     [:h1 "SUCCESS!"]]))
