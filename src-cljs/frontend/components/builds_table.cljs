@@ -163,8 +163,10 @@
 
         [:div.metadata-item.recent-user
          {:title (build-model/ui-user build)}
-          (dashboard-icon "Builds-Author")
-          (build-model/author build)]
+          (when-let [author (build-model/author build)]
+            (list
+              (dashboard-icon "Builds-Author")
+              author))]
 
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
