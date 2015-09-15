@@ -50,6 +50,12 @@
   (let [url (dashboard-builds-url args)]
     (ajax/ajax :get url :recent-builds api-ch :context {:branch branch :repo repo :org org})))
 
+
+(defn get-projects-builds [build-ids api-ch]
+  (doseq [build-id build-ids
+        :let [url (dashboard-builds-url build-id)]]
+    (ajax/ajax :get url :recent-project-builds api-ch :context build-id)))
+
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]
   (let [url (or output-url

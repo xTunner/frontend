@@ -233,8 +233,7 @@
   (-> state
       (assoc :navigation-point navigation-point)
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data (assoc args :show-aside-menu? false))))
+      (assoc-in state/projects-path [])))
 
 (defmethod post-navigated-to! :insights
   [history-imp navigation-point _ previous-state current-state]
