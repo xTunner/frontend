@@ -170,8 +170,7 @@
 
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
-          (list [:div.metadata-item " "]
-                [:div.metadata-item " "])
+          nil
           (list [:div.metadata-item.recent-time
                  {:title  (datetime/full-datetime (js/Date.parse (:start_time build))) }
                  (dashboard-icon "Builds-StartTime")
