@@ -118,12 +118,12 @@
                                (:message notice)]))})
       [:div.row
        [:div.col-xs-12.text-center
-        (om/build contact-form/morphing-button {:text "Get More Info" :form-state form-state})
+        (om/build contact-form/morphing-button {:text "Get In Touch..." :form-state form-state})
         [:div.success-message
          {:class (when (= :success form-state) "success")}
          "Thank you for submitting your information."
          [:br]
-         "Someone from our Enterprise team will contact you within one business day."]]]))))
+         "Someone from our Enterprise team will contact you soon, usually within one business day."]]]))))
 
 (def enterprise-bg
   (map arrow ["left-a-1"
@@ -149,9 +149,7 @@
             [:div.text-center
              [:img.hero-logo {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]]
             [:h1.text-center "CircleCI power behind your firewall"]
-            [:h3.text-center "CircleCI Enterprise delivers the same "
-              [:a {:href "/features"} "Continuous Integration and Deployment platform that developers love" ]
-              " with the added security and configurability that comes from running inside your private cloud or data center."]]]
+            [:h3.text-center "CircleCI Enterprise delivers the same Continuous Integration and Deployment platform that developers love with the added security and configurability that comes from running inside your private cloud or data center."]]]
           [:div.row.text-center
            [:a.btn.btn-cta {:href "#contact-form"} "Get More Info"]]]]
         ;; need this wrapper for border-top to span the full screen
@@ -161,28 +159,28 @@
            [:div.col-xs-4
             [:article
              (common/feature-icon "circle")
-             [:h2.text-center "Ship Faster"]
-             [:p "With all the modern, powerful, and easily managed "
+             [:h2.text-center "Fewer Headaches"]
+             [:p "Reduce DevOps management overhead and ship with confidence. CircleCI Enterprise has all the modern, powerful, and easily managed "
               [:a {:href "/features"} "CircleCi.com features"]
-              " trusted by tens of thousands of developers, CircleCI Enterprise lets you quickly and securely build, test, and deploy your applications."]]
+              " that are trusted by tens of thousands of developers around the world, so your teams can quickly and securely build, test, and deploy with confidence."]]
             ]
            [:div.col-xs-4
             [:article
              (common/feature-icon "security")
              [:h2.text-center "World-Class Security"]
              [:p
-              "CircleCI Enterprise runs in your private cloud or data center and can integrate directly with your GitHub Enterprise installation, giving you peace of mind that your software assets are secured and regulatory requirements are met."]]]
+              "Secure your software assets for peace of mind. CircleCI Enterprise runs in your private cloud or data center and uses modern security practice, so your internal and regulatory security requirements can be met."]]]
            [:div.col-xs-4
             [:article
              (common/feature-icon "controls")
              [:h2.text-center "Total Control"]
              [:p
-              "With CircleCI Enterprise you can customize your build environment and optimize the underlying compute power specifically for your builds."]]]]]]
+              "Ship faster and easier. With CircleCI Enterprise you can customize your build environment and optimize the configuration and scale of the computing power of your build fleet specifically to the needs of your software teams."]]]]]]
          [:div.outer-section
           [:div.container
            [:section.row
             [:div.col-xs-8.col-xs-offset-2.enterprise-section
-             [:h2.text-center "Supported Deployment Platforms"]
+             [:h2.text-center "Supported Installation Environments"]
               [:p "CircleCI Enterprise is currently available for deployment on "
                [:a {:href "/enterprise/aws"} "AWS"]
                " and "
@@ -193,7 +191,7 @@
            [:section.row
             [:div.col-xs-8.col-xs-offset-2.enterprise-section
              [:h2.text-center "Integrations"]
-             [:p "CircleCI is built for unlimited flexibility. From hosting options to test frameworks or programming frameworks, we let you use the technology you need. GitHub Enterprise, Docker, SauceLabs, and many more."]]]]]
+             [:p "CircleCI is built for unlimited flexibility. From hosting options to test frameworks or programming frameworks, we let you use the technology you need. Easily integrate directly with GitHub.com and GitHub Enterprise, Docker, SauceLabs, Heroku, and many more."]]]]]
         [:section.outer-section.outer-section-condensed
           (map language ["rails-1"
                          "clojure-1"
