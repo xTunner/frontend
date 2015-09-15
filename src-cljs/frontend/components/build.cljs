@@ -2,8 +2,9 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
-            [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
+            [frontend.models.container :as container-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
@@ -189,7 +190,7 @@
                         (not (:dismiss-config-errors build-data)))
                (om/build build-config/config-errors build))]]]])))))
 
-(defn build [data owner]
+(defn build-v1 [data owner]
   (reify
     om/IRender
     (render [_]
@@ -222,3 +223,44 @@
 
              (when (< 1 (count (:steps build)))
                [:div (common/messages (:messages build))])])])))))
+
+
+(defn build-v2 [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [build (get-in data state/build-path)
+            build-data (get-in data state/build-data-path)
+            container-data (get-in data state/container-data-path)
+            invite-data (:invite-data data)
+            project-data (get-in data state/project-data-path)
+            user (get-in data state/user-path)]
+        (html
+         [:div#build-log-container
+          (if-not build
+           [:div
+             (om/build common/flashes (get-in data state/error-message-path))
+             [:div.loading-spinner-big common/spinner]]
+
+            [:div
+             (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
+                                                 :project-data project-data
+                                                 :user user
+                                                 :scopes (get-in data state/project-scopes-path)})
+             (om/build common/flashes (get-in data state/error-message-path))
+             (om/build notices {:build-data (dissoc build-data :container-data)
+                                :project-data project-data
+                                :invite-data invite-data})
+             (om/build container-pills {:container-data container-data
+                                        :build-running? (build-model/running? build)
+                                        :build build})
+             (om/build build-steps/container-build-steps container-data)
+
+             (when (< 1 (count (:steps build)))
+               [:div (common/messages (:messages build))])])])))))
+
+(defn build []
+  (if (feature/enabled? :ui-v2)
+    build-v2
+    build-v1))
+

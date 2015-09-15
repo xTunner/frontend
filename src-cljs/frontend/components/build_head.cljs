@@ -814,3 +814,175 @@
 [:div.no-user-actions]]
 
            (om/build build-sub-head data)]])))))
+
+(defn build-head-v2 [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [build-data (:build-data data)
+            build (:build build-data)
+            build-id (build-model/id build)
+            build-num (:build_num build)
+            vcs-url (:vcs_url build)
+            usage-queue-data (:usage-queue-data build-data)
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)
+            project (get-in data [:project-data :project])
+            plan (get-in data [:project-data :plan])
+            user (:user data)
+            logged-in? (not (empty? user))
+            config-data (:config-data build-data)
+            build-info {:build-id (build-model/id build)
+                        :vcs-url (:vcs_url build)
+                        :build-num (:build_num build)}]
+        (html
+         [:div.build-head-wrapper
+          [:div.build-head
+           [:div.build-info
+            [:table
+             [:tbody
+              [:tr
+               [:th "Triggered by"]
+               [:td (trigger-html build)]
+               [:th "Started"]
+               [:td (when (:start_time build)
+                      {:title (datetime/full-datetime (:start_time build))})
+                (when (:start_time build)
+                  (list (om/build common/updating-duration
+                                  {:start (:start_time build)}
+                                  {:opts {:formatter datetime/time-ago}}) " ago"))]]
+              [:tr
+               [:th "Previous"]
+               (if-not (:previous build)
+                 [:td "none"]
+                 [:td
+                  [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
+                   (:build_num (:previous build))]])
+
+               [:th "Duration"]
+               [:td (if (build-model/running? build)
+                      (om/build common/updating-duration {:start (:start_time build)
+                                                          :stop (:stop_time build)})
+                      (build-model/duration build))
+                    (om/build expected-duration {:start (:start_time build)
+                                                :stop (:stop_time build)
+                                                :build build})]]
+              [:tr
+               (when (:usage_queued_at build)
+                 (list [:th "Queued"]
+                       [:td (if (< 0 (build-model/run-queued-time build))
+                              [:span
+                               (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                                   :stop (or (:queued_at build) (:stop_time build))})
+                               " waiting + "
+                               (om/build common/updating-duration {:start (:queued_at build)
+                                                                   :stop (or (:start_time build) (:stop_time build))})
+                               " in queue"]
+
+                              [:span
+                               (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                                   :stop (or (:queued_at build) (:stop_time build))})
+                               " waiting for builds to finish"])]))
+               [:th "Status"]
+               [:td
+                [:span.build-status {:class (:status build)}
+                 (build-model/status-words build)]
+                (when-let [canceler (and (= (:status build) "canceled")
+                                         (:canceler build))]
+                  [:span.build-canceler
+                   (list "by "
+                         [:a {:href (str (github-endpoint) "/" (:login canceler))}
+                          (if (not-empty (:name canceler))
+                            (:name canceler)
+                            (:login canceler))])])]]
+              [:tr
+              [:th "Parallelism"]
+               [:td
+                (if (has-scope :write-settings data)
+                  [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                             :href (build-model/path-for-parallelism build)}
+                   (str (:parallel build) "x")]
+                  [:span (:parallel build) "x"])]
+
+               (when-let [urls (seq (:pull_request_urls build))]
+                 ;; It's possible for a build to be part of multiple PRs, but it's rare
+                 (list [:th (str "PR" (when (< 1 (count urls)) "s"))]
+                       [:td
+                        (interpose
+                         ", "
+                         (map (fn [url] [:a {:href url} "#"
+                                         (let [n (re-find #"/\d+$" url)]
+                                           (if n (subs n 1) "?"))])
+                              urls))]))
+               ]
+
+
+            [:tr
+             [:th "Author"]
+             [:td (if-not (:author_email build)
+                    [:span (build-model/author build)]
+                    [:a {:href (str "mailto:" (:author_email build))}
+                     (build-model/author build)])]
+             (when (build-model/author-isnt-committer build)
+                 (list [:th "Committer"]
+                       [:td
+                        (if-not (:committer_email build)
+                          [:span (build-model/committer build)]
+                          [:a {:href (str "mailto:" (:committer_email build))}
+                           (build-model/committer build)])]))]
+
+              ]]
+
+
+            [:div.build-actions
+             (when (has-scope :write-settings data)
+               [:div.actions
+                (forms/managed-button
+                 [:button.retry_build
+                  {:data-loading-text "Rebuilding",
+                   :title "Retry the same tests",
+                   :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
+                                                                   :no-cache? false}])}
+                  "Rebuild"])
+
+                (forms/managed-button
+                 [:button.without_cache_retry
+                  {:data-loading-text "Rebuilding",
+                   :title "Retry without cache",
+                   :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
+                                                                   :no-cache? true}])}
+                  "without cache"])
+
+                ;; XXX Temporarily remove the ssh button for OSX builds
+                (when (not (feature/enabled-for-project? project :osx))
+                  (forms/managed-button
+                   [:button.ssh_build
+                    {:data-loading-text "Rebuilding",
+                     :title "Retry with SSH in VM",
+                     :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
+                    "with ssh"]))])
+             [:div.actions
+              ;; TODO: Handle when intercom isn't enabled
+              (when (and logged-in? (intercom-enabled?)) ;; no intercom for logged-out users
+                [:button.report_build
+                 {:title "Report error with build",
+                  :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}
+                 "Report"])
+              (when (and (build-model/can-cancel? build) (has-scope :write-settings data))
+                (forms/managed-button
+                  [:button.cancel_build
+                   {:data-loading-text "Canceling",
+                    :title "Cancel this build",
+                    :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                     :vcs-url vcs-url
+                                                                     :build-num build-num}])}
+                   "Cancel"]))]]
+[:div.no-user-actions]]
+
+           (om/build build-sub-head data)]])))))

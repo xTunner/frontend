@@ -29,7 +29,9 @@
             (get-in app [:navigation-data :repo])))))
 
 (defn show-settings-link? [app]
-  (:read-settings (get-in app state/page-scopes-path)))
+  (and
+    (:read-settings (get-in app state/page-scopes-path))
+    (not= false (-> app :navigation-data :show-settings-link?))))
 
 (defn settings-link [app owner]
   (when (show-settings-link? app)
@@ -41,6 +43,10 @@
                                     {:href (routes/v1-org-settings navigation-data)}
                                     (common/ico :settings-light) "Organization Settings"]
             :else nil))))
+
+(defn build-buttons [app owner]
+  (when (:navigation-point app)
+    nil))
 
 (defn head-user [app owner]
   (reify
@@ -63,7 +69,9 @@
                 {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
                  :data-spinner true}
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
-           (settings-link app owner)])))))
+           (settings-link app owner)
+           (when (feature/enabled? :ui-v2)
+             (build-buttons app owner))])))))
 
 (defn head-admin [app owner]
   (reify
