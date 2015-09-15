@@ -231,7 +231,8 @@
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
   (-> state
-      (assoc :navigation-point navigation-point)
+      (assoc :navigation-point navigation-point
+             :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
       (assoc-in state/projects-path [])))
 
