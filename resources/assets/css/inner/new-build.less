@@ -10,6 +10,7 @@
 #container_scroll_parent {
   // hides scrollbar on container_parent
   overflow: hidden;
+
   // TODO: move this into the main #container_parent when om is fully shipped
   #container_parent {
     overflow-y: hidden;
@@ -22,6 +23,7 @@
 
 .containers {
   z-index: 10;
+
   &.fixed {
     position: fixed;
     top: 0px;
@@ -54,16 +56,20 @@
 // Creates the selectors that will keep the proper container in view
 // Generates #container_parent.selected_2 { #container_2 { position: relative; }}
 .selectedX (@index) when (@index > -1) {
+  .selectedX(@index - 1);
+
   #container_parent.selected_@{index} {
+
     #container_@{index} {
       position: relative;
     }
   }
-  .selectedX(@index - 1);
 }
+
 .selectedX (-1) {}
 
 @max_containers: 100;
+
 .selectedX (@max_containers);
 
 /* Set up a :after pseudo-element to reflect the build status */
@@ -73,6 +79,7 @@
   list-style: none;
   margin: 0 8.5%;
 }
+
 .container-selector {
   .flex(1, 1);
   .flexy(column);
@@ -83,6 +90,7 @@
   padding: 1ex 0;
   border: 1px solid @grayBoxBorder;
   border-left-width: 0;
+
   &.parallelism-tab {
     max-width: 30px;
     background: @circleBlue;
@@ -102,32 +110,39 @@
       color: @white;
     }
   }
+
   &.parallelism-tab-b {
     max-width: 30px;
     background: @white;
     color: @blue;
+
     span {
       margin-top: 8px;
       font-size: 22px;
     }
+
     &:hover {
     border: @blue 1px solid;
     color: @blue;
     }
   }
+
   &:hover {
     &.waiting {
       color: @blueLight;
       border: 1px solid @blueLight;
     }
+
     &.running {
       color: @blueLight;
       border: 1px solid @blueLight;
     }
+
     &.success {
       color: @green;
       border: 1px solid @green;
     }
+
     &.failed,
     &.canceled {
       color: @redLight;
@@ -142,6 +157,7 @@
     color: @grayDark;
     border: 1px solid @grayDark;
   }
+
   &.waiting {
     svg {
       path {
@@ -151,6 +167,7 @@
       }
     }
   }
+
   &.running {
     svg {
       path {
@@ -158,6 +175,7 @@
       }
     }
   }
+
   &.success {
     svg {
       path {
@@ -165,6 +183,7 @@
       }
     }
   }
+
   &.failed,
   &.canceled {
     color: @white;
@@ -180,6 +199,7 @@
       }
     }
   }
+
   &.active {
     &:before,
     &:after {
@@ -192,16 +212,19 @@
       border: solid transparent;
       pointer-events: none;
     }
+
     &:before {
       border-top-color: @grayLighter;
       border-width: (@baseFontSize / 2) + 1;
       margin-left: (-@baseFontSize / 2) - 1;
     }
+
     &:after {
       border-top-color: @appBackgroundColor;
       border-width: (@baseFontSize / 2);
       margin-left: (-@baseFontSize / 2);
     }
+
     &.waiting {
       &:hover {
         &:before {
@@ -209,6 +232,7 @@
         }
       }
     }
+
     &.running {
       &:hover {
         &:before {
@@ -216,6 +240,7 @@
         }
       }
     }
+
     &.success {
       &:hover {
         &:before {
@@ -223,6 +248,7 @@
         }
       }
     }
+
     &.failed,
     &.canceled {
       &:before,
@@ -236,22 +262,27 @@
       }
     }
   }
+
   &:first-child {
     border-left-width: 1px;
     border-radius: 4px 0 0 4px;
   }
+
   &:not(:first-child) {
     &:hover {
       margin-left: -1px;
     }
   }
+
   &:last-child {
     border-radius: 0 4px 4px 0;
   }
+
   svg {
     path {
       stroke: @grayDark;
       stroke-width: 8;
+
       &:nth-child(2) {
         stroke-linecap: round;
         stroke-width: 20;
@@ -263,6 +294,13 @@
 // V2 from here on !!!!
 
 // TODO generic V2 stuff, abstract out
+.card {
+  padding: 15px;
+
+  background: white;
+  box-shadow: inset 0 -1px rgba(0, 0, 0, 0.05);
+}
+
 .badge {
   @lighten-ratio: 75%;
 
@@ -305,4 +343,101 @@
     height: @badge-icon-size;
     width: @badge-icon-size;
   }
+}
+
+// Build page V2 stuff
+.build-info-v2 {
+  margin-top: 15px;
+}
+
+.container-v2 {
+}
+
+.container-list-v2 {
+  display: flex;
+}
+
+.container-selector-v2 {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 40px;
+
+  background: @gray-background-v2;
+  color: @gray-light-v2;
+  font-size: 11px;
+  padding: 5px;
+
+  .container-status-icon {
+    height: 14px;
+    width: 14px;
+  }
+
+  & + .container-selector-v2 {
+    margin-left: 1px;
+  }
+
+  &.active {
+    color: @white;
+
+    &.success {
+      background: @brand-success-v2;
+    }
+
+    &.waiting {
+      background: @brand-pending-v2;
+    }
+
+    &.running {
+      background: @brand-primary-v2;
+    }
+
+    &.failed,
+    &.canceled {
+      background: @brand-danger-v2;
+    }
+  }
+
+  &.page-container-pills {
+    color: @white;
+    background: @backround-color-dark-v2;
+    text-align: center;
+  }
+
+  .upper-pill-section {
+    display: flex;
+    flex-direction: row;
+
+    & > .container-index {
+      text-align: left;
+    }
+
+    & > .status-icon {
+      text-align: right;
+    }
+
+    & > .container-index,
+    & > .status-icon {
+      flex-grow: 1;
+    }
+  }
+}
+
+// Used by om frontend to hide scrollers it needs for find in firefox
+.container-scroll-parent-v2 {
+  // hides scrollbar on container_parent
+  overflow: hidden;
+  overflow-x: scroll;
+
+  .container-parent-v2 {
+    overflow-y: hidden;
+
+    // hides scrollbar
+    margin-bottom: -25px;
+    padding-bottom: 25px;
+  }
+}
+
+.build-status {
+  min-width: 105px;
 }
