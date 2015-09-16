@@ -53,7 +53,8 @@
 
 (defn get-projects-builds [build-ids api-ch]
   (doseq [build-id build-ids
-        :let [url (dashboard-builds-url build-id)]]
+        :let [url (dashboard-builds-url (merge {:builds-per-page 60}
+                                               build-id))]]
     (ajax/ajax :get url :recent-project-builds api-ch :context build-id)))
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]

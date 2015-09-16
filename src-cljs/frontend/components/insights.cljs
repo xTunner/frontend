@@ -38,8 +38,8 @@
   (let [y-max (apply max (mapcat #(select-values % [:queued_time_minutes :build_time_minutes])
                                  builds))
         svg-width 900
-        svg-height 250
-        margins {:top 50, :right 10, :bottom 20, :left 70}
+        svg-height 180
+        margins {:top 30, :right 10, :bottom 0, :left 70}
         width (- svg-width (:left margins) (:right margins))
         height (- svg-height (:top margins) (:bottom margins))
         y-scale (-> (js/d3.scale.linear)
@@ -220,14 +220,15 @@
 
 (defrender project-insights [{:keys [reponame username default_branch recent-builds]} owner]
   (html
-   [:div
-    [:header.main-head
-     [:div.head-user
-      [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]]]
+   [:div.project-block
+    [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
     (om/build project-insights-bar recent-builds)]))
 
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]
     (html
        [:div#build-insights
+        [:header.main-head
+         [:div.head-user
+          [:h1 "Insights » Repositories"]]]
         (om/build-all project-insights projects)])))
