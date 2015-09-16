@@ -98,7 +98,7 @@
                 (when (plan-model/suspended? plan)
                   (om/build project-common/suspended-notice plan))
 
-                (om/build builds-table/builds-table builds {:opts {:show-actions? false
+                (om/build builds-table/builds-table builds {:opts {:show-actions? (feature/enabled? :ui-v2)
                                                                    :show-branch? (not (:branch nav-data))
                                                                    :show-project? (not (:repo nav-data))}})
                 [:div.recent-builds-pager

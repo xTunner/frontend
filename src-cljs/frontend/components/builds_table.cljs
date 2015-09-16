@@ -115,10 +115,9 @@
          :href url
          :class (build-model/status-class build)}
         (build-model/status-words build)]]
-      
-      
+
       (when show-actions?
-        [:td.build_actions
+        [:div.build_actions
          (when (build-model/can-cancel? build)
            (let [build-id (build-model/id build)
                  vcs-url (:vcs_url build)
