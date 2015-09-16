@@ -212,7 +212,6 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
-             (om/build common/flashes (get-in data state/error-message-path))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
                                 :invite-data invite-data})
@@ -224,6 +223,55 @@
              (when (< 1 (count (:steps build)))
                [:div (common/messages (:messages build))])])])))))
 
+(defn container-result-icon [name]
+  [:img.container-status-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
+
+(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (let [container-id (container-model/id container)
+             status (container-model/status container build-running?)]
+        [:a.container-selector-v2
+         {:on-click #(raise! owner [:container-selected {:container-id container-id}])
+          :class (concat (container-model/status->classes status)
+                         (when (= container-id current-container-id) ["active"]))}
+         (str (:index container))
+         (container-result-icon (case status
+                                  :failed "Status-Failed"
+                                  :success "Status-Passed"
+                                  :canceled "Status-Cancelled"
+                                  :running "Status-Running"
+                                  :waiting "Status-Queued"
+                                  nil))])))))
+
+(defn container-pills-v2 [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [container-data (:container-data data)
+            build-running? (:build-running? data)
+            build (:build data)
+            paging-width 15
+
+            {:keys [containers current-container-id]} container-data
+            hide-pills? (or (>= 1 (count containers))
+                            (empty? (remove :filler-action (mapcat :actions containers))))
+            style {:position "fixed"}
+            div (html
+                 [:div.container-list-v2
+                  (for [container (take 20 containers)]
+                    (om/build container-pill-v2
+                              {:container container
+                               :build-running? build-running?
+                               :current-container-id current-container-id}
+                              {:react-key (:index container)}))
+                  (when (-> containers count (> paging-width))
+                    [:a.container-selector-v2.page-container-pills
+                     "Next " paging-width
+                     ])])]
+        (om/build sticky {:content div :content-class "containers-v2"})))))
 
 (defn build-v2 [data owner]
   (reify
@@ -236,7 +284,7 @@
             project-data (get-in data state/project-data-path)
             user (get-in data state/user-path)]
         (html
-         [:div#build-log-container
+         [:div.build-info-v2.container-fluid
           (if-not build
            [:div
              (om/build common/flashes (get-in data state/error-message-path))
@@ -247,17 +295,19 @@
                                                  :project-data project-data
                                                  :user user
                                                  :scopes (get-in data state/project-scopes-path)})
-             (om/build common/flashes (get-in data state/error-message-path))
-             (om/build notices {:build-data (dissoc build-data :container-data)
-                                :project-data project-data
-                                :invite-data invite-data})
-             (om/build container-pills {:container-data container-data
-                                        :build-running? (build-model/running? build)
-                                        :build build})
-             (om/build build-steps/container-build-steps container-data)
+             [:div.card.col-sm-12
 
-             (when (< 1 (count (:steps build)))
-               [:div (common/messages (:messages build))])])])))))
+              (om/build common/flashes (get-in data state/error-message-path))
+
+              (om/build notices {:build-data (dissoc build-data :container-data)
+                                 :project-data project-data
+                                 :invite-data invite-data})
+
+              (om/build container-pills-v2 {:container-data container-data
+                                            :build-running? (build-model/running? build)
+                                            :build build})
+
+              (om/build build-steps/container-build-steps-v2 container-data)]])])))))
 
 (defn build []
   (if (feature/enabled? :ui-v2)
