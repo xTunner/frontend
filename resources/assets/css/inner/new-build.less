@@ -259,3 +259,50 @@
     }
   }
 }
+
+// V2 from here on !!!!
+
+// TODO generic V2 stuff, abstract out
+.badge {
+  @lighten-ratio: 75%;
+
+  position: relative;
+  border-radius: 40px;
+  height: 25px;
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  color: @black;
+  background: fadeout(@brand-cancelled-v2, @lighten-ratio);
+
+  &.pass {
+    background: fadeout(@brand-success-v2, @lighten-ratio);
+  }
+
+  &.fail {
+    background: fadeout(@brand-danger-v2, @lighten-ratio);
+  }
+
+  &.busy {
+    background: fadeout(@brand-primary-v2, @lighten-ratio);
+  }
+
+  &.stop {
+    background: fadeout(@brand-warning-v2, @lighten-ratio);
+  }
+
+  &.queued {
+    background: fadeout(@brand-pending-v2, @lighten-ratio);
+  }
+
+  & .badge-icon {
+    @badge-icon-size: 17px;
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    height: @badge-icon-size;
+    width: @badge-icon-size;
+  }
+}

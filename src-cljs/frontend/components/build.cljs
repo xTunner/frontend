@@ -237,14 +237,17 @@
          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
           :class (concat (container-model/status->classes status)
                          (when (= container-id current-container-id) ["active"]))}
-         (str (:index container))
-         (container-result-icon (case status
-                                  :failed "Status-Failed"
-                                  :success "Status-Passed"
-                                  :canceled "Status-Cancelled"
-                                  :running "Status-Running"
-                                  :waiting "Status-Queued"
-                                  nil))])))))
+         [:span.upper-pill-section
+          [:span.container-index (str (:index container))]
+          [:span.status-icon
+           (container-result-icon (case status
+                                    :failed "Status-Failed"
+                                    :success "Status-Passed"
+                                    :canceled "Status-Cancelled"
+                                    :running "Status-Running"
+                                    :waiting "Status-Queued"
+                                    nil))]]
+         [:span.lower-pill-section "(1:32)"]])))))
 
 (defn container-pills-v2 [data owner]
   (reify

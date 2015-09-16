@@ -1007,7 +1007,8 @@
         (html
           [:div
            [:div.row
-            [:span.build-status {:class (:status build)}
+            [:span.badge.build-status {:class (build-model/status-class build)}
+             [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
              (build-model/status-words build)]
 
             [:th "Started"]

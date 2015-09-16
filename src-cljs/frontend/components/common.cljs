@@ -203,6 +203,9 @@
   [:img.background.language {:class name
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
 
+(defn icon-path [name]
+  (utils/cdn-path (str "/img/inner/icons/" name ".svg")))
+
 (def language-background
   (map language ["rails-1"
                  "clojure-1"
