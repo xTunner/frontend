@@ -71,11 +71,11 @@
                            :item-height 14   ; assume font is 14px
                            :spacing 4
                            }
-        left-legend [{:class "success"
+        left-legend [{:class_name "success"
                       :text "Passed"}
-                     {:class "failed"
+                     {:class_name "failed"
                       :text "Failed"}
-                     {:class "canceled"
+                     {:class_name "canceled"
                       :text "Canceled"}]
         right-legend [{:class "queue"
                       :text "Queue time"}]
@@ -115,7 +115,7 @@
           (.append "rect")
           (.attr #js {"width" (:square-size legend-dimensions)
                       "height" (:square-size legend-dimensions)
-                      "class" #(.-class %)
+                      "class" #(.-class_name %)
                       "transform"
                       (fn [item i]
                         (gstring/format "translate(%s,%s)" 0  (- (+ (:square-size legend-dimensions)))))}))
@@ -144,7 +144,7 @@
           (.append "rect")
           (.attr #js {"width" (:square-size legend-dimensions)
                       "height" (:square-size legend-dimensions)
-                      "class" #(.-class %)
+                      "class" #(.-class_name %)
                       "transform"
                       (fn [item i]
                         (gstring/format "translate(%s,%s)" 0  (- (+ (:square-size legend-dimensions)))))}))
