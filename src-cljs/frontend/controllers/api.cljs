@@ -144,8 +144,7 @@
             (for [project projects
                   :let [project-id (project-build-id project)]]
               (if (= project-id target-id)
-                (do
-                  (assoc project :recent-builds recent-builds))
+                (assoc project :recent-builds recent-builds)
                 project)))]
     (update-in state state/projects-path set-builds)))
 

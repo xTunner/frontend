@@ -198,8 +198,7 @@
                     "y" y-middle
                     "x" #(x-scale (.-build_num %))
                     "width" (.rangeBand x-scale)
-                    "height" #(do
-                                (- (y-neg-scale (.-queued_time_minutes %)) y-middle))}))))
+                    "height" #(- (y-neg-scale (.-queued_time_minutes %)) y-middle)}))))
 
 (defn project-insights-bar [builds owner]
   (let [chart-builds (->> builds
