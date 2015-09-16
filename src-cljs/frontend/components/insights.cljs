@@ -66,6 +66,19 @@
                     (.domain (clj->js
                               (map :build_num builds)))
                     (.rangeBands #js[0 width] 0.5))
+        legend-dimensions {:square-size 10
+                           :item-width 80
+                           :item-height 14   ; assume font is 14px
+                           :spacing 4
+                           }
+        left-legend [{:class "success"
+                      :text "Passed"}
+                     {:class "failed"
+                      :text "Failed"}
+                     {:class "canceled"
+                      :text "Canceled"}]
+        right-legend [{:class "queue"
+                      :text "Queue time"}]
         svg (-> js/d3
                 (.select elem)
                 (.html "")
@@ -83,6 +96,65 @@
         grid-lines-container (-> svg
                                  (.append "g")
                                  (.attr "class" "grid-line horizontal"))]
+    ;; left legend
+    (let [{:keys [square-size item-width item-height spacing]} legend-dimensions
+          legend-item (-> svg
+                          (.selectAll ".legend")
+                          (.data (clj->js left-legend))
+                          (.enter)
+                          (.append "g")
+                          (.attr #js {"class" "legend left"
+                                      "transform"
+                                      (fn [item i]
+                                        (let [tr-x (* i item-width)
+                                              tr-y (- (- item-height
+                                                         (/ (- item-height square-size)
+                                                            2)))]
+                                          (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))]
+      (-> legend-item
+          (.append "rect")
+          (.attr #js {"width" (:square-size legend-dimensions)
+                      "height" (:square-size legend-dimensions)
+                      "class" #(.-class %)
+                      "transform"
+                      (fn [item i]
+                        (gstring/format "translate(%s,%s)" 0  (- (+ (:square-size legend-dimensions)))))}))
+      (-> legend-item
+          (.append "text")
+          (.attr #js {"x" (+ (:square-size legend-dimensions)
+                             (:spacing legend-dimensions))})
+          (.text #(.-text %))))
+
+    ;; right legend
+    (let [{:keys [square-size item-width item-height spacing]} legend-dimensions
+          legend-item (-> svg
+                          (.selectAll ".legend-right")
+                          (.data (clj->js right-legend))
+                          (.enter)
+                          (.append "g")
+                          (.attr #js {"class" "legend right"
+                                      "transform"
+                                      (fn [item i]
+                                        (let [tr-x (- width (* (inc i) item-width))
+                                              tr-y (- (- item-height
+                                                         (/ (- item-height square-size)
+                                                            2)))]
+                                          (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))]
+      (-> legend-item
+          (.append "rect")
+          (.attr #js {"width" (:square-size legend-dimensions)
+                      "height" (:square-size legend-dimensions)
+                      "class" #(.-class %)
+                      "transform"
+                      (fn [item i]
+                        (gstring/format "translate(%s,%s)" 0  (- (+ (:square-size legend-dimensions)))))}))
+      (-> legend-item
+          (.append "text")
+          (.attr #js {"x" (+ (:square-size legend-dimensions)
+                             (:spacing legend-dimensions))})
+          (.text #(.-text %))))
+
+
     ;; y-axis
     (-> svg
         (.append "g")
