@@ -39,7 +39,7 @@
                                  builds))
         svg-width 900
         svg-height 180
-        margins {:top 30, :right 10, :bottom 0, :left 70}
+        margins {:top 30, :right 10, :bottom 10, :left 70}
         width (- svg-width (:left margins) (:right margins))
         height (- svg-height (:top margins) (:bottom margins))
         y-scale (-> (js/d3.scale.linear)
