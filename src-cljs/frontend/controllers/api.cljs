@@ -141,10 +141,11 @@
 (defmethod api-event [:recent-project-builds :success]
   [target message status {recent-builds :resp, target-id :context} state]
   (letfn [(set-builds [projects]
-            (doseq [project projects
+            (for [project projects
                   :let [project-id (project-build-id project)]]
               (if (= project-id target-id)
-                (assoc project :recent-builds recent-builds)
+                (do
+                  (assoc project :recent-builds recent-builds))
                 project)))]
     (update-in state state/projects-path set-builds)))
 
