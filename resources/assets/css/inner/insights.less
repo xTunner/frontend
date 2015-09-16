@@ -8,8 +8,44 @@
     padding: 0 20px;
   }
 
-  .insights-chart {
+  .build-time-visualization {
     margin: 0 auto;
     padding: 15px;
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .grid-line {
+      line {
+        stroke: #dddddd;
+        stroke-opacity: 0.7;
+        shape-rendering: crispEdges;
+      }
+    }
+    .y-axis {
+      .tick line {
+        visibility: hidden;
+      }
+      > path.domain {
+        visibility: hidden;
+      }
+    }
+
+    rect.success {
+      fill: #42c88a;
+    }
+    rect.failed {
+      fill: #ed5c5c;
+    }
+    rect.canceled {
+      fill: #999999;
+    }
+    rect.queue {
+      fill: #e6d9f2;
+    }
   }
 }

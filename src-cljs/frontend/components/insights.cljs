@@ -23,11 +23,19 @@
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
 
+(defn add-minute-measures [build]
+  (let [key-mapping {:queued_time_minutes :queued_time_millis
+                     :build_time_minutes :build_time_millis}]
+    (reduce-kv (fn [accum new-key old-key]
+                 (assoc accum new-key (/ (get build old-key) 1000 60)))
+               build
+               key-mapping)))
+
 (defn build-graphable [{:keys [outcome]}]
   (#{"success" "failed" "canceled"} outcome))
 
 (defn visualize-insights-bar! [elem builds]
-  (let [y-max (apply max (mapcat #(select-values % [:queued_time_millis :build_time_millis])
+  (let [y-max (apply max (mapcat #(select-values % [:queued_time_minutes :build_time_minutes])
                                  builds))
         svg-width 900
         svg-height 250
@@ -47,11 +55,13 @@
                         (.range #js[(y-scale 0) height])
                         (.nice))
         y-middle (y-scale 0)
+        y-tick-values (map js/Math.round
+                           [y-max (* y-max 0.5) 0 (* -1 y-max 0.5) (- y-max)])
         y-axis (-> (js/d3.svg.axis)
                    (.scale y-scale)
                    (.orient "left")
-                   (.ticks 3)
-                   (.tickFormat #(js/Math.round (/ (js/Math.abs %) 1000 60))))
+                   (.tickValues (clj->js y-tick-values))
+                   (.tickFormat js/Math.abs))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
                               (map :build_num builds)))
@@ -69,7 +79,10 @@
         enter (-> svg
                   (.selectAll "rect")
                   (.data (clj->js builds))
-                  (.enter))]
+                  (.enter))
+        grid-lines-container (-> svg
+                                 (.append "g")
+                                 (.attr "class" "grid-line horizontal"))]
     ;; y-axis
     (-> svg
         (.append "g")
@@ -85,14 +98,26 @@
                     "y2" (int y-middle)
                     "x1" 0
                     "x2" width}))
+
+    ;; horizontal grid-lines
+    (doseq [tick (remove zero? y-tick-values)
+            :let [y-pos (y-scale tick)]]
+      (-> grid-lines-container
+          (.append "line")
+          (.attr #js {
+                      "y1" y-pos
+                      "y2" y-pos
+                      "x1" 0
+                      "x2" width})))
+
     ;; positive bar
     (-> enter
         (.insert "rect")
         (.attr #js {"class" #(.-outcome %)
-                    "y" #(y-pos-scale (.-build_time_millis %))
+                    "y" #(y-pos-scale (.-build_time_minutes %))
                     "x" #(x-scale (.-build_num %))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-middle (y-pos-scale (.-build_time_millis %)))}))
+                    "height" #(- y-middle (y-pos-scale (.-build_time_minutes %)))}))
 
     ;; negative (queue time) bar
     (-> enter
@@ -102,13 +127,14 @@
                     "x" #(x-scale (.-build_num %))
                     "width" (.rangeBand x-scale)
                     "height" #(do
-                                (- (y-neg-scale (.-queued_time_millis %)) y-middle))}))))
+                                (- (y-neg-scale (.-queued_time_minutes %)) y-middle))}))))
 
 (defn project-insights-bar [builds owner]
   (let [chart-builds (->> builds
                            (filter build-graphable)
                            reverse
-                           (map add-queued-time))]
+                           (map add-queued-time)
+                           (map add-minute-measures))]
     (reify
       om/IDidUpdate
       (did-update [_ prev-props prev-state]
