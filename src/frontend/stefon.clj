@@ -96,6 +96,8 @@
            "docs/missing-file.md"
            "docs/mobile.md"
            "docs/nightly-builds.md"
+           "docs/not-specified-ruby-commands.md"
+           "docs/unrecognized-ruby-version.md"
            "docs/oom.md"
            "docs/parallel-manual-setup.md"
            "docs/parallelism.md"
@@ -107,7 +109,7 @@
            "docs/pushing-packages-to-packagecloud.md"
            "docs/reference.md"
            "docs/requires-admin.md"
-           "docs/rspec-wrong-exit-code.md"
+           "docs/rspec-exit-codes.md"
            "docs/ruby-debugger-problems.md"
            "docs/ruby-exception-during-schema-load.md"
            "docs/skip-a-build.md"
@@ -131,8 +133,6 @@
            "docs/troubleshooting.md"
            "docs/unusual.md"
            "docs/what-happens.md"
-           "docs/wrong-ruby-commands.md"
-           "docs/wrong-ruby-version.md"
            "docs/unexpected-rake-errors.md"
            "docs/manifest.json"]
           (map :path hosted-scripts)))

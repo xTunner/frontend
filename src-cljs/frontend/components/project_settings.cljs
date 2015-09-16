@@ -734,7 +734,7 @@
           [:div.token
            [:h4 "API Token"]
            (when-not (or oss (seq token))
-             [:p [:span.warning "Warning: "] "Private projects require an " [:a {:href "#api"} "API token"] "."])
+             [:p [:span.warning "Warning: "] "Private projects require an API token - " [:a {:href "#api"} "add one with status scope"] "."])
            [:div.styled-select
             [:select {:value token
                       :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :token) %)}

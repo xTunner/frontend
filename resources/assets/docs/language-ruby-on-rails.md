@@ -98,13 +98,14 @@ Our [Ruby troubleshooting](/docs/troubleshooting-ruby)
 documentation has information about the following issues and problems:
 
 *   [Do you need the latest version of Bundler?](/docs/bundler-latest)
-*   [RSpec is failing but CircleCI reports my tests have passed](/docs/rspec-wrong-exit-code)
+*   [RSpec is failing but CircleCI reports my tests have passed](/docs/rspec-exit-codes)
 *   [The Ruby debugger gem won't build](/docs/ruby-debugger-problems)
 *   ["unable to obtain stable firefox connection in 60 seconds"](/docs/capybara-timeout)
 *   [Git errors during a bundle install](/docs/git-bundle-install)
 *   [rake db:schema:load fails](/docs/ruby-exception-during-schema-load)
-*   [CircleCI is running the wrong Ruby commands](/docs/wrong-ruby-commands)
-*   [CircleCI uses the wrong Ruby version](/docs/wrong-ruby-version)
+*   [CircleCI is running the Ruby commands not specified in the config](/docs/not-specified-ruby-commands)
+*   [CircleCI uses the wrong Ruby
+    version](/docs/unrecognized-ruby-version)
 
 If you are still having trouble, please [contact us](mailto:sayhi@circleci.com)
 and we will be happy to help.
