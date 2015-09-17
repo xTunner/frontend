@@ -12,6 +12,7 @@
             [frontend.components.forms :as forms]
             [frontend.config :refer [intercom-enabled? github-endpoint env enterprise?]]
             [frontend.routes :as routes]
+            [frontend.state :as state]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -1117,77 +1118,69 @@
                     [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                                :href (build-model/path-for-parallelism build)}
                      (str (:parallel build) "x")]
-                    [:span (:parallel build) "x"])]
+                    [:span (:parallel build) "x"])]]]]
 
-                 
-                 ]
-
-
-                [:tr
-                 [:th "Author"]
-                 [:td (if-not (:author_email build)
-                        [:span (build-model/author build)]
-                        [:a {:href (str "mailto:" (:author_email build))}
-                         (build-model/author build)])]
-                 (when (build-model/author-isnt-committer build)
-                   (list [:th "Committer"]
-                         [:td
-                          (if-not (:committer_email build)
-                            [:span (build-model/committer build)]
-                            [:a {:href (str "mailto:" (:committer_email build))}
-                             (build-model/committer build)])]))]
-
-                ]]
-
-
-              [:div.build-actions
-               (when (has-scope :write-settings data)
-                 [:div.actions
-                  (forms/managed-button
-                    [:button.retry_build
-                     {:data-loading-text "Rebuilding",
-                      :title "Retry the same tests",
-                      :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                      :vcs-url vcs-url
-                                                                      :build-num build-num
-                                                                      :no-cache? false}])}
-                     "Rebuild"])
-
-                  (forms/managed-button
-                    [:button.without_cache_retry
-                     {:data-loading-text "Rebuilding",
-                      :title "Retry without cache",
-                      :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                      :vcs-url vcs-url
-                                                                      :build-num build-num
-                                                                      :no-cache? true}])}
-                     "without cache"])
-
-                  ;; XXX Temporarily remove the ssh button for OSX builds
-                  (when (not (feature/enabled-for-project? project :osx))
-                    (forms/managed-button
-                      [:button.ssh_build
-                       {:data-loading-text "Rebuilding",
-                        :title "Retry with SSH in VM",
-                        :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                                      :vcs-url vcs-url
-                                                                      :build-num build-num}])}
-                       "with ssh"]))])
-               [:div.actions
-                ;; TODO: Handle when intercom isn't enabled
-                (when (and logged-in? (intercom-enabled?)) ;; no intercom for logged-out users
-                  [:button.report_build
-                   {:title "Report error with build",
-                    :on-click #(raise! owner [:report-build-clicked {:build-url (:build_url @build)}])}
-                   "Report"])
-                (when (and (build-model/can-cancel? build) (has-scope :write-settings data))
-                  (forms/managed-button
-                    [:button.cancel_build
-                     {:data-loading-text "Canceling",
-                      :title "Cancel this build",
-                      :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                       :vcs-url vcs-url
-                                                                       :build-num build-num}])}
-                     "Cancel"]))]]
               [:div.no-user-actions]]
               (om/build build-sub-head-v2 data)]]])))))
+
+(defn build-head-actions
+  [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
+            build (get-in data state/build-path)
+            build-id (build-model/id build)
+            build-num (:build_num build)
+            vcs-url (:vcs_url build)
+            project (get-in data state/project-data-path)
+            plan (:plan project)
+            user (get-in data state/user-path)
+            logged-in? (not (empty? user))
+            has-write-settings? (:write-settings
+                                  (get-in data state/project-scopes-path))]
+        (html
+          [:div.build-actions
+           (when has-write-settings?
+             [:div.actions
+              (forms/managed-button
+                [:button.retry_build
+                 {:data-loading-text "Rebuilding",
+                  :title "Retry the same tests",
+                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num
+                                                                  :no-cache? false}])}
+                 "Rebuild"])
+
+              (forms/managed-button
+                [:button.without_cache_retry
+                 {:data-loading-text "Rebuilding",
+                  :title "Retry without cache",
+                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num
+                                                                  :no-cache? true}])}
+                 "without cache"])
+
+              ;; XXX Temporarily remove the ssh button for OSX builds
+              (when (not (feature/enabled-for-project? project :osx))
+                (forms/managed-button
+                  [:button.ssh_build
+                   {:data-loading-text "Rebuilding",
+                    :title "Retry with SSH in VM",
+                    :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num}])}
+                   "with ssh"]))])
+           [:div.actions
+            (when (and (build-model/can-cancel? build) has-write-settings?))
+              (forms/managed-button
+                [:button.cancel_build
+                 {:data-loading-text "Canceling",
+                  :title "Cancel this build",
+                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
+                 "Cancel"])]])))))
+
