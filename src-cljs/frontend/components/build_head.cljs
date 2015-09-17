@@ -849,11 +849,6 @@
         (html
          [:div.build-commits-container
           [:div.build-commits-title
-           (when (:compare build)
-             [:a {:href (:compare build)}
-              "compare "
-              [:i.fa.fa-github]
-              " "])
            (when (< 3 (count (:all_commit_details build)))
              [:a {:role "button"
                   :on-click #(raise! owner [:show-all-commits-toggled {:build-id build-id}])}
@@ -1007,31 +1002,50 @@
         (html
           [:div
            [:div.row
-            [:span.badge.build-status {:class (build-model/status-class build)}
-             [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-             (build-model/status-words build)]
+            [:div.summary-header.col-sm-12
+             [:span.badge.build-status {:class (build-model/status-class build)}
+              [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
+              (build-model/status-words build)]
+             (when-let [stop-time (:stop_time build)]
+               [:div
+                [:span.summary-label "Finished: "]
+                [:span.stop-time
+                 (when (:stop_time build)
+                   {:title (datetime/full-datetime (:stop_time build))})
+                 (when (:stop_time build)
+                   (list (om/build common/updating-duration
+                                   {:start (:stop_time build)}
+                                   {:opts {:formatter datetime/time-ago}}) " ago"))]
 
-            [:th "Started"]
-                 [:td (when (:start_time build)
-                        {:title (datetime/full-datetime (:start_time build))})
-                  (when (:start_time build)
-                    (list (om/build common/updating-duration
-                                    {:start (:start_time build)}
-                                    {:opts {:formatter datetime/time-ago}}) " ago"))]
+                [:span
+                 " ("
+                 (if (build-model/running? build)
+                   (om/build common/updating-duration {:start (:start_time build)
+                                                       :stop (:stop_time build)})
+                   (build-model/duration build))
+                 (om/build expected-duration {:start (:start_time build)
+                                              :stop (:stop_time build)
+                                              :build build})
+                 ")"]])
+             [:div.summary-build-contents
+              [:span.summary-label "Triggered by: "]
+              [:span (trigger-html build)]
 
-            [:th "Duration"]
-                 [:td (if (build-model/running? build)
-                        (om/build common/updating-duration {:start (:start_time build)
-                                                            :stop (:stop_time build)})
-                        (build-model/duration build))
-                  (om/build expected-duration {:start (:start_time build)
-                                               :stop (:stop_time build)
-                                               :build build})]
-            [:tr
-             [:th "Triggered by"]
-             [:td (trigger-html build)]
-             ]
-            ]
+              (when-let [urls (seq (:pull_request_urls build))]
+                ;; It's possible for a build to be part of multiple PRs, but it's rare
+                (list 
+                  [:span.summary-spacer "•"]
+                  [:span.summary-label
+                    (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
+                  [:span
+                   (interpose
+                     ", "
+                     (map (fn [url] [:a {:href url} "#"
+                                     (let [n (re-find #"/\d+$" url)]
+                                       (if n (subs n 1) "?"))])
+                          urls))]))
+              ]
+             ]]
            [:div.card
             [:h3 "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
@@ -1084,16 +1098,7 @@
                      (str (:parallel build) "x")]
                     [:span (:parallel build) "x"])]
 
-                 (when-let [urls (seq (:pull_request_urls build))]
-                   ;; It's possible for a build to be part of multiple PRs, but it's rare
-                   (list [:th (str "PR" (when (< 1 (count urls)) "s"))]
-                         [:td
-                          (interpose
-                            ", "
-                            (map (fn [url] [:a {:href url} "#"
-                                            (let [n (re-find #"/\d+$" url)]
-                                              (if n (subs n 1) "?"))])
-                                 urls))]))
+                 
                  ]
 
 

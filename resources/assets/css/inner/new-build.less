@@ -301,17 +301,24 @@
   box-shadow: inset 0 -1px rgba(0, 0, 0, 0.05);
 }
 
+@status-badge-height: 25px;
+
+.small-emphasis {
+  font-size: 11px;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
 .badge {
+  .small-emphasis();
+
   @lighten-ratio: 75%;
 
   position: relative;
   border-radius: 40px;
-  height: 25px;
-  font-size: 11px;
-  font-weight: 300;
+  height: @status-badge-height;
   line-height: 20px;
   text-align: center;
-  text-transform: uppercase;
   color: @black;
   background: fadeout(@brand-cancelled-v2, @lighten-ratio);
 
@@ -440,4 +447,25 @@
 
 .build-status {
   min-width: 105px;
+  margin-right: 20px;
+}
+
+.summary-header {
+  display: flex;
+  margin-bottom: 15px;
+  font-size: 13px;
+  line-height: @status-badge-height;
+  color: @gray-light-v2;
+}
+
+.summary-build-contents {
+  margin-left: auto;
+}
+
+.summary-label {
+  color: @gray-lighter-v2;
+}
+
+.summary-spacer {
+  padding: 0 5px;
 }
