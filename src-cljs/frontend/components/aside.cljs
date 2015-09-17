@@ -404,7 +404,7 @@
                           :data-trigger "hover"
                           :title "Insights"
                           :href "/build-insights"}
-           [:i.fa.fa-bar-chart-o]])
+           [:i.fa.fa-bar-chart]])
 
         (when (:admin user)
           [:a.aside-item {:data-placement "right"
