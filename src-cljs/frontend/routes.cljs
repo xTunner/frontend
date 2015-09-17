@@ -73,6 +73,10 @@
   (defroute v1-org-settings "/gh/organizations/:org/settings"
     [org _fragment]
     (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword _fragment)}))
+  (defn v1-org-settings-subpage [params]
+    (apply str (v1-org-settings params)
+         (when-let [subpage (:subpage params)]
+           ["#" subpage])))
   (defroute v1-org-dashboard-alternative "/gh/organizations/:org" {:as params}
     (open-to-inner! nav-ch :dashboard params))
   (defroute v1-org-dashboard "/gh/:org" {:as params}
@@ -94,6 +98,10 @@
                                               :subpage (keyword _fragment)
                                               :org org
                                               :repo repo}))
+  (defn v1-project-settings-subpage [params]
+    (apply str (v1-project-settings params)
+           (when-let [subpage (:subpage params)]
+             ["#" subpage])))
   (defroute v1-add-projects "/add-projects" []
     (open-to-inner! nav-ch :add-projects {}))
   (defroute v1-invite-teammates "/invite-teammates" []
