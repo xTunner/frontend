@@ -1047,7 +1047,7 @@
               ]
              ]]
            [:div.card
-            [:h3 "Commits (" (-> build :all_commit_details count) ")"]
+            [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
            [:div.build-head-wrapper
             [:div.build-head
