@@ -24,4 +24,31 @@
     om/IDisplayName (display-name [_] "Top Nav")
     om/IRender
     (render [_]
-      (html [:div#top-nav "Fish sideburns"]))))
+      (let [orgs (get-in app state/user-organizations-path)
+            current-org (get-in app state/org-data-path)]
+        (html [:div#top-nav
+               [:div.dropdown {}
+                [:button {:class "dropdown-toggle" :data-toggle "dropdown"}
+                 (pr-str current-org)
+                 [:i.fa.fa-caret-down]]
+                [:ul.dropdown-menu
+                 [:li {:role "presentation"}
+                  [:a {:role "menuitem"
+                       :tabIndex "-1"
+                       :href "/features"}
+                   "Features"]]
+                 [:li {:role "presentation"}
+                  [:a {:role "menuitem"
+                       :tabIndex "-1"
+                       :href "/mobile"}
+                   "Mobile"]]
+                 [:li {:role "presentation"}
+                  [:a {:role "menuitem"
+                       :tabIndex "-1"
+                       :href "/integrations/docker"}
+                   "Docker"]]
+                 [:li {:role "presentation"}
+                  [:a {:role "menuitem"
+                       :tabIndex "-1"
+                       :href "/enterprise"}
+                   "Enterprise"]]]]])))))
