@@ -8,8 +8,8 @@
             [goog.string.format]
             [secretary.core :as sec]))
 
-(defn get-projects [api-ch]
-  (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch))
+(defn get-projects [api-ch & {:as context}]
+  (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
 
 (defn get-repos [api-ch & {:keys [page]
                            :or {page 1}}]
@@ -49,6 +49,13 @@
 (defn get-dashboard-builds [{:keys [branch repo org admin query-params builds-per-page] :as args} api-ch]
   (let [url (dashboard-builds-url args)]
     (ajax/ajax :get url :recent-builds api-ch :context {:branch branch :repo repo :org org})))
+
+
+(defn get-projects-builds [build-ids api-ch]
+  (doseq [build-id build-ids
+          :let [url (dashboard-builds-url (merge {:builds-per-page 60}
+                                                 build-id))]]
+    (ajax/ajax :get url :recent-project-builds api-ch :context build-id)))
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]

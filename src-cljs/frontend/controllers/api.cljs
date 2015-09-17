@@ -16,8 +16,19 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
-            [goog.string :as gstring])
+            [goog.string :as gstring]
+            [clojure.set :as set])
   (:require-macros [frontend.utils :refer [inspect]]))
+
+(def build-keys-mapping {:username :org
+                         :reponame :repo
+                         :default_branch :branch})
+
+(defn project-build-id [project]
+  "Takes project hash and filter down to keys that identify the build."
+  (-> project
+      (set/rename-keys build-keys-mapping)
+      (select-keys (vals build-keys-mapping))))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
 ;; result will be pushed into the api-channel
@@ -95,9 +106,14 @@
 
 
 (defmethod api-event [:projects :success]
-  [target message status args state]
-  (mlog "projects success")
-  (->> (:resp args)
+  [target message status {:keys [context resp]} state]
+  ;; for the insights screen, we go on to get recent builds from the
+  ;; default_branch of each project
+  (when (:get-recent-builds context)
+    (let [api-ch (get-in state [:comms :api])
+          project-build-ids (map project-build-id resp)]
+      (api/get-projects-builds project-build-ids api-ch)))
+  (->> resp
        (map (fn [project] (update project :scopes #(set (map keyword %)))))
        (assoc-in state state/projects-path)))
 
@@ -121,6 +137,16 @@
         (assoc-in state/project-scopes-path (:scopes args))
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
+
+(defmethod api-event [:recent-project-builds :success]
+  [target message status {recent-builds :resp, target-id :context} state]
+  (letfn [(set-builds [projects]
+            (for [project projects
+                  :let [project-id (project-build-id project)]]
+              (if (= project-id target-id)
+                (assoc project :recent-builds recent-builds)
+                project)))]
+    (update-in state state/projects-path set-builds)))
 
 
 (defmethod api-event [:build :success]
