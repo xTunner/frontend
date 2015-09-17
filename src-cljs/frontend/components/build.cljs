@@ -36,10 +36,10 @@
      " if you're interested in the cause of the problem."]
 
     [:div
-     "Looks like we had a bug in our infrastructure. "
-     "We should have automatically retried this build.  Please "
+     "Looks like you may have encountered a bug in the build infrastructure. "
+     "Your build should have been automatically retried.  If the problem persists, please "
      (common/contact-us-inner owner)
-     " so we can investigate the problem if it persists."]))
+     ", so CircleCI can investigate."]))
 
 
 (defn report-error [build owner]
