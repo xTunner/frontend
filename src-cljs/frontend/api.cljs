@@ -88,6 +88,3 @@
 
 (defn get-fleet-state [api-ch]
   (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state api-ch))
-
-(defn get-license [api-ch]
-  (ajax/ajax :get "/api/v1/enterprise/settings/license" :license api-ch))
