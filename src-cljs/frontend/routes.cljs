@@ -71,11 +71,8 @@
 
 (defn define-user-routes! [nav-ch authenticated?]
   (defroute v1-org-settings "/gh/organizations/:org/settings"
-    [org]
-    (open-to-inner! nav-ch :org-settings {:org org :subpage nil}))
-  (defroute v1-org-settings-subpage "/gh/organizations/:org/settings#:subpage"
-    [org subpage]
-    (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword subpage)}))
+    [org _fragment]
+    (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword _fragment)}))
   (defroute v1-org-dashboard-alternative "/gh/organizations/:org" {:as params}
     (open-to-inner! nav-ch :dashboard params))
   (defroute v1-org-dashboard "/gh/:org" {:as params}
@@ -92,15 +89,9 @@
                                    :org org
                                    :repo repo}))
   (defroute v1-project-settings "/gh/:org/:repo/edit"
-    [org repo]
+    [org repo _fragment]
     (open-to-inner! nav-ch :project-settings {:project-name (str org "/" repo)
-                                              :subpage nil
-                                              :org org
-                                              :repo repo}))
-  (defroute v1-project-settings-subpage "/gh/:org/:repo/edit#:subpage"
-    [org repo subpage]
-    (open-to-inner! nav-ch :project-settings {:project-name (str org "/" repo)
-                                              :subpage (keyword subpage)
+                                              :subpage (keyword _fragment)
                                               :org org
                                               :repo repo}))
   (defroute v1-add-projects "/add-projects" []
@@ -112,8 +103,7 @@
   (defroute v1-account "/account" []
     (open-to-inner! nav-ch :account {:subpage nil}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
-    ;; TODO: make it possible to call (v1-account-subpage {:subpage subpage}) with a fragment route then remove this hack
-    (open-to-inner! nav-ch :account {:subpage (keyword (first (str/split subpage #"#")))}))
+    (open-to-inner! nav-ch :account {:subpage subpage}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
@@ -252,3 +242,16 @@
     (when (get-in @state [:current-user :admin])
       (define-admin-routes! nav-ch))
     (define-spec-routes! nav-ch)))
+
+(defn dispatch!
+  "Dispatch an action for a given route if it matches the URI path."
+  [uri]
+  (let [[uri-path fragment] (str/split (sec/uri-without-prefix uri) "#")
+        [uri-path query-string] (str/split uri-path  #"\?")
+        uri-path (sec/uri-with-leading-slash uri-path)
+        query-params (when query-string
+                       {:query-params (sec/decode-query-params query-string)})
+        {:keys [action params]} (sec/locate-route uri-path)
+        action (or action identity)
+        params (merge params query-params {:_fragment fragment})]
+    (action params)))
