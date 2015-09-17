@@ -8,7 +8,7 @@
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.state :as state]
-            [frontend.utils :as utils :refer-macros [inspect] :refer [select-values]]
+            [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
@@ -35,7 +35,7 @@
   (#{"success" "failed" "canceled"} outcome))
 
 (defn visualize-insights-bar! [elem builds]
-  (let [y-max (apply max (mapcat #(select-values % [:queued_time_minutes :build_time_minutes])
+  (let [y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
                                  builds))
         svg-width 900
         svg-height 180

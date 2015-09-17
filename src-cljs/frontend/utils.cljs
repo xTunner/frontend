@@ -325,7 +325,3 @@
         max-height (apply max (map #(.-height %) sizes))]
     (doseq [item items]
       (goog.style/setSize item max-width max-height))))
-
-(defn select-values [map ks]
-  "Like select-keys, but return values associated with keys as a vector."
-  (reduce #(conj %1 (map %2)) [] ks))
