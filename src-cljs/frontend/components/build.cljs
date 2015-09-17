@@ -12,6 +12,7 @@
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
+            [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -22,12 +23,32 @@
             [sablono.core :as html :refer-macros [html]])
     (:require-macros [frontend.utils :refer [html]]))
 
+(defn infrastructure-fail-message [owner]
+  (if-not (enterprise?)
+    [:div
+     "Looks like we had a bug in our infrastructure, or that of our providers (generally "
+     [:a {:href "https://status.github.com/"} "GitHub"]
+     " or "
+     [:a {:href "https://status.aws.amazon.com/"} "AWS"]
+     ") We should have automatically retried this build. We've been alerted of"
+     " the issue and are almost certainly looking into it, please "
+     (common/contact-us-inner owner)
+     " if you're interested in the cause of the problem."]
+
+    [:div
+     "Looks like you may have encountered a bug in the build infrastructure. "
+     "Your build should have been automatically retried.  If the problem persists, please "
+     (common/contact-us-inner owner)
+     ", so CircleCI can investigate."]))
+
+
 (defn report-error [build owner]
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
     (when (:failed build)
       [:div.alert.alert-danger
-       (if-not (:infrastructure_fail build)
+       (if (:infrastructure_fail build)
+         (infrastructure-fail-message owner)
          [:div.alert-wrap
           "Error! "
           [:a {:href "/docs/troubleshooting"}
@@ -36,17 +57,7 @@
           [:a (merge {:title "Report an error in how Circle ran this build"}
                      (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}]))
            "report this issue"]
-          " and we'll investigate."]
-
-         [:div
-          "Looks like we had a bug in our infrastructure, or that of our providers (generally "
-          [:a {:href "https://status.github.com/"} "GitHub"]
-          " or "
-          [:a {:href "https://status.aws.amazon.com/"} "AWS"]
-          ") We should have automatically retried this build. We've been alerted of"
-          " the issue and are almost certainly looking into it, please "
-          (common/contact-us-inner owner)
-          " if you're interested in the cause of the problem."])])))
+          " and we'll investigate."])])))
 
 (defn container-pill [{:keys [container current-container-id build-running?]} owner]
   (reify
