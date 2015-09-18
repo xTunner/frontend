@@ -14,7 +14,7 @@
     "react": "0.12.2",
     "viewport-units-buggyfill": "0.3.1",
     "marked": "0.3.2",
-    "d3": "3.4.13"
+    "d3": "3.5.5"
   },
   "devDependencies": {
     "jquery-mockjax": "1.5.3"
