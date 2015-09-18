@@ -22,6 +22,8 @@
        (response/redirect (stefon/link-to-asset "js/om-dev.js.stefon" stefon-options)))
   (compojure.route/resources "/" {:root "public"
                                   :mime-types {:svg "image/svg"}})
+  (compojure.route/resources "/vendor/font-awesome" {:root "components/font-awesome"
+                                                     :mime-types {:svg "image/svg"}})
   (GET "/docs/manifest-dev.json" []
        (-> (doc-utils/read-doc-manifest "resources/assets/docs")
            (json/encode {:pretty true})
