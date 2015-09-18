@@ -56,6 +56,12 @@
 
   height: 100vh;
 
+  // Because this div can include elements which stretch across the top and the
+  // side of the page, it tends to cover the page. Therefore, we need to make it
+  // (but not its children) invisible to the pointer.
+  pointer-events: none;
+  > * { pointer-events: auto; }
+
   a {
     outline: none;
     text-decoration: none;
@@ -583,9 +589,53 @@
 }
 
 .license-banner {
+  .flexy(center);
+
   width: ~"calc(100vw - @{aside_nav_width})";
   height: @license_banner_height;
+  padding: 0 20px;
 
-  background: black;
-  border: 1px solid red;
+  color: @white;
+  background: @blueDarkest;
+
+  .indicator {
+    height: @font-size-large;
+    margin-right: 20px;
+    padding: 0 13px;
+
+    font-size: @font-size-small;
+    line-height: @font-size-large; // Height of indicator, to center vertically.
+
+    background-color: @grayLightest;
+    border-radius: @border-radius-base;
+    color: @grayDark;
+  }
+
+  .message {
+    .flex(1 0 auto);
+    font-size: @font-size-large;
+  }
+
+  .timing {
+    font-size: @font-size-base;
+    text-transform: uppercase;
+
+    .days {
+      font-size: @font-size-large;
+    }
+  }
+
+  .contact-sales {
+    padding: 0 30px;
+    height: 40px;
+    margin-left: 40px;
+
+    font-size: @font-size-large;
+    font-weight: bold;
+    line-height: 40px;
+
+    border-radius: 20px;
+    background-color: @blueDark;
+    &:hover { color: inherit; }
+  }
 }
