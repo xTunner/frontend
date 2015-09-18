@@ -4,6 +4,8 @@
 
 @aside_nav_width: @tile;
 
+@license_banner_height: @tile;
+
 @em: @baseFontSize;
 @cascade_delay: 30ms;
 @aside_items: 7;
@@ -30,9 +32,13 @@
   .app-aside-left.menuless + .app-main {
     margin-left: @aside_nav_width;
   }
+
+  .app-aside-left.including-license-banner + .app-main {
+    margin-top: @license_banner_height;
+  }
 }
 .aside-left-nav {
-  .flex(0 0 @aside_nav_width);
+  .flex(0 0 100%);
   width: @aside_nav_width;
   background: @blueDarkest;
   color: fade(@white, 66);
@@ -40,11 +46,16 @@
 }
 
 .app-aside-left {
-  .flexy();
+  .flexy(column);
+  .flex-wrap(wrap);
+
   position: fixed;
   z-index: @zindex-aside;
   left: 0;
   top: 0;
+
+  height: 100vh;
+
   a {
     outline: none;
     text-decoration: none;
@@ -66,7 +77,6 @@
 .aside-left-nav,
 .aside-left-menu {
   .flexy(column);
-  height: 100vh;
 }
 
 .aside-left-menu.new-aside-left-menu-width {
@@ -76,7 +86,7 @@
 
 
 .aside-left-menu {
-  .flex(0 0 @aside_menu_width);
+  .flex(1 0 1px);
   width: @aside_menu_width;
   box-shadow: 1px 0 @grayBoxBorder;
   position: relative;
@@ -570,4 +580,12 @@
       margin-bottom: 1em;
     }
   }
+}
+
+.license-banner {
+  width: ~"calc(100vw - @{aside_nav_width})";
+  height: @license_banner_height;
+
+  background: black;
+  border: 1px solid red;
 }

@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.license :as license]
             [frontend.components.shared :as shared]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -427,9 +428,14 @@
       (let [user (get-in app state/user-path)
             login (:login user)
             avatar-url (gh-utils/make-avatar-url user)
-            show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)]
+            show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)
+            license (get-in app state/license-path)]
         (html
-         [:aside.app-aside-left {:class (when-not show-aside-menu? "menuless")}
+         [:aside.app-aside-left {:class (cond-> []
+                                          (not show-aside-menu?) (conj "menuless")
+                                          (license/show-banner? license) (conj "including-license-banner"))}
           (om/build aside-nav app {:opts {:user user}})
+          (when (license/show-banner? license)
+            (om/build license/license-banner license))
           (when show-aside-menu?
             (om/build aside-menu app {:opts {:login login}}))])))))
