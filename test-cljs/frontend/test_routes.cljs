@@ -1,0 +1,24 @@
+(ns frontend.test-routes
+  (:require [clojure.string :as string]
+            [om.core :as om :include-macros true]
+            [om.dom]
+            [cemerick.cljs.test]
+            [secretary.core :as secretary]
+            [cljs.core.async :as async]
+            [frontend.routes :as routes])
+  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
+
+(deftest parse-uri-works
+  (testing "a basic uri"
+    (is (= ["/page/subpage" nil nil] (routes/parse-uri "/page/subpage")))
+    (is (= ["/page" nil nil] (routes/parse-uri "/page"))))
+
+  (testing "a uri with query parameters"
+    (is (= ["/page" "abc=123&xyz=789" nil] (routes/parse-uri "/page?abc=123&xyz=789"))))
+
+  (testing "a uri with an anchor"
+    (is (= ["/page" nil "here"] (routes/parse-uri "/page#here")))
+    (is (= ["/page" nil "here?partOf=anchor"] (routes/parse-uri "/page#here?partOf=anchor"))))
+
+  (testing "a uri with both anchor and query parameters"
+    (is (= ["/page" "abc=123" "here"] (routes/parse-uri "/page?abc=123#here")))))

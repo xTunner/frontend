@@ -10,6 +10,15 @@ fi
 # Git Configuration
 export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
 
+# font-awesome is a very special snow flake.  Backend expects it in
+# resources/public/vendor/font-awesome -- which then it syncs to S3
+#
+# TODO: Use manifest and stefon to package font-awesome like the rest
+# TODO: Ensure that backend doesn't overwrite font-awesome files
+#       across multiple uploads
+mkdir -p ./resources/public/vendor
+cp -r ./resources/components/font-awesome ./resources/public/vendor/font-awesome
+
 # Distribute built public files and publish the sha1 of this branch.
 tar -cz resources/public/ | aws s3 cp - s3://$DEPLOY_S3_BUCKET/dist/$CIRCLE_SHA1.tgz
 echo $CIRCLE_SHA1 | aws s3 cp - s3://$DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH

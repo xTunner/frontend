@@ -314,7 +314,7 @@
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
       (do (analytics/track-path (str "/" (.getToken history-imp)))
-          (sec/dispatch! (str "/" (.getToken history-imp)))))
+          (routes/dispatch! (str "/" (.getToken history-imp)))))
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws]))
       (analytics/init-user (:login user)))
