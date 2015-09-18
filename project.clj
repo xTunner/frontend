@@ -60,7 +60,8 @@
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs" "test-cljs"]
-                        :figwheel {:on-jsload "frontend.core/reinstall-om!"}
+                        :figwheel {:websocket-host "dev.circlehost"
+                                   :on-jsload "frontend.core/reinstall-om!"}
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none
