@@ -17,14 +17,6 @@ Want to work with Clojure(Script) full-time? [We're hiring](https://circleci.com
 
 ## Dependencies and Setup
 
-### Submodules
-
-The frontend uses some git submodules that you need to checkout:
-
-```
-git submodule update --init
-```
-
 ### Node.js
 
 Install [Node.js](http://nodejs.org/) and node dependencies:
