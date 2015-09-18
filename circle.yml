@@ -2,10 +2,6 @@ machine:
   python:
     version: 2.7.9
 
-checkout:
-  post:
-    - git submodule update --init resources/public/vendor/font-awesome
-
 dependencies:
   cache_directories:
     - "~/.cache/bower"
