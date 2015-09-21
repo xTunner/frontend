@@ -191,7 +191,7 @@
 
 (def fleet-state-path [:fleet-state])
 
-(def license-path [:license])
+(def license-path [:render-context :enterprise_license])
 
 (def error-message-path [:error-message])
 

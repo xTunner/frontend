@@ -4,6 +4,8 @@
 
 @aside_nav_width: @tile;
 
+@license_banner_height: @tile;
+
 @em: @baseFontSize;
 @cascade_delay: 30ms;
 @aside_items: 7;
@@ -27,24 +29,39 @@
     margin-left: @aside_nav_width + @new_aside_menu_width;
   }
 
-  .app-aside-left.menuless + .app-main {
+  .app-aside.menuless + .app-main {
     margin-left: @aside_nav_width;
+  }
+
+  .app-aside.including-license-banner + .app-main {
+    margin-top: @license_banner_height;
   }
 }
 .aside-left-nav {
-  .flex(0 0 @aside_nav_width);
+  .flex(0 0 100%);
   width: @aside_nav_width;
   background: @blueDarkest;
   color: fade(@white, 66);
   overflow-y: auto;
 }
 
-.app-aside-left {
-  .flexy();
+.app-aside {
+  .flexy(column);
+  .flex-wrap(wrap);
+
   position: fixed;
   z-index: @zindex-aside;
   left: 0;
   top: 0;
+
+  height: 100vh;
+
+  // Because this div can include elements which stretch across the top and the
+  // side of the page, it tends to cover the page. Therefore, we need to make it
+  // (but not its children) invisible to the pointer.
+  pointer-events: none;
+  > * { pointer-events: auto; }
+
   a {
     outline: none;
     text-decoration: none;
@@ -66,17 +83,15 @@
 .aside-left-nav,
 .aside-left-menu {
   .flexy(column);
-  height: 100vh;
 }
 
 .aside-left-menu.new-aside-left-menu-width {
   width: @new_aside_menu_width;
-  .flex(0 0 @new_aside_menu_width);
 }
 
 
 .aside-left-menu {
-  .flex(0 0 @aside_menu_width);
+  .flex(1 0 1px);
   width: @aside_menu_width;
   box-shadow: 1px 0 @grayBoxBorder;
   position: relative;
@@ -569,5 +584,68 @@
     &:last-child {
       margin-bottom: 1em;
     }
+  }
+}
+
+.license-banner {
+  .flexy(center);
+
+  width: ~"calc(100vw - @{aside_nav_width})";
+  height: @license_banner_height;
+  padding: 0 20px;
+
+  color: @white;
+  background: @blueDarkest;
+
+  .indicator {
+    height: @font-size-large;
+    margin-right: 20px;
+    padding: 0 13px;
+
+    font-size: @font-size-small;
+    line-height: @font-size-large; // Height of indicator, to center vertically.
+
+    background-color: @grayLightest;
+    border-radius: @border-radius-base;
+    color: @grayDark;
+  }
+
+  &.in-violation, &.expired {
+    .indicator {
+      background-color: #ed5c5c;
+      color: @white;
+    }
+  }
+
+  .message {
+    .flex(1 0 auto);
+    font-size: @font-size-large;
+  }
+
+  .stat {
+    font-size: @font-size-base;
+    text-transform: uppercase;
+
+    .count {
+      // The span here is the space after .count, which looks better if it's the
+      // same size as the .count.
+      &, & + span {
+        font-size: @font-size-large;
+      }
+    }
+  }
+
+  .contact-sales {
+    padding: 0 30px;
+    height: 40px;
+    margin-left: 40px;
+
+    font-size: @font-size-large;
+    font-weight: bold;
+    line-height: 40px;
+
+    border-radius: 20px;
+    background-color: @blueDark;
+    &:hover { color: inherit; }
   }
 }
