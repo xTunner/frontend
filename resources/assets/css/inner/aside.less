@@ -611,9 +611,11 @@
     color: @grayDark;
   }
 
-  &.in-violation .indicator {
-    background-color: #ed5c5c;
-    color: @white;
+  &.in-violation, &.expired {
+    .indicator {
+      background-color: #ed5c5c;
+      color: @white;
+    }
   }
 
   .message {

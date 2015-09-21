@@ -13,14 +13,17 @@
        (t/interval (t/now))
        t/in-days))
 
-(defn- banner-contents [indicator-text message days days-description]
-  (list
-   [:.indicator indicator-text]
-   [:.message message]
-   [:.timing [:span.days days] " " days-description]
-   [:a.contact-sales
-    {:href "mailto:enterprise@circleci.com"}
-    "Contact Sales…"]))
+(defn- banner-contents
+  ([indicator-text message] (banner-contents indicator-text message nil nil))
+  ([indicator-text message days days-description]
+   (list
+    [:.indicator indicator-text]
+    [:.message message]
+    (when days
+      [:.timing [:span.days days] " " days-description])
+    [:a.contact-sales
+     {:href "mailto:enterprise@circleci.com"}
+     "Contact Sales…"])))
 
 (defn- banner-for-license
   "Returns the banner for the given license, or nil if no banner applies."
@@ -39,6 +42,9 @@
                            "Your trial period has expired."
                            (days-until-api-time (:hard_expiry_date license))
                            "days before suspension")
+          ["trial" "expired"]
+          (banner-contents "Trial Ended"
+                           "Your builds have been suspended. Contact Sales to reactivate your builds.")
           nil)]
     (when contents
       [:.license-banner {:class banner-type}
