@@ -13,30 +13,36 @@
        (t/interval (t/now))
        t/in-days))
 
+(defn- banner-contents [indicator-text message days days-description]
+  (list
+   [:.indicator indicator-text]
+   [:.message message]
+   [:.timing [:span.days days] " " days-description]
+   [:a.contact-sales
+    {:href "mailto:enterprise@circleci.com"}
+    "Contact Sales…"]))
+
 (defn- banner-for-license
   "Returns the banner for the given license, or nil if no banner applies."
   [license]
-  (case ((juxt :type :status) license)
-    ["trial" "current"]
-    (let [days-until-expiry (days-until-api-time (:expiry_date license))]
-      [:.license-banner {:class (:status license)}
-       [:.indicator "Trial Account"]
-       [:.message "Welcome to CircleCI."]
-       [:.timing [:span.days days-until-expiry] " days left in trial"]
-       [:a.contact-sales
-        {:href "mailto:enterprise@circleci.com"}
-        "Contact Sales…"]])
+  (let [banner-type ((juxt :type :status) license)
+        contents
+        (case banner-type
+          ["trial" "current"]
+          (banner-contents "Trial Account"
+                           "Welcome to CircleCI."
+                           (days-until-api-time (:expiry_date license))
+                           "days left in trial")
 
-    ["trial" "in-violation"]
-    (let [days-until-suspension (days-until-api-time (:hard_expiry_date license))]
-      [:.license-banner {:class (:status license)}
-       [:.indicator "Trial Expired"]
-       [:.message "Your trial period has expired."]
-       [:.timing [:span.days days-until-suspension] " days before suspension"]
-       [:a.contact-sales
-        {:href "mailto:enterprise@circleci.com"}
-        "Contact Sales…"]])
-    nil))
+          ["trial" "in-violation"]
+          (banner-contents "Trial Expired"
+                           "Your trial period has expired."
+                           (days-until-api-time (:hard_expiry_date license))
+                           "days before suspension")
+          nil)]
+    (when contents
+      [:.license-banner {:class banner-type}
+       contents])))
 
 (defn show-banner?
   "Should we show a banner for the given license?"
