@@ -96,7 +96,7 @@
   (defroute v1-account "/account" []
     (open-to-inner! nav-ch :account {:subpage nil}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
-    (open-to-inner! nav-ch :account {:subpage subpage}))
+    (open-to-inner! nav-ch :account {:subpage (keyword subpage)}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
