@@ -431,9 +431,9 @@
             show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)
             license (get-in app state/license-path)]
         (html
-         [:aside.app-aside-left {:class (cond-> []
-                                          (not show-aside-menu?) (conj "menuless")
-                                          (license/show-banner? license) (conj "including-license-banner"))}
+         [:aside.app-aside {:class (cond-> []
+                                     (not show-aside-menu?) (conj "menuless")
+                                     (license/show-banner? license) (conj "including-license-banner"))}
           (om/build aside-nav app {:opts {:user user}})
           (when (license/show-banner? license)
             (om/build license/license-banner license))
