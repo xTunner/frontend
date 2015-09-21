@@ -16,8 +16,8 @@
 (defn- banner-for-license
   "Returns the banner for the given license, or nil if no banner applies."
   [license]
-  (case (:status license)
-    "current"
+  (case ((juxt :type :status) license)
+    ["trial" "current"]
     (let [days-until-expiry (days-until-api-time (:expiry_date license))]
       [:.license-banner {:class (:status license)}
        [:.indicator "Trial Account"]
@@ -27,7 +27,7 @@
         {:href "mailto:enterprise@circleci.com"}
         "Contact Sales…"]])
 
-    "in-violation"
+    ["trial" "in-violation"]
     (let [days-until-suspension (days-until-api-time (:hard_expiry_date license))]
       [:.license-banner {:class (:status license)}
        [:.indicator "Trial Expired"]
