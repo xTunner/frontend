@@ -622,12 +622,16 @@
     font-size: @font-size-large;
   }
 
-  .timing {
+  .stat {
     font-size: @font-size-base;
     text-transform: uppercase;
 
-    .days {
-      font-size: @font-size-large;
+    .count {
+      // The span here is the space after .count, which looks better if it's the
+      // same size as the .count.
+      &, & + span {
+        font-size: @font-size-large;
+      }
     }
   }
 
