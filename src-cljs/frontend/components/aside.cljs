@@ -435,7 +435,6 @@
          [:aside.app-aside {:class (cond-> []
                                      (not show-aside-menu?) (conj "menuless")
                                      (license/show-banner? license) (conj "including-license-banner"))}
-          (om/build aside-nav app {:opts {:user user}})
           (when (license/show-banner? license)
             (om/build license/license-banner license))
           (when show-aside-menu?
