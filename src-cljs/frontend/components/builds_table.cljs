@@ -177,7 +177,7 @@
           (list [:div.metadata-item.recent-time
                  {:title  (datetime/full-datetime (js/Date.parse (:start_time build))) }
                  (dashboard-icon "Builds-StartTime")
-                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago}})
+                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
                   " ago"]
                 [:div.metadata-item.recent-time
                  {:title (build-model/duration build)}

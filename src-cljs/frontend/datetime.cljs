@@ -156,6 +156,17 @@
     (let [count (.round js/Math (/ ago (:divisor interval)))]
       (str count " "  (:unit interval) (when-not (= 1 count) "s")))))
 
+(defn time-ago-abbreviated [duration-ms]
+  (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
+        interval (cond (< ago minute){:divisor 1      :unit "sec"   }
+                       (< ago hour)  {:divisor minute :unit "min"   }
+                       (< ago day)   {:divisor hour   :unit "hr"    }
+                       (< ago month) {:divisor day    :unit "day"   }
+                       (< ago year)  {:divisor month  :unit "month" }
+                       :else         {:divisor year   :unit "year"  })]
+    (let [count (.round js/Math (/ ago (:divisor interval)))]
+      (str count " "  (:unit interval) (when-not (= 1 count) "s")))))
+
 (defn as-duration [duration]
   (if (neg? duration)
     (do (utils/mwarn "got negative duration" duration "returning 00:00")
