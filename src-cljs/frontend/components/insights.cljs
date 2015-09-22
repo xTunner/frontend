@@ -185,7 +185,7 @@
     ;; positive bar
     (-> enter
         (.insert "rect")
-        (.attr #js {"class" #(.-outcome %)
+        (.attr #js {"class" #(str "bar " (.-outcome %))
                     "y" #(y-pos-scale (.-build_time_minutes %))
                     "x" #(x-scale (.-build_num %))
                     "width" (.rangeBand x-scale)
@@ -194,21 +194,25 @@
     ;; negative (queue time) bar
     (-> enter
         (.insert "rect")
-        (.attr #js {"class" "queue"
+        (.attr #js {"class" "bar queue"
                     "y" y-middle
                     "x" #(x-scale (.-build_num %))
                     "width" (.rangeBand x-scale)
                     "height" #(- (y-neg-scale (.-queued_time_minutes %)) y-middle)}))))
 
+(defn chartable-builds [builds]
+  (->> builds
+       (filter build-graphable)
+       reverse
+       (map add-queued-time)
+       (map add-minute-measures)))
+
 (defn project-insights-bar [builds owner]
-  (let [chart-builds (->> builds
-                           (filter build-graphable)
-                           reverse
-                           (map add-queued-time)
-                           (map add-minute-measures))]
+  (let [chart-builds (chartable-builds builds)]
     (reify
       om/IDidUpdate
       (did-update [_ prev-props prev-state]
+        (.error js/console  "update called.")
         (let [el (om/get-node owner)]
           (visualize-insights-bar! el chart-builds)))
       om/IRender
