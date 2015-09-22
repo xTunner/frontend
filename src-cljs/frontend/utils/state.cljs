@@ -4,13 +4,15 @@
             [frontend.utils.seq :refer [find-index]]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch]}]
-  (assoc-in state state/crumbs-path (vec (concat
-                                          (when org [{:type :org
-                                                      :username org}])
-                                          (when repo [{:type :project
-                                                       :username org :project repo}])
-                                          (when branch [{:type :project-branch
-                                                         :username org :project repo :branch branch}])))))
+  (assoc-in state state/crumbs-path
+            (vec (concat
+                   [{:type :dashboard}]
+                   (when org [{:type :org
+                               :username org}])
+                   (when repo [{:type :project
+                                :username org :project repo}])
+                   (when branch [{:type :project-branch
+                                  :username org :project repo :branch branch}])))))
 
 (defn reset-current-build [state]
   (assoc state :current-build-data {:build nil

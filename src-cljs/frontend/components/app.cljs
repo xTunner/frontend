@@ -131,24 +131,40 @@
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
+
               (when (and inner? logged-in?)
-                (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
+                (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
+
               [:main.app-main {:ref "app-main"
                                :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
+
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
-               (when show-header-and-footer?
+
+               (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))
-               [:div.main-body
-                (om/build dom-com app)]
-               (when (and show-header-and-footer? (config/footer-enabled?))
-                 [:footer.main-foot
-                  (footer/footer)])
-               (when (and (config/help-tab-enabled?) (not logged-in?))
-                 (om/build shared/sticky-help-link app))]])))))))
+
+               [:div.app-dominant
+                (when (and inner? logged-in?)
+                  (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
+
+
+                [:div.main-body
+                 (when (and (not (feature/enabled? :ui-v2))
+                            show-header-and-footer?)
+                   (om/build header/header app-without-container-data))
+
+                 (om/build dom-com app)
+                 
+                 (when (and show-header-and-footer? (config/footer-enabled?))
+                   [:footer.main-foot
+                    (footer/footer)])]]
+
+                (when (and (config/help-tab-enabled?) (not logged-in?))
+                  (om/build shared/sticky-help-link app))]])))))))
 
 
 (defn app [app owner opts]

@@ -16,45 +16,26 @@
 @activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
 
 .inner {
+  height: 100vh;
+
   .app-main {
     .flexy(column);
-    margin-left: @aside_nav_width + @aside_menu_width;
     overflow: auto;
 
     transition: margin @aside_transition_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   }
 
-  .app-main.new-app-main-margin {
-    margin-left: @aside_nav_width + @new_aside_menu_width;
-  }
-
-  .app-aside.menuless + .app-main {
-    margin-left: @aside_nav_width;
-  }
-
   .app-aside.including-license-banner + .app-main {
     margin-top: @license_banner_height;
   }
 }
+
 .aside-left-nav {
-  .flex(0 0 100%);
   width: @aside_nav_width;
   background: @blueDarkest;
   color: fade(@white, 66);
   overflow-y: auto;
-}
-
-.app-aside {
-  .flexy(column);
-  .flex-wrap(wrap);
-
-  position: fixed;
-  z-index: @zindex-aside;
-  left: 0;
-  top: 0;
-
-  height: 100vh;
 
   // Because this div can include elements which stretch across the top and the
   // side of the page, it tends to cover the page. Therefore, we need to make it
@@ -69,6 +50,7 @@
       color: inherit;
     }
   }
+
   .tooltip {                    //
     font-size: @baseFontSize;   //
     .tooltip-inner {            //
@@ -80,6 +62,7 @@
     }                           //
   }                             //
 }
+
 .aside-left-nav,
 .aside-left-menu {
   .flexy(column);
@@ -94,16 +77,18 @@
   .flex(1 0 1px);
   width: @aside_menu_width;
   box-shadow: 1px 0 @grayBoxBorder;
-  position: relative;
   overflow: hidden;
+
+  background-color: @white;
   transition: @aside_transition_speed;
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+
   .aside-activity {
     color: @grayLight;
-    position: relative;
+
     header {
       .box-sizing(border-box);
-      height: @tile;
+      flex: 0 0 @tile;
       border-bottom: solid 1px @grayBoxBorder;
       padding: @em;
       position: relative;
@@ -311,7 +296,6 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 400ms, background 400ms, visibility 0ms 1000ms, height 200ms ease-in-out;
-  height: 0%;
   &.open {
     opacity: 1;
     visibility: visible;
@@ -321,10 +305,17 @@
       height: 100vh; // needed to fix safari bug preventing accordion from opening up
     }
   }
-  .wrapper {
-    height: 100%;
-    overflow-x: hidden;
+
+  .projects {
     overflow-y: scroll;
+
+    a {
+      outline: none;
+      text-decoration: none;
+      &:not(:hover) {
+        color: inherit;
+      }
+    }
   }
   ul {
     margin: 0;
@@ -484,10 +475,14 @@
     color: @grayLight;
   }
 }
+
 &.ui-v2 .aside-activity .when {
-    font-family: @monoFontFamilyV2;
+  font-family: @monoFontFamilyV2;
 }
 
+.ui-v2 .aside-left-menu {
+  box-shadow: none;
+}
 
 .aside-user {
   .flexy(column);
@@ -497,15 +492,19 @@
   width: @tile;
   height: 100%;
   background: @appBackgroundColor;
-  z-index: @zindex-tooltip;
   color: @appBackgroundColor;
   box-shadow: 1px 0 @grayBoxBorder;
   transition: (@aside_transition_speed / 2);
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   overflow: hidden;
   &.open {
+
+    &.ui-v2 {
+      width: @new_aside_menu_width;
+    }
+
+    width: @aside_menu_width;
     left: 0;
-    width: 100%;
     color: @gray;
     h5 {
       color: @black;
