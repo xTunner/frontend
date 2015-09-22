@@ -33,8 +33,8 @@
                  [com.cemerick/clojurescript.test "0.3.0"]
                  [org.clojure/tools.reader "0.9.2"]]
 
-  :plugins [[lein-cljsbuild "1.0.6"]
-            [lein-figwheel "0.3.7"]
+  :plugins [[lein-cljsbuild "1.1.0"]
+            [lein-figwheel "0.4.0"]
             [cider/cider-nrepl "0.9.1"]]
 
   :exclusions [[org.clojure/clojure]
