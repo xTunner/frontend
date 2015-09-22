@@ -78,21 +78,21 @@
         (.append "rect")
         (.attr #js {"width" square-size
                     "height" square-size
-                    "class" #(.-classname %)
+                    "class" #(aget % "classname")
                     "transform"
                     (fn [item i]
                       (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
     (-> left-legend-item
         (.append "text")
         (.attr #js {"x" (+ square-size spacing)})
-        (.text #(.-text %)))
+        (.text #(aget % "text")))
 
     ;; right legend
     (-> right-legend-item
         (.append "rect")
         (.attr #js {"width" square-size
                     "height" square-size
-                    "class" #(.-classname %)
+                    "class" #(aget % "classname")
                     "transform"
                     (fn [item i]
                       (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
@@ -100,7 +100,7 @@
         (.append "text")
         (.attr #js {"x" (+ square-size
                            spacing)})
-        (.text #(.-text %)))))
+        (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [elem builds]
   (let [y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
@@ -185,20 +185,20 @@
     ;; positive bar
     (-> enter
         (.insert "rect")
-        (.attr #js {"class" #(str "bar " (.-outcome %))
-                    "y" #(y-pos-scale (.-build_time_minutes %))
-                    "x" #(x-scale (.-build_num %))
+        (.attr #js {"class" #(str "bar " (aget % "outcome"))
+                    "y" #(y-pos-scale (aget % "build_time_minutes"))
+                    "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-middle (y-pos-scale (.-build_time_minutes %)))}))
+                    "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))}))
 
     ;; negative (queue time) bar
     (-> enter
         (.insert "rect")
         (.attr #js {"class" "bar queue"
                     "y" y-middle
-                    "x" #(x-scale (.-build_num %))
+                    "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- (y-neg-scale (.-queued_time_minutes %)) y-middle)}))))
+                    "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)}))))
 
 (defn chartable-builds [builds]
   (->> builds
@@ -212,7 +212,6 @@
     (reify
       om/IDidUpdate
       (did-update [_ prev-props prev-state]
-        (.error js/console  "update called.")
         (let [el (om/get-node owner)]
           (visualize-insights-bar! el chart-builds)))
       om/IRender
