@@ -120,10 +120,20 @@
 
   .recent-status-badge {
     padding: 0;
+    position: relative;
 
     a {
       display: block;
       width: 100%;
+    }
+
+    .badge-icon {
+      @badge-icon-size: 17px;
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      height: @badge-icon-size;
+      width: @badge-icon-size;
     }
   }
 }
@@ -199,12 +209,15 @@
     a {
       border-radius: 40px;
       height: 25px;
-      font-size: 11px;
-      font-weight: 300;
-      line-height: 20px;
-      text-transform: uppercase;
-      color: @black;
       background: fadeout(@brand-cancelled-v2, @lighten-ratio);
+      
+      span {
+        font-size: 11px;
+        font-weight: 300;
+        line-height: 20px;
+        text-transform: uppercase;
+        color: @black;
+      }
 
       &.pass {
         background: fadeout(@brand-success-v2, @lighten-ratio);
