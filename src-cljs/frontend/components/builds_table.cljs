@@ -151,6 +151,12 @@
          (:build_num build)]]
 
        [:div.metadata
+        (when-let [author (build-model/author build)]
+          [:div.metadata-item.recent-user
+           {:title (build-model/ui-user build)}
+           (dashboard-icon "Builds-Author")
+           author])
+
         [:div.metadata-item
          (if-not (:vcs_revision build)
            [:a {:href url}]
@@ -159,15 +165,15 @@
                       :href url}
                   (build-model/github-revision build)]))]
 
-        (when-let [author (build-model/author build)]
-          [:div.metadata-item.recent-user
-           {:title (build-model/ui-user build)}
-           (dashboard-icon "Builds-Author")
-           author])
-
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
-          nil
+          (list
+            [:div.metadata-item.recent-time
+             (dashboard-icon "Builds-StartTime")
+             "–"]
+            [:div.metadata-item.recent-time
+             (dashboard-icon "Builds-Duration")
+             "–"])
           (list [:div.metadata-item.recent-time
                  {:title  (datetime/full-datetime (js/Date.parse (:start_time build))) }
                  (dashboard-icon "Builds-StartTime")
