@@ -7,6 +7,7 @@
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
             [frontend.components.instrumentation :as instrumentation]
+            [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
             [frontend.models.project :as project-model]
             [frontend.models.feature :as feature]
@@ -246,9 +247,12 @@
       (let [admin? (if (config/enterprise?)
                      (get-in app [:current-user :dev-admin])
                      (get-in app [:current-user :admin]))
-            logged-out? (not (get-in app state/user-path))]
+            logged-out? (not (get-in app state/user-path))
+            license (get-in app state/license-path)]
         (html
           [:header.main-head (when logged-out? {:class "guest"})
+           (when (license/show-banner? license)
+             (om/build license/license-banner license))
            (when admin?
              (om/build head-admin app))
            (when (config/statuspage-header-enabled?)

@@ -433,10 +433,7 @@
             license (get-in app state/license-path)]
         (html
          [:aside.app-aside {:class (cond-> []
-                                     (not show-aside-menu?) (conj "menuless")
-                                     (license/show-banner? license) (conj "including-license-banner"))}
-          (when (license/show-banner? license)
-            (om/build license/license-banner license))
+                                     (not show-aside-menu?) (conj "menuless"))}
           (when show-aside-menu?
             (om/build aside-menu app {:opts {:login login}}))])))))
 
