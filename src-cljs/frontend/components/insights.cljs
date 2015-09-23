@@ -19,6 +19,17 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                         ;;
+;; Note that unexterned properties must be accessed with `aget` instead of ;;
+;; the `.-` or `..` shortcut notations.                                    ;;
+;;                                                                         ;;
+;; Google closure compiler with "advanced" optimizations will mangle       ;;
+;; unexterned field names.                                                 ;;
+;;                                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
@@ -78,6 +89,7 @@
         (.append "rect")
         (.attr #js {"width" square-size
                     "height" square-size
+                    ;; `aget` must be used here instead of direct field access.  See note in preamble.
                     "class" #(aget % "classname")
                     "transform"
                     (fn [item i]
