@@ -197,9 +197,9 @@
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "Ship better code, faster."}
           "Ship better code, faster."]
-         [:h3.slogan.context {:item-prop "You have a product to focus on, let CircleCI handle your"}
+         [:h3.slogan.context.wrapped-line-top {:item-prop "You have a product to focus on, let CircleCI handle your"}
           "You have a product to focus on, let CircleCI handle your"]
-         [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."}
+         [:h3.slogan.context.wrapped-line-bottom {:item-prop "Continuous Integration & Deployment."}
           "Continuous Integration & Deployment."]]
         [:div.home-avatars
          [:div.avatars
