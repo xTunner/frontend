@@ -393,20 +393,12 @@
                            :title "Invite your teammates"}
             [:i.fa.fa-user]]
 
-           [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Changelog"
-                           :href "/changelog"
-                           :class (when (changelog-updated-since? (:last_viewed_changelog user))
-                                    "unread")}
-            [:i.fa.fa-bell]]
-
-           (when (feature/enabled? :insights)
-             [:a.aside-item {:data-placement "right"
-                             :data-trigger "hover"
-                             :title "Insights"
-                             :href "/build-insights"}
-              [:i.fa.fa-bar-chart-o]])
+        (when (feature/enabled? :insights)
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Insights"
+                          :href "/build-insights"}
+           [:i.fa.fa-bar-chart]])
 
            (when (:admin user)
              [:a.aside-item {:data-placement "right"
