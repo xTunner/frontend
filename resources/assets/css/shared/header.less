@@ -51,6 +51,74 @@
   margin-right: 1em;
 }
 
+
+.license-banner {
+  .flexy(center);
+
+  height: @tile;
+  padding: 0 20px;
+
+  color: @white;
+  background: @blueDarkest;
+
+  .indicator {
+    height: @font-size-large;
+    margin-right: 20px;
+    padding: 0 13px;
+
+    font-size: @font-size-small;
+    line-height: @font-size-large; // Height of indicator, to center vertically.
+
+    background-color: @grayLightest;
+    border-radius: @border-radius-base;
+    color: @grayDark;
+  }
+
+  &.in-violation, &.expired {
+    .indicator {
+      background-color: #ed5c5c;
+      color: @white;
+    }
+  }
+
+  .message {
+    .flex(1 0 auto);
+    font-size: @font-size-large;
+  }
+
+  .stat {
+    font-size: @font-size-base;
+    text-transform: uppercase;
+
+    .count {
+      // The span here is the space after .count, which looks better if it's the
+      // same size as the .count.
+      &, & + span {
+        font-size: @font-size-large;
+      }
+    }
+  }
+
+  .contact-sales {
+    padding: 0 30px;
+    height: 40px;
+    margin-left: 40px;
+
+    font-size: @font-size-large;
+    font-weight: bold;
+    line-height: 40px;
+
+    border-radius: 20px;
+    color: inherit;
+    background-color: @blueDark;
+
+    &:hover {
+      color: inherit;
+      background-color: @blue;
+    }
+  }
+}
+
 #statuspage-bar {
   &.none {
     visibility: hidden;
