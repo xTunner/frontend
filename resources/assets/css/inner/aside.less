@@ -589,7 +589,6 @@
 .license-banner {
   .flexy(center);
 
-  width: ~"calc(100vw - @{aside_nav_width})";
   height: @license_banner_height;
   padding: 0 20px;
 
@@ -644,7 +643,12 @@
     line-height: 40px;
 
     border-radius: 20px;
+    color: inherit;
     background-color: @blueDark;
-    &:hover { color: inherit; }
+
+    &:hover {
+      color: inherit;
+      background-color: @blue;
+    }
   }
 }
