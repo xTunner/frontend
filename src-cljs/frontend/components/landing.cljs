@@ -110,14 +110,14 @@
              :tools #{:rails :ruby :javascript :redis :capistrano}
              ;; TODO get position from index rather than specifying manually
              :position 0}
-   :circleci {:name "CircleCI"
-              :logo ""
-              :quote "We test and deploy all of Circle's infrastructure on Circle. Being our own customer means we build a product our customers love."
-              :cite "David Lowe"
-              :cite-title "Engineer"
-              :cite-avatar "/img/outer/home/david-lowe.png"
-              :tools #{:clojure :javascript :postgres :amazon :chrome :safari :firefox}
-              :position 1}
+   :gocardless {:name "GoCardless"
+                :logo ""
+                :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to deploy with confidence."
+                :cite "Alan Kennedy"
+                :cite-title "Senior Developer"
+                :cite-avatar "/img/outer/home/alan-kennedy.png"
+                :tools #{:ruby :rails :postgres :javascript :node}
+                :position 1}
    :kickstarter {:name "Kickstarter"
                  :logo ""
                  :quote "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently."
@@ -126,14 +126,6 @@
                  :cite-avatar "/img/outer/home/aaron-suggs.png"
                  :tools #{:ruby :rails :javascript :amazon}
                  :position 2}
-   :gocardless {:name "GoCardless"
-                :logo ""
-                :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to deploy with confidence."
-                :cite "Alan Kennedy"
-                :cite-title "Senior Developer"
-                :cite-avatar "/img/outer/home/alan-kennedy.png"
-                :tools #{:ruby :rails :postgres :javascript :node}
-                :position 3}
    :sincerely {:name "Sincerely"
                :logo ""
                :quote "We never merge until we get that green checkmark. A pull request without CircleCI is like skydiving without a parachute."
@@ -141,7 +133,7 @@
                :cite-title "Director of Engineering"
                :cite-avatar "/img/outer/home/justin-watt.png"
                :tools #{:php :amazon :mysql :javascript}
-               :position 4}))
+               :position 3}))
 
 (def nav-height 70)
 
