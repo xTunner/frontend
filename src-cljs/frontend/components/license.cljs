@@ -54,9 +54,18 @@
                            "Your trial period has expired."
                            {:count (days-until-api-time (:hard_expiry_date license))
                             :nouns ["day" "days"]
-                            :description "before suspension"})
+                            :description "until suspension"})
           ["trial" "expired"]
           (banner-contents "Trial Ended"
+                           "Your builds have been suspended. Contact Sales to reactivate your builds.")
+          ["paid" "in-violation"]
+          (banner-contents "License Expired"
+                           "Your license has expired. Contact Sales to renew."
+                           {:count (days-until-api-time (:hard_expiry_date license))
+                            :nouns ["day" "days"]
+                            :description "until suspension"})
+          ["paid" "expired"]
+          (banner-contents "License Suspended"
                            "Your builds have been suspended. Contact Sales to reactivate your builds.")
           nil)]
     (when contents
