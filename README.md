@@ -34,6 +34,7 @@ node_modules/.bin/bower install
 ### Clojure
 
 Install [Leiningen](http://leiningen.org/).
+
 **Note:** You can also install leiningen via homebrew with `brew install leiningen`
 
 ### Hosts
@@ -50,7 +51,7 @@ If you have access to the backend code, you can also add this line:
 127.0.0.1 dev.circlehost
 ```
 **Note:** To the `dev.circlehost` entry _must_ be in your `/etc/hosts`
-to get `lein figwheel` to run properly (in the next section)
+to get `lein figwheel` to run properly (steps in the next section)
 
 ## Usage
 
