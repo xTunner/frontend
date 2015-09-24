@@ -151,6 +151,18 @@
          (:build_num build)]]
 
        [:div.metadata
+
+        (when-let [urls (seq (:pull_request_urls build))]
+          [:div.metadata-item.pull-requests {:title "Pull Requests"}
+           (dashboard-icon "Builds-PullRequest")
+           [:span
+            (interpose
+              ", "
+              (map (fn [url] [:a {:href url} "#"
+                              (let [n (re-find #"/\d+$" url)]
+                                (if n (subs n 1) "?"))])
+                   urls))]])
+
         (when-let [author (build-model/author build)]
           [:div.metadata-item.recent-user
            {:title (build-model/ui-user build)}
