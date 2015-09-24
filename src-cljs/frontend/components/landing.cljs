@@ -197,9 +197,9 @@
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "Ship better code, faster."}
           "Ship better code, faster."]
-         [:h3.slogan.context.wrapped-line-top {:item-prop "You have a product to focus on, let CircleCI handle your"}
+         [:h3.slogan.context.top-line {:item-prop "You have a product to focus on, let CircleCI handle your"}
           "You have a product to focus on, let CircleCI handle your"]
-         [:h3.slogan.context.wrapped-line-bottom {:item-prop "Continuous Integration & Deployment."}
+         [:h3.slogan.context.bottom-line {:item-prop "Continuous Integration & Deployment."}
           "Continuous Integration & Deployment."]]
         [:div.home-avatars
          [:div.avatars
@@ -414,9 +414,9 @@
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"}
           "So, ready to ship faster?"]
-         [:h3.slogan.context {:item-prop "Next you'll just need to log in using your GitHub account."}
+         [:h3.slogan.context.top-line {:item-prop "Next you'll just need to log in using your GitHub account."}
           "Next you'll just need to log in using your GitHub account."]
-         [:h3.slogan.context {:item-prop "Still not convinced? Check out our pricing."}
+         [:h3.slogan.context.bottom-line {:item-prop "Still not convinced? Check out our pricing."}
           "Still not convinced? Check out our "
           [:a {:href "pricing"} "pricing"]
           "."]]
