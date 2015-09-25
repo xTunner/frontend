@@ -34,15 +34,21 @@ gem 'simplecov', :require => false, :group => :test
 
 In `test/test_helper.rb`, `spec/spec_helper.rb`,
 Cucumber's `env.rb`,
-or in your test suite's startup hooks, initialize `SimpleCov`:
+or in your test suite's startup hooks, initialize `SimpleCov`.
 
 ```
+require 'simplecov'
+
+# save to CircleCI's artifacts directory if we're on CircleCI
 if ENV['CIRCLE_ARTIFACTS']
-  require 'simplecov'
-  dir = File.join("..", "..", "..", ENV['CIRCLE_ARTIFACTS'], "coverage")
+  dir = File.join(ENV['CIRCLE_ARTIFACTS'], "coverage")
   SimpleCov.coverage_dir(dir)
 end
+
+SimpleCov.start
 ```
+
+The [simplecov README](https://github.com/colszowka/simplecov#getting-started) has more details.
 
 #### Python, Node, Java, PHP, etc
 

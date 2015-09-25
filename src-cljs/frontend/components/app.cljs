@@ -12,6 +12,7 @@
             [frontend.components.mobile :as mobile]
             [frontend.components.press :as press]
             [frontend.components.add-projects :as add-projects]
+            [frontend.components.insights :as insights]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
@@ -60,6 +61,7 @@
     :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
+    :build-insights insights/build-insights
     :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
@@ -124,7 +126,7 @@
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
                                        (when (feature/enabled? :ui-v2) ["ui-v2"])
-                                       ;; The following 2 are meant for the landing ab test to hide old heaqder/footer
+                                       ;; The following 2 are meant for the landing ab test to hide old header/footer
                                        (when (= :landing (:navigation-point app)) ["landing"])
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
@@ -133,23 +135,38 @@
               (when (and inner? logged-in? (feature/enabled? :ui-v2))
                 (om/build top-nav/top-nav app-without-container-data))
               (when (and inner? logged-in?)
-                (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
+                (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
+
               [:main.app-main {:ref "app-main"
                                :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
+
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
-               (when show-header-and-footer?
+
+               (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))
-               [:div.main-body
-                (om/build dom-com app)]
-               (when (and show-header-and-footer? (config/footer-enabled?))
-                 [:footer.main-foot
-                  (footer/footer)])
-               (when (and (config/help-tab-enabled?) (not logged-in?))
-                 (om/build shared/sticky-help-link app))]])))))))
+
+               [:div.app-dominant
+                (when (and inner? logged-in?)
+                  (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
+
+
+                [:div.main-body
+                 (when (and (not (feature/enabled? :ui-v2))
+                            show-header-and-footer?)
+                   (om/build header/header app-without-container-data))
+
+                 (om/build dom-com app)
+                 
+                 (when (and show-header-and-footer? (config/footer-enabled?))
+                   [:footer.main-foot
+                    (footer/footer)])]]
+
+                (when (and (config/help-tab-enabled?) (not logged-in?))
+                  (om/build shared/sticky-help-link app))]])))))))
 
 
 (defn app [app owner opts]

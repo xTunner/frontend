@@ -6,6 +6,24 @@
   }
 }
 
+.ui-v2 {
+  .breadcrumbs {
+    margin-left: 0;
+    font-size: 20px;
+
+    a {
+      &:not(:hover) {
+        color: @gray-light-v2;
+      }
+
+      &:not(:first-child):before {
+        content: '»';
+        color: @gray-light-v2;
+      }
+    }
+  }
+}
+
 .breadcrumbs {
   margin-left: 1em;
   a {
@@ -27,9 +45,78 @@
     }
   }
 }
+
 #follow-project-button {
   .button_outline(@green, (@tile / 2));
   margin-right: 1em;
+}
+
+
+.license-banner {
+  .flexy(center);
+
+  height: @tile;
+  padding: 0 20px;
+
+  color: @white;
+  background: @blueDarkest;
+
+  .indicator {
+    height: @font-size-large;
+    margin-right: 20px;
+    padding: 0 13px;
+
+    font-size: @font-size-small;
+    line-height: @font-size-large; // Height of indicator, to center vertically.
+
+    background-color: @grayLightest;
+    border-radius: @border-radius-base;
+    color: @grayDark;
+  }
+
+  &.in-violation, &.expired {
+    .indicator {
+      background-color: #ed5c5c;
+      color: @white;
+    }
+  }
+
+  .message {
+    .flex(1 0 auto);
+    font-size: @font-size-large;
+  }
+
+  .stat {
+    font-size: @font-size-base;
+    text-transform: uppercase;
+
+    .count {
+      // The span here is the space after .count, which looks better if it's the
+      // same size as the .count.
+      &, & + span {
+        font-size: @font-size-large;
+      }
+    }
+  }
+
+  .contact-sales {
+    padding: 0 30px;
+    height: 40px;
+    margin-left: 40px;
+
+    font-size: @font-size-large;
+    font-weight: bold;
+    line-height: 40px;
+
+    border-radius: 20px;
+    color: inherit;
+    background-color: @blueDark;
+
+    &:hover {
+      color: inherit;
+      background-color: @blue;
+    }
+  }
 }
 
 #statuspage-bar {
@@ -60,13 +147,33 @@
 
 }
 
+.environment {
+  .flexy(center, center);
+  position: fixed;
+  color: @white;
+  bottom: 0;
+  right: 120px;
+  width: @tile * 1.5;
+  height: 3em;
+  border-radius: 4px 4px 0 0;
+  z-index: 9001; // see intercom hack in shame.less
+  background: @orange;
+  &.env-production  { background: @redLight;  }
+  &.env-staging     { background: @orange;    }
+  &.env-development { background: @blueLight; }
+  &.env-test        { background: @green;     }
+  &.env-dwwoelfel   { background: #500000;  }
+}
+
 .head-admin {
   @color: fade(@white, 50);
   background: @grayDarker;
   color: @color;
+
   &:not(.open) {
-    margin-top: -@tile;
+    display: none;
   }
+
   &.expanded {
     .admin-tools {
       .metrics {
@@ -80,9 +187,11 @@
       color: @white;
     }
   }
+
   [role="button"] {
     cursor: pointer;
   }
+
   .admin-tools {
     height: @tile;
     line-height: 200%;
@@ -103,23 +212,6 @@
         margin: 0 1em 0 3px;
       }
     }
-  }
-  .environment {
-    .flexy(center, center);
-    position: fixed;
-    color: @white;
-    bottom: 0;
-    right: 120px;
-    width: @tile * 1.5;
-    height: 3em;
-    border-radius: 4px 4px 0 0;
-    z-index: 9001; // see intercom hack in shame.less
-    background: @orange;
-    &.env-production  { background: @redLight;  }
-    &.env-staging     { background: @orange;    }
-    &.env-development { background: @blueLight; }
-    &.env-test        { background: @green;     }
-    &.env-dwwoelfel   { background: #500000;  }
   }
   .options {
     margin-left: 1em;

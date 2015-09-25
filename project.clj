@@ -60,7 +60,8 @@
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs" "test-cljs"]
-                        :figwheel {:on-jsload "frontend.core/reinstall-om!"}
+                        :figwheel {:websocket-host "dev.circlehost"
+                                   :on-jsload "frontend.core/reinstall-om!"}
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none
@@ -88,7 +89,7 @@
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
                                              "src-cljs/js/intercom-jquery-externs.js"
-                                             "src-cljs/js/d3_externs_min.js"]
+                                             "src-cljs/js/d3-externs.js"]
                                    :source-map "resources/public/cljs/test/sourcemap-dev.js"}}
                        {:id "production"
                         :source-paths ["src-cljs"]
@@ -101,7 +102,7 @@
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
                                              "src-cljs/js/intercom-jquery-externs.js"
-                                             "src-cljs/js/d3_externs_min.js"]
+                                             "src-cljs/js/d3-externs.js"]
                                    :source-map "resources/public/cljs/production/sourcemap-frontend.js"
                                    }}]
               :test-commands {"frontend-unit-tests"

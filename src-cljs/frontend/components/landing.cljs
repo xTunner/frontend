@@ -110,14 +110,14 @@
              :tools #{:rails :ruby :javascript :redis :capistrano}
              ;; TODO get position from index rather than specifying manually
              :position 0}
-   :circleci {:name "CircleCI"
-              :logo ""
-              :quote "We test and deploy all of Circle's infrastructure on Circle. Being our own customer means we build a product our customers love."
-              :cite "David Lowe"
-              :cite-title "Engineer"
-              :cite-avatar "/img/outer/home/david-lowe.png"
-              :tools #{:clojure :javascript :postgres :amazon :chrome :safari :firefox}
-              :position 1}
+   :gocardless {:name "GoCardless"
+                :logo ""
+                :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to deploy with confidence."
+                :cite "Alan Kennedy"
+                :cite-title "Senior Developer"
+                :cite-avatar "/img/outer/home/alan-kennedy.png"
+                :tools #{:ruby :rails :postgres :javascript :node}
+                :position 1}
    :kickstarter {:name "Kickstarter"
                  :logo ""
                  :quote "CircleCI was super simple to set up and we started reaping the benefits immediately. It lets us ship code quickly and confidently."
@@ -126,14 +126,6 @@
                  :cite-avatar "/img/outer/home/aaron-suggs.png"
                  :tools #{:ruby :rails :javascript :amazon}
                  :position 2}
-   :gocardless {:name "GoCardless"
-                :logo ""
-                :quote "CircleCI lets us develop and ship better code, faster. Its awesome parallelisation feature allows us to deploy with confidence."
-                :cite "Alan Kennedy"
-                :cite-title "Senior Developer"
-                :cite-avatar "/img/outer/home/alan-kennedy.png"
-                :tools #{:ruby :rails :postgres :javascript :node}
-                :position 3}
    :sincerely {:name "Sincerely"
                :logo ""
                :quote "We never merge until we get that green checkmark. A pull request without CircleCI is like skydiving without a parachute."
@@ -141,7 +133,7 @@
                :cite-title "Director of Engineering"
                :cite-avatar "/img/outer/home/justin-watt.png"
                :tools #{:php :amazon :mysql :javascript}
-               :position 4}))
+               :position 3}))
 
 (def nav-height 70)
 
@@ -197,9 +189,9 @@
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "Ship better code, faster."}
           "Ship better code, faster."]
-         [:h3.slogan.context {:item-prop "You have a product to focus on, let CircleCI handle your"}
+         [:h3.slogan.context.top-line {:item-prop "You have a product to focus on, let CircleCI handle your"}
           "You have a product to focus on, let CircleCI handle your"]
-         [:h3.slogan.context {:item-prop "Continuous Integration & Deployment."}
+         [:h3.slogan.context.bottom-line {:item-prop "Continuous Integration & Deployment."}
           "Continuous Integration & Deployment."]]
         [:div.home-avatars
          [:div.avatars
@@ -414,9 +406,9 @@
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"}
           "So, ready to ship faster?"]
-         [:h3.slogan.context {:item-prop "Next you'll just need to log in using your GitHub account."}
+         [:h3.slogan.context.top-line {:item-prop "Next you'll just need to log in using your GitHub account."}
           "Next you'll just need to log in using your GitHub account."]
-         [:h3.slogan.context {:item-prop "Still not convinced? Check out our pricing."}
+         [:h3.slogan.context.bottom-line {:item-prop "Still not convinced? Check out our pricing."}
           "Still not convinced? Check out our "
           [:a {:href "pricing"} "pricing"]
           "."]]

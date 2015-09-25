@@ -1,6 +1,7 @@
 body {
   -webkit-font-smoothing: antialiased;
 }
+
 #app {
   &.aside-nil {
     .app-main {
@@ -10,23 +11,44 @@ body {
 }
 
 .ui-v2 {
+  a {
+    color: @link-color-v2;
+  }
+
   pre, code, samp, kbd {
     font-family: @monoFontFamilyV2;
+  }
+
+  .main-head {
+    .head-user {
+      height: initial;
+      padding: 15px;
+
+      .settings {
+        height: initial;
+        padding: 0;
+
+        color: @gray-light-v2;
+      }
+    }
   }
 }
 
 .app-main {
   position: relative;
-  min-height: 100vh;
-  z-index: @zindex-app-main;
+  height: 100vh;
+  width: 100%;
 }
+
 .main-head {
   .flexy(column);
+
   .head-user {
     .flexy(center, space-between);
     height: @tile;
     box-sizing: border-box;
     border-bottom: solid 1px @grayBoxBorder;
+
     .settings {
       .flexy(center, center);
       height: @tile;
@@ -41,10 +63,12 @@ body {
       span {
         padding: @padding-xs-vertical @padding-xs-horizontal;
       }
+
       &:after {
         font-size: @baseFontSize;
       }
     }
+
     i.ico {
       .spinner {
         path {
@@ -54,6 +78,7 @@ body {
     }
   }
 }
+
 .ui-v2 .main-head {
   position: relative;
   top: @top-nav-height;
@@ -65,12 +90,16 @@ body {
 }
 
 .main-body {
+  width: 100%;
+  overflow: scroll;
+
   .loading-spinner-big {
     @reserved_height: (@tile * 2);
     .flexy(center, center);
     height: ~"calc(100vh - @{reserved_height})";
   }
 }
+
 .main-foot {
   padding: @footerItemSize 0;
   border-top: 1px @panel-default-border solid;
@@ -103,6 +132,7 @@ a {
     text-decoration: none;
   }
 }
+
 input:not(.dumb) {
   @height: 3em;
   &[type="text"],
@@ -111,9 +141,11 @@ input:not(.dumb) {
     .smart_label(@height, (@height / 2));
   }
 }
+
 textarea:not(.dumb) {
   .smart_label(13em, 3px);
 }
+
 .loading-spinner,
 .loading-spinner-big {
   svg {
@@ -131,17 +163,20 @@ textarea:not(.dumb) {
     }
   }
 }
+
 button [spinner], button [data-spinner]{
   width:  @baseLineHeight;
   height: @baseLineHeight;
   vertical-align: top;
 }
+
 .fa.fa-spin {
   -moz-animation: spin 1s infinite linear;
   -o-animation: spin 1s infinite linear;
   -webkit-animation: spin 1s infinite linear;
   animation: spin 1s infinite linear;
 }
+
 .github-icon-link {
   color: #333;
   .transition(all 0.1s ease-in);
@@ -150,19 +185,23 @@ button [spinner], button [data-spinner]{
     color: #4183c4;
   }
 }
+
 .center{
   display: block;
   margin: 0 auto;
 }
+
 .center-text{
   text-align: center;
 }
+
 .contact-us {
   button {
     display: block;
     width: 100px;
   }
 }
+
 #sticky-help-link {
   bottom: 0;
   border: 1px solid @black;
@@ -204,6 +243,7 @@ button [spinner], button [data-spinner]{
   figure {
     margin: 0;
   }
+
   .admin-stats {
     .animation(admin-slide-down 200ms ease-in-out);
     width: 100%;
@@ -217,6 +257,7 @@ button [spinner], button [data-spinner]{
     pointer-events: none;
     user-select: none;
   }
+
   table {
     font-family: monaco;
     font-size: 12px;
@@ -232,7 +273,9 @@ button [spinner], button [data-spinner]{
   0%   { .translate(0, -100%);}
   100% { .translate(0, 0);}
 }
+
 @-webkit-keyframes admin-slide-down {
   0%   { .translate(0, -100%);}
   100% { .translate(0, 0);}
 }
+

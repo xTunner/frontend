@@ -1,0 +1,9 @@
+frontend:
+  build: .
+  ports:
+    - "3000:13000"
+    - "7888:17888"
+    - "3449:13449"
+  volumes:
+    - .:/frontend
+    - ~/.m2:/root/.m2

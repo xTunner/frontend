@@ -15,3 +15,5 @@ pom.xml.asc
 /resources/assets/css/app.css
 /resources/public/assets/
 /resources/assets/docs/manifest.json
+*.swp
+*.swo
