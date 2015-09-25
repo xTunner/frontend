@@ -139,9 +139,9 @@
                                          bugs and those nasty 1-star reviews. Let CircleCI help your iOS app development
                                          cycle with our expertise in Continuous Integration and Continuous Delivery."
                                          [:br]
-                                         "*In beta - "
-                                         [:a {:href (auth-url) :on-click (common/sign-up-cta owner "mobile/ios")} "sign up"]
-                                         " for the pilot program by marking your project iOS and you'll automatically be added to the beta."]
+                                         [:br]
+                                         "Currently in beta. Interested in joining? Please "
+                                         [:a {:href "mailto:sayhi@circleci.com"} "contact us."]]
                      :subheadline "More testing, fewer bugs, better iOS apps."
                      :explanation "Each time you push new code to your repo on Github for your
                                   iOS app, CircleCI will automatically build and test your
