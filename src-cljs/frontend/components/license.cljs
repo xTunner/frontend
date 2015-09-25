@@ -31,8 +31,10 @@
        [:span.count count]
        " "
        (if (= 1 count) singular plural)
-       " "
-       description])
+       (when description
+         (list
+          " "
+          description))])
     [:a.contact-sales
      {:href "mailto:enterprise@circleci.com"}
      "Contact Sales…"])))
@@ -67,6 +69,11 @@
           ["paid" "expired"]
           (banner-contents "License Suspended"
                            "Your builds have been suspended. Contact Sales to reactivate your builds.")
+          ["paid" "seats-exceeded"]
+          (banner-contents "License Exceeded"
+                           "Please contact Sales to upgrade your license."
+                           {:count (str (:seats_used license) "/" (:seats license))
+                            :nouns ["user" "users"]})
           nil)]
     (when contents
       [:.license-banner {:class banner-type}
