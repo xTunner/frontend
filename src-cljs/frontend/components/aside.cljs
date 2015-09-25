@@ -197,6 +197,7 @@
 (defn admin-settings-nav-items [data owner]
   (let [navigation-data (:navigation-data data)]
     [{:type :subpage :href "/admin" :title "Overview" :subpage nil}
+     {:type :subpage :href "/admin/management-console" :title "Management Console" :subpage nil}
      {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
      {:type :subpage :href "/admin/license" :title "License" :subpage :license}]))
 
@@ -428,4 +429,3 @@
                                      (not show-aside-menu?) (conj "menuless"))}
           (when show-aside-menu?
             (om/build aside-menu app {:opts {:login login}}))])))))
-
