@@ -69,17 +69,16 @@
     font-size: @font-size-small;
     line-height: @font-size-large; // Height of indicator, to center vertically.
 
-    background-color: @grayLightest;
     border-radius: @border-radius-base;
-    color: @grayDark;
+    color: @white;
+    background-color: #ed5c5c;
   }
 
-  &.in-violation, &.expired {
-    .indicator {
-      background-color: #ed5c5c;
-      color: @white;
-    }
+  &.current .indicator {
+    color: @grayDark;
+    background-color: @grayLightest;
   }
+  
 
   .message {
     .flex(1 0 auto);
