@@ -57,6 +57,14 @@
   }                             //
 }
 
+.app-aside {
+  min-width: @aside_menu_width;
+}
+
+.ui-v2 .app-aside {
+  min-width: @new_aside_menu_width;
+}
+
 .aside-left-nav,
 .aside-left-menu {
   .flexy(column);
@@ -82,7 +90,7 @@
 
     header {
       .box-sizing(border-box);
-      flex: 0 0 @tile;
+      .flex(0 0 @tile);
       border-bottom: solid 1px @grayBoxBorder;
       padding: @em;
       position: relative;
