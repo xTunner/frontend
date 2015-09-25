@@ -47,6 +47,12 @@
   (defroute v1-admin-fleet-state "/admin/fleet-state" []
     (open-to-inner! nav-ch :admin-settings {:admin true
                                             :subpage :fleet-state}))
+  (defroute v1-admin-system-management "/admin/management-console" []
+    (.replace js/location
+              ;; System management console is served at port 8800
+              ;; with replicated and it's always https
+              (str "https://" js/window.location.hostname ":8800/")))
+
   (defroute v1-admin-license "/admin/license" []
     (open-to-inner! nav-ch :admin-settings {:admin true
                                             :subpage :license})))
