@@ -1149,3 +1149,7 @@
 (defmethod control-event :close-video
   [_ _ _ state]
   (assoc-in state state/modal-video-id-path nil))
+
+(defmethod control-event :top-nav-changed
+  [_ _ {:keys [org]} state]
+  (assoc-in state state/org-data-path org))

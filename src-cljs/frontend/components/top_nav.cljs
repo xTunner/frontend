@@ -17,7 +17,18 @@
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [defrender html]]))
+
+(defrender menu-item [{:keys [login selected] :as org} owner]
+  (do
+    (println "Menu-item: " org)
+    (html
+     [:li {:role "presentation"}
+      [:a {:class (when selected "selected")
+           :role "menuitem"
+           :tabIndex "-1"
+           :on-click #(do (raise! owner [:top-nav-changed {:org org}]))}
+       login]])))
 
 (defn top-nav [app owner]
   (reify
@@ -25,33 +36,20 @@
     om/IRender
     (render [_]
       (let [orgs (get-in app state/user-organizations-path)
-            current-org (get-in app state/org-data-path)]
+            current-org (or (get-in app state/org-data-path)
+                            (first orgs))
+            menu-orgs (map (fn [org]
+                             (if (= org current-org)
+                               (assoc org :selected true)
+                               org))
+                            orgs)]
         (html [:div#top-nav
                [:div.dropdown {}
                 [:button {:class "dropdown-toggle" :data-toggle "dropdown"}
-                 "FuturePerfect Entity"
+                 (:login current-org)
                  [:i.fa.fa-angle-down]]
                 [:ul.dropdown-menu
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/features"}
-                   "Entity 1"]]
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/mobile"}
-                   "Hover Entity"]]
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/integrations/docker"}
-                   "Selected Entity"]]
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/enterprise"}
-                   "Another Entity"]]
+                 (om/build-all menu-item menu-orgs)
                  [:li {:role "presentation"}
                   [:a {:role "menuitem"
                        :tabIndex "-1"
