@@ -88,9 +88,15 @@ i.blue-plus {
         > a {
           color: #dedede; // redundance is for specificity
           padding: 3px 15px;
-
+          
           &.selected {
             background-color: #848484;
+          }
+
+          // reset user agent and bootstrap styles
+          &:focus {
+            outline: none;
+            background-color: inherit;
           }
 
           &:hover {
