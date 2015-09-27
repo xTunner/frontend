@@ -29,26 +29,32 @@
         (html [:div#top-nav
                [:div.dropdown {}
                 [:button {:class "dropdown-toggle" :data-toggle "dropdown"}
-                 (pr-str current-org)
-                 [:i.fa.fa-caret-down]]
+                 "FuturePerfect Entity"
+                 [:i.fa.fa-angle-down]]
                 [:ul.dropdown-menu
                  [:li {:role "presentation"}
                   [:a {:role "menuitem"
                        :tabIndex "-1"
                        :href "/features"}
-                   "Features"]]
+                   "Entity 1"]]
                  [:li {:role "presentation"}
                   [:a {:role "menuitem"
                        :tabIndex "-1"
                        :href "/mobile"}
-                   "Mobile"]]
+                   "Hover Entity"]]
                  [:li {:role "presentation"}
                   [:a {:role "menuitem"
                        :tabIndex "-1"
                        :href "/integrations/docker"}
-                   "Docker"]]
+                   "Selected Entity"]]
                  [:li {:role "presentation"}
                   [:a {:role "menuitem"
                        :tabIndex "-1"
                        :href "/enterprise"}
-                   "Enterprise"]]]]])))))
+                   "Another Entity"]]
+                 [:li {:role "presentation"}
+                  [:a {:role "menuitem"
+                       :tabIndex "-1"
+                       :href "/add-projects"}
+                   [:i {:class "blue-plus"}]
+                    "Add Entity"]]]]])))))
