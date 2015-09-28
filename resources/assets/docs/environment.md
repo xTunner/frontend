@@ -23,8 +23,8 @@ Some specifics:
 *   `Ubuntu 12.04 (precise)`
 *   `Kernel version: 3.2`
 *   `git {{ versions.git }}`
-*   `gcc {{ versions.gcc }}`
-*   `g++ {{ versions.g++ }}`
+*   `gcc {{ versions.default_gcc }}`
+*   `g++ {{ versions.default_g_plusx2 }}`
 *   `GNU make 3.81`
 
 <h2 id="env-vars">Environmental Variables</h2>
@@ -220,8 +220,6 @@ you'd like in your `circle.yml`.
 
 We currently have a number of packages installed to help you test your backend applications, including:
 
-*   `gcc {{ versions.gcc }}`
-*   `g++ {{ versions.g++ }}`
 *   `golang {{ versions.golang }}`
 *   `erlang {{ versions.erlang }}`
 
@@ -277,3 +275,22 @@ Following integration tools are pre-installed.
 *   `heroku/heroku-toolbelt` ({{ versions.heroku }})
 *   `awscli` ({{ versions.awscli }})
 *   `gcloud` ({{ versions.gcloud }})
+
+## Buid Toolchain
+
+We have the following versions of GCC and G++ as well as some other build tools installed:
+
+{{versions.gcc_g_plusx2_versions | code-list}}
+*   `build-essential`  ({{ versions.build_essential }})
+
+To switch GCC and GCC++ versions, you can add the following in circle.yml:
+
+```
+# To use GCC and G++ 4.9
+machine:
+  pre:
+    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 10
+    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 20
+```

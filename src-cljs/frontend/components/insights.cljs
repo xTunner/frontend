@@ -19,6 +19,17 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                         ;;
+;; Note that unexterned properties must be accessed with `aget` instead of ;;
+;; the `.-` or `..` shortcut notations.                                    ;;
+;;                                                                         ;;
+;; Google closure compiler with "advanced" optimizations will mangle       ;;
+;; unexterned field names.                                                 ;;
+;;                                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
@@ -78,21 +89,22 @@
         (.append "rect")
         (.attr #js {"width" square-size
                     "height" square-size
-                    "class" #(.-classname %)
+                    ;; `aget` must be used here instead of direct field access.  See note in preamble.
+                    "class" #(aget % "classname")
                     "transform"
                     (fn [item i]
                       (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
     (-> left-legend-item
         (.append "text")
         (.attr #js {"x" (+ square-size spacing)})
-        (.text #(.-text %)))
+        (.text #(aget % "text")))
 
     ;; right legend
     (-> right-legend-item
         (.append "rect")
         (.attr #js {"width" square-size
                     "height" square-size
-                    "class" #(.-classname %)
+                    "class" #(aget % "classname")
                     "transform"
                     (fn [item i]
                       (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
@@ -100,7 +112,7 @@
         (.append "text")
         (.attr #js {"x" (+ square-size
                            spacing)})
-        (.text #(.-text %)))))
+        (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [elem builds]
   (let [y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
@@ -185,27 +197,30 @@
     ;; positive bar
     (-> enter
         (.insert "rect")
-        (.attr #js {"class" #(.-outcome %)
-                    "y" #(y-pos-scale (.-build_time_minutes %))
-                    "x" #(x-scale (.-build_num %))
+        (.attr #js {"class" #(str "bar " (aget % "outcome"))
+                    "y" #(y-pos-scale (aget % "build_time_minutes"))
+                    "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-middle (y-pos-scale (.-build_time_minutes %)))}))
+                    "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))}))
 
     ;; negative (queue time) bar
     (-> enter
         (.insert "rect")
-        (.attr #js {"class" "queue"
+        (.attr #js {"class" "bar queue"
                     "y" y-middle
-                    "x" #(x-scale (.-build_num %))
+                    "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- (y-neg-scale (.-queued_time_minutes %)) y-middle)}))))
+                    "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)}))))
+
+(defn chartable-builds [builds]
+  (->> builds
+       (filter build-graphable)
+       reverse
+       (map add-queued-time)
+       (map add-minute-measures)))
 
 (defn project-insights-bar [builds owner]
-  (let [chart-builds (->> builds
-                           (filter build-graphable)
-                           reverse
-                           (map add-queued-time)
-                           (map add-minute-measures))]
+  (let [chart-builds (chartable-builds builds)]
     (reify
       om/IDidUpdate
       (did-update [_ prev-props prev-state]

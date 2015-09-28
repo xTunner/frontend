@@ -16,7 +16,7 @@ commands that will run after a green build.
 
 ### Version
 
-Circle has [several Node versions](/docs/environment#nodejs)
+Circle has [several Node versions](/docs/environment#node-js)
 pre-installed.
 We use `{{ versions.default_node }}`
 as our default version. If you'd like a specific version, then you can specify it in your circle.yml:

@@ -4,8 +4,6 @@
 
 @aside_nav_width: @tile;
 
-@license_banner_height: @tile;
-
 @em: @baseFontSize;
 @cascade_delay: 30ms;
 @aside_items: 7;
@@ -24,10 +22,6 @@
 
     transition: margin @aside_transition_speed;
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
-  }
-
-  .app-aside.including-license-banner + .app-main {
-    margin-top: @license_banner_height;
   }
 }
 
@@ -63,6 +57,14 @@
   }                             //
 }
 
+.app-aside {
+  min-width: @aside_menu_width;
+}
+
+.ui-v2 .app-aside {
+  min-width: @new_aside_menu_width;
+}
+
 .aside-left-nav,
 .aside-left-menu {
   .flexy(column);
@@ -88,7 +90,7 @@
 
     header {
       .box-sizing(border-box);
-      flex: 0 0 @tile;
+      .flex(0 0 @tile);
       border-bottom: solid 1px @grayBoxBorder;
       padding: @em;
       position: relative;
@@ -583,68 +585,5 @@
     &:last-child {
       margin-bottom: 1em;
     }
-  }
-}
-
-.license-banner {
-  .flexy(center);
-
-  width: ~"calc(100vw - @{aside_nav_width})";
-  height: @license_banner_height;
-  padding: 0 20px;
-
-  color: @white;
-  background: @blueDarkest;
-
-  .indicator {
-    height: @font-size-large;
-    margin-right: 20px;
-    padding: 0 13px;
-
-    font-size: @font-size-small;
-    line-height: @font-size-large; // Height of indicator, to center vertically.
-
-    background-color: @grayLightest;
-    border-radius: @border-radius-base;
-    color: @grayDark;
-  }
-
-  &.in-violation, &.expired {
-    .indicator {
-      background-color: #ed5c5c;
-      color: @white;
-    }
-  }
-
-  .message {
-    .flex(1 0 auto);
-    font-size: @font-size-large;
-  }
-
-  .stat {
-    font-size: @font-size-base;
-    text-transform: uppercase;
-
-    .count {
-      // The span here is the space after .count, which looks better if it's the
-      // same size as the .count.
-      &, & + span {
-        font-size: @font-size-large;
-      }
-    }
-  }
-
-  .contact-sales {
-    padding: 0 30px;
-    height: 40px;
-    margin-left: 40px;
-
-    font-size: @font-size-large;
-    font-weight: bold;
-    line-height: 40px;
-
-    border-radius: 20px;
-    background-color: @blueDark;
-    &:hover { color: inherit; }
   }
 }
