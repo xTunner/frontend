@@ -35,9 +35,8 @@
     om/IDisplayName (display-name [_] "Top Nav")
     om/IRender
     (render [_]
-      (let [orgs (get-in app state/user-organizations-path)
-            current-org (or (get-in app state/org-data-path)
-                            (first orgs))
+      (let [orgs (get-in app state/top-nav-orgs-path)
+            current-org (get-in app state/top-nav-selected-org-path)
             menu-orgs (map (fn [org]
                              (if (= org current-org)
                                (assoc org :selected true)

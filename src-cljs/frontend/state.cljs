@@ -207,3 +207,6 @@
 (def selected-toolset-path [:selected-toolset])
 
 (def pricing-parallelism-path [:pricing-parallelism])
+
+(def top-nav-orgs-path [:top-nav :orgs])
+(def top-nav-selected-org-path [:top-nav :selected-org])

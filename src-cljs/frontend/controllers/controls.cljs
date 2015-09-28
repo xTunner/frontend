@@ -1152,4 +1152,4 @@
 
 (defmethod control-event :top-nav-changed
   [_ _ {:keys [org]} state]
-  (assoc-in state state/org-data-path org))
+  (assoc-in state state/top-nav-selected-org-path org))
