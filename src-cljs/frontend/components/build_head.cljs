@@ -1174,13 +1174,12 @@
                                                                   :build-num build-num}])}
                    "with ssh"]))])
            [:div.actions
-            (when (and (build-model/can-cancel? build) has-write-settings?))
+            (when (and (build-model/can-cancel? build) has-write-settings?)
               (forms/managed-button
-                [:button.cancel_build
-                 {:data-loading-text "Canceling",
-                  :title "Cancel this build",
-                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                   :vcs-url vcs-url
-                                                                   :build-num build-num}])}
-                 "Cancel"])]])))))
-
+               [:button.cancel_build
+                {:data-loading-text "Canceling",
+                 :title "Cancel this build",
+                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num}])}
+                "Cancel"]))]])))))
