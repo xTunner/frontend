@@ -278,3 +278,32 @@
     }
   }
 }
+
+.hamburger-menu {
+  display: none;
+}
+
+@media (max-width: @screen-sm-min) {
+  .hamburger-menu {
+    display: block;
+    height: 30px;
+    left: 10px;
+    position: absolute;
+    top: 18px;
+    width: 40px;
+    &.closed {
+      background-image: url('@{imgPath}/outer/mobile/menu-icon.png');
+    }
+    &.open {
+      background-image: url('@{imgPath}/outer/mobile/close-x-icon.png');
+      width: 30px;
+    }
+  }
+  .navbar-container {
+    display: none;
+  }
+  .navbar-header {
+    position: absolute;
+    right: 10px;
+  }
+}
