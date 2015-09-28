@@ -16,6 +16,7 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
+            [frontend.routes :as routes]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -437,7 +438,8 @@
 (defmethod navigated-to :account
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (mlog "Navigated to account subpage:" subpage)
-  (let [logged-in? (get-in state state/user-path)]
+  (let [logged-in? (get-in state state/user-path)
+        nav-ch (get-in state [:comms :nav])]
     (if logged-in?
        (-> state
            state-utils/clear-page-state
@@ -445,14 +447,9 @@
            (assoc :navigation-data args)
            (assoc :account-settings-subpage subpage)
            (assoc-in state/crumbs-path [{:type :account}]))
-       (-> state
-           state-utils/clear-page-state
-           (assoc :navigation-point :error)
-           (assoc :navigation-data {:status 401})
-           (assoc :original-navigation-point :account))
-      )
-    )
-  )
+       (do
+         (routes/open-to-outer! nav-ch :error {:status 401})
+         state))))
 
 (defmethod post-navigated-to! :account
   [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
