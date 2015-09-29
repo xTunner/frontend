@@ -1156,9 +1156,7 @@
 
 (defmethod control-event :change-hamburger-state
   [_ _ _ state]
-  (println state)
   (let [hamburger-state (get-in state state/hamburger-menu-path)]
-    (println hamburger-state)
     (if (= "closed" hamburger-state)
       (assoc-in state state/hamburger-menu-path "open")
       (assoc-in state state/hamburger-menu-path "closed")
