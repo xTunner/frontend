@@ -103,11 +103,11 @@
                  [:div.item "Repos"]
                  [:div.value (common/ico :infinity)]]
                 [:div.calculator-preview-item
-                 [:div.item "Builds"]
-                 [:div.value (common/ico :infinity)]]
-                [:div.calculator-preview-item
                  [:div.item "Users"]
                  [:div.value (common/ico :infinity)]]
+                [:div.calculator-preview-item
+                 [:div.item "Build Minutes per Month"]
+                 [:div.value (if (= 1 container-count) "1,500" (common/ico :infinity))]]
                 [:div.calculator-preview-item
                  [:div.item "Max Parallelism"]
                  [:div.value (str container-count)]]
@@ -143,7 +143,7 @@
                 [:div.row
                  [:div.col-sm-12
                   [:h3 "How do containers work?"]
-                  [:p "Every time you push to GitHub, we checkout your code and run your build inside of a container.
+                  [:p "Every time you push to GitHub, we checkout your code and run your build inside ofner-count/ a container.
                       If you don't have enough free containers available, then your builds queue up until other builds finish."]
                   [:p "Everyone gets their first container free and your team can run as many builds as you want with that container.
                       More containers allows faster builds through parallellism in addition shorter queue times"]
