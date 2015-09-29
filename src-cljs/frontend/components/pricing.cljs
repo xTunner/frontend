@@ -103,11 +103,11 @@
                  [:div.item "Repos"]
                  [:div.value (common/ico :infinity)]]
                 [:div.calculator-preview-item
-                 [:div.item "Builds"]
-                 [:div.value (common/ico :infinity)]]
-                [:div.calculator-preview-item
                  [:div.item "Users"]
                  [:div.value (common/ico :infinity)]]
+                [:div.calculator-preview-item
+                 [:div.item "Build Minutes per Month"]
+                 [:div.value (if (= 1 container-count) "1,500" (common/ico :infinity))]]
                 [:div.calculator-preview-item
                  [:div.item "Max Parallelism"]
                  [:div.value (str container-count)]]
