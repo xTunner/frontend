@@ -49,9 +49,13 @@
                  [:i.fa.fa-angle-down]]
                 [:ul.dropdown-menu
                  (om/build-all menu-item menu-orgs)
-                 [:li {:role "presentation"}
-                  [:a {:role "menuitem"
-                       :tabIndex "-1"
-                       :href "/add-projects"}
-                   [:i {:class "blue-plus"}]
-                    "Add Entity"]]]]])))))
+
+                 ;;;;; "Add Entity" is present in the mockup, but won't be needed for a while.
+
+                 ;; [:li {:role "presentation"}
+                 ;;  [:a {:role "menuitem"
+                 ;;       :tabIndex "-1"
+                 ;;       :href "/add-projects"}
+                 ;;   [:i {:class "blue-plus"}]
+                 ;;    "Add Entity"]]
+                 ]]])))))
