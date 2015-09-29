@@ -223,9 +223,7 @@
                    "Log In"]]
                  [:li
                   [:a.signup-link.btn.btn-success.navbar-btn {:href "/signup" :on-mouse-up #(analytics/track-signup-click)}
-                   "Sign Up"]]])  
-              ]
-             ]]
+                   "Sign Up"]]])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
                         :title "Mobile"}
