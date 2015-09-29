@@ -3,6 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.analytics :as analytics]
             [frontend.config :as config]
+            [frontend.components.build-head :as build-head]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
@@ -13,7 +14,7 @@
             [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
@@ -29,7 +30,9 @@
             (get-in app [:navigation-data :repo])))))
 
 (defn show-settings-link? [app]
-  (:read-settings (get-in app state/page-scopes-path)))
+  (and
+    (:read-settings (get-in app state/page-scopes-path))
+    (not= false (-> app :navigation-data :show-settings-link?))))
 
 (defn settings-link [app owner]
   (when (show-settings-link? app)
@@ -63,7 +66,10 @@
                 {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
                  :data-spinner true}
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
-           (settings-link app owner)])))))
+           (settings-link app owner)
+           (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
+             (om/build build-head/build-head-actions app))
+           ])))))
 
 (defn head-admin [app owner]
   (reify

@@ -7,6 +7,7 @@
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
+            [frontend.models.feature :as feature]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -142,7 +143,9 @@
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
-             :navigation-data args
+             :navigation-data (assoc args
+                                     :show-aside-menu? (not (feature/enabled? :ui-v2))
+                                     :show-settings-link? false)
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :dashboard}
                                    {:type :org :username org}

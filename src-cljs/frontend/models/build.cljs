@@ -124,6 +124,14 @@
     "not_running" "not running"
     (:status build)))
 
+(defn status-icon-v2 [build]
+  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "Status-Failed"
+        (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "Status-Cancelled"
+        (= "success" (:outcome build)) "Status-Passed"
+        (= "running" (:status build)) "Status-Running"
+        (= "queued" (:status build)) "Status-Queued"
+        :else nil))
+
 (defn status-class [build]
   (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
         (#{"infrastructure_fail" "killed" "not_run"} (:status build)) "stop"

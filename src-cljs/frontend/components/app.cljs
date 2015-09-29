@@ -57,7 +57,7 @@
 
 (defn dominant-component [app-state owner]
   (case (:navigation-point app-state)
-    :build build-com/build
+    :build (build-com/build)
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
     :build-insights insights/build-insights
