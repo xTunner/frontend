@@ -300,7 +300,13 @@
     }
   }
   .navbar-container {
-    display: none;
+    &.closed {
+      display: none;
+    }
+    &.open {
+      display: block;
+      margin-top: 60px;
+    }
   }
   .navbar-header {
     position: absolute;

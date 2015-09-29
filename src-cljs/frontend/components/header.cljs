@@ -139,7 +139,8 @@
     (render [_]
       (let [flash (get-in app state/flash-path)
             logged-in? (get-in app state/user-path)
-            nav-point (:navigation-point app)]
+            nav-point (:navigation-point app)
+            hamburger-state (get-in app state/hamburger-menu-path)]
         (html
           [:div
            [:div
@@ -152,13 +153,14 @@
                                                                   (name (get-in app [:navigation-data :integration]))
                                                                   nil)}
             [:div.container-fluid
-             [:div.hamburger-menu.closed]
+             [:div.hamburger-menu {:class hamburger-state
+                                   :on-click #(raise! owner [:change-hamburger-state])}]
              [:div.navbar-header
               [:a#logo.navbar-brand
                {:href "/"}
                (common/circle-logo {:width nil
                                     :height 25})]]
-             [:div.navbar-container
+             [:div.navbar-container {:class hamburger-state}
               [:ul.nav.navbar-nav
                (when (config/show-marketing-pages?)
                  (list

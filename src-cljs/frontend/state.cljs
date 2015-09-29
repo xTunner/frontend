@@ -66,6 +66,7 @@
    :invite-data {:dismiss-invite-form nil
                  :github-users nil}
    :instrumentation []
+   :hamburger-menu "closed"
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
    :inputs nil})
 
@@ -210,3 +211,4 @@
 
 (def top-nav-orgs-path [:top-nav :orgs])
 (def top-nav-selected-org-path [:top-nav :selected-org])
+(def hamburger-menu-path [:hamburger-menu])
