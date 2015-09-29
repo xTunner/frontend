@@ -143,7 +143,7 @@
                 [:div.row
                  [:div.col-sm-12
                   [:h3 "How do containers work?"]
-                  [:p "Every time you push to GitHub, we checkout your code and run your build inside ofner-count/ a container.
+                  [:p "Every time you push to GitHub, we checkout your code and run your build inside of a container.
                       If you don't have enough free containers available, then your builds queue up until other builds finish."]
                   [:p "Everyone gets their first container free and your team can run as many builds as you want with that container.
                       More containers allows faster builds through parallellism in addition shorter queue times"]
