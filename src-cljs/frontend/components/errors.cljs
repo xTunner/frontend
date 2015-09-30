@@ -24,14 +24,20 @@
             [:div.banner
              [:div.container
               (condp = status 
-                401 [:h1 4 [:span.error-zero] 1]
-                404 [:h1 4 [:span.error-zero] 4]
-                500 [:h1 5 [:span.error-zero] 0]
+                401 [:img {:src (utils/cdn-path "/img/outer/errors/401.svg")
+                           :alt "401"
+                           }]
+                404 [:img {:src (utils/cdn-path "/img/outer/errors/404.svg")
+                           :alt "404"
+                           }]
+                500 [:img {:src  (utils/cdn-path "/img/outer/errors/500.svg")
+                           :alt "500"
+                           }]
                 [:span.error-zero])]]
             [:div.container
              [:p "Something doesn't look right ..."]
-             (cond
-               (= status 401) [:p.error-message "You'll need to "
+             (condp = status
+               401 [:p.error-message "You'll need to "
                     [:a {:href (gh-utils/auth-url)
                          :on-click #(raise! owner [:track-external-link-clicked
                                                    {:event "login_click"
@@ -43,9 +49,15 @@
                     [:a {:href "/signup"
                          :on-mouse-up #(analytics/track-signup-click)}
                      " signup" ] ]
-               (some #{status} '(404 500)) [:p.error-message "Try heading back to our "
+               404 [:p.error-message "Try heading back to our "
                           [:a {:href "/"} "homepage"]
                           " or checking out our "
                           [:a {:href "http://blog.circleci.com/"} "blog"]]
+               500 [:p.error-message "If the problem persists, feel free to check out our "
+                    [:a {:href "http://status.circleci.com/"} "status"]
+                    " or "
+                    [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
+                    "."
+                    ]
                :else "Something completely unexpected happened"
                )]]])))))
