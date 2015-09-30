@@ -17,7 +17,7 @@ The only thing we don't provide access to is billing functions, which must be do
 
 All Circle API endpoints begin with `"https://circleci.com/api/v1/"`.
 
-<dl class="dl-horizontal"></dl>
+<dl>
 <dt>
   GET: /me
 </dt>
@@ -67,6 +67,12 @@ All Circle API endpoints begin with `"https://circleci.com/api/v1/"`.
   Cancels the build, returns a summary of the build.
 </dd>
 <dt>
+  POST: /project/:username/:project/:build_num/ssh-users
+</dt>
+<dd>
+  Adds a user to the build's SSH permissions.
+</dd>
+<dt>
   POST: /project/:username/:project/tree/:branch
 </dt>
 <dd>
@@ -78,6 +84,31 @@ All Circle API endpoints begin with `"https://circleci.com/api/v1/"`.
 <dd>
   Create an ssh key used to access external systems that require SSH key-based authentication
 </dd>
+<dt>
+  GET: /project/:username/:project/checkout-key
+</dt>
+<dd>
+  List checkout keys
+</dd>
+<dt>
+  POST: /project/:username/:project/checkout-key
+</dt>
+<dd>
+  New checkout key
+</dd>
+<dt>
+  GET: /project/:username/:project/checkout-key/:fingerprint
+</dt>
+<dd>
+  Get a checkout key
+</dd>
+<dt>
+  DELETE: /project/:username/:project/checkout-key/:fingerprint
+</dt>
+<dd>
+  Delete a checkout key
+</dd>
+
 <dt>
   DELETE: /project/:username/:project/build-cache
 </dt>
@@ -96,6 +127,7 @@ All Circle API endpoints begin with `"https://circleci.com/api/v1/"`.
 <dd>
   Adds your Heroku API key to CircleCI, takes apikey as form param name.
 </dd>
+</dl>
 
 ## Getting started
 
@@ -161,6 +193,8 @@ curl https://circleci.com/api/v1/me?circle-token=:token -H "Accept: application/
 
 {{ api_data.project | api-endpoint }}
 
+<h2 id="recent-builds-project-branch">Recent Builds For a Project Branch</h2>
+
 You can narrow the builds to a single branch by appending /tree/:branch to the url:
 `https://circleci.com/api/v1/project/:username/:project/tree/:branch`
 
@@ -183,13 +217,17 @@ The branch name should be url-encoded.
 You can retry a build with ssh by swapping "retry" with "ssh":
 `https://circleci.com/api/v1/project/:username/:project/:build_num/ssh`
 
+<h2 id="add-user-ssh">Add User to Build</h2>
+
+{{ api_data.add_user_ssh | api-endpoint }}
+
 <h2 id="cancel-build">Cancel a Build</h2>
 
 {{ api_data.cancel_build | api-endpoint }}
 
 <h2 id="new-build">Trigger a new Build</h2>
 
-<span class='label label-info'>Note:</span> [Optional build parameters can be set using an experimental API](/docs/parameterized-builds)
+<span class='label label-info'>Note:</span> For more about build parameters, read about [using parameterized builds](/docs/parameterized-builds)
 
 {{ api_data.project_branch | api-endpoint }}
 
@@ -197,13 +235,37 @@ You can retry a build with ssh by swapping "retry" with "ssh":
 
 {{ api_data.project_build_cache | api-endpoint}}
 
+<h2 id="list-environment-variables">List Environment Variables</h2>
+
+{{ api_data.list_environment_variables | api-endpoint}}
+
 <h2 id="add-environment-variable">Add Environment Variables</h2>
 
 {{ api_data.add_environment_variable | api-endpoint}}
 
+<h2 id="get-environment-variable">Get Single Environment Variable</h2>
+
+{{ api_data.get_environment_variable | api-endpoint}}
+
 <h2 id="delete-environment-variable">Delete Environment Variables</h2>
 
 {{ api_data.delete_environment_variable | api-endpoint}}
+
+<h2 id="list-checkout-keys">List Checkout Keys</h2>
+
+{{ api_data.list_checkout_keys | api-endpoint}}
+
+<h2 id="new-checkout-key">New Checkout Key</h2>
+
+{{ api_data.new_checkout_key | api-endpoint}}
+
+<h2 id="get-checkout-key">Get Checkout Key</h2>
+
+{{ api_data.get_checkout_key | api-endpoint}}
+
+<h2 id="delete-checkout-key">Delete Checkout Key</h2>
+
+{{ api_data.delete_checkout_key | api-endpoint}}
 
 
 ## Test Metadata
