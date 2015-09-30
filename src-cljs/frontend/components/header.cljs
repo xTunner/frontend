@@ -153,8 +153,12 @@
                                                                   (name (get-in app [:navigation-data :integration]))
                                                                   nil)}
             [:div.container-fluid
-             [:div.hamburger-menu {:class hamburger-state
-                                   :on-click #(raise! owner [:change-hamburger-state])}]
+             [:div.hamburger-menu { :on-click #(raise! owner [:change-hamburger-state])}
+              (condp = hamburger-state
+                "closed" [:i.fa.fa-bars.fa-3x]
+                "open" [:i.fa.fa-close.fa-3x]
+                )
+              ]
              [:div.navbar-header
               [:a#logo.navbar-brand
                {:href "/"}
