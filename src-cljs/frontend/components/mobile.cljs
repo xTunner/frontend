@@ -141,7 +141,7 @@
                                          [:br]
                                          [:br]
                                          "Currently in beta. Interested in joining? Please "
-                                         [:a {:href "mailto:sayhi@circleci.com"} "contact us."]]
+                                         [:a {:href "mailto:sayhi@circleci.com?subject=ios"} "contact us."]]
                      :subheadline "More testing, fewer bugs, better iOS apps."
                      :explanation "Each time you push new code to your repo on Github for your
                                   iOS app, CircleCI will automatically build and test your
