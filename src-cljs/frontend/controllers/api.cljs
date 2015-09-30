@@ -205,9 +205,19 @@
       (api/get-repos (get-in state [:comms :api]) :page (inc page))
       (update-in state state/repos-path #(into % (:resp args))))))
 
+(defn filter-piggieback [orgs]
+  "Return subset of orgs that aren't covered by piggyback plans."
+  (let [covered-orgs (into #{} (apply concat (map :piggieback_orgs orgs)))]
+    (remove (comp covered-orgs :login) orgs)))
+
 (defmethod api-event [:organizations :success]
-  [target message status args state]
-  (assoc-in state state/user-organizations-path (:resp args)))
+  [target message status {orgs :resp} state]
+  (let [selectable-orgs (filter-piggieback orgs)
+        selected (get-in state state/top-nav-selected-org-path)]
+    (cond-> state
+        true (assoc-in state/user-organizations-path orgs)
+        true (assoc-in state/top-nav-orgs-path selectable-orgs)
+        (not selected) (assoc-in state/top-nav-selected-org-path (first selectable-orgs)))))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]

@@ -93,12 +93,16 @@
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         projects-loaded? (seq (get-in current-state state/projects-path))
+        organizations-loaded? (seq (get-in current-state state/user-organizations-path))
         current-user (get-in current-state state/user-path)]
     (mlog (str "post-navigated-to! :dashboard with current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
+    (when (and (not organizations-loaded?)
+               (not (empty? current-user)))
+      (api/get-orgs api-ch))
     (go (let [builds-url (api/dashboard-builds-url (assoc (:navigation-data current-state)
                                                      :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))

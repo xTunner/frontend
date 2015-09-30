@@ -35,6 +35,7 @@
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
+            [frontend.components.top-nav :as top-nav]
             [frontend.components.signup :as signup]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
@@ -131,7 +132,8 @@
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-
+              (when (and inner? logged-in? (feature/enabled? :ui-v2))
+                (om/build top-nav/top-nav app-without-container-data))
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
