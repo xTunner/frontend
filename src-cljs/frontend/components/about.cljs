@@ -284,7 +284,7 @@
             [:p.caption "CircleCI was founded in 2011"]]
            [:div.fact.col-xs-4
             [:h3.header "Team"]
-            [:p.value "25+"]
+            [:p.value "40+"]
             [:p.caption
              [:a {:href "/jobs"} "Join"]
              " our growing team in downtown SF"]]
