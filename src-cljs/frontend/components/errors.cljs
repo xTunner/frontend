@@ -13,7 +13,7 @@
     om/IRender
     (render [_]
       (let [status (get-in app [:navigation-data :status])
-            logged-in? (get-in app state/user-path)
+            logged-in?  (get-in app state/user-path)
             orig-nav-point (get-in app [:original-navigation-point])
             _ (utils/mlog "error-page render with orig-nav-point " orig-nav-point " and logged-in? " (boolean logged-in?))
             maybe-login-page? (some #{orig-nav-point} [:dashboard :build])]
@@ -23,21 +23,27 @@
             common/language-background-jumbotron
             [:div.banner
              [:div.container
-              (condp = status 
-                401 [:img {:src (utils/cdn-path "/img/outer/errors/401.svg")
-                           :alt "401"
-                           }]
-                404 [:img {:src (utils/cdn-path "/img/outer/errors/404.svg")
-                           :alt "404"
-                           }]
-                500 [:img {:src  (utils/cdn-path "/img/outer/errors/500.svg")
+              (cond
+                (= status 500) [:img.error-img {:src  (utils/cdn-path "/img/outer/errors/500.svg")
                            :alt "500"
                            }]
-                [:span.error-zero])]]
+                (or (= status 401) (and (not logged-in?) maybe-login-page?)) [:img.error-img {:src (utils/cdn-path "/img/outer/errors/401.svg")
+                           :alt "401"
+                           }]
+                (= status 404) [:img.error-img {:src (utils/cdn-path "/img/outer/errors/404.svg")
+                           :alt "404"
+                           }]
+                :else [:span.error-zero])]]
             [:div.container
              [:p "Something doesn't look right ..."]
-             (condp = status
-               401 [:p.error-message "You'll need to "
+             (cond
+               (= status 500) [:p.error-message "If the problem persists, feel free to check out our "
+                    [:a {:href "http://status.circleci.com/"} "status"]
+                    " or "
+                    [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
+                    "."
+                    ]
+               (or (= status 401) (and (not logged-in?) maybe-login-page?)) [:p.error-message "You'll need to "
                     [:a {:href (gh-utils/auth-url)
                          :on-click #(raise! owner [:track-external-link-clicked
                                                    {:event "login_click"
@@ -49,15 +55,9 @@
                     [:a {:href "/signup"
                          :on-mouse-up #(analytics/track-signup-click)}
                      " signup" ] ]
-               404 [:p.error-message "Try heading back to our "
+               (= status 404) [:p.error-message "Try heading back to our "
                           [:a {:href "/"} "homepage"]
                           " or checking out our "
                           [:a {:href "http://blog.circleci.com/"} "blog"]]
-               500 [:p.error-message "If the problem persists, feel free to check out our "
-                    [:a {:href "http://status.circleci.com/"} "status"]
-                    " or "
-                    [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
-                    "."
-                    ]
                :else "Something completely unexpected happened"
                )]]])))))
