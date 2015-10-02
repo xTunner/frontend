@@ -1,3 +1,6 @@
+@import "../shared/variables.less";
+
+
 #build-insights {
   background-color: #f5f5f5;
 
@@ -11,6 +14,9 @@
     padding: 10px;
     background-color: white;
     width: 1000px;
+    h1 {
+      color: @gray-light-v2;
+    }
   }
 
   .head-user {
@@ -58,6 +64,9 @@
     }
     rect.queue {
       fill: #e6d9f2;
+    }
+    .legend text {
+      fill: @gray-light-v2;
     }
   }
 }
