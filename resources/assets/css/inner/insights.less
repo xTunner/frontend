@@ -1,5 +1,6 @@
 @import "../shared/variables.less";
 
+@tick-color: #999999;
 
 #build-insights {
   background-color: #f5f5f5;
@@ -45,8 +46,13 @@
       shape-rendering: crispEdges;
     }
     .y-axis {
-      .tick line {
-        visibility: hidden;
+      .tick {
+        line {
+          visibility: hidden;
+        }
+        text {
+          fill: @tick-color;
+        }
       }
       > path.domain {
         visibility: hidden;
