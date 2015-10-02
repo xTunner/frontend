@@ -251,26 +251,28 @@
        (map add-minute-measures)))
 
 (defn project-insights-bar [builds owner]
-  (let [chart-builds (chartable-builds builds)]
-    (reify
-      om/IDidMount
-      (did-mount [_]
-        (let [el (om/get-node owner)]
-          (insert-skeleton el)))
-      om/IDidUpdate
-      (did-update [_ prev-props prev-state]
-        (let [el (om/get-node owner)]
-          (visualize-insights-bar! el chart-builds)))
-      om/IRender
-      (render [_]
-        (html
-         [:div.build-time-visualization])))))
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [el (om/get-node owner)]
+        (insert-skeleton el)
+        (visualize-insights-bar! el builds)))
+    om/IDidUpdate
+    (did-update [_ prev-props prev-state]
+      (let [el (om/get-node owner)]
+        (visualize-insights-bar! el builds)))
+    om/IRender
+    (render [_]
+      (html
+       [:div.build-time-visualization]))))
 
 (defrender project-insights [{:keys [reponame username default_branch recent-builds]} owner]
-  (html
-   [:div.project-block
-    [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
-    (om/build project-insights-bar recent-builds)]))
+  (let [builds (chartable-builds recent-builds)]
+    (when (not-empty builds)
+      (html
+       [:div.project-block
+        [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
+        (om/build project-insights-bar builds)]))))
 
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]
