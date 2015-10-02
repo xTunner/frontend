@@ -122,7 +122,8 @@
         (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [el builds]
-  (let [y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
+  (let [bar-count 60
+        y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
                                  builds))
         plot-info {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
                    :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))}
@@ -148,7 +149,7 @@
                    (.tickFormat js/Math.abs))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
-                              (map :build_num builds)))
+                              (range bar-count)))
                     (.rangeBands #js[0 (:width plot-info)] 0.5))
         svg (-> js/d3
                 (.select el)
@@ -169,7 +170,7 @@
         (.insert "rect")
         (.attr #js {"class" #(str "bar " (aget % "outcome"))
                     "y" #(y-pos-scale (aget % "build_time_minutes"))
-                    "x" #(x-scale (aget % "build_num"))
+                    "x" (fn [_ i]  (x-scale i))
                     "width" (.rangeBand x-scale)
                     "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))}))
 
@@ -178,7 +179,7 @@
         (.insert "rect")
         (.attr #js {"class" "bar queue"
                     "y" y-middle
-                    "x" #(x-scale (aget % "build_num"))
+                    "x" (fn [_ i]  (x-scale i))
                     "width" (.rangeBand x-scale)
                     "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)}))
 
