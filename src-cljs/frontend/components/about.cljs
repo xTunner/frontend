@@ -221,6 +221,7 @@
     :email ""
     :bio ""}
    {:name "Jonathan Morris"
+    :img-path (scaled-image-path "jonathan-morris")
     :role ""
     :github ""
     :email ""
@@ -244,7 +245,7 @@
     :email ""
     :bio ""}
    {:name "Rishi Kumar"
-    :img-path (scaled-image-path "Rishi")
+    :img-path (scaled-image-path "rishi")
     :role ""
     :github ""
     :email ""
@@ -256,7 +257,7 @@
     :email ""
     :bio ""}
    {:name "Mike Rosabal"
-    :img-path (scaled-image-path "")
+    :img-path (scaled-image-path "mike-rosabal")
     :role ""
     :github ""
     :email ""
