@@ -174,7 +174,9 @@
                     "y" #(y-pos-scale (aget % "build_time_minutes"))
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))}))
+                    "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))})
+        (.insert "title")
+        (.text #(gstring/format "%s in %.1fm" (gstring/toTitleCase (aget % "outcome")) (aget % "build_time_minutes"))))
 
     ;; negative (queue time) bar
     (-> bars-enter
@@ -183,7 +185,9 @@
                     "y" y-middle
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)}))
+                    "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)})
+        (.insert "title")
+        (.text #(gstring/format "Queue time %.1fm" (aget % "queued_time_minutes"))))
 
     ;; legend
     (add-legend svg plot-info)
