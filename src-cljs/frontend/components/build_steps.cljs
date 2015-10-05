@@ -109,10 +109,9 @@
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
                      {:on-click #(let [node (om/get-node owner)
-                                       body (.-body js/document)]
-                                   (set! (.-scrollTop body) (- (+ (.-y (goog.style/getRelativePosition node body))
-                                                                  (.-height (goog.style/getSize node)))
-                                                               (.-height (goog.dom/getViewportSize)))))}]
+                                       target (.-parentNode (.-currentTarget %))]
+                                   (.scrollIntoView target false))}]
+
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
