@@ -45,8 +45,8 @@
   [:p.missing-org-info
    "Missing an organization? You or an admin may need to enable CircleCI for your organization in "
    [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
-    "GitHub's application permissions."]
-   " Then come back and "
+    "GitHub's application permissions"]
+   ". Then come back and "
    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
                       :class "active"}
     "refresh these listings"]
@@ -270,7 +270,8 @@
      [:p.missing-org-info
       "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
       [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
-       "GitHub's application permissions."]]
+       "GitHub's application permissions"]
+      "."]
      [:div.inaccessible-org-wrapper
       (map (fn [org-follows] (om/build inaccessible-org-item
                                       {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
