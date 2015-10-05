@@ -15,12 +15,7 @@
 
 (defn scaled-image-path [name]
   (let [retina (> (.-devicePixelRatio js/window) 1)
-        path (gstring/format "/img/outer/about/%s%s.png" name (if retina "@2x" ""))
-        other-path (gstring/format "/img/outer/about/%s.png" name)
-        ]
-    (println retina)
-    (println (stefon/asset-path path))
-    (println (stefon/asset-path other-path))
+        path (gstring/format "/img/outer/about/%s%s.png" name (if retina "@2x" "")) ]
     (stefon/asset-path path)))
 
 (defn team-data []
