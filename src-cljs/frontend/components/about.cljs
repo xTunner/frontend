@@ -196,7 +196,7 @@
    {:name "Travis Vachon"
     :img-path (scaled-image-path "travis")
     :role "Developer"
-    :github ""
+    :github "travis"
     :email ""
     :bio "Travis enjoys climbing, dancing, and desert based art festivals. At Circle he makes sure new features flow steadily from the shifting sands of product design to the thriving robot metropolis at the heartof Circle's build system."}
    {:name "Chris Black"
@@ -269,7 +269,7 @@
     :img-path (scaled-image-path "justin")
     :role "Developer"
     :github ""
-    :email ""
+    :email "justinc474"
     :bio "Justin, a USC graduate, joins the CircleCI team as a web developer. As a product minded software engineer, Justin is excited to grow the CircleCI web platform. As a UX enthusiast, he's excited to continuously improve the usability of the site. In his spare time Justin likes playing tennis, bike riding, and most importantly, traveling the world."}
 ])
 
