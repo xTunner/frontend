@@ -25,39 +25,34 @@
              [:div.container
               (cond
                 (= status 500) [:img.error-img {:src  (utils/cdn-path "/img/outer/errors/500.svg")
-                           :alt "500"
-                           }]
+                                                :alt "500"}]
                 (or (= status 401) (and (not logged-in?) maybe-login-page?)) [:img.error-img {:src (utils/cdn-path "/img/outer/errors/401.svg")
-                           :alt "401"
-                           }]
+                                                                                              :alt "401"}]
                 (= status 404) [:img.error-img {:src (utils/cdn-path "/img/outer/errors/404.svg")
-                           :alt "404"
-                           }]
+                                                :alt "404"}]
                 :else [:span.error-zero])]]
             [:div.container
              [:p "Something doesn't look right ..."]
              (cond
                (= status 500) [:p.error-message "If the problem persists, feel free to check out our "
-                    [:a {:href "http://status.circleci.com/"} "status"]
-                    " or "
-                    [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
-                    "."
-                    ]
+                               [:a {:href "http://status.circleci.com/"} "status"]
+                               " or "
+                               [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
+                               "." ]
                (or (= status 401) (and (not logged-in?) maybe-login-page?)) [:p.error-message "You'll need to "
-                    [:a {:href (gh-utils/auth-url)
-                         :on-click #(raise! owner [:track-external-link-clicked
-                                                   {:event "login_click"
-                                                    :properties {:source "401"
-                                                                 :url js/window.location.pathname}
-                                                    :path (gh-utils/auth-url)}])}
-                     "login"]
-                    " or " 
-                    [:a {:href "/signup"
-                         :on-mouse-up #(analytics/track-signup-click)}
-                     " signup" ] ]
+                                                                             [:a {:href (gh-utils/auth-url)
+                                                                                  :on-click #(raise! owner [:track-external-link-clicked
+                                                                                                            {:event "login_click"
+                                                                                                             :properties {:source "401"
+                                                                                                                          :url js/window.location.pathname}
+                                                                                                             :path (gh-utils/auth-url)}])}
+                                                                              "login"]
+                                                                             " or "
+                                                                             [:a {:href "/signup"
+                                                                                  :on-mouse-up #(analytics/track-signup-click)}
+                                                                              " signup" ] ]
                (= status 404) [:p.error-message "Try heading back to our "
-                          [:a {:href "/"} "homepage"]
-                          " or checking out our "
-                          [:a {:href "http://blog.circleci.com/"} "blog"]]
-               :else "Something completely unexpected happened"
-               )]]])))))
+                               [:a {:href "/"} "homepage"]
+                               " or checking out our "
+                               [:a {:href "http://blog.circleci.com/"} "blog"]]
+               :else "Something completely unexpected happened")]]])))))
