@@ -469,18 +469,26 @@
 }
 
 .home-action {
+  @action-font-size: 20px;
+
   .box-sizing(border-box);
   .flexy(center, center);
   .order(4);
   position: relative;
   z-index: @zindex-home-action;
   color: @grayDark;
-  font-size: 20px;
+  font-size: @action-font-size;
   background: @white;
   width: @home-action-width;
   min-height: @home-action-height;
   border: 1px solid @white;
   border-radius: (@home-action-height / 2);
+
+  @media (max-width: @screen-sm-max) {
+    font-size: @action-font-size * @mobile-scale-factor;
+    min-height: @home-action-height * @mobile-scale-factor;
+  }
+
   // Button
   &:hover {
     color: @white;
