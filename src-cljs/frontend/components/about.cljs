@@ -15,9 +15,12 @@
 
 (defn scaled-image-path [name]
   (let [retina (> (.-devicePixelRatio js/window) 1)
-        path (gstring/format "/img/outer/about/%s%s.png" name (if retina "@2x" ""))]
+        path (gstring/format "/img/outer/about/%s%s.png" name (if retina "@2x" ""))
+        other-path (gstring/format "/img/outer/about/%s.png" name)
+        ]
     (println retina)
     (println (stefon/asset-path path))
+    (println (stefon/asset-path other-path))
     (stefon/asset-path path)))
 
 (defn team-data []
@@ -44,7 +47,7 @@
     :github "notnoopci"
     :twitter "notnoop"
     :email "mahmood@circleci.com"
-    :bio "During his time at MIT, Mahmood spoke at a few Java research conferences includingDevoxx, and has pushed code to Java 8—and Java 7—compilers. He's been a speaker at OOPSLA/Splash, and is active in the open-source community. He and his family have moved 6 times in the last 6 years."}
+    :bio "During his time at MIT, Mahmood spoke at a few Java research conferences including Devoxx, and has pushed code to Java 8—and Java 7—compilers. He's been a speaker at OOPSLA/Splash, and is active in the open-source community. He and his family have moved 6 times in the last 6 years."}
    {:name "Gordon Syme"
     :img-path (scaled-image-path "gordon")
     :visible true
@@ -150,7 +153,7 @@
     :bio "Alexey joins Circle from the sunny coasts of Spain. In between mountain biking, partying at art galleries and doing martial arts, he helps to ensure that Circle’s customers get the smoothest experience possible."}
    {:name "Hirokuni Kim"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "Support Engineer"
     :github ""
     :email ""
     :bio "Hirokuni has a bit strange background. He studied political science in college to become a lawyer, but suddenly realized that what he truly loves is computer things, not law. He's been doing ops, devs, and devops in his previous jobs. He loves cooking and playing Shogi (Japanese chess) when he is not busy."}
@@ -159,112 +162,112 @@
     :role ""
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Peter Jaros"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "Developer"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Katie Ballinger"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "DevOps"
     :github ""
     :email ""
     :bio "Katie is a both a geek and tinkerer at heart and is always making things. From electronics and rapid prototyping to sewing plush toys, she's always trying new things. She frequents meetups with fellow geeks and often spends her nights coding or playing video games."}
    {:name "Kunal Jain"
     :img-path (scaled-image-path "kunal")
-    :role ""
+    :role "Product Manager"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Frank Wang"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "Support Engineer"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Jen Hugo"
     :img-path (scaled-image-path "jen")
-    :role ""
+    :role "Recruiter"
     :github ""
     :email ""
     :bio "Jen joins CircleCI after having recruited for a variety of tech companies (Apple, Shutterfly, and Brightedge, to name just a few). She's a proud alum of the Ohio State University--go Bucks!--and loves super hot coffee and spending time in wine country."}
    {:name "Travis Vachon"
     :img-path (scaled-image-path "travis")
-    :role ""
+    :role "Developer"
     :github ""
     :email ""
     :bio "Travis enjoys climbing, dancing, and desert based art festivals. At Circle he makes sure new features flow steadily from the shifting sands of product design to the thriving robot metropolis at the heartof Circle's build system."}
    {:name "Chris Black"
     :img-path (scaled-image-path "chris")
-    :role ""
+    :role "DevOps"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Jia Le"
     :img-path (scaled-image-path "jia")
-    :role ""
+    :role "Account Manager"
     :github ""
     :email ""
     :bio "Jia is the one of the first Account Managers to join the CircleCi team. When she's not busy figuring out customer pain points, you can find her hiking, running half marathons or finding the best new vegetarian restaurant in the Bay."}
    {:name "Chloé Arthrus"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "Account Mananger"
     :github ""
     :email ""
     :bio "Chloé is a Northwestern University alumna with an extensive background in Advertising and Marketing. She likes Tetris, cookies, oxford commas, and helping your business get the most out of CircleCI. When she's not at her desk, you can find Chloé playing with her cat, Kitty."}
    {:name "Lev Lazinskiy"
     :img-path (scaled-image-path "lev")
-    :role ""
+    :role "Support Engineer"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Jonathan Morris"
     :img-path (scaled-image-path "jonathan-morris")
-    :role ""
+    :role "Director of Sales"
     :github ""
     :email ""
     :bio "When not working on all things sales, Jonathan can be found playing beach volleyball or soccer, reading sci-fi and autobiographies, or hacking out Black Bird on the guitar."}
    {:name "Thomas Wong"
     :img-path (scaled-image-path "thomas")
-    :role ""
+    :role "Account Manager"
     :github ""
     :email ""
     :bio "Thomas is an alumnus of The University of Southern California. He's excited to help CircleCI grow with the Account Management team. In his free time, you can find Thomas playing playing sports, exploring everything San Francisco, and, naturally, rooting on Trojan Athletics."}
    {:name "Parth Patel"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "Account Manager"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Sean Heuer"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "Support Engineer"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Rishi Kumar"
     :img-path (scaled-image-path "rishi")
-    :role ""
+    :role "Product Manager"
     :github ""
     :email ""
     :bio "Rishi joins CircleCI to work on Product + Growth.  He's worked at a couple of startups, most recently Infer. He spent some time in VC while getting his MBA and previously worked in Management Consulting. He loves UNC basketball, golf pants, travel, and trivia nights."}
    {:name "Le Wang"
     :img-path (scaled-image-path "")
-    :role ""
+    :role "Developer"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Mike Rosabal"
     :img-path (scaled-image-path "mike-rosabal")
-    :role ""
+    :role "Support Engineer"
     :github ""
     :email ""
-    :bio ""}
+    :bio "Bio coming soon!"}
    {:name "Justin Cowperthwaite"
     :img-path (scaled-image-path "justin")
-    :role ""
+    :role "Developer"
     :github ""
     :email ""
     :bio "Justin, a USC graduate, joins the CircleCI team as a web developer. As a product minded software engineer, Justin is excited to grow the CircleCI web platform. As a UX enthusiast, he's excited to continuously improve the usability of the site. In his spare time Justin likes playing tennis, bike riding, and most importantly, traveling the world."}
