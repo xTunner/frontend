@@ -134,9 +134,6 @@
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-              (when (and inner? logged-in? (feature/enabled? :ui-v2))
-                (api/get-orgs api-ch)
-                (om/build top-nav/top-nav app-without-container-data))
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
@@ -148,6 +145,9 @@
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
+
+               (when (and inner? logged-in? (feature/enabled? :ui-v2))
+                 (om/build top-nav/top-nav app-without-container-data))
 
                (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))
