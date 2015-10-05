@@ -280,6 +280,9 @@
   overflow: hidden;
 }
 .home-prolog {
+  // adjustment for header
+  height: ~"calc(100vh - @{navbar-height})";
+
   background: @grayDark;
   color: @prolog-light-on-dark;
   a:not([role="button"]) {
@@ -311,11 +314,6 @@
   .context:nth-of-type(1) { .animation(prolog-up @prolog-open-duration @bezier-fadein (@prolog-open-delay * 1) both); }
   .context:nth-of-type(2) { .animation(prolog-up @prolog-open-duration @bezier-fadein (@prolog-open-delay * 2) both); }
   .home-bottom-shelf      { .animation(prolog-up @prolog-open-duration @bezier-fadein @prolog-open-duration both); }
-}
-
-.home-prolog {
-  // adjustment for header
-  height: ~"calc(100vh - @{navbar-height} - 1px)";
 }
 
 .home-top-shelf {
