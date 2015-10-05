@@ -844,11 +844,11 @@
   }
 }
 .customers-brand {
-  .color_fill(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
-    .color_fill(@a; (@c - 1); (@x - 1); (@y - 1));
+  .color-fill(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
+    .color-fill(@a; (@c - 1); (@x - 1); (@y - 1));
     @n: extract(@a, (@c + @x));
     .logo-@{n} {fill: extract(@a, (@c + @y));}
-  }.color_fill(@customers_brands);
+  }.color-fill(@customers-brands);
   .flexy();
   position: relative;
   &:before,
