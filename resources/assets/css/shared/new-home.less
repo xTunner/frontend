@@ -384,6 +384,7 @@
     }
   }
 }
+
 .home-slogans {
   .order(3);
   position: relative;
@@ -391,13 +392,22 @@
   text-align: center;
   margin: @tile 0;
   max-width: 100%;
+
+  @media (max-width: @screen-sm-max) {
+    margin: (@tile / 3) 0;
+  }
+
   h1,
   h3 {
-    white-space: nowrap;
+    @media (min-width: @screen-md-min) {
+      white-space: nowrap;
+    }
   }
+
   h3 {
     margin: 0;
   }
+
   .slogan {
     position: relative;
     color: transparent;
