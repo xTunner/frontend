@@ -270,7 +270,11 @@
     border-radius: (@home-action-height / 2);
     pointer-events: none;
     opacity: 0;
-    white-space: nowrap;
+
+    @media (min-width: @screen-md-min) {
+      white-space: nowrap;
+    }
+
     &:hover {
       color: @white;
       background: @gray;
