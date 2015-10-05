@@ -184,7 +184,6 @@
                          :ref "prolog-cta"
                          :on-mouse-up #(analytics/track-signup-click)}
          (str (common/sign-up-text))]
-        [:div.home-cover]
         [:div.home-top-shelf]
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "Ship better code, faster."}
@@ -401,7 +400,6 @@
                          :role "button"
                          :on-mouse-up #(analytics/track-signup-click)}
          (str (common/sign-up-text))]
-        [:div.home-cover]
         [:div.home-top-shelf]
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"}

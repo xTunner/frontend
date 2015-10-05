@@ -325,25 +325,7 @@
   height: @tile;
   margin-bottom: auto;
 }
-.home-cover {
-  background: @white;
-  width: (@tile * 3);
-  height: @tile;
-  border-radius: (@tile / 2);
-  position: absolute;
-  z-index: @zindex_home_cover;
-  pointer-events: none;
-  left: ~"calc(50% - 105px)";
-  top: ~"calc(50% + 140px)";
-  opacity: 0;
-  transition+: width @prolog_cover_fadeout;
-  transition+: height @prolog_cover_fadeout;
-  transition+: left @prolog_cover_fadeout;
-  transition+: top @prolog_cover_fadeout;
-  transition+: border-radius @prolog_cover_fadeout;
-  transition+: opacity 0ms @prolog_cover_fadeout;
-  transition-timing-function: @bezier_transform;
-}
+
 .home-avatars {
   .flexy(center, center);
   .order(2);
