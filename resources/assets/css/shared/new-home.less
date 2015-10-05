@@ -106,23 +106,33 @@
 @home-color-last-cta: @blue;
 @home-margin-footer: @empx;
 
+@mobile-scale-factor: 0.8;
+.scaled-header (@font-size, @line-height) {
+  font-size: @font-size;
+  line-height: @line-height;
+
+  @media (max-width: @screen-sm-max) {
+    font-size: (@font-size * @mobile-scale-factor);
+    line-height: (@line-height * @mobile-scale-factor);
+  }
+}
+
 .home {
   &.page {
     font-size: 1.1428572em; // 16px
     line-height: 1.5em; // 24px
     h1 {
-      font-size: @prolog_h1_font;
-      line-height: @prolog_h1_line;
+      .scaled-header(@prolog-h1-font, @prolog-h1-line);
       font-weight: 300;
     }
+
     h3 {
-      font-size: @prolog_h3_font;
-      line-height: @prolog_h3_line;
+      .scaled-header(@prolog-h3-font, @prolog-h3-line);
       font-weight: normal;
     }
+
     h5 {
-      font-size: @prolog_h5_font;
-      line-height: @prolog_h5_line;
+      .scaled-header(@prolog-h5-font, @prolog-h5-line);
       font-weight: normal;
       margin: 1em 0;
     }
