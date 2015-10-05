@@ -106,10 +106,10 @@
 
 
 (defmethod api-event [:projects :success]
-  [target message status {:keys [context resp]} state]
+  [target message status {:keys [resp]} {:keys [navigation-point] :as state}]
   ;; for the insights screen, we go on to get recent builds from the
   ;; default_branch of each project
-  (when (:get-recent-builds context)
+  (when (= navigation-point :build-insights)
     (let [api-ch (get-in state [:comms :api])
           project-build-ids (map project-build-id resp)]
       (api/get-projects-builds project-build-ids api-ch)))

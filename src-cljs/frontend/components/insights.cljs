@@ -30,6 +30,11 @@
 ;;                                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def svg-info
+  {:width 900
+   :height 180
+   :top 30, :right 10, :bottom 10, :left 70})
+
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
@@ -59,6 +64,7 @@
         right-legend-array [{:classname "queue"
                              :text "Queue time"}]
         left-legend-item (-> svg
+                             (.select ".legend-container")
                              (.selectAll ".legend")
                              (.data (clj->js left-legend-array))
                              (.enter)
@@ -72,6 +78,7 @@
                                                                2)))]
                                              (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))
         right-legend-item (-> svg
+                              (.select ".legend-container")
                               (.selectAll ".legend-right")
                               (.data (clj->js right-legend-array))
                               (.enter)
@@ -114,12 +121,11 @@
                            spacing)})
         (.text #(aget % "text")))))
 
-(defn visualize-insights-bar! [elem builds]
-  (let [y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
+(defn visualize-insights-bar! [el builds]
+  (let [max-bar-count 60
+        builds (take max-bar-count builds)
+        y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
                                  builds))
-        svg-info {:width 900
-                  :height 180
-                  :top 30, :right 10, :bottom 10, :left 70}
         plot-info {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
                    :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))}
         y-scale (-> (js/d3.scale.linear)
@@ -142,75 +148,107 @@
                    (.orient "left")
                    (.tickValues (clj->js y-tick-values))
                    (.tickFormat js/Math.abs))
+        scale-filler (map (partial str "xx-") (range (- max-bar-count (count builds))))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
-                              (map :build_num builds)))
+                              `(~@(map :build_num builds) ~@scale-filler)))
                     (.rangeBands #js[0 (:width plot-info)] 0.5))
         svg (-> js/d3
-                (.select elem)
-                (.html "")
-                (.append "svg")
-                (.attr "width" (:width svg-info))
-                (.attr "height" (:height svg-info))
-                (.append "g")
-                (.attr "transform" (gstring/format "translate(%s,%s)"
-                                                   (:left svg-info)
-                                                   (:top svg-info))))
-        enter (-> svg
-                  (.selectAll "rect")
-                  (.data (clj->js builds))
-                  (.enter))
+                (.select el)
+                (.select "svg g.plot-area"))
+        bars-enter (-> svg
+                       (.select "g > g.bars")
+                       (.selectAll "g.bar-pair")
+                       (.data (clj->js builds))
+                       (.enter)
+                       (.append "g")
+                       (.attr "class" "bar-pair"))
         grid-lines-container (-> svg
-                                 (.append "g")
-                                 (.attr "class" "grid-line horizontal"))]
+                                 (.select "g.grid-lines"))
+        grid-y-vals (for [tick (remove zero? y-tick-values)] (y-scale tick))]
+
+    ;; positive bar
+    (-> bars-enter
+        (.insert "rect")
+        (.attr #js {"class" #(str "bar " (aget % "outcome"))
+                    "y" #(y-pos-scale (aget % "build_time_minutes"))
+                    "x" #(x-scale (aget % "build_num"))
+                    "width" (.rangeBand x-scale)
+                    "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))})
+        (.insert "title")
+        (.text #(gstring/format "%s in %.1fm" (gstring/toTitleCase (aget % "outcome")) (aget % "build_time_minutes"))))
+
+    ;; negative (queue time) bar
+    (-> bars-enter
+        (.insert "rect")
+        (.attr #js {"class" "bar queue"
+                    "y" y-middle
+                    "x" #(x-scale (aget % "build_num"))
+                    "width" (.rangeBand x-scale)
+                    "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)})
+        (.insert "title")
+        (.text #(gstring/format "Queue time %.1fm" (aget % "queued_time_minutes"))))
 
     ;; legend
     (add-legend svg plot-info)
 
     ;; y-axis
     (-> svg
-        (.append "g")
-        (.attr "class" "y-axis axis")
+        (.select ".axis-container g.y-axis.axis")
         (.call y-axis))
     ;; x-axis
     (-> svg
-        (.append "g")
-        (.attr "class" "x-axis axis")
-        (.append "line")
+        (.select ".axis-container g.axis.x-axis line")
         (.attr #js {
                     "y1" (int y-middle)
                     "y2" (int y-middle)
                     "x1" 0
                     "x2" (:width plot-info)}))
 
-    ;; horizontal grid-lines
-    (doseq [tick (remove zero? y-tick-values)
-            :let [y-pos (y-scale tick)]]
-      (-> grid-lines-container
-          (.append "line")
-          (.attr #js {
-                      "y1" y-pos
-                      "y2" y-pos
-                      "x1" 0
-                      "x2" (:width plot-info)})))
+    ;; grid lines
+    (-> grid-lines-container
+        (.selectAll "line.horizontal")
+        (.data (clj->js grid-y-vals))
+        (.enter)
+        (.append "line")
+        (.attr #js {"class" "horizontal"
+                    "y1" (fn [y] y)
+                    "y2" (fn [y] y)
+                    "x1" 0
+                    "x2" (:width plot-info)}))))
 
-    ;; positive bar
-    (-> enter
-        (.insert "rect")
-        (.attr #js {"class" #(str "bar " (aget % "outcome"))
-                    "y" #(y-pos-scale (aget % "build_time_minutes"))
-                    "x" #(x-scale (aget % "build_num"))
-                    "width" (.rangeBand x-scale)
-                    "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))}))
+(defn insert-skeleton [el]
+  (let [plot-area (-> js/d3
+                      (.select el)
+                      (.append "svg")
+                      (.attr "width" (:width svg-info))
+                      (.attr "height" (:height svg-info))
+                      (.append "g")
+                      (.attr "class" "plot-area")
+                      (.attr "transform" (gstring/format "translate(%s,%s)"
+                                                         (:left svg-info)
+                                                         (:top svg-info))))]
 
-    ;; negative (queue time) bar
-    (-> enter
-        (.insert "rect")
-        (.attr #js {"class" "bar queue"
-                    "y" y-middle
-                    "x" #(x-scale (aget % "build_num"))
-                    "width" (.rangeBand x-scale)
-                    "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)}))))
+    (-> plot-area
+        (.append "g")
+        (.attr "class" "legend-container"))
+    (-> plot-area
+        (.append "g")
+        (.attr "class" "grid-lines"))
+    (-> plot-area
+        (.append "g")
+        (.attr "class" "bars"))
+
+    (let [axis-container (-> plot-area
+                             (.append "g")
+                             (.attr "class" "axis-container"))]
+      (-> axis-container
+          (.append "g")
+          (.attr "class" "x-axis axis")
+          (.append "line"))
+      (-> axis-container
+          (.append "g")
+          (.attr "class" "y-axis axis")))))
 
 (defn chartable-builds [builds]
   (->> builds
@@ -220,23 +258,28 @@
        (map add-minute-measures)))
 
 (defn project-insights-bar [builds owner]
-  (let [chart-builds (chartable-builds builds)]
-    (reify
-      om/IDidUpdate
-      (did-update [_ prev-props prev-state]
-        (let [el (om/get-node owner)]
-          (visualize-insights-bar! el chart-builds)))
-      om/IRender
-      (render [_]
-        (when-not (empty? chart-builds)
-          (html
-           [:div.build-time-visualization]))))))
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [el (om/get-node owner)]
+        (insert-skeleton el)
+        (visualize-insights-bar! el builds)))
+    om/IDidUpdate
+    (did-update [_ prev-props prev-state]
+      (let [el (om/get-node owner)]
+        (visualize-insights-bar! el builds)))
+    om/IRender
+    (render [_]
+      (html
+       [:div.build-time-visualization]))))
 
 (defrender project-insights [{:keys [reponame username default_branch recent-builds]} owner]
-  (html
-   [:div.project-block
-    [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
-    (om/build project-insights-bar recent-builds)]))
+  (let [builds (chartable-builds recent-builds)]
+    (when (not-empty builds)
+      (html
+       [:div.project-block
+        [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
+        (om/build project-insights-bar builds)]))))
 
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]
