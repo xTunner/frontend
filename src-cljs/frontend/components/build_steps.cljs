@@ -108,8 +108,7 @@
                    [:div.action-log-messages
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
-                     {:on-click #(let [node (om/get-node owner)
-                                       target (.-parentNode (.-currentTarget %))]
+                     {:on-click #(let [target (.-parentNode (.-currentTarget %))]
                                    (.scrollIntoView target false))}]
 
                     (when (:bash_command action)
