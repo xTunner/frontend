@@ -118,9 +118,11 @@
 }
 
 .home {
+
   &.page {
     font-size: 1.1428572em; // 16px
     line-height: 1.5em; // 24px
+
     h1 {
       .scaled-header(@prolog-h1-font, @prolog-h1-line);
       font-weight: 300;
@@ -137,7 +139,9 @@
       margin: 1em 0;
     }
   }
+
   a {
+
     &:hover {
       i {
         path {
@@ -146,9 +150,11 @@
         }
       }
     }
+
     &:not(:hover) {
       color: @black;
     }
+
     i {
       path {
         stroke: @grayDark;
@@ -272,6 +278,7 @@
     }
   }
 }
+
 .home-prolog,
 .home-epilog {
   .flexy(center, center, column);
@@ -435,23 +442,29 @@
       margin-top: 0;
     }
   }
+
   .proverb {
     min-height: @prolog-h1-font;
     margin: 0 0 ((@tile * 2) - (@prolog-h1-line + (@prolog-h3-line * 2)));
+
     &:before {
       color: @grayBoxBorder;
     }
+
     &:after {
       top: @prolog-h1-font;
       color: @grayDark;
     }
   }
+
   .context {
     min-height: @prolog-h3-line;
+
     &:before,
     &:after {
       color: @prolog-light-on-dark;
     }
+
     &:after {
       top: @prolog-h3-line;
     }
@@ -504,6 +517,7 @@
     border-color: @grayBoxBorder;
   }
 }
+
 .home-purpose {
   .flexy(column);
   height: 100vh;
@@ -652,6 +666,7 @@
     }
   }
 }
+
 .home-articles {
   .box-sizing(border-box);
   .flex(0, 0, (100% - @purpose-drawings-width));
@@ -679,6 +694,7 @@
     }
   }
 }
+
 .home-practice {
   .flexy(column);
   height: 100vh;
@@ -707,6 +723,7 @@
     .justify-content(flex-end);
   }
 }
+
 .supported-tools {
   position: relative;
   padding: (@tile / 2) 0;
@@ -736,12 +753,14 @@
     }
   }
 }
+
 .supported-tools-upper,
 .supported-tools-lower {
   .flexy();
   width: 100%;
   margin-bottom: (@tile - (@practice-tool-size * @practice-tool-grow));
 }
+
 .supported-tools-upper {
   .supported-tool {
     .loop-cascade(@counter) when (@counter > 0) {
@@ -754,6 +773,7 @@
     }
   }
 }
+
 .supported-tools-lower {
   .supported-tool {
     .loop-cascade(@counter) when (@counter > 0) {
@@ -766,6 +786,7 @@
     }
   }
 }
+
 .supported-tool {
   .color-stroke(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
     .color-stroke(@a; (@c - 1); (@x - 1); (@y - 1));
@@ -820,6 +841,7 @@
     transition: (@practice-tool-speed / 2) 0ms @practice-tool-timing;
   }
 }
+
 .practice-articles {
   .flex(0, 0, auto);
   .flexy();
@@ -833,6 +855,7 @@
     color: @black;
   }
 }
+
 .practice-customers {
   .flex(1, 1, 0);
   .flexy();
@@ -840,6 +863,7 @@
     .justify-content(flex-start);
   }
 }
+
 .customers-brands {
   .selected-quote(@a; @c: length(@a); @y: 0; @c2: (@c / 2)) when (@c > (length(@a) / 2)) {
     .selected-quote(@a; (@c - 1); (@y - 1); (@c2 - 1));
@@ -857,6 +881,7 @@
     margin: 0;
   }
 }
+
 .customers-brand {
   .color-fill(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
     .color-fill(@a; (@c - 1); (@x - 1); (@y - 1));
@@ -908,6 +933,7 @@
     transition: (@practice-tool-speed / 2) @practice-tool-timing;
   }
 }
+
 .quote-card {
   .box-sizing(border-box);
   .flexy(flex-start, center, column);
@@ -953,6 +979,7 @@
     border-radius: @quote-avatar-size;
   }
 }
+
 .home-potential {
   @number-of-actions: 8;
   @number-of-outputs: 9;
@@ -1003,10 +1030,12 @@
     }
   }
 }
+
 .home-potential-content {
   .order(1);
   .flexy();
 }
+
 .home-potential-bullets {
   .flexy();
   margin: 1em 0;
@@ -1020,6 +1049,7 @@
     margin-bottom: 1em;
   }
 }
+
 .home-epilog {
   .vertGradient(@blueDarkest, @blueDarker);
   .home-action {
@@ -1043,9 +1073,11 @@
       }
     }
   }
+
   .home-avatars {
     i.ico path { fill: fade(@grayDark, 0); }
   }
+
   .home-slogans {
     .proverb:before { color: @white; }
     .context:before { color: fade(@white, 50); }
@@ -1068,6 +1100,7 @@
       }
     }
   }
+
   .home-bottom-shelf {
     .box-sizing(border-box);
     .flex-direction(column);
@@ -1083,3 +1116,4 @@
     }
   }
 }
+
