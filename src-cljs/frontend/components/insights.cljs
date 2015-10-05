@@ -35,6 +35,24 @@
    :height 180
    :top 30, :right 10, :bottom 10, :left 70})
 
+(def plot-info
+  {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
+   :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
+   :left-legend-items [{:classname "success"
+                        :text "Passed"}
+                       {:classname "failed"
+                        :text "Failed"}
+                       {:classname "canceled"
+                        :text "Canceled"}]
+   :right-legend-items [{:classname "queue"
+                         :text "Queue time"}]
+   :legend-info {:square-size 10
+                 :item-width 80
+                 :item-height 14   ; assume font is 14px
+                 :spacing 4}})
+
+(def max-bar-count 60)
+
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
@@ -50,23 +68,12 @@
 (defn build-graphable [{:keys [outcome]}]
   (#{"success" "failed" "canceled"} outcome))
 
-(defn add-legend [svg {chart-width :width}]
-  (let [left-legend-array [{:classname "success"
-                            :text "Passed"}
-                           {:classname "failed"
-                            :text "Failed"}
-                           {:classname "canceled"
-                            :text "Canceled"}]
-        {:keys [square-size item-width item-height spacing]} {:square-size 10
-                                                              :item-width 80
-                                                              :item-height 14   ; assume font is 14px
-                                                              :spacing 4}
-        right-legend-array [{:classname "queue"
-                             :text "Queue time"}]
-        left-legend-item (-> svg
+(defn add-legend [svg]
+  (let [{:keys [square-size item-width item-height spacing]} (:legend-info plot-info)
+        left-legend-enter (-> svg
                              (.select ".legend-container")
                              (.selectAll ".legend")
-                             (.data (clj->js left-legend-array))
+                             (.data (clj->js (:left-legend-items plot-info)))
                              (.enter)
                              (.append "g")
                              (.attr #js {"class" "legend left"
@@ -77,22 +84,22 @@
                                                             (/ (- item-height square-size)
                                                                2)))]
                                              (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))
-        right-legend-item (-> svg
+        right-legend-enter (-> svg
                               (.select ".legend-container")
                               (.selectAll ".legend-right")
-                              (.data (clj->js right-legend-array))
+                              (.data (clj->js (:right-legend-items plot-info)))
                               (.enter)
                               (.append "g")
                               (.attr #js {"class" "legend right"
                                           "transform"
                                           (fn [item i]
-                                            (let [tr-x (- chart-width (* (inc i) item-width))
+                                            (let [tr-x (- (:width plot-info) (* (inc i) item-width))
                                                   tr-y (- (- item-height
                                                              (/ (- item-height square-size)
                                                                 2)))]
                                               (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))]
     ;; left legend
-    (-> left-legend-item
+    (-> left-legend-enter
         (.append "rect")
         (.attr #js {"width" square-size
                     "height" square-size
@@ -101,13 +108,13 @@
                     "transform"
                     (fn [item i]
                       (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
-    (-> left-legend-item
+    (-> left-legend-enter
         (.append "text")
         (.attr #js {"x" (+ square-size spacing)})
         (.text #(aget % "text")))
 
     ;; right legend
-    (-> right-legend-item
+    (-> right-legend-enter
         (.append "rect")
         (.attr #js {"width" square-size
                     "height" square-size
@@ -115,19 +122,15 @@
                     "transform"
                     (fn [item i]
                       (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
-    (-> right-legend-item
+    (-> right-legend-enter
         (.append "text")
         (.attr #js {"x" (+ square-size
                            spacing)})
         (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [el builds]
-  (let [max-bar-count 60
-        builds (take max-bar-count builds)
-        y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
+  (let [y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
                                  builds))
-        plot-info {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
-                   :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))}
         y-scale (-> (js/d3.scale.linear)
                     (.domain #js[(- y-max) y-max])
                     (.range #js[(:height plot-info) 0])
@@ -190,7 +193,7 @@
         (.text #(gstring/format "Queue time %.1fm" (aget % "queued_time_minutes"))))
 
     ;; legend
-    (add-legend svg plot-info)
+    (add-legend svg)
 
     ;; y-axis
     (-> svg
@@ -255,7 +258,8 @@
        (filter build-graphable)
        reverse
        (map add-queued-time)
-       (map add-minute-measures)))
+       (map add-minute-measures)
+       (take max-bar-count)))
 
 (defn project-insights-bar [builds owner]
   (reify
