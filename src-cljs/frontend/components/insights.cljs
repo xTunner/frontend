@@ -133,16 +133,13 @@
                                  builds))
         y-scale (-> (js/d3.scale.linear)
                     (.domain #js[(- y-max) y-max])
-                    (.range #js[(:height plot-info) 0])
-                    (.nice))
+                    (.range #js[(:height plot-info) 0]))
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-max])
-                        (.range #js[(y-scale 0) 0])
-                        (.nice))
+                        (.range #js[(y-scale 0) 0]))
         y-neg-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-max])
-                        (.range #js[(y-scale 0) (:height plot-info)])
-                        (.nice))
+                        (.range #js[(y-scale 0) (:height plot-info)]))
         y-middle (y-scale 0)
         y-tick-values (map js/Math.round
                            [y-max (* y-max 0.5) 0 (* -1 y-max 0.5) (- y-max)])
@@ -159,38 +156,58 @@
         svg (-> js/d3
                 (.select el)
                 (.select "svg g.plot-area"))
-        bars-enter (-> svg
-                       (.select "g > g.bars")
-                       (.selectAll "g.bar-pair")
-                       (.data (clj->js builds))
-                       (.enter)
-                       (.append "g")
-                       (.attr "class" "bar-pair"))
-        grid-lines-container (-> svg
-                                 (.select "g.grid-lines"))
-        grid-y-vals (for [tick (remove zero? y-tick-values)] (y-scale tick))]
+        bars-join (-> svg
+                      (.select "g > g.bars")
+                      (.selectAll "g.bar-pair")
+                      (.data (clj->js builds)))
+        bars-enter-g (-> bars-join
+                         (.enter)
+                         (.append "g")
+                         (.attr "class" "bar-pair"))
+        grid-y-vals (for [tick (remove zero? y-tick-values)] (y-scale tick))
+        grid-lines-join (-> svg
+                            (.select "g.grid-lines")
+                            (.selectAll "line.horizontal")
+                            (.data (clj->js grid-y-vals)))]
 
-    ;; positive bar
-    (-> bars-enter
-        (.insert "rect")
-        (.attr #js {"class" #(str "bar " (aget % "outcome"))
+    ;; top bar enter
+    (-> bars-enter-g
+        (.append "rect")
+        (.attr "class" "bar top")
+        (.insert "title"))
+
+    ;; bottom (queue time) bar enter
+    (-> bars-enter-g
+        (.append "rect")
+        (.attr "class" "bar bottom queue")
+        (.insert "title"))
+
+    ;; top bars enter and update
+    (-> bars-join
+        (.select ".top")
+        (.attr #js {"class" #(str "bar top " (aget % "outcome"))
                     "y" #(y-pos-scale (aget % "build_time_minutes"))
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
                     "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))})
-        (.insert "title")
+        (.select "title")
         (.text #(gstring/format "%s in %.1fm" (gstring/toTitleCase (aget % "outcome")) (aget % "build_time_minutes"))))
 
-    ;; negative (queue time) bar
-    (-> bars-enter
-        (.insert "rect")
-        (.attr #js {"class" "bar queue"
-                    "y" y-middle
+    ;; bottom bar enter and update
+    (-> bars-join
+        (.select ".bottom")
+        (.attr #js {"y" y-middle
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
                     "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)})
-        (.insert "title")
+        (.select "title")
         (.text #(gstring/format "Queue time %.1fm" (aget % "queued_time_minutes"))))
+
+    ;; bars exit
+    (-> bars-join
+        (.exit)
+        (.remove))
+
 
     ;; legend
     (add-legend svg)
@@ -202,18 +219,17 @@
     ;; x-axis
     (-> svg
         (.select ".axis-container g.axis.x-axis line")
-        (.attr #js {
-                    "y1" (int y-middle)
+        (.attr #js {"y1" (int y-middle)
                     "y2" (int y-middle)
                     "x1" 0
                     "x2" (:width plot-info)}))
 
-    ;; grid lines
-    (-> grid-lines-container
-        (.selectAll "line.horizontal")
-        (.data (clj->js grid-y-vals))
+    ;; grid lines enter
+    (-> grid-lines-join
         (.enter)
-        (.append "line")
+        (.append "line"))
+    ;; grid lines enter and update
+    (-> grid-lines-join
         (.attr #js {"class" "horizontal"
                     "y1" (fn [y] y)
                     "y2" (fn [y] y)
