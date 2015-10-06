@@ -190,3 +190,35 @@
           (< ago (* 2 day)) "yesterday"
           (< ago year) (time-format/unparse (time-format/formatter-local "MMM d") (from-long time))
           :else (time-format/unparse (time-format/formatter "MMM yyyy") (from-long time)))))
+
+(def millis-factors [{:unit :hours
+                      :display "h"
+                      :divisor (* 60 1000 60)}
+                     {:unit :minutes
+                      :display "m"
+                      :divisor (* 1000 60)}
+                     {:unit :seconds
+                      :display "s"
+                      :divisor 1000}
+                     {:unit :milliseconds
+                      :display "ms"
+                      :divisor 1}])
+
+(defn millis-to-float-duration
+  "Return vector of [nice-string unit] e.g.
+[\"12.4m\" :minutes]"
+  ([millis]
+   (millis-to-float-duration millis nil))
+  ([millis requested-unit]
+   (let [{:keys [display divisor unit]}
+         (or (some #(when (= requested-unit (:unit %))
+                      %)
+                   millis-factors)
+             (some #(when (> (/ millis (:divisor %)) 1)
+                      %)
+                   millis-factors)
+             (last millis-factors))]
+     (vector (g-string/format "%.1f%s"
+                              (float (/ millis divisor))
+                              display)
+             unit))))
