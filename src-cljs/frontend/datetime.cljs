@@ -227,3 +227,10 @@
                                 result
                                 display))
              unit-info))))
+
+
+(defn nice-floor-duration [millis]
+  "Returns millis floored to a nice value for printing."
+  (let [[_ {:keys [divisor]}] (millis-to-float-duration millis)]
+    (* (js/Math.floor (/ millis divisor))
+       divisor)))

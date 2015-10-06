@@ -28,3 +28,11 @@
                (last)
                (:unit))
            :hours))))
+
+
+(deftest nice-floor-duration-works
+  (testing "basic"
+    (let [result (datetime/nice-floor-duration 6600)
+          [result-str] (datetime/millis-to-float-duration result)]
+      (is (= result-str
+             "6.0s")))))
