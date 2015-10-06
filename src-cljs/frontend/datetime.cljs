@@ -208,8 +208,8 @@
   "Return vector of [nice-string unit] e.g.
 [\"12.4m\" :minutes]"
   ([millis]
-   (millis-to-float-duration millis nil))
-  ([millis requested-unit]
+   (millis-to-float-duration millis {}))
+  ([millis {requested-unit :unit decimals :decimals :or {decimals 1}}]
    (let [{:keys [display divisor unit]}
          (or (some #(when (= requested-unit (:unit %))
                       %)
@@ -217,8 +217,11 @@
              (some #(when (> (/ millis (:divisor %)) 1)
                       %)
                    millis-factors)
-             (last millis-factors))]
-     (vector (g-string/format "%.1f%s"
-                              (float (/ millis divisor))
-                              display)
+             (last millis-factors))
+         result (float (/ millis divisor))]
+     (vector (if (= 0 result)
+               "0"
+               (g-string/format (str "%." decimals "f%s")
+                                result
+                                display))
              unit))))

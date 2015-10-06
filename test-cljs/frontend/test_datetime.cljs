@@ -15,10 +15,14 @@
   (testing "tiny millis"
     (is (= (first (datetime/millis-to-float-duration 0.6))
            "0.6ms")))
-  (testing "specify unit"
+  (testing "zero"
+    (is (= (first (datetime/millis-to-float-duration 0))
+           "0")))
+  (testing "accepts options"
     (is (= (first (datetime/millis-to-float-duration 60000000
-                                                     :seconds))
-           "60000.0s")))
+                                                     {:unit :seconds
+                                                      :decimals 0}))
+           "60000s")))
   (testing "returns unit-hash"
     (is (= (-> (datetime/millis-to-float-duration 60000000)
                (last))
