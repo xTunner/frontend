@@ -88,32 +88,32 @@ All Circle API endpoints begin with `"https://circleci.com/api/v1/"`.
   GET: /project/:username/:project/checkout-key
 </dt>
 <dd>
-  List checkout keys
+  Lists checkout keys.
 </dd>
 <dt>
   POST: /project/:username/:project/checkout-key
 </dt>
 <dd>
-  New checkout key
+  Create a new checkout key.
 </dd>
 <dt>
   GET: /project/:username/:project/checkout-key/:fingerprint
 </dt>
 <dd>
-  Get a checkout key
+  Get a checkout key.
 </dd>
 <dt>
   DELETE: /project/:username/:project/checkout-key/:fingerprint
 </dt>
 <dd>
-  Delete a checkout key
+  Delete a checkout key.
 </dd>
 
 <dt>
   DELETE: /project/:username/:project/build-cache
 </dt>
 <dd>
-  Clears the cache for a project
+  Clears the cache for a project.
 </dd>
 <dt>
   POST: /user/ssh-key
