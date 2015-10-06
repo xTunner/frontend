@@ -647,7 +647,11 @@
 }
 .home-purpose-content {
   .order(1);
-  .flexy();
+  .flexy(center, center, row);
+
+  @media (max-width: @screen-xs-max) {
+    .flexy(center, center, column-reverse);
+  }
 }
 
 .home-drawings {
@@ -659,6 +663,7 @@
 
   margin: auto 0;
   overflow: hidden;
+
   figure {
     @width: 1600px; // default 1600px
     .flex(0, 0, @width);
@@ -683,27 +688,46 @@
       bottom: -@home-drawing-offset;
     }
   }
+
+  @media (max-width: @screen-xs-max) {
+    @drawing-margin: 20px;
+    width: 100%;
+
+    // left & right here indicate whether the drawing comes in from the given side.
+    &.drawing-left {
+      margin-right: @drawing-margin;
+    }
+
+    &.drawing-right {
+      margin-left: @drawing-margin;
+    }
+  }
 }
 
 .home-articles {
-  .box-sizing(border-box);
   .flex(0, 0, (100% - @purpose-drawings-width));
   .flexy(center, center, column);
+
   padding: 0 1em;
+
   article {
     max-width: @home-article-width;
   }
+
   p {
     color: @gray;
   }
+
   .shopify-link {
     .flexy();
+
     &:hover {
       svg {
         stroke: @blueLight;
         margin-left: 1ex;
       }
     }
+
     svg {
       stroke: @grayDark;
       stroke-width: 8;
@@ -1055,18 +1079,14 @@
 
 .home-potential-content {
   .order(1);
-  .flexy();
+  .flexy(center, center, row);
+
+  @media (max-width: @screen-xs-max) {
+    .flexy(center, center, column);
+  }
 }
 
 .home-potential-bullets {
-  .flexy();
-  margin: 1em 0;
-  ul {
-    margin: 0 0 0 3em;
-    &:first-of-type {
-      margin-left: 1em;
-    }
-  }
   li {
     margin-bottom: 1em;
   }

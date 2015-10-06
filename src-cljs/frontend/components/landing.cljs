@@ -220,7 +220,7 @@
        [:section.home-purpose {:class (when (om/get-state owner [:first-fig-animate]) "animate")}
         [:div.home-top-shelf]
         [:div.home-purpose-content
-         [:div.home-drawings
+         [:div.home-drawings.drawing-left
           [:figure]
           [:figure]
           [:figure drawings/drawing-dashboard]]
@@ -349,7 +349,7 @@
              [:li "Clean build environments"]
              [:li "GitHub Integration"]
              [:li "Free Open Source Support"]]]]]
-         [:div.home-drawings
+         [:div.home-drawings.drawing-right
           [:figure]
           [:figure]
           [:figure drawings/draw-build-large]]]
