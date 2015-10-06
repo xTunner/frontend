@@ -77,7 +77,7 @@
   gocardless, #3A6190,
   sincerely, #eb000a;
 
-@home-article-width: 1000px;
+@home-article-width: 100%;
 @purpose-h1-width: 700px;
 @practice-h1-width: 900px;
 @potential-h1-width: 800px;
@@ -764,8 +764,15 @@
 .practice-tools {
   .flex(1, 1, 0);
   .flexy();
+
   article {
     .justify-content(flex-end);
+  }
+
+  @media (max-width: @screen-sm-max) {
+    // magic number, no real rhyme or reason except that it
+    // allows the text on the upper side of the tools to render on-screen.
+    min-height: 215px; 
   }
 }
 
@@ -902,39 +909,65 @@
 }
 
 .practice-customers {
-  .flex(1, 1, 0);
-  .flexy();
   article {
     .justify-content(flex-start);
   }
 }
 
 .customers-brands {
+
   .selected-quote(@a; @c: length(@a); @y: 0; @c2: (@c / 2)) when (@c > (length(@a) / 2)) {
+
     .selected-quote(@a; (@c - 1); (@y - 1); (@c2 - 1));
     @i: (@c2 - 1);
+
     &.selected-@{i} {
+
       .customers-brand:nth-of-type(@{c2}) {
-        svg {fill: extract(@a, (@c + @y));} &:before, &:after {opacity: 1; transition: opacity (@quote-speed / 2) (@quote-speed / 2);}}
-      .margin(@c2) when (@c2 > 1) {& + .quote-card { margin-left: (@tile * @i);}} .margin(@c2);
+
+        svg {
+          fill: extract(@a, (@c + @y));
+        }
+
+        &:before, &:after {
+          opacity: 1;
+          transition: opacity (@quote-speed / 2) (@quote-speed / 2);
+        }
+      }
+
+      .margin(@c2) when (@c2 > 1) {
+        & + .quote-card {
+          @media (min-width: @screen-xs-min) {
+            margin-left: (@tile * @i);
+          }
+        }
+      } .margin(@c2);
     }
+
   } .selected-quote(@customers-brands);
-  .flex(0 3 (@practice-logo-height + @tile));
+
   .flexy(flex-end);
+  flex-wrap: wrap;
+
   width: 100%;
+
   figure {
     margin: 0;
   }
 }
 
 .customers-brand {
+  .flexy();
+  margin-top: 1em;
+
+  position: relative;
+
   .color-fill(@a; @c: length(@a); @x: -1; @y: 0) when (@c > (length(@a) / 2)) {
     .color-fill(@a; (@c - 1); (@x - 1); (@y - 1));
     @n: extract(@a, (@c + @x));
     .logo-@{n} {fill: extract(@a, (@c + @y));}
   }.color-fill(@customers-brands);
-  .flexy();
-  position: relative;
+
   &:before,
   &:after {
     content: "";
@@ -948,20 +981,26 @@
     pointer-events: none;
     transition: opacity 0ms;
   }
-  &:before {
-    border-bottom-color: @grayBoxBorder;
-    border-width: .5em;
-    margin-left: -.5em;
+
+  @media (min-width: @screen-sm-min) {
+    &:before {
+      border-bottom-color: @grayBoxBorder;
+      border-width: .5em;
+      margin-left: -.5em;
+    }
+
+    &:after {
+      border-bottom-color: @white;
+      border-width: .5em;
+      margin-left: -.5em;
+      margin-top: 1px;
+    }
   }
-  &:after {
-    border-bottom-color: @white;
-    border-width: .5em;
-    margin-left: -.5em;
-    margin-top: 1px;
-  }
+
   &:not(:last-child) {
     margin-right: 1em;
   }
+
   &:not(:hover) {
     svg {
       .scale(1, 1);
@@ -970,6 +1009,7 @@
       transition: @practice-tool-speed @practice-tool-timing;
     }
   }
+
   svg {
     .scale(@practice-tool-grow, @practice-tool-grow);
     .filter(@practice-hover-shadow);
@@ -983,8 +1023,8 @@
   .box-sizing(border-box);
   .flexy(flex-start, center, column);
   color: @grayLight;
-  width: (@tile * 7);
-  height: (@tile * 3);
+  max-width: (@tile * 7);
+  min-height: (@tile * 3);
   margin-top: 1em;
   margin-left: 0;
   padding: 1em;
