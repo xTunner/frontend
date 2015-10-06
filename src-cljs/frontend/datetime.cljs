@@ -205,12 +205,14 @@
                       :divisor 1}])
 
 (defn millis-to-float-duration
-  "Return vector of [nice-string unit] e.g.
-[\"12.4m\" :minutes]"
+  "Return vector of [nice-string unit-information] e.g.
+[\"12.4ms\" {:unit :milliseconds
+             :display \"ms\"
+             :divisor 1}]"
   ([millis]
    (millis-to-float-duration millis {}))
   ([millis {requested-unit :unit decimals :decimals :or {decimals 1}}]
-   (let [{:keys [display divisor unit]}
+   (let [{:keys [display divisor unit] :as unit-info}
          (or (some #(when (= requested-unit (:unit %))
                       %)
                    millis-factors)
@@ -224,4 +226,4 @@
                (g-string/format (str "%." decimals "f%s")
                                 result
                                 display))
-             unit))))
+             unit-info))))

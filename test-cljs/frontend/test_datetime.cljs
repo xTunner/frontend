@@ -25,5 +25,6 @@
            "60000s")))
   (testing "returns unit-hash"
     (is (= (-> (datetime/millis-to-float-duration 60000000)
-               (last))
+               (last)
+               (:unit))
            :hours))))
