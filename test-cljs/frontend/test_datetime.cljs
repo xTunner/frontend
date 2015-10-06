@@ -15,6 +15,9 @@
   (testing "tiny millis"
     (is (= (first (datetime/millis-to-float-duration 0.6))
            "0.6ms")))
+  (testing "less than 2 should stay at smaller unit"
+    (is (= (first (datetime/millis-to-float-duration 1800))
+           "1800.0ms")))
   (testing "zero"
     (is (= (first (datetime/millis-to-float-duration 0))
            "0")))
