@@ -1,7 +1,7 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
             [frontend.api :as api]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [put! raise!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
@@ -16,6 +16,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
+            [om.core :as om :include-macros true]
             [goog.string :as gstring]
             [clojure.set :as set])
   (:require-macros [frontend.utils :refer [inspect]]))

@@ -38,6 +38,7 @@
 (def plot-info
   {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
    :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
+   :max-bars 60
    :left-legend-items [{:classname "success"
                         :text "Passed"}
                        {:classname "failed"
@@ -50,8 +51,6 @@
                  :item-width 80
                  :item-height 14   ; assume font is 14px
                  :spacing 4}})
-
-(def max-bar-count 60)
 
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
@@ -148,7 +147,7 @@
                    (.orient "left")
                    (.tickValues (clj->js y-tick-values))
                    (.tickFormat js/Math.abs))
-        scale-filler (map (partial str "xx-") (range (- max-bar-count (count builds))))
+        scale-filler (map (partial str "xx-") (range (- (:max-bars plot-info) (count builds))))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
                               `(~@(map :build_num builds) ~@scale-filler)))
@@ -275,7 +274,7 @@
        reverse
        (map add-queued-time)
        (map add-minute-measures)
-       (take max-bar-count)))
+       (take (:max-bars plot-info))))
 
 (defn project-insights-bar [builds owner]
   (reify
