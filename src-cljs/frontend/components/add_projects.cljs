@@ -45,8 +45,8 @@
   [:p.missing-org-info
    "Missing an organization? You or an admin may need to enable CircleCI for your organization in "
    [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
-    "GitHub's application permissions."]
-   " Then come back and "
+    "GitHub's application permissions"]
+   ". Then come back and "
    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
                       :class "active"}
     "refresh these listings"]
@@ -157,30 +157,9 @@
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:button {:on-click #(utils/open-modal "#inviteForm-addprojects")
-                          :title "You must be an admin to add a project on CircleCI"}
+                [:button {:title "You must be an admin to add a project on CircleCI"}
                  [:i.fa.fa-lock]
                  "Contact repo admin"]]))))))
-
-(def invite-modal
-  [:div#inviteForm-addprojects.fade.hide.modal
-   {:tabIndex "-1",
-    :role "dialog",
-    :aria-labelledby "inviteFormLabel",
-    :aria-hidden "true"}
-   [:div.modal-header
-    [:button.close
-     {:type "button", :data-dismiss "modal", :aria-hidden "true"}
-     "×"]
-    [:h3#inviteFormLabel "This requires an Administrator"]]
-   [:div.modal-body
-    [:p
-     "For security purposes only a project's Github administrator may setup Circle. Invite this project's admin(s) by sending them the link below and asking them to setup the project in Circle. You may also ask them to make you a Github administrator."]
-    [:p [:input {:value "https://circleci.com/?join=dont-test-alone", :type "text"}]]]
-   [:div.modal-footer
-    [:button.btn.btn-primary
-     {:data-dismiss "modal", :aria-hidden "true"}
-     "Got it"]]])
 
 (defrender repo-filter [settings owner]
   (let [repo-filter-string (get-in settings [:add-projects :repo-filter-string])]
@@ -228,8 +207,7 @@
              [:ul.proj-list.list-unstyled
               (for [repo filtered-repos]
                 (om/build repo-item {:repo repo :settings settings}))])])
-        repos-explanation)
-      invite-modal])))
+        repos-explanation)])))
 
 (defn inaccessible-follows
   "Any repo we follow where the org isn't in our set of orgs is either: an org
@@ -292,7 +270,8 @@
      [:p.missing-org-info
       "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
       [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
-       "GitHub's application permissions."]]
+       "GitHub's application permissions"]
+      "."]
      [:div.inaccessible-org-wrapper
       (map (fn [org-follows] (om/build inaccessible-org-item
                                       {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
