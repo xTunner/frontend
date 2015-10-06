@@ -226,7 +226,7 @@
           [:figure drawings/drawing-dashboard]]
          [:div.home-articles
           [:article {:ref "purpose-article"}
-           [:h1 "Launches are dead, long live iteration."]
+           [:h2 "Launches are dead, long live iteration."]
            [:p "We believe that rapid iteration, tight feedback loops, and team communication are the keys to a great product workflow.
                        That's why we designed the world's leading continuous integration and delivery solution.
                        Continuous integration and delivery is revolutionizing the way development teams operate by reducing barriers between your ideas and your production code.
@@ -277,7 +277,7 @@
 
           [:div.practice-articles
            [:article
-            [:h1 "Devs rely on us to just work; we support the right tools."]
+            [:h2 "Devs rely on us to just work; we support the right tools."]
             [:p
              (for [toolset ["Languages" "databases" "queues" "browsers" "deployment"]]
                (html
@@ -332,7 +332,7 @@
         [:div.home-potential-content
          [:div.home-articles
           [:article {:ref "potential-article"}
-           [:h1 "Look under the hood & check the bullet points."]
+           [:h2 "Look under the hood & check the bullet points."]
            [:div.home-potential-bullets
             [:ul
              [:li "Quick & easy setup"]
@@ -400,7 +400,7 @@
          (str (common/sign-up-text))]
         [:div.home-top-shelf]
         [:div.home-slogans
-         [:h1.slogan.proverb {:item-prop "So, ready to ship faster?"}
+         [:h2.slogan.proverb {:item-prop "So, ready to ship faster?"}
           "So, ready to ship faster?"]
          [:h3.slogan.context.top-line {:item-prop "Next you'll just need to log in using your GitHub account. Still not convinced? Check out our pricing."}
           "Next you'll just need to log in using your GitHub account. Still not convinced? Check out our "
