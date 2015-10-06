@@ -50,7 +50,8 @@
    :legend-info {:square-size 10
                  :item-width 80
                  :item-height 14   ; assume font is 14px
-                 :spacing 4}})
+                 :spacing 4}
+   :positive-y% 0.65})
 
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
@@ -128,25 +129,29 @@
         (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [el builds]
-  (let [y-max (apply max (mapcat #((juxt :queued_time_minutes :build_time_minutes) %)
-                                 builds))
-        y-scale (-> (js/d3.scale.linear)
-                    (.domain #js[(- y-max) y-max])
-                    (.range #js[(:height plot-info) 0]))
+  (let [y-pos-max (apply max (map :build_time_minutes
+                                  builds))
+        y-neg-max (apply max (map :queued_time_millis
+                                  builds))
+        y-zero (* (:height plot-info) (:positive-y% plot-info))
         y-pos-scale (-> (js/d3.scale.linear)
-                        (.domain #js[0 y-max])
-                        (.range #js[(y-scale 0) 0]))
+                        (.domain #js[0 y-pos-max])
+                        (.range #js[y-zero 0]))
         y-neg-scale (-> (js/d3.scale.linear)
-                        (.domain #js[0 y-max])
-                        (.range #js[(y-scale 0) (:height plot-info)]))
-        y-middle (y-scale 0)
-        y-tick-values (map js/Math.round
-                           [y-max (* y-max 0.5) 0 (* -1 y-max 0.5) (- y-max)])
-        y-axis (-> (js/d3.svg.axis)
-                   (.scale y-scale)
-                   (.orient "left")
-                   (.tickValues (clj->js y-tick-values))
-                   (.tickFormat js/Math.abs))
+                        (.domain #js[0 y-neg-max])
+                        (.range #js[y-zero (:height plot-info)]))
+        y-pos-tick-values (map js/Math.round
+                               [y-pos-max (* y-pos-max 0.5) 0])
+        y-neg-tick-values (map js/Math.round
+                               [y-neg-max])
+        y-pos-axis (-> (js/d3.svg.axis)
+                       (.scale y-pos-scale)
+                       (.orient "left")
+                       (.tickValues (clj->js y-pos-tick-values)))
+        y-neg-axis (-> (js/d3.svg.axis)
+                       (.scale y-neg-scale)
+                       (.orient "left")
+                       (.tickValues (clj->js y-neg-tick-values)))
         scale-filler (map (partial str "xx-") (range (- (:max-bars plot-info) (count builds))))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
@@ -163,11 +168,12 @@
                          (.enter)
                          (.append "g")
                          (.attr "class" "bar-pair"))
-        grid-y-vals (for [tick (remove zero? y-tick-values)] (y-scale tick))
+        grid-y-pos-vals (for [tick (remove zero? y-pos-tick-values)] (y-pos-scale tick))
+        grid-y-neg-vals (for [tick (remove zero? y-neg-tick-values)] (y-neg-scale tick))
         grid-lines-join (-> svg
                             (.select "g.grid-lines")
                             (.selectAll "line.horizontal")
-                            (.data (clj->js grid-y-vals)))]
+                            (.data (clj->js (concat grid-y-pos-vals grid-y-neg-vals))))]
 
     ;; top bar enter
     (-> bars-enter-g
@@ -188,19 +194,19 @@
                     "y" #(y-pos-scale (aget % "build_time_minutes"))
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-middle (y-pos-scale (aget % "build_time_minutes")))})
+                    "height" #(- y-zero (y-pos-scale (aget % "build_time_minutes")))})
         (.select "title")
         (.text #(gstring/format "%s in %.1fm" (gstring/toTitleCase (aget % "outcome")) (aget % "build_time_minutes"))))
 
     ;; bottom bar enter and update
     (-> bars-join
         (.select ".bottom")
-        (.attr #js {"y" y-middle
+        (.attr #js {"y" y-zero
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- (y-neg-scale (aget % "queued_time_minutes")) y-middle)})
+                    "height" #(- (y-neg-scale (aget % "queued_time_millis")) y-zero)})
         (.select "title")
-        (.text #(gstring/format "Queue time %.1fm" (aget % "queued_time_minutes"))))
+        (.text #(gstring/format "Queue time %.1fm" (aget % "queued_time_millis"))))
 
     ;; bars exit
     (-> bars-join
@@ -213,13 +219,16 @@
 
     ;; y-axis
     (-> svg
-        (.select ".axis-container g.y-axis.axis")
-        (.call y-axis))
+        (.select ".axis-container g.y-axis.positive")
+        (.call y-pos-axis))
+    (-> svg
+        (.select ".axis-container g.y-axis.negative")
+        (.call y-neg-axis))
     ;; x-axis
     (-> svg
         (.select ".axis-container g.axis.x-axis line")
-        (.attr #js {"y1" (int y-middle)
-                    "y2" (int y-middle)
+        (.attr #js {"y1" y-zero
+                    "y2" y-zero
                     "x1" 0
                     "x2" (:width plot-info)}))
 
@@ -266,7 +275,10 @@
           (.append "line"))
       (-> axis-container
           (.append "g")
-          (.attr "class" "y-axis axis")))))
+          (.attr "class" "y-axis positive axis"))
+      (-> axis-container
+          (.append "g")
+          (.attr "class" "y-axis negative axis")))))
 
 (defn chartable-builds [builds]
   (->> builds
