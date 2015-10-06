@@ -107,6 +107,8 @@
 @home-margin-footer: @empx;
 
 @mobile-scale-factor: 0.8;
+@home-section-height: 100vh;
+
 .scaled-header (@font-size, @line-height) {
   font-size: @font-size;
   line-height: @line-height;
@@ -114,6 +116,14 @@
   @media (max-width: @screen-sm-max) {
     font-size: (@font-size * @mobile-scale-factor);
     line-height: (@line-height * @mobile-scale-factor);
+  }
+}
+
+.scaled-page (@page-height: @home-section-height) {
+  min-height: @page-height;
+  
+  @media (min-width: @screen-md-min) {
+    height: @page-height;
   }
 }
 
@@ -286,13 +296,14 @@
 .home-prolog,
 .home-epilog {
   .flexy(center, center, column);
+  .scaled-page();
+
   position: relative;
-  height: 100vh;
   overflow: hidden;
 }
 .home-prolog {
   // adjustment for header
-  height: ~"calc(100vh - @{navbar-height})";
+  .scaled-page(~"calc(100vh - @{navbar-height})");
 
   background: @grayDark;
   color: @prolog-light-on-dark;
@@ -524,7 +535,8 @@
 
 .home-purpose {
   .flexy(column);
-  height: 100vh;
+  .scaled-page();
+
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
   overflow: hidden;
@@ -641,8 +653,10 @@
 .home-drawings {
   .flex(0, 0, @purpose-drawings-width);
   .flexy(center, flex-end);
+  .scaled-page();
+
   position: relative;
-  max-height: 100%;
+
   margin: auto 0;
   overflow: hidden;
   figure {
@@ -701,17 +715,20 @@
 
 .home-practice {
   .flexy(column);
-  height: 100vh;
+  .scaled-page();
+
   padding: 0 (@tile / 2);
   background: @white;
   box-shadow: 0 -1px 3px fade(@black, 5);
   overflow: hidden;
+
   article {
     .flex(1, 1, @home-article-width);
     .flexy(column);
     max-width: @home-article-width;
     margin: 0 auto;
   }
+
   h1 {
     max-width: @practice-h1-width;
   }
@@ -988,7 +1005,8 @@
   @number-of-actions: 8;
   @number-of-outputs: 9;
   .flexy(column);
-  height: 100vh;
+  .scaled-page();
+
   background: @whiten;
   box-shadow: 0 1px 3px fade(@black, 5) inset;
   overflow: hidden;
