@@ -57,14 +57,6 @@
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
 
-(defn add-minute-measures [build]
-  (let [key-mapping {:queued_time_minutes :queued_time_millis
-                     :build_time_minutes :build_time_millis}]
-    (reduce-kv (fn [accum new-key old-key]
-                 (assoc accum new-key (/ (old-key build) 1000 60)))
-               build
-               key-mapping)))
-
 (defn build-graphable [{:keys [outcome]}]
   (#{"success" "failed" "canceled"} outcome))
 
@@ -129,7 +121,7 @@
         (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [el builds]
-  (let [y-pos-max (apply max (map :build_time_minutes
+  (let [y-pos-max (apply max (map :build_time_millis
                                   builds))
         y-neg-max (apply max (map :queued_time_millis
                                   builds))
@@ -140,18 +132,20 @@
         y-neg-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-neg-max])
                         (.range #js[y-zero (:height plot-info)]))
-        y-pos-tick-values (map js/Math.round
-                               [y-pos-max (* y-pos-max 0.5) 0])
-        y-neg-tick-values (map js/Math.round
-                               [y-neg-max])
+        y-pos-tick-values `(~@(map datetime/nice-floor-duration
+                                   [y-pos-max (* y-pos-max 0.5)])
+                            0)
+        y-neg-tick-values [(datetime/nice-floor-duration y-neg-max)]
         y-pos-axis (-> (js/d3.svg.axis)
                        (.scale y-pos-scale)
                        (.orient "left")
-                       (.tickValues (clj->js y-pos-tick-values)))
+                       (.tickValues (clj->js y-pos-tick-values))
+                       (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0}))))
         y-neg-axis (-> (js/d3.svg.axis)
                        (.scale y-neg-scale)
                        (.orient "left")
-                       (.tickValues (clj->js y-neg-tick-values)))
+                       (.tickValues (clj->js y-neg-tick-values))
+                       (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0}))))
         scale-filler (map (partial str "xx-") (range (- (:max-bars plot-info) (count builds))))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
@@ -191,12 +185,15 @@
     (-> bars-join
         (.select ".top")
         (.attr #js {"class" #(str "bar top " (aget % "outcome"))
-                    "y" #(y-pos-scale (aget % "build_time_minutes"))
+                    "y" #(y-pos-scale (aget % "build_time_millis"))
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-zero (y-pos-scale (aget % "build_time_minutes")))})
+                    "height" #(- y-zero (y-pos-scale (aget % "build_time_millis")))})
         (.select "title")
-        (.text #(gstring/format "%s in %.1fm" (gstring/toTitleCase (aget % "outcome")) (aget % "build_time_minutes"))))
+        (.text #(let [[duration-str] (datetime/millis-to-float-duration (aget % "build_time_millis"))]
+                  (gstring/format "%s in %s"
+                                  (gstring/toTitleCase (aget % "outcome"))
+                                  duration-str))))
 
     ;; bottom bar enter and update
     (-> bars-join
@@ -206,7 +203,8 @@
                     "width" (.rangeBand x-scale)
                     "height" #(- (y-neg-scale (aget % "queued_time_millis")) y-zero)})
         (.select "title")
-        (.text #(gstring/format "Queue time %.1fm" (aget % "queued_time_millis"))))
+        (.text #(let [[duration-str] (datetime/millis-to-float-duration (aget % "queued_time_millis"))]
+                  (gstring/format "Queue time %s" duration-str))))
 
     ;; bars exit
     (-> bars-join
@@ -285,7 +283,6 @@
        (filter build-graphable)
        reverse
        (map add-queued-time)
-       (map add-minute-measures)
        (take (:max-bars plot-info))))
 
 (defn project-insights-bar [builds owner]
