@@ -120,15 +120,6 @@
                            spacing)})
         (.text #(aget % "text")))))
 
-(defn svg-href-click-handler-maker [owner]
-  "Clicking on \"a\" does not bubble up to parent document.  We need to
-manually navigate to the URL, otherwise, a full page reload is triggered."
-  #(this-as this
-            (js/d3.event.stopPropagation)
-            (js/d3.event.preventDefault)
-            (let [path  (.getAttribute this "href")]
-              (raise! owner [:nav-to-path {:path path}]))))
-
 (defn visualize-insights-bar! [el builds owner]
   (let [y-pos-max (apply max (map :build_time_millis
                                   builds))
@@ -218,10 +209,6 @@ manually navigate to the URL, otherwise, a full page reload is triggered."
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
                     "height" #(- (y-neg-scale (aget % "queued_time_millis")) y-zero)}))
-
-    (-> plot
-        (.selectAll "a")
-        (.on "click" (svg-href-click-handler-maker owner)))
 
     ;; bars exit
     (-> bars-join
