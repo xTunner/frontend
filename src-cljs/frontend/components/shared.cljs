@@ -102,8 +102,8 @@
 
 
 (defn contact-form
-  "The contact form used in the tab at the bottom of the screen. Not the contact
-  form used on the Enterprise or Contact Us pages."
+  "It's not clear how this should fit into the global state, so it's using component-local
+   state for now."
   [app owner opts]
   (reify
     om/IInitState
@@ -114,39 +114,48 @@
        :notice nil})
     om/IRenderState
     (render-state [_ {:keys [email name message notice loading?]}]
-      (let [clear-notice! #(om/set-state! owner [:notice] nil)]
+      (let [clear-notice! #(om/set-state! owner [:notice] nil)
+            enterprise? (:enterprise? opts)]
         (html
          [:form.contact-us
           [:input {:value name
                    :required true
                    :class (when loading? "disabled")
-                   :type "text"
+                   :type "text",
                    :name "name"
                    :on-change #(do (clear-notice!) (om/set-state! owner [:name] (.. % -target -value)))}]
           [:label {:for "name" :alt "Enter name" :placeholder "Name"}]
 
-          [:input {:value email
+          [:input {:value email,
                    :class (when loading? "disabled")
-                   :type "email"
+                   :type "email",
                    :name "email"
                    :required true
                    :on-change #(do (clear-notice!) (om/set-state! owner [:email] (.. % -target -value)))}]
           [:label {:for "email" :alt "Enter email" :placeholder "Email"}]
 
+          (if enterprise?
+            (list
+             [:input {:required true
+                      :value message
+                      :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))
+                      :type "text"}]
+             [:label {:alt "Enter phone (optional)", :placeholder "Phone"}])
 
-          [:textarea {:value message
-                      :class (when loading? "disabled")
-                      :required true
-                      :name "message"
-                      :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))}]
-          [:label {:for "message" :placeholder "Tell us what you're thinking"}]
+            (list
+             [:textarea {:value message,
+                         :class (when loading? "disabled")
+                         :required true
+                         :name "message"
+                         :on-change #(do (clear-notice!) (om/set-state! owner [:message] (.. % -target -value)))}]
+             [:label {:for "message" :placeholder "Tell us what you're thinking"}]))
 
           [:div.notice (when notice
                          [:div {:class (:type notice)}
                           (:message notice)])]
           [:button.btn.btn-primary {:class (when loading? "disabled")
                                     :on-click #(do (cond
-                                                     (not (and (seq name) (seq email) (seq message)))
+                                                     (not (or enterprise? (and (seq name) (seq email) (seq message))))
                                                      (om/set-state! owner [:notice] {:type "error"
                                                                                      :message "All fields are required."})
 
@@ -158,10 +167,12 @@
                                                      (do
                                                        (om/set-state! owner [:loading?] true)
                                                        (go (let [resp (<! (ajax/managed-form-post
-                                                                           "/about/contact"
-                                                                           :params (merge {:name name
-                                                                                           :email email
-                                                                                           :message message})))]
+                                                                            "/about/contact"
+                                                                            :params (merge {:name name
+                                                                                            :email email
+                                                                                            :message message}
+                                                                                           (when enterprise?
+                                                                                             {:enterprise enterprise?}))))]
                                                              (if (= (:status resp) :success)
                                                                (om/update-state! owner (fn [s]
                                                                                          {:name ""
