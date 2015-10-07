@@ -481,8 +481,19 @@
   font-family: @monoFontFamilyV2;
 }
 
-.ui-v2 .aside-left-menu {
-  box-shadow: none;
+.ui-v2 {
+  .aside-left-menu {
+    box-shadow: none;
+  }
+
+  .aside-user.open {
+    top: 97px;
+    width: @new_aside_menu_width;
+  }
+
+  .aside-user .close-menu {
+    height: 50px;
+  }
 }
 
 .aside-user {
