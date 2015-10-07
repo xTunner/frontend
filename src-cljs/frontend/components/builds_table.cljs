@@ -114,6 +114,7 @@
         {:title "status"
          :href url
          :class (build-model/status-class build)}
+        [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
         (build-model/status-words build)]]
 
       (when show-actions?
