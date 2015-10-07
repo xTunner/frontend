@@ -9,7 +9,7 @@
             [secretary.core :as sec])
   (:import [goog.history Html5History]
            [goog.events EventType Event BrowserEvent]
-           [goog History]))
+           [goog History Uri]))
 
 
 ;; see this.transformer_ at http://goo.gl/ZHLdwa
@@ -82,29 +82,57 @@
       (and (.-platformModifierKey event)
            (.isButton event goog.events.BrowserEvent.MouseButton.LEFT))))
 
+(defn closest-tag [element tag]
+  "Handle SVG element properly."
+  (let [dom-helper (goog.dom.DomHelper.)
+        tag (string/upper-case tag)
+        lower-tag (string/lower-case tag) ; SVG is case-sensitive
+        ]
+    (or (when (= (.-tagName element) tag) element)
+        (.getAncestorByTagNameAndClass dom-helper element tag)
+        (when (= (instance? js/SVGElement element))
+          (loop [e element]
+            (let [e-tag (.-tagName e)]
+              (condp = e-tag
+                lower-tag e
+                "svg" nil
+                (recur (.-parentElement e)))))))))
+
 (defn setup-link-dispatcher! [history-imp top-level-node]
-  (let [dom-helper (goog.dom.DomHelper.)]
-    (events/listen top-level-node "click"
-                   #(let [-target (.. % -target)
-                          target (if (= (.-tagName -target) "A")
-                                   -target
-                                   (.getAncestorByTagNameAndClass dom-helper -target "A"))
-                          location (when target (str (.-pathname target) (.-search target) (.-hash target)))
-                          new-token (when (seq location) (subs location 1))]
-                      (when (and (seq location)
-                                 (= (.. js/window -location -hostname)
-                                    (.-hostname target))
-                                 (not (or (new-window-click? %) (= (.-target target) "_blank"))))
-                        (.preventDefault %)
-                        (if (and (route-fragment location)
-                                 (path-matches? (.getToken history-imp) new-token))
+  (events/listen top-level-node "click"
+                 #(let [-target (.. % -target)
+                        target (closest-tag -target "A")
+                        location (when target
+                                   (or (let [path (str (.-pathname target) (.-search target) (.-hash target))]
+                                         (if-not (empty? path)
+                                           path))
+                                       ;; SVG
+                                       (-> target (.-href) (.-baseVal))))
+                        new-token (when (seq location) (subs location 1))
+                        attr-target (or (.-target target)
+                                        (-> target ; SVG
+                                            (.-target)
+                                            (.-baseVal)))
+                        host-name (or (.-hostname target)
+                                      (let [uri-info (goog.Uri.parse location) ; SVG
+                                            domain (.getDomain uri-info)]
+                                        (if (empty? domain)
+                                          (.. js/window -location -hostname)
+                                          domain)))]
+                    (when (and (seq location)
+                               (= (.. js/window -location -hostname)
+                                  host-name)
+                               (not (or (new-window-click? %) (= attr-target "_blank"))))
+                      (.preventDefault %)
+                      (if (and (route-fragment location)
+                               (path-matches? (.getToken history-imp) new-token))
 
-                          (do (utils/mlog "scrolling to hash for" location)
-                              ;; don't break the back button
-                              (.replaceToken history-imp new-token))
+                        (do (utils/mlog "scrolling to hash for" location)
+                            ;; don't break the back button
+                            (.replaceToken history-imp new-token))
 
-                          (do (utils/mlog "navigating to" location)
-                              (.setToken history-imp new-token))))))))
+                        (do (utils/mlog "navigating to" location)
+                            (.setToken history-imp new-token)))))))
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
