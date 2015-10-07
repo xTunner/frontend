@@ -11,6 +11,7 @@
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.routes :as routes]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
@@ -289,10 +290,13 @@
 
 (defrender no-projects [data owner]
   (html
-    [:div.project-block
-     [:h1 "No insights yet"]
-     [:span "Add projects from your Github orgs and start building on CircleCI to view insights."]
-     [:a.btn.btn-success "Add Project"]]))
+    [:div.no-insights
+     [:div.row.text-center
+      [:h2 "No Insights yet"]]
+     [:div.row.text-center
+      [:span "Add projects from your Github orgs and start building on CircleCI to view insights."]]
+     [:div.row.text-center
+      [:a.btn.btn-success {:href  (routes/v1-add-projects)} "Add Project"]]]))
 
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]
