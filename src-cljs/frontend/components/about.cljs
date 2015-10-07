@@ -154,10 +154,10 @@
     :bio "Hirokuni has a bit strange background. He studied political science in college to become a lawyer, but suddenly realized that what he truly loves is computer things, not law. He's been doing ops, devs, and devops in his previous jobs. He loves cooking and playing Shogi (Japanese chess) when he is not busy."}
    {:name "Conor McDermottroe"
     :img-path (scaled-image-path "conor")
-    :role ""
-    :github ""
-    :email ""
-    :bio "Bio coming soon!"}
+    :role "Developer"
+    :github "conormcd"
+    :email "conor@circleci.com"
+    :bio "Conor is a developer and recovering sysadmin living in Dublin. When he's not working he is a competitive rifle shooter."}
    {:name "Peter Jaros"
     :img-path (scaled-image-path "peter")
     :role "Developer"
