@@ -216,7 +216,7 @@
          (or (some #(when (= requested-unit (:unit %))
                       %)
                    millis-factors)
-             (some #(when (>= (/ millis (:divisor %)) 2)
+             (some #(when (>= (/ millis (:divisor %)) 1)
                       %)
                    millis-factors)
              (last millis-factors))
