@@ -256,7 +256,7 @@
     :bio "Bio coming soon!"}
    {:name "Mike Rosabal"
     :img-path (scaled-image-path "mike-rosabal")
-    :role "Support Engineer"
+    :role "DevOps"
     :github ""
     :email ""
     :bio "Bio coming soon!"}
