@@ -281,6 +281,19 @@
         [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
         (om/build project-insights-bar builds)]))))
 
+(defn scaled-image-name [name]
+  (let [retina (> (.-devicePixelRatio js/window) 1)]
+    (gstring/format "%s%s" name (if retina "@2x" ""))))
+
+;{:src (utils/cdn-path (str "/img/" (scaled-image-name "empty-state-insights") ".png"))}
+
+(defrender no-projects [data owner]
+  (html
+    [:div.project-block
+     [:h1 "No insights yet"]
+     [:span "Add projects from your Github orgs and start building on CircleCI to view insights."]
+     [:a.btn.btn-success "Add Project"]]))
+
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]
     (html
@@ -288,4 +301,6 @@
         [:header.main-head
          [:div.head-user
           [:h1 "Insights » Repositories"]]]
-        (om/build-all project-insights projects)])))
+        (if (empty? projects)
+          (om/build no-projects data)
+          (om/build-all project-insights projects))])))
