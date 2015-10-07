@@ -206,7 +206,7 @@
     :github ""
     :email ""
     :bio "Jia is the one of the first Account Managers to join the CircleCi team. When she's not busy figuring out customer pain points, you can find her hiking, running half marathons or finding the best new vegetarian restaurant in the Bay."}
-   {:name "Chloé Arthrus"
+   {:name "Chloé Arthurs"
     :img-path (scaled-image-path "")
     :role "Account Mananger"
     :github ""
