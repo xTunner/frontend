@@ -153,13 +153,13 @@
     :email ""
     :bio "Hirokuni has a bit strange background. He studied political science in college to become a lawyer, but suddenly realized that what he truly loves is computer things, not law. He's been doing ops, devs, and devops in his previous jobs. He loves cooking and playing Shogi (Japanese chess) when he is not busy."}
    {:name "Conor McDermottroe"
-    :img-path (scaled-image-path "")
-    :role ""
-    :github ""
-    :email ""
-    :bio "Bio coming soon!"}
+    :img-path (scaled-image-path "conor")
+    :role "Developer"
+    :github "conormcd"
+    :email "conor@circleci.com"
+    :bio "Conor is a developer and recovering sysadmin living in Dublin. When he's not working he is a competitive rifle shooter."}
    {:name "Peter Jaros"
-    :img-path (scaled-image-path "")
+    :img-path (scaled-image-path "peter")
     :role "Developer"
     :github ""
     :email ""
@@ -200,13 +200,13 @@
     :github ""
     :email ""
     :bio "One of the few surviving San Francisco natives, Chris recently graduated from the University of California, Irvine with a degree in Classical Civilization. Quickly realizing that Latin was a dead language and having a passion for computers and technology, he began working at CircleCI, where he is excited to develop and expand his DevOps knowledge."}
-   {:name "Jia Le"
+   {:name "Jia He"
     :img-path (scaled-image-path "jia")
     :role "Account Manager"
     :github ""
     :email ""
     :bio "Jia is the one of the first Account Managers to join the CircleCi team. When she's not busy figuring out customer pain points, you can find her hiking, running half marathons or finding the best new vegetarian restaurant in the Bay."}
-   {:name "Chloé Arthrus"
+   {:name "Chloé Arthurs"
     :img-path (scaled-image-path "")
     :role "Account Mananger"
     :github ""
@@ -256,7 +256,7 @@
     :bio "Bio coming soon!"}
    {:name "Mike Rosabal"
     :img-path (scaled-image-path "mike-rosabal")
-    :role "Support Engineer"
+    :role "DevOps"
     :github ""
     :email ""
     :bio "Bio coming soon!"}
