@@ -200,7 +200,7 @@
     :github ""
     :email ""
     :bio "One of the few surviving San Francisco natives, Chris recently graduated from the University of California, Irvine with a degree in Classical Civilization. Quickly realizing that Latin was a dead language and having a passion for computers and technology, he began working at CircleCI, where he is excited to develop and expand his DevOps knowledge."}
-   {:name "Jia Le"
+   {:name "Jia He"
     :img-path (scaled-image-path "jia")
     :role "Account Manager"
     :github ""
