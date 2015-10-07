@@ -60,9 +60,9 @@
 (defn build-graphable [{:keys [outcome]}]
   (#{"success" "failed" "canceled"} outcome))
 
-(defn add-legend [svg]
+(defn add-legend [plot]
   (let [{:keys [square-size item-width item-height spacing]} (:legend-info plot-info)
-        left-legend-enter (-> svg
+        left-legend-enter (-> plot
                              (.select ".legend-container")
                              (.selectAll ".legend")
                              (.data (clj->js (:left-legend-items plot-info)))
@@ -76,7 +76,7 @@
                                                             (/ (- item-height square-size)
                                                                2)))]
                                              (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))
-        right-legend-enter (-> svg
+        right-legend-enter (-> plot
                               (.select ".legend-container")
                               (.selectAll ".legend-right")
                               (.data (clj->js (:right-legend-items plot-info)))
@@ -120,7 +120,16 @@
                            spacing)})
         (.text #(aget % "text")))))
 
-(defn visualize-insights-bar! [el builds]
+(defn svg-href-click-handler-maker [owner]
+  "Clicking on \"a\" does not bubble up to parent document.  We need to
+manually navigate to the URL, otherwise, a full page reload is triggered."
+  #(this-as this
+            (js/d3.event.stopPropagation)
+            (js/d3.event.preventDefault)
+            (let [path  (.getAttribute this "href")]
+              (raise! owner [:nav-to-path {:path path}]))))
+
+(defn visualize-insights-bar! [el builds owner]
   (let [y-pos-max (apply max (map :build_time_millis
                                   builds))
         y-neg-max (apply max (map :queued_time_millis
@@ -151,10 +160,10 @@
                     (.domain (clj->js
                               `(~@(map :build_num builds) ~@scale-filler)))
                     (.rangeBands #js[0 (:width plot-info)] 0.5))
-        svg (-> js/d3
+        plot (-> js/d3
                 (.select el)
                 (.select "svg g.plot-area"))
-        bars-join (-> svg
+        bars-join (-> plot
                       (.select "g > g.bars")
                       (.selectAll "g.bar-pair")
                       (.data (clj->js builds)))
@@ -164,47 +173,55 @@
                          (.attr "class" "bar-pair"))
         grid-y-pos-vals (for [tick (remove zero? y-pos-tick-values)] (y-pos-scale tick))
         grid-y-neg-vals (for [tick (remove zero? y-neg-tick-values)] (y-neg-scale tick))
-        grid-lines-join (-> svg
+        grid-lines-join (-> plot
                             (.select "g.grid-lines")
                             (.selectAll "line.horizontal")
                             (.data (clj->js (concat grid-y-pos-vals grid-y-neg-vals))))]
 
     ;; top bar enter
     (-> bars-enter-g
+        (.append "a")
+        (.attr "class" "top")
         (.append "rect")
-        (.attr "class" "bar top")
-        (.insert "title"))
+        (.attr "class" "bar"))
 
     ;; bottom (queue time) bar enter
     (-> bars-enter-g
+        (.append "a")
+        (.attr "class" "bottom")
         (.append "rect")
-        (.attr "class" "bar bottom queue")
-        (.insert "title"))
+        (.attr "class" "bar bottom queue"))
 
     ;; top bars enter and update
     (-> bars-join
         (.select ".top")
-        (.attr #js {"class" #(str "bar top " (aget % "outcome"))
+        (.attr #js {"xlink:href" #(utils/uri-to-relative (aget % "build_url"))
+                    "xlink:title" #(let [[duration-str] (datetime/millis-to-float-duration (aget % "build_time_millis"))]
+                                     (gstring/format "%s in %s"
+                                                     (gstring/toTitleCase (aget % "outcome"))
+                                                     duration-str))})
+        (.select "rect.bar")
+        (.attr #js {"class" #(str "bar " (aget % "outcome"))
                     "y" #(y-pos-scale (aget % "build_time_millis"))
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-zero (y-pos-scale (aget % "build_time_millis")))})
-        (.select "title")
-        (.text #(let [[duration-str] (datetime/millis-to-float-duration (aget % "build_time_millis"))]
-                  (gstring/format "%s in %s"
-                                  (gstring/toTitleCase (aget % "outcome"))
-                                  duration-str))))
+                    "height" #(- y-zero (y-pos-scale (aget % "build_time_millis")))}))
 
     ;; bottom bar enter and update
     (-> bars-join
         (.select ".bottom")
+        (.attr #js {"xlink:href" #(utils/uri-to-relative (aget % "build_url"))
+                    "xlink:title" #(let [[duration-str] (datetime/millis-to-float-duration (aget % "queued_time_millis"))]
+                                     (gstring/format "Queue time %s" duration-str))})
+        (.select "rect.bar")
         (.attr #js {"y" y-zero
                     "x" #(x-scale (aget % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- (y-neg-scale (aget % "queued_time_millis")) y-zero)})
-        (.select "title")
-        (.text #(let [[duration-str] (datetime/millis-to-float-duration (aget % "queued_time_millis"))]
-                  (gstring/format "Queue time %s" duration-str))))
+                    "height" #(- (y-neg-scale (aget % "queued_time_millis")) y-zero)}))
+
+    (-> plot
+        (.selectAll "a")
+        (.on "click" (svg-href-click-handler-maker owner)))
 
     ;; bars exit
     (-> bars-join
@@ -213,17 +230,17 @@
 
 
     ;; legend
-    (add-legend svg)
+    (add-legend plot)
 
     ;; y-axis
-    (-> svg
+    (-> plot
         (.select ".axis-container g.y-axis.positive")
         (.call y-pos-axis))
-    (-> svg
+    (-> plot
         (.select ".axis-container g.y-axis.negative")
         (.call y-neg-axis))
     ;; x-axis
-    (-> svg
+    (-> plot
         (.select ".axis-container g.axis.x-axis line")
         (.attr #js {"y1" y-zero
                     "y2" y-zero
@@ -246,8 +263,9 @@
   (let [plot-area (-> js/d3
                       (.select el)
                       (.append "svg")
-                      (.attr "width" (:width svg-info))
-                      (.attr "height" (:height svg-info))
+                      (.attr #js {"xlink" "http://www.w3.org/1999/xlink"
+                                  "width" (:width svg-info)
+                                  "height" (:height svg-info)})
                       (.append "g")
                       (.attr "class" "plot-area")
                       (.attr "transform" (gstring/format "translate(%s,%s)"
@@ -291,11 +309,11 @@
     (did-mount [_]
       (let [el (om/get-node owner)]
         (insert-skeleton el)
-        (visualize-insights-bar! el builds)))
+        (visualize-insights-bar! el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! el builds)))
+        (visualize-insights-bar! el builds owner)))
     om/IRender
     (render [_]
       (html
@@ -309,8 +327,8 @@
         [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
         (om/build project-insights-bar builds)]))))
 
-(defrender build-insights [data owner]
-  (let [projects (get-in data state/projects-path)]
+(defrender build-insights [state owner]
+  (let [projects (get-in state state/projects-path)]
     (html
        [:div#build-insights
         [:header.main-head

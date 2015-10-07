@@ -1163,3 +1163,11 @@
       )
     )
   )
+
+(defmethod control-event :nav-to-path
+  [_ _ {:keys [path]} state]
+  (let [nav-ch (get-in state [:comms :nav])
+        nav-path (clojure.string/replace path #"\A/" "")]
+    (put! nav-ch [:navigate! {:path nav-path}])
+    state))
+
