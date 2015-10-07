@@ -147,19 +147,19 @@
     :github "appplemac"
     :bio "Alexey joins Circle from the sunny coasts of Spain. In between mountain biking, partying at art galleries and doing martial arts, he helps to ensure that Circle’s customers get the smoothest experience possible."}
    {:name "Hirokuni Kim"
-    :img-path (scaled-image-path "")
+    :img-path (scaled-image-path "kim")
     :role "Support Engineer"
     :github ""
     :email ""
     :bio "Hirokuni has a bit strange background. He studied political science in college to become a lawyer, but suddenly realized that what he truly loves is computer things, not law. He's been doing ops, devs, and devops in his previous jobs. He loves cooking and playing Shogi (Japanese chess) when he is not busy."}
    {:name "Conor McDermottroe"
-    :img-path (scaled-image-path "")
+    :img-path (scaled-image-path "conor")
     :role ""
     :github ""
     :email ""
     :bio "Bio coming soon!"}
    {:name "Peter Jaros"
-    :img-path (scaled-image-path "")
+    :img-path (scaled-image-path "peter")
     :role "Developer"
     :github ""
     :email ""
