@@ -274,7 +274,7 @@
             style {:position "fixed"}
             div (html
                  [:div.container-list-v2
-                  (if (-> state :container-index (> 0))
+                  (if (> previous-container-count 0)
                     [:a.container-selector-v2.page-container-pills
                      {:on-click #(om/set-state! owner :container-index (- container-index paging-width))}
                      [:div.nav-caret
