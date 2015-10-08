@@ -32,13 +32,13 @@
 
 (def svg-info
   {:width 425
-   :height 385
-   :top 30, :right 10, :bottom 10, :left 70})
+   :height 100
+   :top 30, :right 10, :bottom 10, :left 40})
 
 (def plot-info
   {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
    :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
-   :max-bars 60
+   :max-bars 50
    :left-legend-items [{:classname "success"
                         :text "Passed"}
                        {:classname "failed"
@@ -135,7 +135,7 @@
                         (.domain #js[0 y-neg-max])
                         (.range #js[y-zero (:height plot-info)]))
         y-pos-floored-max (datetime/nice-floor-duration y-pos-max)
-        y-pos-tick-values (list y-pos-floored-max (/ y-pos-floored-max 2) 0)
+        y-pos-tick-values (list y-pos-floored-max 0)
         y-neg-tick-values [(datetime/nice-floor-duration y-neg-max)]
         y-pos-axis (-> (js/d3.svg.axis)
                        (.scale y-pos-scale)
@@ -154,7 +154,7 @@
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
                               (concat (map :build_num builds) scale-filler)))
-                    (.rangeBands #js[0 (:width plot-info)] 0.5))
+                    (.rangeBands #js[0 (:width plot-info)] 0.4))
         plot (-> js/d3
                 (.select el)
                 (.select "svg g.plot-area"))
