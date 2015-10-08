@@ -33,13 +33,13 @@
 (def svg-info
   {:width 425
    :height 100
-   :top 30, :right 10, :bottom 10, :left 40})
+   :top 10, :right 10, :bottom 10, :left 30})
 
 (def plot-info
   {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
    :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
    :max-bars 50
-   :positive-y% 0.65})
+   :positive-y% 0.60})
 
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
@@ -65,16 +65,16 @@
         y-pos-floored-max (datetime/nice-floor-duration y-pos-max)
         y-pos-tick-values (list y-pos-floored-max 0)
         y-neg-tick-values [(datetime/nice-floor-duration y-neg-max)]
-        y-pos-axis (-> (js/d3.svg.axis)
-                       (.scale y-pos-scale)
-                       (.orient "left")
-                       (.tickValues (clj->js y-pos-tick-values))
-                       (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0}))))
-        y-neg-axis (-> (js/d3.svg.axis)
-                       (.scale y-neg-scale)
-                       (.orient "left")
-                       (.tickValues (clj->js y-neg-tick-values))
-                       (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0}))))
+        [y-pos-axis y-neg-axis] (for [[scale tick-values] [[y-pos-scale y-pos-tick-values]
+                                                           [y-neg-scale y-neg-tick-values]]]
+                                  (-> (js/d3.svg.axis)
+                                      (.scale scale)
+                                      (.orient "left")
+                                      (.tickValues (clj->js tick-values))
+                                      (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0})))
+                                      (.innerTickSize 0)
+                                      (.outerTickSize 0)
+                                      (.tickPadding 3)))
         scale-filler (->> (list (:max-bars plot-info) (count builds))
                           (apply -)
                           range
