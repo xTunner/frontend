@@ -371,6 +371,7 @@
   }
   .project {
     .flexy(center);
+    padding-right: @em;
     width: 100%;
     a {
       height: @activity_line;
@@ -410,10 +411,10 @@
       }
       &.project-settings-icon {
         .flexy(center, center);
+        .flex(0 0 auto);
         // width: @activity_line;
         height: @activity_line;
         line-height: @activity_line;
-        padding-right: 1em;
         svg {
           stroke: fade(@grayLight, 0);
           transition: 200ms;
@@ -430,7 +431,6 @@
         width: @activity_ico;
         height: @activity_line;
         line-height: @activity_line;
-        padding-right: 1em;
       }
     }
   }
