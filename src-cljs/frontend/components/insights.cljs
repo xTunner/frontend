@@ -31,8 +31,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def svg-info
-  {:width 900
-   :height 180
+  {:width 425
+   :height 385
    :top 30, :right 10, :bottom 10, :left 70})
 
 (def plot-info
