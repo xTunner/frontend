@@ -359,6 +359,9 @@
 }
 
 // Build page V2 stuff
+
+@pills-breakpoint: @screen-md-max;
+
 .build-info-v2 {
   margin-top: 15px;
 }
@@ -368,6 +371,10 @@
 
 .container-list-v2 {
   display: flex;
+
+  @media (max-width: @pills-breakpoint) {
+    flex-wrap: wrap;
+  }
 }
 
 .container-selector-v2 {
@@ -436,15 +443,24 @@
 
     .pill-details + .nav-caret {
       text-align: right;
+
+    }
+
+    .nav-caret + .pill-details, .pill-details + .nav-caret {
+      @media (max-width: @pills-breakpoint) {
+        text-align: center;
+      }
     }
   }
 
   .upper-pill-section {
     display: flex;
+    flex-grow: 1;
     flex-direction: row;
 
     & > .container-index {
       text-align: left;
+
     }
 
     & > .status-icon {
@@ -454,6 +470,34 @@
     & > .container-index,
     & > .status-icon {
       flex-grow: 1;
+    }
+
+    @media (max-width: @pills-breakpoint) {
+      & > .container-index,
+      & > .status-icon {
+        text-align: center;
+      }
+    }
+  }
+
+  @media (max-width: @pills-breakpoint) {
+    padding: 1px;
+
+    .upper-pill-section {
+      flex-direction: column;
+    }
+
+    .lower-pill-section {
+      display: none;
+    }
+
+
+    &.page-container-pills, &.add-containers {
+      min-width: 100%;
+      margin: 5px 0;
+      padding: 3px;
+
+      text-align: center;
     }
   }
 }
@@ -503,3 +547,4 @@
     font-size: 13px;
   }
 }
+

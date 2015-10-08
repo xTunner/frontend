@@ -16,6 +16,7 @@
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
+            [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -226,13 +227,32 @@
 (defn container-result-icon [name]
   [:img.container-status-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
-(defn container-pill-v2 [{:keys [container current-container-id build-running? duration]} owner]
+(defn last-action-end-time
+  [container]
+  (-> (filter #(not (:filler-action %)) (:actions container)) last :end_time))
+
+(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
   (reify
+    om/IDisplayName
+    (display-name [_] "Container Pill v2")
+    om/IDidMount
+    (did-mount [_]
+      (timer/set-updating! owner (not (last-action-end-time container))))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (timer/set-updating! owner (not (last-action-end-time container))))
     om/IRender
     (render [_]
       (html
        (let [container-id (container-model/id container)
-             status (container-model/status container build-running?)]
+             status (container-model/status container build-running?)
+             start (-> container :actions first :start_time)
+             stop (last-action-end-time container)
+             end-ms (if stop
+                      (.getTime (js/Date. stop))
+                      (datetime/server-now))
+             formatter datetime/as-duration
+             duration-ms (- end-ms (.getTime (js/Date. start)))]
         [:a.container-selector-v2
          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
           :class (concat (container-model/status->classes status)
@@ -247,7 +267,7 @@
                                     :running "Status-Running"
                                     :waiting "Status-Queued"
                                     nil))]]
-         [:span.lower-pill-section "(" duration ")"]])))))
+         [:span.lower-pill-section "(" (formatter duration-ms) ")"]])))))
 
 (defn container-pills-v2 [data owner]
   (reify
@@ -288,8 +308,7 @@
                     (om/build container-pill-v2
                               {:container container
                                :build-running? build-running?
-                               :current-container-id current-container-id
-                               :duration 1503}
+                               :current-container-id current-container-id}
                               {:react-key (:index container)}))
                   (if (> subsequent-container-count 0)
                     [:a.container-selector-v2.page-container-pills
