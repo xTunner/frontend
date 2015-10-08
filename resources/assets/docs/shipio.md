@@ -1,3 +1,10 @@
+<!--
+
+title: Ship.io to CircleCI Migration
+short_title: Ship.io
+
+-->
+
 # Ship.io to CircleCI Migration
 
 Coming from Ship.io? We'll help you get started. For iOS projects, please [contact support](mailto:sayhi@circleci.com) with the name of your GitHub user or organization for access to the iOS build system. Once you've been enabled, 
