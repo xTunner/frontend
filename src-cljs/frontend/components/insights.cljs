@@ -282,12 +282,6 @@
         [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
         (om/build project-insights-bar builds)]))))
 
-(defn scaled-image-name [name]
-  (let [retina (> (.-devicePixelRatio js/window) 1)]
-    (gstring/format "%s%s" name (if retina "@2x" ""))))
-
-;{:src (utils/cdn-path (str "/img/" (scaled-image-name "empty-state-insights") ".png"))}
-
 (defrender no-projects [data owner]
   (html
     [:div.no-insights-block
