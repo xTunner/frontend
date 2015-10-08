@@ -38,7 +38,7 @@
 (def plot-info
   {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
    :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
-   :max-bars 50
+   :max-bars 55
    :positive-y% 0.60})
 
 (defn add-queued-time [build]
@@ -119,7 +119,7 @@
     (-> bars-join
         (.select ".top")
         (.attr #js {"xlink:href" #(utils/uri-to-relative (aget % "build_url"))
-                    "xlink:title" #(let [[duration-str] (datetime/millis-to-float-duration (aget % "build_time_millis"))]
+                    "xlink:title" #(let [duration-str (datetime/as-duration (aget % "build_time_millis"))]
                                      (gstring/format "%s in %s"
                                                      (gstring/toTitleCase (aget % "outcome"))
                                                      duration-str))})
@@ -134,7 +134,7 @@
     (-> bars-join
         (.select ".bottom")
         (.attr #js {"xlink:href" #(utils/uri-to-relative (aget % "build_url"))
-                    "xlink:title" #(let [[duration-str] (datetime/millis-to-float-duration (aget % "queued_time_millis"))]
+                    "xlink:title" #(let [duration-str (datetime/as-duration (aget % "queued_time_millis"))]
                                      (gstring/format "Queue time %s" duration-str))})
         (.select "rect.bar")
         (.attr #js {"y" y-zero
@@ -215,6 +215,11 @@
        (map add-queued-time)
        (take (:max-bars plot-info))))
 
+(defn average-builds [builds f]
+  (let [nums (->> builds
+                  (map f))]
+    (/ (apply + nums) (count nums))))
+
 (defn project-insights-bar [builds owner]
   (reify
     om/IDidMount
@@ -236,7 +241,18 @@
     (when (not-empty builds)
       (html
        [:div.project-block
-        [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
+        [:h1 (gstring/format "%s/%s" username reponame)]
+        [:div.above-info
+         [:h4 "Branch: " (-> recent-builds (first) (:branch))]
+         [:dl
+          [:dt "AVG BUILD"]
+          [:dd (datetime/as-duration (average-builds builds :build_time_millis))]]
+         [:dl
+          [:dt "AVG QUEUE"]
+          [:dd (datetime/as-duration (average-builds builds :queued_time_millis))]]
+         [:dl
+          [:dt "LAST BUILD"]
+          [:dd (datetime/as-time-since (-> builds last :start_time))]]]
         (om/build project-insights-bar builds)]))))
 
 (defrender build-insights [state owner]

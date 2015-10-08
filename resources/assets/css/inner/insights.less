@@ -8,8 +8,7 @@
   @block-width: 425px;
 
   h1 {
-    font-size: round((@baseFontSize * 1.12), 0);
-    font-weight: normal;
+    font-size: round((@baseFontSize * 1.5), 0);
   }
 
   .project-block {
@@ -27,6 +26,29 @@
       border-bottom: #e5e5e5 1px solid;
       margin: 0;
       padding: 10px;
+    }
+
+    h4 {
+      font-size: 16px;
+      margin: 6px 0 3px;
+    }
+    .above-info, .below-info {
+      padding-left: 26px;
+      width: 100%;
+      .clearfix();
+    }
+
+    dl {
+      float: left;
+      width: 33.3%;
+      margin: 0;
+      dt {
+        font-weight: inherit;
+      }
+      dd {
+        font-weight: bold;
+        line-height: 0.9;
+      }
     }
   }
 
