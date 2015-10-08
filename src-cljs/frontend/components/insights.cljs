@@ -290,13 +290,13 @@
 
 (defrender no-projects [data owner]
   (html
-    [:div.no-insights
-     [:div.row.text-center
-      [:h2 "No Insights yet"]]
-     [:div.row.text-center
-      [:span "Add projects from your Github orgs and start building on CircleCI to view insights."]]
-     [:div.row.text-center
-      [:a.btn.btn-success {:href  (routes/v1-add-projects)} "Add Project"]]]))
+    [:div.no-insights-block
+     [:div.content
+      [:div.row
+       [:div.header.text-center "No Insights yet"]]
+       [:div.details.text-center "Add projects from your Github orgs and start building on CircleCI to view insights."]
+      [:div.row.text-center
+       [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]

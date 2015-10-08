@@ -11,11 +11,33 @@
     font-weight: normal;
   }
 
-  .no-insights {
-    background: url('@{imgPath}/empty-state-insights.png') no-repeat center center;
-    background-size: cover;
-    margin: 10px;
-    padding: 20px;
+  .no-insights-block {
+    margin: 15px;
+    padding: 10px;
+    background-color: #fbfeff;
+
+    .content {
+      background: url('@{imgPath}/empty-state-insights.png') no-repeat center center;
+      background-size: contain;
+      height: @standardBlockSize + 40px;
+      font-size: @fontSizeLarge;
+      color: #333333;
+
+      .header {
+        font-weight: bolder;
+        margin-top: 50px;
+      }
+
+      .details {
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        border-radius: 20px;
+        padding-left: 37px;
+        padding-right: 37px;
+      }
+    }
   }
 
   .project-block {
