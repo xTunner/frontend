@@ -125,16 +125,15 @@
                                   builds))
         y-neg-max (apply max (map :queued_time_millis
                                   builds))
-        y-zero (* (:height plot-info) (:positive-y% plot-info))
+        y-zero (apply * ((juxt :height :positive-y%) plot-info))
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-pos-max])
                         (.range #js[y-zero 0]))
         y-neg-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-neg-max])
                         (.range #js[y-zero (:height plot-info)]))
-        y-pos-tick-values `(~@(map datetime/nice-floor-duration
-                                   [y-pos-max (* y-pos-max 0.5)])
-                            0)
+        y-pos-floored-max (datetime/nice-floor-duration y-pos-max)
+        y-pos-tick-values (list y-pos-floored-max (/ y-pos-floored-max 2) 0)
         y-neg-tick-values [(datetime/nice-floor-duration y-neg-max)]
         y-pos-axis (-> (js/d3.svg.axis)
                        (.scale y-pos-scale)
@@ -149,7 +148,7 @@
         scale-filler (map (partial str "xx-") (range (- (:max-bars plot-info) (count builds))))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
-                              `(~@(map :build_num builds) ~@scale-filler)))
+                              (concat (map :build_num builds) scale-filler)))
                     (.rangeBands #js[0 (:width plot-info)] 0.5))
         plot (-> js/d3
                 (.select el)
