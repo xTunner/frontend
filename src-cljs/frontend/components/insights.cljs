@@ -121,11 +121,13 @@
         (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [el builds owner]
-  (let [y-pos-max (apply max (map :build_time_millis
-                                  builds))
-        y-neg-max (apply max (map :queued_time_millis
-                                  builds))
-        y-zero (apply * ((juxt :height :positive-y%) plot-info))
+  (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
+                                   (map #(->> builds
+                                              (map %)
+                                              (apply max))))
+        y-zero (->> [:height :positive-y%]
+                    (map plot-info)
+                    (apply *))
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-pos-max])
                         (.range #js[y-zero 0]))
@@ -145,7 +147,10 @@
                        (.orient "left")
                        (.tickValues (clj->js y-neg-tick-values))
                        (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0}))))
-        scale-filler (map (partial str "xx-") (range (- (:max-bars plot-info) (count builds))))
+        scale-filler (->> (list (:max-bars plot-info) (count builds))
+                          (apply -)
+                          range
+                          (map (partial str "xx-")))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
                               (concat (map :build_num builds) scale-filler)))
