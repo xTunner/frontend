@@ -418,9 +418,7 @@
            (common/ico :github)]
           [:div.avatar-circle
            (common/ico :logo)]]]
-        [:div.home-bottom-shelf
-         [:a {:on-click #(raise! owner [:home-scroll-5th-clicked])}
-          (common/ico :chevron-down)]]]))))
+        [:div.home-bottom-shelf]]))))
 
 (defn home [app owner]
   (reify
