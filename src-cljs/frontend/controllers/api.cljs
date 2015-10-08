@@ -113,10 +113,9 @@
     (let [api-ch (get-in state [:comms :api])
           project-build-ids (map project-build-id resp)]
       (api/get-projects-builds project-build-ids api-ch)))
-  (let [projects (map (fn [project] (update project :scopes #(set (map keyword %)))) resp)]
-    (-> state
-        (assoc-in state/projects-path projects)
-        (assoc-in state/projects-loading-path false))))
+  (->> resp
+       (map (fn [project] (update project :scopes #(set (map keyword %)))))
+       (assoc-in state state/projects-path)))
 
 (defmethod api-event [:me :success]
   [target message status args state]

@@ -136,7 +136,6 @@
 (defn repo-path [repo-index] (conj repos-path repo-index))
 
 (def repos-loading-path (conj user-path :repos-loading))
-(def projects-loading-path (conj user-path :projects-loading))
 
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
