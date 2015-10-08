@@ -1027,10 +1027,6 @@
   [target message {:keys [index]} state]
   (assoc-in state state/language-testimonial-tab-path index))
 
-(defmethod post-control-event! :enterprise-learn-more-clicked
-  [target message {:keys [source]} previous-state current-state]
-  (utils/open-modal "#enterpriseModal"))
-
 (defmethod control-event :project-feature-flag-checked
   [target message {:keys [project-id flag value]} state]
   (assoc-in state (conj state/project-path :feature_flags flag) value))
