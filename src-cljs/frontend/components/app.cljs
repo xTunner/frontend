@@ -37,7 +37,6 @@
             [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
             [frontend.components.signup :as signup]
-            [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
             [frontend.models.feature :as feature]
@@ -118,9 +117,7 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              show-header-and-footer? (not= :signup (:navigation-point app))
-              api-ch (get-in app [:comms :api])
-              organizations-loaded? (seq (get-in app state/top-nav-orgs-path))]
+              show-header-and-footer? (not= :signup (:navigation-point app))]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -136,8 +133,6 @@
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
               (when (and inner? logged-in? (feature/enabled? :ui-v2))
-                (if-not organizations-loaded?
-                  (api/get-orgs api-ch))
                 (om/build top-nav/top-nav app-without-container-data))
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
