@@ -8,6 +8,7 @@
             [frontend.components.documentation :as docs]
             [frontend.favicon]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
@@ -38,7 +39,8 @@
   (fn [history-imp navigation-point args previous-state current-state]
     (let [organizations-loaded? (seq (get-in current-state state/top-nav-orgs-path))
           api-ch (get-in current-state [:comms :api])]
-      (if-not organizations-loaded?
+      (if (and (feature/enabled? :ui-v2)
+               (not organizations-loaded?))
         (api/get-orgs api-ch)))
     (frontend.favicon/reset!)
     (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
