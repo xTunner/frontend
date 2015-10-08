@@ -23,7 +23,7 @@
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html inspect]]))
 
 ;; This is awful, can't we just pass build-head the whole app state?
 ;; splitting it up this way means special purpose paths to find stuff
@@ -59,6 +59,16 @@
 
 (defn build-queue [data owner]
   (reify
+    om/IWillMount
+    (will-mount [_]
+      (let [{:keys [build]} data
+            build-id (build-model/id build)]
+        (raise! owner [:usage-queue-why-showed
+                       {:build-id build-id
+                        :username (:username @build)
+                        :reponame (:reponame @build)
+                        :build_num (:build_num @build)}])))
+
     om/IRender
     (render [_]
       (let [{:keys [build builds]} data
@@ -354,6 +364,10 @@
 
 (defn build-artifacts-list [data owner]
   (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:artifacts-showed]))
+
     om/IRender
     (render [_]
       (let [artifacts-data (:artifacts-data data)
@@ -402,6 +416,10 @@
 
 (defn build-tests-list [data owner]
   (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:tests-showed]))
+
     om/IRender
     (render [_]
       (let [tests-data (:tests-data data)
@@ -508,7 +526,8 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            selected-tab (get build-data :selected-header-tab (default-tab build scopes))
+            selected-tab (or (:selected-header-tab build-data)
+                             (default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -520,32 +539,22 @@
             config-data (:config-data build-data)
             build-params (:build_parameters build)]
         (html
-         [:div.sub-head
-          [:div.sub-head-top
-           [:ul.nav.nav-tabs
-            [:li {:class (when (= :commits selected-tab) "active")}
-             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :commits}])}
-              "Commit Log"]]
+          [:div.sub-head
+           [:div.sub-head-top
+            [:ul.nav.nav-tabs
+             [:li {:class (when (= :commits selected-tab) "active")}
+              [:a {:href "#commits"} "Commit Log"]]
 
             [:li {:class (when (= :config selected-tab) "active")}
-             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
-              "circle.yml"]]
+             [:a {:href "#config"} "circle.yml"]]
 
             (when (seq build-params)
               [:li {:class (when (= :build-parameters selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-parameters}])}
-                "Build Parameters"]])
+               [:a {:href "#build-parameters"} "Build Parameters"]])
 
             (when (has-scope :read-settings data)
               [:li {:class (when (= :usage-queue selected-tab) "active")}
-               [:a#queued_explanation
-                {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
-                                (raise! owner [:usage-queue-why-showed
-                                               {:build-id build-id
-                                                :username (:username @build)
-                                                :reponame (:reponame @build)
-                                                :build_num (:build_num @build)}]))}
-                "Queue"
+               [:a#queued_explanation {:href "#usage-queue"} "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
                    (om/build common/updating-duration {:start (:usage_queued_at build)
@@ -556,18 +565,14 @@
             (when (and (has-scope :write-settings data)
                        (not (feature/enabled-for-project? project :osx)))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
-                "Debug via SSH"]])
+               [:a {:href "#ssh-info"} "Debug via SSH"]])
 
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [:li {:class (when (= :tests selected-tab) "active")}
-               [:a {:on-click #(do
-                                 (raise! owner [:build-header-tab-clicked {:tab :tests}])
-                                 (raise! owner [:tests-showed]))}
-                (if (= "success" (:status build))
-                  "Test Results "
-                  "Test Failures ")
+               [:a {:href "#tests"} (if (= "success" (:status build))
+                                      "Test Results "
+                                      "Test Failures ")
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
@@ -578,15 +583,12 @@
 
             (when (and admin? (build-model/finished? build))
               [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
-                "Build Timing"]])
+               [:a {:href "#build-time-viz"} "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [:li {:class (when (= :artifacts selected-tab) "active")}
-               [:a {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :artifacts}])
-                                   (raise! owner [:artifacts-showed]))}
-                "Artifacts"]])]]
+               [:a {:href "#artifacts"} "Artifacts"]])]]
 
           [:div.sub-head-content
            (case selected-tab
@@ -607,7 +609,10 @@
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
                                                  :plan plan})
-             :ssh-info (om/build build-ssh {:build build :user user}))]])))))
+             :ssh-info (om/build build-ssh {:build build :user user})
+
+             ;; avoid errors if a nonexistent tab is typed in the URL
+             nil)]])))))
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
@@ -903,7 +908,8 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            selected-tab (get build-data :selected-header-tab (default-tab build scopes))
+            selected-tab (or (:selected-header-tab build-data)
+                             (default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -920,24 +926,15 @@
            [:ul.nav.nav-tabs
 
             [:li {:class (when (= :config selected-tab) "active")}
-             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
-              "circle.yml"]]
+             [:a {:href "#config"} "circle.yml"]]
 
             (when (seq build-params)
               [:li {:class (when (= :build-parameters selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-parameters}])}
-                "Build Parameters"]])
+               [:a {:href "build-parameters"} "Build Parameters"]])
 
             (when (has-scope :read-settings data)
               [:li {:class (when (= :usage-queue selected-tab) "active")}
-               [:a#queued_explanation
-                {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
-                                (raise! owner [:usage-queue-why-showed
-                                               {:build-id build-id
-                                                :username (:username @build)
-                                                :reponame (:reponame @build)
-                                                :build_num (:build_num @build)}]))}
-                "Queue"
+               [:a#queued_explanation {:href "#usage-queue"} "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
                    (om/build common/updating-duration {:start (:usage_queued_at build)
@@ -948,18 +945,15 @@
             (when (and (has-scope :write-settings data)
                        (not (feature/enabled-for-project? project :osx)))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
+               [:a {:href "#ssh-info"}
                 "Debug via SSH"]])
 
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [:li {:class (when (= :tests selected-tab) "active")}
-               [:a {:on-click #(do
-                                 (raise! owner [:build-header-tab-clicked {:tab :tests}])
-                                 (raise! owner [:tests-showed]))}
-                (if (= "success" (:status build))
-                  "Test Results "
-                  "Test Failures ")
+               [:a {:href "#tests"} (if (= "success" (:status build))
+                                      "Test Results "
+                                      "Test Failures ")
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
@@ -970,14 +964,13 @@
 
             (when (and admin? (build-model/finished? build))
               [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
+               [:a {:href "#build-time-viz"}
                 "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [:li {:class (when (= :artifacts selected-tab) "active")}
-               [:a {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :artifacts}])
-                                   (raise! owner [:artifacts-showed]))}
+               [:a {:href "#artifacts"}
                 "Artifacts"]])]]
 
           [:div.sub-head-content
@@ -999,7 +992,10 @@
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
                                                  :plan plan})
-             :ssh-info (om/build build-ssh {:build build :user user}))]])))))
+             :ssh-info (om/build build-ssh {:build build :user user})
+
+             ;; avoid errors if a nonexistent tab is typed in the URL
+             nil)]])))))
 
 (defn build-head-v2 [data owner]
   (reify

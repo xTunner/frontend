@@ -3,7 +3,8 @@
             [frontend.async :refer [put!]]
             [frontend.config :as config]
             [secretary.core :as sec :refer-macros [defroute]])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+  (:require-macros [frontend.utils :refer [inspect]]
+                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 
 (defn open-to-inner! [nav-ch navigation-point args]
@@ -76,11 +77,12 @@
     [org repo branch args]
     (open-to-inner! nav-ch :dashboard (merge args {:org org :repo repo :branch branch})))
   (defroute v1-build #"/gh/([^/]+)/([^/]+)/(\d+)"
-    [org repo build-num]
+    [org repo build-num _ {:keys [_fragment]}]
     (open-to-inner! nav-ch :build {:project-name (str org "/" repo)
                                    :build-num (js/parseInt build-num)
                                    :org org
-                                   :repo repo}))
+                                   :repo repo
+                                   :tab (keyword _fragment)}))
   (defroute v1-project-settings "/gh/:org/:repo/edit"
     [org repo _fragment]
     (open-to-inner! nav-ch :project-settings {:project-name (str org "/" repo)
