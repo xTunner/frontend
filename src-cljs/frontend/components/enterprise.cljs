@@ -16,6 +16,18 @@
   (:require-macros [frontend.utils :refer [defrender html inspect]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+(defn modal [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div#enterpriseModal.fade.hide.modal
+        [:div.modal-body
+         [:h4
+          "Contact us to learn more about enterprise Continuous Delivery"]
+         [:hr]
+         (om/build shared/contact-form app {:opts {:enterprise? true}})]]))))
+
 (defn arrow [name]
   [:img.arrow {:class name
                :src (utils/cdn-path (str "/img/outer/enterprise/arrow-" name ".svg"))}])

@@ -86,6 +86,7 @@
   (case (:server-name req)
     "dev.circlehost" {:proto "http" :host "dev.circlehost:8080"}
     "prod.circlehost" {:proto "https" :host "circleci.com"}
+    "enterprise.circlehost" {:proto "https" :host "enterprise-staging.sphereci.com"}
     (when-let [env (some->> req :server-name (re-matches #"(.*).circlehost") second)]
       {:proto "https" :host (format "%s.circleci.com" env)})))
 

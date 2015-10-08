@@ -1140,28 +1140,8 @@
 }
 
 .home-epilog {
-  .vertGradient(@blueDarkest, @blueDarker);
-  .home-action {
-    &:hover {
-      background: @blueDarker;
-      ~ .home-slogans {
-        a {
-          opacity: 0;
-          transition: opacity 0ms;
-        }
-      }
-      ~ .home-bottom-shelf {
-        .home-footer-bait {
-          color: @gray;
-          transition: color @prolog-cover-fadeout (@prolog-cover-fadein * 0.5) ease-in-out;
-        }
-        .chevron-down {
-          stroke: @gray;
-          transition: stroke @prolog-cover-fadeout (@prolog-cover-fadein * 0.5) ease-in-out;
-        }
-      }
-    }
-  }
+  background: @grayDark;
+  color: @prolog-light-on-dark;
 
   .home-avatars {
     i.ico path { fill: fade(@grayDark, 0); }
