@@ -226,7 +226,7 @@
 (defn container-result-icon [name]
   [:img.container-status-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
-(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
+(defn container-pill-v2 [{:keys [container current-container-id build-running? duration]} owner]
   (reify
     om/IRender
     (render [_]
@@ -247,33 +247,63 @@
                                     :running "Status-Running"
                                     :waiting "Status-Queued"
                                     nil))]]
-         [:span.lower-pill-section "(1:32)"]])))))
+         [:span.lower-pill-section "(" duration ")"]])))))
 
 (defn container-pills-v2 [data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IDisplayName
+    (display-name [_]
+      "Container Pills")
+    om/IInitState
+    (init-state [_]
+      {:container-index 0})
+    om/IRenderState
+    (render-state [_ state]
       (let [container-data (:container-data data)
             build-running? (:build-running? data)
             build (:build data)
             paging-width 15
-
             {:keys [containers current-container-id]} container-data
+            container-count (count containers)
+            container-index (:container-index state)
+            previous-container-count (max 0 (- container-index 1))
+            subsequent-container-count (min paging-width (- container-count (+ container-index paging-width)))
+
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
             div (html
                  [:div.container-list-v2
-                  (for [container (take 20 containers)]
+                  (if (-> state :container-index (> 0))
+                    [:a.container-selector-v2.page-container-pills
+                     {:on-click #(om/set-state! owner :container-index (- container-index paging-width))}
+                     [:div.nav-caret
+                      [:i.fa.fa-2x.fa-angle-left]]
+                     [:div.pill-details ;; just for flexbox container
+                      [:div "Previous " paging-width]
+                      [:div (count containers) " total"]]])
+                  (for [container (subvec containers
+                                          container-index
+                                          (min container-count (+ container-index paging-width)))]
                     (om/build container-pill-v2
                               {:container container
                                :build-running? build-running?
-                               :current-container-id current-container-id}
+                               :current-container-id current-container-id
+                               :duration 1503}
                               {:react-key (:index container)}))
-                  (when (-> containers count (> paging-width))
+                  (if (> subsequent-container-count 0)
                     [:a.container-selector-v2.page-container-pills
-                     "Next " paging-width
-                     ])])]
+                     {:on-click #(om/set-state! owner :container-index (+ container-index paging-width))}
+                     [:div.pill-details ;; just for flexbox container
+                      [:div "Next " subsequent-container-count]
+                      [:div container-count " total"]]
+                     [:div.nav-caret
+                      [:i.fa.fa-2x.fa-angle-right]]]
+                    [:a.container-selector-v2.add-containers
+                     {:href (build-model/path-for-parallelism build)
+                      :title "Adjust parallelism"}
+                     "+"])
+                  ])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
 (defn build-v2 [data owner]

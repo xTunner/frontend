@@ -390,6 +390,13 @@
     margin-left: 1px;
   }
 
+  &.add-containers {
+    .flexy(center, center);
+    font-size: 20px;
+    color: @white;
+    background: @brand-primary-v2;
+  }
+
   &.active {
     color: @white;
 
@@ -415,9 +422,21 @@
   }
 
   &.page-container-pills {
+    .flexy(center, flex-start, row);
     color: @white;
     background: @backround-color-dark-v2;
-    text-align: center;
+
+    .nav-caret {
+      flex-grow: 1;
+    }
+
+    .nav-caret + .pill-details {
+      text-align: left;
+    }
+
+    .pill-details + .nav-caret {
+      text-align: right;
+    }
   }
 
   .upper-pill-section {
