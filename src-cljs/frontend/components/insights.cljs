@@ -39,18 +39,6 @@
   {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
    :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
    :max-bars 50
-   :left-legend-items [{:classname "success"
-                        :text "Passed"}
-                       {:classname "failed"
-                        :text "Failed"}
-                       {:classname "canceled"
-                        :text "Canceled"}]
-   :right-legend-items [{:classname "queue"
-                         :text "Queue time"}]
-   :legend-info {:square-size 10
-                 :item-width 80
-                 :item-height 14   ; assume font is 14px
-                 :spacing 4}
    :positive-y% 0.65})
 
 (defn add-queued-time [build]
@@ -59,66 +47,6 @@
 
 (defn build-graphable [{:keys [outcome]}]
   (#{"success" "failed" "canceled"} outcome))
-
-(defn add-legend [plot]
-  (let [{:keys [square-size item-width item-height spacing]} (:legend-info plot-info)
-        left-legend-enter (-> plot
-                             (.select ".legend-container")
-                             (.selectAll ".legend")
-                             (.data (clj->js (:left-legend-items plot-info)))
-                             (.enter)
-                             (.append "g")
-                             (.attr #js {"class" "legend left"
-                                         "transform"
-                                         (fn [item i]
-                                           (let [tr-x (* i item-width)
-                                                 tr-y (- (- item-height
-                                                            (/ (- item-height square-size)
-                                                               2)))]
-                                             (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))
-        right-legend-enter (-> plot
-                              (.select ".legend-container")
-                              (.selectAll ".legend-right")
-                              (.data (clj->js (:right-legend-items plot-info)))
-                              (.enter)
-                              (.append "g")
-                              (.attr #js {"class" "legend right"
-                                          "transform"
-                                          (fn [item i]
-                                            (let [tr-x (- (:width plot-info) (* (inc i) item-width))
-                                                  tr-y (- (- item-height
-                                                             (/ (- item-height square-size)
-                                                                2)))]
-                                              (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))]
-    ;; left legend
-    (-> left-legend-enter
-        (.append "rect")
-        (.attr #js {"width" square-size
-                    "height" square-size
-                    ;; `aget` must be used here instead of direct field access.  See note in preamble.
-                    "class" #(aget % "classname")
-                    "transform"
-                    (fn [item i]
-                      (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
-    (-> left-legend-enter
-        (.append "text")
-        (.attr #js {"x" (+ square-size spacing)})
-        (.text #(aget % "text")))
-
-    ;; right legend
-    (-> right-legend-enter
-        (.append "rect")
-        (.attr #js {"width" square-size
-                    "height" square-size
-                    "class" #(aget % "classname")
-                    "transform"
-                    (fn [item i]
-                      (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
-    (-> right-legend-enter
-        (.append "text")
-        (.attr #js {"x" (+ square-size
-                           spacing)})
-        (.text #(aget % "text")))))
 
 (defn visualize-insights-bar! [el builds owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
@@ -219,10 +147,6 @@
         (.exit)
         (.remove))
 
-
-    ;; legend
-    (add-legend plot)
-
     ;; y-axis
     (-> plot
         (.select ".axis-container g.y-axis.positive")
@@ -263,9 +187,6 @@
                                                          (:left svg-info)
                                                          (:top svg-info))))]
 
-    (-> plot-area
-        (.append "g")
-        (.attr "class" "legend-container"))
     (-> plot-area
         (.append "g")
         (.attr "class" "grid-lines"))
