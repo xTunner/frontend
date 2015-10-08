@@ -28,7 +28,10 @@ machine:
 ```
 
 ### Pick a scheme
-If you have more than one shared scheme in your repo, you can specify the name of the scheme you would like to use to run your tests using the `XCODE_SCHEME` environment variable.
+CircleCI will automatically detect your shared scheme. If you have more than one shared scheme in your repo, you can specify the name of the scheme you would like to use to run your tests using the `XCODE_SCHEME` environment variable.
+
+### Pick a workspace
+CircleCI will detect your workspace. If you have more than one workspace, you can specify the path to your `.xcworkspace` file relative to the git repository root using the `XC_WORKSPACE` environment variable.
 
 ### Run scripts
 Make sure any scripts that you want to run are included in your repository. You can run your script using a bash command (e.g. `./example_script.sh`) configured in our UI (through **Project Settings > Dependency/Test Commands**) or in a [circle.yml](https://circleci.com/docs/configuration) file.
