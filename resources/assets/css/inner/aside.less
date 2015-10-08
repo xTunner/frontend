@@ -479,7 +479,8 @@
 
 .ui-v2 {
   .aside-activity.open {
-    @reserved_height: (@top-nav-height + 59px);
+    @header-height: 59px;
+    @reserved_height: (@top-nav-height + @header-height);
     height: ~"calc(100vh - @{reserved_height})";
   }
 }
