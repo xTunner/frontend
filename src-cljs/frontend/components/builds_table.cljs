@@ -1,5 +1,6 @@
 (ns frontend.components.builds-table
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [cemerick.url :refer (url)]
+            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.components.common :as common]
@@ -105,6 +106,12 @@
 (defn dashboard-icon [name]
   [:img.dashboard-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
+(defn pusher-avatar [build]
+  (if-let [avatar-url (-> build :user :avatar_url)]
+    [:img.dashboard-icon
+     {:src (-> avatar-url url (assoc-in [:query "s"] "16") str)}]
+    (dashboard-icon "Builds-Author")))
+
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (when (:dont_build build) "dont_build")}
@@ -151,11 +158,11 @@
          (:build_num build)]]
 
        [:div.metadata
-        (when-let [author (build-model/author build)]
+        (when-let [pusher (build-model/ui-user build)]
           [:div.metadata-item.recent-user
-           {:title (build-model/ui-user build)}
-           (dashboard-icon "Builds-Author")
-           author])
+           {:title pusher}
+           (pusher-avatar build)
+           pusher])
 
         [:div.metadata-item
          (if-not (:vcs_revision build)
