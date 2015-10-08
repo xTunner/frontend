@@ -275,11 +275,13 @@
 
 (defrender project-insights [{:keys [reponame username default_branch recent-builds]} owner]
   (let [builds (chartable-builds recent-builds)]
-    (when (not-empty builds)
-      (html
-       [:div.project-block
-        [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
-        (om/build project-insights-bar builds)]))))
+    (html
+      (if (not-empty builds)
+        [:div.project-block
+         [:h1 (gstring/format "Build Status: %s/%s/%s" username reponame default_branch)]
+         (om/build project-insights-bar builds)]
+        [:div.project-block
+         [:div.loading-spinner common/spinner]]))))
 
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]
