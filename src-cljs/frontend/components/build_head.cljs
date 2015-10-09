@@ -1220,46 +1220,52 @@
             has-write-settings? (:write-settings
                                   (get-in data state/project-scopes-path))]
         (html
-          [:div.build-actions
-           (when has-write-settings?
-             [:div.btn-group
-              (forms/managed-button
-                [:button.btn
-                 {:data-loading-text "Rebuilding",
-                  :title "Retry the same tests",
-                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num
-                                                                  :no-cache? false}])}
-                 "Rebuild"])
-              [:button.btn.dropdown-toggle {:data-toggle "dropdown"} [:span.caret]]
-              [:ul.dropdown-menu
-               ;; XXX Temporarily remove the ssh button for OSX builds
-               (when (not (feature/enabled-for-project? project :osx))
-                 [:li (forms/managed-button
-                        [:a.ssh_build
-                         {:data-loading-text "Rebuilding",
-                          :title "Retry with SSH in VM",
-                          :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                                        :vcs-url vcs-url
-                                                                        :build-num build-num}])}
-                         "with ssh"])])
-               [:li (forms/managed-button
-                      [:a
-                       {:data-loading-text "Rebuilding",
-                        :title "Retry without cache",
-                        :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                        :vcs-url vcs-url
-                                                                        :build-num build-num
-                                                                        :no-cache? true}])}
-                       "without cache"])]]])
-           [:div.actions
-            (when (and (build-model/can-cancel? build) has-write-settings?)
-              (forms/managed-button
-               [:button.cancel_build
-                {:data-loading-text "Canceling",
-                 :title "Cancel this build",
-                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
-                "Cancel"]))]])))))
+          [:div
+           [:div.build-actions
+            [:div.actions
+             (when (and (build-model/can-cancel? build) has-write-settings?)
+               (forms/managed-button
+                 [:a
+                  {:data-loading-text "Canceling",
+                   :title             "Cancel this build",
+                   :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                    :vcs-url vcs-url
+                                                                    :build-num build-num}])}
+                  "Cancel Build"]))
+            (when has-write-settings?
+              [:div.btn-group
+               (forms/managed-button
+                 [:button.btn
+                  {:data-loading-text "Rebuilding",
+                   :title             "Retry the same tests",
+                   :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num
+                                                                   :no-cache? false}])}
+                  "Rebuild"])
+               [:button.btn.dropdown-toggle {:data-toggle "dropdown"} [:span.caret]]
+               [:ul.dropdown-menu
+                ;; XXX Temporarily remove the ssh button for OSX builds
+                (when (not (feature/enabled-for-project? project :osx))
+                  [:li (forms/managed-button
+                         [:a.ssh_build
+                          {:data-loading-text "Rebuilding",
+                           :title             "Retry with SSH in VM",
+                           :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                                         :vcs-url vcs-url
+                                                                         :build-num build-num}])}
+                          "with ssh"])])
+                [:li (forms/managed-button
+                       [:a
+                        {:data-loading-text "Rebuilding",
+                         :title             "Retry without cache",
+                         :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                         :vcs-url vcs-url
+                                                                         :build-num build-num
+                                                                         :no-cache? true}])}
+                        "without cache"])]]])
+            [:a
+             {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
+                                                 :repo (get-in data (conj state/project-path :reponame))})}
+             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+             "Project Settings"]]]])))))
