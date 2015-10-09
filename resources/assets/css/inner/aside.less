@@ -59,6 +59,7 @@
 
 .app-aside {
   .flex(0 0 auto);
+  .flexy(column);
 }
 
 .aside-left-nav,
@@ -479,9 +480,8 @@
 
 .ui-v2 {
   .aside-activity.open {
-    @header-height: 59px;
-    @reserved_height: (@top-nav-height + @header-height);
-    height: ~"calc(100vh - @{reserved_height})";
+    height: auto;
+    .flex(1 0 1px);
   }
 }
 
