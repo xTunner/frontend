@@ -916,7 +916,7 @@
           [:div
            [:span.metadata-item
             (if-not (:author_email commit-details)
-              [:span 
+              [:span
                author-icon
                (build-model/author commit-details)]
               [:a {:href (str "mailto:" (:author_email commit-details))}
@@ -1135,7 +1135,7 @@
 
               (when-let [urls (seq (:pull_request_urls build))]
                 ;; It's possible for a build to be part of multiple PRs, but it's rare
-                (list 
+                (list
                   [:span.summary-spacer "•"]
                   [:span.summary-label
                     (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
@@ -1156,7 +1156,7 @@
              [:div.build-info
               [:table
                [:tbody
-                
+
                 [:tr
                  [:th "Previous"]
                  (if-not (:previous build)
