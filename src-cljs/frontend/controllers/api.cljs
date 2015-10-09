@@ -146,20 +146,20 @@
                   (get-in args [:context :query-params :page])))
     state
     (-> state
-        (assoc-in [:recent-builds] (:resp args))
+        (assoc-in [:recent_builds] (:resp args))
         (assoc-in state/project-scopes-path (:scopes args))
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
 (defmethod api-event [:recent-project-builds :success]
   [target message status {recent-builds :resp, target-id :context} state]
-  (letfn [(set-builds [projects]
+  (letfn [(add-recent-builds [projects]
             (for [project projects
                   :let [project-id (project-build-id project)]]
               (if (= project-id target-id)
-                (assoc project :recent-builds recent-builds)
+                (assoc project :recent_builds recent-builds)
                 project)))]
-    (update-in state state/projects-path set-builds)))
+    (update-in state state/projects-path add-recent-builds)))
 
 
 (defmethod api-event [:build :success]
