@@ -219,8 +219,7 @@
                                                  nav-point)
                                   "active")}
                     [:a.menu-item {:href "/about"} "About Us"]]
-                   [:li [:a {:href "http://blog.circleci.com"} "Blog"]]))]
-
+                   [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))]
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right
                  [:li [:a.menu-item {:href "/"} "Back to app"]]]
