@@ -1129,6 +1129,34 @@
                                               :stop (:stop_time build)
                                               :build build})
                  ")"]])
+             [:div
+              [:span.summary-label "Previous:"]
+              [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
+               (:build_num (:previous build))]]
+             [:div
+              [:span.summary-label "Parallelism:"]
+              (if (has-scope :write-settings data)
+                [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                           :href (build-model/path-for-parallelism build)}
+                 (str (:parallel build) "x")]
+                [:span (:parallel build) "x"])]
+             (when (:usage_queued_at build)
+               [:div
+                [:span.summary-label "Queued"]
+                [:span (if (< 0 (build-model/run-queued-time build))
+                         [:span
+                          (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                              :stop (or (:queued_at build) (:stop_time build))})
+                          " waiting + "
+                          (om/build common/updating-duration {:start (:queued_at build)
+                                                              :stop (or (:start_time build) (:stop_time build))})
+                          " in queue"]
+
+                         [:span
+                          (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                              :stop (or (:queued_at build) (:stop_time build))})
+                          " waiting for builds to finish"])]])
+
              [:div.summary-build-contents
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]
@@ -1145,63 +1173,13 @@
                      (map (fn [url] [:a {:href url} "#"
                                      (let [n (re-find #"/\d+$" url)]
                                        (if n (subs n 1) "?"))])
-                          urls))]))
-              ]
-             ]]
+                          urls))]))]]]
            [:div.card
             [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
            [:div.build-head-wrapper
             [:div.build-head
-             [:div.build-info
-              [:table
-               [:tbody
-
-                [:tr
-                 [:th "Previous"]
-                 (if-not (:previous build)
-                   [:td "none"]
-                   [:td
-                    [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
-                     (:build_num (:previous build))]])
-
-                 ]
-                [:tr
-                 (when (:usage_queued_at build)
-                   (list [:th "Queued"]
-                         [:td (if (< 0 (build-model/run-queued-time build))
-                                [:span
-                                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                     :stop (or (:queued_at build) (:stop_time build))})
-                                 " waiting + "
-                                 (om/build common/updating-duration {:start (:queued_at build)
-                                                                     :stop (or (:start_time build) (:stop_time build))})
-                                 " in queue"]
-
-                                [:span
-                                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                     :stop (or (:queued_at build) (:stop_time build))})
-                                 " waiting for builds to finish"])]))
-                 [:td
-                  (when-let [canceler (and (= (:status build) "canceled")
-                                           (:canceler build))]
-                    [:span.build-canceler
-                     (list "by "
-                           [:a {:href (str (github-endpoint) "/" (:login canceler))}
-                            (if (not-empty (:name canceler))
-                              (:name canceler)
-                              (:login canceler))])])]]
-                [:tr
-                 [:th "Parallelism"]
-                 [:td
-                  (if (has-scope :write-settings data)
-                    [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                               :href (build-model/path-for-parallelism build)}
-                     (str (:parallel build) "x")]
-                    [:span (:parallel build) "x"])]]]]
-
-              [:div.no-user-actions]]
-              (om/build build-sub-head-v2 data)]]])))))
+             (om/build build-sub-head-v2 data)]]])))))
 
 (defn build-head-actions
   [data owner]
