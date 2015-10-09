@@ -290,7 +290,7 @@
        [:div.header.text-center "No Insights yet"]]
        [:div.details.text-center "Add projects from your Github orgs and start building on CircleCI to view insights."]
       [:div.row.text-center
-       [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
+       [:button.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
 (defrender build-insights [data owner]
   (let [projects (get-in data state/projects-path)]
