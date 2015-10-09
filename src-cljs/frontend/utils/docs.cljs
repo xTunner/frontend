@@ -25,12 +25,13 @@
                        (string/join " "))
         curl-args-padded (if (empty? curl-args) ""
                              (str curl-args " "))
-        curl-params (if-let [params (:params endpoint)]
-                      (->> params
-                           (map #(str (:name %) "=" (:example %)))
-                           (string/join "&")
-                           (str "&"))
-                      "")]
+        curl-params (let [params (:params endpoint)]
+                      (if (and params (= (:method endpoint) "GET"))
+                        (->> params
+                             (map #(str (:name %) "=" (:example %)))
+                             (string/join "&")
+                             (str "&"))
+                        ""))]
     (gstring/format "curl %shttps://circleci.com%s?circle-token=:token%s"
                     curl-args-padded (:url endpoint) curl-params)))
 

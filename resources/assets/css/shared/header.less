@@ -69,17 +69,16 @@
     font-size: @font-size-small;
     line-height: @font-size-large; // Height of indicator, to center vertically.
 
-    background-color: @grayLightest;
     border-radius: @border-radius-base;
-    color: @grayDark;
+    color: @white;
+    background-color: #ed5c5c;
   }
 
-  &.in-violation, &.expired {
-    .indicator {
-      background-color: #ed5c5c;
-      color: @white;
-    }
+  &.expiry-current .indicator {
+    color: @grayDark;
+    background-color: @grayLightest;
   }
+  
 
   .message {
     .flex(1 0 auto);
@@ -249,6 +248,11 @@
   }
 }
 
+.ui-v2 .head-admin:not(.open) {
+  margin-top: -@tile - @top-nav-height;
+  margin-bottom: @top-nav-height;
+}
+
 .navbar {
 
   &, .btn, .dropdown-menu > li > a {
@@ -256,6 +260,20 @@
     font-size: 14px;
     letter-spacing: 0.5px;
   }
+}
+
+.navbar-nav > li > a.signup-link {
+    color: @white;
+    width: 110px;
+    height: 40px;
+    padding-top: 10px;
+    padding-bottom: 6px;
+    border-radius: 20px;
+    margin: 15px;
+
+    &:hover {
+        color: @grayDark;
+    }
 }
 
 .subnav {
@@ -272,5 +290,32 @@
       padding-top: 5px;
       padding-bottom: 5px;
     }
+  }
+}
+
+.hamburger-menu {
+  display: none;
+}
+
+@media (max-width: @screen-sm-min) {
+  .hamburger-menu {
+    color: @black;
+    display: block;
+    left: 10px;
+    position: absolute;
+    top: 12px;
+  }
+  .navbar-container {
+    &.closed {
+      display: none;
+    }
+    &.open {
+      display: block;
+      margin-top: 60px;
+    }
+  }
+  .navbar-header {
+    position: absolute;
+    right: 10px;
   }
 }

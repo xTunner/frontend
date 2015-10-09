@@ -35,7 +35,9 @@
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
+            [frontend.components.top-nav :as top-nav]
             [frontend.components.signup :as signup]
+            [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
             [frontend.models.feature :as feature]
@@ -57,7 +59,7 @@
 
 (defn dominant-component [app-state owner]
   (case (:navigation-point app-state)
-    :build build-com/build
+    :build (build-com/build)
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
     :build-insights insights/build-insights
@@ -116,7 +118,8 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              show-header-and-footer? (not= :signup (:navigation-point app))]
+              show-header-and-footer? (not= :signup (:navigation-point app))
+              api-ch (get-in app [:comms :api])]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -125,13 +128,11 @@
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
                                        (when (feature/enabled? :ui-v2) ["ui-v2"])
-                                       ;; The following 2 are meant for the landing ab test to hide old header/footer
-                                       (when (= :landing (:navigation-point app)) ["landing"])
+                                       ;; The following is meant for the landing ab test to hide old header/footer
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
@@ -143,6 +144,9 @@
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
+
+               (when (and inner? logged-in? (feature/enabled? :ui-v2))
+                 (om/build top-nav/top-nav app-without-container-data))
 
                (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))

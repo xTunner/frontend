@@ -197,6 +197,7 @@
 (defn admin-settings-nav-items [data owner]
   (let [navigation-data (:navigation-data data)]
     [{:type :subpage :href "/admin" :title "Overview" :subpage nil}
+     {:type :subpage :href "/admin/management-console" :title "Management Console" :subpage nil}
      {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
      {:type :subpage :href "/admin/license" :title "License" :subpage :license}]))
 
@@ -393,12 +394,20 @@
                            :title "Invite your teammates"}
             [:i.fa.fa-user]]
 
-        (when (feature/enabled? :insights)
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Insights"
-                          :href "/build-insights"}
-           [:i.fa.fa-bar-chart]])
+           [:a.aside-item {:data-placement "right"
+                           :data-trigger "hover"
+                           :title "Changelog"
+                           :href "/changelog"
+                           :class (when (changelog-updated-since? (:last_viewed_changelog user))
+                                    "unread")}
+            [:i.fa.fa-bell]]
+
+           (when (feature/enabled? :insights)
+             [:a.aside-item {:data-placement "right"
+                             :data-trigger "hover"
+                             :title "Insights"
+                             :href "/build-insights"}
+              [:i.fa.fa-bar-chart]])
 
            (when (:admin user)
              [:a.aside-item {:data-placement "right"
@@ -428,4 +437,3 @@
                                      (not show-aside-menu?) (conj "menuless"))}
           (when show-aside-menu?
             (om/build aside-menu app {:opts {:login login}}))])))))
-

@@ -2,8 +2,9 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
-            [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
+            [frontend.models.container :as container-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
@@ -189,7 +190,7 @@
                         (not (:dismiss-config-errors build-data)))
                (om/build build-config/config-errors build))]]]])))))
 
-(defn build [data owner]
+(defn build-v1 [data owner]
   (reify
     om/IRender
     (render [_]
@@ -211,7 +212,6 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
-             (om/build common/flashes (get-in data state/error-message-path))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
                                 :invite-data invite-data})
@@ -222,3 +222,98 @@
 
              (when (< 1 (count (:steps build)))
                [:div (common/messages (:messages build))])])])))))
+
+(defn container-result-icon [name]
+  [:img.container-status-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
+
+(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (let [container-id (container-model/id container)
+             status (container-model/status container build-running?)]
+        [:a.container-selector-v2
+         {:on-click #(raise! owner [:container-selected {:container-id container-id}])
+          :class (concat (container-model/status->classes status)
+                         (when (= container-id current-container-id) ["active"]))}
+         [:span.upper-pill-section
+          [:span.container-index (str (:index container))]
+          [:span.status-icon
+           (container-result-icon (case status
+                                    :failed "Status-Failed"
+                                    :success "Status-Passed"
+                                    :canceled "Status-Cancelled"
+                                    :running "Status-Running"
+                                    :waiting "Status-Queued"
+                                    nil))]]
+         [:span.lower-pill-section "(1:32)"]])))))
+
+(defn container-pills-v2 [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [container-data (:container-data data)
+            build-running? (:build-running? data)
+            build (:build data)
+            paging-width 15
+
+            {:keys [containers current-container-id]} container-data
+            hide-pills? (or (>= 1 (count containers))
+                            (empty? (remove :filler-action (mapcat :actions containers))))
+            style {:position "fixed"}
+            div (html
+                 [:div.container-list-v2
+                  (for [container (take 20 containers)]
+                    (om/build container-pill-v2
+                              {:container container
+                               :build-running? build-running?
+                               :current-container-id current-container-id}
+                              {:react-key (:index container)}))
+                  (when (-> containers count (> paging-width))
+                    [:a.container-selector-v2.page-container-pills
+                     "Next " paging-width
+                     ])])]
+        (om/build sticky {:content div :content-class "containers-v2"})))))
+
+(defn build-v2 [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [build (get-in data state/build-path)
+            build-data (get-in data state/build-data-path)
+            container-data (get-in data state/container-data-path)
+            invite-data (:invite-data data)
+            project-data (get-in data state/project-data-path)
+            user (get-in data state/user-path)]
+        (html
+         [:div.build-info-v2.container-fluid
+          (if-not build
+           [:div
+             (om/build common/flashes (get-in data state/error-message-path))
+             [:div.loading-spinner-big common/spinner]]
+
+            [:div
+             (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
+                                                 :project-data project-data
+                                                 :user user
+                                                 :scopes (get-in data state/project-scopes-path)})
+             [:div.card.col-sm-12
+
+              (om/build common/flashes (get-in data state/error-message-path))
+
+              (om/build notices {:build-data (dissoc build-data :container-data)
+                                 :project-data project-data
+                                 :invite-data invite-data})
+
+              (om/build container-pills-v2 {:container-data container-data
+                                            :build-running? (build-model/running? build)
+                                            :build build})
+
+              (om/build build-steps/container-build-steps-v2 container-data)]])])))))
+
+(defn build []
+  (if (feature/enabled? :ui-v2)
+    build-v2
+    build-v1))
+

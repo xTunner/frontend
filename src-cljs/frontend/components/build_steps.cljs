@@ -108,11 +108,9 @@
                    [:div.action-log-messages
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
-                     {:on-click #(let [node (om/get-node owner)
-                                       body (.-body js/document)]
-                                   (set! (.-scrollTop body) (- (+ (.-y (goog.style/getRelativePosition node body))
-                                                                  (.-height (goog.style/getSize node)))
-                                                               (.-height (goog.dom/getViewportSize)))))}]
+                     {:on-click #(let [target (.-parentNode (.-currentTarget %))]
+                                   (.scrollIntoView target false))}]
+
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -222,6 +220,166 @@
                                   :class (str "selected_" current-container-id)}
            (for [container containers]
              (om/build container-view
+                       {:container container
+                        :non-parallel-actions non-parallel-actions}
+                       {:opts {:uses-parallelism? (< 1 (count containers))}}))]])))))
+
+(defn output-v2 [out owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [message-html (:converted-message out)]
+        (html
+         [:span.pre {:dangerouslySetInnerHTML
+                     #js {"__html" message-html}}])))))
+
+(defn trailing-output-v2 [converters-state owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [trailing-out (action-model/trailing-output converters-state)]
+        (html
+          [:span {:dangerouslySetInnerHTML
+                  #js {"__html" trailing-out}}])))))
+
+(defn action-v2 [action owner {:keys [uses-parallelism?] :as opts}]
+  (reify
+    om/IRender
+    (render [_]
+      (let [visible? (action-model/visible? action)
+            header-classes  (concat [(:status action)]
+                                    (when-not visible?
+                                      ["minimize"])
+                                    (when (action-model/has-content? action)
+                                      ["contents"])
+                                    (when (action-model/failed? action)
+                                      ["failed"]))]
+        (html
+         [:div {:class (str "type-" (or (:type action) "none"))}
+          [:div.type-divider
+           [:span (:type action)]]
+          [:div.build-output
+           [:div.action_header {:class header-classes}
+            [:div.ah_wrapper
+             [:div.header {:class (when (action-model/has-content? action)
+                                    header-classes)
+                           ;; TODO: figure out what to put here
+                           :on-click #(raise! owner [:action-log-output-toggled
+                                                     {:index (:index @action)
+                                                      :step (:step @action)
+                                                      :value (not visible?)}])}
+              [:div.button {:class (when (action-model/has-content? action)
+                                     header-classes)}
+               (when (action-model/has-content? action)
+                 [:i.fa.fa-chevron-down])]
+              [:div.command {:class header-classes}
+               [:span.command-text {:title (:bash_command action)}
+                (str (when (= (:bash_command action)
+                              (:name action))
+                       "$ ")
+                     (:name action)
+                     (when (and uses-parallelism? (:parallel action))
+                       (gstring/format " (%s)" (:index action))))]
+               [:span.time {:title (str (:start_time action) " to "
+                                        (:end_time action))}
+                (om/build common/updating-duration {:start (:start_time action)
+                                                    :stop (:end_time action)})
+                (when (:timedout action) " (timed out)")]
+               [:span.action-source
+                [:span.action-source-inner {:title (source-title (:source action))}
+                 (source-type (:source action))]]]]
+             [:div.detail-wrapper
+              (when (and visible? (action-model/has-content? action))
+                [:div.detail {:class header-classes}
+                 (if (and (:has_output action)
+                          (nil? (:output action)))
+                   [:div.loading-spinner common/spinner]
+
+                   [:div.action-log-messages
+                    (common/messages (:messages action))
+                    [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
+                     {:on-click #(let [node (om/get-node owner)
+                                       body (.-body js/document)]
+                                   (set! (.-scrollTop body) (- (+ (.-y (goog.style/getRelativePosition node body))
+                                                                  (.-height (goog.style/getSize node)))
+                                                               (.-height (goog.dom/getViewportSize)))))}]
+                    (when (:bash_command action)
+                      [:span
+                       (when (:exit_code action)
+                         [:span.exit-code.pull-right
+                          (str "Exit code: " (:exit_code action))])
+                       [:pre.bash-command
+                        {:title "The full bash command used to run this setup"}
+                        (:bash_command action)]])
+                    [:pre.output.solarized {:style {:white-space "normal"}}
+                     (when (:truncated action)
+                       [:span.truncated "(this output has been truncated)"])
+
+                     (om/build-all output-v2 (:output action) {:key :react-key})
+
+                     (om/build trailing-output-v2 (:converters-state action))
+
+                     (when (:truncated action)
+                       [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
+
+(defn container-view-v2 [{:keys [container non-parallel-actions]} owner {:keys [uses-parallelism?] :as opts}]
+  (reify
+    om/IRender
+    (render [_]
+      (let [container-id (container-model/id container)
+            actions (remove :filler-action
+                            (map (fn [action]
+                                   (get non-parallel-actions (:step action) action))
+                                 (:actions container)))]
+        (html
+         [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
+                               :id (str "container_" (:index container))}
+          (om/build-all action-v2 actions {:key :step
+                                           :opts opts})])))))
+
+(defn container-build-steps-v2 [{:keys [containers current-container-id]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:autoscroll? false})
+    om/IDidMount
+    (did-mount [_]
+      (mount-browser-resize owner))
+    om/IWillUnmount
+    (will-unmount [_]
+      (dispose (om/get-state owner [:browser-resize-key])))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (om/get-state owner [:autoscroll?])
+        (let [body (.-body js/document)
+              very-large-numer 10000000]
+          (set! (.-scrollTop body) very-large-numer))))
+    om/IRender
+    (render [_]
+      (let [non-parallel-actions (->> containers
+                                      first
+                                      :actions
+                                      (remove :parallel)
+                                      (map (fn [action]
+                                             [(:step action) action]))
+                                      (into {}))]
+        (html
+         [:div#container_scroll_parent ;; hides horizontal scrollbar
+          [:div#container_parent {:on-wheel (fn [e]
+                                              (check-autoscroll owner (aget e "deltaY"))
+                                              (when (not= 0 (aget e "deltaX"))
+                                                (.preventDefault e)
+                                                (let [body (.-body js/document)]
+                                                  (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
+                                  :on-scroll (fn [e]
+                                               ;; prevent handling scrolling if we're animating the
+                                               ;; transition to a new selected container
+                                               (let [scroller (.. e -target -scroll_handler)]
+                                                 (when (or (not scroller) (.isStopped scroller))
+                                                   (raise! owner [:container-parent-scroll]))))
+                                  :class (str "selected_" current-container-id)}
+           (for [container containers]
+             (om/build container-view-v2
                        {:container container
                         :non-parallel-actions non-parallel-actions}
                        {:opts {:uses-parallelism? (< 1 (count containers))}}))]])))))

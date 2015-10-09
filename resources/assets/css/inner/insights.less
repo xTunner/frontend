@@ -1,5 +1,11 @@
+@import "../shared/variables.less";
+
+@tick-color: #999999;
+@insightBlockHeight: @standardBlockSize + 40px;
+
 #build-insights {
   background-color: #f5f5f5;
+  padding-bottom: 15px;
 
   h1 {
     font-size: round((@baseFontSize * 1.12), 0);
@@ -9,8 +15,21 @@
   .project-block {
     margin: 20px;
     padding: 10px;
+    border-bottom: #e5e5e5 1px solid;
     background-color: white;
     width: 1000px;
+    height: @insightBlockHeight;
+    h1 {
+      color: @gray-light-v2;
+      padding-left: 15px;
+      border-bottom: #e5e5e5 1px solid;
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    .loading-spinner{
+      margin-top: (@insightBlockHeight / 2) - @spinnerSize;
+    }
   }
 
   .head-user {
@@ -29,20 +48,23 @@
     .axis path,
     .axis line {
       fill: none;
-      stroke: #000;
+      stroke: #666;
       shape-rendering: crispEdges;
     }
 
-    .grid-line {
-      line {
-        stroke: #dddddd;
-        stroke-opacity: 0.7;
-        shape-rendering: crispEdges;
-      }
+    .grid-lines line.horizontal {
+      stroke: #e5e5e5;
+      stroke-opacity: 0.7;
+      shape-rendering: crispEdges;
     }
     .y-axis {
-      .tick line {
-        visibility: hidden;
+      .tick {
+        line {
+          visibility: hidden;
+        }
+        text {
+          fill: @tick-color;
+        }
       }
       > path.domain {
         visibility: hidden;
@@ -60,6 +82,9 @@
     }
     rect.queue {
       fill: #e6d9f2;
+    }
+    .legend text {
+      fill: @gray-light-v2;
     }
   }
 }

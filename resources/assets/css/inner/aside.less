@@ -29,7 +29,7 @@
   width: @aside_nav_width;
   background: @blueDarkest;
   color: fade(@white, 66);
-  overflow-y: auto;
+  overflow: visible;
 
   // Because this div can include elements which stretch across the top and the
   // side of the page, it tends to cover the page. Therefore, we need to make it
@@ -57,6 +57,10 @@
   }                             //
 }
 
+.app-aside {
+  .flex(0 0 auto);
+}
+
 .aside-left-nav,
 .aside-left-menu {
   .flexy(column);
@@ -66,6 +70,9 @@
   width: @new_aside_menu_width;
 }
 
+.ui-v2 .aside-left-menu {
+  top: @top-nav-height;
+}
 
 .aside-left-menu {
   .flex(1 0 1px);
@@ -82,7 +89,7 @@
 
     header {
       .box-sizing(border-box);
-      flex: 0 0 @tile;
+      .flex(0 0 @tile);
       border-bottom: solid 1px @grayBoxBorder;
       padding: @em;
       position: relative;

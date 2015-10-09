@@ -4,6 +4,7 @@
             [frontend.async :refer [raise!]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.feature :as feature]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]
@@ -37,9 +38,7 @@
                                                  " to continue."]
                               error-message)]
         (html
-         (if-not error-message
-           [:span]
-
+         (when error-message
            [:div.flash-error-wrapper.row-fluid
             [:div.offset1.span10
              [:div.alert.alert-block.alert-danger
@@ -56,16 +55,24 @@
          (.getOuterHtml dom-helper))))
 
 (defn messages [messages]
-  [:div.container-fluid
-   [:div.row
-    (when (pos? (count messages))
-      (let [dom-helper (goog.dom.DomHelper.)]
+  (when (pos? (count messages))
+    (if (feature/enabled? :ui-v2)
+      [:div.col-xs-12
+       (map (fn [message]
+              [:div.row
+               [:div.alert.alert-info
+                [:strong "INFO ICON HERE"]
+                " "
+                [:span {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]])
+            messages)]
+      [:div.container-fluid
+       [:div.row
         [:div#build-messages.col-xs-offset-1.col-xs-10
          (map (fn [message]
                 [:div.alert.alert-info
                  [:strong "Warning: "]
                  [:span {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]])
-              messages)]))]])
+              messages)]]])))
 
 ;; TODO: Why do we have ico and icon?
 (def ico-paths
@@ -195,6 +202,9 @@
 (defn language [name]
   [:img.background.language {:class name
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
+
+(defn icon-path [name]
+  (utils/cdn-path (str "/img/inner/icons/" name ".svg")))
 
 (def language-background
   (map language ["rails-1"

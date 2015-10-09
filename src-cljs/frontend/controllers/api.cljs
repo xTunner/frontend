@@ -106,10 +106,10 @@
 
 
 (defmethod api-event [:projects :success]
-  [target message status {:keys [context resp]} state]
+  [target message status {:keys [resp]} {:keys [navigation-point] :as state}]
   ;; for the insights screen, we go on to get recent builds from the
   ;; default_branch of each project
-  (when (:get-recent-builds context)
+  (when (= navigation-point :build-insights)
     (let [api-ch (get-in state [:comms :api])
           project-build-ids (map project-build-id resp)]
       (api/get-projects-builds project-build-ids api-ch)))
@@ -205,9 +205,19 @@
       (api/get-repos (get-in state [:comms :api]) :page (inc page))
       (update-in state state/repos-path #(into % (:resp args))))))
 
+(defn filter-piggieback [orgs]
+  "Return subset of orgs that aren't covered by piggyback plans."
+  (let [covered-orgs (into #{} (apply concat (map :piggieback_orgs orgs)))]
+    (remove (comp covered-orgs :login) orgs)))
+
 (defmethod api-event [:organizations :success]
-  [target message status args state]
-  (assoc-in state state/user-organizations-path (:resp args)))
+  [target message status {orgs :resp} state]
+  (let [selectable-orgs (filter-piggieback orgs)
+        selected (get-in state state/top-nav-selected-org-path)]
+    (cond-> state
+        true (assoc-in state/user-organizations-path orgs)
+        true (assoc-in state/top-nav-orgs-path selectable-orgs)
+        (not selected) (assoc-in state/top-nav-selected-org-path (first selectable-orgs)))))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]
@@ -470,7 +480,9 @@
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
-  (if-let [repo-index (state-utils/find-repo-index state (:login context) (:name context))]
+  (if-let [repo-index (state-utils/find-repo-index (get-in state state/repos-path)
+                                                   (:login context)
+                                                   (:name context))]
     (assoc-in state (conj (state/repo-path repo-index) :following) true)
     state))
 
@@ -491,13 +503,13 @@
                  :start-build
                  (get-in current-state [:comms :api])))))
 
-
 (defmethod api-event [:unfollow-repo :success]
   [target message status {:keys [resp context]} state]
-  (if-let [repo-index (state-utils/find-repo-index state (:login context)  (:name context))]
+  (if-let [repo-index (state-utils/find-repo-index (get-in state state/repos-path)
+                                                   (:login context)
+                                                   (:name context))]
     (assoc-in state (conj (state/repo-path repo-index) :following) false)
     state))
-
 
 (defmethod post-api-event! [:unfollow-repo :success]
   [target message status args previous-state current-state]

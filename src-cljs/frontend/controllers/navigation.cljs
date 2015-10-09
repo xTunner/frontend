@@ -7,6 +7,7 @@
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
+            [frontend.models.feature :as feature]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -16,6 +17,7 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
+            [frontend.routes :as routes]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [frontend.utils :refer [inspect]]
@@ -136,23 +138,31 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
+  [history-imp navigation-point {:keys [project-name build-num org repo tab] :as args} state]
   (mlog "navigated-to :build with args " args)
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args
-             :project-settings-project-name project-name)
-      (assoc-in state/crumbs-path [{:type :dashboard}
-                                   {:type :org :username org}
-                                   {:type :project :username org :project repo}
-                                   {:type :project-branch :username org :project repo}
-                                   {:type :build :username org :project repo
-                                    :build-num build-num}])
-      state-utils/reset-current-build
-      (#(if (state-utils/stale-current-project? % project-name)
-          (state-utils/reset-current-project %)
-          %))))
+  (if (and (= :build (:navigation-point state))
+           (not (state-utils/stale-current-build? state project-name build-num)))
+    ;; page didn't change, just switched tabs
+    (assoc-in state state/build-header-tab-path tab)
+    ;; navigated to page, load everything
+    (-> state
+        state-utils/clear-page-state
+        (assoc :navigation-point (inspect navigation-point)
+               :navigation-data (assoc args
+                                       :show-aside-menu? (not (feature/enabled? :ui-v2))
+                                       :show-settings-link? (not (feature/enabled? :ui-v2)))
+               :project-settings-project-name project-name)
+        (assoc-in state/crumbs-path [{:type :dashboard}
+                                     {:type :org :username org}
+                                     {:type :project :username org :project repo}
+                                     {:type :project-branch :username org :project repo}
+                                     {:type :build :username org :project repo
+                                      :build-num build-num}])
+        state-utils/reset-current-build
+        (#(if (state-utils/stale-current-project? % project-name)
+            (state-utils/reset-current-project %)
+            %))
+        (assoc-in state/build-header-tab-path tab))))
 
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
@@ -241,7 +251,7 @@
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-projects api-ch :get-recent-builds true))
+    (api/get-projects api-ch))
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :invite-teammates
@@ -437,12 +447,18 @@
 (defmethod navigated-to :account
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (mlog "Navigated to account subpage:" subpage)
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point)
-      (assoc :navigation-data args)
-      (assoc :account-settings-subpage subpage)
-      (assoc-in state/crumbs-path [{:type :account}])))
+  (let [logged-in? (get-in state state/user-path)
+        nav-ch (get-in state [:comms :nav])]
+    (if logged-in?
+       (-> state
+           state-utils/clear-page-state
+           (assoc :navigation-point navigation-point)
+           (assoc :navigation-data args)
+           (assoc :account-settings-subpage subpage)
+           (assoc-in state/crumbs-path [{:type :account}]))
+       (do
+         (routes/open-to-outer! nav-ch :error {:status 401})
+         state))))
 
 (defmethod post-navigated-to! :account
   [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
