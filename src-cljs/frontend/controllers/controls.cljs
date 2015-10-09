@@ -1082,11 +1082,6 @@
           (when (= :success (:status api-result))
             (put! (:nav comms) [:navigate! {:path "/docs/search"}]))))))
 
-(defmethod control-event :build-header-tab-clicked
-  [target message {:keys [tab]} state]
-  (assoc-in state state/build-header-tab-path tab))
-
-
 (defn scroll-home-by-offset!
   "Scrolls down to the next section of copy on the landing page."
   [target index]
