@@ -8,6 +8,8 @@
   @block-width: 425px;
   @chart-padding-left: 30px;
 
+  min-width: 465px;
+
   h1 {
     font-size: round((@baseFontSize * 1.5), 0);
   }
@@ -15,7 +17,13 @@
   .project-block {
     display: inline-block;
     margin: 20px;
-    margin-left: ~"calc((100% - 3 * @{block-width}) / 4)"; // equal gutters around columns: (100% - 3 * @block-width) / 4
+    margin-left: ~"calc((100% - @{block-width}) / 2)";
+    @media (min-width: 970px) {
+      margin-left: ~"calc((100% - 2 * @{block-width}) / 3)"; // equal gutters around columns: (100% - 3 * @block-width) / 4
+    }
+    @media (min-width: 1400px) {
+      margin-left: ~"calc((100% - 3 * @{block-width}) / 4)"; // equal gutters around columns: (100% - 3 * @block-width) / 4
+    }
     margin-right: 0;
 
     border-bottom: #e5e5e5 1px solid;

@@ -146,6 +146,10 @@
     ;; bars exit
     (-> bars-join
         (.exit)
+        (.transition)
+        (.duration 300)
+        (.ease "exp")
+        (.attr "width" 0)
         (.remove))
 
     ;; y-axis
