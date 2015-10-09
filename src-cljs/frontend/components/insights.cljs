@@ -34,7 +34,7 @@
 (def svg-info
   {:width 425
    :height 100
-   :top 10, :right 10, :bottom 0, :left 30})
+   :top 10, :right 10, :bottom 10, :left 30})
 
 (def plot-info
   {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
