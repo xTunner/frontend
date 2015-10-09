@@ -298,24 +298,52 @@
 }
 
 @media (max-width: @screen-sm-min) {
-  .hamburger-menu {
-    color: @black;
-    display: block;
-    left: 10px;
-    position: absolute;
-    top: 12px;
-  }
-  .navbar-container {
-    &.closed {
+  .container-fluid {
+    .dropdown-menu {
+      border: none;
+      box-shadow: none;
+      display: block;
+      float: none;
+      font-size: 14px;
+      list-style: none;
+      margin: 5px 0 -5px 0 !important;
+      padding: 0 0 0 20px;
+      position: relative;
+      text-align: left;
+    }
+    .hamburger-menu {
+      color: @black;
+      display: block;
+      left: 10px;
+      position: absolute;
+      top: 20px;
+    }
+    .menu-item {
+      &.sub {
+        height: 40px;
+      }
+    }
+    .navbar-container {
+      &.closed {
+        display: none;
+      }
+      &.open {
+        display: block;
+        margin-top: -10px;
+        .fa-caret-down {
+          display: none;
+        }
+      }
+      .navbar-nav {
+        margin: 0 -30px;
+      }
+    }
+    .navbar-header {
+       margin: 0 auto;
+       width: 128px;
+    }
+    .signup-link {
       display: none;
     }
-    &.open {
-      display: block;
-      margin-top: 60px;
-    }
-  }
-  .navbar-header {
-    position: absolute;
-    right: 10px;
   }
 }

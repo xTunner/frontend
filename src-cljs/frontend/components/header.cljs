@@ -160,8 +160,8 @@
             [:div.container-fluid
              [:div.hamburger-menu { :on-click #(raise! owner [:change-hamburger-state])}
               (condp = hamburger-state
-                "closed" [:i.fa.fa-bars.fa-3x]
-                "open" [:i.fa.fa-close.fa-3x]
+                "closed" [:i.fa.fa-bars.fa-2x]
+                "open" [:i.fa.fa-close.fa-2x]
                 )
               ]
              [:div.navbar-header
@@ -181,34 +181,34 @@
                                                             :enterprise}
                                                           nav-point)
                                            "active")}
-                    [:a {:href "/features"}
+                    [:a.menu-item {:href "/features"}
                      "Product "
                      [:i.fa.fa-caret-down]]
                     [:ul.dropdown-menu
                      [:li {:role "presentation"}
-                      [:a {:role "menuitem"
+                      [:a.sub.menu-item {:role "menuitem"
                            :tabIndex "-1"
                            :href "/features"}
                        "Features"]]
                      [:li {:role "presentation"}
-                      [:a {:role "menuitem"
+                      [:a.sub.menu-item {:role "menuitem"
                            :tabIndex "-1"
                            :href "/mobile"}
                        "Mobile"]]
                      [:li {:role "presentation"}
-                      [:a {:role "menuitem"
+                      [:a.sub.menu-item {:role "menuitem"
                            :tabIndex "-1"
                            :href "/integrations/docker"}
                        "Docker"]]
                      [:li {:role "presentation"}
-                      [:a {:role "menuitem"
+                      [:a.sub.menu-item {:role "menuitem"
                            :tabIndex "-1"
                            :href "/enterprise"}
                        "Enterprise"]]]]
                    [:li (maybe-active nav-point :pricing)
-                    [:a {:href "/pricing"} "Pricing"]]))
+                    [:a.menu-item {:href "/pricing"} "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
-                [:a {:href "/docs"} "Documentation"]]
+                [:a.menu-item {:href "/docs"} "Documentation"]]
                (when (config/show-marketing-pages?)
                  (list
                    [:li {:class (when (contains? #{:about
@@ -218,20 +218,20 @@
                                                    :press}
                                                  nav-point)
                                   "active")}
-                    [:a {:href "/about"} "About Us"]]
+                    [:a.menu-item {:href "/about"} "About Us"]]
                    [:li [:a {:href "http://blog.circleci.com"} "Blog"]]))]
 
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right
-                 [:li [:a {:href "/"} "Back to app"]]]
+                 [:li [:a.menu-item {:href "/"} "Back to app"]]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
-                  [:a.login.login-link {:href (auth-url)
+                  [:a.login.login-link.menu-item {:href (auth-url)
                                         :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
                                         :title "Log In with Github"}
                    "Log In"]]
                  [:li
-                  [:a.signup-link.btn.btn-success.navbar-btn {:href "/signup" :on-mouse-up #(analytics/track-signup-click)}
+                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item {:href "/signup" :on-mouse-up #(analytics/track-signup-click)}
                    "Sign Up"]]])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
