@@ -134,15 +134,16 @@
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-              (when (and inner? logged-in? (feature/enabled? :ui-v2))
-                (api/get-orgs api-ch)
-                (om/build top-nav/top-nav app-without-container-data))
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
               [:main.app-main {:ref "app-main"
                                :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
+
+               (when (and inner? logged-in? (feature/enabled? :ui-v2))
+                 (api/get-orgs api-ch)
+                 (om/build top-nav/top-nav app-without-container-data))
 
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
