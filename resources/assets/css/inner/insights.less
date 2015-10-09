@@ -6,6 +6,7 @@
   background-color: #f5f5f5;
   padding-bottom: 15px;
   @block-width: 425px;
+  @chart-padding-left: 30px;
 
   h1 {
     font-size: round((@baseFontSize * 1.5), 0);
@@ -30,24 +31,43 @@
 
     h4 {
       font-size: 16px;
+      color: #333;
       margin: 6px 0 3px;
+      padding-left: @chart-padding-left;
     }
     .above-info, .below-info {
-      padding-left: 26px;
+      .flexy(center, space-around, row);
+      padding-left: @chart-padding-left;
+      padding-bottom: 10px;
       width: 100%;
-      .clearfix();
-    }
 
-    dl {
-      float: left;
-      width: 33.3%;
-      margin: 0;
-      dt {
-        font-weight: inherit;
+      &.above-info dl {
+        .flex(0 0 33%);
       }
-      dd {
-        font-weight: bold;
-        line-height: 0.9;
+
+      &.below-info dl {
+        .flex(0 0 50%);
+        dt, dd {
+          display: inline;
+        }
+        dt {
+          padding-right: 5px;
+        }
+      }
+
+      > a {
+        .flex(0 0 50%);
+      }
+
+      dl {
+        margin: 0;
+        dt {
+          font-weight: inherit;
+        }
+        dd {
+          font-weight: bold;
+          line-height: 0.9;
+        }
       }
     }
   }

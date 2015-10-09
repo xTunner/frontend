@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.routes :as routes]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
             [frontend.datetime :as datetime]
@@ -33,7 +34,7 @@
 (def svg-info
   {:width 425
    :height 100
-   :top 10, :right 10, :bottom 10, :left 30})
+   :top 10, :right 10, :bottom 0, :left 30})
 
 (def plot-info
   {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
@@ -236,24 +237,30 @@
       (html
        [:div.build-time-visualization]))))
 
-(defrender project-insights [{:keys [reponame username default_branch recent-builds]} owner]
+(defrender project-insights [{:keys [reponame username branches recent-builds]} owner]
   (let [builds (chartable-builds recent-builds)]
     (when (not-empty builds)
-      (html
-       [:div.project-block
-        [:h1 (gstring/format "%s/%s" username reponame)]
-        [:div.above-info
-         [:h4 "Branch: " (-> recent-builds (first) (:branch))]
-         [:dl
-          [:dt "AVG BUILD"]
-          [:dd (datetime/as-duration (average-builds builds :build_time_millis))]]
-         [:dl
-          [:dt "AVG QUEUE"]
-          [:dd (datetime/as-duration (average-builds builds :queued_time_millis))]]
-         [:dl
-          [:dt "LAST BUILD"]
-          [:dd (datetime/as-time-since (-> builds last :start_time))]]]
-        (om/build project-insights-bar builds)]))))
+      (let [branch (-> recent-builds (first) (:branch))]
+        (html
+         [:div.project-block
+          [:h1 (gstring/format "%s/%s" username reponame)]
+          [:h4 "Branch: " branch]
+          [:div.above-info
+           [:dl
+            [:dt "AVG BUILD"]
+            [:dd (datetime/as-duration (average-builds builds :build_time_millis))]]
+           [:dl
+            [:dt "AVG QUEUE"]
+            [:dd (datetime/as-duration (average-builds builds :queued_time_millis))]]
+           [:dl
+            [:dt "LAST BUILD"]
+            [:dd (datetime/as-time-since (-> builds last :start_time))]]]
+          (om/build project-insights-bar builds)
+          [:div.below-info
+           [:dl
+            [:dt "Branches:"]
+            [:dd (-> branches keys count)]]
+           [:a {:href (routes/v1-dashboard-path {:org username :repo reponame :branch branch})} "View builds »"]]])))))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]
