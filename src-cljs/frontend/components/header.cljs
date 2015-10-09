@@ -133,8 +133,8 @@
         [:div.container-fluid
          [:ul.nav.navbar-nav
           (for [[point {:keys [path title]}] %]
-            [:li (maybe-active nav-point point)
-             [:a {:href path} title]])]]])
+            [:li.list-item (maybe-active nav-point point)
+             [:a.menu-item {:href path} title]])]]])
     nav-maps))
 
 (defn outer-header [app owner]
@@ -147,7 +147,7 @@
             nav-point (:navigation-point app)
             hamburger-state (get-in app state/hamburger-menu-path)]
         (html
-          [:div
+          [:div.outer-header
            [:div
             (when flash
               [:div#flash {:dangerouslySetInnerHTML {:__html flash}}])]

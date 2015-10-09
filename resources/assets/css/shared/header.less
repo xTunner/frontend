@@ -293,12 +293,12 @@
   }
 }
 
-.hamburger-menu {
-  display: none;
-}
+.outer-header {
+  .hamburger-menu {
+    display: none;
+  }
 
-@media (max-width: @screen-sm-min) {
-  .container-fluid {
+  @media (max-width: @screen-sm-min) {
     .dropdown-menu {
       border: none;
       box-shadow: none;
@@ -339,15 +339,28 @@
       }
       .navbar-nav {
         margin: 0 -30px;
-        
       }
     }
     .navbar-header {
-       margin: 0 auto;
-       width: 128px;
+      margin: 0 auto;
+      width: 128px;
     }
     .signup-link {
       display: none;
+     }
+    .subnav {
+      .navbar-nav {
+        margin: 5px -20px;
+        width: 100vw;
+
+        .list-item {
+          display: inline-block;
+        }
+        .menu-item {
+          border: none;
+          padding: 5px 8px;
+        }
+      }
     }
   }
 }
