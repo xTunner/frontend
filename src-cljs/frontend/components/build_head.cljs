@@ -392,7 +392,7 @@
                                :display "inline"}
                     :on-click toggler}
                    [:i.fa.artifact-toggle-caret
-                    {:class (if closed? "fa-angle-up" "fa-angle-down")}]
+                    {:class (if closed? "fa-angle-right" "fa-angle-down")}]
                    " "
                    tag]
                   tag)
