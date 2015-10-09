@@ -18,23 +18,6 @@
 // old mixins
 // scheduled for demolition
 
-.border-radius(@radius: 5px) {
-   webkit-border-radius: @radius;
-   moz-border-radius: @radius;
-   border-radius: @radius;
-}
-
-.box-shadow(@arguments) {
-    -webkit-box-shadow: @arguments;
-    -moz-box-shadow: @arguments;
-    box-shadow: @arguments;
-}
-
-.text-shadow(@size1, @size2, @size3, @color){
-    -webkit-text-shadow: @size1 @size2 @size3 @color;
-    text-shadow:-@size1 @size2 @size3 @color;
-}
-
 .buttonDark(@buttonColor: #004b64) {
   text-align: center;
   margin-left: -4px;
@@ -147,10 +130,6 @@
 .user-select(...) {
   .prefixer(user-select, @arguments, webkit moz);
 }
-.to_em(@a) when (ispixel(@a)) {
-  @concat: (unit(@a) / unit(@font_size));
-  @to_em: ~"@{concat}em";
-}
 
 // .for
 // see: https://github.com/seven-phases-max/less.curious/blob/master/src/for.less
@@ -224,10 +203,7 @@
   @joined: ~`"@{arguments}".slice(1,-1)`;
   background-image: linear-gradient(to bottom, @joined);
 }
-.horiGradient(...) {
-  @joined: ~`"@{arguments}".slice(1,-1)`;
-  background-image: linear-gradient(to right, @joined);
-}
+
 .radiGradient(...) {
   @joined: ~`"@{arguments}".slice(1,-1)`;
   background-image: radial-gradient(ellipse at center, @joined);
