@@ -50,8 +50,8 @@ If you have access to the backend code, you can also add this line:
 ```
 127.0.0.1 dev.circlehost
 ```
-**Note:** To the `dev.circlehost` entry _must_ be in your `/etc/hosts`
-to get `lein figwheel` to run properly (steps in the next section)
+**Note:** Whichever of these you use _must_ be in your `/etc/hosts` to get
+`lein figwheel` to run properly (steps in the next section)
 
 ## Usage
 
@@ -76,6 +76,9 @@ Second, the frontend clojurescript asset compiler:
 ```
 lein figwheel dev
 ```
+
+Then visit http://prod.circlehost:3000 or http://dev.circlehost:3000 (if you
+have access and have set it up) in your browser.
 
 ### Viewing documentation changes
 
