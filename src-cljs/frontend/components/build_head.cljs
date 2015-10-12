@@ -1223,11 +1223,11 @@
                                   (get-in data state/project-scopes-path))]
         (html
           [:div
-           [:div.build-actions
+           [:div.build-actions-v2
             [:div.actions
              (when (and (build-model/can-cancel? build) has-write-settings?)
                (forms/managed-button
-                 [:a
+                 [:a.build-action
                   {:data-loading-text "Canceling",
                    :title             "Cancel this build",
                    :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
@@ -1235,9 +1235,9 @@
                                                                     :build-num build-num}])}
                   "Cancel Build"]))
             (when has-write-settings?
-              [:div.btn-group
+              [:div.btn-group.build-action.rebuild
                (forms/managed-button
-                 [:button.btn
+                 [:button.btn.rebuild-btn
                   {:data-loading-text "Rebuilding",
                    :title             "Retry the same tests",
                    :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
@@ -1250,7 +1250,7 @@
                 ;; XXX Temporarily remove the ssh button for OSX builds
                 (when (not (feature/enabled-for-project? project :osx))
                   [:li (forms/managed-button
-                         [:a.ssh_build
+                         [:a
                           {:data-loading-text "Rebuilding",
                            :title             "Retry with SSH in VM",
                            :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
@@ -1266,7 +1266,7 @@
                                                                          :build-num build-num
                                                                          :no-cache? true}])}
                         "without cache"])]]])
-            [:a
+            [:a.build-action
              {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
                                                  :repo (get-in data (conj state/project-path :reponame))})}
              [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
