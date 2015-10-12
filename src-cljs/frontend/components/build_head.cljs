@@ -1081,6 +1081,68 @@
              ;; avoid errors if a nonexistent tab is typed in the URL
              nil)]])))))
 
+(defn build-canceler [canceler github-endpoint]
+  [:div.row
+   [:span
+    (list "Canceled by "
+          [:a  {:href  (str  (github-endpoint) "/"  (:login canceler))}
+           (if  (not-empty  (:name canceler))
+             (:name canceler)
+             (:login canceler))])]])
+
+(defn pull-requests [urls]
+  ;; It's possible for a build to be part of multiple PRs, but it's rare
+  (list
+    [:span.summary-spacer "•"]
+    [:span.summary-label
+     (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
+    [:span
+     (interpose
+       ", "
+       (map (fn [url] [:a {:href url} "#"
+                       (let [n (re-find #"/\d+$" url)]
+                         (if n (subs n 1) "?"))])
+            urls))]))
+
+(defn queued-time [build]
+  (if (< 0 (build-model/run-queued-time build))
+    [:span
+     (om/build common/updating-duration {:start (:usage_queued_at build)
+                                         :stop (or (:queued_at build) (:stop_time build))})
+     " waiting + "
+     (om/build common/updating-duration {:start (:queued_at build)
+                                         :stop (or (:start_time build) (:stop_time build))})
+     " in queue"]
+
+    [:span
+     (om/build common/updating-duration {:start (:usage_queued_at build)
+                                         :stop (or (:queued_at build) (:stop_time build))})
+     " waiting for builds to finish"]))
+
+(defn build-finished-status [build]
+  (let [stop-time  (:stop_time build)
+        start-time (:start_time build)]
+    [:div
+     [:span.summary-label "Finished: "]
+     [:span.stop-time
+      (when stop-time
+        {:title (datetime/full-datetime stop-time)})
+      (when stop-time
+        (list (om/build common/updating-duration
+                        {:start stop-time}
+                        {:opts {:formatter datetime/time-ago}}) " ago"))]
+
+     [:span
+      " ("
+      (if (build-model/running? build)
+        (om/build common/updating-duration {:start start-time
+                                            :stop  stop-time})
+        (build-model/duration build))
+      (om/build expected-duration {:start start-time
+                                   :stop  stop-time
+                                   :build build})
+      ")"]]))
+
 (defn build-head-v2 [data owner]
   (reify
     om/IRender
@@ -1108,27 +1170,8 @@
              [:span.badge.build-status {:class (build-model/status-class build)}
               [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
               (build-model/status-words build)]
-             (when-let [stop-time (:stop_time build)]
-               [:div
-                [:span.summary-label "Finished: "]
-                [:span.stop-time
-                 (when (:stop_time build)
-                   {:title (datetime/full-datetime (:stop_time build))})
-                 (when (:stop_time build)
-                   (list (om/build common/updating-duration
-                                   {:start (:stop_time build)}
-                                   {:opts {:formatter datetime/time-ago}}) " ago"))]
-
-                [:span
-                 " ("
-                 (if (build-model/running? build)
-                   (om/build common/updating-duration {:start (:start_time build)
-                                                       :stop (:stop_time build)})
-                   (build-model/duration build))
-                 (om/build expected-duration {:start (:start_time build)
-                                              :stop (:stop_time build)
-                                              :build build})
-                 ")"]])
+             (when (:stop_time build)
+               (build-finished-status build))
              [:div
               [:span.summary-label "Previous:"]
               [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
@@ -1143,37 +1186,18 @@
              (when (:usage_queued_at build)
                [:div
                 [:span.summary-label "Queued"]
-                [:span (if (< 0 (build-model/run-queued-time build))
-                         [:span
-                          (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                              :stop (or (:queued_at build) (:stop_time build))})
-                          " waiting + "
-                          (om/build common/updating-duration {:start (:queued_at build)
-                                                              :stop (or (:start_time build) (:stop_time build))})
-                          " in queue"]
-
-                         [:span
-                          (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                              :stop (or (:queued_at build) (:stop_time build))})
-                          " waiting for builds to finish"])]])
+                [:span  (queued-time build)]])
 
              [:div.summary-build-contents
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]
 
               (when-let [urls (seq (:pull_request_urls build))]
-                ;; It's possible for a build to be part of multiple PRs, but it's rare
-                (list
-                  [:span.summary-spacer "•"]
-                  [:span.summary-label
-                    (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
-                  [:span
-                   (interpose
-                     ", "
-                     (map (fn [url] [:a {:href url} "#"
-                                     (let [n (re-find #"/\d+$" url)]
-                                       (if n (subs n 1) "?"))])
-                          urls))]))]]]
+                (pull-requests urls))]]]
+
+           (when-let  [canceler  (and  (=  (:status build) "canceled")
+                                       (:canceler build))]
+             (build-canceler canceler github-endpoint))
            [:div.card
             [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
