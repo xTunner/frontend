@@ -1082,13 +1082,12 @@
              nil)]])))))
 
 (defn build-canceler [canceler github-endpoint]
-  [:div.row
-   [:span
-    (list "Canceled by "
-          [:a  {:href  (str  (github-endpoint) "/"  (:login canceler))}
-           (if  (not-empty  (:name canceler))
-             (:name canceler)
-             (:login canceler))])]])
+  [:span.summary-label
+   (list "Canceled by: "
+         [:a  {:href  (str  (github-endpoint) "/"  (:login canceler))}
+          (if  (not-empty  (:name canceler))
+            (:name canceler)
+            (:login canceler))])])
 
 (defn pull-requests [urls]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
@@ -1173,11 +1172,11 @@
              (when (:stop_time build)
                (build-finished-status build))
              [:div
-              [:span.summary-label "Previous:"]
+              [:span.summary-label "Previous: "]
               [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
                (:build_num (:previous build))]]
              [:div
-              [:span.summary-label "Parallelism:"]
+              [:span.summary-label "Parallelism: "]
               (if (has-scope :write-settings data)
                 [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                            :href (build-model/path-for-parallelism build)}
@@ -1185,7 +1184,7 @@
                 [:span (:parallel build) "x"])]
              (when (:usage_queued_at build)
                [:div
-                [:span.summary-label "Queued"]
+                [:span.summary-label "Queued: "]
                 [:span  (queued-time build)]])
 
              [:div.summary-build-contents
@@ -1197,7 +1196,8 @@
 
            (when-let  [canceler  (and  (=  (:status build) "canceled")
                                        (:canceler build))]
-             (build-canceler canceler github-endpoint))
+             [:div.row.summary-header
+              (build-canceler canceler github-endpoint)])
            [:div.card
             [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
