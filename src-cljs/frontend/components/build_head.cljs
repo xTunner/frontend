@@ -356,6 +356,55 @@
                                     :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
            (sort-by first artifacts))])))))
 
+(defn artifacts-node-v2 [{:keys [depth artifacts show-artifact-links?] :as data} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (when (seq artifacts)
+         [:ul.build-artifacts-list
+          (map-indexed
+           (fn node-entry [idx [part {:keys [artifact children]}]]
+             (let [directory? (not artifact)
+                   text       (if (and (not= 0 depth) directory?)
+                                (str part "/")
+                                part)
+                   url        (:url artifact)
+                   tag        (if (and url show-artifact-links?)
+                                [:a.artifact-link {:href (:url artifact) :target "_blank"} text]
+                                [:span.artifact-directory-text text])
+                   key        (keyword (str "index-" idx))
+                   key-state  (om/get-state owner [key])
+                   closed?    (or
+                               (:ancestors-closed? opts)
+                               (if (contains? key-state :closed?)
+                                 (:closed? key-state)
+                                 (> depth 1)))
+                   toggler    (fn [event]
+                                (let [key (keyword (str "index-" idx))]
+                                  (.preventDefault event)
+                                  (.stopPropagation event)
+                                  (om/set-state! owner [key :closed?] (not closed?))))]
+               [:li.build-artifacts-node {:class (when (= 0 depth) "container-artifacts")}
+                (if directory?
+                  [:div.build-artifacts-toggle-children
+                   {:style    {:cursor  "pointer"
+                               :display "inline"}
+                    :on-click toggler}
+                   [:i.fa.artifact-toggle-caret
+                    {:class (if closed? "fa-angle-right" "fa-angle-down")}]
+                   " "
+                   tag]
+                  tag)
+                [:div {:style (when closed? {:display "none"})}
+                 (om/build artifacts-node-v2
+                           {:depth (+ depth 1)
+                            :artifacts children
+                            :show-artifact-links? show-artifact-links?}
+                           {:opts (assoc opts
+                                    :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
+           (sort-by first artifacts))])))))
+
 (defn should-show-artifact-links?
   ;; Be extra careful about XSS in production environment
   [env admin?]
@@ -384,6 +433,33 @@
                    (->> artifacts
                         (group-by :node_index)
                         (sort-by first)))
+              [:div.loading-spinner common/spinner]))])))))
+
+(defn build-artifacts-list-v2 [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:artifacts-showed]))
+
+    om/IRender
+    (render [_]
+      (let [artifacts-data (:artifacts-data data)
+            artifacts (:artifacts artifacts-data)
+            has-artifacts? (:has-artifacts? data)]
+        (html
+         [:div.build-artifacts-container
+          (if-not has-artifacts?
+            (artifacts-ad)
+            (if artifacts
+              (interpose [:hr]
+                         (map (fn artifact-node-builder [[node-index node-artifacts]]
+                                (om/build artifacts-node-v2 {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
+                                                             :depth 0
+                                                             :show-artifact-links? (should-show-artifact-links? (env) (:admin (:user data)))}
+                                          ))
+                              (->> artifacts
+                                   (group-by :node_index)
+                                   (sort-by first))))
               [:div.loading-spinner common/spinner]))])))))
 
 (defn tests-ad [owner]
@@ -516,6 +592,8 @@
    ;; Otherwise, just use the first one.
    :else :commits))
 
+(def tab-link :a.tab-link)
+
 (defn build-sub-head [data owner]
   (reify
     om/IRender
@@ -543,18 +621,19 @@
            [:div.sub-head-top
             [:ul.nav.nav-tabs
              [:li {:class (when (= :commits selected-tab) "active")}
-              [:a {:href "#commits"} "Commit Log"]]
+              [tab-link {:href "#commits"} "Commit Log"]]
 
             [:li {:class (when (= :config selected-tab) "active")}
-             [:a {:href "#config"} "circle.yml"]]
+             [tab-link {:href "#config"} "circle.yml"]]
 
             (when (seq build-params)
               [:li {:class (when (= :build-parameters selected-tab) "active")}
-               [:a {:href "#build-parameters"} "Build Parameters"]])
+               [tab-link {:href "#build-parameters"} "Build Parameters"]])
 
             (when (has-scope :read-settings data)
               [:li {:class (when (= :usage-queue selected-tab) "active")}
-               [:a#queued_explanation {:href "#usage-queue"} "Queue"
+               [tab-link {:id "queued_explanation"
+                          :href "#usage-queue"} "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
                    (om/build common/updating-duration {:start (:usage_queued_at build)
@@ -565,12 +644,12 @@
             (when (and (has-scope :write-settings data)
                        (not (feature/enabled-for-project? project :osx)))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
-               [:a {:href "#ssh-info"} "Debug via SSH"]])
+               [tab-link {:href "#ssh-info"} "Debug via SSH"]])
 
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [:li {:class (when (= :tests selected-tab) "active")}
-               [:a {:href "#tests"} (if (= "success" (:status build))
+               [tab-link {:href "#tests"} (if (= "success" (:status build))
                                       "Test Results "
                                       "Test Failures ")
                 (when-let [fail-count (some->> build-data
@@ -583,12 +662,12 @@
 
             (when (and admin? (build-model/finished? build))
               [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [:a {:href "#build-time-viz"} "Build Timing"]])
+               [tab-link {:href "#build-time-viz"} "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [:li {:class (when (= :artifacts selected-tab) "active")}
-               [:a {:href "#artifacts"} "Artifacts"]])]]
+               [tab-link {:href "#artifacts"} "Artifacts"]])]]
 
           [:div.sub-head-content
            (case selected-tab
@@ -898,6 +977,10 @@
                    (om/build-all commit-line-v2 (drop 3 (map #(assoc % :build build)
                                                              (:all_commit_details build)))))))])])))))
 
+
+(def tab-tag :li.build-info-tab)
+(def tab-link-v2 :a.tab-link-v2)
+
 (defn build-sub-head-v2 [data owner]
   (reify
     om/IRender
@@ -925,16 +1008,17 @@
           [:div.sub-head-top
            [:ul.nav.nav-tabs
 
-            [:li {:class (when (= :config selected-tab) "active")}
-             [:a {:href "#config"} "circle.yml"]]
+            [tab-tag {:class (when (= :config selected-tab) "active")}
+             [tab-link-v2 {:href "#config"} "circle.yml"]]
 
             (when (seq build-params)
-              [:li {:class (when (= :build-parameters selected-tab) "active")}
-               [:a {:href "build-parameters"} "Build Parameters"]])
+              [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
+               [tab-link-v2 {:href "build-parameters"} "Build Parameters"]])
 
             (when (has-scope :read-settings data)
-              [:li {:class (when (= :usage-queue selected-tab) "active")}
-               [:a#queued_explanation {:href "#usage-queue"} "Queue"
+              [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
+               [tab-link-v2 {:id "queued_explanation"
+                             :href "#usage-queue"} "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
                    (om/build common/updating-duration {:start (:usage_queued_at build)
@@ -944,16 +1028,16 @@
             ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
                        (not (feature/enabled-for-project? project :osx)))
-              [:li {:class (when (= :ssh-info selected-tab) "active")}
-               [:a {:href "#ssh-info"}
+              [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
+               [tab-link-v2 {:href "#ssh-info"}
                 "Debug via SSH"]])
 
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
-              [:li {:class (when (= :tests selected-tab) "active")}
-               [:a {:href "#tests"} (if (= "success" (:status build))
-                                      "Test Results "
-                                      "Test Failures ")
+              [tab-tag {:class (when (= :tests selected-tab) "active")}
+               [tab-link-v2 {:href "#tests"} (if (= "success" (:status build))
+                                               "Test Results "
+                                               "Test Failures ")
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
@@ -963,17 +1047,17 @@
                     [:span {:class "fail-count"} fail-count]))]])
 
             (when (and admin? (build-model/finished? build))
-              [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [:a {:href "#build-time-viz"}
+              [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
+               [tab-link-v2 {:href "#build-time-viz"}
                 "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
-              [:li {:class (when (= :artifacts selected-tab) "active")}
-               [:a {:href "#artifacts"}
+              [tab-tag {:class (when (= :artifacts selected-tab) "active")}
+               [tab-link-v2 {:href "#artifacts"}
                 "Artifacts"]])]]
 
-          [:div.sub-head-content
+          [:div.card.sub-head-content
            (case selected-tab
              :commits nil
 
@@ -981,7 +1065,7 @@
 
              :build-time-viz (om/build build-time-visualization build)
 
-             :artifacts (om/build build-artifacts-list
+             :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
 
