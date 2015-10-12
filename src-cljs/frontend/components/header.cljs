@@ -156,19 +156,22 @@
                                                                   (get-in app [:navigation-data :language])
                                                                   :integrations
                                                                   (name (get-in app [:navigation-data :integration]))
-                                                                  nil)}
+                                                                  nil)
+                                                         :on-touch-end #(raise! owner [:change-hamburger-state])}
             [:div.container-fluid
-             [:div.hamburger-menu { :on-click #(raise! owner [:change-hamburger-state])}
+             [:div.hamburger-menu 
               (condp = hamburger-state
                 "closed" [:i.fa.fa-bars.fa-2x]
-                "open" [:i.fa.fa-close.fa-2x]
-                )
-              ]
+                "open" [:i.fa.fa-close.fa-2x])]
              [:div.navbar-header
               [:a#logo.navbar-brand
                {:href "/"}
                (common/circle-logo {:width nil
-                                    :height 25})]]
+                                    :height 25})]
+              (if logged-in?
+                [:a.mobile-nav {:href "/"} "Back to app"]
+                [:a.mobile-nav.signup {:href "/signup"} "Sign up"])
+              ]
              [:div.navbar-container {:class hamburger-state}
               [:ul.nav.navbar-nav
                (when (config/show-marketing-pages?)
@@ -186,24 +189,33 @@
                      [:i.fa.fa-caret-down]]
                     [:ul.dropdown-menu
                      [:li {:role "presentation"}
-                      [:a.sub.menu-item {:role "menuitem"
-                           :tabIndex "-1"
-                           :href "/features"}
+                      [:a.sub.menu-item (
+                                         merge
+                                          (maybe-active nav-point :features)
+                                          {:role "menuitem"
+                                           :tabIndex "-1"
+                                           :href "/features"})
                        "Features"]]
                      [:li {:role "presentation"}
-                      [:a.sub.menu-item {:role "menuitem"
-                           :tabIndex "-1"
-                           :href "/mobile"}
+                      [:a.sub.menu-item (merge
+                                          (maybe-active nav-point :mobile)
+                                          {:role "menuitem"
+                                           :tabIndex "-1"
+                                           :href "/mobile"})
                        "Mobile"]]
                      [:li {:role "presentation"}
-                      [:a.sub.menu-item {:role "menuitem"
-                           :tabIndex "-1"
-                           :href "/integrations/docker"}
+                      [:a.sub.menu-item (merge
+                                          (maybe-active nav-point :integrations)
+                                          {:role "menuitem"
+                                           :tabIndex "-1"
+                                           :href "/integrations/docker"})
                        "Docker"]]
                      [:li {:role "presentation"}
-                      [:a.sub.menu-item {:role "menuitem"
-                           :tabIndex "-1"
-                           :href "/enterprise"}
+                      [:a.sub.menu-item (merge
+                                          (maybe-active nav-point :enterprise)
+                                          { :role "menuitem"
+                                           :tabIndex "-1"
+                                           :href "/enterprise"})
                        "Enterprise"]]]]
                    [:li (maybe-active nav-point :pricing)
                     [:a.menu-item {:href "/pricing"} "Pricing"]]))
@@ -221,7 +233,7 @@
                     [:a.menu-item {:href "/about"} "About Us"]]
                    [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))]
               (if logged-in?
-                [:ul.nav.navbar-nav.navbar-right
+                [:ul.nav.navbar-nav.navbar-right.back-to-app
                  [:li [:a.menu-item {:href "/"} "Back to app"]]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li

@@ -298,6 +298,12 @@
     display: none;
   }
 
+  @media (min-width @screen-sm-min) {
+    .mobile-nav {
+      display: none;
+    }
+  }
+
   @media (max-width: @screen-sm-min) {
     .dropdown-menu {
       border: none;
@@ -319,11 +325,15 @@
       top: 20px;
     }
     .menu-item {
+      background-color: @white !important;
       border: 1px solid #dddddd;
       border-bottom: 0;
       &.sub {
-        padding: 10px 0 10px 40px;
+        padding: 10px 0 10px 40px !important;
         height: 40px;
+      }
+      &.active {
+        color: @brand-primary;
       }
     }
     .navbar-container {
@@ -339,15 +349,27 @@
       }
       .navbar-nav {
         margin: 0 -30px;
+        &.back-to-app {
+          display: none;
+        }
       }
     }
     .navbar-header {
       margin: 0 auto;
       width: 128px;
     }
+    .mobile-nav {
+      color: @black;
+      position: absolute;
+      top: 25px;
+      right: 10px;
+      &.signup {
+        color: @green;
+      }
+    }
     .signup-link {
       display: none;
-     }
+    }
     .subnav {
       .navbar-nav {
         margin: 5px -20px;
