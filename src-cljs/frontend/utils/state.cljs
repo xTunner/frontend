@@ -1,7 +1,8 @@
 (ns frontend.utils.state
   (:require [frontend.state :as state]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.seq :refer [find-index]]))
+            [frontend.utils.seq :refer [find-index]])
+  (:require-macros [frontend.utils :refer [inspect]]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch]}]
   (assoc-in state state/crumbs-path
@@ -46,13 +47,21 @@
   (and (get-in state state/org-name-path)
        (not= org-name (get-in state state/org-name-path))))
 
+(defn stale-current-build?
+  [state project-name build-num]
+  (or (stale-current-project? state project-name)
+      (if-let [current-build-num (get-in state
+                                         [:current-build-data :build :build_num])]
+        (not= build-num current-build-num)
+        true)))
+
 (defn find-repo-index
   "Path for a given repo. Login is the username, name is the repo name."
-   [state login repo-name]
-   (when-let [repos (get-in state state/repos-path)]
-     (find-index #(and (= repo-name (:name %))
-                       (= login (:username login)))
-                 repos)))
+  [repos login repo-name]
+  (when repos
+    (find-index #(and (= repo-name (:name %))
+                      (= login (:username %)))
+                repos)))
 
 (defn clear-page-state [state]
   (-> state
