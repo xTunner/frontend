@@ -299,6 +299,7 @@
         [:header.main-head
          [:div.head-user
           [:h1 "Insights » Repositories"]]]
-        (if (empty? projects)
-          (om/build no-projects data)
-          (om/build-all project-insights projects))])))
+        (cond
+          (nil? projects)    [:div.loading-spinner-big common/spinner]
+          (empty? projects)  (om/build no-projects data)
+          :else              (om/build-all project-insights projects))])))
