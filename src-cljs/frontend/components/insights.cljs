@@ -263,7 +263,7 @@
            [:dl
             [:dt "Branches:"]
             [:dd (-> branches keys count)]]
-           [:a {:href (routes/v1-dashboard-path {:org username :repo reponame :branch branch})} "View builds »"]]])))))
+           ]])))))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]
