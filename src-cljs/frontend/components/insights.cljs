@@ -219,10 +219,17 @@
        (map add-queued-time)
        (take (:max-bars plot-info))))
 
-(defn average-builds [builds f]
+(defn median-builds [builds f]
   (let [nums (->> builds
-                  (map f))]
-    (/ (apply + nums) (count nums))))
+                  (map f)
+                  sort)
+        c (count nums)
+        mid-i (js/Math.floor (/ c 2))]
+    (if (odd? c)
+      (nth nums mid-i)
+      (/ (+ (nth nums mid-i)
+            (nth nums (dec mid-i)))
+         2))))
 
 (defn project-insights-bar [builds owner]
   (reify
@@ -250,11 +257,11 @@
           [:h4 "Branch: " branch]
           [:div.above-info
            [:dl
-            [:dt "AVG BUILD"]
-            [:dd (datetime/as-duration (average-builds builds :build_time_millis))]]
+            [:dt "MEDIAN BUILD"]
+            [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
            [:dl
-            [:dt "AVG QUEUE"]
-            [:dd (datetime/as-duration (average-builds builds :queued_time_millis))]]
+            [:dt "MEDIAN QUEUE"]
+            [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
            [:dl
             [:dt "LAST BUILD"]
             [:dd (datetime/as-time-since (-> builds last :start_time))]]]
