@@ -82,57 +82,64 @@
       (and (.-platformModifierKey event)
            (.isButton event goog.events.BrowserEvent.MouseButton.LEFT))))
 
-(defn closest-tag [element tag]
+(defn closest-tag [element query-tag]
   "Handle SVG element properly."
   (let [dom-helper (goog.dom.DomHelper.)
-        tag (string/upper-case tag)
-        lower-tag (string/lower-case tag) ; SVG is case-sensitive
+        upper-query (string/upper-case query-tag)
+        lower-query (string/lower-case query-tag)
         ]
-    (or (when (= (.-tagName element) tag) element)
-        (.getAncestorByTagNameAndClass dom-helper element tag)
-        (when (= (instance? js/SVGElement element))
+    (or (when (= (.-tagName element) upper-query) element)
+        (.getAncestorByTagNameAndClass dom-helper element upper-query)
+        (when (instance? js/SVGElement element)
           (loop [e element]
-            (let [e-tag (.-tagName e)]
+            (let [e-tag (.-tagName e)]  ; SVG tags are case sensitive
               (condp = e-tag
-                lower-tag e
+                lower-query e
                 "svg" nil
                 (recur (.-parentElement e)))))))))
 
+(defn closest-a-tag-and-populate-properties [target]
+  "Find closest <a> ancestor of target and add some properties to it."
+  (let [a (closest-tag target "A")]
+    (cond (instance? js/SVGElement a)   ; SVG
+          (let [href (-> a (.-href) (.-baseVal))]
+            (hash-map :attr-href href
+                      :attr-target (-> a
+                                       (.-target)
+                                       (.-baseVal))
+                      :host-name (let [uri-info (goog.Uri.parse href)
+                                       domain (.getDomain uri-info)]
+                                   (if (empty? domain)
+                                     (.. js/window -location -hostname)
+                                     domain))))
+          (instance? js/HTMLElement a)                         ; HTML
+          (let [href (let [path (str (.-pathname a) (.-search a) (.-hash a))]
+                       (when-not (empty? path)
+                         path))]
+            (hash-map :attr-href href
+                      :attr-target (-> a .-target)
+                      :host-name (-> a .-hostname))))))
+
 (defn setup-link-dispatcher! [history-imp top-level-node]
-  (events/listen top-level-node "click"
-                 #(let [-target (.. % -target)
-                        target (closest-tag -target "A")
-                        location (when target
-                                   (or (let [path (str (.-pathname target) (.-search target) (.-hash target))]
-                                         (if-not (empty? path)
-                                           path))
-                                       ;; SVG
-                                       (-> target (.-href) (.-baseVal))))
-                        new-token (when (seq location) (subs location 1))
-                        attr-target (or (.-target target)
-                                        (-> target ; SVG
-                                            (.-target)
-                                            (.-baseVal)))
-                        host-name (or (.-hostname target)
-                                      (let [uri-info (goog.Uri.parse location) ; SVG
-                                            domain (.getDomain uri-info)]
-                                        (if (empty? domain)
-                                          (.. js/window -location -hostname)
-                                          domain)))]
-                    (when (and (seq location)
-                               (= (.. js/window -location -hostname)
-                                  host-name)
-                               (not (or (new-window-click? %) (= attr-target "_blank"))))
-                      (.preventDefault %)
-                      (if (and (route-fragment location)
-                               (path-matches? (.getToken history-imp) new-token))
+  (events/listen
+   top-level-node "click"
+     #(let [-target (.. % -target)
+            {:keys [attr-href attr-target host-name]} (closest-a-tag-and-populate-properties -target)
+            new-token (when (seq attr-href) (subs attr-href 1))]
+      (when (and (= (-> js/window .-location .-hostname)
+                    host-name)
+                 (not (or (new-window-click? %)
+                          (= attr-target "_blank"))))
+        (.preventDefault %)
+        (if (and (route-fragment attr-href)
+                 (path-matches? (.getToken history-imp) new-token))
 
-                        (do (utils/mlog "scrolling to hash for" location)
-                            ;; don't break the back button
-                            (.replaceToken history-imp new-token))
+          (do (utils/mlog "scrolling to hash for" attr-href)
+              ;; don't break the back button
+              (.replaceToken history-imp new-token))
 
-                        (do (utils/mlog "navigating to" location)
-                            (.setToken history-imp new-token)))))))
+          (do (utils/mlog "navigating to" attr-href)
+              (.setToken history-imp new-token)))))))
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
