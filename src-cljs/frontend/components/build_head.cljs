@@ -921,15 +921,16 @@
                (build-model/author commit-details)]
               [:a {:href (str "mailto:" (:author_email commit-details))}
                author-icon
-               (build-model/author commit-details)])
-            (when (build-model/author-isnt-committer commit-details)
+               (build-model/author commit-details)])]
+           (when (build-model/author-isnt-committer commit-details)
+             [:span.metadata-item
               (if-not (:committer_email commit-details)
                 [:span
                  author-icon
                  (build-model/committer commit-details)]
                 [:a {:href (str "mailto:" (:committer_email commit-details))}
                  author-icon
-                 (build-model/committer commit-details)]))]
+                 (build-model/committer commit-details)])])
 
            [:a.metadata-item.sha-one {:href commit_url
                                       :title commit}
