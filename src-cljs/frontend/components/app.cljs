@@ -140,13 +140,14 @@
                                :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
 
+               (when (and inner? logged-in? (feature/enabled? :ui-v2))
+                 (api/get-orgs api-ch)
+                 (om/build top-nav/top-nav app-without-container-data))
+
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
-
-               (when (and inner? logged-in? (feature/enabled? :ui-v2))
-                 (om/build top-nav/top-nav app-without-container-data))
 
                (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))

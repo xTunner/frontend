@@ -59,6 +59,7 @@
 
 .app-aside {
   .flex(0 0 auto);
+  .flexy(column);
 }
 
 .aside-left-nav,
@@ -308,6 +309,7 @@
   }
 
   .projects {
+    .flex(1 1 auto);
     overflow-y: scroll;
 
     a {
@@ -474,6 +476,13 @@
     font-family: @monoFontFamily;
     font-size: @fontSizeMini;
     color: @grayLight;
+  }
+}
+
+.ui-v2 {
+  .aside-activity.open {
+    height: auto;
+    .flex(1 0 1px);
   }
 }
 
