@@ -1013,7 +1013,7 @@
 
             (when (seq build-params)
               [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
-               [tab-link-v2 {:href "build-parameters"} "Build Parameters"]])
+               [tab-link-v2 {:href "#build-parameters"} "Build Parameters"]])
 
             (when (has-scope :read-settings data)
               [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
