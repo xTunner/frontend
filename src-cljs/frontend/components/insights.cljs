@@ -268,7 +268,10 @@
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]
     (html
-       [:div#build-insights
+     [:div#build-insights {:class (case (count projects)
+                                    1 "one-project"
+                                    2 "two-projects"
+                                    "three-or-more-projects")}
         [:header.main-head
          [:div.head-user
           [:h1 "Insights » Repositories"]]]
