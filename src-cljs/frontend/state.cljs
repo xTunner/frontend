@@ -9,7 +9,6 @@
    :ab-test-definitions {:a_is_a [true false]
                          :multi_test_equal_variants ["a" "b" "c" "d"]
                          :updated-auth-page [true false]
-                         :parallelism_button_design [true false]
                          :pay_now_button [true false]
                          :follow_notice [true false]
                          :new_usage_queued_upsell [true false]}
