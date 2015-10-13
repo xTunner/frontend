@@ -1,21 +1,21 @@
 (ns frontend.utils
   (:refer-clojure :exclude [uuid])
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [ajax.core :as ajax]
+            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [cljs-time.core :as time]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
             [frontend.config :as config]
-            [om.core :as om :include-macros true]
-            [ajax.core :as ajax]
-            [cljs-time.core :as time]
-            [goog.async.AnimationDelay]
-            [goog.crypt :as crypt]
-            [goog.crypt.Md5 :as md5]
             [goog.Uri]
+            [goog.async.AnimationDelay]
+            [goog.crypt.Md5 :as md5]
+            [goog.crypt :as crypt]
+            [goog.dom :as dom]
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
-            [goog.style]
             [goog.string :as gstring]
-            [goog.dom :as dom]
+            [goog.style :as style]
+            [om.core :as om :include-macros true]
             [sablono.core :as html :include-macros true])
   (:require-macros [frontend.utils :refer [inspect timing defrender html]])
   (:import [goog.format EmailAddress]))
@@ -254,9 +254,14 @@
 (defn scroll-to-node!
   [node]
   (let [body (.-body js/document)
-        node-top (goog.style/getPageOffsetTop node)
-        body-top (goog.style/getPageOffsetTop body)]
-    (set! (.-scrollTop body) (- node-top body-top))))
+        node-top (style/getPageOffsetTop node)
+        body-top (style/getPageOffsetTop body)
+        header-height (if-let [navbar (dom/getElementByClass "navbar-fixed-top")]
+                        (+ (js/parseFloat (style/getComputedStyle navbar "marginTop"))
+                           (.-offsetHeight navbar)
+                           (js/parseFloat (style/getComputedStyle navbar "marginBottom")))
+                        0)]
+    (set! (.-scrollTop body) (- node-top body-top header-height))))
 
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"
@@ -310,8 +315,8 @@
    the size of every element so that it is the same size as the largest element."
   [node class-name]
   (let [items (node-list->seqable (dom/getElementsByClass class-name node))
-        sizes (map goog.style/getSize items)
+        sizes (map style/getSize items)
         max-width (apply max (map #(.-width %) sizes))
         max-height (apply max (map #(.-height %) sizes))]
     (doseq [item items]
-      (goog.style/setSize item max-width max-height))))
+      (style/setSize item max-width max-height))))
