@@ -53,6 +53,8 @@
       (let [crumbs-data (get-in app state/crumbs-path)
             project (get-in app state/project-path)
             project-id (project-model/id project)
+            project-name (:reponame project)
+            project-user (:username project)
             vcs-url (:vcs_url project)]
         (html
           [:div.head-user
@@ -67,6 +69,9 @@
                  :data-spinner true}
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app owner)
+           (when (and (feature/enabled? :ui-v2) (= :project-settings (:navigation-point app)))
+             [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
+              (str "View " project-name " »")])
            (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
              (om/build build-head/build-head-actions app))
            ])))))
