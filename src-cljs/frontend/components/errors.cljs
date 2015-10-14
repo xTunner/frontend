@@ -14,7 +14,7 @@
     om/IRender
     (render [_]
       (let [status (get-in app [:navigation-data :status])
-            logged-in?  (get-in app state/user-path)
+            logged-in? (get-in app state/user-path)
             orig-nav-point (get-in app [:original-navigation-point])
             _ (utils/mlog "error-page render with orig-nav-point " orig-nav-point " and logged-in? " (boolean logged-in?))]
         (html
