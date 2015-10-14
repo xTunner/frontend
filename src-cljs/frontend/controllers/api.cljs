@@ -123,7 +123,7 @@
                                        (if-let [{:keys [recent_builds]} (->> old-projects
                                                                              (filter #(= target-build-id (project-build-id %)))
                                                                              first)]
-                                         (assoc project :recent_builds recent_builds)
+                                         (assoc project :recent-builds recent_builds)
                                          project)))
                                    resp)]
          (api/get-projects-builds project-build-ids api-ch)
@@ -146,7 +146,7 @@
                   (get-in args [:context :query-params :page])))
     state
     (-> state
-        (assoc-in [:recent_builds] (:resp args))
+        (assoc-in [:recent-builds] (:resp args))
         (assoc-in state/project-scopes-path (:scopes args))
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
@@ -157,7 +157,7 @@
             (for [project projects
                   :let [project-id (project-build-id project)]]
               (if (= project-id target-id)
-                (assoc project :recent_builds recent-builds)
+                (assoc project :recent-builds recent-builds)
                 project)))]
     (update-in state state/projects-path add-recent-builds)))
 

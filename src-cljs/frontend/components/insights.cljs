@@ -248,14 +248,14 @@
       (html
        [:div.build-time-visualization]))))
 
-(defrender project-insights [{:keys [reponame username branches recent_builds] :as project} owner]
-  (let [builds (chartable-builds recent_builds)]
+(defrender project-insights [{:keys [reponame username branches recent-builds] :as project} owner]
+  (let [builds (chartable-builds recent-builds)]
     (html
-     (let [branch (-> recent_builds (first) (:branch))]
+     (let [branch (-> recent-builds (first) (:branch))]
        [:div.project-block
         [:h1 (gstring/format "%s/%s" username reponame)]
         [:h4 "Branch: " branch]
-        (cond (nil? recent_builds) [:div.loading-spinner common/spinner]
+        (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
               (empty? builds) [:div.no-builds "No builds."]
               :else
               (list
