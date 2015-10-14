@@ -83,12 +83,14 @@
   "helper for finding appropriate backend, assumes that the `*.circlehost` prefix
   matches the DNS for env on circleci.com"
   [req]
-  (case (:server-name req)
-    "dev.circlehost" {:proto "http" :host "dev.circlehost:8080"}
-    "prod.circlehost" {:proto "https" :host "circleci.com"}
-    "enterprise.circlehost" {:proto "https" :host "enterprise-staging.sphereci.com"}
-    (when-let [env (some->> req :server-name (re-matches #"(.*).circlehost") second)]
-      {:proto "https" :host (format "%s.circleci.com" env)})))
+  (let [server-name (:server-name req)]
+    (cond
+      (= server-name "dev.circlehost") {:proto "http" :host "dev.circlehost:8080"}
+      (= server-name "prod.circlehost") {:proto "https" :host "circleci.com"}
+      (= server-name "enterprise.circlehost") {:proto "https" :host "enterprise-staging.sphereci.com"}
+      (re-matches #"(.*).circlehost" server-name) (when-let [env (some->> req :server-name (re-matches #"(.*).circlehost") second)]
+                                                    {:proto "https" :host (format "%s.circleci.com" env)})
+      :else {:proto "http" :host "dev.circlehost:8080"})))
 
 (def proxy-config
   ;; Incomplete lists of routes to proxy. Unfortunately duplicated knowledge between
