@@ -46,7 +46,7 @@
               [:div.status-bar.row
                [:div.col-xs-3.left.no-padding
                 [:div.success.circle [:i.fa.fa-check.fa-inverse]]
-                [:div.success.line.smaller-bottom-margin]]
+                [:div.success.line]]
                [:div.col-xs-6.middle.no-padding
                 [:div.line]
                 [:div.circle]
