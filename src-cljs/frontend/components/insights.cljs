@@ -12,6 +12,7 @@
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.routes :as routes]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
@@ -279,6 +280,16 @@
                  [:dt "Branches:"]
                  [:dd (-> branches keys count)]]]])]))))
 
+(defrender no-projects [data owner]
+  (html
+    [:div.no-insights-block
+     [:div.content
+      [:div.row
+       [:div.header.text-center "No Insights yet"]]
+       [:div.details.text-center "Add projects from your Github orgs and start building on CircleCI to view insights."]
+      [:div.row.text-center
+       [:button.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
+
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]
     (html
@@ -289,4 +300,7 @@
         [:header.main-head
          [:div.head-user
           [:h1 "Insights » Repositories"]]]
-        (om/build-all project-insights projects)])))
+        (cond
+          (nil? projects)    [:div.loading-spinner-big common/spinner]
+          (empty? projects)  (om/build no-projects state)
+          :else              (om/build-all project-insights projects))])))

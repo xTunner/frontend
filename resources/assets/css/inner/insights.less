@@ -3,6 +3,14 @@
 @tick-color: #999999;
 @spinner-height: 172px;
 
+&.ui-v2 #build-insights .no-insights-block {
+  background-color: @block-background-color-v2;
+
+  .content {
+    color: @gray-dark-v2;
+  }
+}
+
 #build-insights {
   @block-width: 425px;
   @chart-padding-left: 30px;
@@ -40,6 +48,35 @@
     .project-block {
       @media (min-width: 970px) {
         .two-col();
+      }
+    }
+  }
+
+  .no-insights-block {
+    margin: 15px;
+    padding: 10px;
+    background-color: @white;
+
+    .content {
+      background: url('@{imgPath}/empty-state-insights@2x.png') no-repeat center center;
+      background-size: contain;
+      height: @standardBlockSize + 40px;
+      font-size: @fontSizeLarge;
+      color: @grayDark;
+
+      .header {
+        font-weight: bolder;
+        margin-top: 50px;
+      }
+
+      .details {
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        border-radius: 20px;
+        padding-left: 37px;
+        padding-right: 37px;
       }
     }
   }
