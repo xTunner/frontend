@@ -113,15 +113,58 @@
     border-radius: 10px;
     box-shadow: 1px 1.5px 3px 2px lighten(@gray-base, 80%);
     font-size: 16px;
-    margin: 5px 0 30px 0;
+    margin: 5px 0 35px 0;
     padding: 20px;
-    height: 214px;
-    width: 426px;
 
     .customer {
       color: @gray-darker; 
       font-family: ProximaNova-Light;
     }
+
+    .photo-logo-row {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .customer-photo {
+        height: 40px;
+        width: 40px;
+        background-size: 40px 40px;
+        border-radius: 50%;
+        border: 2px solid @white;
+        box-shadow: 0px 1px 2px 1px lighten(@gray-base, 80%);
+
+      &.rohan-singh {
+        background-image: url('@{imgPath}/outer/signup/rohan-singh.png');
+        background-position-x: -5px;
+      }
+
+      &.matt-kemp {
+        background-image: url('@{imgPath}/outer/signup/matt-kemp.png');
+      }
+    }
+    
+    .logo {
+      height: 20px;
+      width: 65px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-repeat: no-repeat;
+      background-position: right;
+
+      &.sprig {
+        background-image: url('@{imgPath}/outer/signup/sprig-logo.svg');
+        background-size: 45px 20px;
+      }
+
+      &.spotify {
+        background-image: url('@{imgPath}/outer/signup/spotify-logo.svg');
+        background-size: 65px 20px;
+      }
+
+    }
+
     .testimonial {
       color: @gray;
       font-family: ProximaNova-LightIt;

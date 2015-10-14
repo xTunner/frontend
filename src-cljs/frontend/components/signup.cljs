@@ -70,14 +70,17 @@
              [:div.col-md-1]
              [:div.col-md-4
               [:div.row.testimonial-card
-               [:div]
-                [:div.customer [:p "Parker Conrad, CEO at Zenefits"]]
-                [:div.testimonial [:p "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining CI Infrastructure."]]
-               ]
+                [:div.photo-logo-row
+                 [:div.customer-photo.rohan-singh]
+                 [:div.logo.spotify]]
+                [:div.customer [:p "Rohan Singh, Senior Infrastructure Engineer at Spotify"]]
+                [:div.testimonial [:p "We love CircleCI's integration with GitHub and their ease of use. They've created a great user experience that makes it easy to see what's going on with builds and what the status is. Another thing that's been indispensable is the ability to SSH into build containers, which is something you don't get with other services."]]]
               [:div.row.testimonial-card
-                [:div.customer [:p "Parker Conrad, CEO at Zenefits"]]
-                [:div.testimonial [:p "CircleCI lets us be more agile and ship product faster. We can focus on delivering value to our customers, not maintaining CI Infrastructure."]]]
-              ]
+                [:div.photo-logo-row
+                 [:div.customer-photo.matt-kemp]
+                 [:div.logo.sprig]]
+                [:div.customer [:p "Matt Kemp, Co-founder & Head of Engineering at Sprig"]]
+                [:div.testimonial [:p "CircleCI is an excellent product and was the clear winner over the alternatives when I tried them all out. I signed up for a few different CI services and got our project building, then tried to configure a few extra options. With CircleCI, I was able to get a green build the fastest and hit the fewest bumps."]]]]
              [:div.col-md-1]]
             [:div.row.footer
              [:div.github-example.col-md-12
