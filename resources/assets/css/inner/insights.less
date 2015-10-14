@@ -1,9 +1,12 @@
 @import "../shared/variables.less";
 
 @tick-color: #999999;
-@insightBlockHeight: @standardBlockSize + 40px;
+@insight-block-height: 243px;
 
 #build-insights {
+  @block-width: 425px;
+  @chart-padding-left: 30px;
+
   .one-col() {
     margin-left: ~"calc((100% - @{block-width}) / 2)";
   }
@@ -16,9 +19,6 @@
 
   background-color: #f5f5f5;
   padding-bottom: 15px;
-  @block-width: 425px;
-  @chart-padding-left: 30px;
-
   min-width: 465px;
 
   h1 {
@@ -48,6 +48,7 @@
 
     display: inline-block;
     margin: 20px 0;
+    vertical-align: top;
     border-bottom: #e5e5e5 1px solid;
     background-color: white;
     width: @block-width;
@@ -100,8 +101,8 @@
     }
 
     .loading-spinner{
-      height: @insightBlockHeight;
-      margin-top: (@insightBlockHeight / 2) - @spinnerSize;
+      height: @insight-block-height;
+      .flexy(center, space-around, column);
     }
   }
 
