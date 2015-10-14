@@ -1,145 +1,34 @@
 @import "../shared/variables.less";
 
 @tick-color: #999999;
-@spinner-height: 172px;
-
-&.ui-v2 #build-insights .no-insights-block {
-  background-color: @block-background-color-v2;
-
-  .content {
-    color: @gray-dark-v2;
-  }
-}
+@insightBlockHeight: @standardBlockSize + 40px;
 
 #build-insights {
-  @block-width: 425px;
-  @chart-padding-left: 30px;
-
-  .one-col() {
-    margin-left: ~"calc((100% - @{block-width}) / 2)";
-  }
-  .two-col() {
-    margin-left: ~"calc((100% - 2 * @{block-width}) / 3)"; // equal gutters around columns: (100% - 3 * @block-width) / 4
-  }
-  .three-col() {
-    margin-left: ~"calc((100% - 3 * @{block-width}) / 4)"; // equal gutters around columns: (100% - 3 * @block-width) / 4
-  }
-
   background-color: #f5f5f5;
   padding-bottom: 15px;
-  min-width: 465px;
 
   h1 {
-    font-size: round((@baseFontSize * 1.5), 0);
-  }
-
-  &.three-or-more-projects {
-    .project-block {
-      @media (min-width: 970px) {
-        .two-col();
-      }
-      @media (min-width: 1400px) {
-        .three-col();
-      }
-    }
-  }
-
-  &.two-projects {
-    .project-block {
-      @media (min-width: 970px) {
-        .two-col();
-      }
-    }
-  }
-
-  .no-insights-block {
-    margin: 15px;
-    padding: 10px;
-    background-color: @white;
-
-    .content {
-      background: url('@{imgPath}/empty-state-insights@2x.png') no-repeat center center;
-      background-size: contain;
-      height: @standardBlockSize + 40px;
-      font-size: @fontSizeLarge;
-      color: @grayDark;
-
-      .header {
-        font-weight: bolder;
-        margin-top: 50px;
-      }
-
-      .details {
-        margin-bottom: 20px;
-      }
-
-      .btn {
-        border-radius: 20px;
-        padding-left: 37px;
-        padding-right: 37px;
-      }
-    }
+    font-size: round((@baseFontSize * 1.12), 0);
+    font-weight: normal;
   }
 
   .project-block {
-
-    display: inline-block;
-    margin: 20px 0;
-    vertical-align: top;
+    margin: 20px;
+    padding: 10px;
     border-bottom: #e5e5e5 1px solid;
     background-color: white;
-    width: @block-width;
-
-    .one-col();
-
-    svg {
-      display: block;
-    }
+    width: 1000px;
+    height: @insightBlockHeight;
     h1 {
       color: @gray-light-v2;
       padding-left: 15px;
       border-bottom: #e5e5e5 1px solid;
       margin: 0;
-      padding: 10px;
+      padding: 10px 0;
     }
 
-    h4 {
-      font-size: 16px;
-      color: #333;
-      margin: 6px 0 3px;
-      padding-left: @chart-padding-left;
-    }
-    .above-info, .below-info {
-      .flexy(center, space-around, row);
-      padding-left: @chart-padding-left;
-      padding-bottom: 10px;
-      width: 100%;
-
-      &.below-info dl {
-        dt, dd {
-          display: inline;
-        }
-        dt {
-          padding-right: 5px;
-        }
-      }
-
-      dl {
-        .flex(0 0 33%);
-        margin: 0;
-        dt {
-          font-weight: inherit;
-        }
-        dd {
-          font-weight: bold;
-          line-height: 0.9;
-        }
-      }
-    }
-
-    .no-builds, .loading-spinner{
-      height: @spinner-height;
-      .flexy(center, space-around, column);
+    .loading-spinner{
+      margin-top: (@insightBlockHeight / 2) - @spinnerSize;
     }
   }
 
@@ -149,11 +38,12 @@
       font-weight: normal;
     }
 
-    padding: 0 10px;
+    padding: 0 20px;
   }
 
   .build-time-visualization {
     margin: 0 auto;
+    padding: 15px;
 
     .axis path,
     .axis line {
@@ -174,7 +64,6 @@
         }
         text {
           fill: @tick-color;
-          font-size: 10px;
         }
       }
       > path.domain {

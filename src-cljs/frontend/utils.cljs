@@ -37,13 +37,6 @@
     "false" false
     nil))
 
-
-(defn uri-to-relative
-  "Returns relative uri e.g. \"/a/b/c\" for \"http://yahoo.com/a/b/c\""
-  [uri]
-  (-> (goog.Uri. uri)
-      (.getPath)))
-
 (def initial-query-map
   {:log-channels? (parse-uri-bool (.getParameterValue parsed-uri "log-channels"))
    :logging-enabled? (parse-uri-bool (.getParameterValue parsed-uri "logging-enabled"))

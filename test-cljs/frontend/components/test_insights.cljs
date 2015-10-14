@@ -13,7 +13,7 @@
   [{:reponame "test repo"
     :username "foo user"
     :default_branch "master"
-    :recent_builds [
+    :recent-builds [
                     {
                      :committer_name "Mr. M",
                      :usage_queued_at "2015-09-14T04:25:05.652Z",
@@ -82,7 +82,7 @@
 
 ;; (deftest can-render-insights-bar
 ;;   (let [test-node (goog.dom/htmlToDocumentFragment "<div class=\"test-chart\"></div>")
-;;         chartable-builds (insights/chartable-builds (:recent_builds (first test-projects-data)))]
+;;         chartable-builds (insights/chartable-builds (:recent-builds (first test-projects-data)))]
 ;;     (.appendChild (.-body js/document) test-node)
 ;;     (insights/visualize-insights-bar! test-node chartable-builds)
 ;;     (testing "Renders legend."

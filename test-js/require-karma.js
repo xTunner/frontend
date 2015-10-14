@@ -14,4 +14,3 @@ goog.require('frontend.controllers.ws_test');
 goog.require('frontend.models.test_plan');
 goog.require('frontend.models.test_feature');
 goog.require('frontend.controllers.api_test');
-goog.require('frontend.test_datetime');
