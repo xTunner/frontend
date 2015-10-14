@@ -103,22 +103,20 @@
   (let [a (closest-tag target "A")]
     (cond (instance? js/SVGElement a)   ; SVG
           (let [href (-> a (.-href) (.-baseVal))]
-            (hash-map :attr-href href
-                      :attr-target (-> a
-                                       (.-target)
-                                       (.-baseVal))
-                      :host-name (let [uri-info (goog.Uri.parse href)
-                                       domain (.getDomain uri-info)]
-                                   (if (empty? domain)
-                                     (.. js/window -location -hostname)
-                                     domain))))
-          (instance? js/HTMLElement a)                         ; HTML
+            {:attr-href href
+             :attr-target (-> a .-target .-baseVal)
+             :host-name (let [uri-info (goog.Uri.parse href)
+                              domain (.getDomain uri-info)]
+                          (if (empty? domain)
+                            (-> js/window .-location .-hostname)
+                            domain))})
+          (instance? js/HTMLElement a)  ; HTML
           (let [href (let [path (str (.-pathname a) (.-search a) (.-hash a))]
                        (when-not (empty? path)
                          path))]
-            (hash-map :attr-href href
-                      :attr-target (-> a .-target)
-                      :host-name (-> a .-hostname))))))
+            {:attr-href href
+             :attr-target (-> a .-target)
+             :host-name (-> a .-hostname)}))))
 
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (events/listen
