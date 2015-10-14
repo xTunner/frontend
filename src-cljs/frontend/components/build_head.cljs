@@ -1214,39 +1214,45 @@
 (defrender rebuild-actions-v2 [{:keys [build project]} owner]
   (let [build-id (build-model/id build)
         build-num (:build_num build)
-        vcs-url (:vcs_url build)]
-  (html
-    [:div.btn-group.build-action.rebuild
-     (forms/managed-button
-       [:button.btn.rebuild-btn
-        {:data-loading-text "Rebuilding",
-         :title             "Retry the same tests",
-         :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                         :vcs-url vcs-url
-                                                         :build-num build-num
-                                                         :no-cache? false}])}
-        "Rebuild"])
-     [:button.btn.dropdown-toggle {:data-toggle "dropdown"} [:span.caret]]
-     [:ul.dropdown-menu
-      [:li (forms/managed-button
-             [:a
-              {:data-loading-text "Rebuilding",
-               :title             "Retry without cache",
-               :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                               :vcs-url vcs-url
-                                                               :build-num build-num
-                                                               :no-cache? true}])}
-              "without cache"])]
-      ;; XXX Temporarily remove the ssh button for OSX builds
-      (when (not (feature/enabled-for-project? project :osx))
-        [:li (forms/managed-button
-               [:a
-                {:data-loading-text "Rebuilding",
-                 :title             "Retry with SSH in VM",
-                 :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                               :vcs-url vcs-url
-                                                               :build-num build-num}])}
-                "with ssh"])])]])))
+        vcs-url (:vcs_url build)
+        actions {:rebuild        {:text "Rebuild"
+                                  :args {:data-loading-text "Rebuilding",
+                                         :title             "Retry the same tests",
+                                         :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                                         :vcs-url vcs-url
+                                                                                         :build-num build-num
+                                                                                         :no-cache? false}])}}
+                 :without_cache  {:text "without Cache"
+                                  :args {:data-loading-text "Rebuilding",
+                                         :title             "Retry without cache",
+                                         :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
+                                                                                         :vcs-url vcs-url
+                                                                                         :build-num build-num
+                                                                                         :no-cache? true}])}}
+                 :with_ssh       {:text "with SSH"
+                                  :args {:data-loading-text "Rebuilding",
+                                         :title             "Retry with SSH in VM",
+                                         :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
+                                                                                       :vcs-url vcs-url
+                                                                                       :build-num build-num}])}}}]
+    (html
+      [:div.btn-group.build-action.rebuild
+       (forms/managed-button
+         [:button.btn.rebuild-btn (-> actions :rebuild :args) (-> actions :rebuild :text)])
+       [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
+        [:img {:src (common/icon-path "UI-ArrowChevron")}]]
+       [:ul.dropdown-menu
+        [:li
+         (forms/managed-button
+           [:a (-> actions :rebuild :args) (-> actions :rebuild :text)])]
+        [:li
+         (forms/managed-button
+           [:a (-> actions :without_cache :args) (-> actions :without_cache :text)])]
+        ;; XXX Temporarily remove the ssh button for OSX builds
+        (when (not (feature/enabled-for-project? project :osx))
+          [:li
+           (forms/managed-button
+             [:a (-> actions :with_ssh :args) (-> actions :with_ssh :text)])])]])))
 
 (defn build-head-actions
   [data owner]
