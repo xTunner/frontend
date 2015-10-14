@@ -255,15 +255,10 @@
        [:div.project-block
         [:h1 (gstring/format "%s/%s" username reponame)]
         [:h4 "Branch: " branch]
-        (cond (nil? recent_builds)
-              [:div.stats
-               [:div.loading-spinner common/spinner]]
-
-              (empty? builds)
-              [:div.stats
-               [:div.no-builds "No builds."]]
+        (cond (nil? recent_builds) [:div.loading-spinner common/spinner]
+              (empty? builds) [:div.no-builds "No builds."]
               :else
-              [:div.stats
+              (list
                [:div.above-info
                 [:dl
                  [:dt "MEDIAN BUILD"]
@@ -278,7 +273,7 @@
                [:div.below-info
                 [:dl
                  [:dt "Branches:"]
-                 [:dd (-> branches keys count)]]]])]))))
+                 [:dd (-> branches keys count)]]]))]))))
 
 (defrender no-projects [data owner]
   (html
