@@ -250,29 +250,34 @@
 (defrender project-insights [{:keys [reponame username branches recent_builds] :as project} owner]
   (let [builds (chartable-builds recent_builds)]
     (html
-     (cond (nil? recent_builds) [:div.project-block
-                                 [:div.loading-spinner common/spinner]]
-           (empty? builds) nil
-           :else
-           (let [branch (-> recent_builds (first) (:branch))]
-             [:div.project-block
-              [:h1 (gstring/format "%s/%s" username reponame)]
-              [:h4 "Branch: " branch]
-              [:div.above-info
-               [:dl
-                [:dt "MEDIAN BUILD"]
-                [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
-               [:dl
-                [:dt "MEDIAN QUEUE"]
-                [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
-               [:dl
-                [:dt "LAST BUILD"]
-                [:dd (datetime/as-time-since (-> builds last :start_time))]]]
-              (om/build project-insights-bar builds)
-              [:div.below-info
-               [:dl
-                [:dt "Branches:"]
-                [:dd (-> branches keys count)]]]])))))
+     (let [branch (-> recent_builds (first) (:branch))]
+       [:div.project-block
+        [:h1 (gstring/format "%s/%s" username reponame)]
+        [:h4 "Branch: " branch]
+        (cond (nil? recent_builds)
+              [:div.stats
+               [:div.loading-spinner common/spinner]]
+
+              (empty? builds)
+              [:div.stats
+               [:div.no-builds "No builds."]]
+              :else
+              [:div.stats
+               [:div.above-info
+                [:dl
+                 [:dt "MEDIAN BUILD"]
+                 [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
+                [:dl
+                 [:dt "MEDIAN QUEUE"]
+                 [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
+                [:dl
+                 [:dt "LAST BUILD"]
+                 [:dd (datetime/as-time-since (-> builds last :start_time))]]]
+               (om/build project-insights-bar builds)
+               [:div.below-info
+                [:dl
+                 [:dt "Branches:"]
+                 [:dd (-> branches keys count)]]]])]))))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]

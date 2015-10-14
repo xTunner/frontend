@@ -1,7 +1,7 @@
 @import "../shared/variables.less";
 
 @tick-color: #999999;
-@insight-block-height: 243px;
+@spinner-height: 172px;
 
 #build-insights {
   @block-width: 425px;
@@ -100,8 +100,8 @@
       }
     }
 
-    .loading-spinner{
-      height: @insight-block-height;
+    .no-builds, .loading-spinner{
+      height: @spinner-height;
       .flexy(center, space-around, column);
     }
   }
