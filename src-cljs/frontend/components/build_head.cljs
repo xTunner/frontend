@@ -1165,13 +1165,15 @@
                         :build-num (:build_num build)}]
         (html
           [:div
-           [:div.row
-            [:div.summary-header.col-sm-12
-             [:span.badge.build-status {:class (build-model/status-class build)}
-              [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-              (build-model/status-words build)]
+           [:div.summary-header
+            [:div.summary-items
+             [:div
+              [:span.badge.build-status {:class (build-model/status-class build)}
+               [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
+               (build-model/status-words build)]]
              (when (:stop_time build)
-               (build-finished-status build))
+               (build-finished-status build))]
+            [:div.summary-items
              [:div
               [:span.summary-label "Previous: "]
               [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
@@ -1182,23 +1184,26 @@
                 [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                            :href (build-model/path-for-parallelism build)}
                  (str (:parallel build) "x")]
-                [:span (:parallel build) "x"])]
-             (when (:usage_queued_at build)
+                [:span (:parallel build) "x"])]]
+            (when (:usage_queued_at build)
+              [:div.summary-items
                [:div
                 [:span.summary-label "Queued: "]
-                [:span  (queued-time build)]])
+                [:span  (queued-time build)]]])
 
-             [:div.summary-build-contents
+            [:div.summary-items.summary-build-contents
+             [:div
               [:span.summary-label "Triggered by: "]
-              [:span (trigger-html build)]
+              [:span (trigger-html build)]]
 
-              (when-let [urls (seq (:pull_request_urls build))]
-                (pull-requests urls))]]]
+             (when-let [urls (seq (:pull_request_urls build))]
+               (pull-requests urls))]]
 
            (when-let  [canceler  (and  (=  (:status build) "canceled")
-                                       (:canceler build))]
-             [:div.row.summary-header
-              (build-canceler canceler github-endpoint)])
+                                      (:canceler build))]
+             [:div.summary-header
+              [:div.summary-items
+               (build-canceler canceler github-endpoint)]])
            [:div.card
             [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
@@ -1260,22 +1265,21 @@
             has-write-settings? (:write-settings
                                   (get-in data state/project-scopes-path))]
         (html
-          [:div
-           [:div.build-actions-v2
-            [:div.actions
-             (when (and (build-model/can-cancel? build) has-write-settings?)
-               (forms/managed-button
-                 [:a.build-action
-                  {:data-loading-text "Canceling"
-                   :title             "Cancel this build"
-                   :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                    :vcs-url vcs-url
-                                                                    :build-num build-num}])}
-                  "Cancel Build"]))
+          [:div.build-actions-v2
+           [:div.actions
+            (when (and (build-model/can-cancel? build) has-write-settings?)
+              (forms/managed-button
+                [:a.build-action
+                 {:data-loading-text "Canceling"
+                  :title             "Cancel this build"
+                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
+                 "Cancel Build"]))
             (when has-write-settings?
               (om/build rebuild-actions-v2 {:build build :project project}))
             [:a.build-action
              {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
                                                  :repo (get-in data (conj state/project-path :reponame))})}
              [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-             "Project Settings"]]]])))))
+             "Project Settings"]]])))))
