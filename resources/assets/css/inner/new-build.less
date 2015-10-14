@@ -371,17 +371,37 @@
 
     ul {
       background: @dropdown-background-color-v2;
+
+      li > a:hover {
+        background: @grayLighter;
+        color: @gray-dark-v2;
+      }
     }
 
+
     border-radius: 3px;
-    border: solid 1px;
-    border-color: @grayLighter;
+    border: solid 1px @grayLighter;
 
     .rebuild-btn {
       padding-right: 80px;
+
+      &:hover {
+        background: @whiten;
+        border-right: 1px solid @grayLighter;
+      }
+    }
+
+    .dropdown-toggle {
+      border-left: 1px solid @grayLighter;
+
+      &:hover {
+        background: @whiten;
+      }
+      &:focus {
+        background: @grayLighter;
+      }
     }
   }
-
 
   .build-action {
     margin-left: 20px;
