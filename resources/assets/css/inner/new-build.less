@@ -360,7 +360,7 @@
 
 // Build page V2 stuff
 
-@pills-breakpoint: @screen-md-max;
+@pills-breakpoint: @screen-xs-max;
 
 .build-info-v2 {
   margin-top: 15px;
@@ -429,9 +429,18 @@
   }
 
   &.page-container-pills {
+    @caret-padding: 10px;
+
     .flexy(center, flex-start, row);
+
     color: @white;
     background: @backround-color-dark-v2;
+
+    .pill-details {
+      @media (max-width: @pills-breakpoint) {
+        text-align: right;
+      }
+    }
 
     .nav-caret, .pill-details {
       flex-grow: 1;
@@ -444,11 +453,18 @@
     .pill-details + .nav-caret {
       text-align: right;
 
+      @media (max-width: @pills-breakpoint) {
+        padding-left: @caret-padding;
+        text-align: left;
+      }
     }
 
-    .nav-caret + .pill-details, .pill-details + .nav-caret {
-      @media (max-width: @pills-breakpoint) {
-        text-align: center;
+    @media (max-width: @pills-breakpoint) {
+      .nav-caret {
+        &:first-child {
+          text-align: right;
+          padding-right: @caret-padding;
+        }
       }
     }
   }
@@ -491,13 +507,21 @@
       display: none;
     }
 
-
     &.page-container-pills, &.add-containers {
+      @container-pill-vertical-spacing: 15px;
+
       min-width: 100%;
-      margin: 5px 0;
       padding: 3px;
 
       text-align: center;
+
+      &:first-child {
+        margin-bottom: @container-pill-vertical-spacing;
+      }
+
+      &:last-child {
+        margin-top: @container-pill-vertical-spacing;
+      }
     }
   }
 }

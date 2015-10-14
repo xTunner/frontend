@@ -231,6 +231,22 @@
   [container]
   (-> (filter #(not (:filler-action %)) (:actions container)) last :end_time))
 
+(defn action-duration-ms
+  [{:keys [start_time end_time] :as action}]
+  (if (and start_time end_time)
+    (let [start (.getTime (js/Date. start_time))
+          end (if end_time
+                (.getTime (js/Date. end_time))
+                (datetime/server-now))]
+      (- end start))
+      0))
+
+;; TODO this seems a little bit slow when calculating durations for really complex builds with
+;; lots of containers. Is there a good way to avoid recalculating this when selecting container pills? (Perhaps caching the calculated value using IWillUpdate / IShouldUpdate?)
+(defn container-utilization-duration
+  [container]
+  (apply + (map action-duration-ms (:actions container))))
+
 (defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
   (reify
     om/IDisplayName
@@ -246,13 +262,8 @@
       (html
        (let [container-id (container-model/id container)
              status (container-model/status container build-running?)
-             start (-> container :actions first :start_time)
-             stop (last-action-end-time container)
-             end-ms (if stop
-                      (.getTime (js/Date. stop))
-                      (datetime/server-now))
              formatter datetime/as-duration
-             duration-ms (- end-ms (.getTime (js/Date. start)))]
+             duration-ms (container-utilization-duration container)]
         [:a.container-selector-v2
          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
           :class (concat (container-model/status->classes status)
@@ -282,7 +293,7 @@
       (let [container-data (:container-data data)
             build-running? (:build-running? data)
             build (:build data)
-            paging-width 15
+            paging-width 10
             {:keys [containers current-container-id]} container-data
             container-count (count containers)
             container-index (:container-index state)
