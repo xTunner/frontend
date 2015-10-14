@@ -44,24 +44,20 @@
              [:div.col-md-1]
              [:div.authorize-instructions.col-md-5
               [:div.status-bar.row
-               [:div.col-md-3.left.no-padding
+               [:div.col-xs-3.left.no-padding
                 [:div.success.circle [:i.fa.fa-check.fa-inverse]]
                 [:div.success.line.smaller-bottom-margin]]
-               [:div.col-md-2.no-padding
-                [:div.line.smaller-bottom-margin]]
-               [:div.col-md-2.middle.no-padding
+               [:div.col-xs-6.middle.no-padding
                 [:div.line]
                 [:div.circle]
                 [:div.line]]
-               [:div.col-md-3.no-padding
-                [:div.line.smaller-bottom-margin]]
-               [:div.col-md-2.right.no-padding
+               [:div.col-xs-3.right.no-padding
                 [:div.line] 
                 [:div.circle]]]
               [:div.status-messages.row
-               [:div.col-md-4.left [:p.success "Begin Signup"]]
-               [:div.col-md-4.middle [:p "Add Code"]]
-               [:div.col-md-4.right [:p "Ship Faster"]]]
+               [:div.col-xs-4.left [:p.success "Begin Signup"]]
+               [:div.col-xs-4.middle [:p "Add Code"]]
+               [:div.col-xs-4.right [:p "Ship Faster"]]]
               [:h1.header "Great, let's add some code to test."]
               [:p.sub-header "Signing up with CircleCI is " [:b "free"] ". Next, you'll be taken to Github to authenticate so you can start shipping faster."]
               [:a.btn.btn-cta.authorize-button
