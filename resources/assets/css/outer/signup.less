@@ -1,83 +1,255 @@
 #signup {
-    margin-top: 70px;
+  margin-top: 70px;
 
-    h1 {
-        font-size: 72px;
-        margin-top: 0;
+  h1 {
+    font-size: 72px;
+    margin-top: 0;
+  }
+
+  .authorize-instructions {
+    i.ico {
+      margin-right: 10px;
+    }
+  }
+
+  i.ico {
+    display: inline;
+
+    .check-icon {
+      height: 15px;
+      width: 20px;
+      stroke: #292;
+      fill: #292;
+      stroke-width: 1;
     }
 
-    .authorize-instructions {
-        i.ico {
-            margin-right: 10px;
-        }
+    .github {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      stroke: white;
+      stroke-width: 1;
     }
+  }
+
+  .github-signup-exp {
+    margin-top: 25px;
+    margin-bottom: 40px;
+  }
+
+  .authorize-button {
+    margin-top: 10px;
+    margin-bottom: 40px;
+    height: 50px;
+    width: 250px;
 
     i.ico {
-
-        display: inline;
-        .check-icon {
-            height: 15px;
-            width: 20px;
-            stroke: #292;
-            fill: #292;
-            stroke-width: 1;
-        }
-
-        .github {
-            width: 20px;
-            height: 20px;
-            fill: white;
-            stroke: white;
-            stroke-width: 1;
-        }
+      position: relative;
+      left: -9px;
+      top: -2px;
     }
 
-    .github-signup-exp {
-        margin-top: 25px;
-        margin-bottom: 40px;
+    span {
+      position: relative;
+      top: -5px;
+      left: -9px;
+      font-size: 18px;
+    }
+  }
+
+  .github-example {
+    text-align: center;
+    img {
+      width: 574px;
+      max-width: 100%;
+      margin-bottom: 40px;
+    }
+    p {
+      margin-bottom: 40px;
+    }
+  }
+
+  .footer {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    border-top: 1px @grayLightest solid;
+
+    a {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+  }
+}
+
+#new-signup {
+
+  .authorize-button {
+    margin-top: 10px;
+    margin-bottom: 40px;
+    height: 50px;
+    width: 290px;
+
+    i.ico {
+      position: relative;
+      left: -9px;
+      top: -2px;
     }
 
-    .authorize-button {
-        margin-top: 10px;
-        margin-bottom: 40px;
-        height: 50px;
-        width: 250px;
+    span {
+      position: relative;
+      top: -5px;
+      left: -9px;
+      font-size: 18px;
+    }
+  }
 
-        i.ico {
-            position: relative;
-            left: -9px;
-            top: -2px;
-        }
+  .authorize-instructions {
+    i.ico {
+      margin-right: 10px;
+    }
+  }
 
-        span {
-            position: relative;
-            top: -5px;
-            left: -9px;
-            font-size: 18px;
-        }
+  .testimonial-card {
+    border-radius: 10px;
+    box-shadow: 1px 1.5px 3px 2px lighten(@gray-base, 80%);
+    font-size: 16px;
+    margin: 5px 0 30px 0;
+    padding: 20px;
+    height: 214px;
+    width: 426px;
+
+    .customer {
+      color: @gray-darker; 
+      font-family: ProximaNova-Light;
+    }
+    .testimonial {
+      color: @gray;
+      font-family: ProximaNova-LightIt;
+      font-style: italic;
+      text-align: left;
+    }
+  }
+
+  .footer {
+    border-top: 1px @grayLightest solid;
+    padding-bottom: 40px;
+    padding-top: 40px;
+    text-align: center;
+
+    a {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+  }
+
+  .header {
+    font-size: 55px;
+    margin-top: 50px;
+    margin-bottom: 0px;
+  }
+
+  i.ico {
+    display: inline;
+
+    .github {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      stroke: white;
+      stroke-width: 1;
+    }
+  }
+
+  .status-bar {
+
+    .circle {
+      border-radius: 50%;
+      border: 2px solid @black;
+      height: 20px;
+      text-align: center;
+      width: 20px;
+
+      &.success {
+        background-color: @brand-success;
+        border: none;
+      }
     }
 
-    .github-example {
-        text-align: center;
-        img {
-            width: 574px;
-            max-width: 100%;
-            margin-bottom: 40px;
-        }
-        p {
-            margin-bottom: 40px;
-        }
+    .no-padding {
+      padding-left: 0;
+      padding-right: 0;
     }
 
-    .footer {
-        padding-top: 40px;
-        padding-bottom: 40px;
-        border-top: 1px @grayLightest solid;
+    div {
+      display: inline-block;
+      text-align: center;
 
-        a {
-            margin-left: 10px;
-            margin-right: 10px;
-
-        }
+      &.left {
+        padding-left: 40px;
+      }
+      &.right {
+        padding-right: 35px;
+      }
     }
+
+    .fa-check {
+      font-size: 14px;
+    }
+
+    .line {
+      border: 2px solid @black;
+      margin-bottom: 8px;
+      width: 100%; 
+
+      &.smaller-bottom-margin {
+        margin-bottom: 3px;
+      }
+    }
+  }
+
+  .status-messages {
+    margin-top: 15px;
+
+    p {
+      color: @black;
+      font-family: ProximaNova-Semibold;
+      font-size: 14px;
+
+      &.success {
+        color: @brand-success;
+      }
+    }
+  }
+
+  .left {
+    text-align: left;
+
+    .line {
+      border-color: @brand-success;
+      width: calc(~'100% - 20px');
+    }
+  }
+
+  .middle {
+    text-align: center;
+
+    .line {
+      width: calc(~'50% - 10px');
+    }
+  }
+
+  .right {
+    text-align: right;
+
+    .line {
+      width: calc(~'100% - 20px');
+    }
+  }
+
+  .sub-header {
+    color: @gray;
+    font-size: 18px;
+    margin-bottom: 40px;
+    margin-top: 40px;
+  }
 }

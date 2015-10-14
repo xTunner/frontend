@@ -84,6 +84,7 @@ window.stefon_hack_for_om =
     "/img/outer/stories/john.jpg": '(asset-path "img/outer/stories/john.jpg")'
     "/img/outer/stories/arthur.jpg": '(asset-path "img/outer/stories/arthur.jpg")'
     "/img/outer/signup/github-example.png": '(asset-path "img/outer/signup/github-example.png")'
+    "/img/outer/signup/status-bar.png": '(asset-path "img/outer/signup/status-bar.png")'
     "/img/container-oriented.png": '(asset-path "img/container-oriented.png")'
     "/img/docs/artifacts.png": '(asset-path "img/docs/artifacts.png")'
     "/img/outer/docs/artifacts_listing.png": '(asset-path "img/outer/docs/artifacts_listing.png")'
