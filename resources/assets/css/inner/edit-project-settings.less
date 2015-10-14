@@ -1,4 +1,4 @@
-.spec_form {
+.spec-form {
   button {
     vertical-align: top;
   }
@@ -47,12 +47,12 @@
     margin: 0;
   }
   aside {
-    width: @aside_menu_width;
+    width: @aside-menu-width;
     min-width: 200px;
     .flex(0 1.1 auto);
   }
   .try-out-build {
-    @input_width: 7em;
+    @input-width: 7em;
     max-height: 8em;
     // margin: 1em 0;
     opacity: 1;
@@ -70,14 +70,14 @@
       input {
         &[type="text"] {
           width: 100%;
-          padding-right: @input_width;
+          padding-right: @input-width;
         }
         &[type="submit"] {
           .circleButton();
           position: absolute;
           top: 0;
           right: 0;
-          width: @input_width;
+          width: @input-width;
           padding: .75em 0;
           box-shadow: none;
           margin: 1px;
@@ -596,7 +596,7 @@
   // SSH Keys Page
   .sshkeys-page {
     table {
-      .skin_table();
+      .skin-table();
       margin: 2em 0;
       &:empty {
         display: none;
@@ -648,7 +648,7 @@
       list-style: disc inside;
     }
     table {
-      .skin_table();
+      .skin-table();
       margin-bottom: 1em;
       tr.preferred {
         td {
@@ -682,7 +682,7 @@
   // Circle API & Status Badge pages
   .circle-api-page, .status-page {
     table {
-      .skin_table();
+      .skin-table();
       overflow: visible;
       th {
         text-align: left;

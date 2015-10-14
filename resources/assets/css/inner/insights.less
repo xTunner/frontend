@@ -1,6 +1,7 @@
 @import "../shared/variables.less";
 
 @tick-color: #999999;
+@insightBlockHeight: @standardBlockSize + 40px;
 
 #build-insights {
   .one-col() {
@@ -96,6 +97,11 @@
           line-height: 0.9;
         }
       }
+    }
+
+    .loading-spinner{
+      height: @insightBlockHeight;
+      margin-top: (@insightBlockHeight / 2) - @spinnerSize;
     }
   }
 

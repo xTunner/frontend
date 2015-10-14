@@ -42,41 +42,56 @@
 (defn- banner-for-license
   "Returns the banner for the given license, or nil if no banner applies."
   [license]
-  (let [banner-type ((juxt :type :status) license)
+  (let [license-type (:type license)
+        seat (:seat_status license)
+        expiry (:expiry_status license)
         contents
-        (case banner-type
-          ["trial" "current"]
+        (cond
+          (and (= license-type "trial")
+               (= expiry "current"))
           (banner-contents "Trial Account"
                            "Welcome to CircleCI."
                            {:count (days-until-api-time (:expiry_date license))
                             :nouns ["day" "days"]
                             :description "left in trial"})
-          ["trial" "in-violation"]
+          (and (= license-type "trial")
+               (= expiry "in-violation"))
           (banner-contents "Trial Expired"
                            "Your trial period has expired."
                            {:count (days-until-api-time (:hard_expiry_date license))
                             :nouns ["day" "days"]
                             :description "until suspension"})
-          ["trial" "expired"]
+          (and (= license-type "trial")
+               (= expiry "expired"))
           (banner-contents "Trial Ended"
                            "Your builds have been suspended. Contact Sales to reactivate your builds.")
-          ["paid" "in-violation"]
+
+          (and (= license-type "paid")
+               (= expiry "in-violation"))
           (banner-contents "License Expired"
                            "Your license has expired. Contact Sales to renew."
                            {:count (days-until-api-time (:hard_expiry_date license))
                             :nouns ["day" "days"]
                             :description "until suspension"})
-          ["paid" "expired"]
+
+          (and (= license-type "paid")
+               (= expiry "expired"))
           (banner-contents "License Suspended"
                            "Your builds have been suspended. Contact Sales to reactivate your builds.")
-          ["paid" "seats-exceeded"]
+
+          ;; Seat violation is the least of priorities - if they are expired or trialing,
+          ;; warn them about expiry/trial instead
+          (and (= license-type "paid")
+               (not= seat "current"))
           (banner-contents "License Exceeded"
                            "Please contact Sales to upgrade your license."
                            {:count (str (:seats_used license) "/" (:seats license))
                             :nouns ["user" "users"]})
-          nil)]
+          :else nil)]
     (when contents
-      [:.license-banner {:class banner-type}
+      [:.license-banner {:class [(str "type-" (:type license))
+                                 (str "seat-" (:seat_status license))
+                                 (str "expiry-" (:expiry_status license))]}
        contents])))
 
 (defn show-banner?

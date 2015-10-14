@@ -170,10 +170,13 @@
       (let [subpage (:project-settings-subpage app :overview)]
         (html
           [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
-           [:header
-            [:h5 "Project Settings"]
-            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-             (common/ico :fail-light)]]
+           (if (feature/enabled? :ui-v2)
+             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+               (common/ico :fail-light)]
+             [:header
+              [:h5 "Project Settings"]
+              [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+               (common/ico :fail-light)]])
            [:div.aside-user-options
             (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
@@ -333,14 +336,15 @@
     (render [_]
       (html
        [:nav
+
         {:class [(when (feature/enabled? :ui-v2)
                    "new-aside-left-menu-width")
                  "aside-left-menu"]}
-        (om/build branch-activity-list app {:opts {:login (:login opts)
-                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
-        (om/build admin-settings-menu app)]))))
+        (om/build admin-settings-menu app)
+        (om/build branch-activity-list app {:opts {:login (:login opts)
+                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
 
 (defn aside-nav [app owner]
   (reify
@@ -394,12 +398,20 @@
                            :title "Invite your teammates"}
             [:i.fa.fa-user]]
 
-        (when (feature/enabled? :insights)
-          [:a.aside-item {:data-placement "right"
-                          :data-trigger "hover"
-                          :title "Insights"
-                          :href "/build-insights"}
-           [:i.fa.fa-bar-chart]])
+           [:a.aside-item {:data-placement "right"
+                           :data-trigger "hover"
+                           :title "Changelog"
+                           :href "/changelog"
+                           :class (when (changelog-updated-since? (:last_viewed_changelog user))
+                                    "unread")}
+            [:i.fa.fa-bell]]
+
+           (when (feature/enabled? :insights)
+             [:a.aside-item {:data-placement "right"
+                             :data-trigger "hover"
+                             :title "Insights"
+                             :href "/build-insights"}
+              [:i.fa.fa-bar-chart]])
 
            (when (:admin user)
              [:a.aside-item {:data-placement "right"

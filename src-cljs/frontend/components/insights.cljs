@@ -252,25 +252,29 @@
     (when (not-empty builds)
       (let [branch (-> recent_builds (first) (:branch))]
         (html
-         [:div.project-block
-          [:h1 (gstring/format "%s/%s" username reponame)]
-          [:h4 "Branch: " branch]
-          [:div.above-info
-           [:dl
-            [:dt "MEDIAN BUILD"]
-            [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
-           [:dl
-            [:dt "MEDIAN QUEUE"]
-            [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
-           [:dl
-            [:dt "LAST BUILD"]
-            [:dd (datetime/as-time-since (-> builds last :start_time))]]]
-          (om/build project-insights-bar builds)
-          [:div.below-info
-           [:dl
-            [:dt "Branches:"]
-            [:dd (-> branches keys count)]]
-           ]])))))
+         (if (not-empty builds)
+           [:div.project-block
+            [:h1 (gstring/format "%s/%s" username reponame)]
+            [:h4 "Branch: " branch]
+            [:div.above-info
+             [:dl
+              [:dt "MEDIAN BUILD"]
+              [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
+             [:dl
+              [:dt "MEDIAN QUEUE"]
+              [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
+             [:dl
+              [:dt "LAST BUILD"]
+              [:dd (datetime/as-time-since (-> builds last :start_time))]]]
+            (om/build project-insights-bar builds)
+            [:div.below-info
+             [:dl
+              [:dt "Branches:"]
+              [:dd (-> branches keys count)]]
+             ]]
+           [:div.project-block
+            [:div.loading-spinner common/spinner]]
+           ))))))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]

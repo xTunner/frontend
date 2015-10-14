@@ -493,7 +493,9 @@
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
-  (if-let [repo-index (state-utils/find-repo-index state (:login context) (:name context))]
+  (if-let [repo-index (state-utils/find-repo-index (get-in state state/repos-path)
+                                                   (:login context)
+                                                   (:name context))]
     (assoc-in state (conj (state/repo-path repo-index) :following) true)
     state))
 
@@ -514,13 +516,13 @@
                  :start-build
                  (get-in current-state [:comms :api])))))
 
-
 (defmethod api-event [:unfollow-repo :success]
   [target message status {:keys [resp context]} state]
-  (if-let [repo-index (state-utils/find-repo-index state (:login context)  (:name context))]
+  (if-let [repo-index (state-utils/find-repo-index (get-in state state/repos-path)
+                                                   (:login context)
+                                                   (:name context))]
     (assoc-in state (conj (state/repo-path repo-index) :following) false)
     state))
-
 
 (defmethod post-api-event! [:unfollow-repo :success]
   [target message status args previous-state current-state]

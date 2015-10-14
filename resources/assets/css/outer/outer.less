@@ -83,8 +83,7 @@
 
   // Bootstrap overrides
   .navbar {
-    margin-bottom: 0;
-    .box-shadow(0 2px 4px 0 rgba(52,52,52,.25));
+    box-shadow: 0 2px 4px 0 rgba(52,52,52,.25);
 
     .login-link.btn {
       width: 110px;
@@ -144,20 +143,6 @@
     background-color: @navbar-default-link-hover-bg;
   }
 
-  .navbar-nav > li > a.signup-link {
-      color: @white;
-      width: 110px;
-      height: 40px;
-      padding-top: 10px;
-      padding-bottom: 6px;
-      border-radius: 20px;
-      margin: 15px;
-
-      &:hover {
-          color: @grayDark;
-      }
-  }
-
   // Emphasis & misc
   // -------------------------
 
@@ -183,15 +168,13 @@
   }
 
   // Extra padding to account for sticky navbar
-  padding-top: 71px;
+  padding-top: 70px;
 
   @import "shared/banner.less";
-  @import "shared/additional.less";
   @import "shared/jumbotron.less";
   @import "shared/contact_form.less";
   @import "shared/background.less";
   @import "shared/stories_procedure.less";
-  @import "home/home.less";
   @import "about/about.less";
   @import "blog/blog.less";
   @import "changelog/changelog.less";

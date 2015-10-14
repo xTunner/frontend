@@ -93,16 +93,12 @@
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         projects-loaded? (seq (get-in current-state state/projects-path))
-        organizations-loaded? (seq (get-in current-state state/user-organizations-path))
         current-user (get-in current-state state/user-path)]
     (mlog (str "post-navigated-to! :dashboard with current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (when (and (not organizations-loaded?)
-               (not (empty? current-user)))
-      (api/get-orgs api-ch))
     (go (let [builds-url (api/dashboard-builds-url (assoc (:navigation-data current-state)
                                                      :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
@@ -142,25 +138,31 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
+  [history-imp navigation-point {:keys [project-name build-num org repo tab] :as args} state]
   (mlog "navigated-to :build with args " args)
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data (assoc args
-                                     :show-aside-menu? (not (feature/enabled? :ui-v2))
-                                     :show-settings-link? false)
-             :project-settings-project-name project-name)
-      (assoc-in state/crumbs-path [{:type :dashboard}
-                                   {:type :org :username org}
-                                   {:type :project :username org :project repo}
-                                   {:type :project-branch :username org :project repo}
-                                   {:type :build :username org :project repo
-                                    :build-num build-num}])
-      state-utils/reset-current-build
-      (#(if (state-utils/stale-current-project? % project-name)
-          (state-utils/reset-current-project %)
-          %))))
+  (if (and (= :build (:navigation-point state))
+           (not (state-utils/stale-current-build? state project-name build-num)))
+    ;; page didn't change, just switched tabs
+    (assoc-in state state/build-header-tab-path tab)
+    ;; navigated to page, load everything
+    (-> state
+        state-utils/clear-page-state
+        (assoc :navigation-point (inspect navigation-point)
+               :navigation-data (assoc args
+                                       :show-aside-menu? (not (feature/enabled? :ui-v2))
+                                       :show-settings-link? (not (feature/enabled? :ui-v2)))
+               :project-settings-project-name project-name)
+        (assoc-in state/crumbs-path [{:type :dashboard}
+                                     {:type :org :username org}
+                                     {:type :project :username org :project repo}
+                                     {:type :project-branch :username org :project repo}
+                                     {:type :build :username org :project repo
+                                      :build-num build-num}])
+        state-utils/reset-current-build
+        (#(if (state-utils/stale-current-project? % project-name)
+            (state-utils/reset-current-project %)
+            %))
+        (assoc-in state/build-header-tab-path tab))))
 
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
