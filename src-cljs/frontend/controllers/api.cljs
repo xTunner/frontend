@@ -120,10 +120,10 @@
              project-build-ids (map project-build-id resp)
              updated-projects (map (fn [{:keys [vcs_url] :as project}]
                                      (let [target-build-id (project-build-id project)]
-                                       (if-let [{:keys [recent_builds]} (->> old-projects
+                                       (if-let [{:keys [recent-builds]} (->> old-projects
                                                                              (filter #(= target-build-id (project-build-id %)))
                                                                              first)]
-                                         (assoc project :recent-builds recent_builds)
+                                         (assoc project :recent-builds recent-builds)
                                          project)))
                                    resp)]
          (api/get-projects-builds project-build-ids api-ch)
