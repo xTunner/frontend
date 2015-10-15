@@ -714,7 +714,7 @@
   (let [user-link (link-to-user build)
         commit-link (link-to-commit build)
         retry-link (link-to-retry-source build)]
-    (condp = (:why build)
+    (case (:why build)
       "github" (list user-link " (pushed " commit-link ")")
       "edit" (list user-link " (updated project settings)")
       "first-build" (list user-link " (first build)")
