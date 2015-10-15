@@ -309,10 +309,45 @@ window.circle_api_data =
           }
         }
         """
+
+    add_user_ssh:
+      try_it: false
+      url: "/api/v1/project/:username/:project/:build_num/ssh-users"
+      method: "POST"
+      description: """
+        Only available when using a user API token.  If the current user has
+        permission to build the project, this API adds the current user's SSH
+        public key to the authorized keys on each container running a build.
+        This allows them to SSH to the build containers.
+        """
+      response: '{... the build data ... }'
+
     project_branch:
       url: "/api/v1/project/:username/:project/tree/:branch"
       description: "Triggers a new build, returns a summary of the build."
       method: "POST"
+      params: [
+          name: "parallel"
+          description: "The number of containers to use to run the build.  Default is null and the project default is used."
+          example: 4
+        ,
+          name: "revision"
+          description: "The specific revision to build.  Default is null and the head of the branch is used"
+          example: "f1baeb913288519dd9a942499cef2873f5b1c2bf"
+        ,
+          name: "build_parameters"
+          description: "Additional environment variables to inject into the build environment.  A map of names to values."
+          example: "{\"JAVA_OPTS\": \"+Xms128m\"}"
+      ]
+      body: """
+      {
+        "parallel": 2, //optional, default null
+        "revision": "f1baeb913288519dd9a942499cef2873f5b1c2bf" // optional
+        "build_parameters": { // optional
+          "RUN_EXTRA_TESTS": "true"
+        }
+      }
+      """
       response: """
         {
           "author_name": "Allen Rohner",
@@ -347,7 +382,7 @@ window.circle_api_data =
           "why": "edit",
           "build_time_millis": null,
           "committer_email": "arohner@gmail.com",
-          "parallel": 1,
+          "parallel": 2,
           "retries": null,
           "compare": null,
           "dont_build": null,
@@ -401,6 +436,13 @@ window.circle_api_data =
       method: "POST"
       description: "Adds your Heroku API key to CircleCI, takes apikey as form param name."
 
+    list_environment_variables:
+      try_it: false
+      url: "/api/v1/project/:username/:project/envvar"
+      method: "GET"
+      description: "Lists the environment variables for :project"
+      response: '[{"name":"foo","value":"xxxx"}]'
+
     add_environment_variable:
       try_it: false
       url: "/api/v1/project/:username/:project/envvar"
@@ -409,11 +451,73 @@ window.circle_api_data =
       body: '{"name":"foo", "value":"bar"}'
       response: '{"name":"foo","value":"xxxx"}'
 
+    get_environment_variable:
+      try_it: false
+      url: "/api/v1/project/:username/:project/envvar/:name"
+      method: "GET"
+      description: "Gets the hidden value of environment variable :name"
+      response: '{"name":"foo","value":"xxxx"}'
+
     delete_environment_variable:
       try_it: false
       url: "/api/v1/project/:username/:project/envvar/:name"
       method: "DELETE"
       description: "Deletes the environment variable named ':name'"
+      response: '{"message":"ok"}'
+
+    list_checkout_keys:
+      try_it: false
+      url: "/api/v1/project/:username/:project/checkout-key"
+      method: "GET"
+      description: "Lists the checkout keys for :project"
+      response: """
+      [{"public_key": "ssh-rsa...",
+        "type": "deploy-key", // can be "deploy-key" or "github-user-key"
+        "fingerprint": "c9:0b:1c:4f:d5:65:56:b9:ad:88:f9:81:2b:37:74:2f",
+        "preferred": true,
+        "time" : "2015-09-21T17:29:21.042Z" // when the key was issued
+        }]
+      """
+
+    new_checkout_key:
+      try_it: false
+      url: "/api/v1/project/:username/:project/checkout-key"
+      method: "POST"
+      description: "Creates a new checkout key. Only usable with a user API token."
+      body: '{"type":"github-user-key"}'
+      params: [
+            name: "type"
+            description: "The type of key to create.  Can be 'deploy-key' or 'github-user-key'."
+            example: "github-user-key"
+      ]
+      response: """
+      {"public_key": "ssh-rsa...",
+        "type": "deploy-key", // can be "deploy-key" or "user-key"
+        "fingerprint": "c9:0b:1c:4f:d5:65:56:b9:ad:88:f9:81:2b:37:74:2f",
+        "preferred": true,
+        "time" : "2015-09-21T17:29:21.042Z" // when the key was issued
+        }
+    """
+
+    get_checkout_key:
+      try_it: false
+      url: "/api/v1/project/:username/:project/checkout-key/:fingerprint"
+      method: "GET"
+      description: "Gets the checkout key"
+      response: """
+      {"public_key": "ssh-rsa...",
+        "type": "deploy-key", // can be "deploy-key" or "user-key"
+        "fingerprint": "c9:0b:1c:4f:d5:65:56:b9:ad:88:f9:81:2b:37:74:2f",
+        "preferred": true,
+        "time" : "2015-09-21T17:29:21.042Z" // when the key was issued
+        }
+      """
+
+    delete_checkout_key:
+      try_it: false
+      url: "/api/v1/project/:username/:project/checkout-key/:fingerprint"
+      method: "DELETE"
+      description: "Deletes the checkout key"
       response: '{"message":"ok"}'
 
     test_metadata:

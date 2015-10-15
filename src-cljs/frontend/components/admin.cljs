@@ -118,7 +118,7 @@
              [:div.loading-spinner common/spinner]
              (list
               [:p "License Type: " [:b (:type license)]]
-              [:p "License Status: " [:b (:status license)]]
+              [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats (" [:b (:seat_status license)] ")"]
               [:p "Expiry date: " [:b (datetime/medium-date (:expiry_date license))]])))]))))
 
 (defn admin-settings [app owner]

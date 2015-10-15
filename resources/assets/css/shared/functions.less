@@ -18,23 +18,6 @@
 // old mixins
 // scheduled for demolition
 
-.border-radius(@radius: 5px) {
-   webkit-border-radius: @radius;
-   moz-border-radius: @radius;
-   border-radius: @radius;
-}
-
-.box-shadow(@arguments) {
-    -webkit-box-shadow: @arguments;
-    -moz-box-shadow: @arguments;
-    box-shadow: @arguments;
-}
-
-.text-shadow(@size1, @size2, @size3, @color){
-    -webkit-text-shadow: @size1 @size2 @size3 @color;
-    text-shadow:-@size1 @size2 @size3 @color;
-}
-
 .buttonDark(@buttonColor: #004b64) {
   text-align: center;
   margin-left: -4px;
@@ -119,7 +102,7 @@
   background-repeat: no-repeat;
   background-position: center;
 }
-.icon_style(@color) {
+.icon-style(@color) {
   i {
     &.ico {
       path {
@@ -128,7 +111,7 @@
     }
   }
 }
-.icon_style(@color, @size) {
+.icon-style(@color, @size) {
   i {
     &.ico {
       svg {
@@ -146,10 +129,6 @@
 }
 .user-select(...) {
   .prefixer(user-select, @arguments, webkit moz);
-}
-.to_em(@a) when (ispixel(@a)) {
-  @concat: (unit(@a) / unit(@font_size));
-  @to_em: ~"@{concat}em";
 }
 
 // .for
@@ -204,16 +183,16 @@
               -1px  0   @color,
                0    2px @topShadowColor inset;
 }
-.shadow_noboss () {
+.shadow-noboss () {
   box-shadow: 0 1px transparent inset, 0 2px 1px transparent;
 }
-.shadow_emboss (@color) {
+.shadow-emboss (@color) {
   box-shadow: 0 1px lighten(@color, 5) inset, 0 2px 1px fade(@black, 21);
 }
-.shadow_deboss (@color) {
+.shadow-deboss (@color) {
   box-shadow: 0 -1px lighten(@color, 3) inset, 0 2px 1px fade(@black, 21) inset;
 }
-.underline_deboss () {
+.underline-deboss () {
   box-shadow: 0 1px fade(@white, 8), 0 -1px fade(@black, 55) inset;
 }
 
@@ -224,10 +203,7 @@
   @joined: ~`"@{arguments}".slice(1,-1)`;
   background-image: linear-gradient(to bottom, @joined);
 }
-.horiGradient(...) {
-  @joined: ~`"@{arguments}".slice(1,-1)`;
-  background-image: linear-gradient(to right, @joined);
-}
+
 .radiGradient(...) {
   @joined: ~`"@{arguments}".slice(1,-1)`;
   background-image: radial-gradient(ellipse at center, @joined);

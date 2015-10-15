@@ -190,3 +190,47 @@
           (< ago (* 2 day)) "yesterday"
           (< ago year) (time-format/unparse (time-format/formatter-local "MMM d") (from-long time))
           :else (time-format/unparse (time-format/formatter "MMM yyyy") (from-long time)))))
+
+(def millis-factors [{:unit :hours
+                      :display "h"
+                      :divisor (* 60 1000 60)}
+                     {:unit :minutes
+                      :display "m"
+                      :divisor (* 1000 60)}
+                     {:unit :seconds
+                      :display "s"
+                      :divisor 1000}
+                     {:unit :milliseconds
+                      :display "ms"
+                      :divisor 1}])
+
+(defn millis-to-float-duration
+  "Return vector of [nice-string unit-information] e.g.
+[\"12.4ms\" {:unit :milliseconds
+             :display \"ms\"
+             :divisor 1}]"
+  ([millis]
+   (millis-to-float-duration millis {}))
+  ([millis {requested-unit :unit decimals :decimals :or {decimals 1}}]
+   (let [{:keys [display divisor unit] :as unit-info}
+         (or (some #(when (= requested-unit (:unit %))
+                      %)
+                   millis-factors)
+             (some #(when (>= (/ millis (:divisor %)) 1)
+                      %)
+                   millis-factors)
+             (last millis-factors))
+         result (float (/ millis divisor))]
+     (vector (if (= 0 result)
+               "0"
+               (g-string/format (str "%." decimals "f%s")
+                                result
+                                display))
+             unit-info))))
+
+
+(defn nice-floor-duration [millis]
+  "Returns millis floored to a nice value for printing."
+  (let [[_ {:keys [divisor]}] (millis-to-float-duration millis)]
+    (* (js/Math.floor (/ millis divisor))
+       divisor)))

@@ -18,15 +18,64 @@
     margin: 0 0 15px 0;
   }
 }
+
+&.ui-v2 {
+  @tab-background: #dcdcdc;
+  @tab-separator-border: #c7c7c7;
+
+  .build-head {
+    .sub-head-top {
+      padding: 0;
+    }
+
+    .nav {
+      .flexy();
+    }
+
+    .build-info-tab {
+      flex-grow: 1;
+      background: @tab-background;
+      border-right: 1px solid @tab-separator-border;
+
+      &:last-child {
+        border-right: none;
+      }
+
+      &.active {
+        background: @white;
+      }
+    }
+
+    .tab-link-v2 {
+      color: @gray-dark-v2; // BS RESET
+      border: none; // BS RESET
+      margin: 0; // BS RESET
+
+      &:hover {
+        background: none; // BS RESET
+        color: @gray-light-v2; // BS RESET
+        border: none; // BS RESET
+      }
+    }
+  }
+
+  // TODO: remove once the build-info block has been totally ported
+  .build-info {
+    display: block;
+  }
+}
+
 .build-head {
   margin: 0;
   section {
     margin: @innerContentPadding 0 0 0;
     padding-top: @innerContentPadding;
   }
+
   .build-info {
     margin: 0 1em;
   }
+
   .compare {
     padding-left: 0.5ex;
     font-weight: normal;
@@ -41,7 +90,7 @@
     border: none; // BS RESET
     &.nav-tabs {
       margin: 0;
-      .active a {
+      .active .tab-link {
         background: none; // BS RESET
         color: @blue; // BS RESET
         box-shadow: 0 -1px @blue inset,
@@ -57,7 +106,7 @@
     li {
       margin: 0; // BS RESET
     }
-    a {
+    .tab-link {
       color: @grayLight;
       line-height: 1em;
       padding: 1em;
@@ -242,6 +291,17 @@
   list-style-type: none;
   padding: 0;
   margin: 0;
+
+  .container-artifacts {
+    margin-left: 0;
+  }
+
+  .artifact-toggle-caret {
+    font-size: 1.5em;
+    line-height: 0.75em;
+    vertical-align: -10%;
+  }
+
   li {
     width: ~'calc(@{codeCharacterWidth} * 88)'; // 80 = target truncated length for artifact.pretty_path
     margin: 0 ~'calc(7px *  3)';
@@ -251,6 +311,7 @@
     }
   }
 }
+
 &.ui-v2 .action-log-messages .exit-code {
   font-family: @monoFontFamilyV2;
 }
@@ -331,8 +392,8 @@
 }
 
 .build-output  {
-  .border-radius;
-  .box-shadow(inset 1px 1px 0 rgba(255,255,255, .2));
+  border-radius: 5px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255, .2);
   margin-bottom: 5px;
   margin-left: 2px;
   margin-right: 2px;
@@ -401,7 +462,7 @@
       float: left;
       margin-right: 15px;
       span {
-        .border-radius(30px);
+        border-radius: 30px;
         display: inline-block;
         height: 7px;
         width: 7px;

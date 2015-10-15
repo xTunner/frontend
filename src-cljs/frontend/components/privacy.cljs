@@ -42,7 +42,7 @@
               "Mailgun's privacy policy"]
              " for more details. You may disable emails in your "
              [:a
-              {:href "https://circleci.com/account"}
+              {:href "/account"}
               "Circle preferences"]
              " to avoid this information being sent over email."]
             [:li

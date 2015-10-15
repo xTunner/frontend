@@ -93,7 +93,7 @@ deployment:
 ### Deploying to Pivotal Web Service
 
 Deploying to PWS is similar to the Bluemix deployment. Given that you
-chnage the names of the variables where the credentials are stored to
+change the names of the variables where the credentials are stored to
 `$PWS_USER` and `$PWS_PASSWORD`, the configuration in the `test: post`
 section will look like this:
 

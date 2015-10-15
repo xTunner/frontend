@@ -20,6 +20,8 @@ body {
   }
 
   .main-head {
+    .flex(0 0 auto);
+    
     .head-user {
       height: initial;
       padding: 15px;
@@ -79,17 +81,8 @@ body {
   }
 }
 
-.ui-v2 .main-head {
-  padding-top: @top-nav-height;
-}
-
-.ui-v2 .main-body {
-  position: relative;
-  top: @top-nav-height;
-}
-
 .main-body {
-  width: 100%;
+  .flex(auto);
   overflow: scroll;
 
   .loading-spinner-big {

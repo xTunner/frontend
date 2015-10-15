@@ -6,6 +6,20 @@
             [frontend.utils :as utils :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
 
+(deftest follow-repo-event
+  (testing "selected repo is marked as being followed"
+    (let [repo1      {:following false :name "test1" :username "blah"}
+          repo2      {:following false :name "test2" :username "blah"}
+          context    {:name "test2"
+                      :login "blah"}
+          state      (assoc-in {} state/repos-path [repo1 repo2])
+
+          new-state  (api/api-event nil :follow-repo :success {:context context} state)
+
+          repo2-following? (get-in new-state (conj (state/repo-path 1) :following))
+          repo1-following? (get-in new-state (conj (state/repo-path 0) :following))]
+    (is repo2-following?)
+    (is (not repo1-following?)))))
 
 (deftest filter-piggieback
   (testing "piggiebacked orgs are removed from list"
