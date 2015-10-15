@@ -128,7 +128,7 @@
                                    resp)]
          (api/get-projects-builds project-build-ids api-ch)
          updated-projects)))
-      true (assoc-in current-state state/projects-path)))
+    true (assoc-in current-state state/projects-path)))
 
 (defmethod api-event [:me :success]
   [target message status args state]
