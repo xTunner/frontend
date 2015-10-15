@@ -106,7 +106,7 @@
     om/IDisplayName (display-name [_] "App")
     om/IWillMount
     (will-mount [_]
-      (let [organizations-loaded? (seq (get-in app state/top-nav-orgs-path))
+      (let [organizations-loaded? (some? (get-in app state/top-nav-orgs-path))
             api-ch (get-in app [:comms :api])]
         (if (and (feature/enabled? :ui-v2)
                  (not organizations-loaded?))
