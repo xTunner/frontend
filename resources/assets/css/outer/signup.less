@@ -81,6 +81,9 @@
   }
 }
 
+
+@blur-color: rgba(52, 52, 52, 0.25);
+
 #new-signup {
 
   .authorize-button {
@@ -89,29 +92,32 @@
     height: 50px;
     width: 290px;
 
-    i.ico {
+    .ico {
       position: relative;
-      left: -9px;
+      left: -15px;
       top: -2px;
+      display: inline;
+
+      .github {
+        width: 20px;
+        height: 20px;
+        fill: white;
+        stroke: white;
+        stroke-width: 1;
+      }
     }
 
     span {
       position: relative;
       top: -5px;
-      left: -9px;
+      left: 0px;
       font-size: 18px;
-    }
-  }
-
-  .authorize-instructions {
-    i.ico {
-      margin-right: 10px;
     }
   }
 
   .testimonial-card {
     border-radius: 10px;
-    box-shadow: 1px 1.5px 3px 2px lighten(@gray-base, 80%);
+    box-shadow: 0 2px 4px 0 @blur-color;
     font-size: 16px;
     margin: 5px 0 35px 0;
     padding: 20px;
@@ -132,7 +138,7 @@
         background-size: 40px 40px;
         border-radius: 50%;
         border: 2px solid @white;
-        box-shadow: 0px 1px 2px 1px lighten(@gray-base, 80%);
+        box-shadow: 0 2px 4px 0 @blur-color;
 
       &.rohan-singh {
         background-image: url('@{imgPath}/outer/signup/rohan-singh.png');
@@ -179,7 +185,7 @@
     padding-top: 40px;
     text-align: center;
 
-    a {
+    .footer-link {
       margin-left: 10px;
       margin-right: 10px;
     }
@@ -191,100 +197,40 @@
     margin-bottom: 0px;
   }
 
-  i.ico {
-    display: inline;
-
-    .github {
-      width: 20px;
-      height: 20px;
-      fill: white;
-      stroke: white;
-      stroke-width: 1;
-    }
+  .status-row {
+    padding: 0 30px;
   }
 
   .status-bar {
-
-    .circle {
-      border-radius: 50%;
-      border: 2px solid @black;
-      height: 20px;
-      text-align: center;
-      width: 20px;
-
-      &.success {
-        background-color: @brand-success;
-        border: none;
-        overflow: scroll; // This is a horrible hack because overflow: hidden with border-radius doesn't work on Safari.
-      }
-    }
-
-    .no-padding {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    div {
-      display: inline-block;
-      text-align: center;
-
-      &.left {
-        padding-left: 40px;
-      }
-      &.right {
-        padding-right: 35px;
-      }
-    }
-
-    .fa-check {
-      font-size: 14px;
-    }
-
-    .line {
-      border: 2px solid @black;
-      margin-bottom: 8px;
-      width: 100%; 
-    }
+     max-width: 100%;
+     max-height: 100%;
   }
 
   .status-messages {
     margin-top: 15px;
 
-    p {
+    .status {
       color: @black;
-      font-family: ProximaNova-Semibold;
       font-size: 14px;
 
       &.success {
         color: @brand-success;
       }
     }
-  }
 
-  .left {
-    text-align: left;
+    .left {
+      text-align: left;
+    }
 
-    .line {
-      border-color: @brand-success;
-      width: calc(~'100% - 20px');
+    .middle {
+      text-align: center;
+    }
+
+    .right {
+      text-align: right;
     }
   }
 
-  .middle {
-    text-align: center;
-
-    .line {
-      width: calc(~'50% - 10px');
-    }
-  }
-
-  .right {
-    text-align: right;
-
-    .line {
-      width: calc(~'100% - 20px');
-    }
-  }
 
   .sub-header {
     color: @gray;

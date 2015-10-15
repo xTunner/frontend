@@ -13,7 +13,7 @@
     om/IRender
     (render [_]
       (html
-        (if false
+        (if (om/get-shared owner [:ab-tests :new_auth_page])
           [:section
            [:div#signup.container-fluid
             [:div.row
@@ -43,21 +43,13 @@
             [:div.row
              [:div.col-md-1]
              [:div.authorize-instructions.col-md-5
-              [:div.status-bar.row
-               [:div.col-xs-3.left.no-padding
-                [:div.success.circle [:i.fa.fa-check.fa-inverse]]
-                [:div.success.line]]
-               [:div.col-xs-6.middle.no-padding
-                [:div.line]
-                [:div.circle]
-                [:div.line]]
-               [:div.col-xs-3.right.no-padding
-                [:div.line] 
-                [:div.circle]]]
+              [:div.row
+               [:div.col-xs-12.status-row
+                [:img.status-bar {:src (utils/cdn-path "/img/outer/signup/status-bar.png")}]]]
               [:div.status-messages.row
-               [:div.col-xs-4.left [:p.success "Begin Signup"]]
-               [:div.col-xs-4.middle [:p "Add Code"]]
-               [:div.col-xs-4.right [:p "Ship Faster"]]]
+               [:div.col-xs-4.left [:p.status.success "Begin Signup"]]
+               [:div.col-xs-4.middle [:p.status "Add Code"]]
+               [:div.col-xs-4.right [:p.status "Ship Faster"]]]
               [:h1.header "Great, let's add some code to test."]
               [:p.sub-header "Signing up with CircleCI is " [:b "free"] ". Next, you'll be taken to Github to authenticate so you can start shipping faster."]
               [:a.btn.btn-cta.authorize-button
@@ -74,16 +66,16 @@
                  [:div.customer-photo.rohan-singh]
                  [:div.logo.spotify]]
                 [:div.customer [:p "Rohan Singh, Senior Infrastructure Engineer at Spotify"]]
-                [:div.testimonial [:p "We love CircleCI's integration with GitHub and their ease of use. They've created a great user experience that makes it easy to see what's going on with builds and what the status is. Another thing that's been indispensable is the ability to SSH into build containers, which is something you don't get with other services."]]]
+                [:div.testimonial [:p "We love CircleCI's integration with GitHub and their ease of use. They've created a great user experience that makes it easy to see what's going on with builds and what the status is."]]]
               [:div.row.testimonial-card
                 [:div.photo-logo-row
                  [:div.customer-photo.matt-kemp]
                  [:div.logo.sprig]]
                 [:div.customer [:p "Matt Kemp, Co-founder & Head of Engineering at Sprig"]]
-                [:div.testimonial [:p "CircleCI is an excellent product and was the clear winner over the alternatives when I tried them all out. I signed up for a few different CI services and got our project building, then tried to configure a few extra options. With CircleCI, I was able to get a green build the fastest and hit the fewest bumps."]]]]
+                [:div.testimonial [:p "CircleCI is an excellent product and was the clear winner over the alternatives when I tried them all out. With CircleCI, I was able to get a green build the fastest and hit the fewest bumps."]]]]
              [:div.col-md-1]]
             [:div.row.footer
              [:div.github-example.col-md-12
-              [:a {:href "/privacy"} "Privacy"]
-              [:a {:href "/contact"} "Contact Us"]
-              [:a {:href "/"} "© CircleCI"]]]]])))))
+              [:a.footer-link {:href "/privacy"} "Privacy"]
+              [:a.footer-link {:href "/contact"} "Contact Us"]
+              [:a.footer-link {:href "/"} "© CircleCI"]]]]])))))
