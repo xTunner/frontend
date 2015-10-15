@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [frontend.analytics :as analytics]
             [frontend.routes :as routes]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :include-macros true :refer [unexterned-prop]]
             [goog.events :as events]
             [goog.history.Html5History :as html5-history]
             [goog.window :as window]
@@ -102,9 +102,9 @@
   "Find closest <a> ancestor of target and add some properties to it."
   (let [a (closest-tag target "A")]
     (cond (instance? js/SVGElement a)   ; SVG
-          (let [href (-> a (.-href) (.-baseVal))]
+          (let [href (-> a (.-href) (unexterned-prop "baseVal"))]
             {:attr-href href
-             :attr-target (-> a .-target .-baseVal)
+             :attr-target (-> a .-target (unexterned-prop "baseVal"))
              :host-name (let [uri-info (goog.Uri.parse href)
                               domain (.getDomain uri-info)]
                           (if (empty? domain)
