@@ -9,7 +9,7 @@
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.state :as state]
-            [frontend.utils :as utils :refer-macros [inspect]]
+            [frontend.utils :as utils :refer-macros [inspect] :refer [unexterned-prop]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.routes :as routes]
@@ -21,16 +21,6 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                                                         ;;
-;; Note that unexterned properties must be accessed with `aget` instead of ;;
-;; the `.-` or `..` shortcut notations.                                    ;;
-;;                                                                         ;;
-;; Google closure compiler with "advanced" optimizations will mangle       ;;
-;; unexterned field names.                                                 ;;
-;;                                                                         ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def svg-info
   {:width 425
@@ -119,29 +109,29 @@
     ;; top bars enter and update
     (-> bars-join
         (.select ".top")
-        (.attr #js {"xlink:href" #(utils/uri-to-relative (aget % "build_url"))
-                    "xlink:title" #(let [duration-str (datetime/as-duration (aget % "build_time_millis"))]
+        (.attr #js {"xlink:href" #(utils/uri-to-relative (unexterned-prop % "build_url"))
+                    "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "build_time_millis"))]
                                      (gstring/format "%s in %s"
-                                                     (gstring/toTitleCase (aget % "outcome"))
+                                                     (gstring/toTitleCase (unexterned-prop % "outcome"))
                                                      duration-str))})
         (.select "rect.bar")
-        (.attr #js {"class" #(str "bar " (aget % "outcome"))
-                    "y" #(y-pos-scale (aget % "build_time_millis"))
-                    "x" #(x-scale (aget % "build_num"))
+        (.attr #js {"class" #(str "bar " (unexterned-prop % "outcome"))
+                    "y" #(y-pos-scale (unexterned-prop % "build_time_millis"))
+                    "x" #(x-scale (unexterned-prop % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-zero (y-pos-scale (aget % "build_time_millis")))}))
+                    "height" #(- y-zero (y-pos-scale (unexterned-prop % "build_time_millis")))}))
 
     ;; bottom bar enter and update
     (-> bars-join
         (.select ".bottom")
-        (.attr #js {"xlink:href" #(utils/uri-to-relative (aget % "build_url"))
-                    "xlink:title" #(let [duration-str (datetime/as-duration (aget % "queued_time_millis"))]
+        (.attr #js {"xlink:href" #(utils/uri-to-relative (unexterned-prop % "build_url"))
+                    "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "queued_time_millis"))]
                                      (gstring/format "Queue time %s" duration-str))})
         (.select "rect.bar")
         (.attr #js {"y" y-zero
-                    "x" #(x-scale (aget % "build_num"))
+                    "x" #(x-scale (unexterned-prop % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- (y-neg-scale (aget % "queued_time_millis")) y-zero)}))
+                    "height" #(- (y-neg-scale (unexterned-prop % "queued_time_millis")) y-zero)}))
 
     ;; bars exit
     (-> bars-join
