@@ -254,11 +254,14 @@
                  [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
                 [:dl
                  [:dt "LAST BUILD"]
-                 [:dd (datetime/as-time-since (->> builds
-                                                   reverse
-                                                   (filter :start_time)
-                                                   first
-                                                   :start_time))]]]
+                 [:dd (om/build common/updating-duration
+                                {:start (->> builds
+                                             reverse
+                                             (filter :start_time)
+                                             first
+                                             :start_time)}
+                                {:opts {:formatter datetime/as-time-since
+                                        :formatter-use-start? true}})]]]
                (om/build project-insights-bar builds)
                [:div.below-info
                 [:dl
