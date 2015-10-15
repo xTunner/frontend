@@ -31,15 +31,18 @@
   }
 
   .aside-item {
+      opacity: 0.8;
 
     &:hover, &:focus {
-      box-shadow: none;
+      opacity: 1;
       background: lighten(@aside-nav-bg-color-v2, 12%);
+      box-shadow: none;
     }
 
     &.logo {
-      box-shadow: none;
+      opacity: 1;
       background: @aside-nav-logo-bg-color-v2;
+      box-shadow: none;
 
       &:hover, &:focus {
         background: lighten(@aside-nav-logo-bg-color-v2, 12%);
