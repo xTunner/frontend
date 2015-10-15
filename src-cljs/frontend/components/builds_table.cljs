@@ -1,5 +1,5 @@
 (ns frontend.components.builds-table
-  (:require [cemerick.url :refer (url)]
+  (:require [cemerick.url :as url]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
@@ -106,12 +106,6 @@
 (defn dashboard-icon [name]
   [:img.dashboard-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
-(defn pusher-avatar [build]
-  (if-let [avatar-url (-> build :user :avatar_url)]
-    [:img.dashboard-icon
-     {:src (-> avatar-url url (assoc-in [:query "s"] "16") str)}]
-    (dashboard-icon "Builds-Author")))
-
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (when (:dont_build build) "dont_build")}
@@ -159,11 +153,16 @@
          (:build_num build)]]
 
        [:div.metadata
-        (when-let [pusher (build-model/ui-user build)]
+        (when-let [pusher-name (build-model/ui-user build)]
           [:div.metadata-item.recent-user
-           {:title pusher}
-           (pusher-avatar build)
-           pusher])
+           {:title pusher-name}
+           (if-let [avatar-url (-> build :user :avatar_url)]
+             [:img.dashboard-icon
+              ;; Adding `&s=N` to the avatar URL returns an NxN version of the
+              ;; avatar (except, for some reason, for default avatars, which are
+              ;; always returned full-size, but they're sized with CSS anyhow).
+              {:src (-> avatar-url url/url (assoc-in [:query "s"] "20") str)}]
+             (dashboard-icon "Builds-Author"))])
 
         [:div.metadata-item
          (if-not (:vcs_revision build)
@@ -176,17 +175,17 @@
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
           (list
-            [:div.metadata-item.recent-time
-             (dashboard-icon "Builds-StartTime")
-             "–"]
-            [:div.metadata-item.recent-time
-             (dashboard-icon "Builds-Duration")
-             "–"])
+           [:div.metadata-item.recent-time
+            (dashboard-icon "Builds-StartTime")
+            "–"]
+           [:div.metadata-item.recent-time
+            (dashboard-icon "Builds-Duration")
+            "–"])
           (list [:div.metadata-item.recent-time
-                 {:title  (datetime/full-datetime (js/Date.parse (:start_time build))) }
+                 {:title (datetime/full-datetime (js/Date.parse (:start_time build)))}
                  (dashboard-icon "Builds-StartTime")
                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                  " ago"]
+                 " ago"]
                 [:div.metadata-item.recent-time
                  {:title (build-model/duration build)}
                  (dashboard-icon "Builds-Duration")
