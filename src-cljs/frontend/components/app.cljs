@@ -37,6 +37,7 @@
             [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
             [frontend.components.signup :as signup]
+            [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
             [frontend.models.feature :as feature]
@@ -103,6 +104,13 @@
 (defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
+    om/IWillMount
+    (will-mount [_]
+      (let [organizations-loaded? (seq (get-in app state/top-nav-orgs-path))
+            api-ch (get-in app [:comms :api])]
+        (if (and (feature/enabled? :ui-v2)
+                 (not organizations-loaded?))
+          (api/get-orgs api-ch))))
     om/IRender
     (render [_]
       (if-not (:navigation-point app)

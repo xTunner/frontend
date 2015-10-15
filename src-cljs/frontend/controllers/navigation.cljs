@@ -8,7 +8,6 @@
             [frontend.components.documentation :as docs]
             [frontend.favicon]
             [frontend.models.build :as build-model]
-            [frontend.models.feature :as feature]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
@@ -26,9 +25,6 @@
 ;;      assoc things in state on every handler
 ;;      We could also use a declarative way to specify each page.
 
-;; TODO Above middleware should take care of common side-effects in
-;;      `post-navigated-to!`
-
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -37,11 +33,6 @@
 
 (defmulti post-navigated-to!
   (fn [history-imp navigation-point args previous-state current-state]
-    (let [organizations-loaded? (seq (get-in current-state state/top-nav-orgs-path))
-          api-ch (get-in current-state [:comms :api])]
-      (if (and (feature/enabled? :ui-v2)
-               (not organizations-loaded?))
-        (api/get-orgs api-ch)))
     (frontend.favicon/reset!)
     (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
     navigation-point))
