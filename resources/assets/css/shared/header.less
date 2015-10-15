@@ -7,43 +7,6 @@
 }
 
 .ui-v2 {
-  .summary-header {
-    .flexy(stretch, flex-start);
-  }
-  .summary-items, .summary-build-contents {
-    .flexy(flex-start, flex-start);
-  }
-
-  .build-status {
-    margin-right: 0 !important; //forced to clear
-  }
-
-  @media (max-width: @screen-sm-max) {
-
-    @small-screen-scale: 2.0;
-
-    .summary-header {
-      .flexy(stretch, space-around, column);
-    }
-
-    .summary-items, .summary-build-contents {
-      margin-left: 0 !important; //forced to clear
-
-      .flexy(stretch, flex-start, row);
-    }
-
-    .head-user {
-      .flexy(stretch, flex-start, column);
-    }
-
-    .breadcrumbs * {
-      font-size: (@fontSizeLarge * @small-screen-scale);
-    }
-    .build-actions-v2 * {
-      font-size: (@fontSizeSmall * @small-screen-scale);
-    }
-  }
-
   .breadcrumbs {
     margin-left: 0;
     font-size: 20px;

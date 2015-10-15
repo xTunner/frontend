@@ -1122,7 +1122,7 @@
 (defn build-finished-status [build]
   (let [stop-time  (:stop_time build)
         start-time (:start_time build)]
-    [:div
+    [:div.summary-item
      [:span.summary-label "Finished: "]
      [:span.stop-time
       (when stop-time
@@ -1131,7 +1131,6 @@
         (list (om/build common/updating-duration
                         {:start stop-time}
                         {:opts {:formatter datetime/time-ago}}) " ago"))]
-
      [:span
       " ("
       (if (build-model/running? build)
@@ -1167,18 +1166,18 @@
           [:div
            [:div.summary-header
             [:div.summary-items
-             [:div
+             [:div.summary-item
               [:span.badge.build-status {:class (build-model/status-class build)}
                [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
                (build-model/status-words build)]]
              (when (:stop_time build)
                (build-finished-status build))]
             [:div.summary-items
-             [:div
+             [:div.summary-item
               [:span.summary-label "Previous: "]
               [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
                (:build_num (:previous build))]]
-             [:div
+             [:div.summary-item
               [:span.summary-label "Parallelism: "]
               (if (has-scope :write-settings data)
                 [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
@@ -1187,12 +1186,12 @@
                 [:span (:parallel build) "x"])]]
             (when (:usage_queued_at build)
               [:div.summary-items
-               [:div
+               [:div.summary-item
                 [:span.summary-label "Queued: "]
                 [:span  (queued-time build)]]])
 
             [:div.summary-items.summary-build-contents
-             [:div
+             [:div.summary-item
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]]
 
@@ -1203,7 +1202,8 @@
                                       (:canceler build))]
              [:div.summary-header
               [:div.summary-items
-               (build-canceler canceler github-endpoint)]])
+               [:div.summary-item
+                (build-canceler canceler github-endpoint)]]])
            [:div.card
             [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
@@ -1242,9 +1242,6 @@
        [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
         [:img {:src (common/icon-path "UI-ArrowChevron")}]]
        [:ul.dropdown-menu
-        [:li
-         (forms/managed-button
-           [:a (-> actions :rebuild :args) (-> actions :rebuild :text)])]
         [:li
          (forms/managed-button
            [:a (-> actions :without_cache :args) (-> actions :without_cache :text)])]
