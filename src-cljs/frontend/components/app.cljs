@@ -106,10 +106,11 @@
     om/IDisplayName (display-name [_] "App")
     om/IWillMount
     (will-mount [_]
-      (let [organizations-loaded? (some? (get-in app state/top-nav-orgs-path))
+      (let [logged-in? (boolean (get-in app state/user-path))
+            load-organizations? (nil? (get-in app state/top-nav-orgs-path))
             api-ch (get-in app [:comms :api])]
-        (if (and (feature/enabled? :ui-v2)
-                 (not organizations-loaded?))
+        (if (and logged-in? load-organizations?
+                 (feature/enabled? :ui-v2))
           (api/get-orgs api-ch))))
     om/IRender
     (render [_]
