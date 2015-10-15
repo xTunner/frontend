@@ -151,10 +151,7 @@
          (when (and show-project? show-branch?) " / ")
 
          (when show-branch?
-           [:a
-            {:title (build-model/vcs-ref-name build)
-             :href url}
-            (-> build build-model/vcs-ref-name)])
+           (-> build build-model/vcs-ref-name))
          " #"
          (:build_num build)]]
 
@@ -186,7 +183,7 @@
                  {:title  (datetime/full-datetime (js/Date.parse (:start_time build))) }
                  (dashboard-icon "Builds-StartTime")
                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                  " ago"]
+                 " ago"]
                 [:div.metadata-item.recent-time
                  {:title (build-model/duration build)}
                  (dashboard-icon "Builds-Duration")
