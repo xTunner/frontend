@@ -724,6 +724,7 @@
       "trigger" (if (:user build)
                   (list user-link " on CircleCI.com")
                   (list "CircleCI.com"))
+      "api" "API"
       (if (:job_name build)
         (:job_name build)
         "unknown"))))
