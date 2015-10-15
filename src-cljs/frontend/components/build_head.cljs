@@ -725,7 +725,7 @@
                   (list user-link " on CircleCI.com")
                   (list "CircleCI.com"))
       "api" "API"
-      (if (:job_name build)
+      (or
         (:job_name build)
         "unknown"))))
 
