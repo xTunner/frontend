@@ -1008,13 +1008,19 @@
          [:div.sub-head
           [:div.sub-head-top
            [:ul.nav.nav-tabs
-
-            [tab-tag {:class (when (= :config selected-tab) "active")}
-             [tab-link-v2 {:href "#config"} "circle.yml"]]
-
-            (when (seq build-params)
-              [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
-               [tab-link-v2 {:href "#build-parameters"} "Build Parameters"]])
+            ;; tests don't get saved until the end of the build (TODO: stream the tests!)
+            (when (build-model/finished? build)
+              [tab-tag {:class (when (= :tests selected-tab) "active")}
+               [tab-link-v2 {:href "#tests"} (if (= "success" (:status build))
+                                               "Test Results "
+                                               "Test Failures ")
+                (when-let [fail-count (some->> build-data
+                                               :tests-data
+                                               :tests
+                                               (filter #(contains? #{"failure" "error"} (:result %)))
+                                               count)]
+                  (when (not= 0 fail-count)
+                    [:span {:class "fail-count"} fail-count]))]])
 
             (when (has-scope :read-settings data)
               [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
@@ -1033,30 +1039,23 @@
                [tab-link-v2 {:href "#ssh-info"}
                 "Debug via SSH"]])
 
-            ;; tests don't get saved until the end of the build (TODO: stream the tests!)
-            (when (build-model/finished? build)
-              [tab-tag {:class (when (= :tests selected-tab) "active")}
-               [tab-link-v2 {:href "#tests"} (if (= "success" (:status build))
-                                               "Test Results "
-                                               "Test Failures ")
-                (when-let [fail-count (some->> build-data
-                                               :tests-data
-                                               :tests
-                                               (filter #(contains? #{"failure" "error"} (:result %)))
-                                               count)]
-                  (when (not= 0 fail-count)
-                    [:span {:class "fail-count"} fail-count]))]])
-
+            ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
+            (when (and logged-in? (build-model/finished? build))
+              [tab-tag {:class (when (= :artifacts selected-tab) "active")}
+               [tab-link-v2 {:href "#artifacts"}
+                "Artifacts"]])
+           
+            [tab-tag {:class (when (= :config selected-tab) "active")}
+             [tab-link-v2 {:href "#config"} "circle.yml"]]
+           
             (when (and admin? (build-model/finished? build))
               [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
                [tab-link-v2 {:href "#build-time-viz"}
                 "Build Timing"]])
 
-            ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
-            (when (and logged-in? (build-model/finished? build))
-              [tab-tag {:class (when (= :artifacts selected-tab) "active")}
-               [tab-link-v2 {:href "#artifacts"}
-                "Artifacts"]])]]
+            (when (seq build-params)
+              [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
+               [tab-link-v2 {:href "#build-parameters"} "Build Parameters"]])]]
 
           [:div.card.sub-head-content
            (case selected-tab
