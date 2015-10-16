@@ -110,13 +110,10 @@
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (when (:dont_build build) "dont_build")}
      [:div.status-area
-      [:div.recent-status-badge
-       [:a
-        {:title "status"
-         :href url
-         :class (build-model/status-class build)}
+      [:a {:href url}
+       [:div.recent-status-badge {:class (build-model/status-class build)}
         [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-        (build-model/status-words build)]]
+        [:div.badge-text (build-model/status-words build)]]]
 
       (when show-actions?
         [:div.build_actions
