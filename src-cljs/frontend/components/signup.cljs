@@ -45,7 +45,7 @@
              [:div.authorize-instructions.col-md-5
               [:div.row
                [:div.col-xs-12.status-row
-                [:img.status-bar {:src (utils/cdn-path "/img/outer/signup/status-bar.png")}]]]
+                [:img.status-bar {:src (utils/cdn-path "/img/outer/signup/status-bar.svg")}]]]
               [:div.status-messages.row
                [:div.col-xs-4.left [:p.status.success "Begin Signup"]]
                [:div.col-xs-4.middle [:p.status "Add Code"]]
