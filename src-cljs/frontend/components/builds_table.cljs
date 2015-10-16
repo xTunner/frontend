@@ -161,7 +161,7 @@
               {:src (-> avatar-url url/url (assoc-in [:query "s"] "20") str)}]
              (dashboard-icon "Builds-Author"))])
 
-        [:div.metadata-item
+        [:div.metadata-item.revision
          (if-not (:vcs_revision build)
            [:a {:href url}]
            (list (dashboard-icon "Builds-CommitNumber")
@@ -172,18 +172,18 @@
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
           (list
-           [:div.metadata-item.recent-time
+           [:div.metadata-item.recent-time.start-time
             (dashboard-icon "Builds-StartTime")
             "–"]
-           [:div.metadata-item.recent-time
+           [:div.metadata-item.recent-time.duration
             (dashboard-icon "Builds-Duration")
             "–"])
-          (list [:div.metadata-item.recent-time
+          (list [:div.metadata-item.recent-time.start-time
                  {:title (datetime/full-datetime (js/Date.parse (:start_time build)))}
                  (dashboard-icon "Builds-StartTime")
                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
                  " ago"]
-                [:div.metadata-item.recent-time
+                [:div.metadata-item.recent-time.duration
                  {:title (build-model/duration build)}
                  (dashboard-icon "Builds-Duration")
                  (om/build common/updating-duration {:start (:start_time build)
