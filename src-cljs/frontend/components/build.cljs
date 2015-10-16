@@ -129,25 +129,18 @@
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
             div (html
-                 [:div.container-list
-                  (for [container containers]
-                    (om/build container-pill
-                              {:container container
-                               :build-running? build-running?
-                               :current-container-id current-container-id}
-                              {:react-key (:index container)}))
-                  (when (om/get-shared owner [:ab-tests :parallelism_button_design])
-                    [:a.container-selector.parallelism-tab
-                     {:role "button"
-                      :href (build-model/path-for-parallelism build)
-                      :title "adjust parallelism"}
-                     [:span "+"]])
-                  (when-not (om/get-shared owner [:ab-tests :parallelism_button_design])
-                       [:a.container-selector.parallelism-tab-b
-                     {:role "button"
-                      :href (build-model/path-for-parallelism build)
-                      :title "adjust parallelism"}
-                     [:span "+"]])])]
+                  [:div.container-list
+                   (for [container containers]
+                     (om/build container-pill
+                               {:container container
+                                :build-running? build-running?
+                                :current-container-id current-container-id}
+                               {:react-key (:index container)}))
+                   [:a.container-selector.parallelism-tab
+                    {:role "button"
+                     :href (build-model/path-for-parallelism build)
+                     :title "adjust parallelism"}
+                    [:span "+"]]])]
         (om/build sticky {:content div :content-class "containers"})))))
 
 (defn notices [data owner]
