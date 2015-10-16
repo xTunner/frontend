@@ -66,13 +66,13 @@
                  [:div.customer-photo.rohan-singh]
                  [:div.logo.spotify]]
                 [:div.customer [:p "Rohan Singh, Senior Infrastructure Engineer at Spotify"]]
-                [:div.testimonial [:p "We love CircleCI's integration with GitHub and their ease of use. They've created a great user experience that makes it easy to see what's going on with builds and what the status is."]]]
+                [:div.testimonial [:p "\"We love CircleCI's integration with GitHub and their ease of use. They've created a great user experience that makes it easy to see what's going on with builds and what the status is.\""]]]
               [:div.row.testimonial-card
                 [:div.photo-logo-row
                  [:div.customer-photo.matt-kemp]
                  [:div.logo.sprig]]
                 [:div.customer [:p "Matt Kemp, Co-founder & Head of Engineering at Sprig"]]
-                [:div.testimonial [:p "CircleCI is an excellent product and was the clear winner over the alternatives when I tried them all out. With CircleCI, I was able to get a green build the fastest and hit the fewest bumps."]]]]
+                [:div.testimonial [:p "\"CircleCI is an excellent product and was the clear winner over the alternatives when I tried them all out. With CircleCI, I was able to get a green build the fastest and hit the fewest bumps.\""]]]]
              [:div.col-md-1]]
             [:div.row.footer
              [:div.github-example.col-md-12
