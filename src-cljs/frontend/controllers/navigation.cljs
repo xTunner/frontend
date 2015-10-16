@@ -26,8 +26,6 @@
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
 ;;      We could also use a declarative way to specify each page.
-
-
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti navigated-to
