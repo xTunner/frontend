@@ -145,10 +145,7 @@
          (when (and show-project? show-branch?) " / ")
 
          (when show-branch?
-           [:a
-            {:title (build-model/vcs-ref-name build)
-             :href url}
-            (-> build build-model/vcs-ref-name)])
+           (-> build build-model/vcs-ref-name))
          " #"
          (:build_num build)]]
 
