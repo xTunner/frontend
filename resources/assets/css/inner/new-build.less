@@ -364,22 +364,18 @@
   color: @gray-dark-v2;
 
   .rebuild {
-    @rebuild-light-gray: #f8f8f8;
-    @rebuild-gray: #f0f0f0;
-    @rebuild-dark-gray: #ddd;
-
     border-radius: 3px;
-    border: solid 1px @rebuild-dark-gray;
+    border: solid 1px @gray-lighter-v2;
 
     button {
-      background: @rebuild-gray;
+      background: @gray-background-v2;
     }
 
     ul {
-      background: @rebuild-light-gray;
+      background: @background-color-v2;
 
       li > a:hover {
-        background: @rebuild-gray;
+        background: @gray-background-v2;
         color: @gray-dark-v2;
       }
     }
@@ -388,21 +384,28 @@
       padding-right: 80px;
 
       &:hover {
-        background: @rebuild-light-gray;
-        border-right: 1px solid @rebuild-gray;
+        background: @background-color-v2;
+        border-right: 1px solid @gray-lighter-v2;
       }
     }
 
     .dropdown-toggle {
-      border-left: 1px solid @grayLighter;
+      border-left: 1px solid @gray-lighter-v2;
 
       &:hover {
-        background: @whiten;
+        background: @background-color-v2;
       }
 
       &:focus {
-        background: @grayLighter;
+        background: @gray-lighter-v2;
       }
+    }
+
+    .dropdown-menu {
+      margin-top: 1px;
+      width: 100%;
+      box-shadow: none;
+      border-radius: 0;
     }
   }
 
