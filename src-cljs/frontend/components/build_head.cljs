@@ -1167,9 +1167,7 @@
            [:div.summary-header
             [:div.summary-items
              [:div.summary-item
-              [:span.badge.build-status {:class (build-model/status-class build)}
-               [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-               (build-model/status-words build)]]
+              (builds-table/build-status-badge build)]
              (when (:stop_time build)
                (build-finished-status build))]
             [:div.summary-items
