@@ -51,13 +51,13 @@
     border: 1px solid @grayBoxBorder;
   }
   .range-highlight {
-    .animation(pricing-range 500ms @bezier_transform 100ms backwards);
+    .animation(pricing-range 500ms @bezier-transform 100ms backwards);
     background: @grayDark;
     width: 0%;
     margin-top: -1em;
   }
   .range-knob {
-    .animation(pricing-knob 500ms @bezier_transform 100ms backwards);
+    .animation(pricing-knob 500ms @bezier-transform 100ms backwards);
     position: absolute;
     width: 2em;
     height: 2em;
@@ -68,7 +68,7 @@
     background: @white;
     border: 1px solid @grayBoxBorder;
     &:before {
-      .animation(pricing-hang 500ms @bezier_fadein 500ms backwards);
+      .animation(pricing-hang 500ms @bezier-fadein 500ms backwards);
       content: attr(data-count);
       position: absolute;
       color: @grayLight;
@@ -162,7 +162,7 @@
       background: @grayDark;
     }
     &:first-of-type {
-      .animation(pricing-button 500ms @bezier_fadein 500ms backwards);
+      .animation(pricing-button 500ms @bezier-fadein 500ms backwards);
       border-radius: 1.5em 0 0 1.5em;
     }
     &:last-of-type {

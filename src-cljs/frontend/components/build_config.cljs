@@ -9,12 +9,21 @@
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html]]))
 
+(defn- maybe-add-start-end
+  "Workaround around missing start/end data from backend"
+  [error]
+  (if (:start error)
+    error
+    (assoc error
+           :start {:line 0 :index 0 :column 0}
+           :end {:line 0 :index 0 :column 0})))
+
 (defn diagnostics [config owner]
   (reify
     om/IInitState
     (init-state [_]
       ;; TODO convert CI.inner.Diagnostics to clojurescript
-      {:configDiagnostics (js/CI.inner.Diagnostics. (:string config) (clj->js (:errors config)))})
+      {:configDiagnostics (js/CI.inner.Diagnostics. (:string config) (->> config :errors (map maybe-add-start-end) clj->js))})
     om/IRenderState
     (render-state [_ {:keys [configDiagnostics]}]
       (html

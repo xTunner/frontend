@@ -104,6 +104,12 @@
 (defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
+    om/IWillMount
+    (will-mount [_]
+      (let [logged-in? (boolean (get-in app state/user-path))
+            api-ch (get-in app [:comms :api])]
+        (if (and logged-in? (feature/enabled? :ui-v2))
+          (api/get-orgs api-ch))))
     om/IRender
     (render [_]
       (if-not (:navigation-point app)
@@ -118,8 +124,7 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              show-header-and-footer? (not= :signup (:navigation-point app))
-              api-ch (get-in app [:comms :api])]
+              show-header-and-footer? (not= :signup (:navigation-point app))]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -128,21 +133,20 @@
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
                                        (when (feature/enabled? :ui-v2) ["ui-v2"])
-                                       ;; The following 2 are meant for the landing ab test to hide old header/footer
-                                       (when (= :landing (:navigation-point app)) ["landing"])
+                                       ;; The following is meant for the landing ab test to hide old header/footer
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-              (when (and inner? logged-in? (feature/enabled? :ui-v2))
-                (api/get-orgs api-ch)
-                (om/build top-nav/top-nav app-without-container-data))
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
               [:main.app-main {:ref "app-main"
                                :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
+
+               (when (and inner? logged-in? (feature/enabled? :ui-v2))
+                 (om/build top-nav/top-nav app-without-container-data))
 
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to

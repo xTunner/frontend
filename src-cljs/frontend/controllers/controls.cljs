@@ -1027,10 +1027,6 @@
   [target message {:keys [index]} state]
   (assoc-in state state/language-testimonial-tab-path index))
 
-(defmethod post-control-event! :enterprise-learn-more-clicked
-  [target message {:keys [source]} previous-state current-state]
-  (utils/open-modal "#enterpriseModal"))
-
 (defmethod control-event :project-feature-flag-checked
   [target message {:keys [project-id flag value]} state]
   (assoc-in state (conj state/project-path :feature_flags flag) value))
@@ -1085,11 +1081,6 @@
           (put! (:api comms) [:docs-articles (:status api-result) api-result])
           (when (= :success (:status api-result))
             (put! (:nav comms) [:navigate! {:path "/docs/search"}]))))))
-
-(defmethod control-event :build-header-tab-clicked
-  [target message {:keys [tab]} state]
-  (assoc-in state state/build-header-tab-path tab))
-
 
 (defn scroll-home-by-offset!
   "Scrolls down to the next section of copy on the landing page."
@@ -1159,7 +1150,4 @@
   (let [hamburger-state (get-in state state/hamburger-menu-path)]
     (if (= "closed" hamburger-state)
       (assoc-in state state/hamburger-menu-path "open")
-      (assoc-in state state/hamburger-menu-path "closed")
-      )
-    )
-  )
+      (assoc-in state state/hamburger-menu-path "closed"))))

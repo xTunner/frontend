@@ -26,8 +26,6 @@
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
 ;;      We could also use a declarative way to specify each page.
-
-
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti navigated-to
@@ -138,25 +136,31 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [project-name build-num org repo] :as args} state]
+  [history-imp navigation-point {:keys [project-name build-num org repo tab] :as args} state]
   (mlog "navigated-to :build with args " args)
-  (-> state
-      state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data (assoc args
-                                     :show-aside-menu? (not (feature/enabled? :ui-v2))
-                                     :show-settings-link? (not (feature/enabled? :ui-v2)))
-             :project-settings-project-name project-name)
-      (assoc-in state/crumbs-path [{:type :dashboard}
-                                   {:type :org :username org}
-                                   {:type :project :username org :project repo}
-                                   {:type :project-branch :username org :project repo}
-                                   {:type :build :username org :project repo
-                                    :build-num build-num}])
-      state-utils/reset-current-build
-      (#(if (state-utils/stale-current-project? % project-name)
-          (state-utils/reset-current-project %)
-          %))))
+  (if (and (= :build (:navigation-point state))
+           (not (state-utils/stale-current-build? state project-name build-num)))
+    ;; page didn't change, just switched tabs
+    (assoc-in state state/build-header-tab-path tab)
+    ;; navigated to page, load everything
+    (-> state
+        state-utils/clear-page-state
+        (assoc :navigation-point (inspect navigation-point)
+               :navigation-data (assoc args
+                                       :show-aside-menu? (not (feature/enabled? :ui-v2))
+                                       :show-settings-link? (not (feature/enabled? :ui-v2)))
+               :project-settings-project-name project-name)
+        (assoc-in state/crumbs-path [{:type :dashboard}
+                                     {:type :org :username org}
+                                     {:type :project :username org :project repo}
+                                     {:type :project-branch :username org :project repo}
+                                     {:type :build :username org :project repo
+                                      :build-num build-num}])
+        state-utils/reset-current-build
+        (#(if (state-utils/stale-current-project? % project-name)
+            (state-utils/reset-current-project %)
+            %))
+        (assoc-in state/build-header-tab-path tab))))
 
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
@@ -240,7 +244,7 @@
       (assoc :navigation-point navigation-point
              :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
-      (assoc-in state/projects-path [])))
+      (assoc-in state/projects-path nil)))
 
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]

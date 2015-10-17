@@ -23,7 +23,7 @@
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html defrender inspect]]))
 
 ;; This is awful, can't we just pass build-head the whole app state?
 ;; splitting it up this way means special purpose paths to find stuff
@@ -59,6 +59,16 @@
 
 (defn build-queue [data owner]
   (reify
+    om/IWillMount
+    (will-mount [_]
+      (let [{:keys [build]} data
+            build-id (build-model/id build)]
+        (raise! owner [:usage-queue-why-showed
+                       {:build-id build-id
+                        :username (:username @build)
+                        :reponame (:reponame @build)
+                        :build_num (:build_num @build)}])))
+
     om/IRender
     (render [_]
       (let [{:keys [build builds]} data
@@ -346,6 +356,55 @@
                                     :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
            (sort-by first artifacts))])))))
 
+(defn artifacts-node-v2 [{:keys [depth artifacts show-artifact-links?] :as data} owner opts]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (when (seq artifacts)
+         [:ul.build-artifacts-list
+          (map-indexed
+           (fn node-entry [idx [part {:keys [artifact children]}]]
+             (let [directory? (not artifact)
+                   text       (if (and (not= 0 depth) directory?)
+                                (str part "/")
+                                part)
+                   url        (:url artifact)
+                   tag        (if (and url show-artifact-links?)
+                                [:a.artifact-link {:href (:url artifact) :target "_blank"} text]
+                                [:span.artifact-directory-text text])
+                   key        (keyword (str "index-" idx))
+                   key-state  (om/get-state owner [key])
+                   closed?    (or
+                               (:ancestors-closed? opts)
+                               (if (contains? key-state :closed?)
+                                 (:closed? key-state)
+                                 (> depth 1)))
+                   toggler    (fn [event]
+                                (let [key (keyword (str "index-" idx))]
+                                  (.preventDefault event)
+                                  (.stopPropagation event)
+                                  (om/set-state! owner [key :closed?] (not closed?))))]
+               [:li.build-artifacts-node {:class (when (= 0 depth) "container-artifacts")}
+                (if directory?
+                  [:div.build-artifacts-toggle-children
+                   {:style    {:cursor  "pointer"
+                               :display "inline"}
+                    :on-click toggler}
+                   [:i.fa.artifact-toggle-caret
+                    {:class (if closed? "fa-angle-right" "fa-angle-down")}]
+                   " "
+                   tag]
+                  tag)
+                [:div {:style (when closed? {:display "none"})}
+                 (om/build artifacts-node-v2
+                           {:depth (+ depth 1)
+                            :artifacts children
+                            :show-artifact-links? show-artifact-links?}
+                           {:opts (assoc opts
+                                    :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
+           (sort-by first artifacts))])))))
+
 (defn should-show-artifact-links?
   ;; Be extra careful about XSS in production environment
   [env admin?]
@@ -354,6 +413,10 @@
 
 (defn build-artifacts-list [data owner]
   (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:artifacts-showed]))
+
     om/IRender
     (render [_]
       (let [artifacts-data (:artifacts-data data)
@@ -370,6 +433,33 @@
                    (->> artifacts
                         (group-by :node_index)
                         (sort-by first)))
+              [:div.loading-spinner common/spinner]))])))))
+
+(defn build-artifacts-list-v2 [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:artifacts-showed]))
+
+    om/IRender
+    (render [_]
+      (let [artifacts-data (:artifacts-data data)
+            artifacts (:artifacts artifacts-data)
+            has-artifacts? (:has-artifacts? data)]
+        (html
+         [:div.build-artifacts-container
+          (if-not has-artifacts?
+            (artifacts-ad)
+            (if artifacts
+              (interpose [:hr]
+                         (map (fn artifact-node-builder [[node-index node-artifacts]]
+                                (om/build artifacts-node-v2 {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
+                                                             :depth 0
+                                                             :show-artifact-links? (should-show-artifact-links? (env) (:admin (:user data)))}
+                                          ))
+                              (->> artifacts
+                                   (group-by :node_index)
+                                   (sort-by first))))
               [:div.loading-spinner common/spinner]))])))))
 
 (defn tests-ad [owner]
@@ -402,6 +492,10 @@
 
 (defn build-tests-list [data owner]
   (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:tests-showed]))
+
     om/IRender
     (render [_]
       (let [tests-data (:tests-data data)
@@ -498,6 +592,8 @@
    ;; Otherwise, just use the first one.
    :else :commits))
 
+(def tab-link :a.tab-link)
+
 (defn build-sub-head [data owner]
   (reify
     om/IRender
@@ -508,7 +604,8 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            selected-tab (get build-data :selected-header-tab (default-tab build scopes))
+            selected-tab (or (:selected-header-tab build-data)
+                             (default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -520,32 +617,23 @@
             config-data (:config-data build-data)
             build-params (:build_parameters build)]
         (html
-         [:div.sub-head
-          [:div.sub-head-top
-           [:ul.nav.nav-tabs
-            [:li {:class (when (= :commits selected-tab) "active")}
-             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :commits}])}
-              "Commit Log"]]
+          [:div.sub-head
+           [:div.sub-head-top
+            [:ul.nav.nav-tabs
+             [:li {:class (when (= :commits selected-tab) "active")}
+              [tab-link {:href "#commits"} "Commit Log"]]
 
             [:li {:class (when (= :config selected-tab) "active")}
-             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
-              "circle.yml"]]
+             [tab-link {:href "#config"} "circle.yml"]]
 
             (when (seq build-params)
               [:li {:class (when (= :build-parameters selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-parameters}])}
-                "Build Parameters"]])
+               [tab-link {:href "#build-parameters"} "Build Parameters"]])
 
             (when (has-scope :read-settings data)
               [:li {:class (when (= :usage-queue selected-tab) "active")}
-               [:a#queued_explanation
-                {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
-                                (raise! owner [:usage-queue-why-showed
-                                               {:build-id build-id
-                                                :username (:username @build)
-                                                :reponame (:reponame @build)
-                                                :build_num (:build_num @build)}]))}
-                "Queue"
+               [tab-link {:id "queued_explanation"
+                          :href "#usage-queue"} "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
                    (om/build common/updating-duration {:start (:usage_queued_at build)
@@ -556,18 +644,14 @@
             (when (and (has-scope :write-settings data)
                        (not (feature/enabled-for-project? project :osx)))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
-                "Debug via SSH"]])
+               [tab-link {:href "#ssh-info"} "Debug via SSH"]])
 
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [:li {:class (when (= :tests selected-tab) "active")}
-               [:a {:on-click #(do
-                                 (raise! owner [:build-header-tab-clicked {:tab :tests}])
-                                 (raise! owner [:tests-showed]))}
-                (if (= "success" (:status build))
-                  "Test Results "
-                  "Test Failures ")
+               [tab-link {:href "#tests"} (if (= "success" (:status build))
+                                      "Test Results "
+                                      "Test Failures ")
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
@@ -578,15 +662,12 @@
 
             (when (and admin? (build-model/finished? build))
               [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
-                "Build Timing"]])
+               [tab-link {:href "#build-time-viz"} "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [:li {:class (when (= :artifacts selected-tab) "active")}
-               [:a {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :artifacts}])
-                                   (raise! owner [:artifacts-showed]))}
-                "Artifacts"]])]]
+               [tab-link {:href "#artifacts"} "Artifacts"]])]]
 
           [:div.sub-head-content
            (case selected-tab
@@ -607,7 +688,10 @@
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
                                                  :plan plan})
-             :ssh-info (om/build build-ssh {:build build :user user}))]])))))
+             :ssh-info (om/build build-ssh {:build build :user user})
+
+             ;; avoid errors if a nonexistent tab is typed in the URL
+             nil)]])))))
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
@@ -630,7 +714,7 @@
   (let [user-link (link-to-user build)
         commit-link (link-to-commit build)
         retry-link (link-to-retry-source build)]
-    (condp = (:why build)
+    (case (:why build)
       "github" (list user-link " (pushed " commit-link ")")
       "edit" (list user-link " (updated project settings)")
       "first-build" (list user-link " (first build)")
@@ -640,7 +724,8 @@
       "trigger" (if (:user build)
                   (list user-link " on CircleCI.com")
                   (list "CircleCI.com"))
-      (if (:job_name build)
+      "api" "API"
+      (or
         (:job_name build)
         "unknown"))))
 
@@ -832,20 +917,21 @@
           [:div
            [:span.metadata-item
             (if-not (:author_email commit-details)
-              [:span 
+              [:span
                author-icon
                (build-model/author commit-details)]
               [:a {:href (str "mailto:" (:author_email commit-details))}
                author-icon
-               (build-model/author commit-details)])
-            (when (build-model/author-isnt-committer commit-details)
+               (build-model/author commit-details)])]
+           (when (build-model/author-isnt-committer commit-details)
+             [:span.metadata-item
               (if-not (:committer_email commit-details)
                 [:span
                  author-icon
                  (build-model/committer commit-details)]
                 [:a {:href (str "mailto:" (:committer_email commit-details))}
                  author-icon
-                 (build-model/committer commit-details)]))]
+                 (build-model/committer commit-details)])])
 
            [:a.metadata-item.sha-one {:href commit_url
                                       :title commit}
@@ -893,6 +979,10 @@
                    (om/build-all commit-line-v2 (drop 3 (map #(assoc % :build build)
                                                              (:all_commit_details build)))))))])])))))
 
+
+(def tab-tag :li.build-info-tab)
+(def tab-link-v2 :a.tab-link-v2)
+
 (defn build-sub-head-v2 [data owner]
   (reify
     om/IRender
@@ -903,7 +993,8 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            selected-tab (get build-data :selected-header-tab (default-tab build scopes))
+            selected-tab (or (:selected-header-tab build-data)
+                             (default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -918,26 +1009,24 @@
          [:div.sub-head
           [:div.sub-head-top
            [:ul.nav.nav-tabs
-
-            [:li {:class (when (= :config selected-tab) "active")}
-             [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :config}])}
-              "circle.yml"]]
-
-            (when (seq build-params)
-              [:li {:class (when (= :build-parameters selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-parameters}])}
-                "Build Parameters"]])
+            ;; tests don't get saved until the end of the build (TODO: stream the tests!)
+            (when (build-model/finished? build)
+              [tab-tag {:class (when (= :tests selected-tab) "active")}
+               [tab-link-v2 {:href "#tests"} (if (= "success" (:status build))
+                                               "Test Results "
+                                               "Test Failures ")
+                (when-let [fail-count (some->> build-data
+                                               :tests-data
+                                               :tests
+                                               (filter #(contains? #{"failure" "error"} (:result %)))
+                                               count)]
+                  (when (not= 0 fail-count)
+                    [:span {:class "fail-count"} fail-count]))]])
 
             (when (has-scope :read-settings data)
-              [:li {:class (when (= :usage-queue selected-tab) "active")}
-               [:a#queued_explanation
-                {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :usage-queue}])
-                                (raise! owner [:usage-queue-why-showed
-                                               {:build-id build-id
-                                                :username (:username @build)
-                                                :reponame (:reponame @build)
-                                                :build_num (:build_num @build)}]))}
-                "Queue"
+              [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
+               [tab-link-v2 {:id "queued_explanation"
+                             :href "#usage-queue"} "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
                    (om/build common/updating-duration {:start (:usage_queued_at build)
@@ -947,40 +1036,29 @@
             ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
                        (not (feature/enabled-for-project? project :osx)))
-              [:li {:class (when (= :ssh-info selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :ssh-info}])}
+              [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
+               [tab-link-v2 {:href "#ssh-info"}
                 "Debug via SSH"]])
-
-            ;; tests don't get saved until the end of the build (TODO: stream the tests!)
-            (when (build-model/finished? build)
-              [:li {:class (when (= :tests selected-tab) "active")}
-               [:a {:on-click #(do
-                                 (raise! owner [:build-header-tab-clicked {:tab :tests}])
-                                 (raise! owner [:tests-showed]))}
-                (if (= "success" (:status build))
-                  "Test Results "
-                  "Test Failures ")
-                (when-let [fail-count (some->> build-data
-                                               :tests-data
-                                               :tests
-                                               (filter #(contains? #{"failure" "error"} (:result %)))
-                                               count)]
-                  (when (not= 0 fail-count)
-                    [:span {:class "fail-count"} fail-count]))]])
-
-            (when (and admin? (build-model/finished? build))
-              [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [:a {:on-click #(raise! owner [:build-header-tab-clicked {:tab :build-time-viz}])}
-                "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
-              [:li {:class (when (= :artifacts selected-tab) "active")}
-               [:a {:on-click #(do (raise! owner [:build-header-tab-clicked {:tab :artifacts}])
-                                   (raise! owner [:artifacts-showed]))}
-                "Artifacts"]])]]
+              [tab-tag {:class (when (= :artifacts selected-tab) "active")}
+               [tab-link-v2 {:href "#artifacts"}
+                "Artifacts"]])
+           
+            [tab-tag {:class (when (= :config selected-tab) "active")}
+             [tab-link-v2 {:href "#config"} "circle.yml"]]
+           
+            (when (and admin? (build-model/finished? build))
+              [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
+               [tab-link-v2 {:href "#build-time-viz"}
+                "Build Timing"]])
 
-          [:div.sub-head-content
+            (when (seq build-params)
+              [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
+               [tab-link-v2 {:href "#build-parameters"} "Build Parameters"]])]]
+
+          [:div.card.sub-head-content
            (case selected-tab
              :commits nil
 
@@ -988,7 +1066,7 @@
 
              :build-time-viz (om/build build-time-visualization build)
 
-             :artifacts (om/build build-artifacts-list
+             :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
 
@@ -999,7 +1077,70 @@
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
                                                  :plan plan})
-             :ssh-info (om/build build-ssh {:build build :user user}))]])))))
+             :ssh-info (om/build build-ssh {:build build :user user})
+
+             ;; avoid errors if a nonexistent tab is typed in the URL
+             nil)]])))))
+
+(defn build-canceler [canceler github-endpoint]
+  [:span.summary-label
+   (list "Canceled by: "
+         [:a  {:href  (str  (github-endpoint) "/"  (:login canceler))}
+          (if  (not-empty  (:name canceler))
+            (:name canceler)
+            (:login canceler))])])
+
+(defn pull-requests [urls]
+  ;; It's possible for a build to be part of multiple PRs, but it's rare
+  (list
+    [:span.summary-spacer "•"]
+    [:span.summary-label
+     (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
+    [:span
+     (interpose
+       ", "
+       (map (fn [url] [:a {:href url} "#"
+                       (let [n (re-find #"/\d+$" url)]
+                         (if n (subs n 1) "?"))])
+            urls))]))
+
+(defn queued-time [build]
+  (if (< 0 (build-model/run-queued-time build))
+    [:span
+     (om/build common/updating-duration {:start (:usage_queued_at build)
+                                         :stop (or (:queued_at build) (:stop_time build))})
+     " waiting + "
+     (om/build common/updating-duration {:start (:queued_at build)
+                                         :stop (or (:start_time build) (:stop_time build))})
+     " in queue"]
+
+    [:span
+     (om/build common/updating-duration {:start (:usage_queued_at build)
+                                         :stop (or (:queued_at build) (:stop_time build))})
+     " waiting for builds to finish"]))
+
+(defn build-finished-status [build]
+  (let [stop-time  (:stop_time build)
+        start-time (:start_time build)]
+    [:div.summary-item
+     [:span.summary-label "Finished: "]
+     [:span.stop-time
+      (when stop-time
+        {:title (datetime/full-datetime stop-time)})
+      (when stop-time
+        (list (om/build common/updating-duration
+                        {:start stop-time}
+                        {:opts {:formatter datetime/time-ago}}) " ago"))]
+     [:span
+      " ("
+      (if (build-model/running? build)
+        (om/build common/updating-duration {:start start-time
+                                            :stop  stop-time})
+        (build-model/duration build))
+      (om/build expected-duration {:start start-time
+                                   :stop  stop-time
+                                   :build build})
+      ")"]]))
 
 (defn build-head-v2 [data owner]
   (reify
@@ -1023,105 +1164,93 @@
                         :build-num (:build_num build)}]
         (html
           [:div
-           [:div.row
-            [:div.summary-header.col-sm-12
-             [:span.badge.build-status {:class (build-model/status-class build)}
-              [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-              (build-model/status-words build)]
-             (when-let [stop-time (:stop_time build)]
-               [:div
-                [:span.summary-label "Finished: "]
-                [:span.stop-time
-                 (when (:stop_time build)
-                   {:title (datetime/full-datetime (:stop_time build))})
-                 (when (:stop_time build)
-                   (list (om/build common/updating-duration
-                                   {:start (:stop_time build)}
-                                   {:opts {:formatter datetime/time-ago}}) " ago"))]
+           [:div.summary-header
+            [:div.summary-items
+             [:div.summary-item
+              [:span.badge.build-status {:class (build-model/status-class build)}
+               [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
+               (build-model/status-words build)]]
+             (when (:stop_time build)
+               (build-finished-status build))]
+            [:div.summary-items
+             [:div.summary-item
+              [:span.summary-label "Previous: "]
+              [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
+               (:build_num (:previous build))]]
+             [:div.summary-item
+              [:span.summary-label "Parallelism: "]
+              (if (has-scope :write-settings data)
+                [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                           :href (build-model/path-for-parallelism build)}
+                 (str (:parallel build) "x")]
+                [:span (:parallel build) "x"])]]
+            (when (:usage_queued_at build)
+              [:div.summary-items
+               [:div.summary-item
+                [:span.summary-label "Queued: "]
+                [:span  (queued-time build)]]])
 
-                [:span
-                 " ("
-                 (if (build-model/running? build)
-                   (om/build common/updating-duration {:start (:start_time build)
-                                                       :stop (:stop_time build)})
-                   (build-model/duration build))
-                 (om/build expected-duration {:start (:start_time build)
-                                              :stop (:stop_time build)
-                                              :build build})
-                 ")"]])
-             [:div.summary-build-contents
+            [:div.summary-items.summary-build-contents
+             [:div.summary-item
               [:span.summary-label "Triggered by: "]
-              [:span (trigger-html build)]
+              [:span (trigger-html build)]]
 
-              (when-let [urls (seq (:pull_request_urls build))]
-                ;; It's possible for a build to be part of multiple PRs, but it's rare
-                (list 
-                  [:span.summary-spacer "•"]
-                  [:span.summary-label
-                    (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
-                  [:span
-                   (interpose
-                     ", "
-                     (map (fn [url] [:a {:href url} "#"
-                                     (let [n (re-find #"/\d+$" url)]
-                                       (if n (subs n 1) "?"))])
-                          urls))]))
-              ]
-             ]]
+             (when-let [urls (seq (:pull_request_urls build))]
+               (pull-requests urls))]]
+
+           (when-let  [canceler  (and  (=  (:status build) "canceled")
+                                      (:canceler build))]
+             [:div.summary-header
+              [:div.summary-items
+               [:div.summary-item
+                (build-canceler canceler github-endpoint)]]])
            [:div.card
             [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
            [:div.build-head-wrapper
             [:div.build-head
-             [:div.build-info
-              [:table
-               [:tbody
-                
-                [:tr
-                 [:th "Previous"]
-                 (if-not (:previous build)
-                   [:td "none"]
-                   [:td
-                    [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
-                     (:build_num (:previous build))]])
+             (om/build build-sub-head-v2 data)]]])))))
 
-                 ]
-                [:tr
-                 (when (:usage_queued_at build)
-                   (list [:th "Queued"]
-                         [:td (if (< 0 (build-model/run-queued-time build))
-                                [:span
-                                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                     :stop (or (:queued_at build) (:stop_time build))})
-                                 " waiting + "
-                                 (om/build common/updating-duration {:start (:queued_at build)
-                                                                     :stop (or (:start_time build) (:stop_time build))})
-                                 " in queue"]
+(defn rebuild-actions-v2 [{:keys [build project]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      (let [rebuild-args  {:build-id  (build-model/id build)
+                           :vcs-url   (:vcs_url build)
+                           :build-num (:build_num build)}
+            rebuild!      #(do (raise! owner %)
+                               (om/set-state! owner [:actions :rebuild :text] "Rebuilding"))]
+        {:actions
+         {:rebuild
+          {:text  "Rebuild"
+           :title "Retry the same tests"
+           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])}
 
-                                [:span
-                                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                     :stop (or (:queued_at build) (:stop_time build))})
-                                 " waiting for builds to finish"])]))
-                 [:td
-                  (when-let [canceler (and (= (:status build) "canceled")
-                                           (:canceler build))]
-                    [:span.build-canceler
-                     (list "by "
-                           [:a {:href (str (github-endpoint) "/" (:login canceler))}
-                            (if (not-empty (:name canceler))
-                              (:name canceler)
-                              (:login canceler))])])]]
-                [:tr
-                 [:th "Parallelism"]
-                 [:td
-                  (if (has-scope :write-settings data)
-                    [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                               :href (build-model/path-for-parallelism build)}
-                     (str (:parallel build) "x")]
-                    [:span (:parallel build) "x"])]]]]
+          :without_cache
+          {:text  "without Cache"
+           :title "Retry without cache"
+           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])}
 
-              [:div.no-user-actions]]
-              (om/build build-sub-head-v2 data)]]])))))
+          :with_ssh
+          {:text  "with SSH"
+           :title "Retry with SSH in VM",
+           :action #(rebuild! [:ssh-build-clicked rebuild-args])}}}))
+    om/IRenderState
+    (render-state [_ {:keys [actions]}]
+      (let [text-for    #(-> actions % :text)
+            action-for  #(-> actions % :action)]
+        (html
+          [:div.btn-group.build-action.rebuild
+           [:button.btn.rebuild-btn {:on-click (action-for :rebuild)} (text-for :rebuild)]
+           [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
+            [:img {:src (common/icon-path "UI-ArrowChevron")}]]
+           [:ul.dropdown-menu
+            [:li
+             [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
+            ;; XXX Temporarily remove the ssh button for OSX builds
+            (when (not (feature/enabled-for-project? project :osx))
+              [:li
+               [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]])))))
 
 (defn build-head-actions
   [data owner]
@@ -1140,46 +1269,21 @@
             has-write-settings? (:write-settings
                                   (get-in data state/project-scopes-path))]
         (html
-          [:div.build-actions
-           (when has-write-settings?
-             [:div.actions
-              (forms/managed-button
-                [:button.retry_build
-                 {:data-loading-text "Rebuilding",
-                  :title "Retry the same tests",
-                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num
-                                                                  :no-cache? false}])}
-                 "Rebuild"])
-
-              (forms/managed-button
-                [:button.without_cache_retry
-                 {:data-loading-text "Rebuilding",
-                  :title "Retry without cache",
-                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num
-                                                                  :no-cache? true}])}
-                 "without cache"])
-
-              ;; XXX Temporarily remove the ssh button for OSX builds
-              (when (not (feature/enabled-for-project? project :osx))
-                (forms/managed-button
-                  [:button.ssh_build
-                   {:data-loading-text "Rebuilding",
-                    :title "Retry with SSH in VM",
-                    :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
-                   "with ssh"]))])
+          [:div.build-actions-v2
            [:div.actions
             (when (and (build-model/can-cancel? build) has-write-settings?)
               (forms/managed-button
-               [:button.cancel_build
-                {:data-loading-text "Canceling",
-                 :title "Cancel this build",
-                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
-                "Cancel"]))]])))))
+                [:a.build-action
+                 {:data-loading-text "Canceling"
+                  :title             "Cancel this build"
+                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
+                 "Cancel Build"]))
+            (when has-write-settings?
+              (om/build rebuild-actions-v2 {:build build :project project}))
+            [:a.build-action
+             {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
+                                                 :repo (get-in data (conj state/project-path :reponame))})}
+             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+             "Project Settings"]]])))))
