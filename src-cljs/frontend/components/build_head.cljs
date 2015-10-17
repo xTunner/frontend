@@ -23,7 +23,7 @@
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html inspect]]))
+  (:require-macros [frontend.utils :refer [html defrender inspect]]))
 
 ;; This is awful, can't we just pass build-head the whole app state?
 ;; splitting it up this way means special purpose paths to find stuff
@@ -917,20 +917,21 @@
           [:div
            [:span.metadata-item
             (if-not (:author_email commit-details)
-              [:span 
+              [:span
                author-icon
                (build-model/author commit-details)]
               [:a {:href (str "mailto:" (:author_email commit-details))}
                author-icon
-               (build-model/author commit-details)])
-            (when (build-model/author-isnt-committer commit-details)
+               (build-model/author commit-details)])]
+           (when (build-model/author-isnt-committer commit-details)
+             [:span.metadata-item
               (if-not (:committer_email commit-details)
                 [:span
                  author-icon
                  (build-model/committer commit-details)]
                 [:a {:href (str "mailto:" (:committer_email commit-details))}
                  author-icon
-                 (build-model/committer commit-details)]))]
+                 (build-model/committer commit-details)])])
 
            [:a.metadata-item.sha-one {:href commit_url
                                       :title commit}
@@ -1081,6 +1082,66 @@
              ;; avoid errors if a nonexistent tab is typed in the URL
              nil)]])))))
 
+(defn build-canceler [canceler github-endpoint]
+  [:span.summary-label
+   (list "Canceled by: "
+         [:a  {:href  (str  (github-endpoint) "/"  (:login canceler))}
+          (if  (not-empty  (:name canceler))
+            (:name canceler)
+            (:login canceler))])])
+
+(defn pull-requests [urls]
+  ;; It's possible for a build to be part of multiple PRs, but it's rare
+  (list
+    [:span.summary-spacer "•"]
+    [:span.summary-label
+     (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
+    [:span
+     (interpose
+       ", "
+       (map (fn [url] [:a {:href url} "#"
+                       (let [n (re-find #"/\d+$" url)]
+                         (if n (subs n 1) "?"))])
+            urls))]))
+
+(defn queued-time [build]
+  (if (< 0 (build-model/run-queued-time build))
+    [:span
+     (om/build common/updating-duration {:start (:usage_queued_at build)
+                                         :stop (or (:queued_at build) (:stop_time build))})
+     " waiting + "
+     (om/build common/updating-duration {:start (:queued_at build)
+                                         :stop (or (:start_time build) (:stop_time build))})
+     " in queue"]
+
+    [:span
+     (om/build common/updating-duration {:start (:usage_queued_at build)
+                                         :stop (or (:queued_at build) (:stop_time build))})
+     " waiting for builds to finish"]))
+
+(defn build-finished-status [build]
+  (let [stop-time  (:stop_time build)
+        start-time (:start_time build)]
+    [:div.summary-item
+     [:span.summary-label "Finished: "]
+     [:span.stop-time
+      (when stop-time
+        {:title (datetime/full-datetime stop-time)})
+      (when stop-time
+        (list (om/build common/updating-duration
+                        {:start stop-time}
+                        {:opts {:formatter datetime/time-ago}}) " ago"))]
+     [:span
+      " ("
+      (if (build-model/running? build)
+        (om/build common/updating-duration {:start start-time
+                                            :stop  stop-time})
+        (build-model/duration build))
+      (om/build expected-duration {:start start-time
+                                   :stop  stop-time
+                                   :build build})
+      ")"]]))
+
 (defn build-head-v2 [data owner]
   (reify
     om/IRender
@@ -1103,105 +1164,93 @@
                         :build-num (:build_num build)}]
         (html
           [:div
-           [:div.row
-            [:div.summary-header.col-sm-12
-             [:span.badge.build-status {:class (build-model/status-class build)}
-              [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-              (build-model/status-words build)]
-             (when-let [stop-time (:stop_time build)]
-               [:div
-                [:span.summary-label "Finished: "]
-                [:span.stop-time
-                 (when (:stop_time build)
-                   {:title (datetime/full-datetime (:stop_time build))})
-                 (when (:stop_time build)
-                   (list (om/build common/updating-duration
-                                   {:start (:stop_time build)}
-                                   {:opts {:formatter datetime/time-ago}}) " ago"))]
+           [:div.summary-header
+            [:div.summary-items
+             [:div.summary-item
+              [:span.badge.build-status {:class (build-model/status-class build)}
+               [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
+               (build-model/status-words build)]]
+             (when (:stop_time build)
+               (build-finished-status build))]
+            [:div.summary-items
+             [:div.summary-item
+              [:span.summary-label "Previous: "]
+              [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
+               (:build_num (:previous build))]]
+             [:div.summary-item
+              [:span.summary-label "Parallelism: "]
+              (if (has-scope :write-settings data)
+                [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                           :href (build-model/path-for-parallelism build)}
+                 (str (:parallel build) "x")]
+                [:span (:parallel build) "x"])]]
+            (when (:usage_queued_at build)
+              [:div.summary-items
+               [:div.summary-item
+                [:span.summary-label "Queued: "]
+                [:span  (queued-time build)]]])
 
-                [:span
-                 " ("
-                 (if (build-model/running? build)
-                   (om/build common/updating-duration {:start (:start_time build)
-                                                       :stop (:stop_time build)})
-                   (build-model/duration build))
-                 (om/build expected-duration {:start (:start_time build)
-                                              :stop (:stop_time build)
-                                              :build build})
-                 ")"]])
-             [:div.summary-build-contents
+            [:div.summary-items.summary-build-contents
+             [:div.summary-item
               [:span.summary-label "Triggered by: "]
-              [:span (trigger-html build)]
+              [:span (trigger-html build)]]
 
-              (when-let [urls (seq (:pull_request_urls build))]
-                ;; It's possible for a build to be part of multiple PRs, but it's rare
-                (list 
-                  [:span.summary-spacer "•"]
-                  [:span.summary-label
-                    (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
-                  [:span
-                   (interpose
-                     ", "
-                     (map (fn [url] [:a {:href url} "#"
-                                     (let [n (re-find #"/\d+$" url)]
-                                       (if n (subs n 1) "?"))])
-                          urls))]))
-              ]
-             ]]
+             (when-let [urls (seq (:pull_request_urls build))]
+               (pull-requests urls))]]
+
+           (when-let  [canceler  (and  (=  (:status build) "canceled")
+                                      (:canceler build))]
+             [:div.summary-header
+              [:div.summary-items
+               [:div.summary-item
+                (build-canceler canceler github-endpoint)]]])
            [:div.card
             [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
             (om/build build-commits-v2 build-data)]
            [:div.build-head-wrapper
             [:div.build-head
-             [:div.build-info
-              [:table
-               [:tbody
-                
-                [:tr
-                 [:th "Previous"]
-                 (if-not (:previous build)
-                   [:td "none"]
-                   [:td
-                    [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
-                     (:build_num (:previous build))]])
+             (om/build build-sub-head-v2 data)]]])))))
 
-                 ]
-                [:tr
-                 (when (:usage_queued_at build)
-                   (list [:th "Queued"]
-                         [:td (if (< 0 (build-model/run-queued-time build))
-                                [:span
-                                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                     :stop (or (:queued_at build) (:stop_time build))})
-                                 " waiting + "
-                                 (om/build common/updating-duration {:start (:queued_at build)
-                                                                     :stop (or (:start_time build) (:stop_time build))})
-                                 " in queue"]
+(defn rebuild-actions-v2 [{:keys [build project]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      (let [rebuild-args  {:build-id  (build-model/id build)
+                           :vcs-url   (:vcs_url build)
+                           :build-num (:build_num build)}
+            rebuild!      #(do (raise! owner %)
+                               (om/set-state! owner [:actions :rebuild :text] "Rebuilding"))]
+        {:actions
+         {:rebuild
+          {:text  "Rebuild"
+           :title "Retry the same tests"
+           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])}
 
-                                [:span
-                                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                     :stop (or (:queued_at build) (:stop_time build))})
-                                 " waiting for builds to finish"])]))
-                 [:td
-                  (when-let [canceler (and (= (:status build) "canceled")
-                                           (:canceler build))]
-                    [:span.build-canceler
-                     (list "by "
-                           [:a {:href (str (github-endpoint) "/" (:login canceler))}
-                            (if (not-empty (:name canceler))
-                              (:name canceler)
-                              (:login canceler))])])]]
-                [:tr
-                 [:th "Parallelism"]
-                 [:td
-                  (if (has-scope :write-settings data)
-                    [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                               :href (build-model/path-for-parallelism build)}
-                     (str (:parallel build) "x")]
-                    [:span (:parallel build) "x"])]]]]
+          :without_cache
+          {:text  "without Cache"
+           :title "Retry without cache"
+           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])}
 
-              [:div.no-user-actions]]
-              (om/build build-sub-head-v2 data)]]])))))
+          :with_ssh
+          {:text  "with SSH"
+           :title "Retry with SSH in VM",
+           :action #(rebuild! [:ssh-build-clicked rebuild-args])}}}))
+    om/IRenderState
+    (render-state [_ {:keys [actions]}]
+      (let [text-for    #(-> actions % :text)
+            action-for  #(-> actions % :action)]
+        (html
+          [:div.btn-group.build-action.rebuild
+           [:button.btn.rebuild-btn {:on-click (action-for :rebuild)} (text-for :rebuild)]
+           [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
+            [:img {:src (common/icon-path "UI-ArrowChevron")}]]
+           [:ul.dropdown-menu
+            [:li
+             [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
+            ;; XXX Temporarily remove the ssh button for OSX builds
+            (when (not (feature/enabled-for-project? project :osx))
+              [:li
+               [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]])))))
 
 (defn build-head-actions
   [data owner]
@@ -1220,46 +1269,21 @@
             has-write-settings? (:write-settings
                                   (get-in data state/project-scopes-path))]
         (html
-          [:div.build-actions
-           (when has-write-settings?
-             [:div.actions
-              (forms/managed-button
-                [:button.retry_build
-                 {:data-loading-text "Rebuilding",
-                  :title "Retry the same tests",
-                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num
-                                                                  :no-cache? false}])}
-                 "Rebuild"])
-
-              (forms/managed-button
-                [:button.without_cache_retry
-                 {:data-loading-text "Rebuilding",
-                  :title "Retry without cache",
-                  :on-click #(raise! owner [:retry-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num
-                                                                  :no-cache? true}])}
-                 "without cache"])
-
-              ;; XXX Temporarily remove the ssh button for OSX builds
-              (when (not (feature/enabled-for-project? project :osx))
-                (forms/managed-button
-                  [:button.ssh_build
-                   {:data-loading-text "Rebuilding",
-                    :title "Retry with SSH in VM",
-                    :on-click #(raise! owner [:ssh-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
-                   "with ssh"]))])
+          [:div.build-actions-v2
            [:div.actions
             (when (and (build-model/can-cancel? build) has-write-settings?)
               (forms/managed-button
-               [:button.cancel_build
-                {:data-loading-text "Canceling",
-                 :title "Cancel this build",
-                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
-                "Cancel"]))]])))))
+                [:a.build-action
+                 {:data-loading-text "Canceling"
+                  :title             "Cancel this build"
+                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                   :vcs-url vcs-url
+                                                                   :build-num build-num}])}
+                 "Cancel Build"]))
+            (when has-write-settings?
+              (om/build rebuild-actions-v2 {:build build :project project}))
+            [:a.build-action
+             {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
+                                                 :repo (get-in data (conj state/project-path :reponame))})}
+             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+             "Project Settings"]]])))))
