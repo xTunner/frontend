@@ -114,7 +114,7 @@
             [:section
              [:h3 "Disclosure"]
              [:p
-              "If you have found a vulnerability in CircleCI, please contact our security team by email at "
+              "If you have found a vulnerability in CircleCi, please contact our security team by email at "
               [:a {:href "mailto:security@circleci.com"} "security@circleci.com"] ". We will do everything in our power to respond and fix the problem immediately. If possible, please encrypt your message using "
               [:a {:target "_blank", :href "/circleci-security.pub"}
                "our security team's GPG key"]
