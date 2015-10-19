@@ -108,7 +108,7 @@
     (will-mount [_]
       (let [logged-in? (boolean (get-in app state/user-path))
             api-ch (get-in app [:comms :api])]
-        (if (and logged-in? (feature/enabled? :ui-v2))
+        (if (and logged-in? (feature/enabled? :ui-fp-top-bar))
           (api/get-orgs api-ch))))
     om/IRender
     (render [_]
