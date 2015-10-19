@@ -302,6 +302,14 @@
     margin-right: 25px;
     color: @gray-light-v2;
     font-size: 12px;
+
+    // We set the widths of these so the icons all line up. We use min-width so
+    // that the line will slide over nicely if something does go long, but these
+    // values are picked with the expectation that there will always be enough
+    // room for the values.
+    &.revision { min-width: 75px; }
+    &.start-time { min-width: 100px; }
+    &.duration { min-width: 60px; }
   }
 
   .dashboard-icon {
