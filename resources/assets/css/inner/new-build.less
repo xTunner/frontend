@@ -315,49 +315,6 @@
   padding-bottom: 8px;
 }
 
-.badge {
-  .small-emphasis();
-
-  @lighten-ratio: 75%;
-
-  position: relative;
-  border-radius: 40px;
-  height: @status-badge-height;
-  line-height: 20px;
-  text-align: center;
-  color: @black;
-  background: fadeout(@brand-cancelled-v2, @lighten-ratio);
-
-  &.pass {
-    background: fadeout(@brand-success-v2, @lighten-ratio);
-  }
-
-  &.fail {
-    background: fadeout(@brand-danger-v2, @lighten-ratio);
-  }
-
-  &.busy {
-    background: fadeout(@brand-primary-v2, @lighten-ratio);
-  }
-
-  &.stop {
-    background: fadeout(@brand-cancelled-v2, @lighten-ratio);
-  }
-
-  &.queued {
-    background: fadeout(@brand-pending-v2, @lighten-ratio);
-  }
-
-  & .badge-icon {
-    @badge-icon-size: 17px;
-    position: absolute;
-    left: 4px;
-    top: 4px;
-    height: @badge-icon-size;
-    width: @badge-icon-size;
-  }
-}
-
 // Build page V2 stuff
 .build-actions-v2 {
   font-size: 13px;
@@ -533,7 +490,7 @@
   }
 }
 
-.build-status {
+.recent-status-badge {
   min-width: 105px;
 }
 
