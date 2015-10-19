@@ -16,6 +16,7 @@
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
+            [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -219,13 +220,52 @@
 (defn container-result-icon [name]
   [:img.container-status-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
-(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
+(defn last-action-end-time
+  [container]
+  (-> (filter #(not (:filler-action %)) (:actions container)) last :end_time))
+
+(defn action-duration-ms
+  [{:keys [start_time end_time] :as action}]
+  (if (and start_time end_time)
+    (let [start (.getTime (js/Date. start_time))
+          end (if end_time
+                (.getTime (js/Date. end_time))
+                (datetime/server-now))]
+      (- end start))
+      0))
+
+;; TODO this seems a little bit slow when calculating durations for really complex builds with
+;; lots of containers. Is there a good way to avoid recalculating this when selecting container pills? (Perhaps caching the calculated value using IWillUpdate / IShouldUpdate?)
+(defn container-utilization-duration
+  [actions]
+  (apply + (map action-duration-ms actions)))
+
+(defn container-duration-label [{:keys [actions]}]
   (reify
     om/IRender
     (render [_]
       (html
+        [:span.lower-pill-section
+         "("
+         (datetime/as-duration (container-utilization-duration actions))
+         ")"]))))
+
+(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
+  (reify
+    om/IDisplayName
+    (display-name [_] "Container Pill v2")
+    om/IDidMount
+    (did-mount [_]
+      (timer/set-updating! owner (not (last-action-end-time container))))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (timer/set-updating! owner (not (last-action-end-time container))))
+    om/IRender
+    (render [_]
+      (html
        (let [container-id (container-model/id container)
-             status (container-model/status container build-running?)]
+             status (container-model/status container build-running?)
+             duration-ms (container-utilization-duration container)]
         [:a.container-selector-v2
          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
           :class (concat (container-model/status->classes status)
@@ -240,33 +280,63 @@
                                     :running "Status-Running"
                                     :waiting "Status-Queued"
                                     nil))]]
-         [:span.lower-pill-section "(1:32)"]])))))
+         (om/build container-duration-label {:actions (:actions container)})])))))
+
+(def paging-width 10)
 
 (defn container-pills-v2 [data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IDisplayName
+    (display-name [_]
+      "Container Pills")
+    om/IInitState
+    (init-state [_]
+      {:paging-offset 0})
+    om/IRenderState
+    (render-state [_ state]
       (let [container-data (:container-data data)
             build-running? (:build-running? data)
             build (:build data)
-            paging-width 15
-
             {:keys [containers current-container-id]} container-data
+            container-count (count containers)
+            paging-offset (:paging-offset state)
+            previous-container-count (max 0 (- paging-offset 1))
+            subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
+
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
             div (html
                  [:div.container-list-v2
-                  (for [container (take 20 containers)]
+                  (if (> previous-container-count 0)
+                    [:a.container-selector-v2.page-container-pills
+                     {:on-click #(om/set-state! owner :paging-offset (- paging-offset paging-width))}
+                     [:div.nav-caret
+                      [:i.fa.fa-2x.fa-angle-left]]
+                     [:div.pill-details ;; just for flexbox container
+                      [:div "Previous " paging-width]
+                      [:div (count containers) " total"]]])
+                  (for [container (subvec containers
+                                          paging-offset
+                                          (min container-count (+ paging-offset paging-width)))]
                     (om/build container-pill-v2
                               {:container container
                                :build-running? build-running?
                                :current-container-id current-container-id}
                               {:react-key (:index container)}))
-                  (when (-> containers count (> paging-width))
+                  (if (> subsequent-container-count 0)
                     [:a.container-selector-v2.page-container-pills
-                     "Next " paging-width
-                     ])])]
+                     {:on-click #(om/set-state! owner :paging-offset (+ paging-offset paging-width))}
+                     [:div.pill-details ;; just for flexbox container
+                      [:div "Next " subsequent-container-count]
+                      [:div container-count " total"]]
+                     [:div.nav-caret
+                      [:i.fa.fa-2x.fa-angle-right]]]
+                    [:a.container-selector-v2.add-containers
+                     {:href (build-model/path-for-parallelism build)
+                      :title "Adjust parallelism"}
+                     "+"])
+                  ])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
 (defn build-v2 [data owner]
