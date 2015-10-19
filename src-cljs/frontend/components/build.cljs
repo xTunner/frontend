@@ -237,8 +237,18 @@
 ;; TODO this seems a little bit slow when calculating durations for really complex builds with
 ;; lots of containers. Is there a good way to avoid recalculating this when selecting container pills? (Perhaps caching the calculated value using IWillUpdate / IShouldUpdate?)
 (defn container-utilization-duration
-  [container]
-  (apply + (map action-duration-ms (:actions container))))
+  [actions]
+  (apply + (map action-duration-ms actions)))
+
+(defn container-duration-label [{:keys [actions]}]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:span.lower-pill-section
+         "("
+         (datetime/as-duration (container-utilization-duration actions))
+         ")"]))))
 
 (defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
   (reify
@@ -255,7 +265,6 @@
       (html
        (let [container-id (container-model/id container)
              status (container-model/status container build-running?)
-             formatter datetime/as-duration
              duration-ms (container-utilization-duration container)]
         [:a.container-selector-v2
          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
@@ -271,7 +280,9 @@
                                     :running "Status-Running"
                                     :waiting "Status-Queued"
                                     nil))]]
-         [:span.lower-pill-section "(" (formatter duration-ms) ")"]])))))
+         (om/build container-duration-label {:actions (:actions container)})])))))
+
+(def paging-width 10)
 
 (defn container-pills-v2 [data owner]
   (reify
@@ -280,18 +291,17 @@
       "Container Pills")
     om/IInitState
     (init-state [_]
-      {:container-index 0})
+      {:paging-offset 0})
     om/IRenderState
     (render-state [_ state]
       (let [container-data (:container-data data)
             build-running? (:build-running? data)
             build (:build data)
-            paging-width 10
             {:keys [containers current-container-id]} container-data
             container-count (count containers)
-            container-index (:container-index state)
-            previous-container-count (max 0 (- container-index 1))
-            subsequent-container-count (min paging-width (- container-count (+ container-index paging-width)))
+            paging-offset (:paging-offset state)
+            previous-container-count (max 0 (- paging-offset 1))
+            subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
 
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
@@ -300,15 +310,15 @@
                  [:div.container-list-v2
                   (if (> previous-container-count 0)
                     [:a.container-selector-v2.page-container-pills
-                     {:on-click #(om/set-state! owner :container-index (- container-index paging-width))}
+                     {:on-click #(om/set-state! owner :paging-offset (- paging-offset paging-width))}
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-left]]
                      [:div.pill-details ;; just for flexbox container
                       [:div "Previous " paging-width]
                       [:div (count containers) " total"]]])
                   (for [container (subvec containers
-                                          container-index
-                                          (min container-count (+ container-index paging-width)))]
+                                          paging-offset
+                                          (min container-count (+ paging-offset paging-width)))]
                     (om/build container-pill-v2
                               {:container container
                                :build-running? build-running?
@@ -316,7 +326,7 @@
                               {:react-key (:index container)}))
                   (if (> subsequent-container-count 0)
                     [:a.container-selector-v2.page-container-pills
-                     {:on-click #(om/set-state! owner :container-index (+ container-index paging-width))}
+                     {:on-click #(om/set-state! owner :paging-offset (+ paging-offset paging-width))}
                      [:div.pill-details ;; just for flexbox container
                       [:div "Next " subsequent-container-count]
                       [:div container-count " total"]]
