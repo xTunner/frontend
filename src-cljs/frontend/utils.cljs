@@ -327,3 +327,7 @@
         max-height (apply max (map #(.-height %) sizes))]
     (doseq [item items]
       (style/setSize item max-width max-height))))
+
+;; For objects where externs are unavailable, directly access property.
+;; This is used as a marker to prevent future "refactoring".
+(def unexterned-prop aget)

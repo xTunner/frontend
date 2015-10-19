@@ -65,6 +65,7 @@
                 [:a {:href plan-path} "Add a plan"]
                 " to keep running builds."))]))
 
+;; TODO: figure out where this is being tracked in mixpanel and launch one of these.
 (defn freemium-trial-html [plan project project-name days org-name plan-path]
   (html
     [:div.alert {:class "alert-success"}

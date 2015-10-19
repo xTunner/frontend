@@ -1,6 +1,7 @@
 (ns frontend.models.action
   (:require [clojure.string :as string]
             [frontend.datetime :as datetime]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as proj]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
@@ -30,7 +31,9 @@
         :else nil))
 
 (defn new-converter [action type]
-  (let [default-color (if (= :err type) "red" "brblue")
+  (let [default-color (if (feature/enabled? :ui-v2)
+                        "white"
+                        (if (= :err type) "red" "brblue"))
         starting-state (clj->js (get-in action [:converters-state type]))]
     (js/CI.terminal.ansiToHtmlConverter default-color "brblack" starting-state)))
 

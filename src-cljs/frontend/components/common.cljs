@@ -169,14 +169,15 @@
 
     om/IRender
     (render [_]
-      (let [end-ms (if stop
-                     (.getTime (js/Date. stop))
-                     (datetime/server-now))
-            formatter (get opts :formatter datetime/as-duration)
-            duration-ms (- end-ms (.getTime (js/Date. start)))]
-        (dom/span nil (formatter duration-ms))))
-
-    ))
+      (let [formatter (get opts :formatter datetime/as-duration)
+            it (if (:formatter-use-start? opts)
+                 start
+                 (let [end-ms (if stop
+                                (.getTime (js/Date. stop))
+                                (datetime/server-now))
+                       duration-ms (- end-ms (.getTime (js/Date. start)))]
+                   duration-ms))]
+        (dom/span nil (formatter it))))))
 
 (defn circle-logo [{:keys [width height]}]
   (html

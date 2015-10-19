@@ -40,9 +40,12 @@
 
 (defn ui-user [build]
   (let [user (:user build)]
-    (if (not-empty (:name user))
-       (:name user)
-       (:login user))))
+    (cond
+      (not-empty (:name user)) (:name user)
+      ;; Currently, if there's no user associated with a build, we get a "user",
+      ;; but its login is "none". Until we have a better representation,
+      ;; recognize that as a sentinel value.
+      (not= "none" (:login user)) (:login user))))
 
 (defn status-icon [build]
   (cond (= "success" (:outcome build)) "fa-check"

@@ -265,10 +265,10 @@
     .cancel_build.disabled {
         color: @gray-lighter-v2;
     }
-}
+  }
 
   .build-info {
-    padding: @build-padding;
+    padding: @build-padding 0 @build-padding @build-padding;
     flex-direction: column;
     flex-grow: 1;
 
@@ -299,17 +299,31 @@
   }
 
   .metadata-item {
-    padding-right: 25px;
+    margin-right: 25px;
     color: @gray-light-v2;
     font-size: 12px;
 
-    &:last-child {
-      padding-right: 0;
-    }
+    // We set the widths of these so the icons all line up. We use min-width so
+    // that the line will slide over nicely if something does go long, but these
+    // values are picked with the expectation that there will always be enough
+    // room for the values.
+    &.revision { min-width: 75px; }
+    &.start-time { min-width: 100px; }
+    &.duration { min-width: 60px; }
   }
 
   .dashboard-icon {
+    width: 16px;
+    height: 16px;
     margin-right: 10px;
+  }
+
+  .recent-user .dashboard-icon {
+    width: 20px;
+    height: 20px;
+
+    margin: 0;
+    border-radius: 50%;
   }
 
   .recent-time {
