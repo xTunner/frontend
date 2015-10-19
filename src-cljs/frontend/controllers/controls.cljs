@@ -1150,7 +1150,4 @@
   (let [hamburger-state (get-in state state/hamburger-menu-path)]
     (if (= "closed" hamburger-state)
       (assoc-in state state/hamburger-menu-path "open")
-      (assoc-in state state/hamburger-menu-path "closed")
-      )
-    )
-  )
+      (assoc-in state state/hamburger-menu-path "closed"))))

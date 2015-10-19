@@ -1,6 +1,7 @@
 (ns frontend.datetime
   (:require [frontend.utils :as utils :include-macros true]
             [cljs-time.coerce :refer [from-long]]
+            [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [goog.string :as g-string]
             goog.string.format
@@ -181,12 +182,57 @@
         (g-string/format "%s:%s" display-minutes display-seconds)))))
 
 (defn as-time-since [date-string]
-  (let [time (.getTime (js/Date. date-string))
+  (let [time-stamp (.getTime (js/Date. date-string))
+        zone-time (time/to-default-time-zone (from-long time-stamp))
         now (server-now)
-        ago (.floor js/Math (/ (- now time) 1000))]
+        ago (js/Math.floor (/ (- now time-stamp) 1000))]
     (cond (< ago minute) "just now"
           (< ago hour) (str (int (/ ago minute)) "m ago")
-          (< ago day) (time-format/unparse (time-format/formatter-local "h:mma") (from-long time))
+          (< ago day) (time-format/unparse (time-format/formatter "h:mma") zone-time)
           (< ago (* 2 day)) "yesterday"
-          (< ago year) (time-format/unparse (time-format/formatter-local "MMM d") (from-long time))
-          :else (time-format/unparse (time-format/formatter "MMM yyyy") (from-long time)))))
+          (< ago year) (time-format/unparse (time-format/formatter "MMM d") zone-time)
+          :else (time-format/unparse (time-format/formatter "MMM yyyy") zone-time))))
+
+(def millis-factors [{:unit :hours
+                      :display "h"
+                      :divisor (* 60 1000 60)}
+                     {:unit :minutes
+                      :display "m"
+                      :divisor (* 1000 60)}
+                     {:unit :seconds
+                      :display "s"
+                      :divisor 1000}
+                     {:unit :milliseconds
+                      :display "ms"
+                      :divisor 1}])
+
+(defn millis-to-float-duration
+  "Return vector of [nice-string unit-information] e.g.
+[\"12.4ms\" {:unit :milliseconds
+             :display \"ms\"
+             :divisor 1}]"
+  ([millis]
+   (millis-to-float-duration millis {}))
+  ([millis {requested-unit :unit decimals :decimals :or {decimals 1}}]
+   (let [{:keys [display divisor unit] :as unit-info}
+         (or (some #(when (= requested-unit (:unit %))
+                      %)
+                   millis-factors)
+             (some #(when (>= (/ millis (:divisor %)) 1)
+                      %)
+                   millis-factors)
+             (last millis-factors))
+         result (float (/ millis divisor))]
+     (vector (if (= 0 result)
+               "0"
+               (g-string/format (str "%." decimals "f%s")
+                                result
+                                display))
+             unit-info))))
+
+
+(defn nice-floor-duration [millis]
+  "Returns millis floored to a nice value for printing."
+  (let [[_ {:keys [divisor]}] (millis-to-float-duration millis)]
+    (* (js/Math.floor (/ millis divisor))
+       divisor)))

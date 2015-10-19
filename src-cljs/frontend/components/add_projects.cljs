@@ -157,7 +157,7 @@
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
-                [:button {:title "You must be an admin to add a project on CircleCI"}
+                [:div.notice {:title "You must be an admin to add a project on CircleCI"}
                  [:i.fa.fa-lock]
                  "Contact repo admin"]]))))))
 

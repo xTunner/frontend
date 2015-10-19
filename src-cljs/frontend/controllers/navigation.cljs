@@ -26,8 +26,6 @@
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
 ;;      We could also use a declarative way to specify each page.
-
-
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti navigated-to
@@ -246,7 +244,7 @@
       (assoc :navigation-point navigation-point
              :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
-      (assoc-in state/projects-path [])))
+      (assoc-in state/projects-path nil)))
 
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
