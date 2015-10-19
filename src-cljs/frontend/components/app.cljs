@@ -108,7 +108,7 @@
     (will-mount [_]
       (let [logged-in? (boolean (get-in app state/user-path))
             api-ch (get-in app [:comms :api])]
-        (if (and logged-in? (feature/enabled? :ui-v2))
+        (if (and logged-in? (feature/enabled? :ui-fp-top-bar))
           (api/get-orgs api-ch))))
     om/IRender
     (render [_]
@@ -145,7 +145,7 @@
                                :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
 
-               (when (and inner? logged-in? (feature/enabled? :ui-v2))
+               (when (and inner? logged-in? (feature/enabled? :ui-fp-top-bar))
                  (om/build top-nav/top-nav app-without-container-data))
 
                (when show-inspector?
