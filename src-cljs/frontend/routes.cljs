@@ -48,6 +48,9 @@
   (defroute v1-admin-fleet-state "/admin/fleet-state" []
     (open-to-inner! nav-ch :admin-settings {:admin true
                                             :subpage :fleet-state}))
+  (defroute v1-admin-users "/admin/users" []
+    (open-to-inner! nav-ch :admin-settings {:admin true
+                                            :subpage :users}))
   (defroute v1-admin-system-management "/admin/management-console" []
     (.replace js/location
               ;; System management console is served at port 8800

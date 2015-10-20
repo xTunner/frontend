@@ -197,12 +197,17 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
-(defn admin-settings-nav-items [data owner]
-  (let [navigation-data (:navigation-data data)]
+(defn admin-settings-nav-items []
+  (filter
+    identity
     [{:type :subpage :href "/admin" :title "Overview" :subpage nil}
-     {:type :subpage :href "/admin/management-console" :title "Management Console" :subpage nil}
+     (when (config/enterprise?)
+       {:type :subpage :href "/admin/management-console" :title "Management Console" :subpage nil})
      {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
-     {:type :subpage :href "/admin/license" :title "License" :subpage :license}]))
+     (when (config/enterprise?)
+       {:type :subpage :href "/admin/license" :title "License" :subpage :license})
+     (when (config/enterprise?)
+       {:type :subpage :href "/admin/users" :title "Users" :subpage :users})]))
 
 (defn admin-settings-menu [app owner]
   (reify
@@ -216,7 +221,7 @@
             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
              (common/ico :fail-light)]]
            [:div.aside-user-options
-            (expand-menu-items (admin-settings-nav-items app owner) subpage)]])))))
+            (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
 (defn redirect-org-settings-subpage
   "Piggiebacked plans can't go to :containers, :organizations, :billing, or :cancel.

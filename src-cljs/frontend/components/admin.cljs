@@ -121,6 +121,52 @@
               [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats (" [:b (:seat_status license)] ")"]
               [:p "Expiry date: " [:b (datetime/medium-date (:expiry_date license))]])))]))))
 
+(defn user [{:keys [user action action-name]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:li
+         (:login user)
+         " "
+         (when action
+           [:button.btn.btn-xs.btn-primary
+            {:on-click #(raise! owner [action (select-keys user [:login])])}
+            action-name])]))))
+
+(defn users [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "User Admin")
+
+    om/IRender
+    (render [_]
+      (let [all-users (:all-users app)
+            active-users (filter #(and (not= 0 (:login-count %))
+                                       (not (:suspended %)))
+                                 all-users)
+            suspended-users (filter :suspended all-users)
+            admin-write-scope? (#{"all" "write-settings"}
+                                  (get-in app [:current-user :admin]))]
+        (html
+          [:section {:style {:padding-left "10px"}}
+           [:h1 "Users"]
+
+          [:p "Suspended users are prevented from logging in and do not count towards the number your license allows."]
+
+          [:h2 "active"]
+          [:ul (om/build-all user (mapv #(merge {:user %}
+                                                (when admin-write-scope?
+                                                  {:action :suspend-user
+                                                   :action-name "suspend"}))
+                                        active-users))]
+
+         [:h2 "suspended"]
+           [:ul (om/build-all user (mapv #(merge {:user %}
+                                                 (when admin-write-scope?
+                                                   {:action :unsuspend-user
+                                                    :action-name "reactivate"}))
+                                         suspended-users))]])))))
+
 (defn admin-settings [app owner]
   (reify
     om/IRender
@@ -133,4 +179,5 @@
               (case subpage
                 :fleet-state (om/build fleet-state app)
                 :license (om/build license app)
+                :users (om/build users app)
                 (om/build overview app))]]])))))

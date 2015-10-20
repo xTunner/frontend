@@ -1151,3 +1151,11 @@
     (if (= "closed" hamburger-state)
       (assoc-in state state/hamburger-menu-path "open")
       (assoc-in state state/hamburger-menu-path "closed"))))
+
+(defmethod post-control-event! :suspend-user
+  [_ _ {:keys [login]} _ {{api-ch :api} :comms}]
+  (api/set-user-suspension login true api-ch))
+
+(defmethod post-control-event! :unsuspend-user
+  [_ _ {:keys [login]} _ {{api-ch :api} :comms}]
+  (api/set-user-suspension login false api-ch))
