@@ -1045,10 +1045,10 @@
               [tab-tag {:class (when (= :artifacts selected-tab) "active")}
                [tab-link-v2 {:href "#artifacts"}
                 "Artifacts"]])
-           
+
             [tab-tag {:class (when (= :config selected-tab) "active")}
              [tab-link-v2 {:href "#config"} "circle.yml"]]
-           
+
             (when (and admin? (build-model/finished? build))
               [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
                [tab-link-v2 {:href "#build-time-viz"}
@@ -1220,17 +1220,17 @@
                                (om/set-state! owner [:actions :rebuild :text] "Rebuilding"))]
         {:actions
          {:rebuild
-          {:text  "Rebuild"
+          {:text  "Rebuild with cache"
            :title "Retry the same tests"
            :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])}
 
           :without_cache
-          {:text  "without Cache"
+          {:text  "Rebuild without cache"
            :title "Retry without cache"
            :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])}
 
           :with_ssh
-          {:text  "with SSH"
+          {:text  "Rebuild with SSH"
            :title "Retry with SSH in VM",
            :action #(rebuild! [:ssh-build-clicked rebuild-args])}}}))
     om/IRenderState
@@ -1238,11 +1238,14 @@
       (let [text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
         (html
-          [:div.btn-group.build-action.rebuild
-           [:button.btn.rebuild-btn {:on-click (action-for :rebuild)} (text-for :rebuild)]
+          [:div.dropdown.rebuild
            [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
+            "Rebuild"
             [:img {:src (common/icon-path "UI-ArrowChevron")}]]
+
            [:ul.dropdown-menu
+            [:li
+             [:a {:on-click (action-for :rebuild)} (text-for :rebuild)]]
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
             ;; XXX Temporarily remove the ssh button for OSX builds
@@ -1268,20 +1271,19 @@
                                   (get-in data state/project-scopes-path))]
         (html
           [:div.build-actions-v2
-           [:div.actions
-            (when (and (build-model/can-cancel? build) has-write-settings?)
-              (forms/managed-button
-                [:a.build-action
-                 {:data-loading-text "Canceling"
-                  :title             "Cancel this build"
-                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                   :vcs-url vcs-url
-                                                                   :build-num build-num}])}
-                 "Cancel Build"]))
-            (when has-write-settings?
-              (om/build rebuild-actions-v2 {:build build :project project}))
-            [:a.build-action
-             {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
-                                                 :repo (get-in data (conj state/project-path :reponame))})}
-             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-             "Project Settings"]]])))))
+           (when true #_(and (build-model/can-cancel? build) has-write-settings?)
+             (forms/managed-button
+               [:a.build-action
+                {:data-loading-text "Canceling"
+                 :title             "Cancel this build"
+                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num}])}
+                "Cancel Build"]))
+           (when has-write-settings?
+             (om/build rebuild-actions-v2 {:build build :project project}))
+           [:a.build-action
+            {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
+                                                :repo (get-in data (conj state/project-path :reponame))})}
+            [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+            "Project Settings"]])))))

@@ -317,58 +317,68 @@
 
 // Build page V2 stuff
 .build-actions-v2 {
+  .flexy(center);
   font-size: 13px;
   color: @gray-dark-v2;
 
   .rebuild {
+    @item-spacing: 10px;
+    @toggle-min-width: 145px;
+
+    margin-left: @item-spacing;
+    margin-right: @item-spacing;
     border-radius: 3px;
-    border: solid 1px @gray-lighter-v2;
+    border: solid 1px @dropdown-gray;
 
     button {
-      background: @gray-background-v2;
+      background: @dropdown-light-gray;
     }
 
     ul {
-      background: @background-color-v2;
+      background: @dropdown-lighter-gray;
 
-      li > a:hover {
-        background: @gray-background-v2;
-        color: @gray-dark-v2;
-      }
-    }
+      a {
+        padding-right: 12px;
+        padding-left:  12px;
+        font-size: 12px;
 
-    .rebuild-btn {
-      min-width: 115px;
-      text-align: left;
-
-      &:hover {
-        background: @background-color-v2;
-        border-right: 1px solid @gray-lighter-v2;
+        &:hover {
+          background: @dropdown-light-gray;
+          color: @gray-dark-v2;
+        }
       }
     }
 
     .dropdown-toggle {
-      border-left: 1px solid @gray-lighter-v2;
+      min-width: @toggle-min-width;
+      font-size: 13px;
 
-      &:hover {
-        background: @background-color-v2;
+      img {
+        float: right;
+        padding-top: 5px;
       }
 
-      &:focus {
-        background: @gray-lighter-v2;
+      span {
+        float: left;
+      }
+
+      &:hover {
+        background: @dropdown-lighter-gray;
       }
     }
 
     .dropdown-menu {
-      margin-top: 1px;
-      width: 100%;
+      margin-top: 0;
+
+      /* Makes sure the dropdown options are
+         exactly in line with the dropdown button. */
+      min-width: (@toggle-min-width + 2);
+      margin-left: -1px;
+
+      text-align: left;
       box-shadow: none;
       border-radius: 0;
     }
-  }
-
-  .build-action {
-    margin-right: 20px;
   }
 }
 
