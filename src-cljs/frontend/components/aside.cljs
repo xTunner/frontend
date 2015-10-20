@@ -170,10 +170,13 @@
       (let [subpage (:project-settings-subpage app :overview)]
         (html
           [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
-           [:header
-            [:h5 "Project Settings"]
-            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-             (common/ico :fail-light)]]
+           (if (feature/enabled? :ui-v2)
+             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+               (common/ico :fail-light)]
+             [:header
+              [:h5 "Project Settings"]
+              [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+               (common/ico :fail-light)]])
            [:div.aside-user-options
             (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
@@ -333,14 +336,21 @@
     (render [_]
       (html
        [:nav
+
         {:class [(when (feature/enabled? :ui-v2)
                    "new-aside-left-menu-width")
                  "aside-left-menu"]}
-        (om/build branch-activity-list app {:opts {:login (:login opts)
-                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
-        (om/build admin-settings-menu app)]))))
+        (om/build admin-settings-menu app)
+        (om/build branch-activity-list app {:opts {:login (:login opts)
+                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
+
+(defn nav-icon
+  [v1 v2]
+  (if (feature/enabled? :ui-v2)
+    [:img.aside-icon {:src (utils/cdn-path (str "/img/inner/icons/Aside-" v2 ".svg"))}]
+    [:i.fa {:class v1}]))
 
 (defn aside-nav [app owner]
   (reify
@@ -367,32 +377,32 @@
                            :data-trigger "hover"
                            :title "Settings"
                            :href "/account"}
-            [:img {:src avatar-url}]]
+            [:img.account-avatar {:src avatar-url}]]
 
            [:a.aside-item {:title "Documentation"
                            :data-placement "right"
                            :data-trigger "hover"
                            :href "/docs"}
-            [:i.fa.fa-copy]]
+            (nav-icon "fa-copy" "Docs")]
 
            [:a.aside-item (merge (common/contact-support-a-info owner)
                                  {:title "Support"
                                   :data-placement "right"
                                   :data-trigger "hover"
                                   :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
-            [:i.fa.fa-comments]]
+            (nav-icon "fa-comments" "Support")]
 
            [:a.aside-item {:href "/add-projects",
                            :data-placement "right"
                            :data-trigger "hover"
                            :title "Add Projects"}
-            [:i.fa.fa-plus-circle]]
+            (nav-icon "fa-plus-circle" "AddProject")]
 
            [:a.aside-item {:href "/invite-teammates",
                            :data-placement "right"
                            :data-trigger "hover"
                            :title "Invite your teammates"}
-            [:i.fa.fa-user]]
+            (nav-icon "fa-user" "Team")]
 
            [:a.aside-item {:data-placement "right"
                            :data-trigger "hover"
@@ -400,27 +410,27 @@
                            :href "/changelog"
                            :class (when (changelog-updated-since? (:last_viewed_changelog user))
                                     "unread")}
-            [:i.fa.fa-bell]]
+            (nav-icon "fa-bell" "Notifications")]
 
            (when (feature/enabled? :insights)
              [:a.aside-item {:data-placement "right"
                              :data-trigger "hover"
                              :title "Insights"
                              :href "/build-insights"}
-              [:i.fa.fa-bar-chart]])
+              (nav-icon "fa-bar-chart" "Insights")])
 
            (when (:admin user)
              [:a.aside-item {:data-placement "right"
                              :data-trigger "hover"
                              :title "Admin"
                              :href "/admin"}
-              [:i.fa.fa-cogs]])
+              (nav-icon "fa-cogs" "Admin")])
 
            [:a.aside-item.push-to-bottom {:data-placement "right"
                                           :data-trigger "hover"
                                           :title "Logout"
                                           :href "/logout"}
-            [:i.fa.fa-power-off]]])))))
+            (nav-icon "fa-power-off" "Power")]])))))
 
 (defn aside [app owner]
   (reify

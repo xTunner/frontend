@@ -102,7 +102,7 @@
   background-repeat: no-repeat;
   background-position: center;
 }
-.icon_style(@color) {
+.icon-style(@color) {
   i {
     &.ico {
       path {
@@ -111,7 +111,7 @@
     }
   }
 }
-.icon_style(@color, @size) {
+.icon-style(@color, @size) {
   i {
     &.ico {
       svg {
@@ -143,9 +143,9 @@
 // .for-each
 // see: https://github.com/seven-phases-max/less.curious/blob/master/src/for.less
 
-.for(@array)   when (default()) {.for-impl_(length(@array))}
-.for-impl_(@i) when (@i > 1)    {.for-impl_((@i - 1))}
-.for-impl_(@i) when (@i > 0)    {.-each(extract(@array, @i))}
+.for(@array)   when (default()) {.for-impl-(length(@array))}
+.for-impl-(@i) when (@i > 1)    {.for-impl-((@i - 1))}
+.for-impl-(@i) when (@i > 0)    {.-each(extract(@array, @i))}
 
 // Outline
 // same effect as "border" w/o increasing object size
@@ -183,16 +183,16 @@
               -1px  0   @color,
                0    2px @topShadowColor inset;
 }
-.shadow_noboss () {
+.shadow-noboss () {
   box-shadow: 0 1px transparent inset, 0 2px 1px transparent;
 }
-.shadow_emboss (@color) {
+.shadow-emboss (@color) {
   box-shadow: 0 1px lighten(@color, 5) inset, 0 2px 1px fade(@black, 21);
 }
-.shadow_deboss (@color) {
+.shadow-deboss (@color) {
   box-shadow: 0 -1px lighten(@color, 3) inset, 0 2px 1px fade(@black, 21) inset;
 }
-.underline_deboss () {
+.underline-deboss () {
   box-shadow: 0 1px fade(@white, 8), 0 -1px fade(@black, 55) inset;
 }
 

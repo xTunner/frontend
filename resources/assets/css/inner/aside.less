@@ -1,17 +1,17 @@
-@aside_menu_width: (@tile * 3);
+@aside-menu-width: (@tile * 3);
 
-@new_aside_menu_width: 285px;
+@new-aside-menu-width: 285px;
 
-@aside_nav_width: @tile;
+@aside-nav-width: @tile;
 
 @em: @baseFontSize;
-@cascade_delay: 30ms;
-@aside_items: 7;
-@aside_transition_speed: 200ms;
-@activity_color: fade(@white, 55);
-@activity_ico: (@em - 2);
-@activity_line: (@em * 1.5);
-@activity_toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
+@cascade-delay: 30ms;
+@aside-items: 7;
+@aside-transition-speed: 200ms;
+@activity-color: fade(@white, 55);
+@activity-ico: (@em - 2);
+@activity-line: (@em * 1.5);
+@activity-toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
 
 .inner {
   height: 100vh;
@@ -20,13 +20,43 @@
     .flexy(column);
     overflow: auto;
 
-    transition: margin @aside_transition_speed;
-    transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
+    transition: margin @aside-transition-speed;
+    transition-timing-function: cubic-bezier(0.5, -0.25, 0.5, 1.25);
+  }
+}
+
+&.ui-v2 {
+  .aside-left-nav {
+    background: @aside-nav-bg-color-v2;
+  }
+
+  .aside-item {
+      opacity: 0.8;
+
+    &:hover, &:focus {
+      opacity: 1;
+      background: lighten(@aside-nav-bg-color-v2, 12%);
+      box-shadow: none;
+    }
+
+    &.logo {
+      opacity: 1;
+      background: @aside-nav-logo-bg-color-v2;
+      box-shadow: none;
+
+      &:hover, &:focus {
+        background: lighten(@aside-nav-logo-bg-color-v2, 12%);
+      }
+    }
+  }
+
+  .aside-icon {
+    margin: auto;
   }
 }
 
 .aside-left-nav {
-  width: @aside_nav_width;
+  width: @aside-nav-width;
   background: @blueDarkest;
   color: fade(@white, 66);
   overflow: visible;
@@ -35,6 +65,7 @@
   // side of the page, it tends to cover the page. Therefore, we need to make it
   // (but not its children) invisible to the pointer.
   pointer-events: none;
+
   > * { pointer-events: auto; }
 
   a {
@@ -59,6 +90,7 @@
 
 .app-aside {
   .flex(0 0 auto);
+  .flexy(column);
 }
 
 .aside-left-nav,
@@ -67,21 +99,21 @@
 }
 
 .aside-left-menu.new-aside-left-menu-width {
-  width: @new_aside_menu_width;
+  width: @new-aside-menu-width;
 }
 
-.ui-v2 .aside-left-menu {
-  top: @top-nav-height;
+.aside-user.open ~ .aside-activity.open {
+  display: none;
 }
 
 .aside-left-menu {
   .flex(1 0 1px);
-  width: @aside_menu_width;
+  width: @aside-menu-width;
   box-shadow: 1px 0 @grayBoxBorder;
   overflow: hidden;
 
   background-color: @white;
-  transition: @aside_transition_speed;
+  transition: @aside-transition-speed;
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
 
   .aside-activity {
@@ -147,8 +179,8 @@
           margin-left: 10px;
           text-align: center;
           width: 40px;
-          height: @activity_line;
-          line-height: @activity_line;
+          height: @activity-line;
+          line-height: @activity-line;
           cursor: pointer;
           &:hover {
             cursor: pointer;
@@ -177,7 +209,7 @@
       }
     }
     .status {
-      .icon_style(transparent, @activity_ico);
+      .icon-style(transparent, @activity-ico);
       i {
         &.ico {
           .busy-light {stroke: @blueLight;}
@@ -203,15 +235,15 @@
 .aside-item {
   .flex(0 1 @tile);
   .flexy(center);
-  .shadow_noboss();
+  .shadow-noboss();
   background: transparent;
   white-space: nowrap;
-  transition: (@aside_transition_speed / 2) ease-in-out;
+  transition: (@aside-transition-speed / 2) ease-in-out;
   min-height: 1.5em;
 
   &:hover,
   &:focus {
-    .shadow_emboss(@blueDarker);
+    .shadow-emboss(@blueDarker);
     color: @white;
     background: @blueDarker;
     transition-duration: 0;
@@ -219,7 +251,7 @@
 
   &:active,
   &.open {
-    .shadow_deboss(@blueDarkest);
+    .shadow-deboss(@blueDarkest);
     color: @white;
     background: fade(@black, 8);
     transition-duration: 0;
@@ -227,10 +259,10 @@
 
   &.logo {
     .justify-content(center);
-    .underline_deboss();
+    .underline-deboss();
     .logomark {
       .flexy(center, center);
-      .icon_style(@white, (@em * 2));
+      .icon-style(@white, (@em * 2));
       width: @tile;
       height: @tile;
     }
@@ -240,16 +272,16 @@
     margin-top: auto;
   }
 
-  &:nth-child(2)  > i {transition-delay: @cascade_delay *  1;}
-  &:nth-child(3)  > i {transition-delay: @cascade_delay *  2;}
-  &:nth-child(4)  > i {transition-delay: @cascade_delay *  3;}
-  &:nth-child(5)  > i {transition-delay: @cascade_delay *  4;}
-  &:nth-child(6)  > i {transition-delay: @cascade_delay *  5;}
-  &:nth-child(7)  > i {transition-delay: @cascade_delay *  6;}
-  &:nth-child(8)  > i {transition-delay: @cascade_delay *  7;}
-  &:nth-child(9)  > i {transition-delay: @cascade_delay *  8;}
-  &:nth-child(10) > i {transition-delay: @cascade_delay *  9;}
-  &:nth-child(11) > i {transition-delay: @cascade_delay * 10;}
+  &:nth-child(2)  > i {transition-delay: @cascade-delay *  1;}
+  &:nth-child(3)  > i {transition-delay: @cascade-delay *  2;}
+  &:nth-child(4)  > i {transition-delay: @cascade-delay *  3;}
+  &:nth-child(5)  > i {transition-delay: @cascade-delay *  4;}
+  &:nth-child(6)  > i {transition-delay: @cascade-delay *  5;}
+  &:nth-child(7)  > i {transition-delay: @cascade-delay *  6;}
+  &:nth-child(8)  > i {transition-delay: @cascade-delay *  7;}
+  &:nth-child(9)  > i {transition-delay: @cascade-delay *  8;}
+  &:nth-child(10) > i {transition-delay: @cascade-delay *  9;}
+  &:nth-child(11) > i {transition-delay: @cascade-delay * 10;}
 
   > i {
     position: relative;
@@ -257,7 +289,7 @@
     min-width: @baseFontSize;
     margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
 
-    transition: margin @aside_transition_speed;
+    transition: margin @aside-transition-speed;
   }
 
   &.unread > i:after {
@@ -273,20 +305,20 @@
     background-color: @white;
   }
 
-  img {
+  .account-avatar {
     @s: (@tile / 2);
     min-width: @s;
     height: @s;
     margin: 0 @baseFontSize 0 ((@tile - @s) / 2);
     border-radius: (@s / 2);
-    transition: margin (@aside_transition_speed * 2);
+    transition: margin (@aside-transition-speed * 2);
     pointer-events: none;
   }
 
   span {
     opacity: 1;
     visibility: visible;
-    transition: visibility 0ms (@aside_transition_speed / 2), opacity (@aside_transition_speed * 2) 0ms;
+    transition: visibility 0ms (@aside-transition-speed / 2), opacity (@aside-transition-speed * 2) 0ms;
   }
 }
 
@@ -308,7 +340,8 @@
   }
 
   .projects {
-    overflow-y: scroll;
+    .flex(1 1 auto);
+    overflow-y: auto;
 
     a {
       outline: none;
@@ -345,8 +378,8 @@
         &:hover {
           a {
             &:not(:last-child) {
-              width: @activity_ico;
-              margin: 0 round((@activity_line - @activity_ico) / 2);
+              width: @activity-ico;
+              margin: 0 round((@activity-line - @activity-ico) / 2);
               transition: 100ms 100ms;
             }
             &:hover {
@@ -371,20 +404,21 @@
   }
   .project {
     .flexy(center);
+    padding-right: @em;
     width: 100%;
     a {
-      height: @activity_line;
-      line-height: @activity_line;
+      height: @activity-line;
+      line-height: @activity-line;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       &:not(:hover) {
-        color: fadein(@activity_color, 34);
+        color: fadein(@activity-color, 34);
       }
       &.toggle {
         .box-sizing(border-box);
         .flex(0 0 (@em * 2));
-        .icon_style(@grayDark, 100%);
+        .icon-style(@grayDark, 100%);
         width: @em * 2;
         height: @em *2;
         padding: 5px; // got this from trial and error
@@ -410,10 +444,11 @@
       }
       &.project-settings-icon {
         .flexy(center, center);
-        // width: @activity_line;
-        height: @activity_line;
-        line-height: @activity_line;
-        padding-right: 1em;
+        .flex(0 0 auto);
+
+        height: @activity-line;
+        line-height: @activity-line;
+
         svg {
           stroke: fade(@grayLight, 0);
           transition: 200ms;
@@ -425,20 +460,20 @@
         }
       }
       &.latest {
-        .flex(0 0 @activity_ico);
+        .flex(0 0 @activity-ico);
         display: none;
-        width: @activity_ico;
-        height: @activity_line;
-        line-height: @activity_line;
-        padding-right: 1em;
+
+        width: @activity-ico;
+        height: @activity-line;
+        line-height: @activity-line;
       }
     }
   }
   .branch,
   .statuses {
     a {
-      height: @activity_line;
-      line-height: @activity_line;
+      height: @activity-line;
+      line-height: @activity-line;
     }
   }
   .branch {
@@ -463,17 +498,24 @@
         transition: 400ms;
       }
       &:last-child {
-        padding-left: round((@activity_line - @activity_ico) / 2);
+        padding-left: round((@activity-line - @activity-ico) / 2);
       }
     }
   }
   .when {
     .flexy(left, flex-start);
-    height: @activity_line;
-    line-height: @activity_line;
+    height: @activity-line;
+    line-height: @activity-line;
     font-family: @monoFontFamily;
     font-size: @fontSizeMini;
     color: @grayLight;
+  }
+}
+
+.ui-v2 {
+  .aside-activity.open {
+    height: auto;
+    .flex(1 0 1px);
   }
 }
 
@@ -481,30 +523,42 @@
   font-family: @monoFontFamilyV2;
 }
 
-.ui-v2 .aside-left-menu {
-  box-shadow: none;
+.ui-v2 {
+  .aside-left-menu {
+    box-shadow: none;
+  }
+
+  .aside-user.open {
+    .flex(1 0 100%);
+    width: @new-aside-menu-width;
+  }
+
+  .aside-user .close-menu {
+    // TODO a magic number. the close menu should be removed on completion of v2 anyways.
+    height: 47px;
+  }
 }
 
 .aside-user {
-  .flexy(column);
-  position: absolute;
-  top: 0;
-  left: -@tile;
-  width: @tile;
+  display: none;
   height: 100%;
+  position: relative;
+
   background: @appBackgroundColor;
   color: @appBackgroundColor;
   box-shadow: 1px 0 @grayBoxBorder;
-  transition: (@aside_transition_speed / 2);
+  transition: (@aside-transition-speed / 2);
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   overflow: hidden;
+
   &.open {
+    .flexy(column);
 
     &.ui-v2 {
-      width: @new_aside_menu_width;
+      width: @new-aside-menu-width;
     }
 
-    width: @aside_menu_width;
+    width: @aside-menu-width;
     left: 0;
     color: @gray;
     h5 {
@@ -523,7 +577,7 @@
     font-weight: normal;
     color: @appBackgroundColor;
     white-space: nowrap;
-    transition: (@aside_transition_speed / 2);
+    transition: (@aside-transition-speed / 2);
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
     width: 100%;
     text-align: center;
@@ -549,6 +603,7 @@
     }
   }
 }
+
 .aside-user-options {
   .flex(1);
   .flexy(column);
@@ -564,7 +619,7 @@
     }
     &a:active {
       &:not(.active) {
-        .shadow_deboss(@white);
+        .shadow-deboss(@white);
         color: inherit;
         background: @grayLightest;
       }

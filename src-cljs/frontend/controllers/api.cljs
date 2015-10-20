@@ -1,7 +1,7 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
             [frontend.api :as api]
-            [frontend.async :refer [put!]]
+            [frontend.async :refer [put! raise!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
@@ -16,6 +16,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
+            [om.core :as om :include-macros true]
             [goog.string :as gstring]
             [clojure.set :as set])
   (:require-macros [frontend.utils :refer [inspect]]))
@@ -106,16 +107,28 @@
 
 
 (defmethod api-event [:projects :success]
-  [target message status {:keys [resp]} {:keys [navigation-point] :as state}]
-  ;; for the insights screen, we go on to get recent builds from the
-  ;; default_branch of each project
-  (when (= navigation-point :build-insights)
-    (let [api-ch (get-in state [:comms :api])
-          project-build-ids (map project-build-id resp)]
-      (api/get-projects-builds project-build-ids api-ch)))
-  (->> resp
-       (map (fn [project] (update project :scopes #(set (map keyword %)))))
-       (assoc-in state state/projects-path)))
+  [target message status {:keys [resp]} {:keys [navigation-point] :as current-state}]
+  (cond->> resp
+    true (map (fn [project] (update project :scopes #(set (map keyword %)))))
+    ;; For the insights screen:
+    ;;   1. copy old recent_builds so page doesn't empty out.
+    ;;   2. we go on to update recent_builds default_branch of each project
+    (= navigation-point :build-insights)
+    ((fn [resp]
+       (let [old-projects (get-in current-state state/projects-path)
+             api-ch (get-in current-state [:comms :api])
+             project-build-ids (map project-build-id resp)
+             updated-projects (map (fn [{:keys [vcs_url] :as project}]
+                                     (let [target-build-id (project-build-id project)]
+                                       (if-let [{:keys [recent-builds]} (->> old-projects
+                                                                             (filter #(= target-build-id (project-build-id %)))
+                                                                             first)]
+                                         (assoc project :recent-builds recent-builds)
+                                         project)))
+                                   resp)]
+         (api/get-projects-builds project-build-ids api-ch)
+         updated-projects)))
+    true (assoc-in current-state state/projects-path)))
 
 (defmethod api-event [:me :success]
   [target message status args state]
@@ -140,13 +153,13 @@
 
 (defmethod api-event [:recent-project-builds :success]
   [target message status {recent-builds :resp, target-id :context} state]
-  (letfn [(set-builds [projects]
+  (letfn [(add-recent-builds [projects]
             (for [project projects
                   :let [project-id (project-build-id project)]]
               (if (= project-id target-id)
                 (assoc project :recent-builds recent-builds)
                 project)))]
-    (update-in state state/projects-path set-builds)))
+    (update-in state state/projects-path add-recent-builds)))
 
 
 (defmethod api-event [:build :success]

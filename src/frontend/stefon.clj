@@ -112,6 +112,7 @@
            "docs/rspec-exit-codes.md"
            "docs/ruby-debugger-problems.md"
            "docs/ruby-exception-during-schema-load.md"
+           "docs/shipio-to-circleci-migration.md"
            "docs/skip-a-build.md"
            "docs/ssh-build.md"
            "docs/ssh-between-build-containers.md"

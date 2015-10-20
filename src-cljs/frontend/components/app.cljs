@@ -104,6 +104,12 @@
 (defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
+    om/IWillMount
+    (will-mount [_]
+      (let [logged-in? (boolean (get-in app state/user-path))
+            api-ch (get-in app [:comms :api])]
+        (if (and logged-in? (feature/enabled? :ui-fp-top-bar))
+          (api/get-orgs api-ch))))
     om/IRender
     (render [_]
       (if-not (:navigation-point app)
@@ -118,8 +124,7 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              show-header-and-footer? (not= :signup (:navigation-point app))
-              api-ch (get-in app [:comms :api])]
+              show-header-and-footer? (not= :signup (:navigation-point app))]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -140,13 +145,13 @@
                                :class (when (feature/enabled? :ui-v2)
                                         "new-app-main-margin")}
 
+               (when (and inner? logged-in? (feature/enabled? :ui-fp-top-bar))
+                 (om/build top-nav/top-nav app-without-container-data))
+
                (when show-inspector?
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
-
-               (when (and inner? logged-in? (feature/enabled? :ui-v2))
-                 (om/build top-nav/top-nav app-without-container-data))
 
                (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))

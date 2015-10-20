@@ -4,6 +4,7 @@
             [frontend.utils :as utils :refer [sel1 sel]]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
+            [frontend.timer :as timer]
             [goog.dom]
             [frontend.components.insights :as insights]
             [om.core :as om :include-macros true])
@@ -71,7 +72,8 @@
 
 (deftest can-render-project-block
   (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
-    (om/root insights/project-insights (first test-projects-data) {:target test-node})
+    (om/root insights/project-insights (first test-projects-data) {:target test-node
+                                                                   :shared {:timer-atom (timer/initialize)}})
     (testing "Simple render of feature container.")))
 
 

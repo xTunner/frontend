@@ -341,7 +341,7 @@ Here are examples of common tweaks you might make in the `dependencies` section.
 ```
 dependencies:
   override:
-    - npm install --dev
+    - npm install
 ```
 
 <h4 id="bundler">Example: using a specific version of bundler</h4>
