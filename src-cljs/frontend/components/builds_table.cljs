@@ -149,7 +149,8 @@
          " #"
          (:build_num build)]]
 
-       [:div.metadata
+       [:div.metadata 
+
         (when-let [pusher-name (build-model/ui-user build)]
           [:div.metadata-item.recent-user
            {:title pusher-name}
@@ -160,6 +161,17 @@
               ;; always returned full-size, but they're sized with CSS anyhow).
               {:src (-> avatar-url url/url (assoc-in [:query "s"] "20") str)}]
              (dashboard-icon "Builds-Author"))])
+
+        (when-let [urls (seq (:pull_request_urls build))]
+          [:div.metadata-item.pull-requests {:title "Pull Requests"}
+           (dashboard-icon "Builds-PullRequest")
+           [:span
+            (interpose
+              ", "
+              (map (fn [url] [:a {:href url} "#"
+                              (let [n (re-find #"/\d+$" url)]
+                                (if n (subs n 1) "?"))])
+                   urls))]])
 
         [:div.metadata-item.revision
          (if-not (:vcs_revision build)
