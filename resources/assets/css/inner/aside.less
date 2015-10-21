@@ -146,7 +146,7 @@
         background-image: url('@{imgPath}/inner/icons/UI-DropdownArrow.svg');
         background-size: @arrow-width;
         background-repeat: no-repeat;
-        background-position: ~"calc(100% - @{extra-click-target})" 60%;
+        background-position: ~"calc(100% - @{extra-click-target})" ~"calc(50% + 1px)";
         background-color: transparent;
 
         cursor: pointer;
@@ -220,6 +220,20 @@
     width: @new-aside-menu-width;
   }
 
+  &:not(.ui-v2) {
+    .aside-activity header {
+      height: 70px;
+      padding-left: 15px;
+      padding-right: 15px;
+
+      align-items: center;
+      font-size: 14px;
+
+      label {
+        margin-left: 10px;
+      }
+    }
+  }
 }
 
 .aside-item {
