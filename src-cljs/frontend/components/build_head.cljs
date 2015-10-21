@@ -628,29 +628,36 @@
          [:div.test-results
           (if-not tests
             [:div.loading-spinner common/spinner]
-            (if-not (seq failed-tests)
-              [:div.alert.alert-danger.iconified
-               [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
-               (tests-ad owner)]
-              (for [[source tests-by-source] (group-by test-model/source failed-tests)]
-                [:div.alert.alert-danger.expanded.build-tests-info
-                 [:div.alert-header
-                  [:img.alert-icon {:src (common/icon-path "Info-Error")}]
-                  (test-model/pretty-source source)
-                  " - "
-                  (pluralize (count failed-tests) "failure")]
-                 [:div.alert-body
-                  [:div.build-tests-summary
-                   "Your build ran "
-                   [:strong (pluralize (count tests) "test")]
-                   " with "
-                   [:strong (pluralize (count failed-tests) "failure")]]
-                  [:div.build-tests-list-container
-                   [:ol.list-unstyled.build-tests-list
-                    (for [[file tests-by-file] (group-by :file tests-by-source)]
-                      (list (when file [:div.filename (str file ":")])
-                            (om/build-all test-item-v2
-                                          (vec (sort-by test-model/format-test-name tests-by-file)))))]]]])))])))))
+            (cond
+              (seq failed-tests) (for [[source tests-by-source] (group-by test-model/source failed-tests)]
+                                   [:div.alert.alert-danger.expanded.build-tests-info
+                                    [:div.alert-header
+                                     [:img.alert-icon {:src (common/icon-path "Info-Error")}]
+                                     (test-model/pretty-source source)
+                                     " - "
+                                     (pluralize (count failed-tests) "failure")]
+                                    [:div.alert-body
+                                     [:div.build-tests-summary
+                                      "Your build ran "
+                                      [:strong (pluralize (count tests) "test")]
+                                      " with "
+                                      [:strong (pluralize (count failed-tests) "failure")]]
+                                     [:div.build-tests-list-container
+                                      [:ol.list-unstyled.build-tests-list
+                                       (for [[file tests-by-file] (group-by :file tests-by-source)]
+                                         (list (when file [:div.filename (str file ":")])
+                                               (om/build-all test-item-v2
+                                                             (vec (sort-by test-model/format-test-name tests-by-file)))))]]]])
+
+              (seq tests) [:div
+                           "Your build ran "
+                           [:strong (count tests)]
+                           " tests in " (string/join ", " (map test-model/pretty-source sources)) " with "
+                           [:strong "0 failures"]]
+
+              :else [:div.alert.alert-danger.iconified
+                     [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
+                     (tests-ad owner)]))])))))
 
 (defn circle-yml-ad []
   [:div
