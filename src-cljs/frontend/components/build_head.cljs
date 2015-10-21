@@ -720,7 +720,7 @@
       "edit" (list user-link " (updated project settings)")
       "first-build" (list user-link " (first build)")
       "retry"  (list user-link " (retried " retry-link
-                                (when-not cache? " without Cache")")")
+                                (when-not cache? " without cache")")")
       "ssh" (list user-link " (retried " retry-link " with SSH)")
       "auto-retry" (list "CircleCI (auto-retry of " retry-link ")")
       "trigger" (if (:user build)
@@ -1223,16 +1223,16 @@
         {:rebuild-status "Rebuild"
          :actions
          {:rebuild
-          {:text  "Rebuild with Cache"
+          {:text  "Rebuild with cache"
            :title "Retry the same tests"
            :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                        (update-status! "Rebuilding with Cache"))}
+                        (update-status! "Rebuilding with cache"))}
 
           :without_cache
-          {:text  "Rebuild without Cache"
-           :title "Retry without Cache"
+          {:text  "Rebuild without cache"
+           :title "Retry without cache"
            :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
-                        (update-status! "Rebuilding without Cache"))}
+                        (update-status! "Rebuilding without cache"))}
 
           :with_ssh
           {:text  "Rebuild with SSH"
