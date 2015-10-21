@@ -83,11 +83,18 @@
   "helper for finding appropriate backend, assumes that the `*.circlehost` prefix
   matches the DNS for env on circleci.com"
   [req]
-  (let [server-name (:server-name req)]
+  (let [server-name (:server-name req)
+        env (System/getenv "CIRCLE_FRONTEND_ENV")]
     (cond
-      (= server-name "dev.circlehost") {:proto "http" :host "dev.circlehost:8080"}
-      (= server-name "prod.circlehost") {:proto "https" :host "circleci.com"}
-      (= server-name "enterprise.circlehost") {:proto "https" :host "enterprise-staging.sphereci.com"}
+      (or
+        (= env "dev")
+        (= server-name "dev.circlehost")) {:proto "http" :host "dev.circlehost:8080"}
+      (or
+        (= env "prod")
+        (= server-name "prod.circlehost")) {:proto "https" :host "circleci.com"}
+      (or
+        (= env "enterprise")
+        (= server-name "enterprise.circlehost")) {:proto "https" :host "enterprise-staging.sphereci.com"}
       (re-matches #"(.*).circlehost" server-name) (when-let [env (some->> req :server-name (re-matches #"(.*).circlehost") second)]
                                                     {:proto "https" :host (format "%s.circleci.com" env)})
       :else {:proto "http" :host "dev.circlehost:8080"})))
