@@ -98,10 +98,6 @@
   .flexy(column);
 }
 
-.aside-left-menu.new-aside-left-menu-width {
-  width: @new-aside-menu-width;
-}
-
 .aside-user.open ~ .aside-activity.open {
   display: none;
 }
@@ -121,77 +117,66 @@
 
     header {
       .box-sizing(border-box);
-      .flex(0 0 @tile);
-      border-bottom: solid 1px @grayBoxBorder;
-      padding: @em;
-      position: relative;
-      display: block;
-      width: 100%;
+      .flex(0 0 auto);
+      .flexy(baseline, space-between);
 
-      select {
+      padding: 10px 15px;
+      border-bottom: solid 1px @grayBoxBorder;
+      font-size: 12px;
+
+      .toggle-sorting {
+        // Width of the arrow itself.
+        @arrow-width: 11px;
+
+        // Margin between the selector text and the arrow.
+        @arrow-margin: 4px;
+
+        // Space to the right of the arrow that's still clickable.
+        @extra-click-target: 5px;
+
+        margin: 0;
+        padding-right: @arrow-margin + @arrow-width + @extra-click-target;
+
         color: @grayDark;
-        display: inline-block;
+
         -webkit-appearance: none; // gets rid of ugly shadow in safari
         -moz-appearance: none; // gets rid of extra arrow in FF
         border: none;
-        outline: none;
-        margin: 0;
-        padding: (@em - 2)  21px @em 0;
-        vertical-align: middle;
-        &:hover {
-          cursor: pointer;
-        }
-      }
 
-      .toggle-sorting {
-          float: left;
+        background-image: url('@{imgPath}/inner/icons/UI-DropdownArrow.svg');
+        background-size: @arrow-width;
+        background-repeat: no-repeat;
+        background-position: ~"calc(100% - @{extra-click-target})" 60%;
+        background-color: transparent;
+
+        cursor: pointer;
       }
 
       .toggle-all-branches {
-          float: right;
-      }
-      .select-arrow {
-        position: relative;
-        display: inline-block;
-        margin-left: -11px;
-        color: @blacken;
-        text-align: center;
-        pointer-events: none;
-      }
+        .flexy;
 
-      .select-arrow img {
-        position: relative;
-        top: -1px;
-      }
-
-      input[type=radio] {
+        input[type=radio] {
           display: none;
-          &:checked + label {
-              background-color: rgba(0,0,0, 0.1);
-              border-radius: 3px;
-          }
-      }
 
-      label.radio {
-          display: inline-block;
+          &:checked + label {
+            background-color: rgba(0,0,0, 0.1);
+          }
+        }
+
+        label {
+          width: 40px;
+          height: 22px;
+          margin: 0;
+
+          line-height: 22px;
           font-weight: normal;
           color: @grayDark;
-          margin-left: 10px;
           text-align: center;
-          width: 40px;
-          height: @activity-line;
-          line-height: @activity-line;
+
+          border-radius: 3px;
           cursor: pointer;
-          &:hover {
-            cursor: pointer;
-          }
-
+        }
       }
-
-    }
-
-    select {
-      background-color: @white;
     }
 
     ul {
@@ -230,6 +215,11 @@
       }
     }
   }
+
+  &.ui-v2 {
+    width: @new-aside-menu-width;
+  }
+
 }
 
 .aside-item {

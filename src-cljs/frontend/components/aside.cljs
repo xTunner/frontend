@@ -283,14 +283,13 @@
         (html
          [:div.aside-activity.open
           [:header
-           [:div.toggle-sorting
-            [:select {:name "toggle-sorting"
-                      :on-change #(raise! owner [:sort-branches-toggled
-                                                 (utils/parse-uri-bool (.. % -target -value))])
-                      :value sort-branches-by-recency?}
-             [:option {:value false} "By Repo"]
-             [:option {:value true} "Recent" ]]
-            [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/icons/UI-DropdownArrow.svg")}]]]
+           [:select {:class "toggle-sorting"
+                     :name "toggle-sorting"
+                     :on-change #(raise! owner [:sort-branches-toggled
+                                                (utils/parse-uri-bool (.. % -target -value))])
+                     :value sort-branches-by-recency?}
+            [:option {:value false} "By Repo"]
+            [:option {:value true} "Recent"]]
 
            [:div.toggle-all-branches
             [:input {:id "my-branches"
@@ -300,7 +299,7 @@
                      :checked (not show-all-branches?)
                      :react-key "toggle-all-branches-my-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled false])}]
-            [:label.radio {:for "my-branches"}
+            [:label {:for "my-branches"}
              "Mine"]
             [:input {:id "all-branches"
                      :name "toggle-all-branches"
@@ -309,7 +308,7 @@
                      :checked show-all-branches?
                      :react-key "toggle-all-branches-all-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled true])}]
-            [:label.radio {:for "all-branches"}
+            [:label {:for "all-branches"}
              "All"]]]
 
           [:div.projects
@@ -338,7 +337,7 @@
        [:nav
 
         {:class [(when (feature/enabled? :ui-v2)
-                   "new-aside-left-menu-width")
+                   "ui-v2")
                  "aside-left-menu"]}
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
