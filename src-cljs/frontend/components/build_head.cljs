@@ -1253,9 +1253,9 @@
         (html
           [:div.dropdown.rebuild
            [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
-            rebuild-status
+            [:span.status rebuild-status]
             (when (= rebuild-status "Rebuild")
-              [:img {:src (common/icon-path "UI-ArrowChevron")}])]
+              [:img.chevron {:src (common/icon-path "UI-ArrowChevron")}])]
            [:ul.dropdown-menu
             [:li
              [:a {:on-click (action-for :rebuild)} (text-for :rebuild)]]
