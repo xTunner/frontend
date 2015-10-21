@@ -51,11 +51,18 @@
                      "ran"
                      "is running")]
     [:div.additional-containers-offer
-     [:p (str "This build " run-phrase " under " (:org_name plan) "'s plan which provides " (plan-model/usable-containers plan)
-              " containers, plus 3 additional containers available for free and open source projects.")]
-     [:p [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                     :subpage "containers"})}
-          [:button "Add Containers"]] "to run more builds concurrently."]]))
+     [:p
+      "This build "
+      run-phrase
+      " under "
+      (:org_name plan)
+      "'s plan which provides "
+      (plan-model/usable-containers plan)
+      " containers, plus 3 additional containers available for free and open source projects. "
+      [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                  :subpage "containers"})}
+       "Add Containers"]
+      " to run more builds concurrently."]]))
 
 (defn build-queue [data owner]
   (reify
@@ -93,7 +100,8 @@
                [:p "This build " (if usage-queued? "has been" "was")
                 " queued behind the following builds for "
                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                    :stop (or (:queued_at build) (:stop_time build))})]
+                                                    :stop (or (:queued_at build) (:stop_time build))})
+                "."]
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
             (when (show-additional-containers-offer? plan build)
@@ -123,28 +131,27 @@
          (if-not builds
            [:div.loading-spinner common/spinner]
            [:div.build-queue.active
-            [:p 
+            [:div
              (when (and (:queued_at build) (not usage-queued?))
-               "Circle " (when run-queued? "has") " spent "
-               [:strong
-                (om/build common/updating-duration {:start (:queued_at build)
-                                                    :stop (or (:start_time build) (:stop_time build))})]
-                " acquiring containers for this build.")
+               (list
+                 "Circle " (when run-queued? "has") " spent "
+                 [:strong
+                  (om/build common/updating-duration {:start (:queued_at build)
+                                                      :stop (or (:start_time build) (:stop_time build))})]
+                 " acquiring containers for this build."))
 
              (when (< 10000 (build-model/run-queued-time build))
                [:span#circle_queued_explanation
-                "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."]) 
+                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."]) 
              (when (seq builds)
                [:span
-                "This build " (if usage-queued? "has been" "was")
+                " This build " (if usage-queued? "has been" "was")
                 " queued behind the following builds for "
                 [:strong
                  (om/build common/updating-duration {:start (:usage_queued_at build)
                                                      :stop (or (:queued_at build) (:stop_time build))})]
                 (when (show-additional-containers-offer? plan build)
-                  (if (om/get-shared owner [:ab-tests :new_usage_queued_upsell])
-                    (new-additional-containers-offer plan build)
-                    (additional-containers-offer plan build)))])]
+                  (new-additional-containers-offer plan build))])]
 
               (when (seq builds)
                [:div.queued-builds
@@ -1107,7 +1114,7 @@
               [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
                [tab-link-v2 {:href "#build-parameters"} "Build Parameters"]])]]
 
-          [:div.card.sub-head-content
+          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
            (case selected-tab
              :commits nil
 
