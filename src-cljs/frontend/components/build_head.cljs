@@ -101,6 +101,55 @@
                 (new-additional-containers-offer plan build)
                 (additional-containers-offer plan build)))]))))))
 
+(defn build-queue-v2 [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (let [{:keys [build]} data
+            build-id (build-model/id build)]
+        (raise! owner [:usage-queue-why-showed
+                       {:build-id build-id
+                        :username (:username @build)
+                        :reponame (:reponame @build)
+                        :build_num (:build_num @build)}])))
+
+    om/IRender
+    (render [_]
+      (let [{:keys [build builds]} data
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)
+            plan (:plan data)]
+        (html
+         (if-not builds
+           [:div.loading-spinner common/spinner]
+           [:div.build-queue.active
+            [:p 
+             (when (and (:queued_at build) (not usage-queued?))
+               "Circle " (when run-queued? "has") " spent "
+               [:strong
+                (om/build common/updating-duration {:start (:queued_at build)
+                                                    :stop (or (:start_time build) (:stop_time build))})]
+                " acquiring containers for this build.")
+
+             (when (< 10000 (build-model/run-queued-time build))
+               [:span#circle_queued_explanation
+                "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."]) 
+             (when (seq builds)
+               [:span
+                "This build " (if usage-queued? "has been" "was")
+                " queued behind the following builds for "
+                [:strong
+                 (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                     :stop (or (:queued_at build) (:stop_time build))})]
+                (when (show-additional-containers-offer? plan build)
+                  (if (om/get-shared owner [:ab-tests :new_usage_queued_upsell])
+                    (new-additional-containers-offer plan build)
+                    (additional-containers-offer plan build)))])]
+
+              (when (seq builds)
+               [:div.queued-builds
+                (om/build builds-table/builds-table-v2 builds {:opts {:show-actions? true}})])]))))))
+
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
         pseudo-url-pattern #"(?im)(^|[^/])(www\.[\S]+(\b|$))"]
@@ -1074,9 +1123,9 @@
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
 
-             :usage-queue (om/build build-queue {:build build
-                                                 :builds (:builds usage-queue-data)
-                                                 :plan plan})
+             :usage-queue (om/build build-queue-v2 {:build build
+                                                    :builds (:builds usage-queue-data)
+                                                    :plan plan})
              :ssh-info (om/build build-ssh {:build build :user user})
 
              ;; avoid errors if a nonexistent tab is typed in the URL
