@@ -1213,36 +1213,46 @@
   (reify
     om/IInitState
     (init-state [_]
-      (let [rebuild-args  {:build-id  (build-model/id build)
-                           :vcs-url   (:vcs_url build)
-                           :build-num (:build_num build)}
-            rebuild!      #(do (raise! owner %)
-                               (om/set-state! owner [:actions :rebuild :text] "Rebuilding"))]
-        {:actions
+      (let [rebuild-args    {:build-id  (build-model/id build)
+                             :vcs-url   (:vcs_url build)
+                             :build-num (:build_num build)}
+            update-status!  #(om/set-state! owner [:rebuild-status] %)
+            rebuild!        #(raise! owner %) ]
+        {:rebuild-status "Rebuild"
+         :actions
          {:rebuild
           {:text  "Rebuild with cache"
            :title "Retry the same tests"
-           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])}
+           :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
+                        (update-status! "Rebuilding with cache"))}
 
           :without_cache
           {:text  "Rebuild without cache"
            :title "Retry without cache"
-           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])}
+           :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
+                        (update-status! "Rebuilding without cache"))}
 
           :with_ssh
           {:text  "Rebuild with SSH"
            :title "Retry with SSH in VM",
-           :action #(rebuild! [:ssh-build-clicked rebuild-args])}}}))
+           :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
+                        (update-status! "Rebuilding with SSH"))}}}))
+
+    om/IWillUpdate
+    (will-update [_ {:keys [build]} _]
+      (when (build-model/running? build)
+        (om/set-state! owner [:rebuild-status] "Rebuild")))
+
+
     om/IRenderState
-    (render-state [_ {:keys [actions]}]
+    (render-state [_ {:keys [actions rebuild-status]}]
       (let [text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
         (html
           [:div.dropdown.rebuild
            [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
-            "Rebuild"
+            rebuild-status
             [:img {:src (common/icon-path "UI-ArrowChevron")}]]
-
            [:ul.dropdown-menu
             [:li
              [:a {:on-click (action-for :rebuild)} (text-for :rebuild)]]
@@ -1271,7 +1281,7 @@
                                   (get-in data state/project-scopes-path))]
         (html
           [:div.build-actions-v2
-           (when true #_(and (build-model/can-cancel? build) has-write-settings?)
+           (when (and (build-model/can-cancel? build) has-write-settings?)
              (forms/managed-button
                [:a.build-action
                 {:data-loading-text "Canceling"
