@@ -269,7 +269,6 @@
 
   .build-info {
     padding: @build-padding 0 @build-padding @build-padding;
-    flex-direction: column;
     flex-grow: 1;
 
     .recent-commit-msg a {
@@ -279,13 +278,12 @@
   }
 
   .build-info-header {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    .flexy;
+    .justify-content(space-between);
+    .flex-wrap(wrap);
   }
 
   .contextual-identifier {
-    margin-right: auto;
     font-size: 13px;
 
     a {
@@ -294,12 +292,13 @@
   }
 
   .metadata {
-    display: flex;
-    flex-wrap: wrap;
+    .flexy(wrap);
   }
 
   .metadata-item {
     margin-right: 25px;
+    margin-bottom: 3px;
+
     color: @gray-light-v2;
     font-size: 12px;
 
