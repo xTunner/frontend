@@ -137,11 +137,20 @@
                                 :build-running? build-running?
                                 :current-container-id current-container-id}
                                {:react-key (:index container)}))
-                   [:a.container-selector.parallelism-tab
-                    {:role "button"
-                     :href (build-model/path-for-parallelism build)
-                     :title "adjust parallelism"}
-                    [:span "+"]]])]
+                   (if (and
+                         (not (get-in data [:project-data :plan :paid]))
+                         (not (get-in data [:project-data :project :feature_flags :oss]))
+                         (= "button" (om/get-shared owner  [:ab-tests :upgrade_banner])))
+                     [:a.container-selector.parallelism-tab.upgrade
+                      {:role "button"
+                       :href (build-model/path-for-parallelism build)
+                       :title "adjust parallelism"}
+                      [:span "Add More Containers"]]
+                     [:a.container-selector.parallelism-tab
+                      {:role "button"
+                       :href (build-model/path-for-parallelism build)
+                       :title "adjust parallelism"}
+                      [:span "+"]])])]
         (om/build sticky {:content div :content-class "containers"})))))
 
 (defn notices [data owner]
@@ -154,7 +163,7 @@
              plan (:plan project-data)
              project (:project project-data)
              build (:build build-data)]
-         [:div
+         [:div.notices
           (common/messages (set (:messages build)))
           [:div.container-fluid
            [:div.row
@@ -184,6 +193,18 @@
                         (not (:dismiss-config-errors build-data)))
                (om/build build-config/config-errors build))]]]])))))
 
+(defn upgrade-banner [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.upgrade-banner
+         [:i.fa.fa-tachometer.fa-lg]
+         [:p.main.message [:b "Build Diagnostics"]
+         [:p.sub.message "Looking for faster builds? "
+          [:a {:href "/gh/organizations"} "Adding containers"]
+          " can cut down time spent testing."]]]))))
+
 (defn build-v1 [data owner]
   (reify
     om/IRender
@@ -206,10 +227,16 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
+             (when (and 
+                     (not (get-in project-data [:plan :paid]))
+                     (not (get-in project-data [:project :feature_flags :oss]))
+                     (= "banner" (om/get-shared owner  [:ab-tests :upgrade_banner])))
+               (om/build upgrade-banner {}))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
                                 :invite-data invite-data})
              (om/build container-pills {:container-data container-data
+                                        :project-data project-data
                                         :build-running? (build-model/running? build)
                                         :build build})
              (om/build build-steps/container-build-steps container-data)
@@ -335,8 +362,7 @@
                     [:a.container-selector-v2.add-containers
                      {:href (build-model/path-for-parallelism build)
                       :title "Adjust parallelism"}
-                     "+"])
-                  ])]
+                     "+"])])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
 (defn build-v2 [data owner]

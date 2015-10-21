@@ -4,7 +4,6 @@
 .build-head-wrapper {
   color: @gray;
   box-shadow: 0 1px @grayBorder;
-  margin-bottom: 1.5em;
   padding: @innerContentPadding 0;
   dl {         //
     margin: 0; // try to eliminate
@@ -17,6 +16,35 @@
     padding-bottom: 15px;
     margin: 0 0 15px 0;
   }
+}
+
+.notices {
+  margin-top: 1.5em;
+}
+
+.upgrade-banner {
+
+  .flexy(center, flex-start, row);
+  background-color: @state-info-bg;
+  padding-left: 15px;
+  height: 40px;
+  width: 100%;
+
+  .fa {
+    color: @black;
+  }
+
+  .message {
+     margin: 2px 0 0 15px;
+
+    &.main {
+      color: @black;
+    }
+  }
+}
+
+.container-selector.parallelism-tab.upgrade  {
+  max-width: 50%;
 }
 
 &.ui-v2 {
