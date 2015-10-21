@@ -295,6 +295,17 @@
   }
 }
 
+.alert {
+  .alert-icon {
+    padding-right: ((2 / 3) * @alert-padding);
+  }
+
+
+  &.iconified {
+    .flexy(row);
+  }
+}
+
 @status-badge-height: 25px;
 
 .small-emphasis {
