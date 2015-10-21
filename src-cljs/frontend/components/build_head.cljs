@@ -713,12 +713,14 @@
 (defn trigger-html [build]
   (let [user-link (link-to-user build)
         commit-link (link-to-commit build)
-        retry-link (link-to-retry-source build)]
+        retry-link (link-to-retry-source build)
+        cache? (build-model/dependency-cache? build)]
     (case (:why build)
       "github" (list user-link " (pushed " commit-link ")")
       "edit" (list user-link " (updated project settings)")
       "first-build" (list user-link " (first build)")
-      "retry" (list user-link " (retried " retry-link ")")
+      "retry"  (list user-link " (retried " retry-link
+                                (when-not cache? " without Cache")")")
       "ssh" (list user-link " (retried " retry-link " with SSH)")
       "auto-retry" (list "CircleCI (auto-retry of " retry-link ")")
       "trigger" (if (:user build)
@@ -1188,7 +1190,7 @@
                 [:span.summary-label "Queued: "]
                 [:span  (queued-time build)]]])
 
-            [:div.summary-items.summary-build-contents
+            [:div.summary-build-contents
              [:div.summary-item
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]]
@@ -1217,20 +1219,20 @@
                              :vcs-url   (:vcs_url build)
                              :build-num (:build_num build)}
             update-status!  #(om/set-state! owner [:rebuild-status] %)
-            rebuild!        #(raise! owner %) ]
+            rebuild!        #(raise! owner %)]
         {:rebuild-status "Rebuild"
          :actions
          {:rebuild
-          {:text  "Rebuild with cache"
+          {:text  "Rebuild with Cache"
            :title "Retry the same tests"
            :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                        (update-status! "Rebuilding with cache"))}
+                        (update-status! "Rebuilding with Cache"))}
 
           :without_cache
-          {:text  "Rebuild without cache"
-           :title "Retry without cache"
+          {:text  "Rebuild without Cache"
+           :title "Retry without Cache"
            :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
-                        (update-status! "Rebuilding without cache"))}
+                        (update-status! "Rebuilding without Cache"))}
 
           :with_ssh
           {:text  "Rebuild with SSH"
@@ -1252,7 +1254,8 @@
           [:div.dropdown.rebuild
            [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
             rebuild-status
-            [:img {:src (common/icon-path "UI-ArrowChevron")}]]
+            (when (= rebuild-status "Rebuild")
+              [:img {:src (common/icon-path "UI-ArrowChevron")}])]
            [:ul.dropdown-menu
             [:li
              [:a {:on-click (action-for :rebuild)} (text-for :rebuild)]]
