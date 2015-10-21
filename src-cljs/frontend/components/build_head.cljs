@@ -645,8 +645,10 @@
    (and (:read-settings scopes)
         (build-model/in-usage-queue? build))
    :usage-queue
+   ;; If there's no SSH info, build isn't finished, show the config
+   (build-model/running? build) :config
    ;; Otherwise, just use the first one.
-   :else :commits))
+   :else :tests))
 
 (def tab-link :a.tab-link)
 
