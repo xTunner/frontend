@@ -623,7 +623,8 @@
             tests (when (:tests tests-data)
                     (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
             sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
-            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
+            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)
+            build-succeeded? (= "success" (get-in data [:build :status]))]
         (html
          [:div.test-results
           (if-not tests
@@ -655,8 +656,9 @@
                            " tests in " (string/join ", " (map test-model/pretty-source sources)) " with "
                            [:strong "0 failures"]]
 
-              :else [:div.alert.alert-danger.iconified
-                     [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
+              :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
+                     [:div [:img.alert-icon {:src (common/icon-path
+                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
                      (tests-ad owner)]))])))))
 
 (defn circle-yml-ad []
