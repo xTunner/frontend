@@ -20,7 +20,7 @@
   min-width: 465px;
 
   h1 {
-    font-size: round((@baseFontSize * 1.5), 0);
+    font-size: 16px;
   }
 
   .no-insights-block {
@@ -66,16 +66,15 @@
     }
     h1 {
       color: @gray-light-v2;
-      padding-left: 15px;
       border-bottom: #e5e5e5 1px solid;
       margin: 0;
-      padding: 10px;
+      padding: 19px 0 13px 15px;
     }
 
     h4 {
-      font-size: 16px;
+      font-size: 13px;
       color: #333;
-      margin: 6px 0 3px;
+      margin: 15px 0 8px;
       padding-left: @chart-padding-left;
     }
     .above-info, .below-info {
@@ -109,6 +108,10 @@
     .no-builds, .loading-spinner{
       height: @spinner-height;
       .flexy(center, space-around, column);
+
+      &.no-builds {
+        font-weight: bold;
+      }
     }
   }
 
@@ -127,7 +130,7 @@
     .axis path,
     .axis line {
       fill: none;
-      stroke: #666;
+      stroke: #999;
       shape-rendering: crispEdges;
     }
 

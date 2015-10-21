@@ -265,7 +265,7 @@
                (om/build project-insights-bar builds)
                [:div.below-info
                 [:dl
-                 [:dt "Branches:"]
+                 [:dt "BRANCHES"]
                  [:dd (-> branches keys count)]]]))]))))
 
 (defrender no-projects [data owner]
