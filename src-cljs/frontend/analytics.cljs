@@ -187,3 +187,9 @@
 
 (deftrack track-signup-click []
   (mixpanel/track "signup_click"))
+
+(deftrack track-parallelism-button-click [data]
+  (mixpanel/track "parallelism_button_click" data))
+
+(deftrack track-parallelism-button-impression [data]
+  (mixpanel/track "parallelism_button_impression" data))

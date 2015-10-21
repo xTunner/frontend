@@ -1,6 +1,8 @@
 @import "../shared/variables.less";
 
 @sideLineWidth: 5px;
+@aquaMarine: #33c1db;
+
 .build-head-wrapper {
   color: @gray;
   box-shadow: 0 1px @grayBorder;
@@ -25,7 +27,7 @@
 .upgrade-banner {
 
   .flexy(center, flex-start, row);
-  background-color: @state-info-bg;
+  background-color: rgba(255, 140, 48, 0.15);
   padding-left: 15px;
   height: 40px;
   width: 100%;
@@ -45,6 +47,13 @@
 
 .container-selector.parallelism-tab.upgrade  {
   max-width: 50%;
+  background-color: @aquaMarine;
+  border: @aquaMarine 1px solid;
+
+  &:hover {
+    background-color: @green;
+    border: @green 1px solid;
+  }
 }
 
 &.ui-v2 {
