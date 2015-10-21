@@ -300,6 +300,25 @@
     padding-right: ((2 / 3) * @alert-padding);
   }
 
+  &.expanded {
+    padding: 0;
+    border: none;
+
+    &.alert-danger {
+      .alert-header {
+        background: lighten(@brand-danger-v2, @brand-lighten-ratio-v2 * 0.66);
+        border-bottom: 1px solid @brand-danger-v2;
+      }
+    }
+
+    .alert-header {
+      padding: @alert-padding;
+    }
+
+    .alert-body {
+      padding: @alert-padding;
+    }
+  }
 
   &.iconified {
     .flexy(row);

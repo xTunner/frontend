@@ -531,6 +531,22 @@
     [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
      [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"} "the docs"] " for more information."]]])
 
+(defmulti format-test-name-v2 test-model/source)
+
+(defmethod format-test-name-v2 :default [test]
+  (->> [[(:name test)] [(:classname test) (:file test)]]
+       (map (fn [s] (some #(when-not (string/blank? %) %) s)))
+       (filter identity)
+       (string/join " - in ")))
+
+(defmethod format-test-name-v2 "lein-test" [test]
+  [:strong (str (:classname test) "/" (:name test))])
+
+(defmethod format-test-name-v2 "cucumber" [test]
+  [:strong (if (string/blank? (:name test))
+             (:classname test)
+             (:name test))])
+
 (defn test-item [test owner]
   (reify
     om/IRender
@@ -543,6 +559,21 @@
                 :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
             " more info "
             (if (:show-message test) [:i.fa.fa-caret-up] [:i.fa.fa-caret-down])])
+         (when (:show-message test)
+           [:pre (:message test)])]))))
+
+(defn test-item-v2 [test owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:li.build-test
+         (format-test-name-v2 test)
+         " - "
+         (when-not (string/blank? (:message test))
+           [:a.test-output-toggle {:role "button"
+                                   :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
+            (if (:show-message test) "less info" "more info")])
          (when (:show-message test)
            [:pre (:message test)])]))))
 
@@ -579,6 +610,47 @@
                        (list (when file [:div.filename (str file ":")])
                              (om/build-all test-item
                                            (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
+
+(defn build-tests-list-v2 [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:tests-showed]))
+
+    om/IRender
+    (render [_]
+      (let [tests-data (:tests-data data)
+            tests (when (:tests tests-data)
+                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
+            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
+            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
+        (html
+         [:div.test-results
+          (if-not tests
+            [:div.loading-spinner common/spinner]
+            (if-not (seq failed-tests)
+              [:div.alert.alert-danger.iconified
+               [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
+               (tests-ad owner)]
+              (for [[source tests-by-source] (group-by test-model/source failed-tests)]
+                [:div.alert.alert-danger.expanded.build-tests-info
+                 [:div.alert-header
+                  [:img.alert-icon {:src (common/icon-path "Info-Error")}]
+                  (test-model/pretty-source source)
+                  " - "
+                  (pluralize (count failed-tests) "failure")]
+                 [:div.alert-body
+                  [:div.build-tests-summary
+                   "Your build ran "
+                   [:strong (pluralize (count tests) "test")]
+                   " with "
+                   [:strong (pluralize (count failed-tests) "failure")]]
+                  [:div.build-tests-list-container
+                   [:ol.list-unstyled.build-tests-list
+                    (for [[file tests-by-file] (group-by :file tests-by-source)]
+                      (list (when file [:div.filename (str file ":")])
+                            (om/build-all test-item-v2
+                                          (vec (sort-by test-model/format-test-name tests-by-file)))))]]]])))])))))
 
 (defn circle-yml-ad []
   [:div
@@ -1081,7 +1153,7 @@
                                                (filter #(contains? #{"failure" "error"} (:result %)))
                                                count)]
                   (when (not= 0 fail-count)
-                    [:span {:class "fail-count"} fail-count]))]])
+                    [:span "(" fail-count ")"]))]])
 
             (when (has-scope :read-settings data)
               [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
@@ -1120,9 +1192,8 @@
 
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
            (case selected-tab
-             :commits nil
 
-             :tests (om/build build-tests-list build-data)
+             :tests (om/build build-tests-list-v2 build-data)
 
              :build-time-viz (om/build build-time-visualization build)
 
