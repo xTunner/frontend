@@ -553,12 +553,20 @@
       color: @grayDark;
 
       background-color: #eaeaea;
+
+      &.selected {
+        background-color: @white;
+      }
     }
 
     .branches > li .branch {
       .flexy;
       padding: 10px;
       border-top: @border;
+
+      &.selected {
+        background-color: @white;
+      }
 
       .last-build-status {
         margin-right: 10px;
