@@ -20,7 +20,7 @@
      :method (:request-method req)
      :headers (assoc (:headers req)
                      "host" (:host backend)
-                     "x-circleci-assets-proto" "http"
+                     "x-circleci-assets-proto" "https"
                      "x-circleci-assets-host" (get-in req [:headers "host"]))
      :body (:body req)
      :follow-redirects false}))
