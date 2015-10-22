@@ -242,7 +242,7 @@
         [:h1 (gstring/format "%s/%s" username reponame)]
         [:h4 "Branch: " branch]
         (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-              (empty? builds) [:div.no-builds "No builds."]
+              (empty? builds) [:div.no-builds "No tests for this repo"]
               :else
               (list
                [:div.above-info
@@ -265,7 +265,7 @@
                (om/build project-insights-bar builds)
                [:div.below-info
                 [:dl
-                 [:dt "Branches:"]
+                 [:dt "BRANCHES"]
                  [:dd (-> branches keys count)]]]))]))))
 
 (defrender no-projects [data owner]

@@ -106,17 +106,17 @@
 (defn dashboard-icon [name]
   [:img.dashboard-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
+(defn build-status-badge [build]
+  [:div.recent-status-badge {:class (build-model/status-class build)}
+       [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
+       [:div.badge-text (build-model/status-words build)]])
+
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (when (:dont_build build) "dont_build")}
      [:div.status-area
-      [:div.recent-status-badge
-       [:a
-        {:title "status"
-         :href url
-         :class (build-model/status-class build)}
-        [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-        (build-model/status-words build)]]
+      [:a {:href url}
+       (build-status-badge build)]
 
       (when show-actions?
         [:div.build_actions
@@ -149,7 +149,8 @@
          " #"
          (:build_num build)]]
 
-       [:div.metadata
+       [:div.metadata 
+
         (when-let [pusher-name (build-model/ui-user build)]
           [:div.metadata-item.recent-user
            {:title pusher-name}
@@ -160,6 +161,17 @@
               ;; always returned full-size, but they're sized with CSS anyhow).
               {:src (-> avatar-url url/url (assoc-in [:query "s"] "20") str)}]
              (dashboard-icon "Builds-Author"))])
+
+        (when-let [urls (seq (:pull_request_urls build))]
+          [:div.metadata-item.pull-requests {:title "Pull Requests"}
+           (dashboard-icon "Builds-PullRequest")
+           [:span
+            (interpose
+              ", "
+              (map (fn [url] [:a {:href url} "#"
+                              (let [n (re-find #"/\d+$" url)]
+                                (if n (subs n 1) "?"))])
+                   urls))]])
 
         [:div.metadata-item.revision
          (if-not (:vcs_revision build)

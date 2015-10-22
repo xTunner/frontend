@@ -88,3 +88,13 @@
 
 (defn get-fleet-state [api-ch]
   (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state api-ch))
+
+(defn get-all-users [api-ch]
+  (ajax/ajax :get "/api/v1/admin/users" :all-users api-ch))
+
+(defn set-user-suspension [login suspended? api-ch]
+  (ajax/ajax :post
+             (gstring/format "/api/v1/admin/user/%s" login)
+             :set-user-suspension
+             api-ch
+             :params {:suspended suspended?}))

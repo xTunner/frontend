@@ -194,6 +194,8 @@
 
 (def license-path [:render-context :enterprise_license])
 
+(def all-users-path [:all-users])
+
 (def error-message-path [:error-message])
 
 (def inputs-path [:inputs])

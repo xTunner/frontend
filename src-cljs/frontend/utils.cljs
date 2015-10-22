@@ -260,15 +260,15 @@
 
 (defn scroll-to-node!
   [node]
-  (let [body (.-body js/document)
+  (let [scrolling-element (dom/getDocumentScrollElement)
         node-top (style/getPageOffsetTop node)
-        body-top (style/getPageOffsetTop body)
+        current-top (style/getPageOffsetTop scrolling-element)
         header-height (if-let [navbar (dom/getElementByClass "navbar-fixed-top")]
                         (+ (js/parseFloat (style/getComputedStyle navbar "marginTop"))
                            (.-offsetHeight navbar)
                            (js/parseFloat (style/getComputedStyle navbar "marginBottom")))
                         0)]
-    (set! (.-scrollTop body) (- node-top body-top header-height))))
+    (set! (.-scrollTop scrolling-element) (- node-top current-top header-height))))
 
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"
