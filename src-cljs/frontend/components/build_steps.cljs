@@ -193,9 +193,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (let [body (.-body js/document)
-              very-large-numer 10000000]
-          (set! (.-scrollTop body) very-large-numer))))
+        (scroll-to-bottom (.querySelector js/document ".main-foot"))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
@@ -349,9 +347,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (let [body (.-body js/document)
-              very-large-numer 10000000]
-          (set! (.-scrollTop body) very-large-numer))))
+        (scroll-to-bottom (.querySelector js/document ".main-foot"))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
