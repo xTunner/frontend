@@ -123,6 +123,45 @@
                             {:start (project-model/most-recent-activity-time (second branch-data))}
                             {:opts {:formatter datetime/time-ago}})]))))])))))
 
+(defn project-aside-v2 [{:keys [project show-all-branches?]} owner {:keys [login]}]
+  (reify
+      om/IDisplayName (display-name [_] "Aside Project")
+      om/IRender
+      (render [_]
+        (let [branches-filter (if show-all-branches?
+                                identity
+                                (partial project-model/personal-branch? {:login login} project))]
+          (html [:li
+                 [:a {:href (routes/v1-project-dashboard {:org (:username project)
+                                                          :repo (:reponame project)})}
+                  [:.project-heading
+                   {:title (project-model/project-name project)}
+                   (project-model/project-name project)]]
+                 [:ul.branches
+                  (for [[branch-kw branch-data] (->> project
+                                                     :branches
+                                                     (filter branches-filter)
+                                                     (sort-by first))]
+                    (let [latest-build (last (sort-by :build_num (concat (:running_builds branch-data)
+                                                                         (:recent_builds branch-data))))]
+                      [:li
+                       [:a {:href (routes/v1-dashboard-path {:org (:username project)
+                                                             :repo (:reponame project)
+                                                             :branch (name branch-kw)})}
+                        [:.branch
+                         [:.last-build-status
+                          [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
+                         [:.branch-info
+                          [:.branch-name
+                           {:title (utils/display-branch branch-kw)}
+                           (utils/display-branch branch-kw)]
+                          [:.last-build-info
+                           {:title (datetime/full-datetime (js/Date.parse (project-model/most-recent-activity-time branch-data)))}
+                           (om/build common/updating-duration
+                                     {:start (project-model/most-recent-activity-time branch-data)}
+                                     {:opts {:formatter datetime/time-ago}})
+                           " ago"]]]]]))]])))))
+
 (defn expand-menu-items [items subpage]
   (for [item items]
     (case (:type item)
@@ -281,7 +320,7 @@
                                      (partial project-model/personal-recent-project? (:login opts))
                                      identity)]
         (html
-         [:div.aside-activity.open
+         [:div.aside-activity.open {:class (when (feature/enabled? :ui-v2) "ui-v2")}
           [:header
            [:select {:class "toggle-sorting"
                      :name "toggle-sorting"
@@ -311,20 +350,31 @@
             [:label {:for "all-branches"}
              "All"]]]
 
-          [:div.projects
-           (for [project (if sort-branches-by-recency?
-                           (->> projects
-                                project-model/sort-branches-by-recency
-                                (filter recent-projects-filter)
-                                (take 100))
-                           (sort project-model/sidebar-sort projects))]
-             (om/build project-aside
-                       {:project project
-                        :settings settings
-                        :collapse-group-id (collapse-group-id project)
-                        :show-activity-time? sort-branches-by-recency?}
-                       {:react-key (collapse-group-id project)
-                        :opts {:login (:login opts)}}))]])))))
+
+          (if (feature/enabled? :ui-v2)
+            (if sort-branches-by-recency?
+              "TODO not implemented"
+              [:ul.projects
+               (for [project (sort project-model/sidebar-sort projects)]
+                 (om/build project-aside-v2
+                           {:project project
+                            :show-all-branches? (get-in app state/show-all-branches-path)}
+                           {:react-key (collapse-group-id project)
+                            :opts {:login (:login opts)}}))])
+            [:div.projects
+             (for [project (if sort-branches-by-recency?
+                             (->> projects
+                                  project-model/sort-branches-by-recency
+                                  (filter recent-projects-filter)
+                                  (take 100))
+                             (sort project-model/sidebar-sort projects))]
+               (om/build project-aside
+                         {:project project
+                          :settings settings
+                          :collapse-group-id (collapse-group-id project)
+                          :show-activity-time? sort-branches-by-recency?}
+                         {:react-key (collapse-group-id project)
+                          :opts {:login (:login opts)}}))])])))))
 
 (defn aside-menu [app owner opts]
   (reify

@@ -121,8 +121,6 @@
       .flexy(baseline, space-between);
 
       padding: 10px 0;
-      border-bottom: solid 1px @grayBoxBorder;
-      font-size: 12px;
 
       .toggle-sorting {
         // Width of the arrow itself.
@@ -178,7 +176,9 @@
         }
       }
     }
+  }
 
+  .aside-activity:not(.ui-v2) {
     ul {
       padding-left: 0;
     }
@@ -227,7 +227,8 @@
       padding-right: 15px;
 
       align-items: center;
-      font-size: 14px;
+
+      border-bottom: solid 1px @grayBoxBorder;
 
       label {
         margin-left: 10px;
@@ -326,7 +327,7 @@
   }
 }
 
-.aside-activity {
+.aside-activity:not(.ui-v2) {
   .flexy(column);
   font-size: @em;
   background: fade(@black, 0);
@@ -518,8 +519,59 @@
 
 .ui-v2 {
   .aside-activity.open {
-    height: auto;
+    @border: solid 1px #c5c5c5;
+
+    .flexy(column);
     .flex(1 0 1px);
+    height: auto;
+
+    font-size: 12px;
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .projects {
+      overflow-y: auto;
+
+      > li {
+        border-top: @border;
+
+        &:last-child {
+          border-bottom: @border;
+        }
+      }
+    }
+
+    .project-heading {
+      padding: 10px;
+
+      font-size: 12px;
+      font-weight: bold;
+      color: @grayDark;
+
+      background-color: #eaeaea;
+    }
+
+    .branches > li .branch {
+      .flexy;
+      padding: 10px;
+      border-top: @border;
+
+      .last-build-status {
+        margin-right: 10px;
+      }
+
+      .branch-name {
+        color: @grayDark;
+      }
+
+      .last-build-info {
+        color: @grayLight;
+      }
+    }
   }
 }
 
