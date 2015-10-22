@@ -547,9 +547,13 @@
 (defmethod post-navigated-to! :admin-settings
   [history-imp navigation-point {:keys [subpage]} previous-state current-state]
   (js/console.log subpage)
-  (when (= :fleet-state subpage)
-    (let [api-ch (get-in current-state [:comms :api])]
-      (api/get-fleet-state api-ch))
-    (set-page-title! "Fleet State"))
-  (when (= :license subpage)
-    (set-page-title! "License")))
+  (case subpage
+    :fleet-state (do
+                   (let [api-ch (get-in current-state [:comms :api])]
+                     (api/get-fleet-state api-ch))
+                   (set-page-title! "Fleet State"))
+    :license (set-page-title! "License")
+    :users (do
+             (let [api-ch (get-in current-state [:comms :api])]
+               (api/get-all-users api-ch))
+             (set-page-title! "Users"))))
