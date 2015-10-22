@@ -169,33 +169,32 @@
              build (:build build-data)]
          [:div.notices
           (common/messages (set (:messages build)))
-          [:div.container-fluid
-           [:div.row
-            [:div.col-xs-10.col-xs-offset-1
-             (when (empty? (:messages build))
-               [:div (report-error build owner)])
+          [:div.row
+           [:div.col-xs-12
+            (when (empty? (:messages build))
+              [:div (report-error build owner)])
 
-             (when (and plan (project-common/show-trial-notice? project plan))
-               (om/build project-common/trial-notice project-data))
+            (when (and plan (project-common/show-trial-notice? project plan))
+              (om/build project-common/trial-notice project-data))
 
-             (when (plan-model/suspended? plan)
-               (om/build project-common/suspended-notice plan))
+            (when (plan-model/suspended? plan)
+              (om/build project-common/suspended-notice plan))
 
-             (when (and project (project-common/show-enable-notice project))
-               (om/build project-common/enable-notice project))
+            (when (and project (project-common/show-enable-notice project))
+              (om/build project-common/enable-notice project))
 
-             (if (om/get-shared owner [:ab-tests :follow_notice])
-               (when (and project (project-common/show-follow-notice project))
-                 (om/build project-common/follow-notice project)))
+            (if (om/get-shared owner [:ab-tests :follow_notice])
+              (when (and project (project-common/show-follow-notice project))
+                (om/build project-common/follow-notice project)))
 
-             (when (build-model/display-build-invite build)
-               (om/build invites/build-invites
-                         (:invite-data data)
-                         {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
+            (when (build-model/display-build-invite build)
+              (om/build invites/build-invites
+                        (:invite-data data)
+                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
 
-             (when (and (build-model/config-errors? build)
-                        (not (:dismiss-config-errors build-data)))
-               (om/build build-config/config-errors build))]]]])))))
+            (when (and (build-model/config-errors? build)
+                       (not (:dismiss-config-errors build-data)))
+              (om/build build-config/config-errors build))]]])))))
 
 (defn upgrade-banner [{:keys [build view]} owner]
   (reify
