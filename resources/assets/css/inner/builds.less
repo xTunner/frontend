@@ -1,10 +1,11 @@
 @import "../shared/variables.less";
 
 @sideLineWidth: 5px;
+@aqua-marine: #33c1db;
+
 .build-head-wrapper {
   color: @gray;
   box-shadow: 0 1px @grayBorder;
-  margin-bottom: 1.5em;
   padding: @innerContentPadding 0;
   dl {         //
     margin: 0; // try to eliminate
@@ -16,6 +17,42 @@
     border-bottom: 1px solid #D7DCE3;
     padding-bottom: 15px;
     margin: 0 0 15px 0;
+  }
+}
+
+.notices {
+  margin-top: 1.5em;
+}
+
+.upgrade-banner {
+
+  .flexy(center, flex-start, row);
+  padding-left: 15px;
+  height: 40px;
+  width: 100%;
+  background-color: fade(@brand-orange-v2, 15);
+
+  .fa {
+    color: @black;
+  }
+
+  .message {
+     margin: 2px 0 0 15px;
+
+    &.main {
+      color: @black;
+    }
+  }
+}
+
+.container-selector.parallelism-tab.upgrade  {
+  max-width: 50%;
+  background-color: @aqua-marine;
+  border: @aqua-marine 1px solid;
+
+  &:hover {
+    background-color: @green;
+    border: @green 1px solid;
   }
 }
 
