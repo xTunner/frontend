@@ -123,7 +123,7 @@
                             {:start (project-model/most-recent-activity-time (second branch-data))}
                             {:opts {:formatter datetime/time-ago}})]))))])))))
 
-(defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login]}]
+(defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project-name?]}]
   (reify
       om/IDisplayName (display-name [_] "Aside Branch List")
       om/IRender
@@ -152,6 +152,10 @@
                    [:.last-build-status
                     [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
                    [:.branch-info
+                    (when show-project-name?
+                      [:.project-name
+                       {:title (project-model/project-name project)}
+                       (project-model/project-name project)])
                     [:.branch-name
                      {:title (utils/display-branch (:identifier branch))}
                      (utils/display-branch (:identifier branch))]
@@ -383,8 +387,10 @@
                                         project-model/sort-branches-by-recency-v2
                                         ;; Arbitrary limit on visible branches.
                                         (take 100))
-                         :show-all-branches? (get-in app state/show-all-branches-path)}
-                        {:opts {:login (:login opts)}})
+                         :show-all-branches? (get-in app state/show-all-branches-path)
+                         :navigation-data (:navigation-data app)}
+                        {:opts {:login (:login opts)
+                                :show-project-name? true}})
               [:ul.projects
                (for [project (sort project-model/sidebar-sort projects)]
                  (om/build project-aside-v2
