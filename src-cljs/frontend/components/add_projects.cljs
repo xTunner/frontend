@@ -2,21 +2,26 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
             [frontend.datetime :as datetime]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [goog.object :as object]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
+
+(def view "add-projects")
 
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div
@@ -274,8 +279,100 @@
       "."]
      [:div.inaccessible-org-wrapper
       (map (fn [org-follows] (om/build inaccessible-org-item
-                                      {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
+                                       {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
            (vals follows-by-orgs))]]))
+
+(defrender payment-plan [data owner]
+  (let [selected-org (:selected-org data)]
+    (analytics/track-payment-plan-impression {:view view})
+    (html
+      [:div.payment-plan
+       [:span.big-number "3"]
+       [:div.instruction "Choose how fast you'd like to build."]
+       [:div.table-container
+        [:table.payment-plan.table
+         [:tr.top.row
+          [:td.cell.first "Plan"]
+          [:td.cell "Cost"]
+          [:td.cell "Containers"]
+          [:td.cell.last]]
+         [:tr.row
+          [:td.cell "Business"]
+          [:td.cell "$500/month"]
+          [:td.cell.container-amount "10"]
+          [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                                :subpage "containers"})
+                         :on-click #(analytics/track-payment-plan-click {:view view})}
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Growth"]
+          [:td.cell "$300/month"]
+          [:td.cell.container-amount "5"]
+          [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                                :subpage "containers"})
+                         :on-click #(analytics/track-payment-plan-click {:view view})}
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Startup"]
+          [:td.cell "$100/month"]
+          [:td.cell.container-amount "2"]
+          [:td.cell [:a{:href (routes/v1-org-settings-subpage {:org selected-org
+                                                               :subpage "containers"})
+                        :on-click #(analytics/track-payment-plan-click {:view view})}
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Hobbyist"]
+          [:td.cell "$50/month"]
+          [:td.cell.container-amount "2"]
+          [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                                :subpage "containers"})
+                         :on-click #(analytics/track-payment-plan-click {:view view})} 
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Free"]
+          [:td.cell "$0/month"]
+          [:td.cell.container-amount "1"]
+          [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                                :subpage "containers"})
+                         :on-click #(analytics/track-payment-plan-click {:view view})} 
+                     "Selected"]]]]
+       [:table.comparison.table
+        [:tr.top.row
+         [:td.cell.first ""]
+         [:td.cell.paid "Paid"]
+         [:td.cell.last.unpaid "Free"]]
+        [:tr.row
+         [:td.cell.metric "Build Users"]
+         [:td.cell.paid "Unlimited"]
+         [:td.cell.unpaid "Unlimited"]]
+        [:tr.row
+         [:td.cell.metric "Build Minutes"]
+         [:td.cell.paid "1,500 minutes"]
+         [:td.cell.unpaid "Unlimited"]]
+        [:tr.row
+         [:td.cell.metric "Testing Inference"]
+         [:td.cell.paid [:i.fa.fa-check]]
+         [:td.cell.unpaid [:i.fa.fa-check]]]
+        [:tr.row
+         [:td.cell.metric "3rd Party Integrations"]
+         [:td.cell.paid [:i.fa.fa-check]]
+         [:td.cell.unpaid [:i.fa.fa-check]]]
+        [:tr.row
+         [:td.cell.metric "Community Forum"]
+         [:td.cell.paid [:i.fa.fa-check]]
+         [:td.cell.unpaid [:i.fa.fa-check]]]
+        [:tr.row
+         [:td.cell.metric "Engineer Ticket Support"]
+         [:td.cell.paid [:i.fa.fa-close]]
+         [:td.cell.unpaid [:i.fa.fa-check]]]
+        [:tr.row
+         [:td.cell.metric "Parallelization"]
+         [:td.cell.paid [:i.fa.fa-close]]
+         [:td.cell.unpaid [:i.fa.fa-check]]]
+        [:tr.row
+         [:td.cell.metric "iOS Support"]
+         [:td.cell.paid [:i.fa.fa-close]]
+         [:td.cell.unpaid [:i.fa.fa-check]]]]]])))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
@@ -308,4 +405,13 @@
          (om/build main {:user user
                          :repos repos
                          :selected-org selected-org
-                         :settings settings})]]]])))
+                         :settings settings})
+        [:hr]
+         (let [org (->> user
+                         :organizations
+                         (cons user)
+                         (map #(when (= (:login %) selected-org) {:selected-org (:login %) :first-follower? (:first-follower? %)}))
+                         (filter some?)
+                         (first))]
+           (if (:first-follower? org)
+             (om/build payment-plan org)))]]]])))

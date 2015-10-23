@@ -1,3 +1,6 @@
+@darkRed: #7A0000;
+@darkGreen: #006B24;
+
 #add-projects {
 
   .overview {
@@ -440,5 +443,77 @@
 
   .follow-wrapper {
     margin: 0 10px;
+  }
+
+  .payment-plan {
+    margin-top: 30px;
+
+    .table-container {
+      display: inline-block;
+    }
+
+    .table {
+      float: left;
+      font-size: 14px;
+      width: 400px;
+      margin-top: 20px;
+      line-height: 40px;
+      color: @gray-dark;
+      border-radius: 5px;
+      border-collapse: separate;
+      border: 1px solid darken(@grayLightest, 5.7);
+
+      &.comparison {
+        margin-left: 70px;
+      }
+
+      &.payment-plan {
+        .row:not(.top):hover {
+          background-color: darken(@whiten, 1);
+        }
+      }
+
+      .cell {
+        border-top: none;
+        padding-left: 20px;
+
+        &.container-amount {
+          text-align: center;
+        }
+
+        &.metric {
+          text-align: right;
+        }
+
+        &.paid, &.unpaid {
+          text-align: center;
+        }
+
+        .fa-check {
+          color: @darkGreen;
+        }
+
+        .fa-close {
+          color: @darkRed;
+        }
+      }
+
+      .row.top {
+        background-color: lighten(@grayLightest, 0.5);
+        font-weight: bold;
+
+        .cell {
+          border-bottom: solid 1px @grayLighter;
+
+          &.first {
+            border-radius: 5px 0 0 0;
+          }
+
+          &.last {
+            border-radius: 0 5px 0 0;
+          }
+        }
+      }
+    }
   }
 }
