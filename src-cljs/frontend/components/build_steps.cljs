@@ -52,7 +52,7 @@
          [:span {:dangerouslySetInnerHTML
                  #js {"__html" trailing-out}}])))))
 
-(defn scroll-to-bottom [element]
+(defn scroll-to-bottom-of [element]
   (.scrollIntoView element false))
 
 (defn action [action owner {:keys [uses-parallelism?] :as opts}]
@@ -111,7 +111,7 @@
                    [:div.action-log-messages
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
-                     {:on-click #(scroll-to-bottom (.-parentNode (.-currentTarget %)))}]
+                     {:on-click #(scroll-to-bottom-of (.-parentNode (.-currentTarget %)))}]
 
                     (when (:bash_command action)
                       [:span
@@ -193,7 +193,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (scroll-to-bottom (.querySelector js/document ".main-foot"))))
+        (scroll-to-bottom-of (.querySelector js/document ".main-foot"))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
@@ -298,7 +298,7 @@
                    [:div.action-log-messages
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
-                     {:on-click #(scroll-to-bottom (.-parentNode (.-currentTarget %)))}]
+                     {:on-click #(scroll-to-bottom-of (.-parentNode (.-currentTarget %)))}]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -347,7 +347,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (scroll-to-bottom (.querySelector js/document ".main-foot"))))
+        (scroll-to-bottom-of (.querySelector js/document ".main-foot"))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
