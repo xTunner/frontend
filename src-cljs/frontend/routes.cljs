@@ -37,6 +37,12 @@
     (open-to-inner! nav-ch :switch {:admin true}))
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
     (open-to-inner! nav-ch :dashboard {:admin true}))
+  (defroute v1-admin-current-builds "/admin/running-builds" []
+    (open-to-inner! nav-ch :dashboard {:admin true
+                                       :query-params {:status "running"}}))
+  (defroute v1-admin-queued-builds "/admin/queued-builds" []
+    (open-to-inner! nav-ch :dashboard {:admin true
+                                       :query-params {:status "scheduled,queued"}}))
   (defroute v1-admin-deployments "/admin/deployments" []
     (open-to-inner! nav-ch :dashboard {:deployments true}))
   (defroute v1-admin-build-state "/admin/build-state" []
