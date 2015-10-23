@@ -1142,6 +1142,14 @@
                                    :build build})
       ")"]]))
 
+(defrender previous-build-label [{:keys [previous vcs-url]} owner]
+  (when-let [build-number (:build_num previous)]
+    (html
+      [:div.summary-item
+       [:span.summary-label "Previous: "]
+       [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
+          build-number]])))
+
 (defn build-head-v2 [data owner]
   (reify
     om/IRender
@@ -1171,11 +1179,7 @@
              (when (:stop_time build)
                (build-finished-status build))]
             [:div.summary-items
-             (when (not-empty (:previous build))
-               [:div.summary-item
-                [:span.summary-label "Previous: "]
-                [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
-                 (:build_num (:previous build))]])
+             (om/build previous-build-label build)
              [:div.summary-item
               [:span.summary-label "Parallelism: "]
               (if (has-scope :write-settings data)

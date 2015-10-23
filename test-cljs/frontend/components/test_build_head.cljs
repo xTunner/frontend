@@ -4,6 +4,7 @@
             [frontend.components.build-head :as bh]
             [frontend.utils :as utils :refer [sel1 sel]]
             [frontend.utils.docs :as doc-utils]
+            [frontend.utils.vcs-url :as vcs-url]
             [frontend.stefon :as stefon]
             [goog.dom]
             [om.core :as om :include-macros true])
@@ -62,3 +63,17 @@
 
   (is (bh/should-show-artifact-links? "development" false))
   (is (bh/should-show-artifact-links? "development" true)))
+
+(deftest previous-build-label
+  (testing "should hide previous label if no previous build"
+    (let [n (goog.dom/htmlToDocumentFragment "<div></div>")]
+      (om/root bh/previous-build-label {:previous nil} {:target n})
+      (is (nil? (.querySelector n ".summary-item")))))
+
+  (testing "should link to previous build"
+    (let [n (goog.dom/htmlToDocumentFragment "<div></div>")]
+      (om/root bh/previous-build-label {:previous {:build_num 4}
+                                        :vcs-url "http://host/orgname/reponame"}
+               {:target n})
+      (let [project-name  (vcs-url/project-name (.-href (.querySelector n ".summary-item > a")))]
+        (is (= project-name "gh/orgname/reponame/4"))))))
