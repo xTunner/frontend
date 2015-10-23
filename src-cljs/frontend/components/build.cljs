@@ -142,7 +142,7 @@
                          user
                          (not (get-in project-data [:plan :paid]))
                          (not (get-in project-data [:project :feature_flags :oss]))
-                         (= "button" (om/get-shared owner  [:ab-tests :upgrade_banner])))
+                         (= :button (om/get-shared owner  [:ab-tests :upgrade_banner])))
                      [:a.container-selector.parallelism-tab.upgrade
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
@@ -238,7 +238,7 @@
                      user
                      (not (get-in project-data [:plan :paid]))
                      (not (get-in project-data [:project :feature_flags :oss]))
-                     (= "banner" (om/get-shared owner  [:ab-tests :upgrade_banner])))
+                     (= :banner (om/get-shared owner  [:ab-tests :upgrade_banner])))
                (om/build upgrade-banner {:build build
                                          :view view}))
              (om/build notices {:build-data (dissoc build-data :container-data)
@@ -277,6 +277,7 @@
 (defn container-utilization-duration
   [actions]
   (apply + (map action-duration-ms actions)))
+
 
 (defn container-duration-label [{:keys [actions]}]
   (reify
