@@ -531,6 +531,11 @@
       margin: 0;
       padding: 0;
       list-style: none;
+
+      // Remove underline focus style for branch picker rows.
+      > li > a:focus {
+        text-decoration: none;
+      }
     }
 
     .projects {
