@@ -550,7 +550,18 @@
       }
     }
 
+    .selectable() {
+      &:hover {
+        background-color: fade(@white, 80%);
+      }
+
+      &.selected {
+        background-color: @white;
+      }
+    }
+
     .project-heading {
+      .selectable;
       padding: 10px;
 
       font-size: 12px;
@@ -558,20 +569,13 @@
       color: @grayDark;
 
       background-color: #eaeaea;
-
-      &.selected {
-        background-color: @white;
-      }
     }
 
     .branches > li .branch {
       .flexy;
+      .selectable;
       padding: 10px;
       border-top: @border;
-
-      &.selected {
-        background-color: @white;
-      }
 
       .last-build-status {
         margin-right: 10px;
