@@ -80,6 +80,9 @@ test:
     - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 ```
 
+### test2junit for Clojure tests
+You can use [test2junit](https://github.com/ruedigergad/test2junit) to convert Clojure test output to XML format. For more details, please checkout our [sample project](https://github.com/kimh/circleci-build-recipies).
+
 ## API
 
 You can access test metadata for a build from the [API](/docs/api#test-metadata).
