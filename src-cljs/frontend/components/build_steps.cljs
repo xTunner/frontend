@@ -52,6 +52,9 @@
          [:span {:dangerouslySetInnerHTML
                  #js {"__html" trailing-out}}])))))
 
+(defn scroll-to-bottom-of [element]
+  (.scrollIntoView element false))
+
 (defn action [action owner {:keys [uses-parallelism?] :as opts}]
   (reify
     om/IRender
@@ -108,8 +111,7 @@
                    [:div.action-log-messages
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
-                     {:on-click #(let [target (.-parentNode (.-currentTarget %))]
-                                   (.scrollIntoView target false))}]
+                     {:on-click #(scroll-to-bottom-of (.-parentNode (.-currentTarget %)))}]
 
                     (when (:bash_command action)
                       [:span
@@ -191,9 +193,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (let [body (.-body js/document)
-              very-large-numer 10000000]
-          (set! (.-scrollTop body) very-large-numer))))
+        (scroll-to-bottom-of (.querySelector js/document ".main-foot"))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
@@ -298,11 +298,7 @@
                    [:div.action-log-messages
                     (common/messages (:messages action))
                     [:i.click-to-scroll.fa.fa-arrow-circle-o-down.pull-right
-                     {:on-click #(let [node (om/get-node owner)
-                                       body (.-body js/document)]
-                                   (set! (.-scrollTop body) (- (+ (.-y (goog.style/getRelativePosition node body))
-                                                                  (.-height (goog.style/getSize node)))
-                                                               (.-height (goog.dom/getViewportSize)))))}]
+                     {:on-click #(scroll-to-bottom-of (.-parentNode (.-currentTarget %)))}]
                     (when (:bash_command action)
                       [:span
                        (when (:exit_code action)
@@ -351,9 +347,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (let [body (.-body js/document)
-              very-large-numer 10000000]
-          (set! (.-scrollTop body) very-large-numer))))
+        (scroll-to-bottom-of (.querySelector js/document ".main-foot"))))
     om/IRender
     (render [_]
       (let [non-parallel-actions (->> containers
