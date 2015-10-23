@@ -121,15 +121,12 @@
 
     ))
 
-(defn container-pills [data owner]
+(defn container-pills [{:keys [build-running? build container-data project-data user view]} owner]
   (reify
     om/IRender
     (render [_]
       (analytics/track-parallelism-button-impression  {:view view})
-      (let [container-data (:container-data data)
-            build-running? (:build-running? data)
-            build (:build data)
-            {:keys [containers current-container-id]} container-data
+      (let [{:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
@@ -142,8 +139,9 @@
                                 :current-container-id current-container-id}
                                {:react-key (:index container)}))
                    (if (and
-                         (not (get-in data [:project-data :plan :paid]))
-                         (not (get-in data [:project-data :project :feature_flags :oss]))
+                         user
+                         (not (get-in project-data [:plan :paid]))
+                         (not (get-in project-data [:project :feature_flags :oss]))
                          (= "button" (om/get-shared owner  [:ab-tests :upgrade_banner])))
                      [:a.container-selector.parallelism-tab.upgrade
                       {:role "button"
@@ -199,7 +197,7 @@
                         (not (:dismiss-config-errors build-data)))
                (om/build build-config/config-errors build))]]]])))))
 
-(defn upgrade-banner [data owner]
+(defn upgrade-banner [{:keys [build view]} owner]
   (reify
     om/IRender
     (render [_]
@@ -209,7 +207,7 @@
          [:i.fa.fa-tachometer.fa-lg]
          [:p.main.message [:b "Build Diagnostics"]
           [:p.sub.message "Looking for faster builds? "
-           [:a {:href (build-model/path-for-parallelism (:build data))
+           [:a {:href (build-model/path-for-parallelism build)
                 :on-click #(analytics/track-parallelism-button-click {:view view})}
             "Adding containers"]
            " can cut down time spent testing."]]]))))
@@ -237,17 +235,21 @@
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
              (when (and 
+                     user
                      (not (get-in project-data [:plan :paid]))
                      (not (get-in project-data [:project :feature_flags :oss]))
                      (= "banner" (om/get-shared owner  [:ab-tests :upgrade_banner])))
-               (om/build upgrade-banner {:build build}))
+               (om/build upgrade-banner {:build build
+                                         :view view}))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
                                 :invite-data invite-data})
-             (om/build container-pills {:container-data container-data
-                                        :project-data project-data
+             (om/build container-pills {:build build
                                         :build-running? (build-model/running? build)
-                                        :build build})
+                                        :container-data container-data
+                                        :project-data project-data
+                                        :user user
+                                        :view view})
              (om/build build-steps/container-build-steps container-data)
 
              (when (< 1 (count (:steps build)))
