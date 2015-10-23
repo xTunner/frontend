@@ -123,57 +123,69 @@
                             {:start (project-model/most-recent-activity-time (second branch-data))}
                             {:opts {:formatter datetime/time-ago}})]))))])))))
 
+(defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login]}]
+  (reify
+      om/IDisplayName (display-name [_] "Aside Branch List")
+      om/IRender
+      (render [_]
+        (let [branches-filter (if show-all-branches?
+                                (constantly true)
+                                (partial project-model/personal-branch-v2? login))]
+          (html
+           [:ul.branches
+            (for [branch (filter branches-filter branches)]
+              (let [project (:project branch)
+                    latest-build (last (sort-by :build_num (concat (:running_builds branch)
+                                                                   (:recent_builds branch))))]
+                [:li
+                 [:a {:href (routes/v1-dashboard-path {:org (:username project)
+                                                       :repo (:reponame project)
+                                                       :branch (name (:identifier branch))})}
+                  [:.branch
+                   {:class (when (and (= (vcs-url/org-name (:vcs_url project))
+                                         (:org navigation-data))
+                                      (= (vcs-url/repo-name (:vcs_url project))
+                                         (:repo navigation-data))
+                                      (= (name (:identifier branch))
+                                         (:branch navigation-data)))
+                             "selected")}
+                   [:.last-build-status
+                    [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
+                   [:.branch-info
+                    [:.branch-name
+                     {:title (utils/display-branch (:identifier branch))}
+                     (utils/display-branch (:identifier branch))]
+                    [:.last-build-info
+                     {:title (datetime/full-datetime (js/Date.parse (project-model/most-recent-activity-time branch)))}
+                     (om/build common/updating-duration
+                               {:start (project-model/most-recent-activity-time branch)}
+                               {:opts {:formatter datetime/time-ago}})
+                     " ago"]]]]]))])))))
+
 (defn project-aside-v2 [{:keys [project show-all-branches? navigation-data]} owner {:keys [login]}]
   (reify
       om/IDisplayName (display-name [_] "Aside Project")
       om/IRender
       (render [_]
-        (let [branches-filter (if show-all-branches?
-                                identity
-                                (partial project-model/personal-branch? {:login login} project))]
-          (html [:li
-                 [:a {:href (routes/v1-project-dashboard {:org (:username project)
-                                                          :repo (:reponame project)})}
-                  [:.project-heading
-                   {:class (when (and (= (vcs-url/org-name (:vcs_url project))
-                                         (:org navigation-data))
-                                      (= (vcs-url/repo-name (:vcs_url project))
-                                         (:repo navigation-data))
-                                      (not (contains? navigation-data :branch)))
-                             "selected")
-                    :title (project-model/project-name project)}
-                   (project-model/project-name project)]]
-                 [:ul.branches
-                  (for [[branch-kw branch-data] (->> project
-                                                     :branches
-                                                     (filter branches-filter)
-                                                     (sort-by first))]
-                    (let [latest-build (last (sort-by :build_num (concat (:running_builds branch-data)
-                                                                         (:recent_builds branch-data))))]
-                      [:li
-                       [:a {:href (routes/v1-dashboard-path {:org (:username project)
-                                                             :repo (:reponame project)
-                                                             :branch (name branch-kw)})}
-                        [:.branch
-                         {:class (when (and (= (vcs-url/org-name (:vcs_url project))
-                                               (:org navigation-data))
-                                            (= (vcs-url/repo-name (:vcs_url project))
-                                               (:repo navigation-data))
-                                            (= (name branch-kw)
-                                               (:branch navigation-data)))
-                                   "selected")}
-                         [:.last-build-status
-                          [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
-                         [:.branch-info
-                          [:.branch-name
-                           {:title (utils/display-branch branch-kw)}
-                           (utils/display-branch branch-kw)]
-                          [:.last-build-info
-                           {:title (datetime/full-datetime (js/Date.parse (project-model/most-recent-activity-time branch-data)))}
-                           (om/build common/updating-duration
-                                     {:start (project-model/most-recent-activity-time branch-data)}
-                                     {:opts {:formatter datetime/time-ago}})
-                           " ago"]]]]]))]])))))
+        (html [:li
+               [:a {:href (routes/v1-project-dashboard {:org (:username project)
+                                                        :repo (:reponame project)})}
+                [:.project-heading
+                 {:class (when (and (= (vcs-url/org-name (:vcs_url project))
+                                       (:org navigation-data))
+                                    (= (vcs-url/repo-name (:vcs_url project))
+                                       (:repo navigation-data))
+                                    (not (contains? navigation-data :branch)))
+                           "selected")
+                  :title (project-model/project-name project)}
+                 (project-model/project-name project)]]
+               (om/build branch-list-v2
+                         {:branches (->> project
+                                         project-model/branches
+                                         (sort-by :name))
+                          :show-all-branches? show-all-branches?
+                          :navigation-data navigation-data}
+                         {:opts {:login login}})]))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -366,14 +378,20 @@
 
           (if (feature/enabled? :ui-v2)
             (if sort-branches-by-recency?
-              "TODO not implemented"
+              (om/build branch-list-v2
+                        {:branches (->> projects
+                                        project-model/sort-branches-by-recency-v2
+                                        ;; Arbitrary limit on visible branches.
+                                        (take 100))
+                         :show-all-branches? (get-in app state/show-all-branches-path)}
+                        {:opts {:login (:login opts)}})
               [:ul.projects
                (for [project (sort project-model/sidebar-sort projects)]
                  (om/build project-aside-v2
                            {:project project
                             :show-all-branches? (get-in app state/show-all-branches-path)
                             :navigation-data (:navigation-data app)}
-                           {:react-key (collapse-group-id project)
+                           {:react-key (project-model/id project)
                             :opts {:login (:login opts)}}))])
             [:div.projects
              (for [project (if sort-branches-by-recency?
