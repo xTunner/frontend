@@ -540,10 +540,10 @@
        (string/join " - in ")))
 
 (defmethod format-test-name-v2 "lein-test" [test]
-  [:strong (str (:classname test) "/" (:name test))])
+  [:strong.build-test-name (str (:classname test) "/" (:name test))])
 
 (defmethod format-test-name-v2 "cucumber" [test]
-  [:strong (if (string/blank? (:name test))
+  [:strong.build-test-name (if (string/blank? (:name test))
              (:classname test)
              (:name test))])
 
@@ -575,7 +575,7 @@
                                    :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
             (if (:show-message test) "less info" "more info")])
          (when (:show-message test)
-           [:pre (:message test)])]))))
+           [:pre.build-test-output (:message test)])]))))
 
 (defn build-tests-list [data owner]
   (reify
@@ -610,6 +610,8 @@
                        (list (when file [:div.filename (str file ":")])
                              (om/build-all test-item
                                            (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
+
+(def initial-test-render-count 5)
 
 (defn build-tests-list-v2 [data owner]
   (reify
@@ -646,9 +648,22 @@
                                      [:div.build-tests-list-container
                                       [:ol.list-unstyled.build-tests-list
                                        (for [[file tests-by-file] (group-by :file tests-by-source)]
+                                         (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
+                                               initial-test-results (take initial-test-render-count sorted-tests)
+                                               other-tests (drop initial-test-render-count sorted-tests)]
+
                                          (list (when file [:div.filename (str file ":")])
                                                (om/build-all test-item-v2
-                                                             (vec (sort-by test-model/format-test-name tests-by-file)))))]]]])
+                                                             (vec initial-test-results))
+                                               (when (seq other-tests)
+                                                 (list
+                                                   [:hr]
+                                                   [:li
+                                                    [:button.btn-link.build-tests-toggle
+                                                     [:i.fa.fa-chevron-right.build-tests-toggle-icon]
+                                                     "More"]]
+                                                   (om/build-all test-item-v2
+                                                                 (vec other-tests)))))))]]]])
 
               (seq tests) [:div
                            "Your build ran "
