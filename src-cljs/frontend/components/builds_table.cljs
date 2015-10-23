@@ -174,7 +174,7 @@
                    urls))]])
 
         [:div.metadata-item.revision
-         (if (:vcs_revision build)
+         (when (:vcs_revision build)
            (list (dashboard-icon "Builds-CommitNumber")
                  [:a {:title (build-model/github-revision build)
                       :href (build-model/github-commit-url build)}
