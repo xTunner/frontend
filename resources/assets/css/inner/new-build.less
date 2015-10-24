@@ -333,6 +333,7 @@
   .rebuild {
     @item-spacing: 20px;
     @toggle-min-width: 145px;
+    @button-height: 30px;
 
     margin-left: @item-spacing;
     margin-right: @item-spacing;
@@ -360,8 +361,10 @@
 
     .dropdown-toggle {
       min-width: @toggle-min-width;
-      font-size: 13px;
-      max-height: 30px;
+      min-height: @button-height;
+      font-size: @font-size-base;
+      padding-top: 1px;
+      padding-bottom: (@font-size-base / 3px);
 
       .chevron {
         float: right;
@@ -370,6 +373,7 @@
 
       .status {
         float: left;
+        max-height: (@button-height / 2px);
       }
 
       &:hover {
