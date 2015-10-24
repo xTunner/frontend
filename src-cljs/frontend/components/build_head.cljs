@@ -769,12 +769,14 @@
 (defn trigger-html [build]
   (let [user-link (link-to-user build)
         commit-link (link-to-commit build)
-        retry-link (link-to-retry-source build)]
+        retry-link (link-to-retry-source build)
+        cache? (build-model/dependency-cache? build)]
     (case (:why build)
       "github" (list user-link " (pushed " commit-link ")")
       "edit" (list user-link " (updated project settings)")
       "first-build" (list user-link " (first build)")
-      "retry" (list user-link " (retried " retry-link ")")
+      "retry"  (list user-link " (retried " retry-link
+                                (when-not cache? " without cache")")")
       "ssh" (list user-link " (retried " retry-link " with SSH)")
       "auto-retry" (list "CircleCI (auto-retry of " retry-link ")")
       "trigger" (if (:user build)
@@ -1101,10 +1103,10 @@
               [tab-tag {:class (when (= :artifacts selected-tab) "active")}
                [tab-link-v2 {:href "#artifacts"}
                 "Artifacts"]])
-           
+
             [tab-tag {:class (when (= :config selected-tab) "active")}
              [tab-link-v2 {:href "#config"} "circle.yml"]]
-           
+
             (when (and admin? (build-model/finished? build))
               [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
                [tab-link-v2 {:href "#build-time-viz"}
@@ -1249,7 +1251,7 @@
                 [:span.summary-label "Queued: "]
                 [:span  (queued-time build)]]])
 
-            [:div.summary-items.summary-build-contents
+            [:div.summary-build-contents
              [:div.summary-item
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]]
@@ -1274,36 +1276,48 @@
   (reify
     om/IInitState
     (init-state [_]
-      (let [rebuild-args  {:build-id  (build-model/id build)
-                           :vcs-url   (:vcs_url build)
-                           :build-num (:build_num build)}
-            rebuild!      #(do (raise! owner %)
-                               (om/set-state! owner [:actions :rebuild :text] "Rebuilding"))]
-        {:actions
-         {:rebuild
-          {:text  "Rebuild"
-           :title "Retry the same tests"
-           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])}
+      {:rebuild-status "Rebuild"})
 
-          :without_cache
-          {:text  "without Cache"
-           :title "Retry without cache"
-           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])}
+    om/IWillUpdate
+    (will-update [_ {:keys [build]} _]
+      (when (build-model/running? build)
+        (om/set-state! owner [:rebuild-status] "Rebuild")))
 
-          :with_ssh
-          {:text  "with SSH"
-           :title "Retry with SSH in VM",
-           :action #(rebuild! [:ssh-build-clicked rebuild-args])}}}))
     om/IRenderState
-    (render-state [_ {:keys [actions]}]
-      (let [text-for    #(-> actions % :text)
+    (render-state [_ {:keys [rebuild-status]}]
+      (let [rebuild-args    {:build-id  (build-model/id build)
+                             :vcs-url   (:vcs_url build)
+                             :build-num (:build_num build)}
+            update-status!  #(om/set-state! owner [:rebuild-status] %)
+            rebuild!        #(raise! owner %)
+            actions         {:rebuild
+                             {:text  "Rebuild with cache"
+                              :title "Retry the same tests"
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
+                                           (update-status! "Rebuilding with cache"))}
+
+                             :without_cache
+                             {:text  "Rebuild without cache"
+                              :title "Retry without cache"
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
+                                           (update-status! "Rebuilding without cache"))}
+
+                             :with_ssh
+                             {:text  "Rebuild with SSH"
+                              :title "Retry with SSH in VM",
+                              :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
+                                           (update-status! "Rebuilding with SSH"))}}
+            text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
         (html
-          [:div.btn-group.build-action.rebuild
-           [:button.btn.rebuild-btn {:on-click (action-for :rebuild)} (text-for :rebuild)]
+          [:div.dropdown.rebuild
            [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
-            [:img {:src (common/icon-path "UI-ArrowChevron")}]]
+            [:span.status rebuild-status]
+            (when (= rebuild-status "Rebuild")
+              [:img.chevron {:src (common/icon-path "UI-ArrowChevron")}])]
            [:ul.dropdown-menu
+            [:li
+             [:a {:on-click (action-for :rebuild)} (text-for :rebuild)]]
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
             ;; XXX Temporarily remove the ssh button for OSX builds
@@ -1329,20 +1343,19 @@
                                   (get-in data state/project-scopes-path))]
         (html
           [:div.build-actions-v2
-           [:div.actions
-            (when (and (build-model/can-cancel? build) has-write-settings?)
-              (forms/managed-button
-                [:a.build-action
-                 {:data-loading-text "Canceling"
-                  :title             "Cancel this build"
-                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                   :vcs-url vcs-url
-                                                                   :build-num build-num}])}
-                 "Cancel Build"]))
-            (when has-write-settings?
-              (om/build rebuild-actions-v2 {:build build :project project}))
-            [:a.build-action
-             {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
-                                                 :repo (get-in data (conj state/project-path :reponame))})}
-             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-             "Project Settings"]]])))))
+           (when (and (build-model/can-cancel? build) has-write-settings?)
+             (forms/managed-button
+               [:a.build-action
+                {:data-loading-text "Canceling"
+                 :title             "Cancel this build"
+                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num}])}
+                "Cancel Build"]))
+           (when has-write-settings?
+             (om/build rebuild-actions-v2 {:build build :project project}))
+           [:a.build-action
+            {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
+                                                :repo (get-in data (conj state/project-path :reponame))})}
+            [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+            "Project Settings"]])))))

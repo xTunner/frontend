@@ -247,3 +247,6 @@
 
 (defn owner? [build user]
   (->> build (owners) (some #{(:login user)})))
+
+(defn dependency-cache? [build]
+  (not (:no_dependency_cache build)))

@@ -306,58 +306,82 @@
 
 // Build page V2 stuff
 .build-actions-v2 {
+  .flexy(center);
   font-size: 13px;
   color: @gray-dark-v2;
 
+  .build-action {
+    .flexy();
+
+    .dashboard-icon {
+      margin-top: 2px;
+    }
+  }
+
+
   .rebuild {
+    @item-spacing: 20px;
+    @toggle-min-width: 145px;
+    @button-height: 30px;
+
+    margin-left: @item-spacing;
+    margin-right: @item-spacing;
     border-radius: 3px;
-    border: solid 1px @gray-lighter-v2;
+    border: solid 1px @dropdown-gray;
 
     button {
-      background: @gray-background-v2;
+      background: @dropdown-light-gray;
     }
 
     ul {
-      background: @background-color-v2;
+      background: @dropdown-lighter-gray;
 
-      li > a:hover {
-        background: @gray-background-v2;
-        color: @gray-dark-v2;
-      }
-    }
+      a {
+        padding-right: 10px;
+        padding-left:  10px;
+        font-size: @font-size-small;
 
-    .rebuild-btn {
-      min-width: 115px;
-      text-align: left;
-
-      &:hover {
-        background: @background-color-v2;
-        border-right: 1px solid @gray-lighter-v2;
+        &:hover {
+          background: @dropdown-light-gray;
+          color: @gray-dark-v2;
+        }
       }
     }
 
     .dropdown-toggle {
-      border-left: 1px solid @gray-lighter-v2;
+      min-width: @toggle-min-width;
+      min-height: @button-height;
+      font-size: @font-size-base;
+      padding-top: 1px;
+      padding-bottom: (@font-size-base / 3px);
 
-      &:hover {
-        background: @background-color-v2;
+      .chevron {
+        float: right;
+        padding-top: 5px;
       }
 
-      &:focus {
-        background: @gray-lighter-v2;
+      .status {
+        float: left;
+        max-height: (@button-height / 2px);
+      }
+
+      &:hover {
+        background: @dropdown-lighter-gray;
       }
     }
 
     .dropdown-menu {
-      margin-top: 1px;
-      width: 100%;
+      margin-top: 0;
+
+      /* Makes sure the dropdown options are
+         exactly in line with the dropdown button. */
+      min-width: (@toggle-min-width + 2px);
+      margin-left: -1px;
+
+      text-align: left;
       box-shadow: none;
       border-radius: 0;
     }
-  }
-
-  .build-action {
-    margin-right: 20px;
   }
 }
 
@@ -548,8 +572,13 @@
   }
 }
 
-.summary-items, .summary-build-contents {
+.summary-items {
   .flexy();
+}
+
+.summary-build-contents {
+  .flexy(stretch, flex-end, row);
+  flex-grow: 2;
 }
 
 @media (max-width: @screen-sm-max) {
@@ -558,7 +587,11 @@
     .flexy(stretch, space-around, column);
   }
 
-  .summary-items, .summary-build-contents {
+  .summary-items {
+    .flexy(stretch, flex-start, row);
+  }
+
+  .summary-build-contents {
     .flexy(stretch, flex-start, row);
   }
 
