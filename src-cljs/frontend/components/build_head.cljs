@@ -1215,40 +1215,38 @@
   (reify
     om/IInitState
     (init-state [_]
-      (let [rebuild-args    {:build-id  (build-model/id build)
-                             :vcs-url   (:vcs_url build)
-                             :build-num (:build_num build)}
-            update-status!  #(om/set-state! owner [:rebuild-status] %)
-            rebuild!        #(raise! owner %)]
-        {:rebuild-status "Rebuild"
-         :actions
-         {:rebuild
-          {:text  "Rebuild with cache"
-           :title "Retry the same tests"
-           :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                        (update-status! "Rebuilding with cache"))}
-
-          :without_cache
-          {:text  "Rebuild without cache"
-           :title "Retry without cache"
-           :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
-                        (update-status! "Rebuilding without cache"))}
-
-          :with_ssh
-          {:text  "Rebuild with SSH"
-           :title "Retry with SSH in VM",
-           :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
-                        (update-status! "Rebuilding with SSH"))}}}))
+      {:rebuild-status "Rebuild"})
 
     om/IWillUpdate
     (will-update [_ {:keys [build]} _]
       (when (build-model/running? build)
         (om/set-state! owner [:rebuild-status] "Rebuild")))
 
-
     om/IRenderState
-    (render-state [_ {:keys [actions rebuild-status]}]
-      (let [text-for    #(-> actions % :text)
+    (render-state [_ {:keys [rebuild-status]}]
+      (let [rebuild-args    {:build-id  (build-model/id build)
+                             :vcs-url   (:vcs_url build)
+                             :build-num (:build_num build)}
+            update-status!  #(om/set-state! owner [:rebuild-status] %)
+            rebuild!        #(raise! owner %)
+            actions         {:rebuild
+                             {:text  "Rebuild with cache"
+                              :title "Retry the same tests"
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
+                                           (update-status! "Rebuilding with cache"))}
+
+                             :without_cache
+                             {:text  "Rebuild without cache"
+                              :title "Retry without cache"
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
+                                           (update-status! "Rebuilding without cache"))}
+
+                             :with_ssh
+                             {:text  "Rebuild with SSH"
+                              :title "Retry with SSH in VM",
+                              :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
+                                           (update-status! "Rebuilding with SSH"))}}
+            text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
         (html
           [:div.dropdown.rebuild
