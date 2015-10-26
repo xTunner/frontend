@@ -520,7 +520,6 @@
 .ui-v2 {
   .aside-activity.open {
     @border-width: 1px;
-    @border: solid @border-width #c5c5c5;
 
     .flexy(column);
     .flex(1 0 1px);
@@ -545,11 +544,7 @@
       overflow-y: auto;
 
       > li {
-        border-top: @border;
-
-        &:last-child {
-          border-bottom: @border;
-        }
+        border-top: solid @border-width #c5c5c5;
       }
     }
 
@@ -582,11 +577,24 @@
       .selectable;
       position: relative;
 
+      border-top: @border-width solid #dcdcdc;
+
+      &:first-child {
+        border-top: none;
+      }
+
+      &.selected {
+        border-top-color: #e5e5e5;
+
+        & + * {
+          border-top-color: #c5c5c5;
+        }
+      }
+
       .branch {
         .flexy;
 
         padding: 10px;
-        border-top: @border;
 
         .last-build-status {
           margin-right: 10px;
