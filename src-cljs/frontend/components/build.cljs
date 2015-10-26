@@ -125,7 +125,9 @@
   (reify
     om/IRender
     (render [_]
-      (analytics/track-parallelism-button-impression  {:view view})
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user})
       (let [{:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
@@ -140,19 +142,24 @@
                                {:react-key (:index container)}))
                    (if (and
                          user
+                         (contains? (:plan project-data) :paid)
                          (not (get-in project-data [:plan :paid]))
                          (not (get-in project-data [:project :feature_flags :oss]))
                          (= :button (om/get-shared owner  [:ab-tests :upgrade_banner])))
                      [:a.container-selector.parallelism-tab.upgrade
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view}) 
+                       :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                             :project-data project-data
+                                                                             :user user}) 
                        :title "adjust parallelism"}
                       [:span "Add Containers +"]] 
                      [:a.container-selector.parallelism-tab
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view}) 
+                       :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                             :project-data project-data
+                                                                             :user user}) 
                        :title "adjust parallelism"}
                       [:span "+"]])])]
         (om/build sticky {:content div :content-class "containers"})))))
@@ -196,18 +203,22 @@
                        (not (:dismiss-config-errors build-data)))
               (om/build build-config/config-errors build))]]])))))
 
-(defn upgrade-banner [{:keys [build view]} owner]
+(defn upgrade-banner [{:keys [build project-data user view]} owner]
   (reify
     om/IRender
     (render [_]
-      (analytics/track-parallelism-button-impression  {:view view})
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user})
       (html
         [:div.upgrade-banner
          [:i.fa.fa-tachometer.fa-lg]
          [:p.main.message [:b "Build Diagnostics"]
           [:p.sub.message "Looking for faster builds? "
            [:a {:href (build-model/path-for-parallelism build)
-                :on-click #(analytics/track-parallelism-button-click {:view view})}
+                :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                      :project-data project-data
+                                                                      :user user})}
             "Adding containers"]
            " can cut down time spent testing."]]]))))
 
@@ -235,10 +246,13 @@
                                               :scopes (get-in data state/project-scopes-path)})
              (when (and 
                      user
+                     (contains? :paid (:plan project-data))
                      (not (get-in project-data [:plan :paid]))
                      (not (get-in project-data [:project :feature_flags :oss]))
                      (= :banner (om/get-shared owner  [:ab-tests :upgrade_banner])))
                (om/build upgrade-banner {:build build
+                                         :project-data project-data
+                                         :user user
                                          :view view}))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
