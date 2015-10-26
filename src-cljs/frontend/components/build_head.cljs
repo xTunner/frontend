@@ -1052,7 +1052,7 @@
                  "Report"])
               (when (and (build-model/can-cancel? build) (has-scope :write-settings data))
                 (forms/managed-button
-                  [:button.cancel_build
+                  [:button.cancel-build
                    {:data-loading-text "Canceling",
                     :title "Cancel this build",
                     :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
