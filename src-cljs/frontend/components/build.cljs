@@ -140,6 +140,7 @@
                                {:react-key (:index container)}))
                    (if (and
                          user
+                         (contains? (:plan project-data) :paid)
                          (not (get-in project-data [:plan :paid]))
                          (not (get-in project-data [:project :feature_flags :oss]))
                          (= :button (om/get-shared owner  [:ab-tests :upgrade_banner])))
@@ -236,6 +237,7 @@
                                               :scopes (get-in data state/project-scopes-path)})
              (when (and 
                      user
+                     (contains? :paid (:plan project-data))
                      (not (get-in project-data [:plan :paid]))
                      (not (get-in project-data [:project :feature_flags :oss]))
                      (= :banner (om/get-shared owner  [:ab-tests :upgrade_banner])))
