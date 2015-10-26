@@ -574,7 +574,7 @@
         .flex(1 1 auto);
         font-size: 12px;
         font-weight: bold;
-        color: @grayDark;
+        color: @gray-dark-v2;
       }
     }
 
@@ -593,16 +593,16 @@
         }
 
         .project-name {
-          color: @grayDark;
+          color: @gray-dark-v2;
           font-weight: bold;
         }
 
         .branch-name {
-          color: @grayDark;
+          color: @gray-dark-v2;
         }
 
         .last-build-info {
-          color: @grayLight;
+          color: @gray-lighter-v2;
         }
       }
 
@@ -618,7 +618,7 @@
         width: 16px;
         height: 16px;
 
-        stroke: fade(@grayLight, 0);
+        stroke: fade(@gray-lighter-v2, 0);
         transition: 200ms;
 
         path {
@@ -632,10 +632,10 @@
     &:hover {
       .project-settings-icon {
         svg {
-          stroke: fade(@grayLight, 60%);
+          stroke: fade(@gray-lighter-v2, 60%);
 
           &:hover {
-            stroke: @grayLight;
+            stroke: @gray-lighter-v2;
           }
         }
       }
