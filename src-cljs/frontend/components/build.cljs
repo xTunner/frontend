@@ -125,7 +125,9 @@
   (reify
     om/IRender
     (render [_]
-      (analytics/track-parallelism-button-impression  {:view view})
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user})
       (let [{:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
@@ -147,13 +149,17 @@
                      [:a.container-selector.parallelism-tab.upgrade
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view}) 
+                       :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                             :project-data project-data
+                                                                             :user user}) 
                        :title "adjust parallelism"}
                       [:span "Add Containers +"]] 
                      [:a.container-selector.parallelism-tab
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view}) 
+                       :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                             :project-data project-data
+                                                                             :user user}) 
                        :title "adjust parallelism"}
                       [:span "+"]])])]
         (om/build sticky {:content div :content-class "containers"})))))
@@ -202,14 +208,18 @@
   (reify
     om/IRender
     (render [_]
-      (analytics/track-parallelism-button-impression  {:view view})
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user})
       (html
         [:div.upgrade-banner
          [:i.fa.fa-tachometer.fa-lg]
          [:p.main.message [:b "Build Diagnostics"]
           [:p.sub.message "Looking for faster builds? "
            [:a {:href (build-model/path-for-parallelism build)
-                :on-click #(analytics/track-parallelism-button-click {:view view})}
+                :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                      :project-data project-data
+                                                                      :user user})}
             "Adding containers"]
            " can cut down time spent testing."]]]))))
 
