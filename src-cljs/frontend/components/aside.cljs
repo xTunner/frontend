@@ -123,7 +123,14 @@
                             {:start (project-model/most-recent-activity-time (second branch-data))}
                             {:opts {:formatter datetime/time-ago}})]))))])))))
 
-(defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project-name?]}]
+(defn project-settings-link [project]
+  (when (and (project-model/can-read-settings? project))
+    [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
+                                                                  :repo (:reponame project)})
+                               :title (project-model/project-name project)}
+     (common/ico :settings-light)]))
+
+(defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
   (reify
       om/IDisplayName (display-name [_] "Aside Branch List")
       om/IRender
@@ -152,7 +159,7 @@
                    [:.last-build-status
                     [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
                    [:.branch-info
-                    (when show-project-name?
+                    (when show-project?
                       [:.project-name
                        {:title (project-model/project-name project)}
                        (project-model/project-name project)])
@@ -164,7 +171,9 @@
                      (om/build common/updating-duration
                                {:start (project-model/most-recent-activity-time branch)}
                                {:opts {:formatter datetime/time-ago}})
-                     " ago"]]]]]))])))))
+                     " ago"]]]]
+                 (when show-project?
+                   (project-settings-link project))]))])))))
 
 (defn project-aside-v2 [{:keys [project show-all-branches? navigation-data]} owner {:keys [login]}]
   (reify
@@ -183,11 +192,7 @@
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})}
                  (project-model/project-name project)]
-                (when (and (project-model/can-read-settings? project))
-                  [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
-                                                                                :repo (:reponame project)})
-                                             :title (project-model/project-name project)}
-                   (common/ico :settings-light)])]
+                (project-settings-link project)]
                (om/build branch-list-v2
                          {:branches (->> project
                                          project-model/branches
@@ -395,7 +400,7 @@
                          :show-all-branches? (get-in app state/show-all-branches-path)
                          :navigation-data (:navigation-data app)}
                         {:opts {:login (:login opts)
-                                :show-project-name? true}})
+                                :show-project? true}})
               [:ul.projects
                (for [project (sort project-model/sidebar-sort projects)]
                  (om/build project-aside-v2

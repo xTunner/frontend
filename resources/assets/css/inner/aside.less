@@ -519,7 +519,8 @@
 
 .ui-v2 {
   .aside-activity.open {
-    @border: solid 1px #c5c5c5;
+    @border-width: 1px;
+    @border: solid @border-width #c5c5c5;
 
     .flexy(column);
     .flex(1 0 1px);
@@ -577,28 +578,38 @@
       }
     }
 
-    .branches > li .branch {
-      .flexy;
+    .branches > li {
       .selectable;
+      position: relative;
 
-      padding: 10px;
-      border-top: @border;
+      .branch {
+        .flexy;
 
-      .last-build-status {
-        margin-right: 10px;
+        padding: 10px;
+        border-top: @border;
+
+        .last-build-status {
+          margin-right: 10px;
+        }
+
+        .project-name {
+          color: @grayDark;
+          font-weight: bold;
+        }
+
+        .branch-name {
+          color: @grayDark;
+        }
+
+        .last-build-info {
+          color: @grayLight;
+        }
       }
 
-      .project-name {
-        color: @grayDark;
-        font-weight: bold;
-      }
-
-      .branch-name {
-        color: @grayDark;
-      }
-
-      .last-build-info {
-        color: @grayLight;
+      .project-settings-icon {
+        position: absolute;
+        top: 10px + @border-width;
+        right: 10px;
       }
     }
 
