@@ -6,9 +6,7 @@
             goog.string.format))
 
 (defn source [test]
-  (or (:source_type test)
-      ;; TODO: this can be removed once source_type is fully deployed
-      (:source test)))
+  (:source_type test))
 
 (defmulti format-test-name source)
 

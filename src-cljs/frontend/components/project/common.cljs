@@ -140,12 +140,13 @@
          [:div.row-fluid
           [:div.offset1.span10
            [:div.alert.alert-success
+            "Follow " project-name " to add " project-name " to your sidebar and get build notifications. "
+            [:hr]
             (forms/managed-button
-             [:button.btn.btn-primary
+             [:button.btn.btn-success
               {:data-loading-text "Following...",
                :on-click #(raise! owner [:followed-repo {:vcs_url vcs-url}])}
-              "Follow"])
-            " " project-name " to add " project-name " to your sidebar and get build notifications."]]])))))
+              "Follow"])]]])))))
 
 (def email-prefs
   [["default" "Default"]

@@ -295,6 +295,42 @@
   }
 }
 
+.alert {
+  .alert-icon {
+    padding-right: ((2 / 3) * @alert-padding);
+  }
+
+  &.expanded {
+    padding: 0;
+    border: none;
+
+    &.alert-danger {
+      .alert-header {
+        .flexy();
+        background: lighten(@brand-danger-v2, @brand-lighten-ratio-v2 * 0.66);
+        border-bottom: 1px solid @brand-danger-v2;
+      }
+
+      hr {
+        border-top-color: @brand-danger-v2;
+      }
+    }
+
+    .alert-header {
+      padding: @alert-padding;
+      text-transform: uppercase;
+    }
+
+    .alert-body {
+      padding: @alert-padding;
+    }
+  }
+
+  &.iconified {
+    .flexy(row);
+  }
+}
+
 @status-badge-height: 25px;
 
 .small-emphasis {
@@ -654,10 +690,14 @@
     margin: 0;
     counter-reset: test-list;
 
-    li {
-      margin-bottom: 20px;
+    li + li {
+      margin-top: 10px;
+    }
+  }
 
-      &:last-child {
+  .build-test {
+    &:last-child {
+      .build-test-output, .build-test-name {
         margin-bottom: 0;
       }
     }
@@ -666,6 +706,25 @@
   .build-test:before {
     content: counter(test-list) " - ";
     counter-increment: test-list;
+  }
+
+  .build-test-name {
+    display: inline-block;
+  }
+
+  .build-test-output {
+    margin: 10px 0;
+  }
+
+  .build-tests-toggle {
+    margin: 0;
+    padding: 0;
+    color: @gray-dark-v2;
+  }
+
+  .build-tests-toggle-icon {
+    margin-right: 6px; // magic number
+    color: @gray-lighter-v2;
   }
 
   // TODO Generalized whitespace tweak. Should be moved to

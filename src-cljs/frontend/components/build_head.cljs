@@ -531,6 +531,22 @@
     [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
      [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"} "the docs"] " for more information."]]])
 
+(defmulti format-test-name-v2 test-model/source)
+
+(defmethod format-test-name-v2 :default [test]
+  (->> [[(:name test)] [(:classname test) (:file test)]]
+       (map (fn [s] (some #(when-not (string/blank? %) %) s)))
+       (filter identity)
+       (string/join " - in ")))
+
+(defmethod format-test-name-v2 "lein-test" [test]
+  [:strong.build-test-name (str (:classname test) "/" (:name test))])
+
+(defmethod format-test-name-v2 "cucumber" [test]
+  [:strong.build-test-name (if (string/blank? (:name test))
+             (:classname test)
+             (:name test))])
+
 (defn test-item [test owner]
   (reify
     om/IRender
@@ -545,6 +561,21 @@
             (if (:show-message test) [:i.fa.fa-caret-up] [:i.fa.fa-caret-down])])
          (when (:show-message test)
            [:pre (:message test)])]))))
+
+(defn test-item-v2 [test owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:li.build-test
+         (format-test-name-v2 test)
+         " - "
+         (when-not (string/blank? (:message test))
+           [:a.test-output-toggle {:role "button"
+                                   :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
+            (if (:show-message test) "less info" "more info")])
+         (when (:show-message test)
+           [:pre.build-test-output (:message test)])]))))
 
 (defn build-tests-list [data owner]
   (reify
@@ -579,6 +610,77 @@
                        (list (when file [:div.filename (str file ":")])
                              (om/build-all test-item
                                            (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
+
+(def initial-test-render-count 5)
+
+(defn build-tests-list-v2 [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:tests-showed]))
+
+    om/IRender
+    (render [_]
+      (let [tests-data (:tests-data data)
+            tests (when (:tests tests-data)
+                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
+            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
+            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)
+            build-succeeded? (= "success" (get-in data [:build :status]))]
+        (html
+         [:div.test-results
+          (if-not tests
+            [:div.loading-spinner common/spinner]
+            (cond
+              (seq failed-tests) (for [[source tests-by-source] (group-by test-model/source failed-tests)]
+                                   [:div.alert.alert-danger.expanded.build-tests-info
+                                    [:div.alert-header
+                                     [:img.alert-icon {:src (common/icon-path "Info-Error")}]
+                                     (test-model/pretty-source source)
+                                     " - "
+                                     (pluralize (count failed-tests) "failure")]
+                                    [:div.alert-body
+                                     [:div.build-tests-summary
+                                      "Your build ran "
+                                      [:strong (pluralize (count tests) "test")]
+                                      " with "
+                                      [:strong (pluralize (count failed-tests) "failure")]]
+                                     [:div.build-tests-list-container
+                                      [:ol.list-unstyled.build-tests-list
+                                       (for [[file tests-by-file] (group-by :file tests-by-source)]
+                                         (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
+                                               initial-test-results (take initial-test-render-count sorted-tests)
+                                               other-tests (drop initial-test-render-count sorted-tests)]
+
+                                         (list (when file [:div.filename (str file ":")])
+                                               (om/build-all test-item-v2
+                                                             (vec initial-test-results))
+                                               (when (seq other-tests)
+                                                 (list
+                                                   [:hr]
+                                                   [:li
+                                                    [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                                                     (if (om/get-state owner :is-open?)
+                                                       [:span
+                                                        [:i.fa.fa-chevron-up.build-tests-toggle-icon]
+                                                        "Less"]
+                                                       [:span 
+                                                        [:i.fa.fa-chevron-down.build-tests-toggle-icon]
+                                                        "More"])]]
+                                                   (when (om/get-state owner :is-open?)
+                                                     (om/build-all test-item-v2
+                                                                   (vec other-tests))))))))]]]])
+
+              (seq tests) [:div
+                           "Your build ran "
+                           [:strong (count tests)]
+                           " tests in " (string/join ", " (map test-model/pretty-source sources)) " with "
+                           [:strong "0 failures"]]
+
+              :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
+                     [:div [:img.alert-icon {:src (common/icon-path
+                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                     (tests-ad owner)]))])))))
 
 (defn circle-yml-ad []
   [:div
@@ -645,8 +747,10 @@
    (and (:read-settings scopes)
         (build-model/in-usage-queue? build))
    :usage-queue
+   ;; If there's no SSH info, build isn't finished, show the config
+   (build-model/running? build) :config
    ;; Otherwise, just use the first one.
-   :else :commits))
+   :else :tests))
 
 (def tab-link :a.tab-link)
 
@@ -1079,7 +1183,7 @@
                                                (filter #(contains? #{"failure" "error"} (:result %)))
                                                count)]
                   (when (not= 0 fail-count)
-                    [:span {:class "fail-count"} fail-count]))]])
+                    [:span "(" fail-count ")"]))]])
 
             (when (has-scope :read-settings data)
               [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
@@ -1118,9 +1222,8 @@
 
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
            (case selected-tab
-             :commits nil
 
-             :tests (om/build build-tests-list build-data)
+             :tests (om/build build-tests-list-v2 build-data)
 
              :build-time-viz (om/build build-time-visualization build)
 

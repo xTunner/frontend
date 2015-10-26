@@ -169,7 +169,6 @@
 
 &.ui-v2 {
   .recent-status-badge {
-    @lighten-ratio: 75%;
     @badge-height: 25px;
 
     .flexy(center, flex-start);
@@ -177,7 +176,7 @@
     height: @badge-height;
     padding: 0;
     border-radius: 2 * @badge-height;
-    background: fadeout(@brand-cancelled-v2, @lighten-ratio);
+    background: lighten(@brand-cancelled-v2, @brand-lighten-ratio-v2);
 
     .badge-icon {
       @badge-icon-margin: 4px;
@@ -204,23 +203,23 @@
     }
 
     &.pass {
-      background: fadeout(@brand-success-v2, @lighten-ratio);
+      background: lighten(@brand-success-v2, @brand-lighten-ratio-v2);
     }
 
     &.fail {
-      background: fadeout(@brand-danger-v2, @lighten-ratio);
+      background: lighten(@brand-danger-v2, @brand-lighten-ratio-v2);
     }
 
     &.busy {
-      background: fadeout(@brand-primary-v2, @lighten-ratio);
+      background: lighten(@brand-primary-v2, @brand-lighten-ratio-v2);
     }
 
     &.stop {
-      background: fadeout(@brand-cancelled-v2, @lighten-ratio);
+      background: lighten(@brand-cancelled-v2, @brand-lighten-ratio-v2);
     }
 
     &.queued {
-      background: fadeout(@brand-pending-v2, @lighten-ratio);
+      background: lighten(@brand-pending-v2, @brand-lighten-ratio-v2);
     }
   }
 

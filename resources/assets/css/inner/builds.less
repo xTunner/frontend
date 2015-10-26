@@ -13,11 +13,6 @@
   *[role="button"] {
     cursor: pointer;
   }
-  h4 {
-    border-bottom: 1px solid #D7DCE3;
-    padding-bottom: 15px;
-    margin: 0 0 15px 0;
-  }
 }
 
 .notices {
@@ -111,59 +106,61 @@
   }
 }
 
-.build-head {
-  margin: 0;
-  section {
-    margin: @innerContentPadding 0 0 0;
-    padding-top: @innerContentPadding;
-  }
-
-  .build-info {
-    margin: 0 1em;
-  }
-
-  .compare {
-    padding-left: 0.5ex;
-    font-weight: normal;
-  }
-
-  .sub-head-top {
-    box-shadow: 0 -1px @grayBoxBorder inset;
-    padding: 0 1em;
-  }
-
-  .nav {
-    border: none; // BS RESET
-    &.nav-tabs {
-      margin: 0;
-      .active .tab-link {
-        background: none; // BS RESET
-        color: @blue; // BS RESET
-        box-shadow: 0 -1px @blue inset,
-                    0  1px @blue;
-      }
-      span.fail-count {
-        background: @redLight;
-        color: @white;
-        border-radius: 1em;
-        padding: 2px 5px;
-      }
+.ui-v1 {
+  .build-head {
+    margin: 0;
+    section {
+      margin: @innerContentPadding 0 0 0;
+      padding-top: @innerContentPadding;
     }
-    li {
-      margin: 0; // BS RESET
+
+    .build-info {
+      margin: 0 1em;
     }
-    .tab-link {
-      color: @grayLight;
-      line-height: 1em;
-      padding: 1em;
+
+    .compare {
+      padding-left: 0.5ex;
+      font-weight: normal;
+    }
+
+    .sub-head-top {
+      box-shadow: 0 -1px @grayBoxBorder inset;
+      padding: 0 1em;
+    }
+
+    .nav {
       border: none; // BS RESET
-      margin: 0; // BS RESET
-      &:hover {
-        background: none; // BS RESET
-        color: @blue; // BS RESET
+      &.nav-tabs {
+        margin: 0;
+        .active .tab-link {
+          background: none; // BS RESET
+          color: @blue; // BS RESET
+          box-shadow: 0 -1px @blue inset,
+          0  1px @blue;
+        }
+        span.fail-count {
+          background: @redLight;
+          color: @white;
+          border-radius: 1em;
+          padding: 2px 5px;
+        }
+      }
+      li {
+        margin: 0; // BS RESET
+      }
+      .tab-link {
+        color: @grayLight;
+        line-height: 1em;
+        padding: 1em;
         border: none; // BS RESET
-        box-shadow: 0 -1px @blue inset,
-                    0  1px @blue;
+        margin: 0; // BS RESET
+        &:hover {
+          background: none; // BS RESET
+          color: @blue; // BS RESET
+          border: none; // BS RESET
+          box-shadow: 0 -1px @blue inset,
+          0  1px @blue;
+        }
       }
     }
   }
@@ -174,6 +171,7 @@
     padding-top: 1em;
     padding-left: 1em;
     padding-right: 1em;
+
     pre, p {
       margin: 0;
     }
@@ -323,6 +321,7 @@
     margin: 0 2em;
   }
 }
+
 .build-tests-list {
   .filename {
     &:not(:first-child) {
@@ -471,6 +470,7 @@
     border-radius: 0;
     padding: 1em;
   }
+
   .detail {
     text-shadow: none;
     padding: 1em;
@@ -487,6 +487,7 @@
         margin-right: 1ex;
       }
     }
+
     .truncated {
       display: block;
       text-align: center;
@@ -555,7 +556,6 @@
     border: 1px solid lighten(@gray,55.50%);
     border-radius: 0 3px 3px 0;
     border-left-color: transparent;
-    text-shadow: 0 1px 0 rgba(255,255,255,.1);
     box-shadow: 0 1px @white inset;
     overflow: hidden; // put the contents beside each other
     .button {
