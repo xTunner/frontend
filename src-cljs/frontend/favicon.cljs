@@ -12,7 +12,7 @@
   (utils/swallow-errors
    (if (= color (get-color))
      (utils/mlog "Not setting favicon to same color")
-     (.setAttribute (favicon-link) "href" (utils/cdn-path (str "/favicon-" color ".ico?v=28"))))))
+     (.setAttribute (favicon-link) "href" (utils/cdn-path (str "/favicon-" color ".ico?v=29"))))))
 
 (defn reset! []
   ;; This seemed clever at the time, undefined is the default dark blue
