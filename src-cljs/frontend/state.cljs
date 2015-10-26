@@ -6,8 +6,11 @@
    ;; 1. Don't define a test with null as one of the options
    ;; 2. If you change a test's options, you must also change the test's name
    ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
+
+   ;; Please kebab-case and not snak_case tests and treatments
    :ab-test-definitions {:a_is_a [true false]
-                         :multi_test_equal_variants [:a :b :c :d]
+                         :multi-test-equal-variants [:a :b :c :d]
+                         :signup-straight-to-oauth [:control :straight-to-oauth]
                          :upgrade_banner [:control :banner :button]
                          ;; TODO: The below are ab tests that have been running since December 2014. We should figure out if they are being
                          ;; tracked, which are the winners, launch them, and delete the dead code.

@@ -21,6 +21,8 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
+(def view "home")
+
 (defn show-follow-project-button? [app]
   (when-let [project (get-in app state/project-path)]
     (and (not (:followed project))
@@ -242,7 +244,7 @@
                                         :title "Log In with Github"}
                    "Log In"]]
                  [:li
-                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item {:href "/signup" :on-mouse-up #(analytics/track-signup-click)}
+                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item {:href "/signup" :on-mouse-up #(analytics/track-signup-click {})}
                    "Sign Up"]]])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
