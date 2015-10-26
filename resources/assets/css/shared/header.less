@@ -7,18 +7,23 @@
 }
 
 .ui-v2 {
-  .breadcrumbs {
+  .breadcrumb {
     margin-left: 0;
+    margin-bottom: 0;
     font-size: 20px;
+
+    & > li + li:before {
+      padding: 0 0 0 5px;
+    }
 
     a {
       &:not(:hover) {
         color: @gray-light-v2;
       }
 
-      &:not(:first-child):before {
-        content: '»';
-        color: @gray-light-v2;
+      &:hover {
+        color: @gray-dark-v2;
+        text-decoration: underline;
       }
     }
   }

@@ -6,8 +6,10 @@
 
 (defn crumb-node [{:keys [active name path]}]
   (if active
-    [:a {:disabled true :title name} name " "]
-    [:a {:href path :title name} name " "]))
+    [:li.active
+     [:a {:disabled true :title name} name " "]]
+    [:li
+     [:a {:href path :title name} name " "]]))
 
 (defmulti render-crumb
   (fn [{:keys [type]}] type))
