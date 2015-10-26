@@ -85,8 +85,7 @@ If you have access to the backend code, you can also add this line:
 If you have foreman (or goreman) installed already, you can run
 
 ```
-foreman start
-# goreman start
+foreman start # goreman start
 ```
 
 Alternatively, you can start the process manually. First, start the HTTP
