@@ -144,18 +144,17 @@
               (let [project (:project branch)
                     latest-build (last (sort-by :build_num (concat (:running_builds branch)
                                                                    (:recent_builds branch))))]
-                [:li
+                [:li {:class (when (and (= (vcs-url/org-name (:vcs_url project))
+                                           (:org navigation-data))
+                                        (= (vcs-url/repo-name (:vcs_url project))
+                                           (:repo navigation-data))
+                                        (= (name (:identifier branch))
+                                           (:branch navigation-data)))
+                               "selected")}
                  [:a {:href (routes/v1-dashboard-path {:org (:username project)
                                                        :repo (:reponame project)
                                                        :branch (name (:identifier branch))})}
                   [:.branch
-                   {:class (when (and (= (vcs-url/org-name (:vcs_url project))
-                                         (:org navigation-data))
-                                      (= (vcs-url/repo-name (:vcs_url project))
-                                         (:repo navigation-data))
-                                      (= (name (:identifier branch))
-                                         (:branch navigation-data)))
-                             "selected")}
                    [:.last-build-status
                     [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
                    [:.branch-info
