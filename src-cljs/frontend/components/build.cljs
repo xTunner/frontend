@@ -204,7 +204,7 @@
                         (not (:dismiss-config-errors build-data)))
                (om/build build-config/config-errors build))]]]])))))
 
-(defn upgrade-banner [{:keys [build view]} owner]
+(defn upgrade-banner [{:keys [build project-data user view]} owner]
   (reify
     om/IRender
     (render [_]
@@ -252,6 +252,8 @@
                      (not (get-in project-data [:project :feature_flags :oss]))
                      (= :banner (om/get-shared owner  [:ab-tests :upgrade_banner])))
                (om/build upgrade-banner {:build build
+                                         :project-data project-data
+                                         :user user
                                          :view view}))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
