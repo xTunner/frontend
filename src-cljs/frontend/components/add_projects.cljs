@@ -13,7 +13,6 @@
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.object :as object]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
