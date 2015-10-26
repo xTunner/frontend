@@ -73,7 +73,7 @@
   (testing "should link to previous build"
     (let [n (goog.dom/htmlToDocumentFragment "<div></div>")]
       (om/root bh/previous-build-label {:previous {:build_num 4}
-                                        :vcs-url "http://host/orgname/reponame"}
+                                        :vcs_url "http://host/orgname/reponame"}
                {:target n})
       (let [project-name  (vcs-url/project-name (.-href (.querySelector n ".summary-item > a")))]
         (is (= project-name "gh/orgname/reponame/4"))))))

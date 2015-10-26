@@ -1303,7 +1303,7 @@
                                    :build build})
       ")"]]))
 
-(defrender previous-build-label [{:keys [previous vcs-url]} owner]
+(defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
   (when-let [build-number (:build_num previous)]
     (html
       [:div.summary-item
