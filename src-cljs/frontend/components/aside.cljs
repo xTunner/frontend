@@ -172,17 +172,22 @@
       om/IRender
       (render [_]
         (html [:li
-               [:a {:href (routes/v1-project-dashboard {:org (:username project)
-                                                        :repo (:reponame project)})}
-                [:.project-heading
-                 {:class (when (and (= (vcs-url/org-name (:vcs_url project))
-                                       (:org navigation-data))
-                                    (= (vcs-url/repo-name (:vcs_url project))
-                                       (:repo navigation-data))
-                                    (not (contains? navigation-data :branch)))
-                           "selected")
-                  :title (project-model/project-name project)}
-                 (project-model/project-name project)]]
+               [:.project-heading
+                {:class (when (and (= (vcs-url/org-name (:vcs_url project))
+                                      (:org navigation-data))
+                                   (= (vcs-url/repo-name (:vcs_url project))
+                                      (:repo navigation-data))
+                                   (not (contains? navigation-data :branch)))
+                          "selected")
+                 :title (project-model/project-name project)}
+                [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
+                                                                      :repo (:reponame project)})}
+                 (project-model/project-name project)]
+                (when (and (project-model/can-read-settings? project))
+                  [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
+                                                                                :repo (:reponame project)})
+                                             :title (project-model/project-name project)}
+                   (common/ico :settings-light)])]
                (om/build branch-list-v2
                          {:branches (->> project
                                          project-model/branches
