@@ -242,15 +242,31 @@
     padding: @build-padding;
     box-shadow: inset -1px 0 rgba(0, 0, 0, 0.05);
 
-    .cancel_build {
+    .cancel-build {
+      .flexy();
+
       background: none;
       border: none;
-      padding: @build-padding;
       width: 100%;
+
+      margin-top: 6px;
+      padding: 0;
+
       color: @gray-dark-v2;
+
+      .cancel-icon {
+        margin: 2px @build-padding 0 4px;
+        height: 17px;
+        width: 17px;
+      }
+
+      .cancel-text {
+        flex-grow: 1;
+        text-align: left;
+      }
     }
 
-    .cancel_build.disabled {
+    .cancel-build.disabled {
         color: @gray-lighter-v2;
     }
   }
