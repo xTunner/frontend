@@ -61,6 +61,7 @@ sudo openssl req -new -key ssl.key -out ssl.csr
 # Common Name: prod.circlehost
 sudo cp ssl.key ssl.key.orig && sudo openssl rsa -in ssl.key.orig -out ssl.key
 sudo openssl x509 -req -days 365 -in ssl.csr -signkey ssl.key -out ssl.crt
+```
 
 ### Hosts
 
