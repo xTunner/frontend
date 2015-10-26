@@ -533,16 +533,18 @@
       list-style: none;
     }
 
-
     // Opt out all <a>s in here from the normal link styles.
     a {
       color: inherit;
       text-decoration: none;
     }
 
-    .projects {
+    // <ul>s at this level scroll.
+    > ul {
       overflow-y: auto;
+    }
 
+    .projects {
       > li {
         border-top: solid @border-width #c5c5c5;
       }
