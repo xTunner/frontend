@@ -3,6 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.user :as user-model]
             [frontend.models.project :as project-model]
@@ -138,7 +139,7 @@
             vcs-url (:vcs_url project)]
         (html
          [:div.row-fluid
-          [:div.offset1.span10
+          [:div {:class (when (not (feature/enabled? :ui-v2)) "col-xs-10 col-xs-offset-1")}
            [:div.alert.alert-success
             "Follow " project-name " to add " project-name " to your sidebar and get build notifications. "
             [:hr]
