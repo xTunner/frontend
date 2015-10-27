@@ -101,5 +101,4 @@
                       [:div.github-example.col-md-12
                        [:a {:href "/privacy"} "Privacy"]
                        [:a {:href "/contact"} "Contact Us"]
-                       [:a {:href "/"} "© CircleCI"]]]  
-                         ]])))))
+                       [:a {:href "/"} "© CircleCI"]]]]])))))
