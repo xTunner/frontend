@@ -271,7 +271,7 @@
               [:div.button {:class (when (action-model/has-content? action)
                                      header-classes)}
                (when (action-model/has-content? action)
-                 [:i.fa.fa-chevron-down])]
+                 [:i.fa.fa-chevron-right])]
               [:div.command {:class header-classes}
                [:span.command-text {:title (:bash_command action)}
                 (str (when (= (:bash_command action)

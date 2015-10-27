@@ -1,15 +1,12 @@
 @import "../shared/variables.less";
 
-@sideLineWidth: 5px;
 @aqua-marine: #33c1db;
+@side-line-width: 5px;
 
 .build-head-wrapper {
   color: @gray;
   box-shadow: 0 1px @grayBorder;
   padding: @innerContentPadding 0;
-  dl {         //
-    margin: 0; // try to eliminate
-  }            //
   *[role="button"] {
     cursor: pointer;
   }
@@ -361,13 +358,15 @@
   }
 }
 
-&.ui-v2 .action-log-messages .exit-code {
-  font-family: @monoFontFamilyV2;
+&.ui-v2 .action-log-messages {
+  background: @terminal-background-color-v2;
+
+  &.exit-code {
+    font-family: @monoFontFamilyV2;
+  }
 }
 
 .action-log-messages {
-  border-radius: 5px;
-  background: @terminal-background-color;
 
   overflow: hidden;
   width: 100%;
@@ -440,22 +439,72 @@
   }
 }
 
-.build-output  {
-  border-radius: 5px;
-  box-shadow: inset 1px 1px 0 rgba(255,255,255, .2);
-  margin-bottom: 5px;
-  margin-left: 2px;
-  margin-right: 2px;
-  color: @gray;
-  font-weight: normal;
+&.ui-v1 {
+  .build-head-wrapper {
+    dl {
+      margin: 0; // try to eliminate
+    }
+  }
+
+  .build-output {
+    margin-left: 2px;
+    margin-right: 2px;
+
+    border-radius: 5px;
+  }
+
   .action_header {
     &.success > .ah_wrapper:before { background: @green; }
     &.failed > .ah_wrapper:before { background: @redLight; }
     &.running > .ah_wrapper:before { background: @yellow; }
     &.canceled > .ah_wrapper:before { background: @grayLight; }
     &.failed .header.running { background: @lightYellow; }
-   &.failed .header.failed { background: @redLight; height: 40px; }
-   &.failed .header.running { background: @lightYellow; }
+    &.failed .header.failed { background: @redLight; height: 40px; }
+    &.failed .header.running { background: @lightYellow; }
+  }
+
+  .action-log-messages {
+    border-radius: 5px;
+    background: @terminal-background-color;
+  }
+
+  .ah_wrapper {
+    border-radius: 0 3px 3px 0;
+
+    &:before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: @side-line-width;
+    }
+  }
+}
+
+&.ui-v2 {
+  .action_header {
+    &.success {
+      border-left: @side-line-width solid @brand-success-v2;
+    }
+
+    &.failed {
+      border-left: @side-line-width solid @brand-danger-v2;
+    }
+
+    &.running {
+      border-left: @side-line-width solid @brand-primary-v2;
+    }
+  }
+}
+
+.build-output  {
+  box-shadow: inset 1px 1px 0 rgba(255,255,255, .2);
+  margin-bottom: 5px;
+  color: @gray;
+  font-weight: normal;
+  .action_header {
     .time {
       float: right;
       margin: 0 1em;
@@ -475,7 +524,7 @@
   .detail {
     text-shadow: none;
     padding: 1em;
-    margin-left: @sideLineWidth;
+    margin-left: @side-line-width;
     .bash-command {
       border: none;
       text-indent: -1.25em;
@@ -505,7 +554,7 @@
     }
   }
   .command {
-    padding-left: @sideLineWidth;
+    padding-left: @side-line-width;
     .command-text {
       font-weight: bolder;
     }
@@ -534,31 +583,23 @@
     }
   }
   .action_header:not(.minimize) .ah_wrapper {
-    .fa.fa-chevron-down {
-      .rotate(180);
+    .fa.fa-chevron-right {
+      .rotate(90);
     }
   }
   .ah_wrapper {
-    &:before {
-      content: "";
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: @sideLineWidth;
-    }
+    border: 1px solid lighten(@gray,55.50%);
+    border-left: 0px solid;
+    min-height: 40px;
+    position: relative;
+    box-shadow: 0 1px @white inset;
+    overflow: hidden; // put the contents beside each other
+
     .header.contents {
       // only show the cursor if clicking gets you anywhere
       cursor: pointer;
     }
-    min-height: 40px;
-    position: relative;
-    border: 1px solid lighten(@gray,55.50%);
-    border-radius: 0 3px 3px 0;
-    border-left-color: transparent;
-    box-shadow: 0 1px @white inset;
-    overflow: hidden; // put the contents beside each other
+
     .button {
       float: left; // put to the right of .command
       background-repeat: no-repeat;
@@ -570,7 +611,8 @@
       height: 30px; // the button has no size without this
       width: 30px; // the button has no size without this
     }
-    .fa.fa-chevron-down {
+
+    .fa.fa-chevron-right {
       color: @whiten;
       display: inline-block;
       transition: all .2s ease;
@@ -579,6 +621,7 @@
                    0   1px @gray,
                    0  -1px @gray;
     }
+
     .command {
       color: #666;
       height: inherit;
@@ -590,6 +633,7 @@
     }
   }
 }
+
 #build-log-container {
   // Make the bootstrap tooltip for the commit message large enough to show a full sha1.
   .tooltip-inner {
