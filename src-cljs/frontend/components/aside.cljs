@@ -363,7 +363,7 @@
                                      (partial project-model/personal-recent-project? (:login opts))
                                      identity)]
         (html
-         [:div.aside-activity.open {:class (when (feature/enabled? :ui-v2) "ui-v2")}
+         [:div.aside-activity.open {:class (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")}
           [:header
            [:select {:class "toggle-sorting"
                      :name "toggle-sorting"
@@ -436,11 +436,9 @@
     om/IRender
     (render [_]
       (html
-       [:nav
+       [:nav.aside-left-menu
 
-        {:class [(when (feature/enabled? :ui-v2)
-                   "ui-v2")
-                 "aside-left-menu"]}
+        {:class (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")}
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
