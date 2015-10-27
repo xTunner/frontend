@@ -77,26 +77,13 @@ If you have access to the backend code, you can also add this line:
 
 ### Development Processes
 
-If you have foreman (or goreman) installed already, you can run
+You must use foreman (or goreman) to run the frontend and nginx.
 
 ```
-foreman start # goreman start
+foreman start # (or) goreman start
 ```
 
-Alternatively, you can start the process manually. First, start the HTTP
-server that will serve the compiled assets on port 3000:
-
-```
-lein run
-```
-
-Second, the frontend clojurescript asset compiler:
-
-```
-lein figwheel dev
-```
-
-Then visit http://prod.circlehost:3000 or http://dev.circlehost:3000 (if you
+Then visit https://prod.circlehost:4443 or https://dev.circlehost:4443 (if you
 have access and have set it up) in your browser.
 
 ### Viewing documentation changes
