@@ -1,5 +1,6 @@
 (ns frontend.components.aside
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.license :as license]
@@ -127,7 +128,8 @@
   (when (and (project-model/can-read-settings? project))
     [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
                                                                   :repo (:reponame project)})
-                               :title (project-model/project-name project)}
+                               :title (project-model/project-name project)
+                               :on-click #(analytics/track "branch-list-project-settings-clicked")}
      (common/ico :settings-light)]))
 
 (defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
@@ -153,7 +155,8 @@
                                "selected")}
                  [:a {:href (routes/v1-dashboard-path {:org (:username project)
                                                        :repo (:reponame project)
-                                                       :branch (name (:identifier branch))})}
+                                                       :branch (name (:identifier branch))})
+                      :on-click #(analytics/track "branch-list-branch-clicked")}
                   [:.branch
                    [:.last-build-status
                     [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
@@ -189,7 +192,8 @@
                           "selected")
                  :title (project-model/project-name project)}
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
-                                                                      :repo (:reponame project)})}
+                                                                      :repo (:reponame project)})
+                                  :on-click #(analytics/track "branch-list-project-clicked")}
                  (project-model/project-name project)]
                 (project-settings-link project)]
                (om/build branch-list-v2
