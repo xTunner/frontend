@@ -50,17 +50,11 @@ brew install nginx
 
 # next, create a self-signed certificate
 sudo mkdir /usr/local/etc/nginx/ssl && cd /usr/local/etc/nginx/ssl
-sudo openssl genrsa -des3 -out ssl.key 2048
-# enter passphrase
-sudo openssl req -new -key ssl.key -out ssl.csr
-# enter passphrase
-# Country Name: US
-# State: California
-# Locality: San Francisco
-# Org name: CircleCI
-# Common Name: prod.circlehost
-sudo cp ssl.key ssl.key.orig && sudo openssl rsa -in ssl.key.orig -out ssl.key
-sudo openssl x509 -req -days 365 -in ssl.csr -signkey ssl.key -out ssl.crt
+sudo openssl req -batch -new \
+      -x509 -newkey rsa:2048 -sha256 -nodes -days 365 \
+      -subj '/C=US/ST=California/L=San Francisco/O=CircleCI/CN=*.circlehost' \
+      -keyout /usr/local/etc/nginx/ssl/star.circlehost.key \
+      -out /usr/local/etc/nginx/ssl/star.circlehost.crt
 ```
 
 ### Hosts
