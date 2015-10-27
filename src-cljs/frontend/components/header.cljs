@@ -21,8 +21,6 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(def view "home")
-
 (defn show-follow-project-button? [app]
   (when-let [project (get-in app state/project-path)]
     (and (not (:followed project))
