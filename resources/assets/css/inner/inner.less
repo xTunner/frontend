@@ -1,17 +1,21 @@
 .inner {
   .flexy();
 
-  background-color: @appBackgroundColor;
-  p {
-    > a {
-      color: @blueDark;
-      border-bottom: 1px dotted @blueLight;
-      &:hover {
-        color: @blueLight;
-        border-bottom-color: @blueDark;
+  &.ui-v1 {
+    background-color: @appBackgroundColor;
+
+    p {
+      > a {
+        color: @blueDark;
+        border-bottom: 1px dotted @blueLight;
+        &:hover {
+          color: @blueLight;
+          border-bottom-color: @blueDark;
+        }
       }
     }
   }
+
 
   span.strikeout {
     text-decoration: line-through;
@@ -25,6 +29,7 @@
 
   .app-dominant {
     .flexy();
+    .flex(1 1 auto);
     overflow: hidden;
   }
 

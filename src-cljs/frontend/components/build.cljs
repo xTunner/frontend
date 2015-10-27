@@ -1,6 +1,7 @@
 (ns frontend.components.build
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
@@ -24,6 +25,8 @@
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
     (:require-macros [frontend.utils :refer [html]]))
+
+(def view "build")
 
 (defn infrastructure-fail-message [owner]
   (if-not (enterprise?)
@@ -118,14 +121,14 @@
 
     ))
 
-(defn container-pills [data owner]
+(defn container-pills [{:keys [build-running? build container-data project-data user view]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [container-data (:container-data data)
-            build-running? (:build-running? data)
-            build (:build data)
-            {:keys [containers current-container-id]} container-data
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user})
+      (let [{:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
@@ -137,11 +140,28 @@
                                 :build-running? build-running?
                                 :current-container-id current-container-id}
                                {:react-key (:index container)}))
-                   [:a.container-selector.parallelism-tab
-                    {:role "button"
-                     :href (build-model/path-for-parallelism build)
-                     :title "adjust parallelism"}
-                    [:span "+"]]])]
+                   (if (and
+                         user
+                         (contains? (:plan project-data) :paid)
+                         (not (get-in project-data [:plan :paid]))
+                         (not (get-in project-data [:project :feature_flags :oss]))
+                         (= :button (om/get-shared owner  [:ab-tests :upgrade_banner])))
+                     [:a.container-selector.parallelism-tab.upgrade
+                      {:role "button"
+                       :href (build-model/path-for-parallelism build)
+                       :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                             :project-data project-data
+                                                                             :user user}) 
+                       :title "adjust parallelism"}
+                      [:span "Add Containers +"]] 
+                     [:a.container-selector.parallelism-tab
+                      {:role "button"
+                       :href (build-model/path-for-parallelism build)
+                       :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                             :project-data project-data
+                                                                             :user user}) 
+                       :title "adjust parallelism"}
+                      [:span "+"]])])]
         (om/build sticky {:content div :content-class "containers"})))))
 
 (defn notices [data owner]
@@ -154,35 +174,53 @@
              plan (:plan project-data)
              project (:project project-data)
              build (:build build-data)]
-         [:div
+         [:div.notices
           (common/messages (set (:messages build)))
-          [:div.container-fluid
-           [:div.row
-            [:div.col-xs-10.col-xs-offset-1
-             (when (empty? (:messages build))
-               [:div (report-error build owner)])
+          [:div.row
+           [:div.col-xs-12
+            (when (empty? (:messages build))
+              [:div (report-error build owner)])
 
-             (when (and plan (project-common/show-trial-notice? project plan))
-               (om/build project-common/trial-notice project-data))
+            (when (and plan (project-common/show-trial-notice? project plan))
+              (om/build project-common/trial-notice project-data))
 
-             (when (plan-model/suspended? plan)
-               (om/build project-common/suspended-notice plan))
+            (when (plan-model/suspended? plan)
+              (om/build project-common/suspended-notice plan))
 
-             (when (and project (project-common/show-enable-notice project))
-               (om/build project-common/enable-notice project))
+            (when (and project (project-common/show-enable-notice project))
+              (om/build project-common/enable-notice project))
 
-             (if (om/get-shared owner [:ab-tests :follow_notice])
-               (when (and project (project-common/show-follow-notice project))
-                 (om/build project-common/follow-notice project)))
+            (if (om/get-shared owner [:ab-tests :follow_notice])
+              (when (and project (project-common/show-follow-notice project))
+                (om/build project-common/follow-notice project)))
 
-             (when (build-model/display-build-invite build)
-               (om/build invites/build-invites
-                         (:invite-data data)
-                         {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
+            (when (build-model/display-build-invite build)
+              (om/build invites/build-invites
+                        (:invite-data data)
+                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
 
-             (when (and (build-model/config-errors? build)
-                        (not (:dismiss-config-errors build-data)))
-               (om/build build-config/config-errors build))]]]])))))
+            (when (and (build-model/config-errors? build)
+                       (not (:dismiss-config-errors build-data)))
+              (om/build build-config/config-errors build))]]])))))
+
+(defn upgrade-banner [{:keys [build project-data user view]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user})
+      (html
+        [:div.upgrade-banner
+         [:i.fa.fa-tachometer.fa-lg]
+         [:p.main.message [:b "Build Diagnostics"]
+          [:p.sub.message "Looking for faster builds? "
+           [:a {:href (build-model/path-for-parallelism build)
+                :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                      :project-data project-data
+                                                                      :user user})}
+            "Adding containers"]
+           " can cut down time spent testing."]]]))))
 
 (defn build-v1 [data owner]
   (reify
@@ -206,12 +244,25 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
+             (when (and 
+                     user
+                     (contains? :paid (:plan project-data))
+                     (not (get-in project-data [:plan :paid]))
+                     (not (get-in project-data [:project :feature_flags :oss]))
+                     (= :banner (om/get-shared owner  [:ab-tests :upgrade_banner])))
+               (om/build upgrade-banner {:build build
+                                         :project-data project-data
+                                         :user user
+                                         :view view}))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
                                 :invite-data invite-data})
-             (om/build container-pills {:container-data container-data
+             (om/build container-pills {:build build
                                         :build-running? (build-model/running? build)
-                                        :build build})
+                                        :container-data container-data
+                                        :project-data project-data
+                                        :user user
+                                        :view view})
              (om/build build-steps/container-build-steps container-data)
 
              (when (< 1 (count (:steps build)))
@@ -239,6 +290,7 @@
 (defn container-utilization-duration
   [actions]
   (apply + (map action-duration-ms actions)))
+
 
 (defn container-duration-label [{:keys [actions]}]
   (reify
@@ -335,8 +387,7 @@
                     [:a.container-selector-v2.add-containers
                      {:href (build-model/path-for-parallelism build)
                       :title "Adjust parallelism"}
-                     "+"])
-                  ])]
+                     "+"])])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
 (defn build-v2 [data owner]

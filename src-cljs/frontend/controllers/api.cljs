@@ -630,6 +630,19 @@
   [target message status {:keys [resp]} state]
   (assoc-in state state/license-path resp))
 
+(defmethod api-event [:all-users :success]
+  [_ _ _ {:keys [resp]} state]
+  (assoc-in state state/all-users-path resp))
+
+(defmethod api-event [:set-user-suspension :success]
+  [_ _ _ {user :resp} state]
+  (assoc-in state
+            state/all-users-path
+            (map #(if (= (:login %) (:login user))
+                    user
+                    %)
+                 (get-in state state/all-users-path))))
+
 (defmethod api-event [:docs-articles :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (get-in state state/docs-search-path) (:query resp))

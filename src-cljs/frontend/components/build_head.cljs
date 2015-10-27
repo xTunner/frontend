@@ -51,11 +51,18 @@
                      "ran"
                      "is running")]
     [:div.additional-containers-offer
-     [:p (str "This build " run-phrase " under " (:org_name plan) "'s plan which provides " (plan-model/usable-containers plan)
-              " containers, plus 3 additional containers available for free and open source projects.")]
-     [:p [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                     :subpage "containers"})}
-          [:button "Add Containers"]] "to run more builds concurrently."]]))
+     [:p
+      "This build "
+      run-phrase
+      " under "
+      (:org_name plan)
+      "'s plan which provides "
+      (plan-model/usable-containers plan)
+      " containers, plus 3 additional containers available for free and open source projects. "
+      [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                  :subpage "containers"})}
+       "Add Containers"]
+      " to run more builds concurrently."]]))
 
 (defn build-queue [data owner]
   (reify
@@ -93,13 +100,62 @@
                [:p "This build " (if usage-queued? "has been" "was")
                 " queued behind the following builds for "
                 (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                    :stop (or (:queued_at build) (:stop_time build))})]
+                                                    :stop (or (:queued_at build) (:stop_time build))})
+                "."]
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
             (when (show-additional-containers-offer? plan build)
               (if (om/get-shared owner [:ab-tests :new_usage_queued_upsell])
                 (new-additional-containers-offer plan build)
                 (additional-containers-offer plan build)))]))))))
+
+(defn build-queue-v2 [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (let [{:keys [build]} data
+            build-id (build-model/id build)]
+        (raise! owner [:usage-queue-why-showed
+                       {:build-id build-id
+                        :username (:username @build)
+                        :reponame (:reponame @build)
+                        :build_num (:build_num @build)}])))
+
+    om/IRender
+    (render [_]
+      (let [{:keys [build builds]} data
+            run-queued? (build-model/in-run-queue? build)
+            usage-queued? (build-model/in-usage-queue? build)
+            plan (:plan data)]
+        (html
+         (if-not builds
+           [:div.loading-spinner common/spinner]
+           [:div.build-queue.active
+            [:div
+             (when (and (:queued_at build) (not usage-queued?))
+               (list
+                 "Circle " (when run-queued? "has") " spent "
+                 [:strong
+                  (om/build common/updating-duration {:start (:queued_at build)
+                                                      :stop (or (:start_time build) (:stop_time build))})]
+                 " acquiring containers for this build."))
+
+             (when (< 10000 (build-model/run-queued-time build))
+               [:span#circle_queued_explanation
+                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."]) 
+             (when (seq builds)
+               [:span
+                " This build " (if usage-queued? "has been" "was")
+                " queued behind the following builds for "
+                [:strong
+                 (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                     :stop (or (:queued_at build) (:stop_time build))})]
+                (when (show-additional-containers-offer? plan build)
+                  (new-additional-containers-offer plan build))])]
+
+              (when (seq builds)
+               [:div.queued-builds
+                (om/build builds-table/builds-table-v2 builds {:opts {:show-actions? true}})])]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -475,6 +531,22 @@
     [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
      [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"} "the docs"] " for more information."]]])
 
+(defmulti format-test-name-v2 test-model/source)
+
+(defmethod format-test-name-v2 :default [test]
+  (->> [[(:name test)] [(:classname test) (:file test)]]
+       (map (fn [s] (some #(when-not (string/blank? %) %) s)))
+       (filter identity)
+       (string/join " - in ")))
+
+(defmethod format-test-name-v2 "lein-test" [test]
+  [:strong.build-test-name (str (:classname test) "/" (:name test))])
+
+(defmethod format-test-name-v2 "cucumber" [test]
+  [:strong.build-test-name (if (string/blank? (:name test))
+             (:classname test)
+             (:name test))])
+
 (defn test-item [test owner]
   (reify
     om/IRender
@@ -489,6 +561,21 @@
             (if (:show-message test) [:i.fa.fa-caret-up] [:i.fa.fa-caret-down])])
          (when (:show-message test)
            [:pre (:message test)])]))))
+
+(defn test-item-v2 [test owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:li.build-test
+         (format-test-name-v2 test)
+         " - "
+         (when-not (string/blank? (:message test))
+           [:a.test-output-toggle {:role "button"
+                                   :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
+            (if (:show-message test) "less info" "more info")])
+         (when (:show-message test)
+           [:pre.build-test-output (:message test)])]))))
 
 (defn build-tests-list [data owner]
   (reify
@@ -523,6 +610,77 @@
                        (list (when file [:div.filename (str file ":")])
                              (om/build-all test-item
                                            (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
+
+(def initial-test-render-count 5)
+
+(defn build-tests-list-v2 [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:tests-showed]))
+
+    om/IRender
+    (render [_]
+      (let [tests-data (:tests-data data)
+            tests (when (:tests tests-data)
+                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
+            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
+            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)
+            build-succeeded? (= "success" (get-in data [:build :status]))]
+        (html
+         [:div.test-results
+          (if-not tests
+            [:div.loading-spinner common/spinner]
+            (cond
+              (seq failed-tests) (for [[source tests-by-source] (group-by test-model/source failed-tests)]
+                                   [:div.alert.alert-danger.expanded.build-tests-info
+                                    [:div.alert-header
+                                     [:img.alert-icon {:src (common/icon-path "Info-Error")}]
+                                     (test-model/pretty-source source)
+                                     " - "
+                                     (pluralize (count failed-tests) "failure")]
+                                    [:div.alert-body
+                                     [:div.build-tests-summary
+                                      "Your build ran "
+                                      [:strong (pluralize (count tests) "test")]
+                                      " with "
+                                      [:strong (pluralize (count failed-tests) "failure")]]
+                                     [:div.build-tests-list-container
+                                      [:ol.list-unstyled.build-tests-list
+                                       (for [[file tests-by-file] (group-by :file tests-by-source)]
+                                         (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
+                                               initial-test-results (take initial-test-render-count sorted-tests)
+                                               other-tests (drop initial-test-render-count sorted-tests)]
+
+                                         (list (when file [:div.filename (str file ":")])
+                                               (om/build-all test-item-v2
+                                                             (vec initial-test-results))
+                                               (when (seq other-tests)
+                                                 (list
+                                                   [:hr]
+                                                   [:li
+                                                    [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                                                     (if (om/get-state owner :is-open?)
+                                                       [:span
+                                                        [:i.fa.fa-chevron-up.build-tests-toggle-icon]
+                                                        "Less"]
+                                                       [:span 
+                                                        [:i.fa.fa-chevron-down.build-tests-toggle-icon]
+                                                        "More"])]]
+                                                   (when (om/get-state owner :is-open?)
+                                                     (om/build-all test-item-v2
+                                                                   (vec other-tests))))))))]]]])
+
+              (seq tests) [:div
+                           "Your build ran "
+                           [:strong (count tests)]
+                           " tests in " (string/join ", " (map test-model/pretty-source sources)) " with "
+                           [:strong "0 failures"]]
+
+              :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
+                     [:div [:img.alert-icon {:src (common/icon-path
+                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                     (tests-ad owner)]))])))))
 
 (defn circle-yml-ad []
   [:div
@@ -589,8 +747,10 @@
    (and (:read-settings scopes)
         (build-model/in-usage-queue? build))
    :usage-queue
+   ;; If there's no SSH info, build isn't finished, show the config
+   (build-model/running? build) :config
    ;; Otherwise, just use the first one.
-   :else :commits))
+   :else :tests))
 
 (def tab-link :a.tab-link)
 
@@ -713,12 +873,14 @@
 (defn trigger-html [build]
   (let [user-link (link-to-user build)
         commit-link (link-to-commit build)
-        retry-link (link-to-retry-source build)]
+        retry-link (link-to-retry-source build)
+        cache? (build-model/dependency-cache? build)]
     (case (:why build)
       "github" (list user-link " (pushed " commit-link ")")
       "edit" (list user-link " (updated project settings)")
       "first-build" (list user-link " (first build)")
-      "retry" (list user-link " (retried " retry-link ")")
+      "retry"  (list user-link " (retried " retry-link
+                                (when-not cache? " without cache")")")
       "ssh" (list user-link " (retried " retry-link " with SSH)")
       "auto-retry" (list "CircleCI (auto-retry of " retry-link ")")
       "trigger" (if (:user build)
@@ -890,7 +1052,7 @@
                  "Report"])
               (when (and (build-model/can-cancel? build) (has-scope :write-settings data))
                 (forms/managed-button
-                  [:button.cancel_build
+                  [:button.cancel-build
                    {:data-loading-text "Canceling",
                     :title "Cancel this build",
                     :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
@@ -1021,7 +1183,7 @@
                                                (filter #(contains? #{"failure" "error"} (:result %)))
                                                count)]
                   (when (not= 0 fail-count)
-                    [:span {:class "fail-count"} fail-count]))]])
+                    [:span "(" fail-count ")"]))]])
 
             (when (has-scope :read-settings data)
               [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
@@ -1045,10 +1207,10 @@
               [tab-tag {:class (when (= :artifacts selected-tab) "active")}
                [tab-link-v2 {:href "#artifacts"}
                 "Artifacts"]])
-           
+
             [tab-tag {:class (when (= :config selected-tab) "active")}
              [tab-link-v2 {:href "#config"} "circle.yml"]]
-           
+
             (when (and admin? (build-model/finished? build))
               [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
                [tab-link-v2 {:href "#build-time-viz"}
@@ -1058,11 +1220,10 @@
               [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
                [tab-link-v2 {:href "#build-parameters"} "Build Parameters"]])]]
 
-          [:div.card.sub-head-content
+          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
            (case selected-tab
-             :commits nil
 
-             :tests (om/build build-tests-list build-data)
+             :tests (om/build build-tests-list-v2 build-data)
 
              :build-time-viz (om/build build-time-visualization build)
 
@@ -1074,9 +1235,9 @@
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
 
-             :usage-queue (om/build build-queue {:build build
-                                                 :builds (:builds usage-queue-data)
-                                                 :plan plan})
+             :usage-queue (om/build build-queue-v2 {:build build
+                                                    :builds (:builds usage-queue-data)
+                                                    :plan plan})
              :ssh-info (om/build build-ssh {:build build :user user})
 
              ;; avoid errors if a nonexistent tab is typed in the URL
@@ -1142,6 +1303,14 @@
                                    :build build})
       ")"]]))
 
+(defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
+  (when-let [build-number (:build_num previous)]
+    (html
+      [:div.summary-item
+       [:span.summary-label "Previous: "]
+       [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
+          build-number]])))
+
 (defn build-head-v2 [data owner]
   (reify
     om/IRender
@@ -1171,10 +1340,7 @@
              (when (:stop_time build)
                (build-finished-status build))]
             [:div.summary-items
-             [:div.summary-item
-              [:span.summary-label "Previous: "]
-              [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) (:build_num (:previous build)))}
-               (:build_num (:previous build))]]
+             (om/build previous-build-label build)
              [:div.summary-item
               [:span.summary-label "Parallelism: "]
               (if (has-scope :write-settings data)
@@ -1188,7 +1354,7 @@
                 [:span.summary-label "Queued: "]
                 [:span  (queued-time build)]]])
 
-            [:div.summary-items.summary-build-contents
+            [:div.summary-build-contents
              [:div.summary-item
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]]
@@ -1213,36 +1379,48 @@
   (reify
     om/IInitState
     (init-state [_]
-      (let [rebuild-args  {:build-id  (build-model/id build)
-                           :vcs-url   (:vcs_url build)
-                           :build-num (:build_num build)}
-            rebuild!      #(do (raise! owner %)
-                               (om/set-state! owner [:actions :rebuild :text] "Rebuilding"))]
-        {:actions
-         {:rebuild
-          {:text  "Rebuild"
-           :title "Retry the same tests"
-           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])}
+      {:rebuild-status "Rebuild"})
 
-          :without_cache
-          {:text  "without Cache"
-           :title "Retry without cache"
-           :action #(rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])}
+    om/IWillUpdate
+    (will-update [_ {:keys [build]} _]
+      (when (build-model/running? build)
+        (om/set-state! owner [:rebuild-status] "Rebuild")))
 
-          :with_ssh
-          {:text  "with SSH"
-           :title "Retry with SSH in VM",
-           :action #(rebuild! [:ssh-build-clicked rebuild-args])}}}))
     om/IRenderState
-    (render-state [_ {:keys [actions]}]
-      (let [text-for    #(-> actions % :text)
+    (render-state [_ {:keys [rebuild-status]}]
+      (let [rebuild-args    {:build-id  (build-model/id build)
+                             :vcs-url   (:vcs_url build)
+                             :build-num (:build_num build)}
+            update-status!  #(om/set-state! owner [:rebuild-status] %)
+            rebuild!        #(raise! owner %)
+            actions         {:rebuild
+                             {:text  "Rebuild with cache"
+                              :title "Retry the same tests"
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
+                                           (update-status! "Rebuilding with cache"))}
+
+                             :without_cache
+                             {:text  "Rebuild without cache"
+                              :title "Retry without cache"
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
+                                           (update-status! "Rebuilding without cache"))}
+
+                             :with_ssh
+                             {:text  "Rebuild with SSH"
+                              :title "Retry with SSH in VM",
+                              :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
+                                           (update-status! "Rebuilding with SSH"))}}
+            text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
         (html
-          [:div.btn-group.build-action.rebuild
-           [:button.btn.rebuild-btn {:on-click (action-for :rebuild)} (text-for :rebuild)]
+          [:div.dropdown.rebuild
            [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
-            [:img {:src (common/icon-path "UI-ArrowChevron")}]]
+            [:span.status rebuild-status]
+            (when (= rebuild-status "Rebuild")
+              [:img.chevron {:src (common/icon-path "UI-ArrowChevron")}])]
            [:ul.dropdown-menu
+            [:li
+             [:a {:on-click (action-for :rebuild)} (text-for :rebuild)]]
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
             ;; XXX Temporarily remove the ssh button for OSX builds
@@ -1268,20 +1446,19 @@
                                   (get-in data state/project-scopes-path))]
         (html
           [:div.build-actions-v2
-           [:div.actions
-            (when (and (build-model/can-cancel? build) has-write-settings?)
-              (forms/managed-button
-                [:a.build-action
-                 {:data-loading-text "Canceling"
-                  :title             "Cancel this build"
-                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                   :vcs-url vcs-url
-                                                                   :build-num build-num}])}
-                 "Cancel Build"]))
-            (when has-write-settings?
-              (om/build rebuild-actions-v2 {:build build :project project}))
-            [:a.build-action
-             {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
-                                                 :repo (get-in data (conj state/project-path :reponame))})}
-             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-             "Project Settings"]]])))))
+           (when (and (build-model/can-cancel? build) has-write-settings?)
+             (forms/managed-button
+               [:a.build-action
+                {:data-loading-text "Canceling"
+                 :title             "Cancel this build"
+                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                  :vcs-url vcs-url
+                                                                  :build-num build-num}])}
+                "Cancel Build"]))
+           (when has-write-settings?
+             (om/build rebuild-actions-v2 {:build build :project project}))
+           [:a.build-action
+            {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
+                                                :repo (get-in data (conj state/project-path :reponame))})}
+            [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+            "Project Settings"]])))))

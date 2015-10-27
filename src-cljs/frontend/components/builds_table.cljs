@@ -69,7 +69,7 @@
                 vcs-url (:vcs_url build)
                 build-num (:build_num build)]
             (forms/managed-button
-             [:button.cancel_build
+             [:button.cancel-build
               {:on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                 :vcs-url vcs-url
                                                                 :build-num build-num}])}
@@ -106,10 +106,18 @@
 (defn dashboard-icon [name]
   [:img.dashboard-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
+(defn build-status-badge-wording [build]
+  (let [wording       (build-model/status-words build)
+        too-long?     (> (count wording) 10)]
+    [:div {:class (if too-long?
+                    "badge-text small-text"
+                    "badge-text")}
+     wording]))
+
 (defn build-status-badge [build]
   [:div.recent-status-badge {:class (build-model/status-class build)}
-       [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
-       [:div.badge-text (build-model/status-words build)]])
+   [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
+   (build-status-badge-wording build)])
 
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
@@ -127,12 +135,13 @@
              ;; TODO: how are we going to get back to the correct build in the app-state?
              ;;       Not a problem here, b/c the websocket will be updated, but something to think about
              (forms/managed-button
-               [:button.cancel_build
+               [:button.cancel-build
                 {:data-loading-text "Canceling..."
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
-                "Cancel"])))])]
+                [:img.cancel-icon {:src (common/icon-path "Status-Cancelled")}]
+                [:span.cancel-text " Cancel"]])))])]
      [:div.build-info
       [:div.build-info-header
        [:div.contextual-identifier
@@ -149,7 +158,8 @@
          " #"
          (:build_num build)]]
 
-       [:div.metadata
+       [:div.metadata 
+
         (when-let [pusher-name (build-model/ui-user build)]
           [:div.metadata-item.recent-user
            {:title pusher-name}
@@ -161,12 +171,22 @@
               {:src (-> avatar-url url/url (assoc-in [:query "s"] "20") str)}]
              (dashboard-icon "Builds-Author"))])
 
+        (when-let [urls (seq (:pull_request_urls build))]
+          [:div.metadata-item.pull-requests {:title "Pull Requests"}
+           (dashboard-icon "Builds-PullRequest")
+           [:span
+            (interpose
+              ", "
+              (map (fn [url] [:a {:href url} "#"
+                              (let [n (re-find #"/\d+$" url)]
+                                (if n (subs n 1) "?"))])
+                   urls))]])
+
         [:div.metadata-item.revision
-         (if-not (:vcs_revision build)
-           [:a {:href url}]
+         (when (:vcs_revision build)
            (list (dashboard-icon "Builds-CommitNumber")
                  [:a {:title (build-model/github-revision build)
-                      :href url}
+                      :href (build-model/github-commit-url build)}
                   (build-model/github-revision build)]))]
 
         (if (or (not (:start_time build))

@@ -14,6 +14,9 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
+(defn icon-path [name]
+  (utils/cdn-path (str "/img/inner/icons/" name ".svg")))
+
 (defn contact-support-a-info [owner & {:keys [tags]
                                        :or {tags [:intercom-dialog-raised]}}]
   (if (config/intercom-enabled?)
@@ -60,10 +63,10 @@
       [:div.col-xs-12
        (map (fn [message]
               [:div.row
-               [:div.alert.alert-info
-                [:strong "INFO ICON HERE"]
-                " "
-                [:span {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]])
+               [:div.alert.alert-info.iconified
+                [:div.alert-icon
+                 [:img {:src (icon-path "Info-Info")}]]
+                [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]])
             messages)]
       [:div.container-fluid
        [:div.row
@@ -203,9 +206,6 @@
 (defn language [name]
   [:img.background.language {:class name
                              :src (utils/cdn-path (str "/img/outer/languages/language-" name ".svg"))}])
-
-(defn icon-path [name]
-  (utils/cdn-path (str "/img/inner/icons/" name ".svg")))
 
 (def language-background
   (map language ["rails-1"

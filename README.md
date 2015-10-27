@@ -37,6 +37,32 @@ Install [Leiningen](http://leiningen.org/).
 
 **Note:** You can also install leiningen via homebrew with `brew install leiningen`
 
+### nginx
+
+You'll need to install nginx to serve the site over `https` - we
+require local development to user SSL to support using development
+backends against production APIs in a secure way.
+
+```
+# first, install nginx
+brew update
+brew install nginx
+
+# next, create a self-signed certificate
+sudo mkdir /usr/local/etc/nginx/ssl && cd /usr/local/etc/nginx/ssl
+sudo openssl genrsa -des3 -out ssl.key 2048
+# enter passphrase
+sudo openssl req -new -key ssl.key -out ssl.csr
+# enter passphrase
+# Country Name: US
+# State: California
+# Locality: San Francisco
+# Org name: CircleCI
+# Common Name: prod.circlehost
+sudo cp ssl.key ssl.key.orig && sudo openssl rsa -in ssl.key.orig -out ssl.key
+sudo openssl x509 -req -days 365 -in ssl.csr -signkey ssl.key -out ssl.crt
+```
+
 ### Hosts
 
 In your `/etc/hosts`, add the following line:
@@ -60,8 +86,7 @@ If you have access to the backend code, you can also add this line:
 If you have foreman (or goreman) installed already, you can run
 
 ```
-foreman start
-# goreman start
+foreman start # goreman start
 ```
 
 Alternatively, you can start the process manually. First, start the HTTP

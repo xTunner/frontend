@@ -169,7 +169,6 @@
 
 &.ui-v2 {
   .recent-status-badge {
-    @lighten-ratio: 75%;
     @badge-height: 25px;
 
     .flexy(center, flex-start);
@@ -177,7 +176,7 @@
     height: @badge-height;
     padding: 0;
     border-radius: 2 * @badge-height;
-    background: fadeout(@brand-cancelled-v2, @lighten-ratio);
+    background: lighten(@brand-cancelled-v2, @brand-lighten-ratio-v2);
 
     .badge-icon {
       @badge-icon-margin: 4px;
@@ -198,24 +197,29 @@
       color: @black;
     }
 
+    .small-text {
+      font-size: 10px;
+      margin-left: -5px;
+    }
+
     &.pass {
-      background: fadeout(@brand-success-v2, @lighten-ratio);
+      background: lighten(@brand-success-v2, @brand-lighten-ratio-v2);
     }
 
     &.fail {
-      background: fadeout(@brand-danger-v2, @lighten-ratio);
+      background: lighten(@brand-danger-v2, @brand-lighten-ratio-v2);
     }
 
     &.busy {
-      background: fadeout(@brand-primary-v2, @lighten-ratio);
+      background: lighten(@brand-primary-v2, @brand-lighten-ratio-v2);
     }
 
     &.stop {
-      background: fadeout(@brand-cancelled-v2, @lighten-ratio);
+      background: lighten(@brand-cancelled-v2, @brand-lighten-ratio-v2);
     }
 
     &.queued {
-      background: fadeout(@brand-pending-v2, @lighten-ratio);
+      background: lighten(@brand-pending-v2, @brand-lighten-ratio-v2);
     }
   }
 
@@ -238,22 +242,37 @@
     padding: @build-padding;
     box-shadow: inset -1px 0 rgba(0, 0, 0, 0.05);
 
-    .cancel_build {
+    .cancel-build {
+      .flexy();
+
       background: none;
       border: none;
-      padding: @build-padding;
       width: 100%;
+
+      margin-top: 6px;
+      padding: 0;
+
       color: @gray-dark-v2;
+
+      .cancel-icon {
+        margin: 2px @build-padding 0 4px;
+        height: 17px;
+        width: 17px;
+      }
+
+      .cancel-text {
+        flex-grow: 1;
+        text-align: left;
+      }
     }
 
-    .cancel_build.disabled {
+    .cancel-build.disabled {
         color: @gray-lighter-v2;
     }
   }
 
   .build-info {
     padding: @build-padding 0 @build-padding @build-padding;
-    flex-direction: column;
     flex-grow: 1;
 
     .recent-commit-msg a {
@@ -263,13 +282,13 @@
   }
 
   .build-info-header {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    .flexy;
+    .justify-content(space-between);
+    .flex-wrap(wrap);
   }
 
   .contextual-identifier {
-    margin-right: auto;
+    margin-bottom: 3px;
     font-size: 13px;
 
     a {
@@ -278,12 +297,13 @@
   }
 
   .metadata {
-    display: flex;
-    flex-wrap: wrap;
+    .flexy(wrap);
   }
 
   .metadata-item {
     margin-right: 25px;
+    margin-bottom: 3px;
+
     color: @gray-light-v2;
     font-size: 12px;
 
