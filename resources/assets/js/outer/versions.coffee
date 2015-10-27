@@ -83,6 +83,7 @@ CI.Versions =
     "jruby-1.7.12",
     "jruby-1.7.11",
     "jruby-1.7.0",
+    "jruby-9.0.1.0",
     "rbx-2.2.6",
     "rbx-2.2.10",
     "rbx-2.5.2"
@@ -162,6 +163,7 @@ CI.Versions =
   default_php: "5.3.10-1ubuntu3.7"
   php: "5.3.10-1ubuntu3.18"
   php_versions: [
+    "5.6.14"
     "5.6.5"
     "5.6.2"
     "5.5.21"
@@ -254,7 +256,8 @@ CI.Versions =
     "7.8.2",
     "7.8.3",
     "7.8.4",
-    "7.10.1"]
+    "7.10.1",
+    "7.10.2"]
 
   default_gcc: "4.6"
   default_g_plusx2: "4.6"
@@ -274,9 +277,11 @@ CI.Versions =
   # you can copy-paste these from image-maker/src/circlevm/pallet/android.clj
   android_sdk_packages: [
     "platform-tools",
+    "build-tools-23.0.1",
     "build-tools-22.0.1",
     "build-tools-21.1.2",
     "build-tools-20.0.0",
+    "android-23",
     "android-22",
     "addon-google_apis-google-22",
     "sys-img-armeabi-v7a-android-22",
@@ -307,3 +312,5 @@ CI.Versions =
   heroku: "3.40.9"
   awscli: "1.7.44"
   gcloud: "0.9.70"
+  docker: "1.8.2"
+
