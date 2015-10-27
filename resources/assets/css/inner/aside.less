@@ -576,20 +576,24 @@
     }
 
     .branches > li {
+      @border-color-between-branches: #dcdcdc;
+      @border-color-above-selected-branch: #e5e5e5;
+      @border-color-below-selected-branch: #c5c5c5;
+
       .selectable;
       position: relative;
 
-      border-top: @border-width solid #dcdcdc;
+      border-top: @border-width solid @border-color-between-branches;
 
       &:first-child {
         border-top: none;
       }
 
       &.selected {
-        border-top-color: #e5e5e5;
+        border-top-color: @border-color-above-selected-branch;
 
         & + li {
-          border-top-color: #c5c5c5;
+          border-top-color: @border-color-below-selected-branch;
         }
       }
 
