@@ -9,7 +9,6 @@
 .ui-v2 {
   .breadcrumb {
     margin-left: 0;
-    margin-bottom: 0;
     font-size: 20px;
 
     & > li + li:before {
@@ -34,25 +33,29 @@
   }
 }
 
-.breadcrumbs {
-  margin-left: 1em;
-  a {
-    &:not(:first-child) {
-      &:before {
-        content: '/';
-        color: @grayLight;
-        margin-right: 3px; // from trial and error
-      }
+.ui-v1 {
+  .breadcrumb {
+    & > li + li:before {
+      content: '/';
+      color: @grayLight;
+      margin-right: 3px; // from trial and error
     }
-    &:not(:hover) {
+
+    & > li a {
       color: @grayLight;
     }
-    &[disabled] {
-      pointer-events: none;
-    }
-    &:last-child{
-      pointer-events: none;
-    }
+  }
+}
+
+.breadcrumb {
+  margin: 10px 1em;
+
+  &[disabled] {
+    pointer-events: none;
+  }
+
+  &:last-child{
+    pointer-events: none;
   }
 }
 
