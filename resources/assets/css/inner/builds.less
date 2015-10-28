@@ -504,6 +504,11 @@
 
     &.failed {
       border-left: @side-line-width solid @brand-danger-v2;
+
+      // make sure failed command text color is not white on a white background
+      .command-text, .time {
+        color: #666;
+      }
     }
 
     &.running {
