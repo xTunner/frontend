@@ -337,9 +337,9 @@
                      "Selected"]]]]
        [:table.comparison.table
         [:tr.top.row
-         [:td.cell.first ""]
-         [:td.cell.paid "Paid"]
-         [:td.cell.last.unpaid "Free"]]
+         [:td.cell.first.metric "Plan Features"]
+         [:td.cell.paid "Free"]
+         [:td.cell.last.unpaid "Paid"]]
         [:tr.row
          [:td.cell.metric "Build Users"]
          [:td.cell.paid "Unlimited"]
