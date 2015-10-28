@@ -298,7 +298,7 @@
          [:tr.row
           [:td.cell "Business"]
           [:td.cell "$500/month"]
-          [:td.cell.container-amount "10"]
+          [:td.cell.container-amount "11"]
           [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
                                                                 :subpage "containers"})
                          :on-click #(analytics/track-payment-plan-click {:view view})}
@@ -306,7 +306,7 @@
          [:tr.row
           [:td.cell "Growth"]
           [:td.cell "$300/month"]
-          [:td.cell.container-amount "5"]
+          [:td.cell.container-amount "7"]
           [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
                                                                 :subpage "containers"})
                          :on-click #(analytics/track-payment-plan-click {:view view})}
@@ -314,7 +314,7 @@
          [:tr.row
           [:td.cell "Startup"]
           [:td.cell "$100/month"]
-          [:td.cell.container-amount "2"]
+          [:td.cell.container-amount "3"]
           [:td.cell [:a{:href (routes/v1-org-settings-subpage {:org selected-org
                                                                :subpage "containers"})
                         :on-click #(analytics/track-payment-plan-click {:view view})}
@@ -338,40 +338,40 @@
        [:table.comparison.table
         [:tr.top.row
          [:td.cell.first.metric "Plan Features"]
-         [:td.cell.paid "Free"]
+         [:td.cell.unpaid "Free"]
          [:td.cell.last.unpaid "Paid"]]
         [:tr.row
          [:td.cell.metric "Build Users"]
-         [:td.cell.paid "Unlimited"]
-         [:td.cell.unpaid "Unlimited"]]
+         [:td.cell.unpaid "Unlimited"]
+         [:td.cell.paid "Unlimited"]]
         [:tr.row
          [:td.cell.metric "Build Minutes"]
-         [:td.cell.paid "1,500 minutes"]
-         [:td.cell.unpaid "Unlimited"]]
+         [:td.cell.unpaid "1,500 minutes"]
+         [:td.cell.paid "Unlimited"]]
         [:tr.row
          [:td.cell.metric "Testing Inference"]
-         [:td.cell.paid [:i.fa.fa-check]]
-         [:td.cell.unpaid [:i.fa.fa-check]]]
+         [:td.cell.unpaid [:i.fa.fa-check]]
+         [:td.cell.paid [:i.fa.fa-check]]]
         [:tr.row
          [:td.cell.metric "3rd Party Integrations"]
-         [:td.cell.paid [:i.fa.fa-check]]
-         [:td.cell.unpaid [:i.fa.fa-check]]]
+         [:td.cell.unpaid [:i.fa.fa-check]]
+         [:td.cell.paid [:i.fa.fa-check]]]
         [:tr.row
          [:td.cell.metric "Community Forum"]
-         [:td.cell.paid [:i.fa.fa-check]]
-         [:td.cell.unpaid [:i.fa.fa-check]]]
+         [:td.cell.unpaid [:i.fa.fa-check]]
+         [:td.cell.paid [:i.fa.fa-check]]]
         [:tr.row
          [:td.cell.metric "Engineer Ticket Support"]
-         [:td.cell.paid [:i.fa.fa-close]]
-         [:td.cell.unpaid [:i.fa.fa-check]]]
+         [:td.cell.unpaid [:i.fa.fa-close]]
+         [:td.cell.paid [:i.fa.fa-check]]]
         [:tr.row
          [:td.cell.metric "Parallelization"]
-         [:td.cell.paid [:i.fa.fa-close]]
-         [:td.cell.unpaid [:i.fa.fa-check]]]
+         [:td.cell.unpaid [:i.fa.fa-close]]
+         [:td.cell.paid [:i.fa.fa-check]]]
         [:tr.row
          [:td.cell.metric "iOS Support"]
-         [:td.cell.paid [:i.fa.fa-close]]
-         [:td.cell.unpaid [:i.fa.fa-check]]]]]])))
+         [:td.cell.unpaid [:i.fa.fa-close]]
+         [:td.cell.paid [:i.fa.fa-check]]]]]])))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
@@ -406,11 +406,14 @@
                          :selected-org selected-org
                          :settings settings})
         [:hr]
+         ;; This is a chain to get the organization that the user has clicked on and whether this use is the first follower.
+         ;; The process is to combine the user with the users organizations (since the use is a org), and then filter
+         ;; down to the selected org and create a map of the org's name and whether or not this user is the first follower.
          (let [org (->> user
                          :organizations
                          (cons user)
                          (map #(when (= (:login %) selected-org) {:selected-org (:login %) :first-follower? (:first-follower? %)}))
                          (filter some?)
                          (first))]
-           (if (:first-follower? org)
+           (if true;;(:first-follower? org)
              (om/build payment-plan org)))]]]])))
