@@ -401,7 +401,7 @@
             project-data (get-in data state/project-data-path)
             user (get-in data state/user-path)]
         (html
-         [:div.build-info-v2.container-fluid
+         [:div.build-info-v2
           (if-not build
            [:div
              (om/build common/flashes (get-in data state/error-message-path))
