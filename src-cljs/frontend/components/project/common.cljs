@@ -86,9 +86,7 @@
             org-name (:org_name plan)
             plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "containers"})
             trial-notice-fn (if (plan-model/freemium? plan)
-                              (if (om/get-shared owner [:ab-tests :pay_now_button])
-                                freemium-trial-html-b
-                                freemium-trial-html)
+                                freemium-trial-html
                               non-freemium-trial-html)]
         (trial-notice-fn plan project project-name days org-name plan-path)))))
 
@@ -114,29 +112,6 @@
                :on-click #(raise! owner [:enabled-project {:project-id project-id
                                                            :project-name project-name}])}
               "Add SSH key"])]]])))))
-
-(defn show-follow-notice [project]
-  ;; followed here indicates that the user is following this project, not that the
-  ;; project has followers
-  (not (:followed project)))
-
-(defn follow-notice [project owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [project-name (vcs-url/project-name (:vcs_url project))
-            vcs-url (:vcs_url project)]
-        (html
-         [:div.row-fluid
-          [:div {:class (when (not (feature/enabled? :ui-v2)) "col-xs-10 col-xs-offset-1")}
-           [:div.alert.alert-success
-            "Follow " project-name " to add " project-name " to your sidebar and get build notifications. "
-            [:hr]
-            (forms/managed-button
-             [:button.btn.btn-success
-              {:data-loading-text "Following...",
-               :on-click #(raise! owner [:followed-repo {:vcs_url vcs-url}])}
-              "Follow"])]]])))))
 
 (def email-prefs
   [["default" "Default"]
