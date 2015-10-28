@@ -66,7 +66,6 @@
                 [:a {:href plan-path} "Add a plan"]
                 " to keep running builds."))]))
 
-;; TODO: figure out where this is being tracked in mixpanel and launch one of these.
 (defn freemium-trial-html [plan project project-name days org-name plan-path]
   (html
     [:div.alert {:class "alert-success"}
@@ -74,16 +73,6 @@
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
              [:a.pay-now-plain-text {:href plan-path} "Please enter your payment information"]
              " before the trial expires to continue using these containers."
-             )]))
-
-(defn freemium-trial-html-b [plan project project-name days org-name plan-path]
-  (html
-    [:div.alert {:class "alert-success"}
-       (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
-                             org-name (plan-model/usable-containers plan) (pluralize days "day"))
-             "Please enter your payment information before the trial expires to continue using these containers.    "
-             [:a.pay-now-button {:href plan-path}
-              [:button "Pay Now"]]
              )]))
 
 (defn trial-notice [data owner]
