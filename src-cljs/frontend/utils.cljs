@@ -258,6 +258,10 @@
         (.setAttribute new-link-el "href" canonical-page)
         (dom/appendChild (.-head js/document) new-link-el)))))
 
+(defn scroll-to-node-bottom [node]
+  (when node
+    (.scrollIntoView node false)))
+
 (defn scroll-to-node!
   [node]
   (let [scrolling-element (dom/getDocumentScrollElement)
