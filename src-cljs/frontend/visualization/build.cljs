@@ -1,10 +1,18 @@
-(ns frontend.visualization.build)
+(ns frontend.visualization.build
+  (:require [frontend.models.feature :as feature]))
 
 (defn status->color [status]
-  (cond
-   (= status "success") "#292"
-   (= status "failed") "#c13737"
-   :else "rgb(128,128,128)"))
+  (let [is-v2? (feature/enabled? :ui-v2)
+        is-success? (= status "success")
+        is-failed? (= status "failed")]
+    (cond
+      (and is-v2? is-success?) "#42c88a"
+      (and is-v2? is-failed?) "#ed5c5c"
+      is-success? "#292"
+      is-failed? "#c13737"
+      ; grey for v2
+      is-v2? "#2c2f33"
+      :else "rgb(128,128,128)")))
 
 (defn millis->min-secs [millis]
   (let [total-secs (/ millis 1000.0)
@@ -34,8 +42,8 @@
     (> step-pixels cut-off)))
 
 (defn chart-build [svg scale build]
-  (let [bar-height 6
-        bar-pad 2
+  (let [bar-height 10
+        bar-pad 5
         text-height 16
         step-count (-> build (:steps) (count))
         chart-height (* (-> build (:parallel))
@@ -62,15 +70,19 @@
                          "width" #(- (scale (js/Date. (aget % "end_time"))) (scale (js/Date. (aget % "start_time"))))
                          "height" bar-height
                          "fill" #(status->color (aget % "status"))}))
-         ;; the start tick
-         (-> group
-             (.append "rect")
-             (.attr #js {"x" #(scale (js/Date. (aget % "start_time")))
-                         "y" #(* (+ bar-height bar-pad) (aget % "index"))
-                         "width" 0.1
-                         "height" (+ 1 bar-height)
-                         "stroke" "black"
-                         "stroke-width" 0.5})))))
+
+         (let [x #(scale (js/Date. (aget % "start_time")))
+               y1 #(* (+ bar-height bar-pad) (aget % "index"))
+               y2 #(+ bar-height (* (+ bar-height bar-pad) (aget % "index")))]
+           ;; the start tick
+           (-> group
+               (.append "line")
+               (.attr #js {"x1" x
+                           "x2" x
+                           "y1" y1
+                           "y2" y2
+                           "stroke" "black"
+                           "stroke-width" 0.75}))))))
 
     (-> svg (.selectAll "text") (.data (clj->js long-actions)) (.enter) (.append "text")
         (.text #(str (aget % "name") " (" (millis->min-secs (max-action-run-time-millis %)) ")"))
@@ -88,7 +100,7 @@
         d0 (js/Date. (:start_time build))
         d1 (js/Date. (:stop_time build))
         scale (-> js/d3 (.-time) (.scale))]
-    (.attr svg "width" svg-width)
+    (.attr svg "width" "100%")
     (-> scale (.domain #js [d0, d1]) (.range #js [0, (* 0.8 svg-width)]))
     (println "scale maps [" d0 ", " d1 "] -> [" (scale d0) ", " (scale d1) "]")
 

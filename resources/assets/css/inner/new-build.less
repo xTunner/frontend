@@ -296,6 +296,8 @@
 }
 
 .alert {
+  margin-bottom: 15px;
+
   .alert-icon {
     padding-right: ((2 / 3) * @alert-padding);
   }
@@ -317,7 +319,7 @@
     }
 
     .alert-header {
-      padding: @alert-padding;
+      padding: ((2 / 3) * @alert-padding) @alert-padding;
       text-transform: uppercase;
     }
 
@@ -354,8 +356,7 @@
     }
   }
 
-
-  .rebuild {
+  .dropdown {
     @item-spacing: 20px;
     @toggle-min-width: 145px;
     @button-height: 30px;
@@ -364,6 +365,7 @@
     margin-right: @item-spacing;
     border-radius: 3px;
     border: solid 1px @dropdown-gray;
+    background: @dropdown-light-gray;
 
     button {
       background: @dropdown-light-gray;

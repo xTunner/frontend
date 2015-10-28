@@ -131,7 +131,7 @@
          (if-not builds
            [:div.loading-spinner common/spinner]
            [:div.build-queue.active
-            [:div
+            [:div.queue-message
              (when (and (:queued_at build) (not usage-queued?))
                (list
                  "Circle " (when run-queued? "has") " spent "
