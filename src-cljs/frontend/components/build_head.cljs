@@ -748,7 +748,7 @@
         (build-model/in-usage-queue? build))
    :usage-queue
    ;; If there's no SSH info, build isn't finished, show the config
-   (build-model/running? build) :config
+   (build-model/running? build) (if (feature/enabled? :ui-v2) :config :commits)
    ;; Otherwise, just use the first one.
    :else :tests))
 
