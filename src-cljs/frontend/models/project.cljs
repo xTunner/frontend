@@ -28,6 +28,9 @@
   (let [[branch-name build-info] branch-data]
     (personal-branch-helper project (:login user) branch-name (:pusher_logins build-info))))
 
+(defn personal-branch-v2? [login branch]
+  (personal-branch-helper (:project branch) login (:identifier branch) (:pusher_logins branch)))
+
 (defn branch-builds [project branch-name-kw]
   (let [build-data (get-in project [:branches branch-name-kw])]
     (sort-by :build_num (concat (:running_builds build-data)
@@ -92,6 +95,24 @@
       (sort-by :recent-activity-time (fn [a b]
                                        (compare b a)))))
 
+(defn branches
+  "Returns a collection of branches the project contains. Each branch will
+  include its :identifier (the key it was listed under in the project) and
+  its :project."
+  [project]
+  (for [[name-kw branch-data] (:branches project)]
+    (merge branch-data
+           {:identifier name-kw
+            :project project})))
+
+(defn sort-branches-by-recency-v2 [projects]
+  (->> projects
+       (mapcat branches)
+       ;; Branches without activity do not appear in the Recent branch list.
+       (filter most-recent-activity-time)
+       (sort-by #(js/Date.parse (most-recent-activity-time %))
+                ;; This inverts compare, yielding a reverse sort.
+                (comp - compare))))
 
 
 (defn personal-recent-project? [login recent-project]

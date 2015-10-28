@@ -1,5 +1,6 @@
 (ns frontend.components.aside
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.license :as license]
@@ -122,6 +123,86 @@
                   (om/build common/updating-duration
                             {:start (project-model/most-recent-activity-time (second branch-data))}
                             {:opts {:formatter datetime/time-ago}})]))))])))))
+
+(defn project-settings-link [project]
+  (when (and (project-model/can-read-settings? project))
+    [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
+                                                                  :repo (:reponame project)})
+                               :title (project-model/project-name project)
+                               :on-click #(analytics/track "branch-list-project-settings-clicked")}
+     (common/ico :settings-light)]))
+
+(defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
+  (reify
+      om/IDisplayName (display-name [_] "Aside Branch List")
+      om/IRender
+      (render [_]
+        (let [branches-filter (if show-all-branches?
+                                (constantly true)
+                                (partial project-model/personal-branch-v2? login))]
+          (html
+           [:ul.branches
+            (for [branch (filter branches-filter branches)]
+              (let [project (:project branch)
+                    latest-build (last (sort-by :build_num (concat (:running_builds branch)
+                                                                   (:recent_builds branch))))]
+                [:li {:class (when (and (= (vcs-url/org-name (:vcs_url project))
+                                           (:org navigation-data))
+                                        (= (vcs-url/repo-name (:vcs_url project))
+                                           (:repo navigation-data))
+                                        (= (name (:identifier branch))
+                                           (:branch navigation-data)))
+                               "selected")}
+                 [:a {:href (routes/v1-dashboard-path {:org (:username project)
+                                                       :repo (:reponame project)
+                                                       :branch (name (:identifier branch))})
+                      :on-click #(analytics/track "branch-list-branch-clicked")}
+                  [:.branch
+                   [:.last-build-status
+                    [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
+                   [:.branch-info
+                    (when show-project?
+                      [:.project-name
+                       {:title (project-model/project-name project)}
+                       (project-model/project-name project)])
+                    [:.branch-name
+                     {:title (utils/display-branch (:identifier branch))}
+                     (utils/display-branch (:identifier branch))]
+                    [:.last-build-info
+                     {:title (datetime/full-datetime (js/Date.parse (project-model/most-recent-activity-time branch)))}
+                     (om/build common/updating-duration
+                               {:start (project-model/most-recent-activity-time branch)}
+                               {:opts {:formatter datetime/time-ago}})
+                     " ago"]]]]
+                 (when show-project?
+                   (project-settings-link project))]))])))))
+
+(defn project-aside-v2 [{:keys [project show-all-branches? navigation-data]} owner {:keys [login]}]
+  (reify
+      om/IDisplayName (display-name [_] "Aside Project")
+      om/IRender
+      (render [_]
+        (html [:li
+               [:.project-heading
+                {:class (when (and (= (vcs-url/org-name (:vcs_url project))
+                                      (:org navigation-data))
+                                   (= (vcs-url/repo-name (:vcs_url project))
+                                      (:repo navigation-data))
+                                   (not (contains? navigation-data :branch)))
+                          "selected")
+                 :title (project-model/project-name project)}
+                [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
+                                                                      :repo (:reponame project)})
+                                  :on-click #(analytics/track "branch-list-project-clicked")}
+                 (project-model/project-name project)]
+                (project-settings-link project)]
+               (om/build branch-list-v2
+                         {:branches (->> project
+                                         project-model/branches
+                                         (sort-by :name))
+                          :show-all-branches? show-all-branches?
+                          :navigation-data navigation-data}
+                         {:opts {:login login}})]))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -286,16 +367,15 @@
                                      (partial project-model/personal-recent-project? (:login opts))
                                      identity)]
         (html
-         [:div.aside-activity.open
+         [:div.aside-activity.open {:class (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")}
           [:header
-           [:div.toggle-sorting
-            [:select {:name "toggle-sorting"
-                      :on-change #(raise! owner [:sort-branches-toggled
-                                                 (utils/parse-uri-bool (.. % -target -value))])
-                      :value sort-branches-by-recency?}
-             [:option {:value false} "By Repo"]
-             [:option {:value true} "Recent" ]]
-            [:div.select-arrow [:img {:src (utils/cdn-path "/img/inner/icons/UI-DropdownArrow.svg")}]]]
+           [:select {:class "toggle-sorting"
+                     :name "toggle-sorting"
+                     :on-change #(raise! owner [:sort-branches-toggled
+                                                (utils/parse-uri-bool (.. % -target -value))])
+                     :value sort-branches-by-recency?}
+            [:option {:value false} "By Repo"]
+            [:option {:value true} "Recent"]]
 
            [:div.toggle-all-branches
             [:input {:id "my-branches"
@@ -305,7 +385,7 @@
                      :checked (not show-all-branches?)
                      :react-key "toggle-all-branches-my-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled false])}]
-            [:label.radio {:for "my-branches"}
+            [:label {:for "my-branches"}
              "Mine"]
             [:input {:id "all-branches"
                      :name "toggle-all-branches"
@@ -314,23 +394,43 @@
                      :checked show-all-branches?
                      :react-key "toggle-all-branches-all-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled true])}]
-            [:label.radio {:for "all-branches"}
+            [:label {:for "all-branches"}
              "All"]]]
 
-          [:div.projects
-           (for [project (if sort-branches-by-recency?
-                           (->> projects
-                                project-model/sort-branches-by-recency
-                                (filter recent-projects-filter)
-                                (take 100))
-                           (sort project-model/sidebar-sort projects))]
-             (om/build project-aside
-                       {:project project
-                        :settings settings
-                        :collapse-group-id (collapse-group-id project)
-                        :show-activity-time? sort-branches-by-recency?}
-                       {:react-key (collapse-group-id project)
-                        :opts {:login (:login opts)}}))]])))))
+
+          (if (feature/enabled? :ui-v2)
+            (if sort-branches-by-recency?
+              (om/build branch-list-v2
+                        {:branches (->> projects
+                                        project-model/sort-branches-by-recency-v2
+                                        ;; Arbitrary limit on visible branches.
+                                        (take 100))
+                         :show-all-branches? (get-in app state/show-all-branches-path)
+                         :navigation-data (:navigation-data app)}
+                        {:opts {:login (:login opts)
+                                :show-project? true}})
+              [:ul.projects
+               (for [project (sort project-model/sidebar-sort projects)]
+                 (om/build project-aside-v2
+                           {:project project
+                            :show-all-branches? (get-in app state/show-all-branches-path)
+                            :navigation-data (:navigation-data app)}
+                           {:react-key (project-model/id project)
+                            :opts {:login (:login opts)}}))])
+            [:div.projects
+             (for [project (if sort-branches-by-recency?
+                             (->> projects
+                                  project-model/sort-branches-by-recency
+                                  (filter recent-projects-filter)
+                                  (take 100))
+                             (sort project-model/sidebar-sort projects))]
+               (om/build project-aside
+                         {:project project
+                          :settings settings
+                          :collapse-group-id (collapse-group-id project)
+                          :show-activity-time? sort-branches-by-recency?}
+                         {:react-key (collapse-group-id project)
+                          :opts {:login (:login opts)}}))])])))))
 
 (defn aside-menu [app owner opts]
   (reify
@@ -340,11 +440,9 @@
     om/IRender
     (render [_]
       (html
-       [:nav
+       [:nav.aside-left-menu
 
-        {:class [(when (feature/enabled? :ui-v2)
-                   "new-aside-left-menu-width")
-                 "aside-left-menu"]}
+        {:class (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")}
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
