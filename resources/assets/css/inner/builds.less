@@ -12,8 +12,10 @@
   }
 }
 
-.notices {
-  margin-top: 1.5em;
+.ui-v1 {
+  .notices {
+    margin-top: 1.5em;
+  }
 }
 
 .upgrade-banner {
@@ -284,6 +286,10 @@
     .subtleButton(@grayLight);
     .subtleButtonColor(@redLight, @redLight);
   }
+
+  .queue-message {
+    padding-bottom: 15px;
+  }
 }
 
 .build-ssh-list {
@@ -452,6 +458,17 @@
     margin-right: 2px;
 
     border-radius: 5px;
+
+    .failed {
+      .command-text, .time {
+        color: @whiten;
+      }
+
+      .fa-chevron-down, .fa-chevron-right {
+        text-shadow: none;
+      }
+    }
+
   }
 
   .action_header {
@@ -546,14 +563,7 @@
       font-weight: bold;
     }
   }
-  .failed {
-    .command-text, .time {
-      color: @whiten;
-    }
-    .button i.fa.fa-chevron-up {
-      text-shadow: none;
-    }
-  }
+
   .command {
     padding-left: @side-line-width;
     .command-text {
@@ -583,9 +593,13 @@
       }
     }
   }
-  .action_header:not(.minimize) .ah_wrapper {
+  .action_header.open .ah_wrapper {
     .fa.fa-chevron-right {
       .rotate(90);
+    }
+
+    .fa.fa-chevron-down {
+      .rotate(180);
     }
   }
   .ah_wrapper {
@@ -613,7 +627,7 @@
       width: 30px; // the button has no size without this
     }
 
-    .fa.fa-chevron-right {
+    .fa-chevron-right, .fa-chevron-down {
       color: @whiten;
       display: inline-block;
       transition: all .2s ease;

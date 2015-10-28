@@ -61,8 +61,8 @@
     (render [_]
       (let [visible? (action-model/visible? action)
             header-classes  (concat [(:status action)]
-                                    (when-not visible?
-                                      ["minimize"])
+                                    (when visible?
+                                      ["open"])
                                     (when (action-model/has-content? action)
                                       ["contents"])
                                     (when (action-model/failed? action)
@@ -248,8 +248,8 @@
     (render [_]
       (let [visible? (action-model/visible? action)
             header-classes  (concat [(:status action)]
-                                    (when-not visible?
-                                      ["minimize"])
+                                    (when visible?
+                                      ["open"])
                                     (when (action-model/has-content? action)
                                       ["contents"])
                                     (when (action-model/failed? action)
