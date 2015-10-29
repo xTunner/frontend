@@ -80,7 +80,9 @@ test:
 Note the final colon, and
 `parallel: true`
 on the next line.
-This is a command modifier which tells circle that the command should be run in parallel on all test machines. It defaults to true for commands in the machine, checkout, dependencies and database build phases, and it defaults to false for commands in the test and deployment phases.
+This is a command modifier which tells circle that the command should be run in parallel on all test machines. It defaults to true for commands in the machine, checkout, dependencies and database build phases, and it defaults to false for commands in the test phases.
+
+Please note that since we do not support parallel deployment, specifying 'parallel:true' in the deployment phase will cause an error.
 
 Obviously, this is slightly limited because it's hard-coded to
 only work with two nodes, and the test time might not balance
