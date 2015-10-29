@@ -127,14 +127,6 @@
     "not_running" "not running"
     (:status build)))
 
-(defn status-icon-v2 [build]
-  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "Status-Failed"
-        (#{"retried" "canceled" "infrastructure_fail" "killed" "not_run"} (:status build)) "Status-Cancelled"
-        (= "success" (:outcome build)) "Status-Passed"
-        (= "running" (:status build)) "Status-Running"
-        (#{"queued" "not_running" "scheduled"} (:status build)) "Status-Queued"
-        :else nil))
-
 (defn status-class [build]
   (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
         (#{"infrastructure_fail" "killed" "not_run" "retried" "canceled"} (:status build)) "stop"
@@ -142,6 +134,15 @@
         (= "running" (:status build)) "busy"
         (#{"queued" "not_running" "scheduled"} (:status build)) "queued"
         :else nil))
+
+(defn status-icon-v2 [build]
+  (case (status-class build)
+    "fail" "Status-Failed"
+    "stop" "Status-Cancelled"
+    "pass" "Status-Passed"
+    "busy" "Status-Running"
+    "queued" "Status-Queued"
+    nil))
 
 (defn favicon-color [build]
   (cond (#{"failed" "timedout" "no_tests"} (:status build)) "red"
