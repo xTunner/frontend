@@ -132,7 +132,7 @@
         (#{"retried" "canceled" "infrastructure_fail" "killed" "not_run"} (:status build)) "Status-Cancelled"
         (= "success" (:outcome build)) "Status-Passed"
         (= "running" (:status build)) "Status-Running"
-        (#{"queued" "not_running"} (:status build)) "Status-Queued"
+        (#{"queued" "not_running" "scheduled"} (:status build)) "Status-Queued"
         :else nil))
 
 (defn status-class [build]
@@ -140,7 +140,7 @@
         (#{"infrastructure_fail" "killed" "not_run" "retried" "canceled"} (:status build)) "stop"
         (= "success" (:outcome build)) "pass"
         (= "running" (:status build)) "busy"
-        (#{"queued" "not_running"} (:status build)) "queued"
+        (#{"queued" "not_running" "scheduled"} (:status build)) "queued"
         :else nil))
 
 (defn favicon-color [build]
