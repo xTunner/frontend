@@ -101,6 +101,12 @@ Firefox {{ versions.Firefox }}. Chromedriver 23.0 is also available as
 <span class='label label-info'>Help</span>
 [Check out our browser debugging docs.](/docs/troubleshooting-browsers)
 
+## Docker
+
+We're using a build of Docker which is patched to work in the CircleCI build environment.
+
+The current version is `{{ versions.docker }}`
+
 ## Languages
 
 ### Ruby
