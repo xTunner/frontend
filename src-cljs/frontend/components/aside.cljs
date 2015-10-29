@@ -168,12 +168,17 @@
                     [:.branch-name
                      {:title (utils/display-branch (:identifier branch))}
                      (utils/display-branch (:identifier branch))]
-                    [:.last-build-info
-                     {:title (datetime/full-datetime (js/Date.parse (project-model/most-recent-activity-time branch)))}
-                     (om/build common/updating-duration
-                               {:start (project-model/most-recent-activity-time branch)}
-                               {:opts {:formatter datetime/time-ago}})
-                     " ago"]]]]
+                    (let [last-activity-time (project-model/most-recent-activity-time branch)]
+                      [:.last-build-info
+                       {:title (when last-activity-time
+                                 (datetime/full-datetime (js/Date.parse last-activity-time)))}
+                       (if last-activity-time
+                         (list
+                          (om/build common/updating-duration
+                                    {:start last-activity-time}
+                                    {:opts {:formatter datetime/time-ago}})
+                          " ago")
+                         "never")])]]]
                  (when show-project?
                    (project-settings-link project))]))])))))
 
