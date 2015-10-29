@@ -28,7 +28,8 @@
                                                         (str js/window.location.pathname
                                                              js/window.location.hash))}
                                           (when (not= auth-host js/window.location.host)
-                                            {"delegate" (str auth-protocol "://" js/window.location.host)})))
+                                            ;; window.location.protocol includes the colon
+                                            {"delegate" (str js/window.location.protocol "//" js/window.location.host)})))
                      (assoc :protocol (or (aget js/window "renderContext" "auth_protocol")
                                           "https"))
                      str)]
