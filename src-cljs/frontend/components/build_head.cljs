@@ -21,6 +21,8 @@
             [frontend.visualization.build :as viz-build]
             [frontend.components.build-timings :as build-timings]
             [frontend.components.svg :refer [svg]]
+            [goog.dom]
+            [goog.dom.DomHelper]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -732,11 +734,21 @@
 
 (defn build-config [{:keys [config-string]} owner opts]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [node (om/get-node owner)
+            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
+        (js/Prism.highlightElement highlight-target)))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (let [node (om/get-node owner)
+            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
+        (js/Prism.highlightElement highlight-target)))
     om/IRender
     (render [_]
       (html
        (if (seq config-string)
-         [:div.build-config-string [:pre config-string]]
+         [:div.build-config-string [:pre.solarized.language-yaml config-string]]
          (circle-yml-ad))))))
 
 (defn build-parameters [{:keys [build-parameters]} owner opts]
