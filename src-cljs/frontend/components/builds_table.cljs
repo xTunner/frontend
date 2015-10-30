@@ -193,18 +193,20 @@
                 (= "not_run" (:status build)))
           (list
            [:div.metadata-item.recent-time.start-time
+            {:title "Started: not started"}
             (dashboard-icon "Builds-StartTime")
             "–"]
            [:div.metadata-item.recent-time.duration
+            {:title "Duration: not run"}
             (dashboard-icon "Builds-Duration")
             "–"])
           (list [:div.metadata-item.recent-time.start-time
-                 {:title (datetime/full-datetime (js/Date.parse (:start_time build)))}
+                 {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
                  (dashboard-icon "Builds-StartTime")
                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
                  " ago"]
                 [:div.metadata-item.recent-time.duration
-                 {:title (build-model/duration build)}
+                 {:title (str "Duration: " (build-model/duration build))}
                  (dashboard-icon "Builds-Duration")
                  (om/build common/updating-duration {:start (:start_time build)
                                                      :stop (:stop_time build)})]))]]
