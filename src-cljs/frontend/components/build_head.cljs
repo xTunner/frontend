@@ -39,13 +39,6 @@
       ;; less than 10 seconds waiting for additional containers (our fault)
       (< run-queued-ms 10000 usage-queued-ms))))
 
-(defn additional-containers-offer [plan build]
-  [:p#additional_containers_offer
-   "Too much waiting? You can " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                                            :subpage "containers"})}
-                                 "add more containers"]
-   " and finish even faster."])
-
 (defn new-additional-containers-offer [plan build]
   (let [run-phrase (if (build-model/finished? build)
                      "ran"
@@ -105,9 +98,7 @@
 
                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})))
             (when (show-additional-containers-offer? plan build)
-              (if (om/get-shared owner [:ab-tests :new_usage_queued_upsell])
-                (new-additional-containers-offer plan build)
-                (additional-containers-offer plan build)))]))))))
+                (new-additional-containers-offer plan build))]))))))
 
 (defn build-queue-v2 [data owner]
   (reify
