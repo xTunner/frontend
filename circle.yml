@@ -28,7 +28,7 @@ test:
 
 deployment:
   deploy:
-    branch: /(?!master).+/
+    branch: /(?!not-really-master).+/
     commands:
       - script/deploy.sh
   track-master:
