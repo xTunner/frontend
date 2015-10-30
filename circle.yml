@@ -28,11 +28,11 @@ test:
 
 deployment:
   deploy:
-    branch: /(?!not-really-master).+/
+    branch: /(?!master).+/
     commands:
       - script/deploy.sh
   track-master:
-    branch: not-really-master
+    branch: master
     commands:
       - script/deploy.sh
       - git checkout ship-v2
