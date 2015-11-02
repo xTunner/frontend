@@ -626,6 +626,10 @@
   [target message status {:keys [resp]} state]
   (assoc-in state state/fleet-state-path resp))
 
+(defmethod api-event [:build-system-summary :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/build-system-summary-path resp))
+
 (defmethod api-event [:license :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/license-path resp))

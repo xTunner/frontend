@@ -145,7 +145,7 @@
     ;; navigated to page, load everything
     (-> state
         state-utils/clear-page-state
-        (assoc :navigation-point (inspect navigation-point)
+        (assoc :navigation-point navigation-point
                :navigation-data (assoc args
                                        :show-aside-menu? (not (feature/enabled? :ui-v2))
                                        :show-settings-link? (not (feature/enabled? :ui-v2)))

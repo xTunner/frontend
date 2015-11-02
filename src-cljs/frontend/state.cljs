@@ -190,7 +190,8 @@
 
 (def build-state-path [:build-state])
 
-(def fleet-state-path [:fleet-state])
+(def fleet-state-path [:build-system :builders])
+(def build-system-summary-path [:build-system :queue-and-build-counts])
 
 (def license-path [:render-context :enterprise_license])
 
