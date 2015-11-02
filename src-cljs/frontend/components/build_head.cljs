@@ -1429,8 +1429,8 @@
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
-            project (get-in data state/project-data-path)
-            plan (:plan project)
+            project (get-in data state/project-path)
+            plan (get-in data state/project-plan-path)
             user (get-in data state/user-path)
             logged-in? (not (empty? user))
             has-write-settings? (:write-settings
