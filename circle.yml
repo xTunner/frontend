@@ -35,7 +35,4 @@ deployment:
     branch: master
     commands:
       - script/deploy.sh
-      - git checkout ship-v2
-      - git pull --rebase
-      - git merge $CIRCLE_SHA1 --no-edit
-      - git push origin ship-v2
+      - script/prepare-v2-branch.sh
