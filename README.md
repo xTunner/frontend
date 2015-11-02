@@ -133,18 +133,18 @@ lein cljsbuild once
 ### Sanity Check
 
 To test that everything worked, visit
-http://prod.circlehost:3000/assets/css/app.css and
-http://prod.circlehost:3000/assets/js/om-dev.js.stefon in your browser.
+https://prod.circlehost:4443/assets/css/app.css and
+https://prod.circlehost:4443/assets/js/om-dev.js.stefon in your browser.
 
 ### Production & Development Backends
 
 Now you should have everything you need to start hacking on Circle's frontend!
 
-Visit http://prod.circlehost:3000 for the a production backend
+Visit https://prod.circlehost:4443 for the a production backend
 with locally build development assets. Again, if you've got access to the
 backend code (NOTE: it's not open source), you can run it locally on
 `circlehost:8080`. To connect to the development backend, visit
-http://dev.circlehost:3000. The dev server will default to dev assets, so you
+https://dev.circlehost:4443. The dev server will default to dev assets, so you
 don't need the query parameter.
 
 ### Browser REPL
