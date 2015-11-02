@@ -406,14 +406,13 @@
                          :selected-org selected-org
                          :settings settings})
         [:hr]
-         ;; This is a chain to get the organization that the user has clicked on and whether this use is the first follower.
-         ;; The process is to combine the user with the users organizations (since the use is a org), and then filter
-         ;; down to the selected org and create a map of the org's name and whether or not this user is the first follower.
+         ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
+         ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then 
+         ;; show the payment plan.
          (let [org (->> user
                          :organizations
-                         (cons user)
-                         (map #(when (= (:login %) selected-org) {:selected-org (:login %) :first-follower? (:first-follower? %)}))
+                         (map #(when (= (:login %) selected-org) {:selected-org (:login %) :show-upsell? (:show_upsell? %)}))
                          (filter some?)
                          (first))]
-           (if true;;(:first-follower? org)
+           (if (or (= selected-org (:login user)) (:show-upsell? org))
              (om/build payment-plan org)))]]]])))
