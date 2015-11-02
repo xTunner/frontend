@@ -507,7 +507,7 @@
 
       // make sure failed command text color is not white on a white background
       .command-text, .time {
-        color: #666;
+        color: @command-text-color;
       }
     }
 
@@ -642,7 +642,7 @@
     }
 
     .command {
-      color: #666;
+      color: @command-text-color;
       height: inherit;
       overflow: hidden; // put to the left of .button
       line-height: 3em;
