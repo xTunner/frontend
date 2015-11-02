@@ -264,8 +264,28 @@
              (when (< 1 (count (:steps build)))
                [:div (common/messages (:messages build))])])])))))
 
-(defn container-result-icon [name]
-  [:img.container-status-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
+(defn svg-inject [owner]
+  (js/SVGInjector (om/get-node owner)))
+
+(defn injected-svg [{:keys [class src]} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (svg-inject owner))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (svg-inject owner))
+    om/IRender
+    (render [_]
+      (html
+       [:img {:class class :data-src src}]))))
+
+(defn container-result-icon [{:keys [name]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (om/build injected-svg {:class "container-status-icon"
+                              :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}))))
 
 (defn last-action-end-time
   [container]
@@ -314,21 +334,21 @@
        (let [container-id (container-model/id container)
              status (container-model/status container build-running?)
              duration-ms (container-utilization-duration container)]
-        [:a.container-selector-v2
-         {:on-click #(raise! owner [:container-selected {:container-id container-id}])
-          :class (concat (container-model/status->classes status)
-                         (when (= container-id current-container-id) ["active"]))}
-         [:span.upper-pill-section
-          [:span.container-index (str (:index container))]
-          [:span.status-icon
-           (container-result-icon (case status
-                                    :failed "Status-Failed"
-                                    :success "Status-Passed"
-                                    :canceled "Status-Cancelled"
-                                    :running "Status-Running"
-                                    :waiting "Status-Queued"
-                                    nil))]]
-         (om/build container-duration-label {:actions (:actions container)})])))))
+         [:a.container-selector-v2
+          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
+           :class (concat (container-model/status->classes status)
+                          (when (= container-id current-container-id) ["active"]))}
+          [:span.upper-pill-section
+           [:span.container-index (str (:index container))]
+           [:span.status-icon
+            (om/build container-result-icon {:name (case status
+                                                     :failed "Status-Failed"
+                                                     :success "Status-Passed"
+                                                     :canceled "Status-Cancelled"
+                                                     :running "Status-Running"
+                                                     :waiting "Status-Queued"
+                                                     nil)})]]
+          (om/build container-duration-label {:actions (:actions container)})])))))
 
 (def paging-width 10)
 
