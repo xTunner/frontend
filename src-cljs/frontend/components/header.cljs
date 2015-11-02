@@ -243,7 +243,7 @@
                                         :title "Log In with Github"}
                    "Log In"]]
                  [:li
-                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item {:href "/signup" :on-mouse-up #(analytics/track-signup-click)}
+                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item {:href "/signup" :on-mouse-up #(analytics/track-signup-click {})}
                    "Sign Up"]]])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"

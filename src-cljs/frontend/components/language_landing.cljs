@@ -165,7 +165,7 @@
             [:div.center-text
              [:a.languages-cta-button
               {:href "/signup"
-               :on-mouse-up #(analytics/track-signup-click)}
+               :on-mouse-up #(analytics/track-signup-click {})}
               [:i.fa.fa-github]
               " Sign up with GitHub"]
              [:div.language-cta-trial "14-day free trial"]]]]])))))

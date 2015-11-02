@@ -195,9 +195,10 @@
     "Sign Up Free"))
 
 (defn sign-up-cta [owner source]
+  (analytics/track-signup-impression {:view source})
   [:a.btn.btn-cta {:href "/signup"
                    :role "button"
-                   :on-mouse-up #(analytics/track-signup-click)}
+                   :on-mouse-up #(analytics/track-signup-click {:view source})}
    (str (sign-up-text))])
 
 (defn feature-icon [name]

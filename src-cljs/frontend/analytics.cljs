@@ -185,8 +185,11 @@
                                  {} choices)]
     (mixpanel/register-once mixpanel-choices)))
 
-(deftrack track-signup-click []
-  (mixpanel/track "signup_click"))
+(deftrack track-signup-click [data]
+  (mixpanel/track "signup_click" data))
+
+(deftrack track-signup-impression [data]
+  (mixpanel/track "signup_impression" data))
 
 (deftrack track-parallelism-button-click [data]
   (mixpanel/track "parallelism_button_click" data))
