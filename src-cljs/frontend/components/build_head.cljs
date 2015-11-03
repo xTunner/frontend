@@ -736,13 +736,14 @@
    ;; default to the queue tab if the build is currently usage queued, and
    ;; the user is has the right permissions (and is logged in).
    (and (:read-settings scopes)
-        (or (build-model/in-usage-queue? build)
-            ;; "config" takes up too much room for paid customers.
-            (feature/enabled? :ui-v2)))
+        (build-model/in-usage-queue? build))
    :usage-queue
    ;; If there's no SSH info, build isn't finished, show the config or commits.
    (build-model/running? build) (if (feature/enabled? :ui-v2)
-                                  :config
+                                  ;; "config" takes up too much room for paid customers.
+                                  (if (:read-settings scopes)
+                                    :usage-queue
+                                    :config)
                                   :commits)
    ;; Otherwise, just use the first one.
    :else :tests))
