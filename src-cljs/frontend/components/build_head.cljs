@@ -738,8 +738,8 @@
    (and (:read-settings scopes)
         (build-model/in-usage-queue? build))
    :usage-queue
-   ;; If there's no SSH info, build isn't finished, show the config
-   (build-model/running? build) (if (feature/enabled? :ui-v2) :config :commits)
+   ;; If there's no SSH info, build isn't finished, show the usage-queue or commits.
+   (build-model/running? build) (if (feature/enabled? :ui-v2) :usage-queue :commits)
    ;; Otherwise, just use the first one.
    :else :tests))
 
