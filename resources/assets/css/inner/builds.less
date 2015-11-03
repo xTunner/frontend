@@ -96,8 +96,6 @@
   }
 
   .sub-head-usage-queue {
-    padding-bottom: 0;
-
     .build:last-child {
       margin-bottom: 0;
       box-shadow: none;
@@ -510,6 +508,10 @@
 
     &.running {
       border-left: @side-line-width solid @brand-primary-v2;
+    }
+
+    &.canceled {
+      border-left: @side-line-width solid @brand-cancelled-v2;
     }
   }
 }

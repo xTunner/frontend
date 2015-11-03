@@ -733,15 +733,10 @@
   (cond
    ;; default to ssh-info for SSH builds
    (build-model/ssh-enabled-now? build) :ssh-info
-   ;; default to the queue tab if the build is currently usage queued, and
-   ;; the user is has the right permissions (and is logged in).
-   (and (:read-settings scopes)
-        (build-model/in-usage-queue? build))
-   :usage-queue
    ;; If there's no SSH info, build isn't finished, show the config
    (build-model/running? build) (if (feature/enabled? :ui-v2) :config :commits)
-   ;; Otherwise, just use the first one.
-   :else :tests))
+   (:read-settings scopes) :usage-queue
+   :else nil))
 
 (def tab-link :a.tab-link)
 
