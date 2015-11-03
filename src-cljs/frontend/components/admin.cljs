@@ -120,10 +120,10 @@
                 (let [container-totals (->> fleet-state
                                           (map #(select-keys % [:free :busy :total]))
                                           (apply merge-with +))
-                    queued-builds (+ (get-in summary-counts [:usage-queue :builds])
-                                     (get-in summary-counts [:run-queue :builds]))
-                    queue-container-count (+ (get-in summary-counts [:usage-queue :containers])
-                                             (get-in summary-counts [:run-queue :containers]))]
+                    queued-builds (+ (get-in summary-counts [:usage_queue :builds])
+                                     (get-in summary-counts [:run_queue :builds]))
+                    queue-container-count (+ (get-in summary-counts [:usage_queue :containers])
+                                             (get-in summary-counts [:run_queue :containers]))]
                 [:div
                  [:div "capacity"
                   [:ul [:li "total containers: " (:total container-totals)]]]
