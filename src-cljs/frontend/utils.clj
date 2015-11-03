@@ -39,7 +39,6 @@
               (throw e#))))
      (catch :default e2#
        (merror e2#)
-       (rollbar/push e2#)
        (when (:rethrow-errors? initial-query-map)
          (js/eval "debugger")
          (throw e2#)))))
