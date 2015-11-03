@@ -736,10 +736,14 @@
    ;; default to the queue tab if the build is currently usage queued, and
    ;; the user is has the right permissions (and is logged in).
    (and (:read-settings scopes)
-        (build-model/in-usage-queue? build))
+        (or (build-model/in-usage-queue? build)
+            ;; "circle.yml" take sup too much room for paid customers.
+            (feature/enabled? :ui-v2)))
    :usage-queue
    ;; If there's no SSH info, build isn't finished, show the usage-queue or commits.
-   (build-model/running? build) (if (feature/enabled? :ui-v2) :usage-queue :commits)
+   (build-model/running? build) (if (feature/enabled? :ui-v2)
+                                  :config
+                                  :commits)
    ;; Otherwise, just use the first one.
    :else :tests))
 
