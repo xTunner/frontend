@@ -18,7 +18,8 @@
          "success"              "pass"
          "running"              "busy"
          "queued"               "queued"
-         "not_running"          "queued")))
+         "not_running"          "queued"
+         "scheduled"            "queued")))
 
 (deftest status-badge-icons
   (testing "correct icons are mapped to build states"
@@ -35,4 +36,5 @@
          "success"              "Status-Passed"
          "running"              "Status-Running"
          "queued"               "Status-Queued"
-         "not_running"          "Status-Queued")))
+         "not_running"          "Status-Queued"
+         "scheduled"            "Status-Queued")))
