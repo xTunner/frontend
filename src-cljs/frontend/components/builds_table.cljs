@@ -104,7 +104,7 @@
               builds)]]))))
 
 (defn dashboard-icon [name]
-  [:img.dashboard-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
+  [:img.dashboard-icon {:src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
 (defn build-status-badge-wording [build]
   (let [wording       (build-model/status-words build)
@@ -158,18 +158,22 @@
          " #"
          (:build_num build)]]
 
-       [:div.metadata 
-
-        (when-let [pusher-name (build-model/ui-user build)]
+       [:div.metadata
+        (let [pusher-name (build-model/ui-user build)
+              api-trigged? (= (:why build) "api")]
           [:div.metadata-item.recent-user
-           {:title pusher-name}
+           {:title (if api-trigged?
+                     "API"
+                     pusher-name)}
            (if-let [avatar-url (-> build :user :avatar_url)]
              [:img.dashboard-icon
               ;; Adding `&s=N` to the avatar URL returns an NxN version of the
               ;; avatar (except, for some reason, for default avatars, which are
               ;; always returned full-size, but they're sized with CSS anyhow).
               {:src (-> avatar-url url/url (assoc-in [:query "s"] "20") str)}]
-             (dashboard-icon "Builds-Author"))])
+             (if api-trigged?
+               (dashboard-icon "Bot-Icon")
+               (dashboard-icon "Default-Avatar")))])
 
         (when-let [urls (seq (:pull_request_urls build))]
           [:div.metadata-item.pull-requests {:title "Pull Requests"}
