@@ -116,7 +116,7 @@
 (def email-prefs
   [["default" "Default"]
    ["all" "All builds"]
-   ["smart" "My breaks and fixes"]
+   ["smart" "Branches I've pushed to"]
    ["none" "None"]])
 
 (defn email-pref [{:keys [project user]} owner]
