@@ -119,6 +119,17 @@
    [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
    (build-status-badge-wording build)])
 
+(defn avatar [user & {:keys [size trigger] :or {size 20} :as opts}]
+  (if-let [avatar-url (-> user :avatar_url)]
+    [:img.dashboard-icon
+     ;; Adding `&s=N` to the avatar URL returns an NxN version of the
+     ;; avatar (except, for some reason, for default avatars, which are
+     ;; always returned full-size, but they're sized with CSS anyhow).
+     {:src (-> avatar-url url/url (assoc-in [:query "s"] size) str)}]
+    (if (= trigger "api")
+      (dashboard-icon "Bot-Icon")
+      (dashboard-icon "Default-Avatar"))))
+
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (when (:dont_build build) "dont_build")}
@@ -160,20 +171,12 @@
 
        [:div.metadata
         (let [pusher-name (build-model/ui-user build)
-              api-trigged? (= (:why build) "api")]
+              trigger     (:why build)]
           [:div.metadata-item.recent-user
-           {:title (if api-trigged?
+           {:title (if (= trigger "api")
                      "API"
                      pusher-name)}
-           (if-let [avatar-url (-> build :user :avatar_url)]
-             [:img.dashboard-icon
-              ;; Adding `&s=N` to the avatar URL returns an NxN version of the
-              ;; avatar (except, for some reason, for default avatars, which are
-              ;; always returned full-size, but they're sized with CSS anyhow).
-              {:src (-> avatar-url url/url (assoc-in [:query "s"] "20") str)}]
-             (if api-trigged?
-               (dashboard-icon "Bot-Icon")
-               (dashboard-icon "Default-Avatar")))])
+           (avatar (:user build) :trigger trigger)])
 
         (when-let [urls (seq (:pull_request_urls build))]
           [:div.metadata-item.pull-requests {:title "Pull Requests"}
