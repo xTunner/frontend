@@ -1068,7 +1068,7 @@
           (utils/tooltip (str "#commit-line-tooltip-hack-" commit)
                          {:placement "bottom"
                           :animation false
-                          :viewport "#build-log-container"})))
+                          :viewport ".build-commits-container"})))
       om/IRender
       (render [_]
         (html
