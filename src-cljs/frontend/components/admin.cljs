@@ -66,43 +66,77 @@
                (:environment app)))]
           "."]]))))
 
-(defn fleet-state [app owner]
+(defn builders [builders owner]
   (reify
     om/IDisplayName (display-name [_] "Admin Build State")
     om/IRender
     (render [_]
-      (let [fleet-state (sort-by :instance_id (get-in app state/fleet-state-path))]
+      (html
+        [:section {:style {:padding-left "10px"}}
+         [:header
+          [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
+          " / "
+          [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
+         (if-not builders
+           [:div.loading-spinner common/spinner]
+           ;; FIXME: This table shouldn't really be .recent-builds-table; it's
+           ;; a hack to steal a bit of styling from the builds table until we
+           ;; properly address the styling for this table and admin tools in
+           ;; general.
+           [:table.recent-builds-table
+            [:thead
+             [:tr
+              [:th "Instance ID"]
+              [:th "Instance Type"]
+              [:th "Boot Time"]
+              [:th "Busy Containers"]
+              [:th "State"]]]
+            [:tbody
+             (if (seq builders)
+               (for [instance builders]
+                 [:tr
+                  [:td (:instance_id instance)]
+                  [:td (:ec2_instance_type instance)]
+                  [:td (datetime/long-datetime (:boot_time instance))]
+                  [:td (:busy instance) " / " (:total instance)]
+                  [:td (:state instance)]])
+               [:tr
+                [:td "No available masters"]])]])]))))
+
+(defn fleet-state [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [fleet-state (sort-by :instance_id (get-in app state/fleet-state-path))
+            summary-counts (get-in app state/build-system-summary-path)]
         (html
-         [:section {:style {:padding-left "10px"}}
-          [:header
-           [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
-           " / "
-           [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
-          (if-not fleet-state
-            [:div.loading-spinner common/spinner]
-            ;; FIXME: This table shouldn't really be .recent-builds-table; it's
-            ;; a hack to steal a bit of styling from the builds table until we
-            ;; properly address the styling for this table and admin tools in
-            ;; general.
-            [:table.recent-builds-table
-             [:thead
-              [:tr
-               [:th "Instance ID"]
-               [:th "Instance Type"]
-               [:th "Boot Time"]
-               [:th "Busy Containers"]
-               [:th "State"]]]
-             [:tbody
-              (if (seq fleet-state)
-                (for [instance fleet-state]
-                  [:tr
-                   [:td (:instance_id instance)]
-                   [:td (:ec2_instance_type instance)]
-                   [:td (datetime/long-datetime (:boot_time instance))]
-                   [:td (:busy instance) " / " (:total instance)]
-                   [:td (:state instance)]])
-                [:tr
-                 [:td "No available masters"]])]])])))))
+          [:div {:style {:padding-left "10px"}}
+           [:h1 "Fleet State"]
+           (if-not fleet-state
+             [:div.loading-spinner common/spinner]
+             [:div
+              (if-not summary-counts
+                [:div.loading-spinner common/spinner]
+                (let [container-totals (->> fleet-state
+                                          (map #(select-keys % [:free :busy :total]))
+                                          (apply merge-with +))
+                    queued-builds (+ (get-in summary-counts [:usage_queue :builds])
+                                     (get-in summary-counts [:run_queue :builds]))
+                    queue-container-count (+ (get-in summary-counts [:usage_queue :containers])
+                                             (get-in summary-counts [:run_queue :containers]))]
+                [:div
+                 [:div "capacity"
+                  [:ul [:li "total containers: " (:total container-totals)]]]
+                 [:div "in use"
+                  [:ul
+                   [:li "running builds: " (get-in summary-counts [:running :builds])]
+                   [:li "containers in use: " (:busy container-totals)]]]
+                 [:div "queued"
+                  [:ul
+                   [:li "queued builds: " queued-builds]
+                   [:li "containers requested by queued builds: " queue-container-count]]]]))
+              [:h2 "Builders"]
+              (om/build builders fleet-state)])])))))
 
 
 (defn license [app owner]

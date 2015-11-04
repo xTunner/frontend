@@ -18,8 +18,7 @@
             [frontend.utils :as utils :refer [mlog merror]]
             [om.core :as om :include-macros true]
             [goog.string :as gstring]
-            [clojure.set :as set])
-  (:require-macros [frontend.utils :refer [inspect]]))
+            [clojure.set :as set]))
 
 (def build-keys-mapping {:username :org
                          :reponame :repo
@@ -625,6 +624,10 @@
 (defmethod api-event [:fleet-state :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/fleet-state-path resp))
+
+(defmethod api-event [:build-system-summary :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/build-system-summary-path resp))
 
 (defmethod api-event [:license :success]
   [target message status {:keys [resp]} state]
