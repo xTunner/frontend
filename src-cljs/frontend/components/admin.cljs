@@ -11,7 +11,7 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html inspect]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn build-state [app owner]
   (reify

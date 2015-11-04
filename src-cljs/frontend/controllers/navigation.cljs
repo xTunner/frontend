@@ -20,8 +20,7 @@
             [frontend.routes :as routes]
             [goog.dom]
             [goog.string :as gstring])
-  (:require-macros [frontend.utils :refer [inspect]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler

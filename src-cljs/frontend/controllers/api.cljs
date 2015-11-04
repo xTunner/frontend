@@ -18,8 +18,7 @@
             [frontend.utils :as utils :refer [mlog merror]]
             [om.core :as om :include-macros true]
             [goog.string :as gstring]
-            [clojure.set :as set])
-  (:require-macros [frontend.utils :refer [inspect]]))
+            [clojure.set :as set]))
 
 (def build-keys-mapping {:username :org
                          :reponame :repo
