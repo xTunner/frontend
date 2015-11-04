@@ -282,7 +282,7 @@ Following integration tools are pre-installed.
 *   `awscli` ({{ versions.awscli }})
 *   `gcloud` ({{ versions.gcloud }})
 
-## Buid Toolchain
+## Build Toolchain
 
 We have the following versions of GCC and G++ as well as some other build tools installed:
 
