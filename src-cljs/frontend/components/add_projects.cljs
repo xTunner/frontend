@@ -281,7 +281,7 @@
                                        {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
            (vals follows-by-orgs))]]))
 
-(defrender payment-plan [selected-org owner]
+(defrender payment-plan [{:keys [selected-org view]} owner]
   (analytics/track-payment-plan-impression {:view view})
   (html
     [:div.payment-plan
@@ -415,4 +415,5 @@
                          (first))]
             (println selected-org)
             (if (or (= selected-org (:login user)) (:show-upsell? org))
-              (om/build payment-plan selected-org)))]]]])))
+              (om/build payment-plan {:selected-org selected-org
+                                      :view view})))]]]])))
