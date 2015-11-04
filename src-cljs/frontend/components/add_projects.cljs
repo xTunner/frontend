@@ -413,7 +413,6 @@
                          (map #(when (= (:login %) selected-org) {:selected-org (:login %) :show-upsell? (:show_upsell? %)}))
                          (filter some?)
                          (first))]
-            (println selected-org)
             (if (or (= selected-org (:login user)) (:show-upsell? org))
               (om/build payment-plan {:selected-org selected-org
                                       :view view})))]]]])))
