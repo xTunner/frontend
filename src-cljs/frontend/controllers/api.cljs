@@ -6,7 +6,6 @@
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
-            [frontend.models.user :as user]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -17,7 +16,6 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
-            [frontend.utils.launchdarkly :as launchdarkly]
             [om.core :as om :include-macros true]
             [goog.string :as gstring]
             [clojure.set :as set])
@@ -233,11 +231,6 @@
         true (assoc-in state/user-organizations-path orgs)
         true (assoc-in state/top-nav-orgs-path selectable-orgs)
         (not selected) (assoc-in state/top-nav-selected-org-path (first selectable-orgs)))))
-
-(defmethod post-api-event! [:organizations :success]
-  [target message status {orgs :resp} previous-state current-state]
-  (launchdarkly/identify {:email (:selected_email (get-in current-state state/user-path))
-                          :custom {:organizations (map :login (filter-piggieback orgs))}}))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]
