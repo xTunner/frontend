@@ -140,7 +140,7 @@
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
-                [:img.cancel-icon {:src (common/icon-path "Status-Cancelled")}]
+                [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
                 [:span.cancel-text " Cancel"]])))])]
      [:div.build-info
       [:div.build-info-header
