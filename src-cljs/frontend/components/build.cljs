@@ -1,31 +1,25 @@
 (ns frontend.components.build
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.analytics :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
-            [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
+            [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.dom :as gdom]
-            [goog.dom.dataset :as gdataset]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]])
+            [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html]]))
 
 (def view "build")
@@ -266,43 +260,11 @@
              (when (< 1 (count (:steps build)))
                [:div (common/messages (:messages build))])])])))))
 
-
-(defn svg-inject! [owner]
-  (let [node (om/get-node owner)
-        {:keys [class]} (om/get-props owner)]
-    ;; SVGInjector replaces the img with an svg. It merges the data- attributes
-    ;; onto that svg, including data-reactid, so the svg successfully "becomes"
-    ;; the component's element. The only hiccup is that it merges the class
-    ;; names on the svg element with those on the element it replaces. The first
-    ;; time it injects, this is good: we get a mix of the svg's own classes and
-    ;; the ones we apply to it. If we re-render injected-svg with a different
-    ;; src, though, the result will be the *new* svg's classes plus the *old*
-    ;; svg's classes, plus the ones specified in the component props.
-    ;;
-    ;; To get around that, we forcefully reset the class attribute to the latest
-    ;; component version just before we SVGInjector each time, clearing out any
-    ;; classes which SVGInjector may have added to the element previously.
-    (.setAttribute node "class" class)
-    (js/SVGInjector node)))
-
-(defn injected-svg [{:keys [class src]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (svg-inject! owner))
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (svg-inject! owner))
-    om/IRender
-    (render [_]
-      (html
-       [:img {:class class :data-src src}]))))
-
 (defn container-result-icon [{:keys [name]} owner]
   (reify
     om/IRender
     (render [_]
-      (om/build injected-svg {:class "container-status-icon"
+      (om/build svg {:class "container-status-icon"
                               :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}))))
 
 (defn last-action-end-time
