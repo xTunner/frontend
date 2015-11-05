@@ -12,7 +12,7 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
+(defn build-row [build owner {:keys [show-actions? show-branch? show-project? show-log? show-parallelism?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:tr {:class (when (:dont_build build) "dont_build")}
      [:td
@@ -36,11 +36,12 @@
        {:title (build-model/ui-user build)
         :href url}
        (build-model/author build)]]
-     [:td.recent-log
-      [:a
-       {:title (:body build)
-        :href url}
-       (:subject build)]]
+     (when show-log?
+       [:td.recent-log
+        [:a
+         {:title (:body build)
+          :href url}
+         (:subject build)]])
      (if (or (not (:start_time build))
              (= "not_run" (:status build)))
        [:td {:col-span 2}]
@@ -56,6 +57,9 @@
                 :href url}
                (om/build common/updating-duration {:start (:start_time build)
                                                    :stop (:stop_time build)})]]))
+     (when show-parallelism?
+       [:td
+        (:parallel build) ])
      [:td.recent-status-badge
       [:a
        {:title "status"
@@ -69,15 +73,16 @@
                 vcs-url (:vcs_url build)
                 build-num (:build_num build)]
             (forms/managed-button
-             [:button.cancel-build
-              {:on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                :vcs-url vcs-url
-                                                                :build-num build-num}])}
-              "Cancel"])))])]))
+              [:button.cancel-build
+               {:on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                                 :vcs-url vcs-url
+                                                                 :build-num build-num}])}
+               "Cancel"])))])]))
 
-(defn builds-table-v1 [builds owner {:keys [show-actions? show-branch? show-project?]
+(defn builds-table-v1 [builds owner {:keys [show-actions? show-branch? show-project? show-log? show-parallelism?]
                                      :or {show-branch? true
-                                          show-project? true}}]
+                                          show-project? true
+                                          show-log? true}}]
   (reify
     om/IDisplayName (display-name [_] "Builds Table V1")
     om/IRender
@@ -91,16 +96,19 @@
           (when show-branch?
             [:th "Branch"])
           [:th "Author"]
-          [:th "Log"]
+          (when show-log? [:th "Log"])
           [:th.condense "Started"]
           [:th.condense "Length"]
+          (when show-parallelism? [:th "Containers"])
           [:th.condense "Status"]
           (when show-actions?
             [:th.condense "Actions"])]]
         [:tbody
          (map #(build-row % owner {:show-actions? show-actions?
                                    :show-branch? show-branch?
-                                   :show-project? show-project?})
+                                   :show-project? show-project?
+                                   :show-log? show-log?
+                                   :show-parallelism? show-parallelism?})
               builds)]]))))
 
 (defn dashboard-icon [name]
