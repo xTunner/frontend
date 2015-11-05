@@ -196,3 +196,9 @@
 
 (deftrack track-parallelism-button-impression [data]
   (mixpanel/track "parallelism_button_impression" data))
+
+(deftrack track-payment-plan-impression [data]
+  (mixpanel/track "payment-plan-impression" data))
+
+(deftrack track-payment-plan-click [data]
+  (mixpanel/track "payment-plan-click" data))
