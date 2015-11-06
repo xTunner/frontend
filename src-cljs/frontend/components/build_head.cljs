@@ -648,13 +648,11 @@
                                                    [:hr]
                                                    [:li
                                                     [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
-                                                     (if (om/get-state owner :is-open?)
-                                                       [:span
-                                                        [:i.fa.fa-chevron-up.build-tests-toggle-icon]
-                                                        "Less"]
-                                                       [:span 
-                                                        [:i.fa.fa-chevron-down.build-tests-toggle-icon]
-                                                        "More"])]]
+                                                     [:span
+                                                      [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
+                                                      (if (om/get-state owner :is-open?)
+                                                        "Less"
+                                                        "More")]]]
                                                    (when (om/get-state owner :is-open?)
                                                      (om/build-all test-item-v2
                                                                    (vec other-tests))))))))]]]])

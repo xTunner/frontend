@@ -747,6 +747,13 @@
   .build-tests-toggle-icon {
     margin-right: 6px; // magic number
     color: @gray-lighter-v2;
+    &:before {
+      display: inline-block;
+      transition: all .2s ease;
+    }
+    &.expanded:before {
+      .rotate(90);
+    }
   }
 
   // TODO Generalized whitespace tweak. Should be moved to
