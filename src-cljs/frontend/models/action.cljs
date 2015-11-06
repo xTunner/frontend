@@ -8,7 +8,7 @@
             goog.string.format))
 
 (defn failed? [action]
-  (#{"failed" "timedout" "cancelled" "infrastructure_fail"} (:status action)))
+  (#{"failed" "timedout" "canceled" "infrastructure_fail"} (:status action)))
 
 (defn has-content? [action]
   (or (:has_output action)

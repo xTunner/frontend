@@ -5,6 +5,7 @@
             [frontend.datetime :as datetime]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.utils :as utils :include-macros true]
@@ -116,7 +117,8 @@
 
 (defn build-status-badge [build]
   [:div.recent-status-badge {:class (build-model/status-class build)}
-   [:img.badge-icon {:src (-> build build-model/status-icon-v2 common/icon-path)}]
+   (om/build svg {:class "badge-icon"
+                  :src (-> build build-model/status-icon-v2 common/icon-path)})
    (build-status-badge-wording build)])
 
 (defn avatar [user & {:keys [size trigger] :or {size 20} :as opts}]
@@ -151,7 +153,7 @@
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
-                [:img.cancel-icon {:src (common/icon-path "Status-Cancelled")}]
+                [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
                 [:span.cancel-text " Cancel"]])))])]
      [:div.build-info
       [:div.build-info-header
