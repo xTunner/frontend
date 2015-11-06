@@ -133,7 +133,7 @@
 
              (when (< 10000 (build-model/run-queued-time build))
                [:span#circle_queued_explanation
-                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."]) 
+                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
              (when (seq builds)
                [:span
                 " This build " (if usage-queued? "has been" "was")
@@ -289,8 +289,8 @@
   [build owner]
     [:div.ssh-ad
      [:p
-      "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on. 
-       This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate. 
+      "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on.
+       This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
        More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."
      (om/build ssh-buttons build)]])
 
@@ -673,7 +673,7 @@
                                                        [:span
                                                         [:i.fa.fa-chevron-up.build-tests-toggle-icon]
                                                         "Less"]
-                                                       [:span 
+                                                       [:span
                                                         [:i.fa.fa-chevron-down.build-tests-toggle-icon]
                                                         "More"])]]
                                                    (when (om/get-state owner :is-open?)
