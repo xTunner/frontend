@@ -294,6 +294,19 @@
        More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."
      (om/build ssh-buttons build)]])
 
+(defrender ssh-build-list [nodes owner]
+  (html
+    [:div.build-ssh-list
+     [:dl.dl-horizontal
+      (map (fn [node i]
+             (list
+               [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
+               [:dd {:class (when (:ssh_enabled node) "connected")}
+                [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
+                (when-not (:ssh_enabled node)
+                  [:span.loading-spinner common/spinner])]))
+           nodes (range))]]))
+
 (defn ssh-instructions
   "Instructions for SSHing into a build that you can SSH into"
   [build owner]
@@ -303,16 +316,7 @@
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
         [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
-       [:div.build-ssh-list
-        [:dl.dl-horizontal
-         (map (fn [node i]
-                (list
-                  [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
-                  [:dd {:class (when (:ssh_enabled node) "connected")}
-                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
-                   (when-not (:ssh_enabled node)
-                     [:span.loading-spinner common/spinner])]))
-              nodes (range))]]
+       (om/build ssh-build-list nodes)
        [:div.build-ssh-doc
         "Debugging Selenium browser tests? "
         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
