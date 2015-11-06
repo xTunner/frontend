@@ -312,12 +312,16 @@
 
 (defrender ssh-node-list-v2 [nodes owner]
   (html
-    [:ul.ssh-node-list
-     (map-indexed (fn [i node] [:li
-                                [:span.container (str "Container " i)]
-                                [:span.command (ssh-command node)]
-                                (when (:ssh_enabled node)
-                                  [:img.running-icon {:src (common/icon-path "Status-Running")}])])
+    [:ul.ssh-nodes-list
+     (map-indexed (fn [i node]
+                    (let [no-ssh?       (not (:ssh_enabled node))
+                          command-class (cond-> "ssh-node-command"
+                                          no-ssh? (str " ssh-node-disabled"))]
+                      [:li.ssh-node
+                       [:span.ssh-node-container (str "Container " i)]
+                       [:span {:class command-class} (ssh-command node)]
+                       (when no-ssh?
+                         [:img.ssh-node-running-icon {:src (common/icon-path "Status-Running")}])]))
                   nodes)]))
 
 (defn ssh-instructions
@@ -329,14 +333,17 @@
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
         [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
+
        (if  (feature/enabled? :ui-v2)
          (om/build ssh-node-list-v2 nodes)
          (om/build ssh-node-list nodes))
-       [:div.build-ssh-doc
-        "Debugging Selenium browser tests? "
-        [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-         "Read our doc on interacting with the browser over VNC"]
-        "."]])))
+
+       (if-not (feature/enabled? :ui-v2)
+         [:div.build-ssh-doc
+          "Debugging Selenium browser tests? "
+          [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+           "Read our doc on interacting with the browser over VNC"]
+          "."])])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify

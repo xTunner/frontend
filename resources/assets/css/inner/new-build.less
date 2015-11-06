@@ -113,7 +113,7 @@
 
  .parallelism-tab {
     width: 50%;
-  } 
+  }
 
 
   &:hover {
@@ -751,4 +751,50 @@
   // terrible hack because the box shadow is inset into grid
   margin-bottom: -(@grid-gutter-width / 2) + 1;
   box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.10);
+}
+
+&.ui-v2 {
+  .sub-head-ssh-info {
+    p {
+      margin: 0px;
+    }
+  }
+
+  .ssh-nodes-list {
+    list-style: none;
+    padding-left: 0px;
+    padding-top: 5px;
+  }
+
+  .ssh-node {
+    @ssh-node-padding: 10px;
+
+    .flexy(center, flex-start, row);
+    border-bottom: solid 2px @list-border-color;
+    padding-top:    @ssh-node-padding;
+    padding-bottom: @ssh-node-padding;
+  }
+
+  .ssh-node:last-child {
+    border-bottom: none;
+  }
+
+  .ssh-node-container {
+    padding-right: 18px;
+  }
+
+  .ssh-node-command {
+    padding-right: 10px;
+  }
+
+  .ssh-node-disabled {
+    color: @brand-gray-v2;
+  }
+
+  .ssh-node-running-icon {
+    @icon-size: 10px;
+
+    height: @icon-size;
+    width: @icon-size;
+  }
 }
