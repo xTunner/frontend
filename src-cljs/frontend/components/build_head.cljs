@@ -601,71 +601,87 @@
 
 (def initial-test-render-count 5)
 
-(defn build-tests-list-v2 [data owner]
+(defn build-tests-source-block [[source {:keys [failures successes]}] owner]
+  (reify om/IRender
+    (render [_]
+      (html
+       [:div.alert.alert-danger.expanded.build-tests-info
+        [:div.alert-header
+         [:img.alert-icon {:src (common/icon-path "Info-Error")}]
+         (test-model/pretty-source source)
+         " - "
+         (pluralize (count failures) "failure")]
+        [:div.alert-body
+         [:div.build-tests-summary
+          "Your build ran "
+          [:strong (pluralize (+ (count failures)
+                                 (count successes)) "test")]
+          " with "
+          [:strong (pluralize (count failures) "failure")]]
+         [:div.build-tests-list-container
+          [:ol.list-unstyled.build-tests-list
+           (for [[file tests-by-file] (group-by :file (take (if (om/get-state owner :is-open?)
+                                                              js/Infinity
+                                                              initial-test-render-count)
+                                                            failures))]
+             (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
+                   initial-test-results (take initial-test-render-count sorted-tests)
+                   other-tests (drop initial-test-render-count sorted-tests)]
+               (list (when file [:div.filename (str file ":")])
+                     (om/build-all test-item-v2
+                                   (vec initial-test-results))
+                     (when (seq other-tests)
+                       (list
+                        [:hr]
+                        [:li
+                         [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                          [:span
+                           [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
+                           (if (om/get-state owner :is-open?)
+                             "Less"
+                             "More")]]]
+                        (when (om/get-state owner :is-open?)
+                          (om/build-all test-item-v2
+                                        (vec other-tests))))))))]]]]))))
+
+(defn build-tests-list-v2 [{{tests :tests} :tests-data
+                            {build-status :status} :build
+                            :as data}
+                           owner]
   (reify
     om/IWillMount
     (will-mount [_]
       (raise! owner [:tests-showed]))
-
     om/IRender
     (render [_]
-      (let [tests-data (:tests-data data)
-            tests (when (:tests tests-data)
-                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
-            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
-            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)
-            build-succeeded? (= "success" (get-in data [:build :status]))]
+      (let [source-hash (->> tests
+                             (map-indexed #(assoc %2 :i %1))
+                             (reduce (fn [acc {:keys [result] :as test}]
+                                       (update-in acc [(test-model/source test)
+                                                       (if (#{"failure" "error"} result)
+                                                         :failures
+                                                         :successes)]
+                                                  #(cons test %)))
+                                     {}))
+            failed-sources (filter (fn [[_ {:keys [failures]}]]
+                                     (seq failures))
+                                   source-hash)
+            build-succeeded? (= "success" build-status)]
         (html
          [:div.test-results
           (if-not tests
             [:div.loading-spinner common/spinner]
             (cond
-              (seq failed-tests) (for [[source tests-by-source] (group-by test-model/source failed-tests)]
-                                   [:div.alert.alert-danger.expanded.build-tests-info
-                                    [:div.alert-header
-                                     [:img.alert-icon {:src (common/icon-path "Info-Error")}]
-                                     (test-model/pretty-source source)
-                                     " - "
-                                     (pluralize (count failed-tests) "failure")]
-                                    [:div.alert-body
-                                     [:div.build-tests-summary
-                                      "Your build ran "
-                                      [:strong (pluralize (count tests) "test")]
-                                      " with "
-                                      [:strong (pluralize (count failed-tests) "failure")]]
-                                     [:div.build-tests-list-container
-                                      [:ol.list-unstyled.build-tests-list
-                                       (for [[file tests-by-file] (group-by :file tests-by-source)]
-                                         (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
-                                               initial-test-results (take initial-test-render-count sorted-tests)
-                                               other-tests (drop initial-test-render-count sorted-tests)]
-
-                                         (list (when file [:div.filename (str file ":")])
-                                               (om/build-all test-item-v2
-                                                             (vec initial-test-results))
-                                               (when (seq other-tests)
-                                                 (list
-                                                   [:hr]
-                                                   [:li
-                                                    [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
-                                                     [:span
-                                                      [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
-                                                      (if (om/get-state owner :is-open?)
-                                                        "Less"
-                                                        "More")]]]
-                                                   (when (om/get-state owner :is-open?)
-                                                     (om/build-all test-item-v2
-                                                                   (vec other-tests))))))))]]]])
-
+              (seq failed-sources) (om/build-all build-tests-source-block failed-sources)
               (seq tests) [:div
                            "Your build ran "
                            [:strong (count tests)]
-                           " tests in " (string/join ", " (map test-model/pretty-source sources)) " with "
+                           " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
                            [:strong "0 failures"]]
 
               :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
                      [:div [:img.alert-icon {:src (common/icon-path
-                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                                                   (if build-succeeded? "Info-Info" "Info-Error"))}]]
                      (tests-ad owner)]))])))))
 
 (defn circle-yml-ad []
