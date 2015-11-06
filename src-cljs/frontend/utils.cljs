@@ -335,3 +335,27 @@
 ;; For objects where externs are unavailable, directly access property.
 ;; This is used as a marker to prevent future "refactoring".
 (def unexterned-prop aget)
+
+(defn split-map-values-at
+  "Assume M is {k -> xs, ...} split into two maps.
+
+  One containing first TOP-MAX values of xs, the other containing the rest.
+
+  This only makes sense for sorted maps."
+  [m top-max]
+  (loop [top-map (sorted-map)
+         bottom-map (sorted-map)
+         ks (keys m)
+         remaining top-max]
+    (if (seq ks)
+      (let [k (first ks)
+            [top bottom] (split-at remaining (m k))]
+        (recur (if (seq top)
+                 (assoc top-map k top)
+                 top-map)
+               (if (seq bottom)
+                 (assoc bottom-map k bottom)
+                 bottom-map)
+               (rest ks)
+               (- remaining (count top))))
+      [top-map bottom-map])))

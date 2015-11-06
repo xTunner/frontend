@@ -601,6 +601,14 @@
 
 (def initial-test-render-count 5)
 
+(defn build-tests-file-block [[file failures] owner]
+  (reify om/IRender
+    (render [_]
+      (html
+       [:div
+        (when file [:div.filename (str file ":")])
+        (om/build-all test-item-v2 (vec failures))]))))
+
 (defn build-tests-source-block [[source {:keys [failures successes]}] owner]
   (reify om/IRender
     (render [_]
@@ -620,29 +628,24 @@
           [:strong (pluralize (count failures) "failure")]]
          [:div.build-tests-list-container
           [:ol.list-unstyled.build-tests-list
-           (for [[file tests-by-file] (group-by :file (take (if (om/get-state owner :is-open?)
-                                                              js/Infinity
-                                                              initial-test-render-count)
-                                                            failures))]
-             (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
-                   initial-test-results (take initial-test-render-count sorted-tests)
-                   other-tests (drop initial-test-render-count sorted-tests)]
-               (list (when file [:div.filename (str file ":")])
-                     (om/build-all test-item-v2
-                                   (vec initial-test-results))
-                     (when (seq other-tests)
-                       (list
-                        [:hr]
-                        [:li
-                         [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
-                          [:span
-                           [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
-                           (if (om/get-state owner :is-open?)
-                             "Less"
-                             "More")]]]
-                        (when (om/get-state owner :is-open?)
-                          (om/build-all test-item-v2
-                                        (vec other-tests))))))))]]]]))))
+           (let [file-failures (->> (group-by :file failures)
+                                    (map (fn [[k v]] [k (sort-by test-model/format-test-name v)]))
+                                    (into (sorted-map)))
+                 [top-map bottom-map] (utils/split-map-values-at file-failures initial-test-render-count)]
+             (list
+              (om/build-all build-tests-file-block top-map)
+              (when-not (empty? bottom-map)
+                (list
+                 [:hr]
+                 [:li
+                  [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                   [:span
+                    [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
+                    (if (om/get-state owner :is-open?)
+                      "Less"
+                      "More")]]]
+                 (when (om/get-state owner :is-open?)
+                   (om/build-all build-tests-file-block bottom-map))))))]]]]))))
 
 (defn build-tests-list-v2 [{{tests :tests} :tests-data
                             {build-status :status} :build
