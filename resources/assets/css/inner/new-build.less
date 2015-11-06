@@ -700,16 +700,34 @@
   }
 
   .build-test {
+    pointer-events: none;
+
     &:last-child {
       .build-test-output, .build-test-name {
         margin-bottom: 0;
       }
     }
+
+    .test-name:before {
+      margin-left: 5px;
+      content: counter(test-list) ". ";
+      counter-increment: test-list;
+    }
   }
 
   .build-test:before {
-    content: counter(test-list) " - ";
-    counter-increment: test-list;
+    display: inline-block;
+    transition: all .2s ease;
+    content: "\f054";
+    font-family: FontAwesome;
+    font-size: 12px;
+    color: @gray-test-chevron;
+    cursor: pointer;
+    pointer-events: all;
+  }
+
+  .build-test.expanded:before {
+    .rotate(90);
   }
 
   .build-test-name {

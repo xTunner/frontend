@@ -558,14 +558,11 @@
     om/IRender
     (render [_]
       (html
-        [:li.build-test
-         (format-test-name-v2 test)
-         " - "
-         (when-not (string/blank? (:message test))
-           [:a.test-output-toggle {:role "button"
-                                   :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
-            (if (:show-message test) "less info" "more info")])
-         (when (:show-message test)
+       [:li.build-test {:class (when (:show-message test) "expanded")
+                        :on-click #(when-not (string/blank? (:message test))
+                                     (raise! owner [:show-test-message-toggled {:test-index (:i test)}]))}
+        [:span.test-name (format-test-name-v2 test)]
+        (when (:show-message test)
            [:pre.build-test-output (:message test)])]))))
 
 (defn build-tests-list [data owner]
