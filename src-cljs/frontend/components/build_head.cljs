@@ -332,18 +332,18 @@
       [:div.ssh-info-container
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
+        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]
+        [:div
+         "Browser based testing? Read "
+         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+          "our docs"]
+         " on how to use VNC with CircleCI."]]
 
        (if  (feature/enabled? :ui-v2)
          (om/build ssh-node-list-v2 nodes)
          (om/build ssh-node-list nodes))
 
-       (if-not (feature/enabled? :ui-v2)
-         [:div.build-ssh-doc
-          "Debugging Selenium browser tests? "
-          [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-           "Read our doc on interacting with the browser over VNC"]
-          "."])])))
+       ])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
