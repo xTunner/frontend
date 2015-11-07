@@ -606,7 +606,7 @@
     (render [_]
       (html
        [:div
-        (when file [:div.filename (str file ":")])
+        (when file [:li.filename (str file ":")])
         (om/build-all test-item-v2 (vec failures))]))))
 
 (defn build-tests-source-block [[source {:keys [failures successes]}] owner]
