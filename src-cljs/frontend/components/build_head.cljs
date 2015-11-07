@@ -616,9 +616,8 @@
        [:div.alert.alert-danger.expanded.build-tests-info
         [:div.alert-header
          [:img.alert-icon {:src (common/icon-path "Info-Error")}]
-         (test-model/pretty-source source)
-         " - "
-         (pluralize (count failures) "failure")]
+         [:span.source-name (test-model/pretty-source source)]
+         [:span.failure-count (pluralize (count failures) "failure")]]
         [:div.alert-body
          [:div.build-tests-summary
           "Your build ran "
