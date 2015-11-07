@@ -525,7 +525,7 @@
 (defmulti format-test-name-v2 test-model/source)
 
 (defmethod format-test-name-v2 :default [test]
-  (->> [[(:name test)] [(:classname test) (:file test)]]
+  (->> [[(:name test)] [(:classname test)]]
        (map (fn [s] (some #(when-not (string/blank? %) %) s)))
        (filter identity)
        (string/join " - in ")))
