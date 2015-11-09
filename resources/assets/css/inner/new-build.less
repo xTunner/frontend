@@ -350,6 +350,10 @@
 
   .build-action {
     .flexy();
+    margin-right: 20px;
+    &:last-of-type {
+      margin-right: 0;
+    }
 
     .dashboard-icon {
       margin-top: 2px;
@@ -361,7 +365,6 @@
     @toggle-min-width: 145px;
     @button-height: 30px;
 
-    margin-left: @item-spacing;
     margin-right: @item-spacing;
     border-radius: 3px;
     border: solid 1px @dropdown-gray;
@@ -476,24 +479,41 @@
   &.active {
     color: @white;
 
+    // When a container is selected, color its selector and invert the status
+    // icon colors.
+    .selected-color(@color) {
+      background: @color;
+
+      .status {
+        .circle {
+          fill: @white;
+        }
+
+        .icon {
+          fill: @color;
+        }
+      }
+    }
+
+
     &.success {
-      background: @brand-success-v2;
+      .selected-color(@brand-success-v2);
     }
 
     &.waiting {
-      background: @brand-pending-v2;
+      .selected-color(@brand-pending-v2);
     }
 
     &.running {
-      background: @brand-primary-v2;
+      .selected-color(@brand-primary-v2);
     }
 
     &.failed {
-      background: @brand-danger-v2;
+      .selected-color(@brand-danger-v2);
     }
 
     &.canceled {
-      background: @brand-cancelled-v2;
+      .selected-color(@brand-canceled-v2);
     }
   }
 
@@ -636,6 +656,7 @@
 
     .head-user {
       .flexy(stretch, flex-start, column);
+      height: inherit;
     }
   }
 }

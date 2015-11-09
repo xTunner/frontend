@@ -1060,7 +1060,7 @@
            (om/build build-sub-head data)]])))))
 
 (defn commit-line-v2 [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
-  (let [author-icon [:img.dashboard-icon {:src (common/icon-path "Builds-Author")}]]
+  (let [author-icon [:img.dashboard-icon {:src (common/icon-path "Default-Avatar")}]]
     (reify
       om/IDidMount
       (did-mount [_]
