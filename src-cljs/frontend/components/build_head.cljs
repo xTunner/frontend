@@ -19,6 +19,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.visualization.build :as viz-build]
+            [frontend.components.build-timings :as build-timings]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -1275,7 +1276,7 @@
 
              :tests (om/build build-tests-list-v2 build-data)
 
-             :build-time-viz (om/build build-time-visualization build)
+             :build-time-viz (om/build build-timings/build-timings build)
 
              :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user
