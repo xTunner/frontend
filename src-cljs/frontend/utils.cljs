@@ -345,6 +345,7 @@
   [m top-max]
   (loop [top-map (sorted-map)
          bottom-map (sorted-map)
+         ;; `nil` is a valid key here BE CAREFUL
          ks (keys m)
          remaining top-max]
     (if (seq ks)
@@ -357,5 +358,6 @@
                  (assoc bottom-map k bottom)
                  bottom-map)
                (rest ks)
-               (- remaining (count top))))
+               (max (- remaining (count top))
+                    0)))
       [top-map bottom-map])))
