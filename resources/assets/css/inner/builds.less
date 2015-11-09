@@ -261,35 +261,6 @@
   }
 }
 
-.build-actions {
-  .flexy(column);
-  padding-top: 4px; // to match space from line height in table
-
-  > .actions {
-    .flexy(center, flex-end);
-    margin-bottom: .5em;
-
-    border-radius: 2em;
-
-    > button {
-      .subtleButton(@grayLight);
-      .aRowOfButtons(2em);
-      float: none;
-    }
-
-    // When a button next to the main Rebuild button is hovered, indicate that
-    // it's also a rebuild action by lightly shading the Rebuild button.
-    &:hover > .retry_build:not(:hover) {
-      .subtleBtnTextColor(@whiten);
-    }
-
-    > .report-build,
-    > .cancel-build {
-      .subtleButtonColor(@redLight, @redLight);
-    }
-  }
-}
-
 &.ui-v1 .build-queue {
   .cancel-build {
     .subtleButton(@grayLight);
@@ -298,6 +269,43 @@
 
   .queue-message {
     padding-bottom: 15px;
+  }
+}
+
+&.ui-v2 .build-actions {
+  .flexy(center);
+  margin-top: 6px;
+  vertical-align: middle;
+}
+
+&.ui-v1 {
+  .build-actions {
+    .flexy(column);
+    padding-top: 4px; // to match space from line height in table
+
+    > .actions {
+      .flexy(center, flex-end);
+      margin-bottom: .5em;
+
+      border-radius: 2em;
+
+      > button {
+        .subtleButton(@grayLight);
+        .aRowOfButtons(2em);
+        float: none;
+      }
+
+      // When a button next to the main Rebuild button is hovered, indicate that
+      // it's also a rebuild action by lightly shading the Rebuild button.
+      &:hover > .retry_build:not(:hover) {
+        .subtleBtnTextColor(@whiten);
+      }
+
+      > .report-build,
+      > .cancel-build {
+        .subtleButtonColor(@redLight, @redLight);
+      }
+    }
   }
 }
 
