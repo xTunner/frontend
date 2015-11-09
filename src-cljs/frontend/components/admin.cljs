@@ -4,6 +4,7 @@
             [clojure.string :as str]
             [frontend.async :refer [raise!]]
             [frontend.components.about :as about]
+            [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.shared :as shared]
             [frontend.datetime :as datetime]
@@ -103,21 +104,43 @@
                [:tr
                 [:td "No available masters"]])]])]))))
 
+(defn admin-builds-table [builds owner {:keys [tab]}]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         [:a
+          {:href (case tab
+                   :running-builds "/admin/running-builds"
+                   :queued-builds "/admin/queued-builds")}
+          "See more"]
+         " / "
+         [:a {:on-click #(raise! owner [:refresh-admin-build-list {:tab tab}])} "Refresh"]
+         (if (empty? builds)
+           [:div.loading-spinner common/spinner]
+           ;; uses v1 build table because it was simpler to add containers to
+           ;; that.  it's expected that this will be iterated on.
+           (om/build builds-table/builds-table-v1 builds
+                     {:opts {:show-actions? true
+                             :show-parallelism? true
+                             :show-branch? false
+                             :show-log? false}}))]))))
+
 (defn fleet-state [app owner]
   (reify
     om/IRender
     (render [_]
       (let [fleet-state (sort-by :instance_id (get-in app state/fleet-state-path))
-            summary-counts (get-in app state/build-system-summary-path)]
+            summary-counts (get-in app state/build-system-summary-path)
+            current-tab (or (get-in app [:navigation-data :tab]) :builders)]
         (html
           [:div {:style {:padding-left "10px"}}
            [:h1 "Fleet State"]
-           (if-not fleet-state
-             [:div.loading-spinner common/spinner]
-             [:div
-              (if-not summary-counts
-                [:div.loading-spinner common/spinner]
-                (let [container-totals (->> fleet-state
+           [:div
+            (if-not summary-counts
+              [:div.loading-spinner common/spinner]
+              (let [container-totals (->> fleet-state
                                           (map #(select-keys % [:free :busy :total]))
                                           (apply merge-with +))
                     queued-builds (+ (get-in summary-counts [:usage_queue :builds])
@@ -135,9 +158,17 @@
                   [:ul
                    [:li "queued builds: " queued-builds]
                    [:li "containers requested by queued builds: " queue-container-count]]]]))
-              [:h2 "Builders"]
-              (om/build builders fleet-state)])])))))
-
+            [:ul.nav.nav-tabs
+             (for [[tab-key tab-name] {:builders "Builders"
+                                       :running-builds "Running Builds"
+                                       :queued-builds "Queued Builds"}]
+               [:li (when (= current-tab tab-key) {:class "active"})
+                [:a {:href (str "#" (name tab-key))} tab-name]])]
+            (if (#{:running-builds :queued-builds} current-tab)
+              (om/build admin-builds-table
+                        (:recent-builds app)
+                        {:opts {:tab current-tab}})
+              (om/build builders fleet-state))]])))))
 
 (defn license [app owner]
   (reify
