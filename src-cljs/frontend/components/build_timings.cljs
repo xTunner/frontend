@@ -4,6 +4,8 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (def timings-width 800)
+(def bar-height 20)
+(def bar-gap 10)
 
 (defn create-x-scale [start-time stop-time]
   (let [start-time (js/Date. start-time)
@@ -18,20 +20,35 @@
       (.attr "width" timings-width)))
 
 (defn draw-containers! [x-scale step]
-  (let [bar-height 10
-        step-length    #(- (x-scale (js/Date. (aget % "end_time")))
-                           (x-scale (js/Date. (aget % "start_time"))))
-        container-pos  #(* (+ 2 bar-height) (inc (aget % "index")))
-        step-start-pos #(x-scale (js/Date. (aget % "start_time")))]
+  (let [step-length      #(- (x-scale (js/Date. (aget % "end_time")))
+                             (x-scale (js/Date. (aget % "start_time"))))
+        container-pos    #(* bar-height (inc (aget % "index")))
+        container-height #(- bar-height bar-gap)
+        step-start-pos   #(x-scale (js/Date. (aget % "start_time")))]
     (-> step
         (.selectAll "rect")
           (.data #(aget % "actions"))
         (.enter)
           (.append "rect")
+          (.attr "fill" "green")
           (.attr "width" step-length)
-          (.attr "height" bar-height)
+          (.attr "height" container-height)
           (.attr "y" container-pos)
           (.attr "x" step-start-pos))))
+
+(defn draw-step-start-line! [x-scale step]
+  (-> step
+      (.selectAll "line")
+        (.data #(aget % "actions"))
+      (.enter)
+        (.append "line")
+        (.attr "x1" #(x-scale (js/Date. (aget % "start_time"))))
+        (.attr "x2" #(x-scale (js/Date. (aget % "start_time"))))
+        (.attr "y1" #(* bar-height (inc (aget % "index"))))
+        (.attr "y2" #(+ (* bar-height (inc (aget % "index")))
+                        (- bar-height bar-gap)))
+        (.attr "stroke" "black")
+        (.attr "stroke-width" 1)))
 
 (defn draw-steps! [x-scale chart steps]
   (let [step (-> chart
@@ -39,6 +56,7 @@
                    (.data (clj->js steps))
                  (.enter)
                    (.append "g"))]
+    (draw-step-start-line! x-scale step)
     (draw-containers! x-scale step)))
 
 (defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
