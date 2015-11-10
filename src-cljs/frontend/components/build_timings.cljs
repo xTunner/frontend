@@ -7,6 +7,7 @@
 (def padding-right 20)
 
 (def top-axis-height 20)
+(def top-axis-offset 5)
 (def left-axis-width 20)
 
 (def bar-height 20)
@@ -45,25 +46,27 @@
       (gstring/format "%d:%02dm" m s))))
 
 (defn create-y-axis [number-of-containers]
-  (let [axis-scale (-> (js/d3.scale.linear)
-                       (.domain #js [0 number-of-containers])
-                       (.range  #js [0 (timings-height number-of-containers)]))]
+  (let [range-start (+ bar-height (/ container-bar-height 2))
+        range-end   (+ (timings-height number-of-containers) (/ container-bar-height 2))
+        axis-scale  (-> (js/d3.scale.linear)
+                        (.domain #js [0 number-of-containers])
+                        (.range  #js [range-start range-end]))]
   (-> (js/d3.svg.axis)
       (.tickValues (clj->js (range 0 number-of-containers)))
       (.scale axis-scale)
       (.tickFormat #(js/Math.floor %))
-      (.innerTickSize 5)
       (.orient "left"))))
 
 (defn create-x-axis [build-duration]
-  (let [axis-scale (-> (js/d3.scale.linear)
-                       (.domain #js [0 build-duration])
-                       (.range  #js [0 (timings-width)]))]
+  (let [range-start  top-axis-offset
+        range-end    (- (timings-width) top-axis-offset)
+        axis-scale   (-> (js/d3.scale.linear)
+                         (.domain #js [0 build-duration])
+                         (.range  #js [range-start range-end]))]
   (-> (js/d3.svg.axis)
       (.tickValues (clj->js (range 0 (inc build-duration) (/ build-duration 4))))
       (.scale axis-scale)
       (.tickFormat time-axis-tick-formatter)
-      (.innerTickSize 5)
       (.orient "top"))))
 
 (defn build-duration [start-time stop-time]
@@ -117,10 +120,9 @@
     (draw-step-start-line! x-scale step)
     (draw-containers! x-scale step)))
 
-(defn draw-axis! [chart axis class-name [x-translation y-translation]]
+(defn draw-axis! [chart axis class-name]
   (-> chart
       (.append "g")
-      (.attr "transform" (gstring/format "translate(%d,%d)" x-translation y-translation))
       (.attr "class" class-name)
       (.call axis)))
 
@@ -129,8 +131,8 @@
         chart   (create-root-svg parallel)
         x-axis  (create-x-axis (build-duration start_time stop_time))
         y-axis  (create-y-axis parallel)]
-    (draw-axis! chart x-axis "x-axis" [0  0])
-    (draw-axis! chart y-axis "y-axis" [0 top-axis-height])
+    (draw-axis! chart x-axis "x-axis")
+    (draw-axis! chart y-axis "y-axis")
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
