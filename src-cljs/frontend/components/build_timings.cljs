@@ -1,15 +1,18 @@
 (ns frontend.components.build-timings
   (:require [om.core :as om :include-macros true]
+            [goog.string :as gstring]
             [frontend.models.build :as build])
   (:require-macros [frontend.utils :refer [html]]))
 
+(def margin-bottom 20)
+(def margin-right 50)
+
 (defn timings-width []  (-> (.querySelector js/document ".build-timings")
-                            (.-offsetWidth)))
+                            (.-offsetWidth)
+                            (- margin-right)))
 (def bar-height 20)
 (def bar-gap 10)
 (def container-bar-height (- bar-height bar-gap))
-
-(def axis-margin 20)
 
 ;;; Helpers
 (defn create-x-scale [start-time stop-time]
@@ -22,19 +25,32 @@
 (defn create-root-svg [number-of-containers]
   (-> (.select js/d3 ".build-timings")
       (.select "svg")
-        (.attr "width" (timings-width))
+        (.attr "width" (+ (timings-width) margin-right))
         (.attr "height" (+ (* (inc number-of-containers) bar-height)
-                           axis-margin))
-      (.append "g") ; add in a margin
-        (.attr "transform", (str "translate(0," axis-margin ")"))))
+                           margin-bottom))
+      (.append "g") ;move everything over to see the axis
+        (.attr "transform", (gstring/format "translate(%d,%d)" (/ margin-right 2)  margin-bottom))))
 
-(defn create-x-axis [x-scale]
+(defn time-axis-tick-formatter [ms-value]
+  (let [m (js/Math.floor (/ ms-value 1000 60))
+        s (js/Math.floor (- (/ ms-value 1000) (* m 60)))]
+    (if (<= m 0)
+      (gstring/format "%02ds" s)
+      (gstring/format "%d:%02dm" m s))))
+
+(defn create-x-axis [build-duration]
+  (let [axis-scale (-> (js/d3.scale.linear)
+                       (.domain #js [0 build-duration])
+                       (.range  #js [0 (timings-width)]))]
   (-> (js/d3.svg.axis)
-      (.scale x-scale)
-      (.ticks js/d3.time.minutes 3)
-      (.tickFormat #(str ((js/d3.time.format "%M") %) "m"))
+      (.tickValues (clj->js (range 0 (inc build-duration) (/ build-duration 4))))
+      (.scale axis-scale)
+      (.tickFormat time-axis-tick-formatter)
       (.innerTickSize 5)
-      (.orient "top")))
+      (.orient "top"))))
+
+(defn build-duration [start-time stop-time]
+  (- (.getTime (js/Date. stop-time)) (.getTime (js/Date. start-time))))
 
 (defn container-position [step]
   (* bar-height (inc (aget step "index"))))
@@ -93,7 +109,7 @@
 (defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
         chart   (create-root-svg parallel)
-        x-axis  (create-x-axis x-scale)]
+        x-axis  (create-x-axis (build-duration start_time stop_time))]
     (draw-x-axis! chart x-axis)
     (draw-steps! x-scale chart steps)))
 
