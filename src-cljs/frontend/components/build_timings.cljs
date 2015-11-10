@@ -6,7 +6,9 @@
 (def timings-width 800)
 (def bar-height 20)
 (def bar-gap 10)
+(def container-bar-height (- bar-height bar-gap))
 
+;;; Helpers
 (defn create-x-scale [start-time stop-time]
   (let [start-time (js/Date. start-time)
         stop-time  (js/Date. stop-time)]
@@ -19,35 +21,41 @@
       (.append "svg")
       (.attr "width" timings-width)))
 
+(defn container-position [step]
+  (* bar-height (inc (aget step "index"))))
+
+(defn scaled-time [x-scale step time-key]
+  (x-scale (js/Date. (aget step time-key))))
+
+;;; Elements of the visualization
 (defn draw-containers! [x-scale step]
-  (let [step-length      #(- (x-scale (js/Date. (aget % "end_time")))
-                             (x-scale (js/Date. (aget % "start_time"))))
-        container-pos    #(* bar-height (inc (aget % "index")))
-        container-height #(- bar-height bar-gap)
+  (let [step-length      #(- (scaled-time x-scale % "end_time")
+                             (scaled-time x-scale % "start_time"))
         step-start-pos   #(x-scale (js/Date. (aget % "start_time")))]
     (-> step
         (.selectAll "rect")
           (.data #(aget % "actions"))
         (.enter)
           (.append "rect")
-          (.attr "class" "container-step")
-          (.attr "width" step-length)
-          (.attr "height" container-height)
-          (.attr "y" container-pos)
-          (.attr "x" step-start-pos))))
+          (.attr "class"  "container-step")
+          (.attr "width"  step-length)
+          (.attr "height" container-bar-height)
+          (.attr "y"      container-position)
+          (.attr "x"      step-start-pos))))
 
 (defn draw-step-start-line! [x-scale step]
+  (let [step-start-position #(scaled-time x-scale % "start_time")]
   (-> step
       (.selectAll "line")
         (.data #(aget % "actions"))
       (.enter)
         (.append "line")
         (.attr "class" "container-step-start-line")
-        (.attr "x1" #(x-scale (js/Date. (aget % "start_time"))))
-        (.attr "x2" #(x-scale (js/Date. (aget % "start_time"))))
-        (.attr "y1" #(* bar-height (inc (aget % "index"))))
-        (.attr "y2" #(+ (* bar-height (inc (aget % "index")))
-                        (- bar-height bar-gap)))))
+        (.attr "x1"    step-start-position)
+        (.attr "x2"    step-start-position)
+        (.attr "y1"    container-position)
+        (.attr "y2"    #(+ (container-position %)
+                           container-bar-height)))))
 
 (defn draw-steps! [x-scale chart steps]
   (let [step (-> chart
@@ -64,6 +72,7 @@
     (println "Running " parallel "x with " (count steps) "steps.")
     (draw-steps! x-scale chart steps)))
 
+;;;; Main component
 (defn build-timings [build owner]
   (reify
     om/IDidMount
