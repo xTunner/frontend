@@ -1,4 +1,5 @@
-(ns frontend.utils.launchdarkly)
+(ns frontend.utils.launchdarkly
+    (:refer-clojure :exclude [exists?]))
 
 (defn feature-on?
   ([feature-name default]
