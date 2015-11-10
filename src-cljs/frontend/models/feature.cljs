@@ -52,8 +52,9 @@
   value, otherwise look in a cookie for the feature. Returns false by
   default."
   [feature]
-  (if (set-in-query-string? feature)
-    (enabled-in-query-string? feature)
-    (if (ld/exists? feature)
-      (ld/feature-on? (name feature))
-      (enabled-in-cookie? feature))))
+  (let [feature-name (name feature)]
+   (if (set-in-query-string? feature-name)
+     (enabled-in-query-string? feature-name)
+     (if (ld/exists? feature-name)
+       (ld/feature-on? feature-name)
+       (enabled-in-cookie? feature-name)))))

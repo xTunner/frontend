@@ -34,6 +34,7 @@
             [frontend.components.language-landing :as language-landing]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
+            [frontend.components.opt-in :as opt-in]
             [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
             [frontend.components.signup :as signup]
@@ -153,6 +154,10 @@
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
 
+               ;; TODO: put behind banner feature flag
+               (when (and (feature/enabled? :ui-v2-opt-in-banner) (not (feature/enabled-in-cookie? :ui-v2)))
+                 (om/build opt-in/ui-v2-opt-in-banner app))
+
                (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))
 
@@ -165,9 +170,8 @@
                  (when (and (not (feature/enabled? :ui-v2))
                             show-header-and-footer?)
                    (om/build header/header app-without-container-data))
-
                  (om/build dom-com app)
-                 
+
                  (when (and show-header-and-footer? (config/footer-enabled?))
                    [:footer.main-foot
                     (footer/footer)])]]
