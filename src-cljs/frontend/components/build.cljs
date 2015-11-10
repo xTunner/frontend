@@ -4,7 +4,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]

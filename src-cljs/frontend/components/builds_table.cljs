@@ -7,7 +7,7 @@
             [frontend.components.forms :as forms]
             [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])

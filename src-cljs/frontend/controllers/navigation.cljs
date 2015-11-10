@@ -7,7 +7,7 @@
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
