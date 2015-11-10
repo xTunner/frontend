@@ -134,7 +134,7 @@
 
              (when (< 10000 (build-model/run-queued-time build))
                [:span#circle_queued_explanation
-                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."]) 
+                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
              (when (seq builds)
                [:span
                 " This build " (if usage-queued? "has been" "was")
@@ -285,6 +285,46 @@
      [:p "This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate."]
      [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."]])
 
+(defn ssh-ad-v2
+  "Note about why you might want to SSH into a build and buttons to do so"
+  [build owner]
+    [:div.ssh-ad
+     [:p
+      "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on.
+       This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
+       More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."
+     (om/build ssh-buttons build)]])
+
+(defn ssh-command [node]
+  (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node)))
+
+(defrender ssh-node-list [nodes owner]
+  (html
+    [:div.build-ssh-list
+     [:dl.dl-horizontal
+      (map (fn [node i]
+             (list
+               [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
+               [:dd {:class (when (:ssh_enabled node) "connected")}
+                [:span (ssh-command node)]
+                (when-not (:ssh_enabled node)
+                  [:span.loading-spinner common/spinner])]))
+           nodes (range))]]))
+
+(defrender ssh-node-list-v2 [nodes owner]
+  (html
+    [:ul.ssh-nodes-list
+     (map-indexed (fn [i node]
+                    (let [no-ssh?       (not (:ssh_enabled node))
+                          command-class (cond-> "ssh-node-command"
+                                          no-ssh? (str " ssh-node-disabled"))]
+                      [:li.ssh-node
+                       [:span.ssh-node-container (str "Container " i)]
+                       [:span {:class command-class} (ssh-command node)]
+                       (when no-ssh?
+                         [:img.ssh-node-running-icon {:src (common/icon-path "Status-Running")}])]))
+                  nodes)]))
+
 (defn ssh-instructions
   "Instructions for SSHing into a build that you can SSH into"
   [build owner]
@@ -293,22 +333,18 @@
       [:div.ssh-info-container
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
-       [:div.build-ssh-list
-        [:dl.dl-horizontal
-         (map (fn [node i]
-                (list
-                  [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
-                  [:dd {:class (when (:ssh_enabled node) "connected")}
-                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
-                   (when-not (:ssh_enabled node)
-                     [:span.loading-spinner common/spinner])]))
-              nodes (range))]]
-       [:div.build-ssh-doc
-        "Debugging Selenium browser tests? "
-        [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-         "Read our doc on interacting with the browser over VNC"]
-        "."]])))
+        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]
+        [:div
+         "Browser based testing? Read "
+         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+          "our docs"]
+         " on how to use VNC with CircleCI."]]
+
+       (if  (feature/enabled? :ui-v2)
+         (om/build ssh-node-list-v2 nodes)
+         (om/build ssh-node-list nodes))
+
+       ])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
@@ -323,8 +359,12 @@
            (if for-current-user?
              (cond
                (build-model/ssh-enabled-now? build) (ssh-instructions build owner)
-               (build-model/finished? build) (ssh-ad build owner))
-             (ssh-ad build owner))])))))
+               (build-model/finished? build) (if (feature/enabled? :ui-v2)
+                                               (ssh-ad-v2 build owner)
+                                               (ssh-ad build owner)))
+             (if (feature/enabled? :ui-v2)
+               (ssh-ad-v2 build owner)
+               (ssh-ad build owner)))])))))
 
 (defn build-time-visualization [build owner]
   (reify
@@ -656,7 +696,7 @@
                                                        [:span
                                                         [:i.fa.fa-chevron-up.build-tests-toggle-icon]
                                                         "Less"]
-                                                       [:span 
+                                                       [:span
                                                         [:i.fa.fa-chevron-down.build-tests-toggle-icon]
                                                         "More"])]]
                                                    (when (om/get-state owner :is-open?)
