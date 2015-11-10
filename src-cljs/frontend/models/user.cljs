@@ -4,8 +4,6 @@
             [goog.string :as gstring]
             goog.string.format))
 
-(def id :_id)
-
 (defn missing-scopes [user]
   (let [current-scopes (set (:github_oauth_scopes user))]
     (set/union (when (empty? (set/intersection current-scopes #{"user" "user:email"}))
