@@ -9,6 +9,8 @@
 (def bar-gap 10)
 (def container-bar-height (- bar-height bar-gap))
 
+(def axis-margin 20)
+
 ;;; Helpers
 (defn create-x-scale [start-time stop-time]
   (let [start-time (js/Date. start-time)
@@ -20,8 +22,19 @@
 (defn create-root-svg [number-of-containers]
   (-> (.select js/d3 ".build-timings")
       (.select "svg")
-      (.attr "width" (timings-width))
-      (.attr "height" (* number-of-containers bar-height))))
+        (.attr "width" (timings-width))
+        (.attr "height" (+ (* (inc number-of-containers) bar-height)
+                           axis-margin))
+      (.append "g") ; add in a margin
+        (.attr "transform", (str "translate(0," axis-margin ")"))))
+
+(defn create-x-axis [x-scale]
+  (-> (js/d3.svg.axis)
+      (.scale x-scale)
+      (.ticks js/d3.time.minutes 3)
+      (.tickFormat #(str ((js/d3.time.format "%M") %) "m"))
+      (.innerTickSize 5)
+      (.orient "top")))
 
 (defn container-position [step]
   (* bar-height (inc (aget step "index"))))
@@ -60,7 +73,10 @@
                            container-bar-height)))))
 
 (defn draw-steps! [x-scale chart steps]
-  (let [step (-> chart
+  (let [steps-group (-> chart
+                        (.append "g"))
+
+        step (-> steps-group
                  (.selectAll "g")
                    (.data (clj->js steps))
                  (.enter)
@@ -68,9 +84,17 @@
     (draw-step-start-line! x-scale step)
     (draw-containers! x-scale step)))
 
+(defn draw-x-axis! [chart x-axis]
+  (-> chart
+      (.append "g")
+      (.attr "class" "x-axis")
+      (.call x-axis)))
+
 (defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
-        chart   (create-root-svg parallel)]
+        chart   (create-root-svg parallel)
+        x-axis  (create-x-axis x-scale)]
+    (draw-x-axis! chart x-axis)
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
