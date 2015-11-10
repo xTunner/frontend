@@ -30,7 +30,7 @@
           (.data #(aget % "actions"))
         (.enter)
           (.append "rect")
-          (.attr "fill" "green")
+          (.attr "class" "container-step")
           (.attr "width" step-length)
           (.attr "height" container-height)
           (.attr "y" container-pos)
@@ -42,13 +42,12 @@
         (.data #(aget % "actions"))
       (.enter)
         (.append "line")
+        (.attr "class" "container-step-start-line")
         (.attr "x1" #(x-scale (js/Date. (aget % "start_time"))))
         (.attr "x2" #(x-scale (js/Date. (aget % "start_time"))))
         (.attr "y1" #(* bar-height (inc (aget % "index"))))
         (.attr "y2" #(+ (* bar-height (inc (aget % "index")))
-                        (- bar-height bar-gap)))
-        (.attr "stroke" "black")
-        (.attr "stroke-width" 1)))
+                        (- bar-height bar-gap)))))
 
 (defn draw-steps! [x-scale chart steps]
   (let [step (-> chart
