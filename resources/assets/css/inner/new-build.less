@@ -877,9 +877,32 @@
     stroke-width: 1;
   }
 
-  .x-axis path, line {
-    fill: none;
-    stroke: @build-timings-axis;
-    shape-rendering: crispEdges;
+  .x-axis {
+    path, line {
+      fill: none;
+      stroke: @build-timings-axis;
+    }
+  }
+
+  .x-axis {
+     text {
+      font-family: "Roboto-Regular";
+      font-size: 11px;
+      line-height: 16px;
+    }
+  }
+
+  .y-axis {
+    path, line {
+      display: none;
+    }
+  }
+
+  .y-axis {
+     text {
+      stroke: @backround-color-dark-v2;
+      font-family: "Roboto-Light";
+      font-size: 9px;
+    }
   }
 }

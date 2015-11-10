@@ -4,15 +4,22 @@
             [frontend.models.build :as build])
   (:require-macros [frontend.utils :refer [html]]))
 
-(def margin-bottom 20)
-(def margin-right 50)
+(def padding-right 20)
 
-(defn timings-width []  (-> (.querySelector js/document ".build-timings")
-                            (.-offsetWidth)
-                            (- margin-right)))
+(def top-axis-height 20)
+(def left-axis-width 20)
+
 (def bar-height 20)
 (def bar-gap 10)
 (def container-bar-height (- bar-height bar-gap))
+
+(defn timings-width []  (-> (.querySelector js/document ".build-timings")
+                            (.-offsetWidth)
+                            (- padding-right)
+                            (- left-axis-width)))
+
+(defn timings-height [number-of-containers]
+  (* (inc number-of-containers) bar-height))
 
 ;;; Helpers
 (defn create-x-scale [start-time stop-time]
@@ -25,11 +32,10 @@
 (defn create-root-svg [number-of-containers]
   (-> (.select js/d3 ".build-timings")
       (.select "svg")
-        (.attr "width" (+ (timings-width) margin-right))
-        (.attr "height" (+ (* (inc number-of-containers) bar-height)
-                           margin-bottom))
+        (.attr "width"  (+ (timings-width) left-axis-width padding-right))
+        (.attr "height" (+ (timings-height number-of-containers) top-axis-height))
       (.append "g") ;move everything over to see the axis
-        (.attr "transform", (gstring/format "translate(%d,%d)" (/ margin-right 2)  margin-bottom))))
+        (.attr "transform" (gstring/format "translate(%d,%d)" left-axis-width top-axis-height))))
 
 (defn time-axis-tick-formatter [ms-value]
   (let [m (js/Math.floor (/ ms-value 1000 60))
@@ -37,6 +43,17 @@
     (if (<= m 0)
       (gstring/format "%02ds" s)
       (gstring/format "%d:%02dm" m s))))
+
+(defn create-y-axis [number-of-containers]
+  (let [axis-scale (-> (js/d3.scale.linear)
+                       (.domain #js [0 number-of-containers])
+                       (.range  #js [0 (timings-height number-of-containers)]))]
+  (-> (js/d3.svg.axis)
+      (.tickValues (clj->js (range 0 number-of-containers)))
+      (.scale axis-scale)
+      (.tickFormat #(js/Math.floor %))
+      (.innerTickSize 5)
+      (.orient "left"))))
 
 (defn create-x-axis [build-duration]
   (let [axis-scale (-> (js/d3.scale.linear)
@@ -100,17 +117,20 @@
     (draw-step-start-line! x-scale step)
     (draw-containers! x-scale step)))
 
-(defn draw-x-axis! [chart x-axis]
+(defn draw-axis! [chart axis class-name [x-translation y-translation]]
   (-> chart
       (.append "g")
-      (.attr "class" "x-axis")
-      (.call x-axis)))
+      (.attr "transform" (gstring/format "translate(%d,%d)" x-translation y-translation))
+      (.attr "class" class-name)
+      (.call axis)))
 
 (defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
         chart   (create-root-svg parallel)
-        x-axis  (create-x-axis (build-duration start_time stop_time))]
-    (draw-x-axis! chart x-axis)
+        x-axis  (create-x-axis (build-duration start_time stop_time))
+        y-axis  (create-y-axis parallel)]
+    (draw-axis! chart x-axis "x-axis" [0  0])
+    (draw-axis! chart y-axis "y-axis" [0 top-axis-height])
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
@@ -123,10 +143,6 @@
     (did-mount [_]
       (om/set-state! owner :drawn? true)
       (draw-chart! build))
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (when (om/get-state owner :drawn?)
-        (draw-chart! build)))
     om/IRenderState
     (render-state [_ _]
       (html
