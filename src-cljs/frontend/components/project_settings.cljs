@@ -4,7 +4,6 @@
             [frontend.analytics :as analytics]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
-            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
@@ -691,7 +690,7 @@
 
 (defn status-badges [project-data owner]
   (let [project (:project project-data)
-        oss (feature/enabled-for-project? project :oss)
+        oss (project-model/feature-enabled? project :oss)
         ;; Get branch selection or the empty string for the default branch.
         branches (branch-names project-data)
         branch (get-in project-data [:status-badges :branch])

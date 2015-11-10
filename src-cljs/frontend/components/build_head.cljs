@@ -5,7 +5,8 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
-            [frontend.models.feature :as feature]
+            [frontend.models.project :as project-model]
+            [frontend.feature :as feature]
             [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -798,7 +799,7 @@
 
             ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
-                       (not (feature/enabled-for-project? project :osx)))
+                       (not (project-model/feature-enabled? project :osx)))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link {:href "#ssh-info"} "Debug via SSH"]])
 
@@ -1030,7 +1031,7 @@
                   "without cache"])
 
                 ;; XXX Temporarily remove the ssh button for OSX builds
-                (when (not (feature/enabled-for-project? project :osx))
+                (when (not (project-model/feature-enabled? project :osx))
                   (forms/managed-button
                    [:button.ssh_build
                     {:data-loading-text "Rebuilding",
@@ -1193,7 +1194,7 @@
 
             ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
-                       (not (feature/enabled-for-project? project :osx)))
+                       (not (project-model/feature-enabled? project :osx)))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link-v2 {:href "#ssh-info"}
                 "Debug via SSH"]])
@@ -1420,7 +1421,7 @@
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
             ;; XXX Temporarily remove the ssh button for OSX builds
-            (when (not (feature/enabled-for-project? project :osx))
+            (when (not (project-model/feature-enabled? project :osx))
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]])))))
 
