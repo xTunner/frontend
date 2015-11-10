@@ -1,4 +1,5 @@
-(ns frontend.config)
+(ns frontend.config
+  (:require [frontend.models.feature :as feature]))
 
 (defn env
   "The name of the server configuration environment.
@@ -9,7 +10,8 @@
 (defn enterprise?
   "True if this is an enterprise (as opposed to main public web) deployment."
   []
-  (boolean (aget js/window "renderContext" "enterprise")))
+  (or (boolean (aget js/window "renderContext" "enterprise"))
+      (feature/enabled? :enterprise-ui)))
 
 (defn pusher
   "Options to be passed to the Pusher client library."
