@@ -3,7 +3,8 @@
             [frontend.models.build :as build])
   (:require-macros [frontend.utils :refer [html]]))
 
-(def timings-width 800)
+(defn timings-width []  (-> (.querySelector js/document ".build-timings")
+                            (.-offsetWidth)))
 (def bar-height 20)
 (def bar-gap 10)
 (def container-bar-height (- bar-height bar-gap))
@@ -14,12 +15,12 @@
         stop-time  (js/Date. stop-time)]
     (-> (js/d3.time.scale)
         (.domain #js [start-time stop-time])
-        (.range  #js [0 timings-width]))))
+        (.range  #js [0 (timings-width)]))))
 
 (defn create-root-svg []
   (-> (.select js/d3 ".build-timings")
-      (.append "svg")
-      (.attr "width" timings-width)))
+      (.select "svg")
+      (.attr "width" (timings-width))))
 
 (defn container-position [step]
   (* bar-height (inc (aget step "index"))))
@@ -75,10 +76,19 @@
 ;;;; Main component
 (defn build-timings [build owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:drawn? false})
     om/IDidMount
     (did-mount [_]
-     (draw-chart! build))
-    om/IRender
-    (render [_]
+      (om/set-state! owner :drawn? true)
+      (draw-chart! build))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (when (om/get-state owner :drawn?)
+        (draw-chart! build)))
+    om/IRenderState
+    (render-state [_ _]
       (html
-       [:div.build-timings]))))
+       [:div.build-timings
+        [:svg]]))))
