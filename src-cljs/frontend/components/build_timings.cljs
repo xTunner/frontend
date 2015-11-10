@@ -17,10 +17,11 @@
         (.domain #js [start-time stop-time])
         (.range  #js [0 (timings-width)]))))
 
-(defn create-root-svg []
+(defn create-root-svg [number-of-containers]
   (-> (.select js/d3 ".build-timings")
       (.select "svg")
-      (.attr "width" (timings-width))))
+      (.attr "width" (timings-width))
+      (.attr "height" (* number-of-containers bar-height))))
 
 (defn container-position [step]
   (* bar-height (inc (aget step "index"))))
@@ -69,8 +70,7 @@
 
 (defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
-        chart   (create-root-svg)]
-    (println "Running " parallel "x with " (count steps) "steps.")
+        chart   (create-root-svg parallel)]
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
