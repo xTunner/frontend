@@ -113,7 +113,7 @@
 
  .parallelism-tab {
     width: 50%;
-  } 
+  }
 
 
   &:hover {
@@ -355,6 +355,10 @@
 
   .build-action {
     .flexy();
+    margin-right: 20px;
+    &:last-of-type {
+      margin-right: 0;
+    }
 
     .dashboard-icon {
       margin-top: 2px;
@@ -366,7 +370,6 @@
     @toggle-min-width: 145px;
     @button-height: 30px;
 
-    margin-left: @item-spacing;
     margin-right: @item-spacing;
     border-radius: 3px;
     border: solid 1px @dropdown-gray;
@@ -481,24 +484,41 @@
   &.active {
     color: @white;
 
+    // When a container is selected, color its selector and invert the status
+    // icon colors.
+    .selected-color(@color) {
+      background: @color;
+
+      .status {
+        .circle {
+          fill: @white;
+        }
+
+        .icon {
+          fill: @color;
+        }
+      }
+    }
+
+
     &.success {
-      background: @brand-success-v2;
+      .selected-color(@brand-success-v2);
     }
 
     &.waiting {
-      background: @brand-pending-v2;
+      .selected-color(@brand-pending-v2);
     }
 
     &.running {
-      background: @brand-primary-v2;
+      .selected-color(@brand-primary-v2);
     }
 
     &.failed {
-      background: @brand-danger-v2;
+      .selected-color(@brand-danger-v2);
     }
 
     &.canceled {
-      background: @brand-cancelled-v2;
+      .selected-color(@brand-canceled-v2);
     }
   }
 
@@ -641,6 +661,7 @@
 
     .head-user {
       .flexy(stretch, flex-start, column);
+      height: inherit;
     }
   }
 }
@@ -797,4 +818,51 @@
   // terrible hack because the box shadow is inset into grid
   margin-bottom: -(@grid-gutter-width / 2) + 1;
   box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.10);
+}
+
+&.ui-v2 {
+  .sub-head-ssh-info {
+    p {
+      margin: 0px;
+      line-height: 20px;
+    }
+  }
+
+  .ssh-nodes-list {
+    list-style: none;
+    padding-left: 0px;
+    padding-top: 5px;
+  }
+
+  .ssh-node {
+    @ssh-node-padding: 10px;
+
+    .flexy(center, flex-start, row);
+    border-bottom: solid 2px @list-border-color;
+    padding-top:    @ssh-node-padding;
+    padding-bottom: @ssh-node-padding;
+  }
+
+  .ssh-node:last-child {
+    border-bottom: none;
+  }
+
+  .ssh-node-container {
+    padding-right: 18px;
+  }
+
+  .ssh-node-command {
+    padding-right: 10px;
+  }
+
+  .ssh-node-disabled {
+    color: @brand-gray-v2;
+  }
+
+  .ssh-node-running-icon {
+    @icon-size: 10px;
+
+    height: @icon-size;
+    width: @icon-size;
+  }
 }

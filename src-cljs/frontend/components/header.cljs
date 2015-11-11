@@ -11,7 +11,7 @@
             [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
             [frontend.models.project :as project-model]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]

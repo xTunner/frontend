@@ -144,7 +144,7 @@
 (defn status-icon-v2 [build]
   (case (status-class build)
     "fail" "Status-Failed"
-    "stop" "Status-Cancelled"
+    "stop" "Status-Canceled"
     "pass" "Status-Passed"
     "busy" "Status-Running"
     "queued" "Status-Queued"

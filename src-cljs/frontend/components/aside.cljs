@@ -5,10 +5,11 @@
             [frontend.components.common :as common]
             [frontend.components.license :as license]
             [frontend.components.shared :as shared]
+            [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
             [frontend.routes :as routes]
@@ -159,7 +160,8 @@
                       :on-click #(analytics/track "branch-list-branch-clicked")}
                   [:.branch
                    [:.last-build-status
-                    [:img.badge-icon {:src (-> latest-build build-model/status-icon-v2 common/icon-path)}]]
+                    (om/build svg {:class "badge-icon"
+                                   :src (-> latest-build build-model/status-icon-v2 common/icon-path)})]
                    [:.branch-info
                     (when show-project?
                       [:.project-name
