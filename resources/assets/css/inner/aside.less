@@ -552,6 +552,10 @@
     .projects {
       > li {
         border-top: solid @border-width #c5c5c5;
+
+        &:first-child {
+          border-top: none;
+        }
       }
     }
 
@@ -577,6 +581,10 @@
         font-size: 12px;
         font-weight: bold;
         color: @gray-dark-v2;
+      }
+
+      &:first-child {
+        border-top: none;
       }
     }
 
