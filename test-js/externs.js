@@ -3,6 +3,7 @@ Date.getTime = function () {};
 
 var ldclient = {};
 ldclient.toggle = function() {};
+ldclient.identify = function() {};
 
 var __karma__ = {};
 __karma__.result = function () {};
