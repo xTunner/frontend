@@ -12,7 +12,7 @@
             [frontend.components.statuspage :as statuspage]
             [frontend.components.opt-in :as opt-in]
             [frontend.models.project :as project-model]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]

@@ -51,9 +51,10 @@
   (defroute v1-admin "/admin" []
     (open-to-inner! nav-ch :admin-settings {:admin true
                                             :subpage nil}))
-  (defroute v1-admin-fleet-state "/admin/fleet-state" []
+  (defroute v1-admin-fleet-state "/admin/fleet-state" [_fragment]
     (open-to-inner! nav-ch :admin-settings {:admin true
-                                            :subpage :fleet-state}))
+                                            :subpage :fleet-state
+                                            :tab (keyword _fragment)}))
   (defroute v1-admin-users "/admin/users" []
     (open-to-inner! nav-ch :admin-settings {:admin true
                                             :subpage :users}))

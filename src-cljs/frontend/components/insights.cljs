@@ -202,9 +202,9 @@
 (defn chartable-builds [builds]
   (->> builds
        (filter build-graphable)
+       (take (:max-bars plot-info))
        reverse
-       (map add-queued-time)
-       (take (:max-bars plot-info))))
+       (map add-queued-time)))
 
 (defn median-builds [builds f]
   (let [nums (->> builds

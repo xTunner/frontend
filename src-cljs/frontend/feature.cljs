@@ -1,4 +1,4 @@
-(ns frontend.models.feature
+(ns frontend.feature
   "Functions related to enabling and disabling features."
   (:require [goog.net.cookies :as cookies]
             [frontend.models.project :as project]
@@ -8,8 +8,6 @@
 
 (defn enabled-for-project? [project feature]
   (project/feature-enabled? project feature))
-
-;; export so we can set this using javascript in production
 
 (defn- feature-flag-value-true? [value]
   (= value "true"))

@@ -3,7 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.user :as user-model]
             [frontend.models.project :as project-model]
@@ -116,7 +116,7 @@
 (def email-prefs
   [["default" "Default"]
    ["all" "All builds"]
-   ["smart" "My breaks and fixes"]
+   ["smart" "Branches I've pushed to"]
    ["none" "None"]])
 
 (defn email-pref [{:keys [project user]} owner]

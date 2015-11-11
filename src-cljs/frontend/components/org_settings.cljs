@@ -268,7 +268,7 @@
            [:div#edit-plan {:class "pricing.page"}
             (when (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name))
-            (when-not (pm/enterprise? plan)
+            (when-not (config/enterprise?)
               [:fieldset
                [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
                              container-cost "/month each.")]])
@@ -286,7 +286,7 @@
                            :type "text" :value selected-containers
                            :on-change #(utils/edit-input owner state/selected-containers-path %
                                                          :value (int (.. % -target -value)))}]
-                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") (when-not (pm/enterprise? plan) (str " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))))]
+                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") (when-not (config/enterprise?) (str " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))))]
                   (when (not (= new-total old-total))
                     [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])
                   (when false ;; (pm/grandfathered? plan) ;; I don't
@@ -294,7 +294,7 @@
                     [:i.fa.fa-question-circle#grandfathered-tooltip-hack
                      {:title "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
                 [:fieldset
-                 (if (and (pm/can-edit-plan? plan org-name) (or (pm/enterprise? plan) (pm/paid? plan)))
+                 (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
                    (forms/managed-button
                     [:button.btn.btn-large.btn-primary.center
                      {:data-success-text "Saved",
@@ -326,7 +326,7 @@
                                                                            (pluralize selected-containers "container"))}])
                                          false))}
                        "Pay Now"])))
-                 (when-not (pm/enterprise? plan)
+                 (when-not (config/enterprise?)
                    ;; TODO: Clean up conditional here - super nested and many interactions
                    (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
                      (list
@@ -864,7 +864,7 @@
               " for more parallelism and shorter queue times."))])
         (when (pm/freemium? plan)
           [:p (str (pm/freemium-containers plan) " container is free, forever.")])
-        (when-not (pm/enterprise? plan)
+        (when-not (config/enterprise?)
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."])]]))))
 
 (def main-component

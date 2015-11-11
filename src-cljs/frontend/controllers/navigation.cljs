@@ -7,7 +7,7 @@
             [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -20,8 +20,7 @@
             [frontend.routes :as routes]
             [goog.dom]
             [goog.string :as gstring])
-  (:require-macros [frontend.utils :refer [inspect]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
@@ -145,7 +144,7 @@
     ;; navigated to page, load everything
     (-> state
         state-utils/clear-page-state
-        (assoc :navigation-point (inspect navigation-point)
+        (assoc :navigation-point navigation-point
                :navigation-data (assoc args
                                        :show-aside-menu? (not (feature/enabled? :ui-v2))
                                        :show-settings-link? (not (feature/enabled? :ui-v2)))
@@ -542,15 +541,17 @@
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
              :navigation-data args
-             :admin-settings-subpage subpage)))
+             :admin-settings-subpage subpage
+             :recent-builds nil)))
 
 (defmethod post-navigated-to! :admin-settings
-  [history-imp navigation-point {:keys [subpage]} previous-state current-state]
+  [history-imp navigation-point {:keys [subpage tab]} previous-state current-state]
   (js/console.log subpage)
   (case subpage
     :fleet-state (do
                    (let [api-ch (get-in current-state [:comms :api])]
-                     (api/get-fleet-state api-ch))
+                     (api/get-fleet-state api-ch)
+                     (api/get-admin-dashboard-builds tab api-ch))
                    (set-page-title! "Fleet State"))
     :license (set-page-title! "License")
     :users (do

@@ -5,7 +5,8 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
-            [frontend.models.feature :as feature]
+            [frontend.models.project :as project-model]
+            [frontend.feature :as feature]
             [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -133,7 +134,7 @@
 
              (when (< 10000 (build-model/run-queued-time build))
                [:span#circle_queued_explanation
-                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."]) 
+                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
              (when (seq builds)
                [:span
                 " This build " (if usage-queued? "has been" "was")
@@ -284,6 +285,46 @@
      [:p "This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate."]
      [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."]])
 
+(defn ssh-ad-v2
+  "Note about why you might want to SSH into a build and buttons to do so"
+  [build owner]
+    [:div.ssh-ad
+     [:p
+      "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on.
+       This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
+       More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."
+     (om/build ssh-buttons build)]])
+
+(defn ssh-command [node]
+  (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node)))
+
+(defrender ssh-node-list [nodes owner]
+  (html
+    [:div.build-ssh-list
+     [:dl.dl-horizontal
+      (map (fn [node i]
+             (list
+               [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
+               [:dd {:class (when (:ssh_enabled node) "connected")}
+                [:span (ssh-command node)]
+                (when-not (:ssh_enabled node)
+                  [:span.loading-spinner common/spinner])]))
+           nodes (range))]]))
+
+(defrender ssh-node-list-v2 [nodes owner]
+  (html
+    [:ul.ssh-nodes-list
+     (map-indexed (fn [i node]
+                    (let [no-ssh?       (not (:ssh_enabled node))
+                          command-class (cond-> "ssh-node-command"
+                                          no-ssh? (str " ssh-node-disabled"))]
+                      [:li.ssh-node
+                       [:span.ssh-node-container (str "Container " i)]
+                       [:span {:class command-class} (ssh-command node)]
+                       (when no-ssh?
+                         [:img.ssh-node-running-icon {:src (common/icon-path "Status-Running")}])]))
+                  nodes)]))
+
 (defn ssh-instructions
   "Instructions for SSHing into a build that you can SSH into"
   [build owner]
@@ -292,22 +333,18 @@
       [:div.ssh-info-container
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]]
-       [:div.build-ssh-list
-        [:dl.dl-horizontal
-         (map (fn [node i]
-                (list
-                  [:dt (when (< 1 (count nodes)) [:span (str "container " i " ")])]
-                  [:dd {:class (when (:ssh_enabled node) "connected")}
-                   [:span (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node))]
-                   (when-not (:ssh_enabled node)
-                     [:span.loading-spinner common/spinner])]))
-              nodes (range))]]
-       [:div.build-ssh-doc
-        "Debugging Selenium browser tests? "
-        [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-         "Read our doc on interacting with the browser over VNC"]
-        "."]])))
+        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]
+        [:div
+         "Browser based testing? Read "
+         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
+          "our docs"]
+         " on how to use VNC with CircleCI."]]
+
+       (if  (feature/enabled? :ui-v2)
+         (om/build ssh-node-list-v2 nodes)
+         (om/build ssh-node-list nodes))
+
+       ])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
@@ -322,8 +359,12 @@
            (if for-current-user?
              (cond
                (build-model/ssh-enabled-now? build) (ssh-instructions build owner)
-               (build-model/finished? build) (ssh-ad build owner))
-             (ssh-ad build owner))])))))
+               (build-model/finished? build) (if (feature/enabled? :ui-v2)
+                                               (ssh-ad-v2 build owner)
+                                               (ssh-ad build owner)))
+             (if (feature/enabled? :ui-v2)
+               (ssh-ad-v2 build owner)
+               (ssh-ad build owner)))])))))
 
 (defn build-time-visualization [build owner]
   (reify
@@ -525,7 +566,7 @@
 (defmulti format-test-name-v2 test-model/source)
 
 (defmethod format-test-name-v2 :default [test]
-  (->> [[(:name test)] [(:classname test) (:file test)]]
+  (->> [[(:name test)] [(:classname test)]]
        (map (fn [s] (some #(when-not (string/blank? %) %) s)))
        (filter identity)
        (string/join " - in ")))
@@ -558,14 +599,11 @@
     om/IRender
     (render [_]
       (html
-        [:li.build-test
-         (format-test-name-v2 test)
-         " - "
-         (when-not (string/blank? (:message test))
-           [:a.test-output-toggle {:role "button"
-                                   :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
-            (if (:show-message test) "less info" "more info")])
-         (when (:show-message test)
+       [:li.build-test {:class (when (:show-message test) "expanded")
+                        :on-click #(when-not (string/blank? (:message test))
+                                     (raise! owner [:show-test-message-toggled {:test-index (:i test)}]))}
+        [:span.test-name (format-test-name-v2 test)]
+        (when (:show-message test)
            [:pre.build-test-output (:message test)])]))))
 
 (defn build-tests-list [data owner]
@@ -604,73 +642,89 @@
 
 (def initial-test-render-count 5)
 
-(defn build-tests-list-v2 [data owner]
+(defn build-tests-file-block [[file failures] owner]
+  (reify om/IRender
+    (render [_]
+      (html
+       [:div
+        (when file [:li.filename (str file ":")])
+        (om/build-all test-item-v2 (vec failures))]))))
+
+(defn build-tests-source-block [[source {:keys [failures successes]}] owner]
+  (reify om/IRender
+    (render [_]
+      (html
+       [:div.alert.alert-danger.expanded.build-tests-info
+        [:div.alert-header
+         [:img.alert-icon {:src (common/icon-path "Info-Error")}]
+         [:span.source-name (test-model/pretty-source source)]
+         [:span.failure-count (pluralize (count failures) "failure")]]
+        [:div.alert-body
+         [:div.build-tests-summary
+          "Your build ran "
+          [:strong (pluralize (+ (count failures)
+                                 (count successes)) "test")]
+          " with "
+          [:strong (pluralize (count failures) "failure")]]
+         [:div.build-tests-list-container
+          [:ol.list-unstyled.build-tests-list
+           (let [file-failures (->> (group-by :file failures)
+                                    (map (fn [[k v]] [k (sort-by test-model/format-test-name v)]))
+                                    (into (sorted-map)))
+                 [top-map bottom-map] (utils/split-map-values-at file-failures initial-test-render-count)]
+             (list
+              (om/build-all build-tests-file-block top-map)
+              (when-not (empty? bottom-map)
+                (list
+                 [:hr]
+                 [:li
+                  [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                   [:span
+                    [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
+                    (if (om/get-state owner :is-open?)
+                      "Less"
+                      "More")]]]
+                 (when (om/get-state owner :is-open?)
+                   (om/build-all build-tests-file-block bottom-map))))))]]]]))))
+
+(defn build-tests-list-v2 [{{tests :tests} :tests-data
+                            {build-status :status} :build
+                            :as data}
+                           owner]
   (reify
     om/IWillMount
     (will-mount [_]
       (raise! owner [:tests-showed]))
-
     om/IRender
     (render [_]
-      (let [tests-data (:tests-data data)
-            tests (when (:tests tests-data)
-                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
-            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
-            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)
-            build-succeeded? (= "success" (get-in data [:build :status]))]
+      (let [source-hash (->> tests
+                             (map-indexed #(assoc %2 :i %1))
+                             (reduce (fn [acc {:keys [result] :as test}]
+                                       (update-in acc [(test-model/source test)
+                                                       (if (#{"failure" "error"} result)
+                                                         :failures
+                                                         :successes)]
+                                                  #(cons test %)))
+                                     {}))
+            failed-sources (filter (fn [[_ {:keys [failures]}]]
+                                     (seq failures))
+                                   source-hash)
+            build-succeeded? (= "success" build-status)]
         (html
          [:div.test-results
           (if-not tests
             [:div.loading-spinner common/spinner]
             (cond
-              (seq failed-tests) (for [[source tests-by-source] (group-by test-model/source failed-tests)]
-                                   [:div.alert.alert-danger.expanded.build-tests-info
-                                    [:div.alert-header
-                                     [:img.alert-icon {:src (common/icon-path "Info-Error")}]
-                                     (test-model/pretty-source source)
-                                     " - "
-                                     (pluralize (count failed-tests) "failure")]
-                                    [:div.alert-body
-                                     [:div.build-tests-summary
-                                      "Your build ran "
-                                      [:strong (pluralize (count tests) "test")]
-                                      " with "
-                                      [:strong (pluralize (count failed-tests) "failure")]]
-                                     [:div.build-tests-list-container
-                                      [:ol.list-unstyled.build-tests-list
-                                       (for [[file tests-by-file] (group-by :file tests-by-source)]
-                                         (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
-                                               initial-test-results (take initial-test-render-count sorted-tests)
-                                               other-tests (drop initial-test-render-count sorted-tests)]
-
-                                         (list (when file [:div.filename (str file ":")])
-                                               (om/build-all test-item-v2
-                                                             (vec initial-test-results))
-                                               (when (seq other-tests)
-                                                 (list
-                                                   [:hr]
-                                                   [:li
-                                                    [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
-                                                     (if (om/get-state owner :is-open?)
-                                                       [:span
-                                                        [:i.fa.fa-chevron-up.build-tests-toggle-icon]
-                                                        "Less"]
-                                                       [:span 
-                                                        [:i.fa.fa-chevron-down.build-tests-toggle-icon]
-                                                        "More"])]]
-                                                   (when (om/get-state owner :is-open?)
-                                                     (om/build-all test-item-v2
-                                                                   (vec other-tests))))))))]]]])
-
+              (seq failed-sources) (om/build-all build-tests-source-block failed-sources)
               (seq tests) [:div
                            "Your build ran "
                            [:strong (count tests)]
-                           " tests in " (string/join ", " (map test-model/pretty-source sources)) " with "
+                           " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
                            [:strong "0 failures"]]
 
               :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
                      [:div [:img.alert-icon {:src (common/icon-path
-                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                                                   (if build-succeeded? "Info-Info" "Info-Error"))}]]
                      (tests-ad owner)]))])))))
 
 (defn circle-yml-ad []
@@ -733,10 +787,20 @@
   (cond
    ;; default to ssh-info for SSH builds
    (build-model/ssh-enabled-now? build) :ssh-info
-   ;; If there's no SSH info, build isn't finished, show the config
-   (build-model/running? build) (if (feature/enabled? :ui-v2) :config :commits)
-   (:read-settings scopes) :usage-queue
-   :else nil))
+   ;; default to the queue tab if the build is currently usage queued, and
+   ;; the user is has the right permissions (and is logged in).
+   (and (:read-settings scopes)
+        (build-model/in-usage-queue? build))
+   :usage-queue
+   ;; If there's no SSH info, build isn't finished, show the config or commits.
+   (build-model/running? build) (if (feature/enabled? :ui-v2)
+                                  ;; "config" takes up too much room for paid customers.
+                                  (if (:read-settings scopes)
+                                    :usage-queue
+                                    :config)
+                                  :commits)
+   ;; Otherwise, just use the first one.
+   :else :tests))
 
 (def tab-link :a.tab-link)
 
@@ -788,7 +852,7 @@
 
             ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
-                       (not (feature/enabled-for-project? project :osx)))
+                       (not (project-model/feature-enabled? project :osx)))
               [:li {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link {:href "#ssh-info"} "Debug via SSH"]])
 
@@ -1020,7 +1084,7 @@
                   "without cache"])
 
                 ;; XXX Temporarily remove the ssh button for OSX builds
-                (when (not (feature/enabled-for-project? project :osx))
+                (when (not (project-model/feature-enabled? project :osx))
                   (forms/managed-button
                    [:button.ssh_build
                     {:data-loading-text "Rebuilding",
@@ -1050,7 +1114,7 @@
            (om/build build-sub-head data)]])))))
 
 (defn commit-line-v2 [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
-  (let [author-icon [:img.dashboard-icon {:src (common/icon-path "Builds-Author")}]]
+  (let [author-icon [:img.dashboard-icon {:src (common/icon-path "Default-Avatar")}]]
     (reify
       om/IDidMount
       (did-mount [_]
@@ -1058,7 +1122,7 @@
           (utils/tooltip (str "#commit-line-tooltip-hack-" commit)
                          {:placement "bottom"
                           :animation false
-                          :viewport "#build-log-container"})))
+                          :viewport ".build-commits-container"})))
       om/IRender
       (render [_]
         (html
@@ -1183,7 +1247,7 @@
 
             ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
-                       (not (feature/enabled-for-project? project :osx)))
+                       (not (project-model/feature-enabled? project :osx)))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link-v2 {:href "#ssh-info"}
                 "Debug via SSH"]])
@@ -1410,7 +1474,7 @@
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
             ;; XXX Temporarily remove the ssh button for OSX builds
-            (when (not (feature/enabled-for-project? project :osx))
+            (when (not (project-model/feature-enabled? project :osx))
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]])))))
 

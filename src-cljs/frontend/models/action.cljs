@@ -1,14 +1,14 @@
 (ns frontend.models.action
   (:require [clojure.string :as string]
             [frontend.datetime :as datetime]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.models.project :as proj]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
             goog.string.format))
 
 (defn failed? [action]
-  (#{"failed" "timedout" "cancelled" "infrastructure_fail"} (:status action)))
+  (#{"failed" "timedout" "canceled" "infrastructure_fail"} (:status action)))
 
 (defn has-content? [action]
   (or (:has_output action)
