@@ -1,6 +1,5 @@
 (ns frontend.models.test-feature
-  (:require [frontend.models.feature :as feature]
-            [frontend.utils.launchdarkly :as ld])
+  (:require [frontend.models.feature :as feature])
   (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var]]))
 
 (deftest enabled?-works
@@ -18,15 +17,5 @@
     (feature/enable-in-cookie :foo)
     (with-redefs [feature/enabled-in-query-string? (constantly false)]
       ;; cookie set to true, query set to false
-      (is (not (feature/enabled? :foo)))))
-
-  ;; test launch darkly overrides
-  (with-redefs [ld/feature-on? (constantly true)
-                ld/exists? (constantly true)]
-    ;; cookie set to false, ld set to true
-    (is (feature/enabled? :foo))
-    (feature/disable-in-cookie :foo)
-    (with-redefs [ld/exists? (constantly false)]
-      ;; cookie set to true, ld not set
       (is (not (feature/enabled? :foo)))))
   (feature/disable-in-cookie :foo))
