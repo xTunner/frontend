@@ -104,13 +104,15 @@
           (.data #(aget % "actions"))
         (.enter)
           (.append "rect")
-          (.attr "class"  "container-step")
-          (.attr "width"  step-length)
-          (.attr "height" container-bar-height)
-          (.attr "y"      container-position)
-          (.attr "x"      step-start-pos)
-          (.on "mouseover" highlight-selected!)
-          (.on "mouseout" reset-selected!))))
+            (.attr "class"     "container-step")
+            (.attr "width"     step-length)
+            (.attr "height"    container-bar-height)
+            (.attr "y"         container-position)
+            (.attr "x"         step-start-pos)
+            (.on   "mouseover" highlight-selected!)
+            (.on   "mouseout"  reset-selected!)
+          (.append "title")
+            (.text #(gstring/format "%s (%s)" (aget % "name") (aget % "index"))))))
 
 (defn draw-step-start-line! [x-scale step]
   (let [step-start-position #(scaled-time x-scale % "start_time")]
