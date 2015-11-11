@@ -276,12 +276,10 @@ versions installed:
 
 - OS X 10.10.3 (14D136) Darwin 14.3.0
 - Xcode:
+  - 6.3.1 Build version 6D1002
   - 6.4 Build version 6E35b
   - 7.0 Build version 7A218
-  - 7.1 Build version 7B91b
-- Facebook xctool 0.2.7
-- CocoaPods 0.39.0
-- xcpretty 0.1.12
-- fastlane 1.36.1
-- carthage 0.8.0
+- Facebook xctool 0.2.2
+- CocoaPods 0.36.4
+- xcpretty 0.1.8
 - shenzhen 0.13.1
