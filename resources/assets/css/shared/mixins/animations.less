@@ -81,3 +81,70 @@
   0%   {background: @white;    color: @grayDark;}
   100% {background: @grayDark; color: @white;}
 }
+
+// Container actions transitions
+@-webkit-keyframes fadeOutLeft { 
+  0% { 
+    opacity: 1; 
+    -webkit-transform: translateX(0); 
+  } 
+  100% { 
+    opacity: 0; 
+    -webkit-transform: translateX(-100%); 
+  } 
+} 
+@keyframes fadeInLeft { 
+  0% { 
+    opacity: 0; 
+    transform: translateX(-100%); 
+  } 
+  100% { 
+    opacity: 1; 
+    transform: translateX(0); 
+  } 
+} 
+
+@-webkit-keyframes fadeOut { 
+  0% { 
+    opacity: 1; 
+  } 
+  100% { 
+    opacity: 0; 
+  } 
+} 
+@keyframes fadeOut { 
+  0% { 
+    opacity: 1; 
+  } 
+  100% { 
+    opacity: 0; 
+  } 
+} 
+
+.steps-enter-active { 
+  -webkit-animation-name: fadeInLeft; 
+  animation-name: fadeInLeft; 
+}
+.steps-leave-active {
+  -webkit-animation-name: fadeOut; 
+  animation-name: fadeOutLeft; 
+}
+
+.steps-enter { 
+  -webkit-animation-duration: 0.2s; 
+  animation-duration: 0.2s; 
+  -webkit-animation-fill-mode: both; 
+  animation-fill-mode: both; 
+  -webkit-animation-timing-function: ease-in; 
+  animation-timing-function: ease-in; 
+} 
+
+.steps-leave {
+  -webkit-animation-duration: 0.2s; 
+  animation-duration: 0.2s; 
+  -webkit-animation-fill-mode: both; 
+  animation-fill-mode: both; 
+  -webkit-animation-timing-function: ease-out; 
+  animation-timing-function: ease-out; 
+}
+

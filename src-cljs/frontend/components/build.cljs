@@ -388,6 +388,29 @@
                      "+"])])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
+(def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
+
+(defn transition-group
+  [opts component]
+  (let [[group-name enter? leave? appear? enterTimeout leaveTimeout]
+        (if (map? opts)
+          [(:name opts)
+           (:enter opts)
+           (:leave opts)
+           (:appear opts)
+           (:enterTimeout opts)
+           (:leaveTimeout opts)]
+          [opts true true false nil nil])]
+    (apply
+      css-trans-group
+      #js {:transitionName group-name
+           :transitionEnter enter?
+           :transitionLeave leave?
+           :transitionAppear appear?
+           :transitionEnterTimeout enterTimeout
+           :transitionLeaveTimeout leaveTimeout}
+      component)))
+
 (defn build-v2 [data owner]
   (reify
     om/IRender
@@ -422,7 +445,10 @@
                                             :build-running? (build-model/running? build)
                                             :build build})
 
-              (om/build build-steps/container-build-steps-v2 container-data)]])])))))
+              (transition-group "steps"
+                                [(om/build build-steps/container-build-steps-v2
+                                           container-data
+                                           {:key :current-container-id})])]])])))))
 
 (defn build []
   (if (feature/enabled? :ui-v2)
