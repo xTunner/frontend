@@ -209,7 +209,7 @@
                      [:h1.text-center (:heading hero)]
                      [:h3.text-center (:subheading hero)]]]]
                   [:div.row.text-center
-                   (common/sign-up-cta owner (str "integrations/" (name integration-name)))]])
+                   (om/build common/sign-up-cta {:source (str "integrations/" (name integration-name))})]])
 
                [:div.outer-section
                 [:section.container
@@ -225,4 +225,4 @@
                   [:h2.text-center "Ready for world-class continuous delivery?"]
                   [:p.text-center (:secondary-cta integration)]
                   [:div.text-center
-                   (common/sign-up-cta owner (str "integrations/" (name integration-name)))]]]]])))))
+                   (om/build common/sign-up-cta {:source (str "integrations/" (name integration-name))})]]]]])))))
