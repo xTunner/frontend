@@ -48,6 +48,10 @@
         background: lighten(@aside-nav-logo-bg-color-v2, 12%);
       }
     }
+
+    &.avatar {
+      opacity: 1;
+    }
   }
 
   .aside-icon {
@@ -754,15 +758,18 @@
   .flex(1);
   .flexy(column);
   overflow-y: auto;
+
   .aside-item {
     max-height: 3em;
     padding: 0;
+
     &:hover,
     &:focus {
       color: @grayDarker;
       box-shadow: none;
       background: @grayLightest;
     }
+
     &a:active {
       &:not(.active) {
         .shadow-deboss(@white);
@@ -770,11 +777,13 @@
         background: @grayLightest;
       }
     }
+
     &a.active {
       color: @grayDark;
       background: @grayLightest;
       cursor: default;
     }
+
     &.aside-heading {
       padding-top: 1em;
       font-weight: bold;
@@ -782,6 +791,7 @@
       background: @white;
       box-shadow: none;
     }
+
     &:last-child {
       margin-bottom: 1em;
     }
