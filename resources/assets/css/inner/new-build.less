@@ -313,6 +313,11 @@
         border-bottom: 1px solid @brand-danger-v2;
       }
 
+      .source-name:after {
+        content: "—";
+        padding: 0 4px;
+      }
+
       hr {
         border-top-color: @brand-danger-v2;
       }
@@ -711,26 +716,56 @@
     padding: 0;
   }
 
+  .build-tests-summary {
+    margin-bottom: 8px;
+  }
+
+  .build-tests-list-container {
+    padding-top: 0;
+
+    .filename {
+      margin: 10px 0;
+    }
+  }
+
   .build-tests-list {
     margin: 0;
     counter-reset: test-list;
 
-    li + li {
+    li {
       margin-top: 10px;
     }
   }
 
   .build-test {
+    pointer-events: none;
+
     &:last-child {
       .build-test-output, .build-test-name {
         margin-bottom: 0;
       }
     }
+
+    .test-name:before {
+      margin-left: 5px;
+      content: counter(test-list) ". ";
+      counter-increment: test-list;
+    }
   }
 
   .build-test:before {
-    content: counter(test-list) " - ";
-    counter-increment: test-list;
+    display: inline-block;
+    transition: all 0.2s ease;
+    content: "\f054";
+    font-family: FontAwesome;
+    font-size: @build-failure-chevron-size;
+    color: @gray-test-chevron;
+    cursor: pointer;
+    pointer-events: all;
+  }
+
+  .build-test.expanded:before {
+    .rotate(90);
   }
 
   .build-test-name {
@@ -750,6 +785,15 @@
   .build-tests-toggle-icon {
     margin-right: 6px; // magic number
     color: @gray-lighter-v2;
+
+    &:before {
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    &.expanded:before {
+      .rotate(90);
+    }
   }
 
   // TODO Generalized whitespace tweak. Should be moved to
@@ -761,6 +805,8 @@
 
 .test-results {
   .alert {
+    margin-bottom: 15px;
+
     &:last-child {
       margin-bottom: 0;
     }

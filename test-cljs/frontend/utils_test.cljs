@@ -52,3 +52,13 @@
     (is (contains? #{"https://secure.gravatar.com/avatar/bar?d=https%3A%2F%2Fidenticons.github.com%2Ffoo.png&s=200"
                      "https://secure.gravatar.com/avatar/bar?s=200&d=https%3A%2F%2Fidenticons.github.com%2Ffoo.png"}
                    (gh-utils/make-avatar-url {:login "foo" :gravatar_id "bar"})))))
+
+
+(deftest split-map-values-at-works
+  (let [orig (into (sorted-map) [[:a [1 2 3]], [:b [4 5 6]]])]
+    (testing "split spill over to bottom"
+      (is (= [{:a [1 2]} {:a [3] :b [4 5 6]}]
+             (utils/split-map-values-at orig 2))))
+    (testing "even split"
+      (is (= [{:a [1 2 3]} {:b [4 5 6]}]
+             (utils/split-map-values-at orig 3))))))
