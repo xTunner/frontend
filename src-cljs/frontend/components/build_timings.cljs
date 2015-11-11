@@ -7,7 +7,6 @@
 (def padding-right 20)
 
 (def top-axis-height 20)
-(def top-axis-offset 5)
 (def left-axis-width 35)
 
 (def bar-height 20)
@@ -65,11 +64,9 @@
       (.orient "left"))))
 
 (defn create-x-axis [build-duration]
-  (let [range-start  top-axis-offset
-        range-end    (- (timings-width) top-axis-offset)
-        axis-scale   (-> (js/d3.scale.linear)
+  (let [axis-scale   (-> (js/d3.scale.linear)
                          (.domain #js [0 build-duration])
-                         (.range  #js [range-start range-end]))]
+                         (.range  #js [0 (timings-width)]))]
   (-> (js/d3.svg.axis)
       (.tickValues (clj->js (range 0 (inc build-duration) (/ build-duration 4))))
       (.scale axis-scale)
