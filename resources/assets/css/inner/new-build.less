@@ -317,6 +317,7 @@
         content: "—";
         padding: 0 4px;
       }
+
       hr {
         border-top-color: @brand-danger-v2;
       }
@@ -704,8 +705,6 @@
     .filename {
       margin: 10px 0;
     }
-
-
   }
 
   .build-tests-list {
@@ -735,10 +734,10 @@
 
   .build-test:before {
     display: inline-block;
-    transition: all .2s ease;
+    transition: all 0.2s ease;
     content: "\f054";
     font-family: FontAwesome;
-    font-size: 12px;
+    font-size: @build-failure-chevron-size;
     color: @gray-test-chevron;
     cursor: pointer;
     pointer-events: all;
@@ -765,10 +764,12 @@
   .build-tests-toggle-icon {
     margin-right: 6px; // magic number
     color: @gray-lighter-v2;
+
     &:before {
       display: inline-block;
-      transition: all .2s ease;
+      transition: all 0.2s ease;
     }
+
     &.expanded:before {
       .rotate(90);
     }
