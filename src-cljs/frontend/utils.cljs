@@ -337,11 +337,14 @@
 (def unexterned-prop aget)
 
 (defn split-map-values-at
-  "Assume M is {k -> xs, ...} split into two maps.
+  "This is similar to `split-at`, but for maps.
 
-  One containing first TOP-MAX values of xs, the other containing the rest.
+M is a map of arrays : {k -> [xs], j -> [ys] , ...}.
 
-  This only makes sense for sorted maps."
+Return [TOP-MAP BOTTOM-MAP]
+
+M is split into top and bottom maps, fitting a max of TOP-MAX keys/values (i.e. `(take top-max (concat xs ys ...))` into the
+top.  The remaining keys/values goes into the bottom."
   [m top-max]
   (loop [top-map (sorted-map)
          bottom-map (sorted-map)
