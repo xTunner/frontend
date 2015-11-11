@@ -125,11 +125,13 @@
     (draw-containers! x-scale step)))
 
 (defn draw-label! [chart number-of-containers]
+  (let [[x-trans y-trans] [-25 (+ (/ (timings-height number-of-containers) 2) 40)]
+        rotation          -90]
   (-> chart
       (.append "text")
       (.attr "class" "y-axis-label")
-      (.attr "transform" (gstring/format "translate(%d,%d) rotate(%d)" -25 90 -90))
-      (.text "CONTAINERS")))
+      (.attr "transform" (gstring/format "translate(%d,%d) rotate(%d)" x-trans y-trans rotation))
+      (.text "CONTAINERS"))))
 
 (defn draw-axis! [chart axis class-name]
   (-> chart
