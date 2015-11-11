@@ -154,7 +154,6 @@
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
 
-               ;; TODO: put behind banner feature flag
                (when (and (feature/enabled? :ui-v2-opt-in-banner) (not (feature/enabled-in-cookie? :ui-v2)))
                  (om/build opt-in/ui-v2-opt-in-banner app))
 
