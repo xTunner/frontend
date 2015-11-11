@@ -47,7 +47,9 @@
   (let [m (js/Math.floor (/ ms-value 1000 60))
         s (js/Math.floor (- (/ ms-value 1000) (* m 60)))]
     (if (<= m 0)
-      (gstring/format "%02ds" s)
+      (if (= s 0)
+        (gstring/format "%ds" s)
+        (gstring/format "%02ds" s))
       (gstring/format "%d:%02dm" m s))))
 
 (defn create-y-axis [number-of-containers]
