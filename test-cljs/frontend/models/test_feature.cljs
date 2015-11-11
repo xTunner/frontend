@@ -25,7 +25,7 @@
                 ld/exists? (constantly true)]
     ;; cookie set to false, ld set to true
     (is (feature/enabled? :foo))
-    (feature/enable-in-cookie :foo)
+    (feature/disable-in-cookie :foo)
     (with-redefs [ld/exists? (constantly false)]
       ;; cookie set to true, ld not set
       (is (not (feature/enabled? :foo)))))
