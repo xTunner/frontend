@@ -121,9 +121,6 @@
   (reify
     om/IRender
     (render [_]
-      (analytics/track-parallelism-button-impression  {:view view
-                                                       :project-data project-data
-                                                       :user user})
       (let [{:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
@@ -199,9 +196,6 @@
   (reify
     om/IRender
     (render [_]
-      (analytics/track-parallelism-button-impression  {:view view
-                                                       :project-data project-data
-                                                       :user user})
       (html
         [:div.upgrade-banner
          [:i.fa.fa-tachometer.fa-lg]
