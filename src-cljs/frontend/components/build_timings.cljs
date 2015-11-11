@@ -8,11 +8,13 @@
 
 (def top-axis-height 20)
 (def top-axis-offset 5)
-(def left-axis-width 20)
+(def left-axis-width 35)
 
 (def bar-height 20)
 (def bar-gap 10)
 (def container-bar-height (- bar-height bar-gap))
+
+(def min-container-rows 4)
 
 (defn timings-width []  (-> (.querySelector js/document ".build-timings")
                             (.-offsetWidth)
@@ -20,7 +22,10 @@
                             (- left-axis-width)))
 
 (defn timings-height [number-of-containers]
-  (* (inc number-of-containers) bar-height))
+  (let [number-of-containers (if (< number-of-containers min-container-rows)
+                               min-container-rows
+                               number-of-containers)]
+  (* (inc number-of-containers) bar-height)))
 
 ;;; Helpers
 (defn create-x-scale [start-time stop-time]
@@ -120,6 +125,13 @@
     (draw-step-start-line! x-scale step)
     (draw-containers! x-scale step)))
 
+(defn draw-label! [chart number-of-containers]
+  (-> chart
+      (.append "text")
+      (.attr "class" "y-axis-label")
+      (.attr "transform" (gstring/format "translate(%d,%d) rotate(%d)" -25 90 -90))
+      (.text "CONTAINERS")))
+
 (defn draw-axis! [chart axis class-name]
   (-> chart
       (.append "g")
@@ -131,8 +143,9 @@
         chart   (create-root-svg parallel)
         x-axis  (create-x-axis (build-duration start_time stop_time))
         y-axis  (create-y-axis parallel)]
-    (draw-axis! chart x-axis "x-axis")
-    (draw-axis! chart y-axis "y-axis")
+    (draw-axis!  chart x-axis "x-axis")
+    (draw-axis!  chart y-axis "y-axis")
+    (draw-label! chart parallel)
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
