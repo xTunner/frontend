@@ -84,9 +84,21 @@
 
 ;;; Elements of the visualization
 (defn draw-containers! [x-scale step]
-  (let [step-length      #(- (scaled-time x-scale % "end_time")
-                             (scaled-time x-scale % "start_time"))
-        step-start-pos   #(x-scale (js/Date. (aget % "start_time")))]
+  (let [step-length         #(- (scaled-time x-scale % "end_time")
+                                (scaled-time x-scale % "start_time"))
+        step-start-pos      #(x-scale (js/Date. (aget % "start_time")))
+        highlight-selected! (fn [_] (this-as
+                                      selected
+                                      (-> step
+                                          (.selectAll "rect")
+                                          (.transition)
+                                          (.duration 200)
+                                          (.attr "fill-opacity" #(this-as element (if (= element selected) 1 0.5))))))
+        reset-selected!    #(-> step
+                                (.selectAll "rect")
+                                (.transition)
+                                (.duration 500)
+                                (.attr "fill-opacity" 1))]
     (-> step
         (.selectAll "rect")
           (.data #(aget % "actions"))
@@ -96,7 +108,9 @@
           (.attr "width"  step-length)
           (.attr "height" container-bar-height)
           (.attr "y"      container-position)
-          (.attr "x"      step-start-pos))))
+          (.attr "x"      step-start-pos)
+          (.on "mouseover" highlight-selected!)
+          (.on "mouseout" reset-selected!))))
 
 (defn draw-step-start-line! [x-scale step]
   (let [step-start-position #(scaled-time x-scale % "start_time")]
