@@ -528,7 +528,7 @@
     .flexy(center, flex-start, row);
 
     color: @white;
-    background: @backround-color-dark-v2;
+    background: @background-color-dark-v2;
 
     .pill-details {
       @media (max-width: @pills-breakpoint) {
@@ -864,5 +864,51 @@
 
     height: @icon-size;
     width: @icon-size;
+  }
+}
+
+.build-timings {
+  .container-step-pass {
+    fill: @brand-green-v2;
+  }
+
+  .container-step-fail {
+    fill: @brand-red-v2;
+  }
+
+  .container-step-stop {
+    fill: @brand-gray-v2;
+  }
+
+  .container-step-start-line {
+    stroke: @background-color-dark-v2;
+    stroke-width: 1;
+  }
+
+  .x-axis {
+    path, line {
+      fill: none;
+      stroke: @build-timings-axis;
+    }
+  }
+
+  .x-axis text {
+      font-size: @fontSizeMini;
+  }
+
+  .y-axis {
+    path, line {
+      display: none;
+    }
+  }
+
+  .y-axis text {
+      stroke: @background-color-dark-v2;
+      font-size: round((@baseFontSize * 0.65), 0); // 9px
+  }
+
+  .y-axis-label {
+    font-size: @fontSizeMini;
+    stroke: @background-color-dark-v2;
   }
 }
