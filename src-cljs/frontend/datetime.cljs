@@ -146,27 +146,41 @@
 (def year
   (* month 12))
 
-(defn time-ago [duration-ms]
+
+(def full-time-units
+  {:seconds "second"
+   :minutes "minute"
+   :hours   "hour"
+   :days    "day"
+   :months  "month"
+   :years   "year"})
+
+(def abbreviated-time-units
+  {:seconds "sec"
+   :minutes "min"
+   :hours   "hr"
+   :days    "day"
+   :months  "month"
+   :years   "year"})
+
+(defn format-duration [duration-ms {:keys [seconds minutes hours days months years]}]
   (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
-        interval (cond (< ago minute){:divisor 1      :unit "second" }
-                       (< ago hour)  {:divisor minute :unit "minute" }
-                       (< ago day)   {:divisor hour   :unit "hour"   }
-                       (< ago month) {:divisor day    :unit "day"    }
-                       (< ago year)  {:divisor month  :unit "month"  }
-                       :else         {:divisor year   :unit "year"   })]
-    (let [count (.round js/Math (/ ago (:divisor interval)))]
-      (str count " "  (:unit interval) (when-not (= 1 count) "s")))))
+        interval (cond (< ago minute){:divisor 1      :unit seconds }
+                       (< ago hour)  {:divisor minute :unit minutes }
+                       (< ago day)   {:divisor hour   :unit hours   }
+                       (< ago month) {:divisor day    :unit days    }
+                       (< ago year)  {:divisor month  :unit months  }
+                       :else         {:divisor year   :unit years   })]
+    (let [time-count (.round js/Math (/ ago (:divisor interval)))]
+      (str time-count " "  (:unit interval) (when-not (or (= 1 time-count)
+                                                          (= 1 (count (:unit interval))))
+                                              "s")))))
+
+(defn time-ago [duration-ms]
+  (format-duration duration-ms full-time-units))
 
 (defn time-ago-abbreviated [duration-ms]
-  (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
-        interval (cond (< ago minute){:divisor 1      :unit "sec"   }
-                       (< ago hour)  {:divisor minute :unit "min"   }
-                       (< ago day)   {:divisor hour   :unit "hr"    }
-                       (< ago month) {:divisor day    :unit "day"   }
-                       (< ago year)  {:divisor month  :unit "month" }
-                       :else         {:divisor year   :unit "year"  })]
-    (let [count (.round js/Math (/ ago (:divisor interval)))]
-      (str count " "  (:unit interval) (when-not (= 1 count) "s")))))
+  (format-duration duration-ms abbreviated-time-units))
 
 (defn as-duration [duration]
   (if (neg? duration)
