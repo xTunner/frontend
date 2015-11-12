@@ -113,12 +113,15 @@
 
     om/IWillUnmount
     (will-unmount [_]
-      (scroll/dispose owner))
-
-    ))
+      (scroll/dispose owner))))
 
 (defn container-pills [{:keys [build-running? build container-data project-data user view]} owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user}))
     om/IRender
     (render [_]
       (let [{:keys [containers current-container-id]} container-data
@@ -194,6 +197,11 @@
 
 (defn upgrade-banner [{:keys [build project-data user view]} owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (analytics/track-parallelism-button-impression  {:view view
+                                                       :project-data project-data
+                                                       :user user}))
     om/IRender
     (render [_]
       (html

@@ -63,6 +63,6 @@
            common/language-background
            [:h2 "Start shipping faster, build for free using CircleCI today."]
            [:p.subheader "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
-           (common/sign-up-cta owner "changelog")
+           (om/build common/sign-up-cta {:source "changelog"})
            ]])))))
 

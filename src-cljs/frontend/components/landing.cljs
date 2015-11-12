@@ -139,13 +139,19 @@
 
 (def view "home")
 
-(defn home-cta [owner source]
-  (analytics/track-signup-impression {:view source})
-  [:a.home-action {:href "/signup"
-                   :role "button"
-                   :ref "prolog-cta"
-                   :on-mouse-up #(analytics/track-signup-click {:view source})}
-   (str (common/sign-up-text))])
+(defn home-cta [{:keys [source]} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (analytics/track-signup-impression {:view source}))
+    om/IRender
+    (render [_]
+      (html
+        [:a.home-action {:href "/signup"
+                       :role "button"
+                       :ref "prolog-cta"
+                       :on-mouse-up #(analytics/track-signup-click {:view source})}
+       (str (common/sign-up-text))]))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback
                                  cta-visibility-callback
@@ -189,7 +195,7 @@
     (render [_]
       (html
        [:section.home-prolog {:ref "home-prolog"}
-        (home-cta owner view)
+        (om/build home-cta {:source view})
         [:div.home-top-shelf]
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "Ship better code, faster."}
@@ -399,7 +405,7 @@
     (render [_]
       (html
        [:section.home-epilog {:ref "home-epilog"}
-        (home-cta owner view)
+        (om/build home-cta {:source view})
         [:div.home-top-shelf]
         [:div.home-slogans
          [:h2.slogan.proverb {:item-prop "So, ready to ship faster?"}
