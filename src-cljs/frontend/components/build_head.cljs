@@ -872,8 +872,8 @@
                     [:span {:class "fail-count"} fail-count]))]])
 
             (when (and admin? (build-model/finished? build))
-              [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [tab-link {:href "#build-time-viz"} "Build Timing"]])
+              [:li {:class (when (= :build-timing selected-tab) "active")}
+               [tab-link {:href "#build-timing"} "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
@@ -886,7 +886,7 @@
 
              :tests (om/build build-tests-list build-data)
 
-             :build-time-viz (om/build build-time-visualization build)
+             :build-timing (om/build build-time-visualization build)
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
@@ -1263,8 +1263,8 @@
              [tab-link-v2 {:href "#config"} "circle.yml"]]
 
             (when (and admin? (build-model/finished? build))
-              [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
-               [tab-link-v2 {:href "#build-time-viz"}
+              [tab-tag {:class (when (= :build-timing selected-tab) "active")}
+               [tab-link-v2 {:href "#build-timing"}
                 "Build Timing"]])
 
             (when (seq build-params)
@@ -1276,7 +1276,7 @@
 
              :tests (om/build build-tests-list-v2 build-data)
 
-             :build-time-viz (om/build build-timings/build-timings build)
+             :build-timing (om/build build-timings/build-timings build)
 
              :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user
