@@ -892,11 +892,8 @@
     }
   }
 
-  .x-axis {
-     text {
-      font-size: 11px;
-      line-height: 16px;
-    }
+  .x-axis text {
+      font-size: @fontSizeMini;
   }
 
   .y-axis {
@@ -905,14 +902,13 @@
     }
   }
 
-  .y-axis {
-     text {
+  .y-axis text {
       stroke: @background-color-dark-v2;
-      font-size: 9px;
-    }
+      font-size: round((@baseFontSize * 0.65), 0); // 9px
   }
 
   .y-axis-label {
-    font-size: 11px;
+    font-size: @fontSizeMini;
+    stroke: @background-color-dark-v2;
   }
 }

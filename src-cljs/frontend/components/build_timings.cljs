@@ -7,11 +7,12 @@
 (def padding-right 20)
 
 (def top-axis-height 20)
-(def left-axis-width 35)
+(def left-axis-width 40)
 
 (def bar-height 20)
 (def bar-gap 10)
 (def container-bar-height (- bar-height bar-gap))
+(def step-start-line-extension 1)
 
 (def min-container-rows 4)
 
@@ -37,8 +38,11 @@
 (defn create-root-svg [number-of-containers]
   (-> (.select js/d3 ".build-timings")
       (.select "svg")
-        (.attr "width"  (+ (timings-width) left-axis-width padding-right))
-        (.attr "height" (+ (timings-height number-of-containers) top-axis-height))
+        (.attr "width"  (+ (timings-width)
+                           left-axis-width
+                           padding-right))
+        (.attr "height" (+ (timings-height number-of-containers)
+                           top-axis-height))
       (.append "g") ;move everything over to see the axis
         (.attr "transform" (gstring/format "translate(%d,%d)" left-axis-width top-axis-height))))
 
@@ -54,33 +58,38 @@
 (defn create-y-axis [number-of-containers]
   (let [range-start (+ bar-height (/ container-bar-height 2))
         range-end   (+ (timings-height number-of-containers) (/ container-bar-height 2))
-        axis-scale  (-> (js/d3.scale.linear)
-                        (.domain #js [0 number-of-containers])
-                        (.range  #js [range-start range-end]))]
+        axis-scale  (-> (.linear js/d3.scale)
+                          (.domain #js [0 number-of-containers])
+                          (.range  #js [range-start range-end]))]
   (-> (js/d3.svg.axis)
-      (.tickValues (clj->js (range 0 number-of-containers)))
-      (.scale axis-scale)
-      (.tickFormat #(js/Math.floor %))
-      (.orient "left"))))
+        (.tickValues (clj->js (range 0 number-of-containers)))
+        (.scale axis-scale)
+        (.tickFormat #(js/Math.floor %))
+        (.orient "left"))))
 
 (defn create-x-axis [build-duration]
-  (let [axis-scale   (-> (js/d3.scale.linear)
+  (let [axis-scale (-> (.linear js/d3.scale)
                          (.domain #js [0 build-duration])
                          (.range  #js [0 (timings-width)]))]
-  (-> (js/d3.svg.axis)
-      (.tickValues (clj->js (range 0 (inc build-duration) (/ build-duration 4))))
-      (.scale axis-scale)
-      (.tickFormat time-axis-tick-formatter)
-      (.orient "top"))))
+  (-> (.axis js/d3.svg)
+        (.tickValues (clj->js (range 0 (inc build-duration) (/ build-duration 4))))
+        (.scale axis-scale)
+        (.tickFormat time-axis-tick-formatter)
+        (.orient "top"))))
 
 (defn build-duration [start-time stop-time]
-  (- (.getTime (js/Date. stop-time)) (.getTime (js/Date. start-time))))
+  (- (.getTime (js/Date. stop-time))
+     (.getTime (js/Date. start-time))))
 
 (defn container-position [step]
   (* bar-height (inc (aget step "index"))))
 
 (defn scaled-time [x-scale step time-key]
   (x-scale (js/Date. (aget step time-key))))
+
+(defn wrap-status [status]
+  {:status  status
+   :outcome status})
 
 ;;; Elements of the visualization
 (defn draw-containers! [x-scale step]
@@ -104,8 +113,7 @@
           (.data #(aget % "actions"))
         (.enter)
           (.append "rect")
-            (.attr "class"     #(str "container-step-" (build/status-class {:status  (aget % "status")
-                                                                            :outcome (aget % "status")})))
+            (.attr "class"     #(str "container-step-" (build/status-class (wrap-status (aget % "status")))))
             (.attr "width"     step-length)
             (.attr "height"    container-bar-height)
             (.attr "y"         container-position)
@@ -125,37 +133,38 @@
         (.attr "class" "container-step-start-line")
         (.attr "x1"    step-start-position)
         (.attr "x2"    step-start-position)
-        (.attr "y1"    #(- (container-position %) 1))
+        (.attr "y1"    #(- (container-position %)
+                           step-start-line-extension))
         (.attr "y2"    #(+ (container-position %)
                            container-bar-height
-                           1)))))
+                           step-start-line-extension)))))
 
 (defn draw-steps! [x-scale chart steps]
-  (let [steps-group (-> chart
-                        (.append "g"))
+  (let [steps-group       (-> chart
+                              (.append "g"))
 
-        step (-> steps-group
-                 (.selectAll "g")
-                   (.data (clj->js steps))
-                 (.enter)
-                   (.append "g"))]
+        step              (-> steps-group
+                              (.selectAll "g")
+                                (.data (clj->js steps))
+                              (.enter)
+                                (.append "g"))]
     (draw-step-start-line! x-scale step)
     (draw-containers! x-scale step)))
 
 (defn draw-label! [chart number-of-containers]
-  (let [[x-trans y-trans] [-25 (+ (/ (timings-height number-of-containers) 2) 40)]
+  (let [[x-trans y-trans] [-30 (+ (/ (timings-height number-of-containers) 2) 40)]
         rotation          -90]
   (-> chart
       (.append "text")
-      (.attr "class" "y-axis-label")
-      (.attr "transform" (gstring/format "translate(%d,%d) rotate(%d)" x-trans y-trans rotation))
-      (.text "CONTAINERS"))))
+        (.attr "class" "y-axis-label")
+        (.attr "transform" (gstring/format "translate(%d,%d) rotate(%d)" x-trans y-trans rotation))
+        (.text "CONTAINERS"))))
 
 (defn draw-axis! [chart axis class-name]
   (-> chart
       (.append "g")
-      (.attr "class" class-name)
-      (.call axis)))
+        (.attr "class" class-name)
+        (.call axis)))
 
 (defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
@@ -170,12 +179,8 @@
 ;;;; Main component
 (defn build-timings [build owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:drawn? false})
     om/IDidMount
     (did-mount [_]
-      (om/set-state! owner :drawn? true)
       (draw-chart! build))
     om/IRenderState
     (render-state [_ _]
