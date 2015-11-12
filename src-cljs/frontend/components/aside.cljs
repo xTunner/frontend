@@ -483,10 +483,10 @@
             [:div.logomark
              (common/ico :logo)]]
 
-           [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Settings"
-                           :href "/account"}
+           [:a.aside-item.avatar {:data-placement "right"
+                                  :data-trigger "hover"
+                                  :title "Settings"
+                                  :href "/account"}
             [:img.account-avatar {:src avatar-url}]]
 
            [:a.aside-item {:title "Documentation"

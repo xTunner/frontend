@@ -83,58 +83,23 @@
 }
 
 // Container actions transitions
-@-webkit-keyframes fadeOutLeft { 
-  0% { 
-    opacity: 1; 
-    -webkit-transform: translateX(0); 
-  } 
-  100% { 
-    opacity: 0; 
-    -webkit-transform: translateX(-100%); 
-  } 
-} 
-@keyframes fadeInLeft { 
-  0% { 
-    opacity: 0; 
-    transform: translateX(-100%); 
-  } 
-  100% { 
-    opacity: 1; 
-    transform: translateX(0); 
-  } 
-} 
-
-@-webkit-keyframes fadeOut { 
-  0% { 
-    opacity: 1; 
-  }
-  100% { 
-    opacity: 0; 
-  }
-} 
-@keyframes fadeOut { 
-  0% { 
-    opacity: 1; 
-  }
-  100% { 
-    opacity: 0; 
-  }
-} 
 
 .build-steps-animator {
   position: relative;
   overflow-x: hidden;
 }
 
+@steps-transition-rate: 0.225s;
+
 .steps-ltr-enter {
+  position: absolute;
   opacity: 0.01;
   transform: translateX(-100%);
-  position: absolute;
 
   &.steps-ltr-enter-active {
     opacity: 1;
     transform: translateX(0%);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
   }
 }
 
@@ -145,19 +110,19 @@
   &.steps-ltr-leave-active {
     opacity: 0;
     transform: translateX(100%);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
   }
 }
 
 .steps-rtl-enter {
+  position: absolute;
   opacity: 0.01;
   transform: translateX(100%);
-  position: absolute;
 
   &.steps-rtl-enter-active {
     opacity: 1;
     transform: translateX(0);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
   }
 }
 
@@ -168,7 +133,7 @@
   &.steps-rtl-leave-active {
     opacity: 0;
     transform: translateX(-100%);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
   }
 }
 

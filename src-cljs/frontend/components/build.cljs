@@ -460,7 +460,9 @@
                                             :build build})
 
               (transition-group {:name (om/get-state owner :action-transition-direction)
-                                 :class "build-steps-animator"
+                                 :enter true
+                                 :leave true
+                                 :class "build-steps-animator"}
                                 [(om/build build-steps/container-build-steps-v2
                                            container-data
                                            {:key :current-container-id})])]])])))))
