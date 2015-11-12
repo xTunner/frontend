@@ -4,7 +4,7 @@
             [frontend.async :refer [raise!]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]

@@ -10,8 +10,9 @@
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
+            [frontend.components.opt-in :as opt-in]
             [frontend.models.project :as project-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
@@ -75,7 +76,10 @@
               (str "View " project-name " »")])
            (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
              (om/build build-head/build-head-actions app))
-           ])))))
+           (when (and (= :dashboard (:navigation-point app))
+                      (feature/enabled? :ui-v2-opt-in-banner)
+                      (feature/enabled-in-cookie? :ui-v2))
+             (om/build opt-in/ui-v2-opt-out-ui app))])))))
 
 (defn head-admin [app owner]
   (reify
@@ -160,7 +164,7 @@
                                                                   nil)
                                                          :on-touch-end #(raise! owner [:change-hamburger-state])}
             [:div.container-fluid
-             [:div.hamburger-menu 
+             [:div.hamburger-menu
               (condp = hamburger-state
                 "closed" [:i.fa.fa-bars.fa-2x]
                 "open" [:i.fa.fa-close.fa-2x])]

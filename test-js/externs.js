@@ -1,5 +1,10 @@
 var Date = {};
 Date.getTime = function () {};
+
+var ldclient = {};
+ldclient.toggle = function() {};
+ldclient.identify = function() {};
+
 var __karma__ = {};
 __karma__.result = function () {};
 __karma__.complete = function () {};
@@ -110,4 +115,3 @@ React.addons.TestUtils.SimulateNative.touchEnd = function () {};
 React.addons.TestUtils.SimulateNative.touchMove = function () {};
 React.addons.TestUtils.SimulateNative.touchStart = function () {};
 React.addons.TestUtils.SimulateNative.wheel = function () {};
-

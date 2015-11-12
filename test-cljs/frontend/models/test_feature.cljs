@@ -1,5 +1,5 @@
 (ns frontend.models.test-feature
-  (:require [frontend.feature :as feature])
+  (:require [frontend.models.feature :as feature])
   (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var]]))
 
 (deftest enabled?-works

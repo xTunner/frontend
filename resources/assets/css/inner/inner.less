@@ -36,6 +36,38 @@
     padding: 0 15px;
   }
 
+  .ui-v2-opt-in {
+    background: @feature-opt-in-banner-bg;
+    box-shadow: -1px 0 @feature-opt-in-banner-shadow;
+    font-size: 16px;
+    padding: 25px;
+    color: @gray-darker;
+    height: 70px;
+    button {
+      margin-top: -5px;
+      margin-right: 5px;
+      float: right;
+      .circleButton(@green);
+      font-size: 14px;
+      height: 30px;
+      border: none;
+      box-shadow: none;
+      text-shadow: none;
+      padding: 0.25em 1.25em;
+    }
+  }
+
+  .ui-v2-opt-out {
+    a {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+    button {
+      .subtleButton(@green);
+      float: none;
+    }
+  }
+
   @import "terminal.less";
   @import "builds.less";
   @import "new-build.less";

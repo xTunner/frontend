@@ -4,7 +4,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
@@ -147,15 +147,15 @@
                        :href (build-model/path-for-parallelism build)
                        :on-click #(analytics/track-parallelism-button-click {:view view
                                                                              :project-data project-data
-                                                                             :user user}) 
+                                                                             :user user})
                        :title "adjust parallelism"}
-                      [:span "Add Containers +"]] 
+                      [:span "Add Containers +"]]
                      [:a.container-selector.parallelism-tab
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
                        :on-click #(analytics/track-parallelism-button-click {:view view
                                                                              :project-data project-data
-                                                                             :user user}) 
+                                                                             :user user})
                        :title "adjust parallelism"}
                       [:span "+"]])])]
         (om/build sticky {:content div :content-class "containers"})))))
@@ -238,7 +238,7 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
-             (when (and 
+             (when (and
                      user
                      (contains? :paid (:plan project-data))
                      (not (get-in project-data [:plan :paid]))
@@ -428,4 +428,3 @@
   (if (feature/enabled? :ui-v2)
     build-v2
     build-v1))
-
