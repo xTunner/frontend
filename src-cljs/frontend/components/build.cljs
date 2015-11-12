@@ -392,27 +392,41 @@
 
 (defn transition-group
   [opts component]
-  (let [[group-name enter? leave? appear? enterTimeout leaveTimeout]
+  (let [[group-name enter? leave? appear? class-name]
         (if (map? opts)
           [(:name opts)
            (:enter opts)
            (:leave opts)
            (:appear opts)
-           (:enterTimeout opts)
-           (:leaveTimeout opts)]
-          [opts true true false nil nil])]
+           (:class opts)]
+          [opts true true false nil])]
     (apply
       css-trans-group
       #js {:transitionName group-name
            :transitionEnter enter?
            :transitionLeave leave?
            :transitionAppear appear?
-           :transitionEnterTimeout enterTimeout
-           :transitionLeaveTimeout leaveTimeout}
+           :component "div"
+           :className class-name}
       component)))
+
+(defn selected-container-index [data]
+  (get-in data [:current-build-data :container-data :current-container-id]))
 
 (defn build-v2 [data owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:action-transition-direction "steps-ltr"})
+    om/IWillReceiveProps
+    (will-receive-props [_ next-props]
+      (let [old-ix (selected-container-index (om/get-props owner))
+            new-ix (selected-container-index next-props)]
+        (om/set-state! owner
+                       :action-transition-direction
+                       (if (> old-ix new-ix)
+                         "steps-ltr"
+                         "steps-rtl"))))
     om/IRender
     (render [_]
       (let [build (get-in data state/build-path)
@@ -445,7 +459,8 @@
                                             :build-running? (build-model/running? build)
                                             :build build})
 
-              (transition-group "steps"
+              (transition-group {:name (om/get-state owner :action-transition-direction)
+                                 :class "build-steps-animator"
                                 [(om/build build-steps/container-build-steps-v2
                                            container-data
                                            {:key :current-container-id})])]])])))))
