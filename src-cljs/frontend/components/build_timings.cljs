@@ -1,6 +1,7 @@
 (ns frontend.components.build-timings
   (:require [om.core :as om :include-macros true]
             [goog.string :as gstring]
+            [frontend.datetime :as datetime]
             [frontend.models.build :as build])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -74,7 +75,7 @@
   (-> (.axis js/d3.svg)
         (.tickValues (clj->js (range 0 (inc build-duration) (/ build-duration 4))))
         (.scale axis-scale)
-        (.tickFormat time-axis-tick-formatter)
+        (.tickFormat #(str (datetime/as-duration %) "m"))
         (.orient "top"))))
 
 (defn build-duration [start-time stop-time]
@@ -91,23 +92,46 @@
   {:status  status
    :outcome status})
 
+
 ;;; Elements of the visualization
+(defn highlight-selected-container! [step-data]
+  (let [fade-value #(if (= (.-textContent %1) (str (aget %2 "index"))) 1 0.1)]
+    (-> (.select js/d3 ".y-axis")
+        (.selectAll ".tick")
+        (.selectAll "text")
+        (.transition)
+        (.duration 200)
+        (.attr "stroke-opacity" #(this-as element (fade-value element step-data)))
+        (.attr "fill-opacity"   #(this-as element (fade-value element step-data))))))
+
+(defn highlight-selected-step! [step selected]
+  (-> step
+      (.selectAll "rect")
+      (.transition)
+      (.duration 200)
+      (.attr "fill-opacity" #(this-as element (if (= element selected) 1 0.5)))))
+
+(defn reset-selected! [step]
+  ;reset all the steps
+  (-> step
+      (.selectAll "rect")
+      (.transition)
+      (.duration 500)
+      (.attr "fill-opacity" 1))
+
+  ;reset all container labels
+  (-> (.select js/d3 ".y-axis")
+      (.selectAll ".tick")
+      (.selectAll "text")
+      (.transition)
+      (.duration 200)
+      (.attr "stroke-opacity" 1)
+      (.attr "fill-opacity"   1)))
+
 (defn draw-containers! [x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")
                                 (scaled-time x-scale % "start_time"))
-        step-start-pos      #(x-scale (js/Date. (aget % "start_time")))
-        highlight-selected! (fn [_] (this-as
-                                      selected
-                                      (-> step
-                                          (.selectAll "rect")
-                                          (.transition)
-                                          (.duration 200)
-                                          (.attr "fill-opacity" #(this-as element (if (= element selected) 1 0.5))))))
-        reset-selected!    #(-> step
-                                (.selectAll "rect")
-                                (.transition)
-                                (.duration 500)
-                                (.attr "fill-opacity" 1))]
+        step-start-pos      #(x-scale (js/Date. (aget % "start_time")))]
     (-> step
         (.selectAll "rect")
           (.data #(aget % "actions"))
@@ -118,8 +142,10 @@
             (.attr "height"    container-bar-height)
             (.attr "y"         container-position)
             (.attr "x"         step-start-pos)
-            (.on   "mouseover" highlight-selected!)
-            (.on   "mouseout"  reset-selected!)
+            (.on   "mouseover" #(this-as selected
+                                         (highlight-selected-step! step selected)
+                                         (highlight-selected-container! %)))
+            (.on   "mouseout"  #(reset-selected! step))
           (.append "title")
             (.text #(gstring/format "%s (%s)" (aget % "name") (aget % "index"))))))
 
