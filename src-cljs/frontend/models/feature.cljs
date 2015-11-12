@@ -1,15 +1,7 @@
 (ns frontend.models.feature
   "Functions related to enabling and disabling features."
-  (:require [goog.net.cookies :as cookies]
-            [frontend.models.project :as project]
-            [frontend.utils :as util]
-            [frontend.utils.launchdarkly :as ld])
+  (:require [goog.net.cookies :as cookies])
   (:import goog.Uri))
-
-(defn enabled-for-project? [project feature]
-  (project/feature-enabled? project feature))
-
-;; export so we can set this using javascript in production
 
 (defn- feature-flag-value-true? [value]
   (= value "true"))
@@ -53,9 +45,6 @@
   value, otherwise look in a cookie for the feature. Returns false by
   default."
   [feature]
-  (let [feature-name (name feature)]
-   (if (set-in-query-string? feature-name)
-     (enabled-in-query-string? feature-name)
-     (if (ld/exists? feature-name)
-       (ld/feature-on? feature-name)
-       (enabled-in-cookie? feature-name)))))
+  (if (set-in-query-string? feature)
+    (enabled-in-query-string? feature)
+    (enabled-in-cookie? feature)))
