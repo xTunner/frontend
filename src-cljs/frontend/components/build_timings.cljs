@@ -75,10 +75,10 @@
   (-> (.axis js/d3.svg)
         (.tickValues (clj->js (range 0 (inc build-duration) (/ build-duration 4))))
         (.scale axis-scale)
-        (.tickFormat #(str (datetime/as-duration %) "m"))
+        (.tickFormat #(datetime/as-duration %))
         (.orient "top"))))
 
-(defn build-duration [start-time stop-time]
+(defn duration [start-time stop-time]
   (- (.getTime (js/Date. stop-time))
      (.getTime (js/Date. start-time))))
 
@@ -131,7 +131,8 @@
 (defn draw-containers! [x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")
                                 (scaled-time x-scale % "start_time"))
-        step-start-pos      #(x-scale (js/Date. (aget % "start_time")))]
+        step-start-pos      #(x-scale (js/Date. (aget % "start_time")))
+        step-duration       #(datetime/as-duration (duration (aget % "start_time") (aget % "end_time")))]
     (-> step
         (.selectAll "rect")
           (.data #(aget % "actions"))
@@ -147,7 +148,7 @@
                                          (highlight-selected-container! %)))
             (.on   "mouseout"  #(reset-selected! step))
           (.append "title")
-            (.text #(gstring/format "%s (%s)" (aget % "name") (aget % "index"))))))
+            (.text #(gstring/format "%s (%s) - %s" (aget % "name") (aget % "index") (step-duration %))))))
 
 (defn draw-step-start-line! [x-scale step]
   (let [step-start-position #(scaled-time x-scale % "start_time")]
@@ -195,7 +196,7 @@
 (defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
         chart   (create-root-svg parallel)
-        x-axis  (create-x-axis (build-duration start_time stop_time))
+        x-axis  (create-x-axis (duration start_time stop_time))
         y-axis  (create-y-axis parallel)]
     (draw-axis!  chart x-axis "x-axis")
     (draw-axis!  chart y-axis "y-axis")
