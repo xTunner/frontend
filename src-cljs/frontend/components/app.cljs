@@ -40,7 +40,7 @@
             [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
@@ -167,7 +167,7 @@
                    (om/build header/header app-without-container-data))
 
                  (om/build dom-com app)
-                 
+
                  (when (and show-header-and-footer? (config/footer-enabled?))
                    [:footer.main-foot
                     (footer/footer)])]]

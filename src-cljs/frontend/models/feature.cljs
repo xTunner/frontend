@@ -1,4 +1,4 @@
-(ns frontend.feature
+(ns frontend.models.feature
   "Functions related to enabling and disabling features."
   (:require [goog.net.cookies :as cookies])
   (:import goog.Uri))

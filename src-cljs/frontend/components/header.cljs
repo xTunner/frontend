@@ -11,7 +11,7 @@
             [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
             [frontend.models.project :as project-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
@@ -160,7 +160,7 @@
                                                                   nil)
                                                          :on-touch-end #(raise! owner [:change-hamburger-state])}
             [:div.container-fluid
-             [:div.hamburger-menu 
+             [:div.hamburger-menu
               (condp = hamburger-state
                 "closed" [:i.fa.fa-bars.fa-2x]
                 "open" [:i.fa.fa-close.fa-2x])]

@@ -3,7 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
             [frontend.datetime :as time-utils]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.user :as user-model]
             [frontend.models.project :as project-model]
