@@ -124,9 +124,10 @@
         (.attr "class" "container-step-start-line")
         (.attr "x1"    step-start-position)
         (.attr "x2"    step-start-position)
-        (.attr "y1"    container-position)
+        (.attr "y1"    #(- (container-position %) 1))
         (.attr "y2"    #(+ (container-position %)
-                           container-bar-height)))))
+                           container-bar-height
+                           1)))))
 
 (defn draw-steps! [x-scale chart steps]
   (let [steps-group (-> chart
