@@ -222,6 +222,7 @@
                     [:a.menu-item {:href "/pricing"} "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
                 [:a.menu-item {:href "/docs"} "Documentation"]]
+               [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
                (when (config/show-marketing-pages?)
                  (list
                    [:li {:class (when (contains? #{:about
