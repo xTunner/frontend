@@ -1,13 +1,8 @@
-(ns frontend.feature
+(ns frontend.models.feature
   "Functions related to enabling and disabling features."
   (:require [goog.net.cookies :as cookies]
-            [frontend.models.project :as project]
-            [frontend.utils :as util]
             [frontend.utils.launchdarkly :as ld])
   (:import goog.Uri))
-
-(defn enabled-for-project? [project feature]
-  (project/feature-enabled? project feature))
 
 (defn- feature-flag-value-true? [value]
   (= value "true"))

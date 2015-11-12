@@ -1,7 +1,7 @@
 (ns frontend.models.action
   (:require [clojure.string :as string]
             [frontend.datetime :as datetime]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as proj]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]

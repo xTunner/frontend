@@ -24,5 +24,5 @@
             [:div.text-center enterprise-logo]
             [:h1.text-center "Welcome to CircleCI"]]]]
          [:div.row.text-center
-          (common/sign-up-cta owner "enterprise-landing")]]
+          (om/build common/sign-up-cta {:source"enterprise-landing"})]]
         [:div.outer-section]]))))
