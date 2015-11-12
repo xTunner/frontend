@@ -194,12 +194,18 @@
     "Get Started"
     "Sign Up Free"))
 
-(defn sign-up-cta [owner source]
-  (analytics/track-signup-impression {:view source})
-  [:a.btn.btn-cta {:href "/signup"
-                   :role "button"
-                   :on-mouse-up #(analytics/track-signup-click {:view source})}
-   (str (sign-up-text))])
+(defn sign-up-cta [{:keys [source]} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (analytics/track-signup-impression {:view source}))
+    om/IRender
+    (render [_]
+      (html
+        [:a.btn.btn-cta {:href "/signup"
+                         :role "button"
+                         :on-mouse-up #(analytics/track-signup-click {:view source})}
+         (str (sign-up-text))]))))
 
 (defn feature-icon [name]
   [:img.header-icon {:src (utils/cdn-path (str "/img/outer/feature-icons/feature-" name ".svg"))}])

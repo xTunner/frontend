@@ -250,8 +250,11 @@
 .ssh-ad {
   button {
     .subtleButton(@grayLight);
+    margin-top: 0;
+    margin-bottom: 0;
     float: none;
   }
+
   .ssh_build {
     border-top-right-radius: 2em;
     border-bottom-right-radius: 2em;
@@ -504,6 +507,15 @@
 
     &.failed {
       border-left: @side-line-width solid @brand-danger-v2;
+
+      // make sure failed command text color is not white on a white background
+      .command-text {
+        color: @component-header-text-v2;
+      }
+
+      .action-source, .time {
+        color: @component-body-text-v2;
+      }
     }
 
     &.running {
@@ -511,7 +523,15 @@
     }
 
     &.canceled {
-      border-left: @side-line-width solid @brand-cancelled-v2;
+      border-left: @side-line-width solid @brand-canceled-v2;
+    }
+    
+    .command-text {
+      color: @component-header-text-v2;
+    }
+
+    .action-source, .time {
+      color: @component-body-text-v2;
     }
   }
 }

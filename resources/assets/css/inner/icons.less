@@ -1,0 +1,25 @@
+svg.status {
+  .icon {
+    fill: @white;
+  }
+
+  &.passed .circle {
+    fill: @brand-success-v2;
+  }
+
+  &.failed .circle {
+    fill: @brand-danger-v2;
+  }
+
+  &.canceled .circle {
+    fill: @brand-canceled-v2;
+  }
+
+  &.running .circle {
+    fill: @brand-info-v2;
+  }
+
+  &.queued .circle {
+    fill: @brand-pending-v2;
+  }
+}

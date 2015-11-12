@@ -2,11 +2,13 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
             [frontend.datetime :as datetime]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
@@ -17,6 +19,8 @@
             [om.dom :as dom :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
+
+(def view "add-projects")
 
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div
@@ -274,8 +278,99 @@
       "."]
      [:div.inaccessible-org-wrapper
       (map (fn [org-follows] (om/build inaccessible-org-item
-                                      {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
+                                       {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
            (vals follows-by-orgs))]]))
+
+(defrender payment-plan [{:keys [selected-org view]} owner]
+  (analytics/track-payment-plan-impression {:view view})
+  (html
+    [:div.payment-plan
+     [:span.big-number "3"]
+     [:div.instruction "Choose how fast you'd like to build."]
+     [:div.table-container
+      [:table.payment-plan.table
+       [:tr.top.row
+        [:td.cell.first "Plan"]
+        [:td.cell "Cost"]
+        [:td.cell "Containers"]
+        [:td.cell.last]]
+       [:tr.row
+        [:td.cell "Business"]
+        [:td.cell "$500/month"]
+        [:td.cell.container-amount "11"]
+        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                              :subpage "containers"})
+                       :on-click #(analytics/track-payment-plan-click {:view view})}
+                   "Select"]]]
+       [:tr.row
+        [:td.cell "Growth"]
+        [:td.cell "$300/month"]
+        [:td.cell.container-amount "7"]
+        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                              :subpage "containers"})
+                       :on-click #(analytics/track-payment-plan-click {:view view})}
+                   "Select"]]]
+       [:tr.row
+        [:td.cell "Startup"]
+        [:td.cell "$100/month"]
+        [:td.cell.container-amount "3"]
+        [:td.cell [:a{:href (routes/v1-org-settings-subpage {:org selected-org
+                                                             :subpage "containers"})
+                      :on-click #(analytics/track-payment-plan-click {:view view})}
+                   "Select"]]]
+       [:tr.row
+        [:td.cell "Hobbyist"]
+        [:td.cell "$50/month"]
+        [:td.cell.container-amount "2"]
+        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                              :subpage "containers"})
+                       :on-click #(analytics/track-payment-plan-click {:view view})} 
+                   "Select"]]]
+       [:tr.row
+        [:td.cell "Free"]
+        [:td.cell "$0/month"]
+        [:td.cell.container-amount "1"]
+        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
+                                                              :subpage "containers"})
+                       :on-click #(analytics/track-payment-plan-click {:view view})} 
+                   "Selected"]]]]
+      [:table.comparison.table
+       [:tr.top.row
+        [:td.cell.first.metric "Plan Features"]
+        [:td.cell.unpaid "Free"]
+        [:td.cell.last.unpaid "Paid"]]
+       [:tr.row
+        [:td.cell.metric "Build Users"]
+        [:td.cell.unpaid "Unlimited"]
+        [:td.cell.paid "Unlimited"]]
+       [:tr.row
+        [:td.cell.metric "Build Minutes"]
+        [:td.cell.unpaid "1,500 minutes"]
+        [:td.cell.paid "Unlimited"]]
+       [:tr.row
+        [:td.cell.metric "Testing Inference"]
+        [:td.cell.unpaid [:i.fa.fa-check]]
+        [:td.cell.paid [:i.fa.fa-check]]]
+       [:tr.row
+        [:td.cell.metric "3rd Party Integrations"]
+        [:td.cell.unpaid [:i.fa.fa-check]]
+        [:td.cell.paid [:i.fa.fa-check]]]
+       [:tr.row
+        [:td.cell.metric "Community Forum"]
+        [:td.cell.unpaid [:i.fa.fa-check]]
+        [:td.cell.paid [:i.fa.fa-check]]]
+       [:tr.row
+        [:td.cell.metric "Engineer Ticket Support"]
+        [:td.cell.unpaid [:i.fa.fa-close]]
+        [:td.cell.paid [:i.fa.fa-check]]]
+       [:tr.row
+        [:td.cell.metric "Parallelization"]
+        [:td.cell.unpaid [:i.fa.fa-close]]
+        [:td.cell.paid [:i.fa.fa-check]]]
+       [:tr.row
+        [:td.cell.metric "iOS Support"]
+        [:td.cell.unpaid [:i.fa.fa-close]]
+        [:td.cell.paid [:i.fa.fa-check]]]]]]))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
@@ -285,27 +380,39 @@
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
     (html
-     [:div#add-projects
-      [:div#follow-contents
-       [:div.follow-wrapper
-        (when (seq (user-model/missing-scopes user))
-          (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
-        (when (seq followed-inaccessible)
-          (inaccessible-orgs-notice followed-inaccessible settings))
-        [:h2 "Welcome!"]
-        [:h3 "You're about to set up a new project in CircleCI."]
-        [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
-        [:hr]
-        [:div.org-listing
-         (om/build organization-listing {:user user
-                                         :settings settings
-                                         :repos repos})]
-        [:hr]
-        [:div#project-listing.project-listing
-         [:div.overview
-          [:span.big-number "2"]
-          [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
-         (om/build main {:user user
-                         :repos repos
-                         :selected-org selected-org
-                         :settings settings})]]]])))
+      [:div#add-projects
+       [:div#follow-contents
+        [:div.follow-wrapper
+         (when (seq (user-model/missing-scopes user))
+           (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+         (when (seq followed-inaccessible)
+           (inaccessible-orgs-notice followed-inaccessible settings))
+         [:h2 "Welcome!"]
+         [:h3 "You're about to set up a new project in CircleCI."]
+         [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+         [:hr]
+         [:div.org-listing
+          (om/build organization-listing {:user user
+                                          :settings settings
+                                          :repos repos})]
+         [:hr]
+         [:div#project-listing.project-listing
+          [:div.overview
+           [:span.big-number "2"]
+           [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+          (om/build main {:user user
+                          :repos repos
+                          :selected-org selected-org
+                          :settings settings})
+          [:hr]
+          ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
+          ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then 
+          ;; show the payment plan.
+          (let [org (->> user
+                         :organizations
+                         (map #(when (= (:login %) selected-org) {:selected-org (:login %) :show-upsell? (:show_upsell? %)}))
+                         (filter some?)
+                         (first))]
+            (if (or (= selected-org (:login user)) (:show-upsell? org))
+              (om/build payment-plan {:selected-org selected-org
+                                      :view view})))]]]])))

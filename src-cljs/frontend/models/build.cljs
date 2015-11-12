@@ -129,16 +129,22 @@
 
 (defn status-class [build]
   (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
-        (#{"infrastructure_fail" "killed" "not_run" "retried" "canceled"} (:status build)) "stop"
         (= "success" (:outcome build)) "pass"
         (= "running" (:status build)) "busy"
         (#{"queued" "not_running" "scheduled"} (:status build)) "queued"
+
+        (or
+         (#{"infrastructure_fail" "killed" "not_run" "retried" "canceled"} (:status build))
+         ;; If there's no build at all, consider that a "stop"-like status.
+         (nil? build))
+        "stop"
+
         :else nil))
 
 (defn status-icon-v2 [build]
   (case (status-class build)
     "fail" "Status-Failed"
-    "stop" "Status-Cancelled"
+    "stop" "Status-Canceled"
     "pass" "Status-Passed"
     "busy" "Status-Running"
     "queued" "Status-Queued"

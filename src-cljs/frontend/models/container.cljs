@@ -15,7 +15,7 @@
          (= "running" (last action-statuses)))
      :running
      ;; If it has any of the failure-like statuses, it's 'failed'.
-     (some action-statuses ["failed" "timedout" "cancelled" "infrastructure_fail"])
+     (some action-statuses ["failed" "timedout" "canceled" "infrastructure_fail"])
      :failed
      ;; If any of the actions have been canceled, it's 'canceled'.
      (some :canceled (:actions container))

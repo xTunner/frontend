@@ -113,7 +113,7 @@
 
  .parallelism-tab {
     width: 50%;
-  } 
+  }
 
 
   &:hover {
@@ -313,6 +313,11 @@
         border-bottom: 1px solid @brand-danger-v2;
       }
 
+      .source-name:after {
+        content: "—";
+        padding: 0 4px;
+      }
+
       hr {
         border-top-color: @brand-danger-v2;
       }
@@ -350,6 +355,10 @@
 
   .build-action {
     .flexy();
+    margin-right: 20px;
+    &:last-of-type {
+      margin-right: 0;
+    }
 
     .dashboard-icon {
       margin-top: 2px;
@@ -361,7 +370,6 @@
     @toggle-min-width: 145px;
     @button-height: 30px;
 
-    margin-left: @item-spacing;
     margin-right: @item-spacing;
     border-radius: 3px;
     border: solid 1px @dropdown-gray;
@@ -476,24 +484,41 @@
   &.active {
     color: @white;
 
+    // When a container is selected, color its selector and invert the status
+    // icon colors.
+    .selected-color(@color) {
+      background: @color;
+
+      .status {
+        .circle {
+          fill: @white;
+        }
+
+        .icon {
+          fill: @color;
+        }
+      }
+    }
+
+
     &.success {
-      background: @brand-success-v2;
+      .selected-color(@brand-success-v2);
     }
 
     &.waiting {
-      background: @brand-pending-v2;
+      .selected-color(@brand-pending-v2);
     }
 
     &.running {
-      background: @brand-primary-v2;
+      .selected-color(@brand-primary-v2);
     }
 
     &.failed {
-      background: @brand-danger-v2;
+      .selected-color(@brand-danger-v2);
     }
 
     &.canceled {
-      background: @brand-cancelled-v2;
+      .selected-color(@brand-canceled-v2);
     }
   }
 
@@ -636,6 +661,7 @@
 
     .head-user {
       .flexy(stretch, flex-start, column);
+      height: inherit;
     }
   }
 }
@@ -690,26 +716,56 @@
     padding: 0;
   }
 
+  .build-tests-summary {
+    margin-bottom: 8px;
+  }
+
+  .build-tests-list-container {
+    padding-top: 0;
+
+    .filename {
+      margin: 10px 0;
+    }
+  }
+
   .build-tests-list {
     margin: 0;
     counter-reset: test-list;
 
-    li + li {
+    li {
       margin-top: 10px;
     }
   }
 
   .build-test {
+    pointer-events: none;
+
     &:last-child {
       .build-test-output, .build-test-name {
         margin-bottom: 0;
       }
     }
+
+    .test-name:before {
+      margin-left: 5px;
+      content: counter(test-list) ". ";
+      counter-increment: test-list;
+    }
   }
 
   .build-test:before {
-    content: counter(test-list) " - ";
-    counter-increment: test-list;
+    display: inline-block;
+    transition: all 0.2s ease;
+    content: "\f054";
+    font-family: FontAwesome;
+    font-size: @build-failure-chevron-size;
+    color: @gray-test-chevron;
+    cursor: pointer;
+    pointer-events: all;
+  }
+
+  .build-test.expanded:before {
+    .rotate(90);
   }
 
   .build-test-name {
@@ -729,6 +785,15 @@
   .build-tests-toggle-icon {
     margin-right: 6px; // magic number
     color: @gray-lighter-v2;
+
+    &:before {
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    &.expanded:before {
+      .rotate(90);
+    }
   }
 
   // TODO Generalized whitespace tweak. Should be moved to
@@ -740,6 +805,8 @@
 
 .test-results {
   .alert {
+    margin-bottom: 15px;
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -751,4 +818,51 @@
   // terrible hack because the box shadow is inset into grid
   margin-bottom: -(@grid-gutter-width / 2) + 1;
   box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.10);
+}
+
+&.ui-v2 {
+  .sub-head-ssh-info {
+    p {
+      margin: 0px;
+      line-height: 20px;
+    }
+  }
+
+  .ssh-nodes-list {
+    list-style: none;
+    padding-left: 0px;
+    padding-top: 5px;
+  }
+
+  .ssh-node {
+    @ssh-node-padding: 10px;
+
+    .flexy(center, flex-start, row);
+    border-bottom: solid 2px @list-border-color;
+    padding-top:    @ssh-node-padding;
+    padding-bottom: @ssh-node-padding;
+  }
+
+  .ssh-node:last-child {
+    border-bottom: none;
+  }
+
+  .ssh-node-container {
+    padding-right: 18px;
+  }
+
+  .ssh-node-command {
+    padding-right: 10px;
+  }
+
+  .ssh-node-disabled {
+    color: @brand-gray-v2;
+  }
+
+  .ssh-node-running-icon {
+    @icon-size: 10px;
+
+    height: @icon-size;
+    width: @icon-size;
+  }
 }

@@ -106,7 +106,7 @@
          [:h3.text-center "Let CircleCI help your team focus on making a great product. Speed up your testing and development cycle to improve productivity. CircleCI is flexible to run in your environment and scale with your growth. Have the peace of mind by reducing bugs and improving the quality of your application."]]]]
 
       [:div.row.text-center
-       (common/sign-up-cta owner "features")]]
+       (om/build common/sign-up-cta {:source "features"})]]
      [:div.outer-section
       [:section.container
        [:div.row
@@ -286,4 +286,4 @@
        [:div.col-xs-12
         [:h2.text-center "Build better code. Start shipping faster."]
         [:div.text-center
-         (common/sign-up-cta owner "features")]]]]]))
+         (om/build common/sign-up-cta {:source "features"})]]]]]))

@@ -1,29 +1,25 @@
 (ns frontend.components.build
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.analytics :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
-            [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
+            [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros [html]])
+            [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html]]))
 
 (def view "build")
@@ -117,17 +113,17 @@
 
     om/IWillUnmount
     (will-unmount [_]
-      (scroll/dispose owner))
-
-    ))
+      (scroll/dispose owner))))
 
 (defn container-pills [{:keys [build-running? build container-data project-data user view]} owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IDidMount
+    (did-mount [_]
       (analytics/track-parallelism-button-impression  {:view view
                                                        :project-data project-data
-                                                       :user user})
+                                                       :user user}))
+    om/IRender
+    (render [_]
       (let [{:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
@@ -151,15 +147,15 @@
                        :href (build-model/path-for-parallelism build)
                        :on-click #(analytics/track-parallelism-button-click {:view view
                                                                              :project-data project-data
-                                                                             :user user}) 
+                                                                             :user user})
                        :title "adjust parallelism"}
-                      [:span "Add Containers +"]] 
+                      [:span "Add Containers +"]]
                      [:a.container-selector.parallelism-tab
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
                        :on-click #(analytics/track-parallelism-button-click {:view view
                                                                              :project-data project-data
-                                                                             :user user}) 
+                                                                             :user user})
                        :title "adjust parallelism"}
                       [:span "+"]])])]
         (om/build sticky {:content div :content-class "containers"})))))
@@ -201,11 +197,13 @@
 
 (defn upgrade-banner [{:keys [build project-data user view]} owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IDidMount
+    (did-mount [_]
       (analytics/track-parallelism-button-impression  {:view view
                                                        :project-data project-data
-                                                       :user user})
+                                                       :user user}))
+    om/IRender
+    (render [_]
       (html
         [:div.upgrade-banner
          [:i.fa.fa-tachometer.fa-lg]
@@ -240,7 +238,7 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
-             (when (and 
+             (when (and
                      user
                      (contains? :paid (:plan project-data))
                      (not (get-in project-data [:plan :paid]))
@@ -264,8 +262,12 @@
              (when (< 1 (count (:steps build)))
                [:div (common/messages (:messages build))])])])))))
 
-(defn container-result-icon [name]
-  [:img.container-status-icon { :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
+(defn container-result-icon [{:keys [name]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (om/build svg {:class "container-status-icon"
+                              :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}))))
 
 (defn last-action-end-time
   [container]
@@ -314,21 +316,21 @@
        (let [container-id (container-model/id container)
              status (container-model/status container build-running?)
              duration-ms (container-utilization-duration container)]
-        [:a.container-selector-v2
-         {:on-click #(raise! owner [:container-selected {:container-id container-id}])
-          :class (concat (container-model/status->classes status)
-                         (when (= container-id current-container-id) ["active"]))}
-         [:span.upper-pill-section
-          [:span.container-index (str (:index container))]
-          [:span.status-icon
-           (container-result-icon (case status
-                                    :failed "Status-Failed"
-                                    :success "Status-Passed"
-                                    :canceled "Status-Cancelled"
-                                    :running "Status-Running"
-                                    :waiting "Status-Queued"
-                                    nil))]]
-         (om/build container-duration-label {:actions (:actions container)})])))))
+         [:a.container-selector-v2
+          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
+           :class (concat (container-model/status->classes status)
+                          (when (= container-id current-container-id) ["active"]))}
+          [:span.upper-pill-section
+           [:span.container-index (str (:index container))]
+           [:span.status-icon
+            (om/build container-result-icon {:name (case status
+                                                     :failed "Status-Failed"
+                                                     :success "Status-Passed"
+                                                     :canceled "Status-Canceled"
+                                                     :running "Status-Running"
+                                                     :waiting "Status-Queued"
+                                                     nil)})]]
+          (om/build container-duration-label {:actions (:actions container)})])))))
 
 (def paging-width 10)
 
@@ -426,4 +428,3 @@
   (if (feature/enabled? :ui-v2)
     build-v2
     build-v1))
-

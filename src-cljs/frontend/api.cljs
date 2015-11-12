@@ -50,6 +50,14 @@
   (let [url (dashboard-builds-url args)]
     (ajax/ajax :get url :recent-builds api-ch :context {:branch branch :repo repo :org org})))
 
+(defn get-admin-dashboard-builds
+  [tab api-ch]
+  (get-dashboard-builds
+    {:admin true
+     :query-params {:status (case tab
+                              :running-builds "running"
+                              :queued-builds "scheduled,queued")}}
+    api-ch))
 
 (defn get-projects-builds [build-ids api-ch]
   (doseq [build-id build-ids
@@ -87,7 +95,8 @@
   (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
 
 (defn get-fleet-state [api-ch]
-  (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state api-ch))
+  (ajax/ajax :get "/api/v1/admin/build-state-summary" :fleet-state api-ch)
+  (ajax/ajax :get "/api/v1/admin/build-system-summary" :build-system-summary api-ch))
 
 (defn get-all-users [api-ch]
   (ajax/ajax :get "/api/v1/admin/users" :all-users api-ch))

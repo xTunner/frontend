@@ -1076,6 +1076,14 @@
   [target message _ state]
   (assoc-in state state/error-message-path nil))
 
+(defmethod control-event :refresh-admin-build-list
+  [_ _ _ state]
+  (assoc state :recent-builds nil))
+
+(defmethod post-control-event! :refresh-admin-build-list
+  [target _ {:keys [tab]} _ current-state]
+  (api/get-admin-dashboard-builds tab (get-in current-state [:comms :api])))
+
 (defmethod control-event :show-all-commits-toggled
   [target message _ state]
   (update-in state (conj state/build-data-path :show-all-commits) not))
