@@ -1,3 +1,22 @@
+.rotating-chevron {
+  margin-right: 6px; // magic number
+
+  &:before {
+    display: inline-block;
+    transition: all 0.2s ease;
+    content: "\f054";
+    font-family: FontAwesome;
+    font-size: @build-failure-chevron-size;
+    color: @gray-chevron;
+    cursor: pointer;
+    pointer-events: all;
+  }
+
+  &.expanded:before {
+    .rotate(90);
+  }
+}
+
 #container_parent {
   position: relative;
   overflow: hidden;
@@ -703,6 +722,10 @@
   .metadata-item, .commit-message {
     font-size: 13px;
   }
+
+  .chevron-label {
+    color: @gray-chevron-label;
+  }
 }
 
 .build-tests-info {
@@ -750,6 +773,8 @@
   }
 
   .build-test {
+    .rotating-chevron;
+
     pointer-events: none;
 
     &:last-child {
@@ -763,22 +788,9 @@
       content: counter(test-list) ". ";
       counter-increment: test-list;
     }
+
   }
 
-  .build-test:before {
-    display: inline-block;
-    transition: all 0.2s ease;
-    content: "\f054";
-    font-family: FontAwesome;
-    font-size: @build-failure-chevron-size;
-    color: @gray-test-chevron;
-    cursor: pointer;
-    pointer-events: all;
-  }
-
-  .build-test.expanded:before {
-    .rotate(90);
-  }
 
   .build-test-name {
     display: inline-block;
@@ -791,22 +803,14 @@
   .build-tests-toggle {
     margin: 0;
     padding: 0;
-    color: @gray-dark-v2;
+    color: @gray-chevron-label;
+    &:hover {
+      text-decoration: none;
+    }
   }
 
   .build-tests-toggle-icon {
-    margin-right: 6px; // magic number
-    color: @gray-lighter-v2;
-
-    &:before {
-      display: inline-block;
-      transition: all 0.2s ease;
-      font-size: @build-failure-chevron-size;
-    }
-
-    &.expanded:before {
-      .rotate(90);
-    }
+    .rotating-chevron;
   }
 
   // TODO Generalized whitespace tweak. Should be moved to

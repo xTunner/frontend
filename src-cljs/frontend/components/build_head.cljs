@@ -678,9 +678,9 @@
                 (list
                  [:hr]
                  [:li
-                  [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                  [:a.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
                    [:span
-                    [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
+                    [:i.fa.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
                     (if (om/get-state owner :is-open?)
                       "Less"
                       "More")]]]
@@ -1183,12 +1183,13 @@
                  (when (< initial-build-commits-count (count commits))
                    (list
                      [:hr]
-                     [:a {:role "button"
+                     [:a {:class "chevron-label"
+                          :role "button"
                           :on-click #(raise! owner [:show-all-commits-toggled])}
-                      [:i.fa.fa-chevron-right {:class (when :show-all-commits? "expanded")}]
+                      [:i.fa.rotating-chevron {:class (when show-all-commits? "expanded")}]
                       (if show-all-commits?
-                        " Less"
-                        " More")]))
+                        "Less"
+                        "More")]))
                  (when show-all-commits?
                    (om/build-all commit-line-v2 bottom-commits))))])])))))
 
