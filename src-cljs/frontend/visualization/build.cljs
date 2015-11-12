@@ -1,5 +1,5 @@
 (ns frontend.visualization.build
-  (:require [frontend.models.feature :as feature]))
+  (:require [frontend.feature :as feature]))
 
 (defn status->color [status]
   (let [is-v2? (feature/enabled? :ui-v2)

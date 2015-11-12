@@ -40,7 +40,7 @@
             [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
-            [frontend.models.feature :as feature]
+            [frontend.feature :as feature]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
