@@ -324,8 +324,7 @@
                        [:span.ssh-node-container (str "Container " i)]
                        [:span {:class command-class} (ssh-command node)]
                        (when no-ssh?
-                         (om/build svg {:class "ssh-node-running-icon"
-                                        :src (utils/cdn-path (str "/img/inner/icons/Status-Running.svg"))}))]))
+                         (om/build svg {:class "ssh-node-running-icon" :src (common/icon-path "Status-Running")}))]))
                   nodes)]))
 
 (defn ssh-instructions
