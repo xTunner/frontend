@@ -123,14 +123,6 @@
                     "badge-text")}
      wording]))
 
-(defn build-status-badge-wording [build]
-  (let [wording       (build-model/status-words build)
-        too-long?     (> (count wording) 10)]
-    [:div {:class (if too-long?
-                    "badge-text small-text"
-                    "badge-text")}
-     wording]))
-
 (defn build-status-badge [build]
   [:div.recent-status-badge {:class (build-model/status-class build)}
    (om/build svg {:class "badge-icon"
