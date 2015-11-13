@@ -77,6 +77,8 @@
            (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
              (om/build build-head/build-head-actions app))
            (when (and (= :dashboard (:navigation-point app))
+                      (not (-> app :navigation-data :repo))
+                      (not (-> app :navigation-data :org))
                       (feature/enabled? :ui-v2-opt-in-banner)
                       (feature/enabled-in-cookie? :ui-v2))
              (om/build opt-in/ui-v2-opt-out-ui app))])))))
