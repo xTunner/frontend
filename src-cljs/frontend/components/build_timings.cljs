@@ -95,13 +95,12 @@
 
 ;;; Elements of the visualization
 (defn highlight-selected-container! [step-data]
-  (let [fade-value #(if (= (.-textContent %1) (str (aget %2 "index"))) 1 0.1)]
+  (let [fade-value #(if (= (.-textContent %1) (str (aget %2 "index"))) 1 0.5)]
     (-> (.select js/d3 ".y-axis")
         (.selectAll ".tick")
         (.selectAll "text")
         (.transition)
         (.duration 200)
-        (.attr "stroke-opacity" #(this-as element (fade-value element step-data)))
         (.attr "fill-opacity"   #(this-as element (fade-value element step-data))))))
 
 (defn highlight-selected-step! [step selected]
@@ -125,8 +124,7 @@
       (.selectAll "text")
       (.transition)
       (.duration 200)
-      (.attr "stroke-opacity" 1)
-      (.attr "fill-opacity"   1)))
+      (.attr "fill-opacity" 1)))
 
 (defn draw-containers! [x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")
