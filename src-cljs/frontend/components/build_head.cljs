@@ -20,6 +20,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.visualization.build :as viz-build]
             [frontend.components.build-timings :as build-timings]
+            [frontend.components.svg :refer [svg]]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -323,7 +324,8 @@
                        [:span.ssh-node-container (str "Container " i)]
                        [:span {:class command-class} (ssh-command node)]
                        (when no-ssh?
-                         [:img.ssh-node-running-icon {:src (common/icon-path "Status-Running")}])]))
+                         (om/build svg {:class "ssh-node-running-icon"
+                                        :src (utils/cdn-path (str "/img/inner/icons/Status-Running.svg"))}))]))
                   nodes)]))
 
 (defn ssh-instructions
