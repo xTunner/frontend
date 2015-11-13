@@ -2,6 +2,7 @@ var Date = {};
 Date.getTime = function () {};
 
 var ldclient = {};
+window.ldclient = {};
 ldclient.toggle = function() {};
 ldclient.identify = function() {};
 
