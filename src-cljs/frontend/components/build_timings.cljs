@@ -47,15 +47,6 @@
       (.append "g") ;move everything over to see the axis
         (.attr "transform" (gstring/format "translate(%d,%d)" left-axis-width top-axis-height))))
 
-(defn time-axis-tick-formatter [ms-value]
-  (let [m (js/Math.floor (/ ms-value 1000 60))
-        s (js/Math.floor (- (/ ms-value 1000) (* m 60)))]
-    (if (<= m 0)
-      (if (= s 0)
-        (gstring/format "%ds" s)
-        (gstring/format "%02ds" s))
-      (gstring/format "%d:%02dm" m s))))
-
 (defn create-y-axis [number-of-containers]
   (let [range-start (+ bar-height (/ container-bar-height 2))
         range-end   (+ (timings-height number-of-containers) (/ container-bar-height 2))
