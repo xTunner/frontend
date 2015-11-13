@@ -1057,8 +1057,7 @@
 
 (defmethod post-control-event! :ui-v2-beta-feedback
   [target message _ state]
-  (feature/disable-in-cookie :ui-v2)
-  (track-and-redirect "UI V2 Beta Feedback Clicked" {} js/location))
+  (analytics/track "UI V2 Beta Feedback Clicked"))
 
 (defmethod post-control-event! :project-experiments-feedback-clicked
   [target message _ previous-state current-state]
