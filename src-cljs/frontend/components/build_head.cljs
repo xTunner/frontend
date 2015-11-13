@@ -335,8 +335,8 @@
       [:div.ssh-info-container
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-        [:div "This build takes up one of your concurrent builds, so cancel it when you are done. "
-         "Browser based testing? Read "
+        [:div
+         "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
          [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
          " on how to use VNC with CircleCI."]]
 
