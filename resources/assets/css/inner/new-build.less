@@ -838,7 +838,7 @@
     @ssh-node-padding: 10px;
 
     .flexy(center, flex-start, row);
-    border-bottom: solid 2px @list-border-color;
+    border-bottom: solid 1px @list-border-color;
     padding-top:    @ssh-node-padding;
     padding-bottom: @ssh-node-padding;
   }
@@ -848,11 +848,13 @@
   }
 
   .ssh-node-container {
-    padding-right: 18px;
+    min-width: 110px;
+    font-family: @monoFontFamilyV2
   }
 
   .ssh-node-command {
-    padding-right: 10px;
+    min-width: 310px;
+    font-family: @monoFontFamilyV2
   }
 
   .ssh-node-disabled {
