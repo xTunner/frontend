@@ -1012,8 +1012,7 @@
   [target message {:keys [tab]} previous-state current-state]
   (analytics/track-test-stack tab))
 
-(defmethod post-control-event! :track-external-link-clicked
-  [target message {:keys [path event properties]} previous-state current-state]
+(defn track-and-redirect [event properties path]
   (let [redirect #(js/window.location.replace path)
         track-ch (analytics/managed-track event properties)]
     (if track-ch
@@ -1023,6 +1022,10 @@
             (async/timeout 1000) (do (utils/mlog "timing out waiting for analytics. redirecting.")
                                      (redirect))))
       (redirect))))
+
+(defmethod post-control-event! :track-external-link-clicked
+  [_ _ {:keys [event properties path]} _ _]
+  (track-and-redirect event properties path))
 
 (defmethod control-event :language-testimonial-tab-selected
   [target message {:keys [index]} state]
@@ -1045,12 +1048,17 @@
 (defmethod post-control-event! :try-ui-v2-clicked
   [target message _ state]
   (feature/enable-in-cookie :ui-v2)
-  (js/location.reload))
+  (track-and-redirect "Try UI V2 Clicked" {} js/location))
 
 (defmethod post-control-event! :disable-ui-v2-clicked
   [target message _ state]
   (feature/disable-in-cookie :ui-v2)
-  (js/location.reload))
+  (track-and-redirect "Disable UI V2 Clicked" {} js/location))
+
+(defmethod post-control-event! :ui-v2-beta-feedback
+  [target message _ state]
+  (feature/disable-in-cookie :ui-v2)
+  (track-and-redirect "UI V2 Beta Feedback Clicked" {} js/location))
 
 (defmethod post-control-event! :project-experiments-feedback-clicked
   [target message _ previous-state current-state]
