@@ -1,5 +1,6 @@
 (ns frontend.config
-  (:require [frontend.models.feature :as feature]))
+  (:require [frontend.models.feature :as feature]
+            [frontend.utils.launchdarkly :as ld]))
 
 (defn env
   "The name of the server configuration environment.
@@ -75,6 +76,10 @@
       (boolean v)
       ;; TODO: Kill this after backend populate the context value
       (analytics-enabled?))))
+
+(defn elevio-enabled?
+  []
+  (ld/feature-on? "elevio" false))
 
 (defn statuspage-header-enabled?
   "If true, we should show statuspage alerts with incidents activated"

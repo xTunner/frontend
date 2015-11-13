@@ -10,6 +10,7 @@
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.intercom :as intercom]
+            [frontend.support :as support]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
@@ -326,7 +327,7 @@
 
 (defmethod post-control-event! :intercom-dialog-raised
   [target message _ previous-state current-state]
-  (intercom/raise-dialog (get-in current-state [:comms :errors])))
+  (support/raise-dialog (get-in current-state [:comms :errors])))
 
 
 (defmethod post-control-event! :intercom-user-inspected
@@ -732,7 +733,7 @@
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
-  (intercom/raise-dialog (get-in current-state [:comms :errors])))
+  (support/raise-dialog (get-in current-state [:comms :errors])))
 
 (defmethod post-control-event! :cancel-build-clicked
   [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
@@ -1054,7 +1055,7 @@
 
 (defmethod post-control-event! :project-experiments-feedback-clicked
   [target message _ previous-state current-state]
-  (intercom/raise-dialog (get-in current-state [:comms :errors])))
+  (support/raise-dialog (get-in current-state [:comms :errors])))
 
 (defmethod control-event :refresh-admin-build-state-clicked
   [target message _ state]

@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [goog.dom]
             [goog.dom.DomHelper]
+            [goog.dom.classlist]
             [frontend.ab :as ab]
             [frontend.analytics :as analytics]
             [frontend.components.app :as app]
@@ -25,6 +26,7 @@
             [frontend.utils :as utils :refer [mlog merror third set-canonical!]]
             [frontend.datetime :as datetime]
             [frontend.timer :as timer]
+            [frontend.support :as support]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]]))
@@ -295,9 +297,29 @@
             (analytics/track-message {} "intercom-dialog-raised" state)))))
      5000)))
 
+(defn track-elevio-widget! [state]
+  (when (config/elevio-enabled?)
+    (js/setTimeout
+     (fn []
+       (when-let [launcher (goog.dom/getElement "elevio-base-menu")]
+         (goog.events/listen
+          launcher
+          goog.events.EventType.CLICK
+          (fn [e]
+            (let [target (.-target e)
+                  module-name (or (-> target
+                                      (goog.dom/getAncestorByTagNameAndClass "div")
+                                      (.getAttribute "data-elevio-tooltip"))
+                                  "widget")
+                  message (str "elevio " module-name " clicked")]
+             ;; This triggers when the elevio widget is clicked
+             (analytics/track-message {} message state))))))
+     5000)))
+
 (defn ^:export setup! []
   (apply-app-id-hack)
   (analytics/set-existing-user)
+  (support/enable-one!)
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)
@@ -308,7 +330,9 @@
     (when instrument?
       (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (track-intercom-widget! state)
+    (if (config/elevio-enabled?)
+      (track-elevio-widget! state)
+      (track-intercom-widget! state))
     (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
