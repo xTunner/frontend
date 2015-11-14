@@ -285,9 +285,6 @@
                                     1 "one-project"
                                     2 "two-projects"
                                     "three-or-more-projects")}
-        [:header.main-head
-         [:div.head-user
-          [:h1 "Insights » Repositories"]]]
         (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
