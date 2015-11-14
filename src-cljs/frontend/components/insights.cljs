@@ -280,6 +280,7 @@
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]
+    (println state)
     (html
      [:div#build-insights {:class (case (count projects)
                                     1 "one-project"

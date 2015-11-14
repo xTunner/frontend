@@ -189,6 +189,7 @@
         repos (:repos data)
         repo-filter-string (get-in settings [:add-projects :repo-filter-string])
         show-forks (true? (get-in settings [:add-projects :show-forks]))]
+    (println data)
     (html
      [:div.proj-wrapper
       (if-let [selected-login (get-in settings [:add-projects :selected-org :login])]
