@@ -270,11 +270,13 @@
   &.logo {
     .justify-content(center);
     .underline-deboss();
+    min-height: @tile;
+
     .logomark {
       .flexy(center, center);
       .icon-style(@white, (@em * 2));
       width: @tile;
-      height: @tile;
+      min-height: @tile;
     }
   }
 
@@ -750,6 +752,9 @@
     right: 0;
     height: @tile;
     padding: 0 @em;
+
+    z-index: @zindex-popover;
+
     &:hover {
       path {
         stroke: @black;
