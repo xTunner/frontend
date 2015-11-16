@@ -5,7 +5,7 @@
 
 (defn disable! []
   (gdom/removeNode (gdom/getElement "elevio-widget"))
-  (set! (.-_elevio js/window) nil))
+  (aset js/window "_elev" nil))
 
 (defn enable! []
   (class-list/add (gdom/getElement "elevio-widget") "enabled"))
