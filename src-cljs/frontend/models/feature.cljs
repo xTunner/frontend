@@ -1,6 +1,7 @@
-(ns frontend.feature
+(ns frontend.models.feature
   "Functions related to enabling and disabling features."
-  (:require [goog.net.cookies :as cookies])
+  (:require [goog.net.cookies :as cookies]
+            [frontend.utils.launchdarkly :as ld])
   (:import goog.Uri))
 
 (defn- feature-flag-value-true? [value]
@@ -45,6 +46,9 @@
   value, otherwise look in a cookie for the feature. Returns false by
   default."
   [feature]
-  (if (set-in-query-string? feature)
-    (enabled-in-query-string? feature)
-    (enabled-in-cookie? feature)))
+  (let [feature-name (name feature)]
+   (if (set-in-query-string? feature-name)
+     (enabled-in-query-string? feature-name)
+     (if (ld/exists? feature-name)
+       (ld/feature-on? feature-name)
+       (enabled-in-cookie? feature-name)))))

@@ -8,6 +8,7 @@
             [frontend.models.action :as action-model]
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.intercom :as intercom]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -1040,6 +1041,16 @@
           (when (not= :success (:status api-result))
             (put! (:errors comms) [:api-error api-result]))
           (api/get-project-settings project-name (:api comms))))))
+
+(defmethod post-control-event! :try-ui-v2-clicked
+  [target message _ state]
+  (feature/enable-in-cookie :ui-v2)
+  (js/location.reload))
+
+(defmethod post-control-event! :disable-ui-v2-clicked
+  [target message _ state]
+  (feature/disable-in-cookie :ui-v2)
+  (js/location.reload))
 
 (defmethod post-control-event! :project-experiments-feedback-clicked
   [target message _ previous-state current-state]

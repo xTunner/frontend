@@ -6,7 +6,7 @@
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
             [frontend.routes :as routes]

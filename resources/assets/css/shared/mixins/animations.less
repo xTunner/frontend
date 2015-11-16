@@ -81,3 +81,59 @@
   0%   {background: @white;    color: @grayDark;}
   100% {background: @grayDark; color: @white;}
 }
+
+// Container actions transitions
+
+.build-steps-animator {
+  position: relative;
+  overflow-x: hidden;
+}
+
+@steps-transition-rate: 0.225s;
+
+.steps-ltr-enter {
+  position: absolute;
+  opacity: 0.01;
+  transform: translateX(-100%);
+
+  &.steps-ltr-enter-active {
+    opacity: 1;
+    transform: translateX(0%);
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
+  }
+}
+
+.steps-ltr-leave {
+  opacity: 1;
+  transform: translateX(0%);
+
+  &.steps-ltr-leave-active {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
+  }
+}
+
+.steps-rtl-enter {
+  position: absolute;
+  opacity: 0.01;
+  transform: translateX(100%);
+
+  &.steps-rtl-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
+  }
+}
+
+.steps-rtl-leave {
+  opacity: 1;
+  transform: translateX(0%);
+
+  &.steps-rtl-leave-active {
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity @steps-transition-rate ease-in-out, transform @steps-transition-rate ease-in-out;
+  }
+}
+

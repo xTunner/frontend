@@ -10,8 +10,9 @@
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
+            [frontend.components.opt-in :as opt-in]
             [frontend.models.project :as project-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
@@ -63,6 +64,10 @@
               [:li
                [:a {:title "home", :href "/"} [:i.fa.fa-home] " "]])
             (crumbs/crumbs crumbs-data)]
+           (when (and (= :dashboard (:navigation-point app))
+                      (feature/enabled? :ui-v2-opt-in-banner)
+                      (feature/enabled-in-cookie? :ui-v2))
+             (om/build opt-in/ui-v2-opt-out-ui app))
            (when (show-follow-project-button? app)
              (forms/managed-button
                [:button#follow-project-button
@@ -74,8 +79,7 @@
              [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
               (str "View " project-name " »")])
            (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
-             (om/build build-head/build-head-actions app))
-           ])))))
+             (om/build build-head/build-head-actions app))])))))
 
 (defn head-admin [app owner]
   (reify
@@ -160,7 +164,7 @@
                                                                   nil)
                                                          :on-touch-end #(raise! owner [:change-hamburger-state])}
             [:div.container-fluid
-             [:div.hamburger-menu 
+             [:div.hamburger-menu
               (condp = hamburger-state
                 "closed" [:i.fa.fa-bars.fa-2x]
                 "open" [:i.fa.fa-close.fa-2x])]
@@ -222,6 +226,7 @@
                     [:a.menu-item {:href "/pricing"} "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
                 [:a.menu-item {:href "/docs"} "Documentation"]]
+               [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
                (when (config/show-marketing-pages?)
                  (list
                    [:li {:class (when (contains? #{:about

@@ -7,7 +7,7 @@
             [frontend.components.forms :as forms]
             [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -123,14 +123,6 @@
                     "badge-text")}
      wording]))
 
-(defn build-status-badge-wording [build]
-  (let [wording       (build-model/status-words build)
-        too-long?     (> (count wording) 10)]
-    [:div {:class (if too-long?
-                    "badge-text small-text"
-                    "badge-text")}
-     wording]))
-
 (defn build-status-badge [build]
   [:div.recent-status-badge {:class (build-model/status-class build)}
    (om/build svg {:class "badge-icon"
@@ -156,21 +148,20 @@
        (build-status-badge build)]
 
       (when show-actions?
-        [:div.build_actions
+        [:div.build-actions
          (when (build-model/can-cancel? build)
            (let [build-id (build-model/id build)
                  vcs-url (:vcs_url build)
                  build-num (:build_num build)]
-             ;; TODO: how are we going to get back to the correct build in the app-state?
-             ;;       Not a problem here, b/c the websocket will be updated, but something to think about
-             (forms/managed-button
+             (list
+               (forms/managed-button
                [:button.cancel-build
                 {:data-loading-text "Canceling..."
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
                 [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
-                [:span.cancel-text " Cancel"]])))])]
+                [:span.cancel-text " Cancel"]]))))])]
      [:div.build-info
       [:div.build-info-header
        [:div.contextual-identifier
@@ -259,4 +250,3 @@
   (if (feature/enabled? :ui-v2)
     (builds-table-v2 builds owner opts)
     (builds-table-v1 builds owner opts)))
-

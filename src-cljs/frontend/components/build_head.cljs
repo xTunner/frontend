@@ -6,7 +6,7 @@
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -19,6 +19,10 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.visualization.build :as viz-build]
+            [frontend.components.build-timings :as build-timings]
+            [frontend.components.svg :refer [svg]]
+            [goog.dom]
+            [goog.dom.DomHelper]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -322,7 +326,7 @@
                        [:span.ssh-node-container (str "Container " i)]
                        [:span {:class command-class} (ssh-command node)]
                        (when no-ssh?
-                         [:img.ssh-node-running-icon {:src (common/icon-path "Status-Running")}])]))
+                         (om/build svg {:class "ssh-node-running-icon" :src (common/icon-path "Status-Running")}))]))
                   nodes)]))
 
 (defn ssh-instructions
@@ -333,18 +337,14 @@
       [:div.ssh-info-container
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]
         [:div
-         "Browser based testing? Read "
-         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-          "our docs"]
+         "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
+         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
          " on how to use VNC with CircleCI."]]
 
        (if  (feature/enabled? :ui-v2)
          (om/build ssh-node-list-v2 nodes)
-         (om/build ssh-node-list nodes))
-
-       ])))
+         (om/build ssh-node-list nodes))])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
@@ -734,11 +734,21 @@
 
 (defn build-config [{:keys [config-string]} owner opts]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [node (om/get-node owner)
+            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
+        (js/Prism.highlightElement highlight-target)))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (let [node (om/get-node owner)
+            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
+        (js/Prism.highlightElement highlight-target)))
     om/IRender
     (render [_]
       (html
        (if (seq config-string)
-         [:div.build-config-string [:pre config-string]]
+         [:div.build-config-string [:pre.solarized.language-yaml config-string]]
          (circle-yml-ad))))))
 
 (defn build-parameters [{:keys [build-parameters]} owner opts]
@@ -871,8 +881,8 @@
                     [:span {:class "fail-count"} fail-count]))]])
 
             (when (and admin? (build-model/finished? build))
-              [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [tab-link {:href "#build-time-viz"} "Build Timing"]])
+              [:li {:class (when (= :build-timing selected-tab) "active")}
+               [tab-link {:href "#build-timing"} "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
@@ -885,7 +895,7 @@
 
              :tests (om/build build-tests-list build-data)
 
-             :build-time-viz (om/build build-time-visualization build)
+             :build-timing (om/build build-time-visualization build)
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
@@ -1264,8 +1274,8 @@
              [tab-link-v2 {:href "#config"} "circle.yml"]]
 
             (when (and admin? (build-model/finished? build))
-              [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
-               [tab-link-v2 {:href "#build-time-viz"}
+              [tab-tag {:class (when (= :build-timing selected-tab) "active")}
+               [tab-link-v2 {:href "#build-timing"}
                 "Build Timing"]])
 
             (when (seq build-params)
@@ -1277,7 +1287,7 @@
 
              :tests (om/build build-tests-list-v2 build-data)
 
-             :build-time-viz (om/build build-time-visualization build)
+             :build-timing (om/build build-timings/build-timings build)
 
              :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user

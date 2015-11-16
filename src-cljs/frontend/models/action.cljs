@@ -1,7 +1,7 @@
 (ns frontend.models.action
   (:require [clojure.string :as string]
             [frontend.datetime :as datetime]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as proj]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
@@ -37,22 +37,29 @@
         starting-state (clj->js (get-in action [:converters-state type]))]
     (js/CI.terminal.ansiToHtmlConverter default-color "brblack" starting-state)))
 
-(defn maybe-strip-console-codes
+(defn strip-console-codes
   "Strips console codes if output is over 2mb (assuming 2 bytes per char)"
   [message]
-  (if (< (* 1024 1024) (count message))
-    (string/replace message #"\u001B\[[^A-Za-z]*[A-Za-z]" "")
-    message))
+  (string/replace message #"\u001B\[[^A-Za-z]*[A-Za-z]" ""))
 
 (defn format-output [action output-index]
   (let [output (get-in action [:output output-index])
-        escaped-message (maybe-strip-console-codes (gstring/htmlEscape (:message output)))
-        converter (new-converter action (keyword (:type output)))]
+        html-escaped-message (gstring/htmlEscape (:message output))
+        should-strip? (< (* 1024 1024) (count html-escaped-message))
+        converter (new-converter action (keyword (:type output)))
+        message (if should-strip?
+                  (strip-console-codes html-escaped-message)
+                  (.append converter html-escaped-message))]
     (-> action
-        (assoc-in [:output output-index :converted-message] (.append converter escaped-message))
+        (assoc-in [:output output-index :converted-message] message)
         (assoc-in [:output output-index :react-key] (utils/uuid))
-        (assoc-in [:converters-state (keyword (:type output))] (merge (utils/js->clj-kw (.currentState converter))
-                                                                      {:converted-output (.get_trailing converter)})))))
+        (assoc-in [:converters-state (keyword (:type output))] (if should-strip?
+                                                                 {:color "white"
+                                                                  :italic false
+                                                                  :bold false
+                                                                  :converted-output message}
+                                                                 (merge (utils/js->clj-kw (.currentState converter))
+                                                                        {:converted-output (.get_trailing converter)}))))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]

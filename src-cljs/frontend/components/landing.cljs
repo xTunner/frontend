@@ -139,13 +139,19 @@
 
 (def view "home")
 
-(defn home-cta [owner source]
-  (analytics/track-signup-impression {:view source})
-  [:a.home-action {:href "/signup"
-                   :role "button"
-                   :ref "prolog-cta"
-                   :on-mouse-up #(analytics/track-signup-click {:view source})}
-   (str (common/sign-up-text))])
+(defn home-cta [{:keys [source cta-class]} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (analytics/track-signup-impression {:view source}))
+    om/IRender
+    (render [_]
+      (html
+       [:a.home-action {:class cta-class
+                        :href "/signup"
+                        :role "button"
+                        :on-mouse-up #(analytics/track-signup-click {:view source})}
+       (str (common/sign-up-text))]))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback
                                  cta-visibility-callback
@@ -159,9 +165,11 @@
                                    :header-overlap-px (atom 0)})
     om/IDidMount
     (did-mount [_]
-      (scroll/register owner
+      (scroll/register
+       owner
        #(let [logo (om/get-node owner "center-logo")
-              cta (om/get-node owner "prolog-cta")
+              container (om/get-node owner)
+              cta (utils/sel1 container ".prolog-cta")
               prolog (om/get-node owner "home-prolog")
               logo-visible? (neg? (.-bottom (.getBoundingClientRect logo)))
               cta-visible? (neg? (.-bottom (.getBoundingClientRect cta)))
@@ -189,7 +197,8 @@
     (render [_]
       (html
        [:section.home-prolog {:ref "home-prolog"}
-        (home-cta owner view)
+        (om/build home-cta {:source view
+                            :cta-class "prolog-cta"})
         [:div.home-top-shelf]
         [:div.home-slogans
          [:h1.slogan.proverb {:item-prop "Ship better code, faster."}
@@ -374,9 +383,11 @@
                                    :header-overlap-px (atom 0)})
     om/IDidMount
     (did-mount [_]
-      (scroll/register owner
+      (scroll/register
+       owner
        #(let [vh (.-height (goog.dom/getViewportSize))
-              cta (om/get-node owner "epilog-cta")
+              container (om/get-node owner)
+              cta (utils/sel1 container ".epilog-cta")
               epilog (om/get-node owner "home-epilog")
               cta-visible? (< (.-top (.getBoundingClientRect cta)) vh)
               epilog-visible? (< (.-top (.getBoundingClientRect epilog)) nav-height)
@@ -399,7 +410,8 @@
     (render [_]
       (html
        [:section.home-epilog {:ref "home-epilog"}
-        (home-cta owner view)
+        (om/build home-cta {:source view
+                            :cta-class "epilog-cta"})
         [:div.home-top-shelf]
         [:div.home-slogans
          [:h2.slogan.proverb {:item-prop "So, ready to ship faster?"}

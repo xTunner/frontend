@@ -7,7 +7,7 @@
             [frontend.components.project.common :as project-common]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]

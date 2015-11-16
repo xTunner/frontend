@@ -379,7 +379,7 @@
             [:h1.text-center "About Us"]
             [:h3.text-center "CircleCI was founded in 2011 with the mission of giving every developer state-of-the-art automated testing and continuous integration tools."]]]]
          [:div.row.text-center
-          (common/sign-up-cta owner "about")]]
+          (om/build common/sign-up-cta {:source "about"})]]
         [:div.outer-section
          [:section.container
           [:div.row
@@ -428,7 +428,7 @@
          [:h2 "Start shipping faster, build for free using CircleCI today."]
          [:p.subheader
           "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
-         (common/sign-up-cta owner "about")]]))))
+         (om/build common/sign-up-cta  {:source "about"})]]))))
 
 (defrender team [app owner]
   (html

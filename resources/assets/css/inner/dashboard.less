@@ -247,22 +247,11 @@
     box-shadow: inset -1px 0 rgba(0, 0, 0, 0.05);
 
     .cancel-build {
-      .flexy();
-
       background: none;
       border: none;
-      width: 100%;
-
-      margin-top: 6px;
       padding: 0;
 
       color: @gray-dark-v2;
-
-      .cancel-icon {
-        margin: 2px @build-padding 0 4px;
-        height: 17px;
-        width: 17px;
-      }
 
       .cancel-text {
         flex-grow: 1;
@@ -271,6 +260,15 @@
           text-decoration: underline;
         }
       }
+    }
+
+    .cancel-icon {
+      // Specific mragins are a firefox hack:
+      // Since it doesn't support flexbox properly in buttons,
+      // we have to do a bit of manual positioning.
+      margin: 0 7px 1px 4px;
+      height: 17px;
+      width: 17px;
     }
 
     .cancel-build.disabled {
@@ -348,50 +346,52 @@
   }
 }
 
-
-.recent-status-badge {
-  @half_height: (@baseLineHeight / 2);
-  padding: @half_height;
-  a {
-    vertical-align: middle;
-    text-align: center;
-    background: @grayLight;
-    border-radius: @half_height;
-    color: @white;
-    font-weight: bold;
-    font-size: @fontSizeSmall;
-    text-transform: capitalize;
-    white-space: nowrap;
-    padding: (@half_height / 5);
-    &.pass {background: @green}
-    &.fail {background: @redLight}
-    &.busy {background: @blueLight}
-    &.stop {background: @orange}
-  }
-  span {
-    display: block;
-    color: @white;
-    font-weight: bold;
-    text-transform: capitalize;
-    text-shadow: none;
-    text-align: center;
-    white-space: nowrap;
-    border-radius: 25px;
-    box-sizing: border-box;
-    line-height: 1.75em;
-    width: 100%;
-  }
-
-  + .build_actions {
-    vertical-align: middle;
+&.ui-v1 {
+  .recent-status-badge {
+    @half_height: (@baseLineHeight / 2);
+    padding: @half_height;
     a {
-      .subtleButton(@redLight);
-      margin: 0 1ex;
-      float: none;
+      vertical-align: middle;
       text-align: center;
-      line-height: ~"calc(1.75em - 2px)";
-      min-height: ~"calc(1.75em - 2px)";
-      padding: 0 1ex;
+      background: @grayLight;
+      border-radius: @half_height;
+      color: @white;
+      font-weight: bold;
+      font-size: @fontSizeSmall;
+      text-transform: capitalize;
+      white-space: nowrap;
+      padding: (@half_height / 5);
+      &.pass {background: @green}
+      &.fail {background: @redLight}
+      &.busy {background: @blueLight}
+      &.stop {background: @orange}
+    }
+    span {
+      display: block;
+      color: @white;
+      font-weight: bold;
+      text-transform: capitalize;
+      text-shadow: none;
+      text-align: center;
+      white-space: nowrap;
+      border-radius: 25px;
+      box-sizing: border-box;
+      line-height: 1.75em;
+      width: 100%;
+    }
+
+    + .build_actions {
+      vertical-align: middle;
+      a {
+        .subtleButton(@redLight);
+        margin: 0 1ex;
+        float: none;
+        text-align: center;
+        line-height: ~"calc(1.75em - 2px)";
+        min-height: ~"calc(1.75em - 2px)";
+        padding: 0 1ex;
+      }
     }
   }
 }
+
