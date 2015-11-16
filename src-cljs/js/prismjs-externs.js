@@ -1,5 +1,5 @@
-Prism = {
-  "highlight": function () {};
-  "highlightElement": function () {};
+var Prism = {
+  "highlight": function () {},
+  "highlightElement": function () {}
 };
 
