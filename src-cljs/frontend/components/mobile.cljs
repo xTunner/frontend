@@ -16,7 +16,7 @@
   [:div.outer-section.outer-section-condensed.wide-cta-banner
    [:section
     [:h3 "Start shipping faster, build for free using CircleCI today."]
-    (common/sign-up-cta owner source)]])
+    (om/build common/sign-up-cta {:source source})]])
 
 (defrender mobile [app owner]
   (html
@@ -33,7 +33,7 @@
        " and "
        [:a {:href "/mobile/android"} "Android"]
        " applications."]
-      (common/sign-up-cta owner "mobile")]
+      (om/build common/sign-up-cta {:source "mobile"})]
 
      [:div.outer-section
       [:section.container
@@ -104,7 +104,7 @@
    [:div.jumbotron
     [:h1 (:headline data)]
     (:jumbotron-content data)
-    (common/sign-up-cta owner (str "mobile/" (:name data)))]
+    (om/build common/sign-up-cta {:source (str "mobile/" (:name data))})]
 
    [:div.outer-section
     [:section.container

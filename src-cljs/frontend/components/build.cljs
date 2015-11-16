@@ -4,7 +4,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
@@ -113,17 +113,17 @@
 
     om/IWillUnmount
     (will-unmount [_]
-      (scroll/dispose owner))
-
-    ))
+      (scroll/dispose owner))))
 
 (defn container-pills [{:keys [build-running? build container-data project-data user view]} owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IDidMount
+    (did-mount [_]
       (analytics/track-parallelism-button-impression  {:view view
                                                        :project-data project-data
-                                                       :user user})
+                                                       :user user}))
+    om/IRender
+    (render [_]
       (let [{:keys [containers current-container-id]} container-data
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
@@ -147,15 +147,15 @@
                        :href (build-model/path-for-parallelism build)
                        :on-click #(analytics/track-parallelism-button-click {:view view
                                                                              :project-data project-data
-                                                                             :user user}) 
+                                                                             :user user})
                        :title "adjust parallelism"}
-                      [:span "Add Containers +"]] 
+                      [:span "Add Containers +"]]
                      [:a.container-selector.parallelism-tab
                       {:role "button"
                        :href (build-model/path-for-parallelism build)
                        :on-click #(analytics/track-parallelism-button-click {:view view
                                                                              :project-data project-data
-                                                                             :user user}) 
+                                                                             :user user})
                        :title "adjust parallelism"}
                       [:span "+"]])])]
         (om/build sticky {:content div :content-class "containers"})))))
@@ -197,11 +197,13 @@
 
 (defn upgrade-banner [{:keys [build project-data user view]} owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IDidMount
+    (did-mount [_]
       (analytics/track-parallelism-button-impression  {:view view
                                                        :project-data project-data
-                                                       :user user})
+                                                       :user user}))
+    om/IRender
+    (render [_]
       (html
         [:div.upgrade-banner
          [:i.fa.fa-tachometer.fa-lg]
@@ -236,7 +238,7 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
-             (when (and 
+             (when (and
                      user
                      (contains? :paid (:plan project-data))
                      (not (get-in project-data [:plan :paid]))
@@ -386,8 +388,45 @@
                      "+"])])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
+(def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
+
+(defn transition-group
+  [opts component]
+  (let [[group-name enter? leave? appear? class-name]
+        (if (map? opts)
+          [(:name opts)
+           (:enter opts)
+           (:leave opts)
+           (:appear opts)
+           (:class opts)]
+          [opts true true false nil])]
+    (apply
+      css-trans-group
+      #js {:transitionName group-name
+           :transitionEnter enter?
+           :transitionLeave leave?
+           :transitionAppear appear?
+           :component "div"
+           :className class-name}
+      component)))
+
+(defn selected-container-index [data]
+  (get-in data [:current-build-data :container-data :current-container-id]))
+
 (defn build-v2 [data owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:action-transition-direction "steps-ltr"})
+    om/IWillReceiveProps
+    (will-receive-props [_ next-props]
+      (let [old-ix (selected-container-index (om/get-props owner))
+            new-ix (selected-container-index next-props)]
+        (om/set-state! owner
+                       :action-transition-direction
+                       (if (> old-ix new-ix)
+                         "steps-ltr"
+                         "steps-rtl"))))
     om/IRender
     (render [_]
       (let [build (get-in data state/build-path)
@@ -420,10 +459,15 @@
                                             :build-running? (build-model/running? build)
                                             :build build})
 
-              (om/build build-steps/container-build-steps-v2 container-data)]])])))))
+              (transition-group {:name (om/get-state owner :action-transition-direction)
+                                 :enter true
+                                 :leave true
+                                 :class "build-steps-animator"}
+                                [(om/build build-steps/container-build-steps-v2
+                                           container-data
+                                           {:key :current-container-id})])]])])))))
 
 (defn build []
   (if (feature/enabled? :ui-v2)
     build-v2
     build-v1))
-

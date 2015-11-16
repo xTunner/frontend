@@ -39,3 +39,15 @@
           [result-str] (datetime/millis-to-float-duration result)]
       (is (= result-str
              "6.0s")))))
+
+(deftest format-duration-works
+  (testing "full units"
+    (testing "singular"
+      (is (= (datetime/time-ago 1000) "1 second")))
+    (testing "plural"
+      (is (= (datetime/time-ago 480000) "8 minutes"))))
+  (testing "abbreviated  units"
+    (testing "singular"
+      (is (= (datetime/time-ago 3600000) "1 hour")))
+    (testing "plural"
+      (is (= (datetime/time-ago (* 3600000 48)) "2 days")))))

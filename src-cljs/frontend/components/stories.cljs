@@ -35,7 +35,7 @@
       [:div.col-xs-12
        [:h2.text-center "Ready for world-class continuous delivery?"]
        [:div.text-center
-        (common/sign-up-cta owner source)]]]]))
+        (om/build common/sign-up-cta {:source source})]]]]))
 
 
 (defmulti story
@@ -220,7 +220,7 @@
      [:h2 "Start shipping faster, build for free using CircleCI today."]
      [:p.subheader
       "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
-     (common/sign-up-cta owner "stories/learnzillion")]]))
+     (om/build common/sign-up-cta {:source "stories/learnzillion"})]]))
 
 (defrendermethod story :sony
   [app owner]
@@ -275,4 +275,4 @@
      [:h2 "Start shipping faster, build for free using CircleCI today."]
      [:p.subheader
       "You have a product to focus on, let CircleCI handle your continuous integration and deployment."]
-     (common/sign-up-cta owner "stories/sony")]]))
+     (om/build common/sign-up-cta {:source "stories/sony"})]]))

@@ -328,8 +328,7 @@
                                    (get non-parallel-actions (:step action) action))
                                  (:actions container)))]
         (html
-         [:div.container-view {:style {:left (str (* 100 (:index container)) "%")}
-                               :id (str "container_" (:index container))}
+         [:div.container-view {:id (str "container_" (:index container))}
           (om/build-all action-v2 actions {:key :step
                                            :opts opts})])))))
 
@@ -359,22 +358,15 @@
                                              [(:step action) action]))
                                       (into {}))]
         (html
-         [:div#container_scroll_parent ;; hides horizontal scrollbar
-          [:div#container_parent {:on-wheel (fn [e]
-                                              (check-autoscroll owner (aget e "deltaY"))
-                                              (when (not= 0 (aget e "deltaX"))
-                                                (.preventDefault e)
-                                                (let [body (.-body js/document)]
-                                                  (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
-                                  :on-scroll (fn [e]
-                                               ;; prevent handling scrolling if we're animating the
-                                               ;; transition to a new selected container
-                                               (let [scroller (.. e -target -scroll_handler)]
-                                                 (when (or (not scroller) (.isStopped scroller))
-                                                   (raise! owner [:container-parent-scroll]))))
+          [:div {:on-wheel (fn [e]
+                             (check-autoscroll owner (aget e "deltaY"))
+                             (when (not= 0 (aget e "deltaX"))
+                               (.preventDefault e)
+                               (let [body (.-body js/document)]
+                                 (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
+                                  
                                   :class (str "selected_" current-container-id)}
-           (for [container containers]
-             (om/build container-view-v2
-                       {:container container
-                        :non-parallel-actions non-parallel-actions}
-                       {:opts {:uses-parallelism? (< 1 (count containers))}}))]])))))
+           (om/build container-view-v2
+                     {:container (containers current-container-id)
+                      :non-parallel-actions non-parallel-actions}
+                     {:opts {:uses-parallelism? (< 1 (count containers))}})])))))

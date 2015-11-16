@@ -31,6 +31,7 @@
   }
 }
 
+&.ui-v1 {
 
 /* This .class { ... }
  *      .class:not(.other_class) { position:absolute }
@@ -43,34 +44,35 @@
   top: 0px;
 }
 
-// TODO: remove the :not(.current_container) when om is fully deployed
-.container-view:not(.current_container) {
-  position: absolute;
-}
+  // TODO: remove the :not(.current_container) when om is fully deployed
+  .container-view:not(.current_container) {
+    position: absolute;
+  }
 
-// TODO: remove om is fully deployed
-.container-view.current_container {
-  position: relative;
-}
+  // TODO: remove om is fully deployed
+  .container-view.current_container {
+    position: relative;
+  }
 
-// Creates the selectors that will keep the proper container in view
-// Generates #container_parent.selected_2 { #container_2 { position: relative; }}
-.selectedX (@index) when (@index > -1) {
-  .selectedX(@index - 1);
+  // Creates the selectors that will keep the proper container in view
+  // Generates #container_parent.selected_2 { #container_2 { position: relative; }}
+  .selectedX (@index) when (@index > -1) {
+    .selectedX(@index - 1);
 
-  #container_parent.selected_@{index} {
+    #container_parent.selected_@{index} {
 
-    #container_@{index} {
-      position: relative;
+      #container_@{index} {
+        position: relative;
+      }
     }
   }
+
+  .selectedX (-1) {}
+
+  @max_containers: 100;
+
+  .selectedX (@max_containers);
 }
-
-.selectedX (-1) {}
-
-@max_containers: 100;
-
-.selectedX (@max_containers);
 
 /* Set up a :after pseudo-element to reflect the build status */
 .container-list {
@@ -313,6 +315,11 @@
         border-bottom: 1px solid @brand-danger-v2;
       }
 
+      .source-name:after {
+        content: "—";
+        padding: 0 4px;
+      }
+
       hr {
         border-top-color: @brand-danger-v2;
       }
@@ -523,7 +530,7 @@
     .flexy(center, flex-start, row);
 
     color: @white;
-    background: @backround-color-dark-v2;
+    background: @background-color-dark-v2;
 
     .pill-details {
       @media (max-width: @pills-breakpoint) {
@@ -711,26 +718,56 @@
     padding: 0;
   }
 
+  .build-tests-summary {
+    margin-bottom: 8px;
+  }
+
+  .build-tests-list-container {
+    padding-top: 0;
+
+    .filename {
+      margin: 10px 0;
+    }
+  }
+
   .build-tests-list {
     margin: 0;
     counter-reset: test-list;
 
-    li + li {
+    li {
       margin-top: 10px;
     }
   }
 
   .build-test {
+    pointer-events: none;
+
     &:last-child {
       .build-test-output, .build-test-name {
         margin-bottom: 0;
       }
     }
+
+    .test-name:before {
+      margin-left: 5px;
+      content: counter(test-list) ". ";
+      counter-increment: test-list;
+    }
   }
 
   .build-test:before {
-    content: counter(test-list) " - ";
-    counter-increment: test-list;
+    display: inline-block;
+    transition: all 0.2s ease;
+    content: "\f054";
+    font-family: FontAwesome;
+    font-size: @build-failure-chevron-size;
+    color: @gray-test-chevron;
+    cursor: pointer;
+    pointer-events: all;
+  }
+
+  .build-test.expanded:before {
+    .rotate(90);
   }
 
   .build-test-name {
@@ -750,6 +787,15 @@
   .build-tests-toggle-icon {
     margin-right: 6px; // magic number
     color: @gray-lighter-v2;
+
+    &:before {
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    &.expanded:before {
+      .rotate(90);
+    }
   }
 
   // TODO Generalized whitespace tweak. Should be moved to
@@ -761,6 +807,8 @@
 
 .test-results {
   .alert {
+    margin-bottom: 15px;
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -792,7 +840,7 @@
     @ssh-node-padding: 10px;
 
     .flexy(center, flex-start, row);
-    border-bottom: solid 2px @list-border-color;
+    border-bottom: solid 1px @list-border-color;
     padding-top:    @ssh-node-padding;
     padding-bottom: @ssh-node-padding;
   }
@@ -802,11 +850,13 @@
   }
 
   .ssh-node-container {
-    padding-right: 18px;
+    min-width: 110px;
+    font-family: @monoFontFamilyV2
   }
 
   .ssh-node-command {
-    padding-right: 10px;
+    min-width: 310px;
+    font-family: @monoFontFamilyV2
   }
 
   .ssh-node-disabled {
@@ -818,5 +868,51 @@
 
     height: @icon-size;
     width: @icon-size;
+  }
+}
+
+.build-timings {
+  .container-step-pass {
+    fill: @brand-green-v2;
+  }
+
+  .container-step-fail {
+    fill: @brand-red-v2;
+  }
+
+  .container-step-stop {
+    fill: @brand-gray-v2;
+  }
+
+  .container-step-start-line {
+    stroke: @background-color-dark-v2;
+    stroke-width: 1;
+  }
+
+  .x-axis {
+    path, line {
+      fill: none;
+      stroke: @build-timings-axis;
+    }
+  }
+
+  .x-axis text {
+      font-size: @fontSizeMini;
+  }
+
+  .y-axis {
+    path, line {
+      display: none;
+    }
+  }
+
+  .y-axis text {
+      stroke: @background-color-dark-v2;
+      font-size: round((@baseFontSize * 0.65), 0); // 9px
+  }
+
+  .y-axis-label {
+    font-size: @fontSizeMini;
+    stroke: @background-color-dark-v2;
   }
 }

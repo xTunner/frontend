@@ -403,16 +403,36 @@
   float: right;
   font-style: italic;
 }
-.type-divider {
-  text-align: center;
-  border-bottom: 1px solid #777;
-  line-height: 0.1em;
-  margin: 30px 0 7px;
-  span {
-    background: @appBackgroundColor;
-    color: #777;
-    font-size: 16px;
-    padding: 0 10px;
+
+&.ui-v1 {
+  .type-divider {
+    text-align: center;
+    border-bottom: 1px solid #777;
+    line-height: 0.1em;
+    margin: 30px 0 7px;
+    span {
+      background: @appBackgroundColor;
+      color: #777;
+      font-size: 16px;
+      padding: 0 10px;
+    }
+  }
+}
+
+&.ui-v2 {
+  .type-divider {
+    text-align: center;
+    border-bottom: 1px solid #777;
+    line-height: 0.1em;
+    margin: 25px 0 15px;
+
+    span {
+      padding: 0 10px;
+      background: @appBackgroundColor;
+      color: #777;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
   }
 }
 

@@ -7,7 +7,7 @@
             [frontend.components.forms :as forms]
             [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -114,14 +114,6 @@
 
 (defn dashboard-icon [name]
   [:img.dashboard-icon {:src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
-
-(defn build-status-badge-wording [build]
-  (let [wording       (build-model/status-words build)
-        too-long?     (> (count wording) 10)]
-    [:div {:class (if too-long?
-                    "badge-text small-text"
-                    "badge-text")}
-     wording]))
 
 (defn build-status-badge-wording [build]
   (let [wording       (build-model/status-words build)
@@ -259,4 +251,3 @@
   (if (feature/enabled? :ui-v2)
     (builds-table-v2 builds owner opts)
     (builds-table-v1 builds owner opts)))
-

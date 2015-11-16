@@ -6,7 +6,7 @@
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.feature :as feature]
+            [frontend.models.feature :as feature]
             [frontend.models.test :as test-model]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -19,6 +19,8 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.visualization.build :as viz-build]
+            [frontend.components.build-timings :as build-timings]
+            [frontend.components.svg :refer [svg]]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -322,7 +324,7 @@
                        [:span.ssh-node-container (str "Container " i)]
                        [:span {:class command-class} (ssh-command node)]
                        (when no-ssh?
-                         [:img.ssh-node-running-icon {:src (common/icon-path "Status-Running")}])]))
+                         (om/build svg {:class "ssh-node-running-icon" :src (common/icon-path "Status-Running")}))]))
                   nodes)]))
 
 (defn ssh-instructions
@@ -333,18 +335,14 @@
       [:div.ssh-info-container
        [:div.build-ssh-title
         [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-        [:p "This build takes up one of your concurrent builds, so cancel it when you are done."]
         [:div
-         "Browser based testing? Read "
-         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"}
-          "our docs"]
+         "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
+         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
          " on how to use VNC with CircleCI."]]
 
        (if  (feature/enabled? :ui-v2)
          (om/build ssh-node-list-v2 nodes)
-         (om/build ssh-node-list nodes))
-
-       ])))
+         (om/build ssh-node-list nodes))])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
@@ -566,7 +564,7 @@
 (defmulti format-test-name-v2 test-model/source)
 
 (defmethod format-test-name-v2 :default [test]
-  (->> [[(:name test)] [(:classname test) (:file test)]]
+  (->> [[(:name test)] [(:classname test)]]
        (map (fn [s] (some #(when-not (string/blank? %) %) s)))
        (filter identity)
        (string/join " - in ")))
@@ -599,14 +597,11 @@
     om/IRender
     (render [_]
       (html
-        [:li.build-test
-         (format-test-name-v2 test)
-         " - "
-         (when-not (string/blank? (:message test))
-           [:a.test-output-toggle {:role "button"
-                                   :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
-            (if (:show-message test) "less info" "more info")])
-         (when (:show-message test)
+       [:li.build-test {:class (when (:show-message test) "expanded")
+                        :on-click #(when-not (string/blank? (:message test))
+                                     (raise! owner [:show-test-message-toggled {:test-index (:i test)}]))}
+        [:span.test-name (format-test-name-v2 test)]
+        (when (:show-message test)
            [:pre.build-test-output (:message test)])]))))
 
 (defn build-tests-list [data owner]
@@ -645,73 +640,89 @@
 
 (def initial-test-render-count 5)
 
-(defn build-tests-list-v2 [data owner]
+(defn build-tests-file-block [[file failures] owner]
+  (reify om/IRender
+    (render [_]
+      (html
+       [:div
+        (when file [:li.filename (str file ":")])
+        (om/build-all test-item-v2 (vec failures))]))))
+
+(defn build-tests-source-block [[source {:keys [failures successes]}] owner]
+  (reify om/IRender
+    (render [_]
+      (html
+       [:div.alert.alert-danger.expanded.build-tests-info
+        [:div.alert-header
+         [:img.alert-icon {:src (common/icon-path "Info-Error")}]
+         [:span.source-name (test-model/pretty-source source)]
+         [:span.failure-count (pluralize (count failures) "failure")]]
+        [:div.alert-body
+         [:div.build-tests-summary
+          "Your build ran "
+          [:strong (pluralize (+ (count failures)
+                                 (count successes)) "test")]
+          " with "
+          [:strong (pluralize (count failures) "failure")]]
+         [:div.build-tests-list-container
+          [:ol.list-unstyled.build-tests-list
+           (let [file-failures (->> (group-by :file failures)
+                                    (map (fn [[k v]] [k (sort-by test-model/format-test-name v)]))
+                                    (into (sorted-map)))
+                 [top-map bottom-map] (utils/split-map-values-at file-failures initial-test-render-count)]
+             (list
+              (om/build-all build-tests-file-block top-map)
+              (when-not (empty? bottom-map)
+                (list
+                 [:hr]
+                 [:li
+                  [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                   [:span
+                    [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
+                    (if (om/get-state owner :is-open?)
+                      "Less"
+                      "More")]]]
+                 (when (om/get-state owner :is-open?)
+                   (om/build-all build-tests-file-block bottom-map))))))]]]]))))
+
+(defn build-tests-list-v2 [{{tests :tests} :tests-data
+                            {build-status :status} :build
+                            :as data}
+                           owner]
   (reify
     om/IWillMount
     (will-mount [_]
       (raise! owner [:tests-showed]))
-
     om/IRender
     (render [_]
-      (let [tests-data (:tests-data data)
-            tests (when (:tests tests-data)
-                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
-            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
-            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)
-            build-succeeded? (= "success" (get-in data [:build :status]))]
+      (let [source-hash (->> tests
+                             (map-indexed #(assoc %2 :i %1))
+                             (reduce (fn [acc {:keys [result] :as test}]
+                                       (update-in acc [(test-model/source test)
+                                                       (if (#{"failure" "error"} result)
+                                                         :failures
+                                                         :successes)]
+                                                  #(cons test %)))
+                                     {}))
+            failed-sources (filter (fn [[_ {:keys [failures]}]]
+                                     (seq failures))
+                                   source-hash)
+            build-succeeded? (= "success" build-status)]
         (html
          [:div.test-results
           (if-not tests
             [:div.loading-spinner common/spinner]
             (cond
-              (seq failed-tests) (for [[source tests-by-source] (group-by test-model/source failed-tests)]
-                                   [:div.alert.alert-danger.expanded.build-tests-info
-                                    [:div.alert-header
-                                     [:img.alert-icon {:src (common/icon-path "Info-Error")}]
-                                     (test-model/pretty-source source)
-                                     " - "
-                                     (pluralize (count failed-tests) "failure")]
-                                    [:div.alert-body
-                                     [:div.build-tests-summary
-                                      "Your build ran "
-                                      [:strong (pluralize (count tests) "test")]
-                                      " with "
-                                      [:strong (pluralize (count failed-tests) "failure")]]
-                                     [:div.build-tests-list-container
-                                      [:ol.list-unstyled.build-tests-list
-                                       (for [[file tests-by-file] (group-by :file tests-by-source)]
-                                         (let [sorted-tests (sort-by test-model/format-test-name tests-by-file)
-                                               initial-test-results (take initial-test-render-count sorted-tests)
-                                               other-tests (drop initial-test-render-count sorted-tests)]
-
-                                         (list (when file [:div.filename (str file ":")])
-                                               (om/build-all test-item-v2
-                                                             (vec initial-test-results))
-                                               (when (seq other-tests)
-                                                 (list
-                                                   [:hr]
-                                                   [:li
-                                                    [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
-                                                     (if (om/get-state owner :is-open?)
-                                                       [:span
-                                                        [:i.fa.fa-chevron-up.build-tests-toggle-icon]
-                                                        "Less"]
-                                                       [:span
-                                                        [:i.fa.fa-chevron-down.build-tests-toggle-icon]
-                                                        "More"])]]
-                                                   (when (om/get-state owner :is-open?)
-                                                     (om/build-all test-item-v2
-                                                                   (vec other-tests))))))))]]]])
-
+              (seq failed-sources) (om/build-all build-tests-source-block failed-sources)
               (seq tests) [:div
                            "Your build ran "
                            [:strong (count tests)]
-                           " tests in " (string/join ", " (map test-model/pretty-source sources)) " with "
+                           " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
                            [:strong "0 failures"]]
 
               :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
                      [:div [:img.alert-icon {:src (common/icon-path
-                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                                                   (if build-succeeded? "Info-Info" "Info-Error"))}]]
                      (tests-ad owner)]))])))))
 
 (defn circle-yml-ad []
@@ -858,8 +869,8 @@
                     [:span {:class "fail-count"} fail-count]))]])
 
             (when (and admin? (build-model/finished? build))
-              [:li {:class (when (= :build-time-viz selected-tab) "active")}
-               [tab-link {:href "#build-time-viz"} "Build Timing"]])
+              [:li {:class (when (= :build-timing selected-tab) "active")}
+               [tab-link {:href "#build-timing"} "Build Timing"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
@@ -872,7 +883,7 @@
 
              :tests (om/build build-tests-list build-data)
 
-             :build-time-viz (om/build build-time-visualization build)
+             :build-timing (om/build build-time-visualization build)
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
@@ -1249,8 +1260,8 @@
              [tab-link-v2 {:href "#config"} "circle.yml"]]
 
             (when (and admin? (build-model/finished? build))
-              [tab-tag {:class (when (= :build-time-viz selected-tab) "active")}
-               [tab-link-v2 {:href "#build-time-viz"}
+              [tab-tag {:class (when (= :build-timing selected-tab) "active")}
+               [tab-link-v2 {:href "#build-timing"}
                 "Build Timing"]])
 
             (when (seq build-params)
@@ -1262,7 +1273,7 @@
 
              :tests (om/build build-tests-list-v2 build-data)
 
-             :build-time-viz (om/build build-time-visualization build)
+             :build-timing (om/build build-timings/build-timings build)
 
              :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user

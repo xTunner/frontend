@@ -40,4 +40,3 @@ deployment:
     branch: master
     commands:
       - script/deploy.sh
-      - script/prepare-v2-branch.sh

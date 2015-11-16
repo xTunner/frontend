@@ -1,5 +1,5 @@
 (ns frontend.config
-  (:require [frontend.feature :as feature]))
+  (:require [frontend.models.feature :as feature]))
 
 (defn env
   "The name of the server configuration environment.

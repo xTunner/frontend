@@ -15,7 +15,7 @@ file, check out our [sample file](/docs/config-sample).
 
 Should you have a test failure, our [troubleshooting section](/docs/troubleshooting)
 can likely tell you the best way to solve the problem.
-If you find yourself repeateadly consulting this guide, please
+If you find yourself repeatedly consulting this guide, please
 [contact us](mailto:sayhi@circleci.com) and let us know what you're working on.
 We'll try to make it easier for you.
 
@@ -170,10 +170,9 @@ This alternative can avoid horrific Daylight Saving Time (DST) bugs.
 
 ### Hosts
 
-Sometimes you might need to add one or more entries to the
-`/etc/hosts` file to assign various domain names to an IP address.
-This example points to the development subdomain at the circleci hostname and IP
-address.
+Sometimes you might need to add one or more entries to the `/etc/hosts` file to
+assign various host names to an IP address. You can provide a mapping from
+hostnames to IP addresses in the following manner:
 
 ```
 machine:
@@ -182,6 +181,7 @@ machine:
     foobar: 1.2.3.4
 ```
 
+CircleCI will automatically update the `/etc/hosts` file with these values.
 Hostnames [must be well formed](http://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names).
 CircleCI will only accept hostnames that contain alpha-numeric characters,
 hyphens (-) and dots (.).
@@ -617,7 +617,7 @@ This example will POST a JSON packet to the specified URL.
 ```
 notify:
   webhooks:
-    # A list of hook hashes, containing the url field
+    # A list of hook hashes, containing the URL field
     - url: https://example.com/hooks/circle
 ```
 
@@ -719,7 +719,7 @@ of branches to build in the [Branches section](#branches).
 Each setting takes a list of either strings or regexes; regexes are
 specified with '/' around the value.
 
-The following configuration will supress any chat channel build notifications
+The following configuration will suppress any chat channel build notifications
 for any build of a branch whose name starts with "dev" or "experiment", or which is
 named "sandbox":
 
