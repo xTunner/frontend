@@ -256,7 +256,10 @@
     }
 
     .cancel-icon {
-      margin: 0 @build-padding 0 4px;
+      // Specific mragins are a firefox hack:
+      // Since it doesn't support flexbox properly in buttons,
+      // we have to do a bit of manual positioning.
+      margin: 0 7px 1px 4px;
       height: 17px;
       width: 17px;
     }
