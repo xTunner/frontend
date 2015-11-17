@@ -895,7 +895,7 @@
 
              :tests (om/build build-tests-list build-data)
 
-             :build-timing (om/build build-time-visualization build)
+             :build-timing (om/build build-timings/build-timings build)
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
