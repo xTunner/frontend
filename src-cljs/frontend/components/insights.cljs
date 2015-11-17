@@ -302,7 +302,7 @@
                    (add-show-insights? project orgs))))))
 
 (defrender build-insights [state owner]
-  (let [orgs @(get-in state state/user-organizations-path)
+  (let [orgs (dissoc (get-in state state/user-organizations-path))
         projects (add-show-insights?-to-projects orgs (get-in state state/projects-path))]
     (html
      [:div#build-insights {:class (case (count projects)
