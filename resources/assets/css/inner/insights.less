@@ -105,10 +105,23 @@
       }
     }
 
-    .no-builds, .loading-spinner{
+    .no-insights, .loading-spinner{
       height: @spinner-height;
+      text-align: center;
       .flexy(center, space-around, column);
 
+      &.no-insights {
+        font-weight: bold;
+      }
+      
+      .message {
+        width: 80%;
+        margin-top: 40px;
+      }
+
+      .upgrade-link {
+        margin-bottom: 40px;
+      }
     }
   }
 
