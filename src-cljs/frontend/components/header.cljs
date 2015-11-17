@@ -83,7 +83,6 @@
            (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
              (om/build build-head/build-head-actions app))])))))
 
-
 (defn head-admin [app owner]
   (reify
     om/IDisplayName (display-name [_] "Admin Header")
