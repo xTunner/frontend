@@ -302,7 +302,7 @@
 
 (defrender build-insights [state owner]
   (let [orgs (dissoc (get-in state state/user-organizations-path))
-        projects (add-show-insights?-to-projects orgs (get-in state state/projects-path))]
+        projects (get-in state state/projects-path)]
     (html
      [:div#build-insights {:class (case (count projects)
                                     1 "one-project"
@@ -311,4 +311,4 @@
         (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
-          :else              (om/build-all project-insights projects))])))
+          :else              (om/build-all project-insights (add-show-insights?-to-projects orgs projects)))])))
