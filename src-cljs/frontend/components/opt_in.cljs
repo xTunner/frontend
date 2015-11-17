@@ -25,5 +25,8 @@
       (html
        [:div.ui-v2-opt-out {}
         (managed-button [:button {:on-click #(raise! owner [:disable-ui-v2-clicked])} "Back to old look"])
-        [:a {:href "mailto:beta@circleci.com?subject=New Look"} "Beta Feedback"]
+        [:a {:href "mailto:beta@circleci.com?subject=New Look"
+             :target "_blank"
+             :on-click #(raise! owner [:ui-v2-beta-feedback])}
+         "Beta Feedback"]
         ]))))
