@@ -154,7 +154,9 @@
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
 
-               (when (and (feature/enabled? :ui-v2-opt-in-banner) (not (feature/enabled-in-cookie? :ui-v2)))
+               (when (and (= :dashboard (:navigation-point app))
+                          (feature/enabled? :ui-v2-opt-in-banner)
+                          (not (feature/enabled-in-cookie? :ui-v2)))
                  (om/build opt-in/ui-v2-opt-in-banner app))
 
                (when (and (feature/enabled? :ui-v2))

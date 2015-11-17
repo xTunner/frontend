@@ -65,6 +65,8 @@
                [:a {:title "home", :href "/"} [:i.fa.fa-home] " "]])
             (crumbs/crumbs crumbs-data)]
            (when (and (= :dashboard (:navigation-point app))
+                      (not (-> app :navigation-data :repo))
+                      (not (-> app :navigation-data :org))
                       (feature/enabled? :ui-v2-opt-in-banner)
                       (feature/enabled-in-cookie? :ui-v2))
              (om/build opt-in/ui-v2-opt-out-ui app))
