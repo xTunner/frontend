@@ -742,8 +742,12 @@
 
   .alert {
     a {
-      color: @gray-dark-v2;
-      text-decoration: underline;
+      color: @link-color-v2;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
