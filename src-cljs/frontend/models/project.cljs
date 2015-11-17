@@ -2,7 +2,9 @@
   (:require [clojure.string :refer [lower-case split join]]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
-            [frontend.models.plan :as plan-model]))
+            [frontend.models.plan :as plan-model]
+            [frontend.config :as config]
+            [frontend.utils.vcs-url :as vcs-url]))
 
 (defn project-name [project]
   (->> (split (:vcs_url project) #"/")
@@ -150,3 +152,19 @@
 
 (defn feature-enabled? [project feature]
   (get-in project [:feature_flags feature]))
+
+(defn add-show-premium-content? [project orgs org-name]
+  (let [org (->> orgs
+                (filter #(-> % :login (= org-name)))
+                (first))]
+  (assoc project :org-name org-name
+         :show-insights? (or (config/enterprise?)
+                             (:oss? project)
+                             (> (:num_paid_containers org) 0)))))
+
+(defn get-project-org-name
+  "Returns the org-name for a given project"
+  [project]
+  (-> project 
+      (:vcs_url)
+      (vcs-url/org-name)))

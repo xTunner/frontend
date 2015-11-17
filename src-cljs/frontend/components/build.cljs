@@ -224,8 +224,10 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             invite-data (:invite-data data)
+            orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path)]
+            user (get-in data state/user-path) ]
+        (println project-data)
         (html
          [:div#build-log-container
           (if-not build
@@ -433,8 +435,10 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             invite-data (:invite-data data)
+            orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path)]
+            user (get-in data state/user-path)
+            orgs-data (get-in data state/user-organizations-path)]
         (html
          [:div.build-info-v2
           (if-not build

@@ -282,23 +282,14 @@
       [:div.row.text-center
        [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
-(defn add-show-insights? [project orgs org-name]
-  (let [org (->> orgs
-                (filter #(-> % :login (= org-name)))
-                (first))]
-  (assoc project :org-name org-name
-         :show-insights? (or (config/enterprise?)
-                             (:oss? project)
-                             (> (:num_paid_containers org) 0)))))
-
-(defn add-show-insights?-to-projects [orgs projects]
+(defn decorate-projects
   "Returns a new seq with show-insights? added to all projects"
-  (->> projects
-       (map (fn [project]
-              (->> project
-                   (:vcs_url)
-                   (vcs-url/org-name)
-                   (add-show-insights? project orgs))))))
+  [orgs projects]
+   (->> projects
+        (map (fn [project]
+               (->> project
+                    (project-model/get-project-org-name)
+                    (project-model/add-show-premium-content? project orgs))))))
 
 (defrender build-insights [state owner]
   (let [orgs (dissoc (get-in state state/user-organizations-path))
@@ -311,4 +302,4 @@
         (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
-          :else              (om/build-all project-insights (add-show-insights?-to-projects orgs projects)))])))
+          :else              (om/build-all project-insights (decorate-projects orgs projects)))])))
