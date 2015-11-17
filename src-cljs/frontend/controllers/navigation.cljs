@@ -250,7 +250,8 @@
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-projects api-ch))
+    (api/get-projects api-ch)
+    (api/get-orgs api-ch {:include-user? true}))
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :invite-teammates

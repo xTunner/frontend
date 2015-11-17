@@ -6,6 +6,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
             [frontend.datetime :as datetime]
+            [frontend.models.organization :as organization]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.routes :as routes]
@@ -410,9 +411,8 @@
           ;; show the payment plan.
           (let [org (->> user
                          :organizations
-                         (map #(when (= (:login %) selected-org) {:selected-org (:login %) :show-upsell? (:show_upsell? %)}))
                          (filter some?)
                          (first))]
-            (if (or (= selected-org (:login user)) (:show-upsell? org))
+            (if (or (= selected-org (:login user)) (organization/show-upsell? org))
               (om/build payment-plan {:selected-org selected-org
                                       :view view})))]]]])))
