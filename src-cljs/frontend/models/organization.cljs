@@ -1,4 +1,5 @@
-(ns frontend.models.organization)
+(ns frontend.models.organization
+  (:require [frontend.config :as config]))
 
 (defn projects-by-follower
   "Returns a map of users logins to projects they follow."
@@ -9,3 +10,8 @@
                         (update-in acc [login] conj project))
                       acc logins)))
           {} projects))
+
+(defn show-upsell?
+  "Given an org, returns whether or not to show that org upsells"
+  [org]
+  (and (not (config/enterprise?)) (> 4 (:num_paid_containers org))))
