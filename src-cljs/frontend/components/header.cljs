@@ -83,6 +83,7 @@
                       (feature/enabled-in-cookie? :ui-v2))
              (om/build opt-in/ui-v2-opt-out-ui app))])))))
 
+
 (defn head-admin [app owner]
   (reify
     om/IDisplayName (display-name [_] "Admin Header")

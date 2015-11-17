@@ -83,5 +83,15 @@
   (crumb-node {:name "Settings"
                :active false}))
 
+(defmethod render-crumb :build-insights
+  [attrs]
+  (crumb-node {:name "Insights"
+               :active false}))
+
+(defmethod render-crumb :insights-repositories
+  [attrs]
+  (crumb-node {:name "Repositories"
+               :active false}))
+
 (defn crumbs [crumbs-data]
   (map render-crumb crumbs-data))
