@@ -1093,7 +1093,7 @@
 
 (defmethod control-event :show-all-commits-toggled
   [target message _ state]
-  (update-in state (conj state/build-data-path :show-all-commits) not))
+  (update-in state (conj state/build-data-path :show-all-commits?) not))
 
 (defmethod control-event :show-test-message-toggled
   [_ _ {:keys [test-index]} state]

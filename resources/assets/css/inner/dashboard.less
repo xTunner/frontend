@@ -233,6 +233,10 @@
 
     background-color: @white;
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.10);
+
+    a:hover {
+      text-decoration: underline;
+    }
   }
 
   @build-padding: 10px;
@@ -252,6 +256,9 @@
       .cancel-text {
         flex-grow: 1;
         text-align: left;
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
 
@@ -302,7 +309,7 @@
     margin-right: 25px;
     margin-bottom: 3px;
 
-    color: @gray-light-v2;
+    color: @link-color-v2;
     font-size: 12px;
 
     // We set the widths of these so the icons all line up. We use min-width so

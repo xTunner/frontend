@@ -583,6 +583,9 @@
         font-size: 12px;
         font-weight: bold;
         color: @gray-dark-v2;
+        &:hover {
+          text-decoration: underline;
+        }
       }
 
       &:first-child {
@@ -609,6 +612,12 @@
 
         & + li {
           border-top-color: @border-color-below-selected-branch;
+        }
+      }
+
+      &:hover {
+        .branch-name {
+          text-decoration: underline;
         }
       }
 

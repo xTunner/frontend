@@ -217,7 +217,7 @@
              [:a {:role "button"
                   :on-click #(raise! owner [:show-all-commits-toggled {:build-id build-id}])}
               (str (- (count (:all_commit_details build)) 3) " more ")
-              (if (:show-all-commits build-data)
+              (if (:show-all-commits? build-data)
                 [:i.fa.fa-caret-up]
                 [:i.fa.fa-caret-down])])]
           (when (:subject build)
@@ -231,7 +231,7 @@
                (list
                 (om/build-all commit-line (take 3 (map #(assoc % :build build)
                                                        (:all_commit_details build))))
-                (when (:show-all-commits build-data)
+                (when (:show-all-commits? build-data)
                   (om/build-all commit-line (drop 3 (map #(assoc % :build build)
                                                          (:all_commit_details build)))))))])])))))
 
@@ -678,9 +678,9 @@
                 (list
                  [:hr]
                  [:li
-                  [:button.btn-link.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
+                  [:a.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
                    [:span
-                    [:i.fa.fa-chevron-right.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
+                    [:i.fa.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
                     (if (om/get-state owner :is-open?)
                       "Less"
                       "More")]]]
@@ -1167,39 +1167,41 @@
                                                    (linkify)
                                                    (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]])))))
 
-(defn build-commits-v2 [build-data owner]
+(def initial-build-commits-count 3)
+
+(defn build-commits-v2 [{:keys [build show-all-commits?]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [build (:build build-data)
-            build-id (build-model/id build)]
+      (let [build-id (build-model/id build)
+            commits (:all_commit_details build)
+            [top-commits bottom-commits] (->> commits
+                                             (map #(assoc % :build build))
+                                             (split-at initial-build-commits-count))]
         (html
          [:div.build-commits-container
           (when (:subject build)
             [:div.build-commits-list
-             (if-not (seq (:all_commit_details build))
+             (if-not (seq commits)
                (om/build commit-line-v2 {:build build
                                          :subject (:subject build)
                                          :body (:body build)
                                          :commit_url (build-model/github-commit-url build)
                                          :commit (:vcs_revision build)})
                (list
-                 (om/build-all commit-line-v2 (take 3 (map #(assoc % :build build)
-                                                           (:all_commit_details build))))
-
-                 (when (< 3 (count (:all_commit_details build)))
+                 (om/build-all commit-line-v2 top-commits)
+                 (when (< initial-build-commits-count (count commits))
                    (list
                      [:hr]
-                     [:a {:role "button"
-                          :on-click #(raise! owner [:show-all-commits-toggled {:build-id build-id}])}
-                      (if (:show-all-commits build-data)
-                        [:i.fa.fa-caret-up]
-                        [:i.fa.fa-caret-down])
-                      " More"]))
-
-                 (when (:show-all-commits build-data)
-                   (om/build-all commit-line-v2 (drop 3 (map #(assoc % :build build)
-                                                             (:all_commit_details build)))))))])])))))
+                     [:a {:class "chevron-label"
+                          :role "button"
+                          :on-click #(raise! owner [:show-all-commits-toggled])}
+                      [:i.fa.rotating-chevron {:class (when show-all-commits? "expanded")}]
+                      (if show-all-commits?
+                        "Less"
+                        "More")]))
+                 (when show-all-commits?
+                   (om/build-all commit-line-v2 bottom-commits))))])])))))
 
 
 (def tab-tag :li.build-info-tab)
