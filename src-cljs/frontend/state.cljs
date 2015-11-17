@@ -2,6 +2,7 @@
 
 (defn initial-state []
   {:error-message nil
+   :general-message nil
    ;; A/B test instructions:
    ;; 1. Don't define a test with null as one of the options
    ;; 2. If you change a test's options, you must also change the test's name
@@ -140,6 +141,9 @@
 
 (def repos-loading-path (conj user-path :repos-loading))
 
+(def user-in-beta-key :in_beta_program)
+(def user-in-beta-path (conj user-path user-in-beta-key))
+
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
 (def org-plan-path (conj org-data-path :plan))
@@ -201,6 +205,7 @@
 (def all-users-path [:all-users])
 
 (def error-message-path [:error-message])
+(def general-message-path [:general-message])
 
 (def inputs-path [:inputs])
 
