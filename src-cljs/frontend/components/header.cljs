@@ -64,6 +64,12 @@
               [:li
                [:a {:title "home", :href "/"} [:i.fa.fa-home] " "]])
             (crumbs/crumbs crumbs-data)]
+           (when (and (= :dashboard (:navigation-point app))
+                      (not (-> app :navigation-data :repo))
+                      (not (-> app :navigation-data :org))
+                      (feature/enabled? :ui-v2-opt-in-banner)
+                      (feature/enabled-in-cookie? :ui-v2))
+             (om/build opt-in/ui-v2-opt-out-ui app))
            (when (show-follow-project-button? app)
              (forms/managed-button
                [:button#follow-project-button
@@ -75,13 +81,7 @@
              [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
               (str "View " project-name " »")])
            (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
-             (om/build build-head/build-head-actions app))
-           (when (and (= :dashboard (:navigation-point app))
-                      (not (-> app :navigation-data :repo))
-                      (not (-> app :navigation-data :org))
-                      (feature/enabled? :ui-v2-opt-in-banner)
-                      (feature/enabled-in-cookie? :ui-v2))
-             (om/build opt-in/ui-v2-opt-out-ui app))])))))
+             (om/build build-head/build-head-actions app))])))))
 
 
 (defn head-admin [app owner]
