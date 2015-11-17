@@ -286,10 +286,9 @@
   (let [org (->> orgs
                 (filter #(-> % :login (= org-name)))
                 (first))]
-    (println project)
   (assoc project :org-name org-name
          :show-insights? (or (config/enterprise?)
-                             (get-in project [:feature_flags :oss])
+                             (:oss? project)
                              (> (:num_paid_containers org) 0)))))
 
 (defn add-show-insights?-to-projects [orgs projects]
