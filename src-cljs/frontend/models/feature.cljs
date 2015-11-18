@@ -32,13 +32,16 @@
   (-> (get-in-cookie feature)
       feature-flag-value-true?))
 
+;; feature cookies should be basically permanent, so make them last for 10 years
+(def feature-cookie-max-age (* 60 60 24 365 10))
+
 ;; export so we can set this using javascript in production
 (defn ^:export enable-in-cookie [feature]
-  (cookies/set (feature-flag-key-name feature) "true"))
+  (cookies/set (feature-flag-key-name feature) "true" feature-cookie-max-age))
 
 ;; export so we can set this using javascript in production
 (defn ^:export disable-in-cookie [feature]
-  (cookies/set (feature-flag-key-name feature) "false"))
+  (cookies/set (feature-flag-key-name feature) "false" feature-cookie-max-age))
 
 ;; export so we can set this using javascript in production
 (defn ^:export enabled?
