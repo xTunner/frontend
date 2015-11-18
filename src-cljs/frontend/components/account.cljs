@@ -217,7 +217,7 @@
           [:div
            [:h2 "Beta Program"]
            (when-let [message (get-in app state/general-message-path)]
-             (common/messages [message]))
+             (common/messages [message] {:show-warning-text? false}))
            (if (get-in app state/user-in-beta-path)
              (om/build beta-program-member app)
              (om/build join-beta-program app))]])))))
