@@ -90,7 +90,8 @@
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
                                              "src-cljs/js/intercom-jquery-externs.js"
-                                             "src-cljs/js/d3-externs.js"]
+                                             "src-cljs/js/d3-externs.js"
+                                             "src-cljs/js/prismjs-externs.js"]
                                    :source-map "resources/public/cljs/test/sourcemap-dev.js"}}
                        {:id "production"
                         :source-paths ["src-cljs"]
@@ -103,7 +104,8 @@
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
                                              "src-cljs/js/intercom-jquery-externs.js"
-                                             "src-cljs/js/d3-externs.js"]
+                                             "src-cljs/js/d3-externs.js"
+                                             "src-cljs/js/prismjs-externs.js"]
                                    :source-map "resources/public/cljs/production/sourcemap-frontend.js"
                                    }}]
               :test-commands {"frontend-unit-tests"

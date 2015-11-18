@@ -47,15 +47,6 @@
       (.append "g") ;move everything over to see the axis
         (.attr "transform" (gstring/format "translate(%d,%d)" left-axis-width top-axis-height))))
 
-(defn time-axis-tick-formatter [ms-value]
-  (let [m (js/Math.floor (/ ms-value 1000 60))
-        s (js/Math.floor (- (/ ms-value 1000) (* m 60)))]
-    (if (<= m 0)
-      (if (= s 0)
-        (gstring/format "%ds" s)
-        (gstring/format "%02ds" s))
-      (gstring/format "%d:%02dm" m s))))
-
 (defn create-y-axis [number-of-containers]
   (let [range-start (+ bar-height (/ container-bar-height 2))
         range-end   (+ (timings-height number-of-containers) (/ container-bar-height 2))
@@ -95,13 +86,12 @@
 
 ;;; Elements of the visualization
 (defn highlight-selected-container! [step-data]
-  (let [fade-value #(if (= (.-textContent %1) (str (aget %2 "index"))) 1 0.1)]
+  (let [fade-value #(if (= (.-textContent %1) (str (aget %2 "index"))) 1 0.5)]
     (-> (.select js/d3 ".y-axis")
         (.selectAll ".tick")
         (.selectAll "text")
         (.transition)
         (.duration 200)
-        (.attr "stroke-opacity" #(this-as element (fade-value element step-data)))
         (.attr "fill-opacity"   #(this-as element (fade-value element step-data))))))
 
 (defn highlight-selected-step! [step selected]
@@ -125,8 +115,7 @@
       (.selectAll "text")
       (.transition)
       (.duration 200)
-      (.attr "stroke-opacity" 1)
-      (.attr "fill-opacity"   1)))
+      (.attr "fill-opacity" 1)))
 
 (defn draw-containers! [x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")

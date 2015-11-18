@@ -270,11 +270,13 @@
   &.logo {
     .justify-content(center);
     .underline-deboss();
+    min-height: @tile;
+
     .logomark {
       .flexy(center, center);
       .icon-style(@white, (@em * 2));
       width: @tile;
-      height: @tile;
+      min-height: @tile;
     }
   }
 
@@ -552,6 +554,10 @@
     .projects {
       > li {
         border-top: solid @border-width #c5c5c5;
+
+        &:first-child {
+          border-top: none;
+        }
       }
     }
 
@@ -577,6 +583,13 @@
         font-size: 12px;
         font-weight: bold;
         color: @gray-dark-v2;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      &:first-child {
+        border-top: none;
       }
     }
 
@@ -599,6 +612,12 @@
 
         & + li {
           border-top-color: @border-color-below-selected-branch;
+        }
+      }
+
+      &:hover {
+        .branch-name {
+          text-decoration: underline;
         }
       }
 
@@ -742,6 +761,9 @@
     right: 0;
     height: @tile;
     padding: 0 @em;
+
+    z-index: @zindex-popover;
+
     &:hover {
       path {
         stroke: @black;

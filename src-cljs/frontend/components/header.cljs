@@ -40,10 +40,15 @@
     (let [navigation-data (:navigation-data app)]
       (cond (:repo navigation-data) [:a.settings.project-settings
                                      {:href (routes/v1-project-settings navigation-data) }
-                                     (common/ico :settings-light) "Project Settings"]
+                                     (if (feature/enabled? :ui-v2)
+                                       [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+                                       (common/ico :settings-light))
+                                     "Project Settings"]
             (:org navigation-data) [:a.settings.org-settings
                                     {:href (routes/v1-org-settings navigation-data)}
-                                    (common/ico :settings-light) "Organization Settings"]
+                                    (if (feature/enabled? :ui-v2)
+                                      [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+                                      (common/ico :settings-light)) "Organization Settings"]
             :else nil))))
 
 (defn head-user [app owner]
@@ -64,6 +69,12 @@
               [:li
                [:a {:title "home", :href "/"} [:i.fa.fa-home] " "]])
             (crumbs/crumbs crumbs-data)]
+           (when (and (= :dashboard (:navigation-point app))
+                      (not (-> app :navigation-data :repo))
+                      (not (-> app :navigation-data :org))
+                      (feature/enabled? :ui-v2-opt-in-banner)
+                      (feature/enabled-in-cookie? :ui-v2))
+             (om/build opt-in/ui-v2-opt-out-ui app))
            (when (show-follow-project-button? app)
              (forms/managed-button
                [:button#follow-project-button
@@ -75,11 +86,7 @@
              [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
               (str "View " project-name " »")])
            (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
-             (om/build build-head/build-head-actions app))
-           (when (and (= :dashboard (:navigation-point app))
-                      (feature/enabled? :ui-v2-opt-in-banner)
-                      (feature/enabled-in-cookie? :ui-v2))
-             (om/build opt-in/ui-v2-opt-out-ui app))])))))
+             (om/build build-head/build-head-actions app))])))))
 
 (defn head-admin [app owner]
   (reify

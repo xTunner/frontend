@@ -5,7 +5,9 @@
             [frontend.routes :as routes]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.state :as state]
@@ -234,7 +236,7 @@
       (html
        [:div.build-time-visualization]))))
 
-(defrender project-insights [{:keys [reponame username branches recent-builds] :as project} owner]
+(defrender project-insights [{:keys [show-insights? reponame username branches recent-builds] :as project} owner]
   (let [builds (chartable-builds recent-builds)]
     (html
      (let [branch (-> recent-builds (first) (:branch))]
@@ -242,7 +244,9 @@
         [:h1 (gstring/format "%s/%s" username reponame)]
         [:h4 "Branch: " branch]
         (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-              (empty? builds) [:div.no-builds "No tests for this repo"]
+              (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
+                              [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "Upgrade here"]]
+              (empty? builds) [:div.no-insights "No tests for this repo"]
               :else
               (list
                [:div.above-info
@@ -278,17 +282,33 @@
       [:div.row.text-center
        [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
+(defn add-show-insights? [project orgs org-name]
+  (let [org (->> orgs
+                (filter #(-> % :login (= org-name)))
+                (first))]
+  (assoc project :org-name org-name
+         :show-insights? (or (config/enterprise?)
+                             (:oss? project)
+                             (> (:num_paid_containers org) 0)))))
+
+(defn add-show-insights?-to-projects [orgs projects]
+  "Returns a new seq with show-insights? added to all projects"
+  (->> projects
+       (map (fn [project]
+              (->> project
+                   (:vcs_url)
+                   (vcs-url/org-name)
+                   (add-show-insights? project orgs))))))
+
 (defrender build-insights [state owner]
-  (let [projects (get-in state state/projects-path)]
+  (let [orgs (dissoc (get-in state state/user-organizations-path))
+        projects (get-in state state/projects-path)]
     (html
      [:div#build-insights {:class (case (count projects)
                                     1 "one-project"
                                     2 "two-projects"
                                     "three-or-more-projects")}
-        [:header.main-head
-         [:div.head-user
-          [:h1 "Insights » Repositories"]]]
         (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
-          :else              (om/build-all project-insights projects))])))
+          :else              (om/build-all project-insights (add-show-insights?-to-projects orgs projects)))])))
