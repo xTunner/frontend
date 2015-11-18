@@ -153,7 +153,7 @@
 (defn feature-enabled? [project feature]
   (get-in project [:feature_flags feature]))
 
-(defn add-show-premium-content? [project orgs org-name]
+(defn add-show-premium-content? [project orgs]
   (let [org-name (-> project 
                      (:vcs_url)
                      (vcs-url/org-name)) 

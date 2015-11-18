@@ -287,8 +287,8 @@
   [orgs projects]
    (->> projects
         (map (fn [project]
-               (->> project
-                    (project-model/add-show-premium-content? project orgs))))))
+               (-> project
+                    (project-model/add-show-premium-content? orgs))))))
 
 (defrender build-insights [state owner]
   (let [orgs (dissoc (get-in state state/user-organizations-path))

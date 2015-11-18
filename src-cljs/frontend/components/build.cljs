@@ -6,6 +6,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
+            [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
@@ -227,7 +228,6 @@
             orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
             user (get-in data state/user-path) ]
-        (println project-data)
         (html
          [:div#build-log-container
           (if-not build
@@ -237,7 +237,7 @@
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :project-data project-data
+                                              :project-data (project-model/add-show-premium-content? project-data orgs-data)
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
              (when (and
