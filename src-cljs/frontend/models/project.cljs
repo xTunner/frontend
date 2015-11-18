@@ -162,9 +162,6 @@
                              :login
                              (= org-name)))
                 (first))]
-    (println project)
-  (println (:oss? project)) 
-  (println (:num_paid_containers org)) 
   (assoc project :org-name org-name
          :show-premium-content? (or (config/enterprise?)
                                     (:oss? project)
