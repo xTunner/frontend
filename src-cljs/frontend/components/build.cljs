@@ -217,6 +217,15 @@
             "Adding containers"]
            " can cut down time spent testing."]]]))))
 
+(defn get-shallow-project
+  "Return only the project being shown with show-premium-content? added"
+  [projects project]
+  (->> projects
+       (filter #(-> %
+                    :vcs_url
+                    (= (:vcs_url project))))
+       (first)))
+
 (defn build-v1 [data owner]
   (reify
     om/IRender
@@ -227,7 +236,8 @@
             invite-data (:invite-data data)
             orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path) ]
+            projects (get-in data state/projects-path)
+            user (get-in data state/user-path)]
         (html
          [:div#build-log-container
           (if-not build
@@ -237,7 +247,11 @@
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :project-data (project-model/add-show-premium-content? project-data orgs-data)
+                                              :orgs-data orgs-data
+                                              :project-data project-data
+                                              :project (-> projects
+                                                           (get-shallow-project (get-in project-data [:project]))
+                                                           (project-model/add-show-premium-content? orgs-data))
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
              (when (and
@@ -437,8 +451,8 @@
             invite-data (:invite-data data)
             orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path)
-            orgs-data (get-in data state/user-organizations-path)]
+            project (get-in data state/project-path)
+            user (get-in data state/user-path) ]
         (html
          [:div.build-info-v2
           (if-not build
@@ -448,7 +462,8 @@
 
             [:div
              (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
-                                                 :project-data project-data
+                                                 :orgs-data orgs-data
+                                                 :project project
                                                  :user user
                                                  :scopes (get-in data state/project-scopes-path)})
              [:div.card.col-sm-12

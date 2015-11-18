@@ -158,9 +158,14 @@
                      (:vcs_url)
                      (vcs-url/org-name)) 
         org (->> orgs
-                (filter #(-> % :login (= org-name)))
+                (filter #(-> %
+                             :login
+                             (= org-name)))
                 (first))]
+    (println project)
+  (println (:oss? project)) 
+  (println (:num_paid_containers org)) 
   (assoc project :org-name org-name
-         :show-insights? (or (config/enterprise?)
-                             (:oss? project)
-                             (> (:num_paid_containers org) 0)))))
+         :show-premium-content? (or (config/enterprise?)
+                                    (:oss? project)
+                                    (> (:num_paid_containers org) 0)))))

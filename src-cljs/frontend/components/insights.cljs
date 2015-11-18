@@ -236,7 +236,7 @@
       (html
        [:div.build-time-visualization]))))
 
-(defrender project-insights [{:keys [show-insights? reponame username branches recent-builds] :as project} owner]
+(defrender project-insights [{:keys [show-premium-content? reponame username branches recent-builds] :as project} owner]
   (let [builds (chartable-builds recent-builds)]
     (html
      (let [branch (-> recent-builds (first) (:branch))]
@@ -244,7 +244,7 @@
         [:h1 (gstring/format "%s/%s" username reponame)]
         [:h4 "Branch: " branch]
         (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-              (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
+              (not show-premium-content?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
                               [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "Upgrade here"]]
               (empty? builds) [:div.no-insights "No tests for this repo"]
               :else
@@ -283,7 +283,7 @@
        [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
 (defn decorate-projects
-  "Returns a new seq with show-insights? added to all projects"
+  "Returns a new seq with add-show-premium-content? added to all projects"
   [orgs projects]
    (->> projects
         (map (fn [project]
