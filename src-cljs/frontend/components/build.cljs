@@ -451,8 +451,8 @@
             invite-data (:invite-data data)
             orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
-            project (get-in data state/project-path)
-            user (get-in data state/user-path) ]
+            projects  (get-in data state/projects-path)
+            user (get-in data state/user-path)]
         (html
          [:div.build-info-v2
           (if-not build
@@ -463,7 +463,9 @@
             [:div
              (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
                                                  :orgs-data orgs-data
-                                                 :project project
+                                                 :project (-> projects
+                                                              (get-shallow-project (get-in project-data [:project]))
+                                                              (project-model/add-show-premium-content? orgs-data))
                                                  :user user
                                                  :scopes (get-in data state/project-scopes-path)})
              [:div.card.col-sm-12

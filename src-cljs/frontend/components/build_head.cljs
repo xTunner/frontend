@@ -380,7 +380,7 @@
       (html
        [:div.build-time-visualization
         (when (not (:show-premium-content? project))
-        [:span.message "This release of Insights is only available for repos belonging to paid plans "
+        [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
          [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "upgrade here."]])]))))
 
 (defn cleanup-artifact-path [path]
@@ -1293,7 +1293,8 @@
 
              :tests (om/build build-tests-list-v2 build-data)
 
-             :build-timing (om/build build-timings/build-timings build project)
+             :build-timing (om/build build-timings/build-timings {:build build
+                                                                  :project project})
 
              :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user

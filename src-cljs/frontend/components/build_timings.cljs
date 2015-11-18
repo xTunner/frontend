@@ -2,7 +2,8 @@
   (:require [om.core :as om :include-macros true]
             [goog.string :as gstring]
             [frontend.datetime :as datetime]
-            [frontend.models.build :as build])
+            [frontend.models.build :as build]
+            [frontend.routes :as routes])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def padding-right 20)
@@ -193,13 +194,17 @@
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
-(defn build-timings [build owner]
+(defn build-timings [{:keys [build project]} owner]
   (reify
     om/IDidMount
     (did-mount [_]
-      (draw-chart! build))
+      (when (:show-premium-content? project)
+       (draw-chart! build)))
     om/IRenderState
     (render-state [_ _]
       (html
        [:div.build-timings
-        [:svg]]))))
+        (if (:show-premium-content? project)
+          [:svg]
+          [:span.message "This release of Insights is only available for repos belonging to paid plans "
+           [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "upgrade here."]])]))))
