@@ -23,8 +23,13 @@
 (defn track [event & [metadata]]
   (utils/swallow-errors (js/Intercom "trackEvent" (name event) (clj->js metadata))))
 
+(defn get-root []
+  (gdom/getElement "intercom-container"))
+
 (defn disable! []
-  (js/Intercom "shutdown"))
+  (when-let [intercom (aget js/window "Intercom")]
+    (intercom "shutdown")))
 
 (defn enable! []
-  (class-list/add (gdom/getElement "intercom-container") "enabled"))
+  (when-let [el (get-root)]
+    (class-list/add el "enabled")))

@@ -3,9 +3,14 @@
             [goog.dom :as gdom]
             [goog.dom.classlist :as class-list]))
 
+(defn get-root []
+  (gdom/getElement "elevio-widget"))
+
 (defn disable! []
-  (gdom/removeNode (gdom/getElement "elevio-widget"))
+  (when-let [el (get-root)]
+    (gdom/removeNode el))
   (aset js/window "_elev" nil))
 
 (defn enable! []
-  (class-list/add (gdom/getElement "elevio-widget") "enabled"))
+  (when-let [el (get-root)]
+    (class-list/add el "enabled")))
