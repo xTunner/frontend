@@ -288,7 +288,6 @@
    (->> projects
         (map (fn [project]
                (->> project
-                    (project-model/get-project-org-name)
                     (project-model/add-show-premium-content? project orgs))))))
 
 (defrender build-insights [state owner]
