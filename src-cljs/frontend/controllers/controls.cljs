@@ -16,6 +16,7 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.launchdarkly :as launchdarkly]
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
             [goog.dom]
@@ -884,7 +885,8 @@
    (get-in current-state [:comms :api])
    :params {:basic_email_prefs       (get-in current-state (conj state/user-path :basic_email_prefs))
             :selected_email          (get-in current-state (conj state/user-path :selected_email))
-            state/user-in-beta-key   (get-in current-state state/user-in-beta-path)}))
+            state/user-in-beta-key   (get-in current-state state/user-in-beta-path)})
+  (launchdarkly/merge-custom-properties! {state/user-in-beta-key (get-in current-state state/user-in-beta-path)}))
 
 (defmethod control-event :project-preferences-updated
   [target message args state]
