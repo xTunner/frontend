@@ -9,7 +9,7 @@
   (try
     (if (config/elevio-enabled?)
       ((-> (aget js/window "_elev")
-           (aget js/_elev "openModule")) "support")
+           (aget "openModule")) "support")
       (js/Intercom "show"))
     (catch :default e
       (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")
