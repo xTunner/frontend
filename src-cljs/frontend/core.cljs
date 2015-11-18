@@ -307,13 +307,15 @@
           goog.events.EventType.CLICK
           (fn [e]
             (let [target (.-target e)
-                  module-name (or (-> target
-                                      (goog.dom/getAncestorByTagNameAndClass "div")
-                                      (.getAttribute "data-elevio-tooltip"))
-                                  "widget")
-                  message (str "elevio " module-name " clicked")]
+                  module-name (-> (or (-> target
+                                          (goog.dom/getAncestorByTagNameAndClass "div")
+                                          (.getAttribute "data-elevio-tooltip"))
+                                      "widget")
+                                  (string/lower-case)
+                                  (string/replace #"\s+" "-"))
+                  message (str "elevio-" module-name "-clicked")]
              ;; This triggers when the elevio widget is clicked
-             (analytics/track-message {} message state))))))
+             (analytics/track message))))))
      5000)))
 
 (defn ^:export setup! []
