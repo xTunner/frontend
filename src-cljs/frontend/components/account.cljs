@@ -5,6 +5,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.project.common :as project]
+            [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.routes :as routes]
             [frontend.models.feature :as feature]
@@ -215,7 +216,10 @@
         (html/html
          [:div#settings-beta-program
           [:div
-           [:h2 "Beta Program"]
+           [:h2 "Beta Program"
+            (when (get-in app state/user-in-beta-path)
+              (om/build svg {:class "badge-enrolled"
+                             :src (common/icon-path "Status-Passed")}))]
            (when-let [message (get-in app state/general-message-path)]
              (common/messages [message] {:show-warning-text? false}))
            (if (get-in app state/user-in-beta-path)
