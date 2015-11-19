@@ -51,13 +51,13 @@
     :twitter "gordon_syme"
     :email "gordon@circleci.com"
     :bio "Gordon joins the team after spending significant time at Amazon building tools to monitor the entire network (he built their DWDM monitoring from the ground up). When he's not hacking away on code, he spends time mountain biking and racing dinghies off the coast of Ireland."}
-   {:name "Tim Dixon"
-    :img-path (scaled-image-path "tim")
+   {:name "Lizzie Dixon"
+    :img-path (scaled-image-path "lizzie")
     :visible true
     :role "Developer"
     :github "startling"
-    :email "tim@circleci.com"
-    :bio "Tim grew up in the midwest and moved to SF to work for Circle. He likes functional programming, board games, and learning on-the-fly."}
+    :email "lizzie@circleci.com"
+    :bio "Lizzie grew up in the midwest and moved to SF to work for Circle. She likes functional programming, board games, and learning on-the-fly."}
    {:name "Ian Duncan"
     :img-path (scaled-image-path "ian")
     :visible true
