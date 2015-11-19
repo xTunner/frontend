@@ -236,7 +236,7 @@
       (html
        [:div.build-time-visualization]))))
 
-(defrender project-insights [{:keys [show-premium-content? reponame username branches recent-builds] :as project} owner]
+(defrender project-insights [{:keys [show-insights? reponame username branches recent-builds] :as project} owner]
   (let [builds (chartable-builds recent-builds)]
     (html
      (let [branch (-> recent-builds (first) (:branch))]
@@ -244,7 +244,7 @@
         [:h1 (gstring/format "%s/%s" username reponame)]
         [:h4 "Branch: " branch]
         (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-              (not show-premium-content?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
+              (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
                               [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "Upgrade here"]]
               (empty? builds) [:div.no-insights "No tests for this repo"]
               :else
@@ -282,16 +282,7 @@
       [:div.row.text-center
        [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
-(defn decorate-projects
-  "Returns a new seq with add-show-premium-content? added to all projects"
-  [orgs projects]
-   (->> projects
-        (map (fn [project]
-               (-> project
-                    (project-model/add-show-premium-content? orgs))))))
-
-
-(defn decorate-projects [project orgs]
+(defn decorate-project [project orgs]
   (let [org-name (-> project 
                      (:vcs_url)
                      (vcs-url/org-name)) 
@@ -301,9 +292,17 @@
                              (= org-name)))
                 (first))]
   (assoc project :org-name org-name
-         :show-premium-content? (or (config/enterprise?)
+         :show-insights? (or (config/enterprise?)
                                     (:oss? project)
                                     (> (:num_paid_containers org) 0)))))
+
+(defn decorate-projects
+  "Returns a new seq with add-show-insights? added to all projects"
+  [projects orgs]
+   (->> projects
+        (map (fn [project]
+               (-> project
+                    (decorate-project orgs))))))
 
 (defrender build-insights [state owner]
   (let [orgs (dissoc (get-in state state/user-organizations-path))
@@ -316,4 +315,4 @@
         (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
-          :else              (om/build-all project-insights (decorate-projects orgs projects orgs)))])))
+          :else              (om/build-all project-insights (decorate-projects projects orgs)))])))

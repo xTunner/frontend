@@ -218,15 +218,6 @@
             "Adding containers"]
            " can cut down time spent testing."]]]))))
 
-(defn get-shallow-project
-  "Return only the project being shown with show-premium-content? added"
-  [projects project]
-  (->> projects
-       (filter #(-> %
-                    :vcs_url
-                    (= (:vcs_url project))))
-       (first)))
-
 (defn get-decorated-project [project-data]
   (let [project (:project project-data)
         plan (:plan project-data) 
@@ -245,7 +236,6 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             invite-data (:invite-data data)
-            orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
             projects (get-in data state/projects-path)
             user (get-in data state/user-path)]
@@ -258,7 +248,6 @@
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :orgs-data orgs-data
                                               :project-data project-data
                                               :project (get-decorated-project project-data)
                                               :user user
@@ -458,7 +447,6 @@
             build-data (get-in data state/build-data-path)
             container-data (get-in data state/container-data-path)
             invite-data (:invite-data data)
-            orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
             user (get-in data state/user-path)]
         (html
@@ -470,7 +458,6 @@
 
             [:div
              (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
-                                                 :orgs-data orgs-data
                                                  :project-data project-data
                                                  :project (get-decorated-project project-data)
                                                  :user user

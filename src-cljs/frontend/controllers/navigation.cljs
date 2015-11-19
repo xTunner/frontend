@@ -168,7 +168,6 @@
         nav-ch (get-in current-state [:comms :nav])
         err-ch (get-in current-state [:comms :errors])
         projects-loaded? (seq (get-in current-state state/projects-path))
-        orgs-loaded? (seq (get-in current-state state/user-organizations-path))
         current-user (get-in current-state state/user-path)]
     (mlog (str "post-navigated-to! :build current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
@@ -229,6 +228,7 @@
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
+  (println "making api requests.")
   (let [api-ch (get-in current-state [:comms :api])]
     ;; load orgs, collaborators, and repos.
     (api/get-orgs api-ch)

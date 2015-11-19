@@ -366,23 +366,6 @@
                (ssh-ad-v2 build owner)
                (ssh-ad build owner)))])))))
 
-(defn build-time-visualization [{:keys [build project]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (when (:show-premium-content? project)
-        (-> js/console (.log "did-mount calling get-node"))
-        (let [el (om/get-node owner)]
-          (viz-build/visualize-timing! el build))))
-    om/IRender
-    (render [_]
-      (js/console.log "build-time-visualization render called")
-      (html
-       [:div.build-time-visualization
-        (when (not (:show-premium-content? project))
-        [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
-         [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "upgrade here."]])]))))
-
 (defn cleanup-artifact-path [path]
   (-> path
       (string/replace "$CIRCLE_ARTIFACTS/" "")
@@ -968,7 +951,6 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            orgs-data (:orgs-data data)
             project (:project data)
             plan (get-in data [:project-data :plan])
             user (:user data)
