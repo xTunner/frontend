@@ -195,16 +195,17 @@
 
 ;;;; Main component
 (defn build-timings [{:keys [build project]} owner]
+  (println (:show-build-timing? project))
   (reify
     om/IDidMount
     (did-mount [_]
-      (when (:show-premium-content? project)
+      (when (:show-build-timing? project)
        (draw-chart! build)))
     om/IRenderState
     (render-state [_ _]
       (html
        [:div.build-timings
-        (if (:show-premium-content? project)
+        (if (:show-build-timing? project)
           [:svg]
-          [:span.message "This release of Insights is only available for repos belonging to paid plans "
+          [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "upgrade here."]])]))))

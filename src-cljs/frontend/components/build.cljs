@@ -14,6 +14,7 @@
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
+            [frontend.config :as config]
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
@@ -226,6 +227,16 @@
                     (= (:vcs_url project))))
        (first)))
 
+(defn get-decorated-project [project-data]
+  (let [project (:project project-data)
+        plan (:plan project-data) 
+        show-build-timing? (or (config/enterprise?)
+                               (:oss project)
+                               (> (:containers plan) 1))]
+    (-> project
+        (assoc-in [:show-build-timing?] show-build-timing?)
+        (assoc-in [:org-name] (:org_name plan)))))
+
 (defn build-v1 [data owner]
   (reify
     om/IRender
@@ -249,9 +260,7 @@
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :orgs-data orgs-data
                                               :project-data project-data
-                                              :project (-> projects
-                                                           (get-shallow-project (get-in project-data [:project]))
-                                                           (project-model/add-show-premium-content? orgs-data))
+                                              :project (get-decorated-project project-data)
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
              (when (and
@@ -451,7 +460,6 @@
             invite-data (:invite-data data)
             orgs-data (get-in data state/user-organizations-path)
             project-data (get-in data state/project-data-path)
-            projects  (get-in data state/projects-path)
             user (get-in data state/user-path)]
         (html
          [:div.build-info-v2
@@ -463,9 +471,8 @@
             [:div
              (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
                                                  :orgs-data orgs-data
-                                                 :project (-> projects
-                                                              (get-shallow-project (get-in project-data [:project]))
-                                                              (project-model/add-show-premium-content? orgs-data))
+                                                 :project-data project-data
+                                                 :project (get-decorated-project project-data)
                                                  :user user
                                                  :scopes (get-in data state/project-scopes-path)})
              [:div.card.col-sm-12
