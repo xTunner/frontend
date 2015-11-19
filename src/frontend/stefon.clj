@@ -3,7 +3,9 @@
 (def hosted-scripts [{:path "js/hosted/intercom2.js"
                       :url "https://widget.intercom.io/widget/vnk4oztr"}
                      {:path "js/hosted/pusher.min.js"
-                      :url "https://js.pusher.com/2.2/pusher.min.js"}])
+                      :url "https://js.pusher.com/2.2/pusher.min.js"}
+                     {:path "js/hosted/elevio.js"
+                      :url "https://static.elev.io/js/v3.js"}])
 
 (def asset-roots ["resources/assets"])
 

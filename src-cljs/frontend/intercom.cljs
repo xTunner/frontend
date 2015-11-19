@@ -1,5 +1,7 @@
 (ns frontend.intercom
-  (:require [frontend.utils :as utils :include-macros true]))
+  (:require [frontend.utils :as utils :include-macros true]
+            [goog.dom :as gdom]
+            [goog.dom.classlist :as class-list]))
 
 (defn raise-dialog [ch]
   (try
@@ -20,3 +22,14 @@
 
 (defn track [event & [metadata]]
   (utils/swallow-errors (js/Intercom "trackEvent" (name event) (clj->js metadata))))
+
+(defn get-root []
+  (gdom/getElement "intercom-container"))
+
+(defn disable! []
+  (when-let [intercom (aget js/window "Intercom")]
+    (intercom "shutdown")))
+
+(defn enable! []
+  (when-let [el (get-root)]
+    (class-list/add el "enabled")))

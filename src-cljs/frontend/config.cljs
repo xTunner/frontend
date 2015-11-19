@@ -76,6 +76,10 @@
       ;; TODO: Kill this after backend populate the context value
       (analytics-enabled?))))
 
+(defn elevio-enabled?
+  []
+  (and (aget js/window "_elev") (feature/enabled? "elevio")))
+
 (defn statuspage-header-enabled?
   "If true, we should show statuspage alerts with incidents activated"
   []

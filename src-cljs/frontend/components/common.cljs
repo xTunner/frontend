@@ -18,7 +18,7 @@
   (utils/cdn-path (str "/img/inner/icons/" name ".svg")))
 
 (defn contact-support-a-info [owner & {:keys [tags]
-                                       :or {tags [:intercom-dialog-raised]}}]
+                                       :or {tags [:support-dialog-raised]}}]
   (if (config/intercom-enabled?)
         {:on-click #(raise! owner tags)}
         {:href (str "mailto:" (config/support-email))
