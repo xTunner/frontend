@@ -1214,7 +1214,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            project (get-in data  [:project-data :project])
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)
             build-params (:build_parameters build)]
@@ -1376,7 +1376,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            project (get-in data  [:project-data :project])
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             user (:user data)
             logged-in? (not (empty? user))
