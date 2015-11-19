@@ -1,7 +1,8 @@
 (ns frontend.models.project
   (:require [clojure.string :refer [lower-case split join]]
             [frontend.utils :as utils :include-macros true]
-            [goog.string :as gstring]))
+            [goog.string :as gstring]
+            [frontend.models.plan :as plan-model]))
 
 (defn project-name [project]
   (->> (split (:vcs_url project) #"/")
