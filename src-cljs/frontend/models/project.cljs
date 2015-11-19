@@ -152,17 +152,3 @@
 
 (defn feature-enabled? [project feature]
   (get-in project [:feature_flags feature]))
-
-(defn add-show-premium-content? [project orgs]
-  (let [org-name (-> project 
-                     (:vcs_url)
-                     (vcs-url/org-name)) 
-        org (->> orgs
-                (filter #(-> %
-                             :login
-                             (= org-name)))
-                (first))]
-  (assoc project :org-name org-name
-         :show-premium-content? (or (config/enterprise?)
-                                    (:oss? project)
-                                    (> (:num_paid_containers org) 0)))))

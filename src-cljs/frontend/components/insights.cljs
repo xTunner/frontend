@@ -290,6 +290,21 @@
                (-> project
                     (project-model/add-show-premium-content? orgs))))))
 
+
+(defn decorate-projects [project orgs]
+  (let [org-name (-> project 
+                     (:vcs_url)
+                     (vcs-url/org-name)) 
+        org (->> orgs
+                (filter #(-> %
+                             :login
+                             (= org-name)))
+                (first))]
+  (assoc project :org-name org-name
+         :show-premium-content? (or (config/enterprise?)
+                                    (:oss? project)
+                                    (> (:num_paid_containers org) 0)))))
+
 (defrender build-insights [state owner]
   (let [orgs (dissoc (get-in state state/user-organizations-path))
         projects (get-in state state/projects-path)]
@@ -301,4 +316,4 @@
         (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
-          :else              (om/build-all project-insights (decorate-projects orgs projects)))])))
+          :else              (om/build-all project-insights (decorate-projects orgs projects orgs)))])))
