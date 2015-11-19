@@ -225,8 +225,8 @@
                                (:oss project)
                                (> (:containers plan) 1))]
     (-> project
-        (assoc-in [:show-build-timing?] show-build-timing?)
-        (assoc-in [:org-name] (:org_name plan)))))
+        (assoc :show-build-timing? show-build-timing?)
+        (assoc :org-name (:org_name plan)))))
 
 (defn build-v1 [data owner]
   (reify
