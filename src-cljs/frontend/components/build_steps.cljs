@@ -364,7 +364,7 @@
                                (.preventDefault e)
                                (let [body (.-body js/document)]
                                  (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
-                                  
+
                                   :class (str "selected_" current-container-id)}
            (om/build container-view-v2
                      {:container (containers current-container-id)

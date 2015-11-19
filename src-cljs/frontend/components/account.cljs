@@ -5,8 +5,10 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.project.common :as project]
+            [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.routes :as routes]
+            [frontend.models.feature :as feature]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
@@ -150,6 +152,79 @@
                        [:i.fa.fa-times-circle]
                        " Revoke"]]]]))]])]])))))
 
+(defn set-beta-preference! [owner pref]
+  (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
+
+(defn join-beta-program [app owner]
+  (reify
+    om/IRenderState
+    (render-state [_ {:keys [clicked-join?]}]
+      (html/html
+       [:div
+        [:p
+         "Join our beta program to get a sneak peek into what's
+         happening at CircleCI! By joining our beta you agree to keep
+         any information provided through the program confidential.
+         Please no tweets, blogs, or other public posting. We hope you
+         love what we've been working on!"]
+        [:form
+         (if (not clicked-join?)
+           [:input.btn
+            {:on-click #(do
+                          (om/set-state! owner :clicked-join? true)
+                          false)
+             :type "submit"
+             :value "Join Beta Program"}]
+           [:div
+            [:div.card
+             [:h3 "Beta Terms"]
+             [:p " Our beta program is a way to engage with our most thoughtful and dedicated users. We want to build the best features with your help. To that end, in joining the beta program you should be comfortable with these expectations:"]
+             [:ul
+              [:li "We'll contact you about new features through e-mail and in-app messages"]
+              [:li "You'll try to give feedback about new features when we release them"]
+              [:li "You won't post information about beta features publicly. We do encourage you to talk with your coworkers!"]]]
+            [:p]
+            [:input.btn
+            {:on-click #(do
+                          (set-beta-preference! owner true)
+                          false)
+             :type "submit"
+             :value "Accept"}]])]]))))
+
+(defn beta-program-member [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
+        [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
+        [:form
+         [:input.btn
+          {:on-click #(do
+                        (set-beta-preference! owner false)
+                        false)
+           :type "submit"
+           :value "Leave Beta Program"}]]]))))
+
+(defn beta-program [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let []
+        (html/html
+         [:div#settings-beta-program
+          [:div
+           [:h2 "Beta Program"
+            (when (get-in app state/user-in-beta-path)
+              (om/build svg {:class "badge-enrolled"
+                             :src (common/icon-path "Status-Passed")}))]
+           (when-let [message (get-in app state/general-message-path)]
+             (common/messages [message] {:show-warning-text? false}))
+           (if (get-in app state/user-in-beta-path)
+             (om/build beta-program-member app)
+             (om/build join-beta-program app))]])))))
+
 (defn preferred-email-address [owner user]
   [:div.notification-item
    [:form#email_address.form-horizontal
@@ -231,7 +306,8 @@
             coms        {:notifications notifications
                          :heroku        heroku-key
                          :api           api-tokens
-                         :plans         plans}
+                         :plans         plans
+                         :beta          beta-program}
             subpage-com (get coms subpage)]
         (html
          [:div#account-settings
@@ -245,9 +321,13 @@
             [:li#heroku (active-class-if-active subpage :heroku)
              [:a {:href (routes/v1-account-subpage {:subpage "heroku"})} "Heroku Key"]]
             [:li#plans (active-class-if-active subpage :plans)
-             [:a {:href (routes/v1-account-subpage {:subpage "plans"})} "Plan Pricing"]]]]
+             [:a {:href (routes/v1-account-subpage {:subpage "plans"})} "Plan Pricing"]]
+            (when (feature/enabled? :beta-program-available)
+              [:li#beta (active-class-if-active subpage :beta)
+               [:a {:href (routes/v1-account-subpage {:subpage "beta"})} "Beta Program"]])]]
+
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div.settings-item
            [:div.settings-item-inner
             [:div#subpage
-             (om/build subpage-com (select-in app [state/user-path state/projects-path]))]]]])))))
+             (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]]]])))))

@@ -17,6 +17,7 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.launchdarkly :as launchdarkly]
             [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
             [goog.dom]
@@ -859,9 +860,22 @@
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name})}])))
        (release-button! uuid (:status api-result))))))
 
+(defn- maybe-add-message-for-beta
+  "Adds a message if a user changes their beta status.  Must be run
+  before actually updating state."
+  [state args]
+  (let [before (boolean (get-in state state/user-in-beta-path))
+        after (boolean (args state/user-in-beta-key))]
+    (case [before after]
+      [true false] (assoc-in state state/general-message-path {:message "You have left the beta program! See you later!"})
+      [false true] (assoc-in state state/general-message-path {:message "You have joined the beta program! Thanks!"})
+      state)))
+
 (defmethod control-event :preferences-updated
   [target message args state]
-  (update-in state state/user-path merge args))
+  (-> state
+      (maybe-add-message-for-beta args)
+      (update-in state/user-path merge args)))
 
 (defmethod post-control-event! :preferences-updated
   [target message args previous-state current-state]
@@ -870,8 +884,10 @@
    "/api/v1/user/save-preferences"
    :update-preferences
    (get-in current-state [:comms :api])
-   :params {:basic_email_prefs (get-in current-state (conj state/user-path :basic_email_prefs))
-            :selected_email    (get-in current-state (conj state/user-path :selected_email))}))
+   :params {:basic_email_prefs       (get-in current-state (conj state/user-path :basic_email_prefs))
+            :selected_email          (get-in current-state (conj state/user-path :selected_email))
+            state/user-in-beta-key   (get-in current-state state/user-in-beta-path)})
+  (launchdarkly/merge-custom-properties! {state/user-in-beta-key (get-in current-state state/user-in-beta-path)}))
 
 (defmethod control-event :project-preferences-updated
   [target message args state]

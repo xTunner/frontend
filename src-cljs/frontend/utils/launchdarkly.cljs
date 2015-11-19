@@ -12,5 +12,21 @@
   (when (and (aget js/window "ldclient") js/ldclient.identify)
    (.identify js/ldclient (clj->js (merge {:key (aget js/ldUser "key")} user)))))
 
+(def local-lduser-state (atom nil))
+
+(defn load-lduser! []
+  (swap! local-lduser-state
+         (fn [v]
+           (when-not v
+             (or (js->clj js/ldUser) {})))))
+
+(defn reidentify! [f]
+  (load-lduser!)
+  (swap! local-lduser-state f)
+  (identify @local-lduser-state))
+
+(defn merge-custom-properties! [m]
+  (reidentify! #(update-in % [:custom] merge m)))
+
 (defn exists? [feature-name]
   (not (nil? (feature-on? feature-name nil))))
