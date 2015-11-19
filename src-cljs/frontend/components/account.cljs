@@ -158,7 +158,7 @@
 (defn join-beta-program [app owner]
   (reify
     om/IRenderState
-    (render-state [_ {:keys [interested?]}]
+    (render-state [_ {:keys [clicked-join?]}]
       (html/html
        [:div
         [:p
@@ -168,10 +168,10 @@
          Please no tweets, blogs, or other public posting. We hope you
          love what we've been working on!"]
         [:form
-         (if (not interested?)
+         (if (not clicked-join?)
            [:input.btn
             {:on-click #(do
-                          (om/set-state! owner :interested? true)
+                          (om/set-state! owner :clicked-join? true)
                           false)
              :type "submit"
              :value "Join Beta Program"}]
@@ -195,7 +195,6 @@
   (reify
     om/IRender
     (render [_]
-      (println (get-in app state/general-message-path))
       (html
        [:div
         [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]

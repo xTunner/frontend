@@ -61,9 +61,11 @@
   {:show-warning-text? true})
 
 (defn messages
-  ([messages opts]
+  ([msgs]
+   (messages msgs {}))
+  ([msgs opts]
    (let [{:keys [show-warning-text?]} (merge messages-default-opts opts)]
-     (when (pos? (count messages))
+     (when (pos? (count msgs))
        (if (feature/enabled? :ui-v2)
          [:div.col-xs-12
           (map (fn [message]
@@ -72,7 +74,7 @@
                    [:div.alert-icon
                     [:img {:src (icon-path "Info-Info")}]]
                    [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]])
-               messages)]
+               msgs)]
          [:div.container-fluid
           [:div.row
            [:div#build-messages.col-xs-offset-1.col-xs-10
@@ -80,9 +82,7 @@
                    [:div.alert.alert-info
                     (when show-warning-text? [:strong "Warning: "])
                     [:span {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]])
-                 messages)]]]))))
-  ([messages]
-   (messages {})))
+                 msgs)]]])))))
 
 ;; TODO: Why do we have ico and icon?
 (def ico-paths
