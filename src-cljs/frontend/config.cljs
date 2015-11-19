@@ -1,6 +1,5 @@
 (ns frontend.config
-  (:require [frontend.models.feature :as feature]
-            [frontend.utils.launchdarkly :as ld]))
+  (:require [frontend.models.feature :as feature]))
 
 (defn env
   "The name of the server configuration environment.
@@ -79,7 +78,7 @@
 
 (defn elevio-enabled?
   []
-  (and (aget js/window "_elev") (ld/feature-on? "elevio" false)))
+  (and (aget js/window "_elev") (feature/enabled? "elevio")))
 
 (defn statuspage-header-enabled?
   "If true, we should show statuspage alerts with incidents activated"
