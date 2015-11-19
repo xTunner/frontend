@@ -819,7 +819,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            project (:project data)
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)
             build-params (:build_parameters build)]
@@ -883,7 +883,8 @@
              :tests (om/build build-tests-list build-data)
 
              :build-timing (om/build build-timings/build-timings {:build build
-                                                                  :project project})
+                                                                  :project project
+                                                                  :plan plan })
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
@@ -951,7 +952,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            project (:project data)
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             user (:user data)
             logged-in? (not (empty? user))
@@ -1213,7 +1214,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            project (:project data)
+            project (get-in data  [:project-data :project])
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)
             build-params (:build_parameters build)]
@@ -1276,7 +1277,8 @@
              :tests (om/build build-tests-list-v2 build-data)
 
              :build-timing (om/build build-timings/build-timings {:build build
-                                                                  :project project})
+                                                                  :project project
+                                                                  :plan plan})
 
              :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user
@@ -1374,7 +1376,7 @@
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
-            project (:project data)
+            project (get-in data  [:project-data :project])
             plan (get-in data [:project-data :plan])
             user (:user data)
             logged-in? (not (empty? user))

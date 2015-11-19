@@ -218,16 +218,6 @@
             "Adding containers"]
            " can cut down time spent testing."]]]))))
 
-(defn get-decorated-project [project-data]
-  (let [project (:project project-data)
-        plan (:plan project-data) 
-        show-build-timing? (or (config/enterprise?)
-                               (:oss project)
-                               (> (:containers plan) 1))]
-    (-> project
-        (assoc :show-build-timing? show-build-timing?)
-        (assoc :org-name (:org_name plan)))))
-
 (defn build-v1 [data owner]
   (reify
     om/IRender
@@ -237,7 +227,6 @@
             container-data (get-in data state/container-data-path)
             invite-data (:invite-data data)
             project-data (get-in data state/project-data-path)
-            projects (get-in data state/projects-path)
             user (get-in data state/user-path)]
         (html
          [:div#build-log-container
@@ -247,9 +236,9 @@
              [:div.loading-spinner-big common/spinner]]
 
             [:div
+             (println project-data)
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :project-data project-data
-                                              :project (get-decorated-project project-data)
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
              (when (and
@@ -459,7 +448,6 @@
             [:div
              (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
                                                  :project-data project-data
-                                                 :project (get-decorated-project project-data)
                                                  :user user
                                                  :scopes (get-in data state/project-scopes-path)})
              [:div.card.col-sm-12

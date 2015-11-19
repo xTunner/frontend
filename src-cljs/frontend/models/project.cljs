@@ -2,7 +2,8 @@
   (:require [clojure.string :refer [lower-case split join]]
             [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
-            [frontend.models.plan :as plan-model]))
+            [frontend.models.plan :as plan-model]
+            [frontend.config :as config]))
 
 (defn project-name [project]
   (->> (split (:vcs_url project) #"/")
@@ -150,3 +151,8 @@
 
 (defn feature-enabled? [project feature]
   (get-in project [:feature_flags feature]))
+
+(defn show-build-timing? [project plan]
+  (or (config/enterprise?)
+      (:oss project)
+      (> (:containers plan) 1)))
