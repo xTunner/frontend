@@ -325,7 +325,7 @@
           state paths))
 
 
-(defmethod post-control-event! :intercom-dialog-raised
+(defmethod post-control-event! :support-dialog-raised
   [target message _ previous-state current-state]
   (support/raise-dialog (get-in current-state [:comms :errors])))
 

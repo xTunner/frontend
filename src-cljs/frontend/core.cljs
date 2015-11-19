@@ -292,9 +292,9 @@
           launcher
           goog.events.EventType.CLICK
           (fn []
-            ;; this matches the :intercom-dialog-raised control event
+            ;; this matches the :support-dialog-raised control event
             ;; raised by the Support aside
-            (analytics/track-message "intercom-dialog-raised" {} state)))))
+            (analytics/track-message "support-dialog-raised" {} state)))))
      5000)))
 
 (defn track-elevio-widget! [state]

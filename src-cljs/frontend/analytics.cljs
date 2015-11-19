@@ -126,7 +126,7 @@
   {:url  js/location.href
    :title js/document.title})
 
-(defmethod tracking-properties :intercom-dialog-raised [_ args state]
+(defmethod tracking-properties :support-dialog-raised [_ args state]
   (page-properties))
 
 (defmethod tracking-properties :report-build-clicked [_ args state]
