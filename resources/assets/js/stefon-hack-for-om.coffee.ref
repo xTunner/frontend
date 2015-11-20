@@ -16,6 +16,8 @@ window.stefon_hack_for_om =
   asset_paths:
     "/img/outer/about/alexey.png": '(asset-path "img/outer/about/alexey.png")'
     "/img/outer/about/alexey@2x.png": '(asset-path "img/outer/about/alexey@2x.png")'
+    "/img/outer/about/bear.png": '(asset-path "img/outer/about/bear.png")'
+    "/img/outer/about/bear@2x.png": '(asset-path "img/outer/about/bear@2x.png")'
     "/img/outer/about/cayenne.png": '(asset-path "img/outer/about/cayenne.png")'
     "/img/outer/about/cayenne@2x.png": '(asset-path "img/outer/about/cayenne@2x.png")'
     "/img/outer/about/chris.png": '(asset-path "img/outer/about/chris@2x.png")'
