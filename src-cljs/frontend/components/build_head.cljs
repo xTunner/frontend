@@ -883,7 +883,7 @@
 
              :build-timing (om/build build-timings/build-timings {:build build
                                                                   :project project
-                                                                  :plan plan })
+                                                                  :plan plan})
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
