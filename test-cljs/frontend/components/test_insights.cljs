@@ -14,7 +14,6 @@
   [{:reponame "test repo"
     :username "foo user"
     :default_branch "master"
-    :show-insights? true
     :recent-builds [
                     {
                      :committer_name "Mr. M",
