@@ -1,5 +1,6 @@
 (ns frontend.components.account
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.set :as set]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
@@ -152,7 +153,53 @@
                        [:i.fa.fa-times-circle]
                        " Revoke"]]]]))]])]])))))
 
-(defn set-beta-preference! [owner pref]
+
+(def available-betas
+  [{:id "ui-v2"
+    :name "New UI"
+    :description "If we haven't revisited this text, that was a
+    mistake. Our new UI is meant to help you do your work faster and
+    get mroe out of CircleCI."}
+   {:id "insights"
+    :name "Insights"
+    :description "Also this text. Insights is super fun for the whole family! "}
+   ])
+
+(defn set-beta-preference! [owner betas id value]
+  (raise! owner [:preferences-updated {state/user-betas-key
+                                       (if value
+                                         (conj (set betas) id)
+                                         (remove #{id} (set betas)))}]))
+
+(defn beta-programs [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [betas (get-in app state/user-betas-path)]
+        (html
+         [:div
+          [:h4.beta-programs "Available Beta Programs"]
+          (interpose
+           [:hr]
+           (map
+            (fn [program]
+              (let [participating? (contains? (set betas) (:id program))]
+                [:div
+                 [:h3 (:name program)
+                  (when participating?
+                    (om/build svg {:class "badge-enrolled"
+                                   :src (common/icon-path "Status-Passed")}))]
+                 [:p (:description program)]
+                 [:input.btn
+                  {:on-click #(do
+                                (set-beta-preference! owner betas (:id program) (not participating?)))
+                   :type "submit"
+                   :value (if participating?
+                            (str "Leave " (:name program) " Beta")
+                            (str "Join " (:name program) " Beta"))}]]))
+            available-betas))])))))
+
+(defn set-beta-program-preference! [owner pref]
   (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
 
 (defn join-beta-program [app owner]
@@ -194,7 +241,7 @@
             [:p]
             [:input.btn
             {:on-click #(do
-                          (set-beta-preference! owner true)
+                          (set-beta-program-preference! owner true)
                           false)
              :type "submit"
              :value "Accept"}]])]]))))
@@ -205,15 +252,18 @@
     (render [_]
       (html
        [:div
-        [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
-        [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
-        [:form
-         [:input.btn
-          {:on-click #(do
-                        (set-beta-preference! owner false)
-                        false)
-           :type "submit"
-           :value "Leave Beta Program"}]]]))))
+        [:div
+         [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
+         [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
+         [:form
+          [:input.btn
+           {:on-click #(do
+                         (set-beta-program-preference! owner false)
+                         false)
+            :type "submit"
+            :value "Leave Beta Program"}]]]
+        [:hr]
+        (om/build beta-programs app)]))))
 
 (defn beta-program [app owner]
   (reify
