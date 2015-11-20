@@ -785,6 +785,33 @@
                 (release-button! uuid (:status api-result))))
             nil)))))
 
+(defmethod post-control-event! :new-osx-plan-clicked
+  [target message {:keys [plan-type price description]} previous-state current-state]
+  (let [stripe-ch (chan)
+        uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+
+    (utils/mlog "calling stripe/open-checkout")
+    (stripe/open-checkout {:price price :description description} stripe-ch)
+    (go (let [[message data] (<! stripe-ch)]
+          (condp = message
+            :stripe-checkout-closed (release-button! uuid :idle)
+            :stripe-checkout-succeeded
+            (let [card-info (:card data)]
+              (put! api-ch [:plan-card :success {:resp card-info
+                                                 :context {:org-name org-name}}])
+              (let [api-result (<! (ajax/managed-ajax
+                                     :post
+                                     (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
+                                     :params {:token data
+                                              :billing-name org-name
+                                              :billing-email (get-in current-state (conj state/user-path :selected_email))
+                                              :osx plan-type}))]
+                (put! api-ch [:create-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+                (release-button! uuid (:status api-result))))
+            nil)))))
+
 (defmethod post-control-event! :new-checkout-key-clicked
   [target message {:keys [project-id project-name key-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
@@ -828,6 +855,19 @@
        (release-button! uuid (:status api-result))))
     (let [upgrade? (> containers (get-in previous-state (conj state/org-plan-path :containers)))]
       (analytics/track-save-containers upgrade?))))
+
+(defmethod post-control-event! :update-osx-plan-clicked
+  [target message {:keys [plan-type]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (go
+      (let [api-result (<! (ajax/managed-ajax
+                             :put
+                             (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
+                             :params {:osx plan-type}))]
+        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
