@@ -18,7 +18,6 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.visualization.build :as viz-build]
             [frontend.components.build-timings :as build-timings]
             [frontend.components.svg :refer [svg]]
             [goog.dom]
@@ -365,19 +364,6 @@
              (if (feature/enabled? :ui-v2)
                (ssh-ad-v2 build owner)
                (ssh-ad build owner)))])))))
-
-(defn build-time-visualization [build owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (-> js/console (.log "did-mount calling get-node"))
-      (let [el (om/get-node owner)]
-        (viz-build/visualize-timing! el build)))
-    om/IRender
-    (render [_]
-      (js/console.log "build-time-visualization render called")
-      (html
-       [:div.build-time-visualization]))))
 
 (defn cleanup-artifact-path [path]
   (-> path
@@ -895,7 +881,9 @@
 
              :tests (om/build build-tests-list build-data)
 
-             :build-timing (om/build build-timings/build-timings build)
+             :build-timing (om/build build-timings/build-timings {:build build
+                                                                  :project project
+                                                                  :plan plan })
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
@@ -1287,7 +1275,9 @@
 
              :tests (om/build build-tests-list-v2 build-data)
 
-             :build-timing (om/build build-timings/build-timings build)
+             :build-timing (om/build build-timings/build-timings {:build build
+                                                                  :project project
+                                                                  :plan plan})
 
              :artifacts (om/build build-artifacts-list-v2
                                   {:artifacts-data (get build-data :artifacts-data) :user user
