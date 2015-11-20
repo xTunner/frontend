@@ -1202,3 +1202,7 @@
 (defmethod post-control-event! :unsuspend-user
   [_ _ {:keys [login]} _ {{api-ch :api} :comms}]
   (api/set-user-suspension login false api-ch))
+
+(defmethod post-control-event! :set-admin-scope
+  [_ _ {:keys [login scope]} _ {{api-ch :api} :comms}]
+  (api/set-user-admin-scope login scope api-ch))

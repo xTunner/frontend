@@ -637,7 +637,7 @@
   [_ _ _ {:keys [resp]} state]
   (assoc-in state state/all-users-path resp))
 
-(defmethod api-event [:set-user-suspension :success]
+(defmethod api-event [:set-user-admin-state :success]
   [_ _ _ {user :resp} state]
   (assoc-in state
             state/all-users-path
