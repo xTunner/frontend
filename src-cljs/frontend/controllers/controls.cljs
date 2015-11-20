@@ -881,17 +881,18 @@
 
 (defmethod post-control-event! :preferences-updated
   [target message args previous-state current-state]
-  (ajax/ajax
-   :put
-   "/api/v1/user/save-preferences"
-   :update-preferences
-   (get-in current-state [:comms :api])
-   :params {:basic_email_prefs       (get-in current-state (conj state/user-path :basic_email_prefs))
-            :selected_email          (get-in current-state (conj state/user-path :selected_email))
-            state/user-in-beta-key   (get-in current-state state/user-in-beta-path)
-            state/user-betas-key     (get-in current-state state/user-betas-path)})
-  (launchdarkly/merge-custom-properties! {state/user-in-beta-key (get-in current-state state/user-in-beta-path)
-                                          state/user-betas-key (get-in current-state state/user-betas-path)}))
+  (let [beta-params {state/user-in-beta-key   (get-in current-state state/user-in-beta-path)
+                     state/user-betas-key     (get-in current-state state/user-betas-path)}
+        email-params {:basic_email_pref       (get-in current-state (conj state/user-path :basic_email_prefs))
+                      :selected_email         (get-in current-state (conj state/user-path :selected_email))}
+        api-ch (get-in current-state [:comms :api])]
+    (ajax/ajax
+     :put
+     "/api/v1/user/save-preferences"
+     :update-preferences
+     api-ch
+     :params (merge beta-params email-params))
+    (launchdarkly/merge-custom-properties! beta-params)))
 
 (defmethod control-event :project-preferences-updated
   [target message args state]
