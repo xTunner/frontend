@@ -366,6 +366,19 @@
                (ssh-ad-v2 build owner)
                (ssh-ad build owner)))])))))
 
+(defn build-time-visualization [build owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (-> js/console (.log "did-mount calling get-node"))
+      (let [el (om/get-node owner)]
+        (viz-build/visualize-timing! el build)))
+    om/IRender
+    (render [_]
+      (js/console.log "build-time-visualization render called")
+      (html
+       [:div.build-time-visualization]))))
+
 (defn cleanup-artifact-path [path]
   (-> path
       (string/replace "$CIRCLE_ARTIFACTS/" "")
