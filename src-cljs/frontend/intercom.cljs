@@ -31,5 +31,4 @@
     (intercom "shutdown")))
 
 (defn enable! []
-  (when-let [el (aget js/document "body")]
-    (class-list/add el "circle-intercom")))
+  (class-list/add js/document.body "circle-intercom"))
