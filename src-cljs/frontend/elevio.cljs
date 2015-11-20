@@ -12,5 +12,4 @@
   (aset js/window "_elev" nil))
 
 (defn enable! []
-  (when-let [el (get-root)]
-    (class-list/add el "enabled")))
+  (class-list/add js/document.body "circle-elevio"))
