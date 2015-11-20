@@ -224,12 +224,10 @@
                                             {:login (:login user)
                                              :scope :write-settings}])})
                "admin"]
-              [:button.btn.btn-default
-               (if (= "read-settings" relevant-scope) {:class "active"}
-                 {:on-click #(raise! owner [:set-admin-scope
-                                            {:login (:login user)
-                                             :scope :read-settings}])})
-               "read-only admin"]
+              ;; read-settings generally hidden for until we sort out what we
+              ;; really want the scope precision to be
+              (when (= "read-settings" relevant-scope)
+                [:button.btn.btn-default.active "read-only admin"])
               [:button.btn.btn-default
                (if (= "none" relevant-scope)
                  {:class "active"}
