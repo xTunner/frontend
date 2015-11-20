@@ -273,12 +273,19 @@
         (html/html
          [:div#settings-beta-program
           [:div
-           [:h2 "Beta Program"
-            (when (get-in app state/user-in-beta-path)
-              (om/build svg {:class "badge-enrolled"
-                             :src (common/icon-path "Status-Passed")}))]
-           (when-let [message (get-in app state/general-message-path)]
-             (common/messages [message] {:show-warning-text? false}))
+           (let [message (get-in app state/general-message-path)
+                 enrolled? (get-in app state/user-in-beta-path)]
+             (list
+              [:h2 "Beta Program"
+               (when (and enrolled? (not message))
+                 (om/build svg {:class "badge-enrolled"
+                                :src (common/icon-path "Status-Passed")}))]
+              (when message
+                [:div.alert.alert-success
+                 (om/build svg {:src (if enrolled?
+                                       (common/icon-path "Status-Passed")
+                                       (common/icon-path "Info-Info"))})
+                 [:span message]])))
            (if (get-in app state/user-in-beta-path)
              (om/build beta-program-member app)
              (om/build join-beta-program app))]])))))
