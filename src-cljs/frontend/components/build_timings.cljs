@@ -2,9 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [goog.string :as gstring]
             [frontend.datetime :as datetime]
-            [frontend.models.build :as build]
-            [frontend.models.project :as project-model]
-            [frontend.routes :as routes])
+            [frontend.models.build :as build])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def padding-right 20)
@@ -195,17 +193,13 @@
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
-(defn build-timings [{:keys [build project plan]} owner]
+(defn build-timings [build owner]
   (reify
     om/IDidMount
     (did-mount [_]
-      (when (project-model/show-build-timing? project plan)
-       (draw-chart! build)))
+      (draw-chart! build))
     om/IRenderState
     (render-state [_ _]
       (html
        [:div.build-timings
-        (if (project-model/show-build-timing? project plan)
-          [:svg]
-          [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
-           [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})} "upgrade here."]])]))))
+        [:svg]]))))
