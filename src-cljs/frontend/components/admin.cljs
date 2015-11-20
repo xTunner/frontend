@@ -186,7 +186,19 @@
               [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats (" [:b (:seat_status license)] ")"]
               [:p "Expiry date: " [:b (datetime/medium-date (:expiry_date license))]])))]))))
 
-(defn user [{:keys [user action action-name]} owner]
+(defn relevant-scope
+  [admin-scopes]
+  (or (some (set admin-scopes) ["write-settings" "read-settings"])
+    "none"))
+
+(defn admin-in-words
+  [admin-scopes]
+  (case (relevant-scope admin-scopes)
+    "write-settings" "admin"
+    "read-settings" "read-only admin"
+    "none"))
+
+(defn user [{:keys [user admin-write-scope?]} owner]
   (reify
     om/IRender
     (render [_]
@@ -194,10 +206,36 @@
         [:li
          (:login user)
          " "
-         (when action
-           [:button.btn.btn-xs.btn-primary
-            {:on-click #(raise! owner [action (select-keys user [:login])])}
-            action-name])]))))
+         (when admin-write-scope?
+           (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
+             [:button.btn.btn-xs.btn-default
+              {:on-click #(raise! owner [action (select-keys user [:login])])}
+              (case action
+                :suspend-user "suspend"
+                :unsuspend-user "reactivate")]))
+         " "
+         (let [relevant-scope (-> user :admin_scopes relevant-scope)]
+           (if admin-write-scope?
+             [:div.btn-group.btn-group-xs
+              [:button.btn.btn-default
+               (if (= "write-settings" relevant-scope)
+                 {:class "active"}
+                 {:on-click #(raise! owner [:set-admin-scope
+                                            {:login (:login user)
+                                             :scope :write-settings}])})
+               "admin"]
+              ;; read-settings generally hidden for until we sort out what we
+              ;; really want the scope precision to be
+              (when (= "read-settings" relevant-scope)
+                [:button.btn.btn-default.active "read-only admin"])
+              [:button.btn.btn-default
+               (if (= "none" relevant-scope)
+                 {:class "active"}
+                 {:on-click #(raise! owner [:set-admin-scope
+                                            {:login (:login user)
+                                             :scope :none}])})
+               "none"]]
+             (-> user :admin_scopes admin-in-words)))]))))
 
 (defn users [app owner]
   (reify
@@ -219,17 +257,13 @@
           [:p "Suspended users are prevented from logging in and do not count towards the number your license allows."]
 
           [:h2 "active"]
-          [:ul (om/build-all user (mapv #(merge {:user %}
-                                                (when admin-write-scope?
-                                                  {:action :suspend-user
-                                                   :action-name "suspend"}))
+           [:ul (om/build-all user (mapv (fn [u] {:user u
+                                                  :admin-write-scope? admin-write-scope?})
                                         active-users))]
 
          [:h2 "suspended"]
-           [:ul (om/build-all user (mapv #(merge {:user %}
-                                                 (when admin-write-scope?
-                                                   {:action :unsuspend-user
-                                                    :action-name "reactivate"}))
+           [:ul (om/build-all user (mapv (fn [u] {:user u
+                                                  :admin-write-scope? admin-write-scope?})
                                          suspended-users))]])))))
 
 (defn admin-settings [app owner]

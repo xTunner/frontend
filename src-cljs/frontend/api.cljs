@@ -104,6 +104,13 @@
 (defn set-user-suspension [login suspended? api-ch]
   (ajax/ajax :post
              (gstring/format "/api/v1/admin/user/%s" login)
-             :set-user-suspension
+             :set-user-admin-state
              api-ch
              :params {:suspended suspended?}))
+
+(defn set-user-admin-scope [login scope api-ch]
+  (ajax/ajax :post
+             (gstring/format "/api/v1/admin/user/%s" login)
+             :set-user-admin-state
+             api-ch
+             :params {:admin scope}))
