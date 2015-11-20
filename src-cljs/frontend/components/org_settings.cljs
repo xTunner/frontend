@@ -26,7 +26,8 @@
             [clojure.string :as string]
             [goog.string :as gstring]
             [goog.string.format]
-            [inflections.core :as infl :refer [pluralize]])
+            [inflections.core :as infl :refer [pluralize]]
+            [frontend.models.feature :as feature])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html]]))
 
@@ -397,7 +398,8 @@
                        [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
                         " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                         " ago. Pay now to enable builds of private repositories."])))]]]]]])
-           (om/build osx-plans plan)])))))
+           (when (feature/enabled? :osx-plans)
+             (om/build osx-plans plan))])))))
 
 (defn piggyback-organizations [app owner]
   (om/component
