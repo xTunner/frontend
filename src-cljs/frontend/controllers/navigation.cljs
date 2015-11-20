@@ -231,7 +231,7 @@
   (println "making api requests.")
   (let [api-ch (get-in current-state [:comms :api])]
     ;; load orgs, collaborators, and repos.
-    (api/get-orgs api-ch)
+    (api/get-user-plans api-ch)
     (api/get-repos api-ch))
   (set-page-title! "Add projects")
   (analytics/track-signup))
