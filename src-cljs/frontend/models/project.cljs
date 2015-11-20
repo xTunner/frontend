@@ -150,3 +150,20 @@
 
 (defn feature-enabled? [project feature]
   (get-in project [:feature_flags feature]))
+
+(defn show-build-timing? [project plan]
+  (or (config/enterprise?)
+      (:oss project)
+      (> (:containers plan) 1)))
+
+(defn add-show-insights? [project plans]
+  (let [org-name (-> project 
+                     (:vcs_url)
+                     (vcs-url/org-name))
+        plans (->> plans
+                   (filter #(-> %
+                                :org_name
+                                (= org-name))))]
+    (assoc project :show-insights? (or (config/enterprise?)
+                                       (:oss? project)
+                                       (> (:num_paid_containers org) 0)))))
