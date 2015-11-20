@@ -251,7 +251,7 @@
         (html
           [:div.osx-plans
            [:fieldset
-            [:legend (str "Something cool about OS X.")]]
+            [:legend (str "OS X Plans")]]
            [:div.plan-selection
             (om/build osx-plan {:plan plan :plan-type "starter" :current-plan current-plan})
             (om/build osx-plan {:plan plan :plan-type "standard" :current-plan current-plan})
