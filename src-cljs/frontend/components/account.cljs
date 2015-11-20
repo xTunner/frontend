@@ -163,10 +163,10 @@
        [:div
         [:p
          "Join our beta program to get a sneak peek into what's
-         happening at CircleCI! By joining our beta you agree to keep
-         any information provided through the program confidential.
-         Please no tweets, blogs, or other public posting. We hope you
-         love what we've been working on!"]
+          happening at CircleCI, help us test new functionality, and
+          stay informed about new beta features. By joining our beta
+          you agree to keep any information provided through the
+          program confidential."]
         [:form
          (if (not clicked-join?)
            [:input.btn
@@ -178,11 +178,19 @@
            [:div
             [:div.card
              [:h3 "Beta Terms"]
-             [:p " Our beta program is a way to engage with our most thoughtful and dedicated users. We want to build the best features with your help. To that end, in joining the beta program you should be comfortable with these expectations:"]
+             [:p
+              "Our beta program is a way to engage with our most
+               thoughtful and dedicated users. We want to build the
+               best features with your help. To that end, in joining
+               the beta program you should be comfortable with these
+               expectations:"]
              [:ul
               [:li "We'll contact you about new features through e-mail and in-app messages"]
               [:li "You'll try to give feedback about new features when we release them"]
-              [:li "You won't post information about beta features publicly. We do encourage you to talk with your coworkers!"]]]
+              [:li "You won't post information about beta features
+                    publicly. Please no tweets, blogs, or other public
+                    posting, but we do encourage you to talk with your
+                    coworkers!"]]]
             [:p]
             [:input.btn
             {:on-click #(do

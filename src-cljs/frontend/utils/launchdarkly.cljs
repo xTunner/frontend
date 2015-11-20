@@ -17,7 +17,8 @@
 (defn load-lduser! []
   (swap! local-lduser-state
          (fn [v]
-           (when-not v
+           (if v
+             v
              (or (js->clj js/ldUser) {})))))
 
 (defn reidentify! [f]
@@ -26,7 +27,7 @@
   (identify @local-lduser-state))
 
 (defn merge-custom-properties! [m]
-  (reidentify! #(update-in % [:custom] merge m)))
+  (reidentify! #(update-in % ["custom"] merge m)))
 
 (defn exists? [feature-name]
   (not (nil? (feature-on? feature-name nil))))
