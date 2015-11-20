@@ -160,10 +160,13 @@
   (let [org-name (-> project 
                      (:vcs_url)
                      (vcs-url/org-name))
-        plans (->> plans
-                   (filter #(-> %
-                                :org_name
-                                (= org-name))))]
+        org-best-plan (->> plans
+                           (filter #(-> %
+                                        :org_name
+                                        (= org-name)))
+                           (first)
+                           (:plans)
+                           (apply max-key :containers))]
     (assoc project :show-insights? (or (config/enterprise?)
                                        (:oss? project)
-                                       (> (:num_paid_containers org) 0)))))
+                                       (> (:containers org-best-plan) 1)))))

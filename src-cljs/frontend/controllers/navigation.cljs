@@ -231,7 +231,7 @@
   (println "making api requests.")
   (let [api-ch (get-in current-state [:comms :api])]
     ;; load orgs, collaborators, and repos.
-    (api/get-user-plans api-ch)
+    (api/get-orgs api-ch)
     (api/get-repos api-ch))
   (set-page-title! "Add projects")
   (analytics/track-signup))
@@ -251,7 +251,7 @@
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (api/get-projects api-ch)
-    (api/get-orgs api-ch {:include-user? true}))
+    (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :invite-teammates
