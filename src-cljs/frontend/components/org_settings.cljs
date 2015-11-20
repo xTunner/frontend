@@ -299,7 +299,8 @@
                                  80
                                  (let [n (* 2 selected-containers)] (+ n (- 10 (mod n 10)))))
             selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
-            old-total (pm/stripe-cost plan)
+            osx-total (or (some-> plan :osx :template :price) 0)
+            old-total (- (pm/stripe-cost plan) osx-total)
             new-total (pm/cost plan selected-containers)
             container-cost (pm/per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
