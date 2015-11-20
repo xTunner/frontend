@@ -177,8 +177,13 @@
           (assoc-in (conj (state/project-branch-crumb-path state)
                           :branch)
                     (some-> build :branch utils/encode-branch))
-          (assoc-in (conj state/project-path :oss) (:oss build))
-          (assoc-in state/containers-path containers)))))
+          (assoc-in state/containers-path containers)
+          ;; Only add the :oss key to the project-path if there is already
+          ;; a project there.
+          ((fn [x] 
+             (if (get-in x state/project-path)
+               (assoc-in x (conj state/project-path :oss) (:oss build))
+               x)))))))
 
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]

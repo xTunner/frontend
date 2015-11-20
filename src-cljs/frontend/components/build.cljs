@@ -236,7 +236,6 @@
              [:div.loading-spinner-big common/spinner]]
 
             [:div
-             (println project-data)
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :project-data project-data
                                               :user user
