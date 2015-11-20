@@ -155,7 +155,7 @@
 
 (defn show-build-timing? [project plan]
   (or (config/enterprise?)
-      (:oss? project)
+      (:oss project)
       (> (:containers plan) 1)))
 
 (defn add-show-insights? [project plans]
