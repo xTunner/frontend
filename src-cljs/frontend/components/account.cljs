@@ -169,7 +169,7 @@
   (raise! owner [:preferences-updated {state/user-betas-key
                                        (if value
                                          (conj (set betas) id)
-                                         (remove #{id} (set betas)))}]))
+                                         (disj (set betas) id))}]))
 
 (defn beta-programs [app owner]
   (reify
