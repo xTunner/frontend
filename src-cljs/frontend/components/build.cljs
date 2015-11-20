@@ -6,6 +6,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
+            [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
@@ -13,6 +14,7 @@
             [frontend.components.common :as common]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
+            [frontend.config :as config]
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
@@ -234,6 +236,7 @@
              [:div.loading-spinner-big common/spinner]]
 
             [:div
+             (println project-data)
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :project-data project-data
                                               :user user

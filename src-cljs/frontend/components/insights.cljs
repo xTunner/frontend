@@ -245,7 +245,7 @@
         [:h4 "Branch: " branch]
         (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
               (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
-                              [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "Upgrade here"]]
+                              [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})} "Upgrade here"]]
               (empty? builds) [:div.no-insights "No tests for this repo"]
               :else
               (list
