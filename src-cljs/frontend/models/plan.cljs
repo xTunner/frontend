@@ -25,6 +25,9 @@
 (defn paid? [plan]
   (boolean (:paid plan)))
 
+(defn osx? [plan]
+  (boolean (:osx plan)))
+
 (defn trial? [plan]
   (boolean (:trial plan)))
 

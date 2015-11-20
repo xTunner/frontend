@@ -211,6 +211,54 @@
 (defn pluralize-no-val [num word]
   (if (> num 1) (infl/plural word) (infl/singular word)))
 
+(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan-type-key (keyword (str "osx-" plan-type))
+            new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
+                                            {:plan-type   {:template plan-type-key}
+                                             :price       price
+                                             :description (str "OS X " plan-type " - $" price "/month.")}])
+                             false)
+            update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
+                                false)
+            plan-class  (if (= plan-type-key (keyword current-plan)) "selected" "")
+            plan-img [:img {:src (utils/cdn-path (str "img/inner/" plan-type ".png"))}]]
+        (html
+          (if (pm/osx? plan)
+            (forms/managed-button
+              [:a {:data-success-text plan-img
+                   :data-loading-text plan-img
+                   :data-failed-text  plan-img
+                   :class plan-class
+                   :on-click          update-plan-fn}
+               plan-img])
+            (forms/managed-button
+              [:a {:data-success-text plan-img
+                   :data-loading-text plan-img
+                   :data-failed-text  plan-img
+                   :class plan-class
+                   :on-click          new-plan-fn}
+               plan-img])))))))
+
+(defn osx-plans [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [current-plan (some-> plan :osx :template :id)]
+        (html
+          [:div.osx-plans
+           [:fieldset
+            [:legend (str "Something cool about OS X.")]]
+           [:div.plan-selection
+            (om/build osx-plan {:plan plan :plan-type "starter" :current-plan current-plan})
+            (om/build osx-plan {:plan plan :plan-type "standard" :current-plan current-plan})
+            (om/build osx-plan {:plan plan :plan-type "growth" :current-plan current-plan})
+            [:a {:href "mailto:sayhi@circleci.com"}
+             [:img {:src (utils/cdn-path "img/inner/mobile-focused.png")}]]
+            ]])))))
+
 (defn containers [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
@@ -257,6 +305,7 @@
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
                                     selected-paid-containers)]
         (html
+          [:div
          (if-not plan
            (cond ;; TODO: fix; add plan
             (nil? plan)
@@ -326,6 +375,8 @@
                                                                            (pluralize selected-containers "container"))}])
                                          false))}
                        "Pay Now"])))
+
+
                  (when-not (config/enterprise?)
                    ;; TODO: Clean up conditional here - super nested and many interactions
                    (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
@@ -345,7 +396,8 @@
                        ;; TODO: Only show for trial-plans?
                        [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
                         " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                        " ago. Pay now to enable builds of private repositories."])))]]]]]]))))))
+                        " ago. Pay now to enable builds of private repositories."])))]]]]]])
+           (om/build osx-plans plan)])))))
 
 (defn piggyback-organizations [app owner]
   (om/component
