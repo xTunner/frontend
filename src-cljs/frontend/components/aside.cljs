@@ -522,12 +522,11 @@
                                     "unread")}
             (nav-icon "fa-bell" "Notifications")]
 
-           (when (feature/enabled? :insights)
-             [:a.aside-item {:data-placement "right"
-                             :data-trigger "hover"
-                             :title "Insights"
-                             :href "/build-insights"}
-              (nav-icon "fa-bar-chart" "Insights")])
+	   [:a.aside-item {:data-placement "right"
+                           :data-trigger "hover"
+                           :title "Insights"
+                           :href "/build-insights"}
+            (nav-icon "fa-bar-chart" "Insights")]
 
            (when (:admin user)
              [:a.aside-item {:data-placement "right"
