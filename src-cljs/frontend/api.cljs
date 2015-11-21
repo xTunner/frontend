@@ -56,7 +56,8 @@
     {:admin true
      :query-params {:status (case tab
                               :running-builds "running"
-                              :queued-builds "scheduled,queued")}}
+                              :queued-builds "scheduled,queued")
+                    :order "asc"}}
     api-ch))
 
 (defn get-projects-builds [build-ids api-ch]
