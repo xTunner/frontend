@@ -62,6 +62,15 @@
        "Add Containers"]
       " to run more builds concurrently."]]))
 
+(defn queued-explanation-text []
+  (if (not (enterprise?))
+    "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."
+    [:span
+     "Typically, this means you have more builds scheduled to be run than available capacity in the fleet. "
+     (if (-> js/window (aget "renderContext") (aget "current_user") utils/js->clj-kw :admin)
+       [:span "Check " [:a {:href "/admin/fleet-state"} "Fleet State"] " for details and potentially start new builders"]
+       "Ask CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
+
 (defn build-queue [data owner]
   (reify
     om/IWillMount
@@ -91,7 +100,7 @@
                " acquiring containers for this build."])
             (when (< 10000 (build-model/run-queued-time build))
               [:p#circle_queued_explanation
-               "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
+               (queued-explanation-text)])
 
             (when (seq builds)
               (list
@@ -138,7 +147,7 @@
 
              (when (< 10000 (build-model/run-queued-time build))
                [:span#circle_queued_explanation
-                " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."])
+                (str " " (queued-explanation-text))])
              (when (seq builds)
                [:span
                 " This build " (if usage-queued? "has been" "was")
