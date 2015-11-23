@@ -283,6 +283,14 @@
     .recent-commit-msg a {
       color: @gray-lighter-v2;
       font-size: 11px;
+
+      &.pull-request {
+        color: @link-color-v2;
+
+        &:last-child {
+          margin-right: 10px;
+        }
+      }
     }
   }
 

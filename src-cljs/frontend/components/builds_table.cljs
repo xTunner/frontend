@@ -187,17 +187,6 @@
                      pusher-name)}
            (avatar (:user build) :trigger trigger)])
 
-        (when-let [urls (seq (:pull_request_urls build))]
-          [:div.metadata-item.pull-requests {:title "Pull Requests"}
-           (dashboard-icon "Builds-PullRequest")
-           [:span
-            (interpose
-              ", "
-              (map (fn [url] [:a {:href url} "#"
-                              (let [n (re-find #"/\d+$" url)]
-                                (if n (subs n 1) "?"))])
-                   urls))]])
-
         [:div.metadata-item.revision
          (when (:vcs_revision build)
            (list (dashboard-icon "Builds-CommitNumber")
@@ -227,6 +216,18 @@
                  (om/build common/updating-duration {:start (:start_time build)
                                                      :stop (:stop_time build)})]))]]
       [:div.recent-commit-msg
+
+       (when-let [urls (seq (:pull_request_urls build))]
+         [:span.pull-requests {:title "Pull Requests"}
+          (dashboard-icon "Builds-PullRequest")
+          [:span
+           (interpose
+            ", "
+            (map (fn [url] [:a.pull-request {:href url} "#"
+                            (let [n (re-find #"/\d+$" url)]
+                              (if n (subs n 1) "?"))])
+                 urls))]])
+
        [:a.recent-log
         {:title (:body build)
          :href url}
