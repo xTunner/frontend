@@ -549,7 +549,6 @@
 
 (defmethod post-navigated-to! :admin-settings
   [history-imp navigation-point {:keys [subpage tab]} previous-state current-state]
-  (js/console.log subpage)
   (case subpage
     :fleet-state (do
                    (let [api-ch (get-in current-state [:comms :api])]

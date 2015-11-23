@@ -67,9 +67,9 @@
     "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."
     [:span
      "Typically, this means you have more builds scheduled to be run than available capacity in the fleet. "
-     (if (-> js/window (aget "renderContext") (aget "current_user") utils/js->clj-kw :admin)
+     (if (:admin (utils/current-user))
        [:span "Check " [:a {:href "/admin/fleet-state"} "Fleet State"] " for details and potentially start new builders"]
-       "Ask CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
+       "Ask a CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
 
 (defn build-queue [data owner]
   (reify
