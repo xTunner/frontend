@@ -245,7 +245,7 @@
         [:h4 "Branch: " branch]
         (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
               (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
-                              [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org-name project)})} "Upgrade here"]]
+                              [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})} "Upgrade here"]]
               (empty? builds) [:div.no-insights "No tests for this repo"]
               :else
               (list
@@ -282,26 +282,16 @@
       [:div.row.text-center
        [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
-(defn add-show-insights? [project orgs org-name]
-  (let [org (->> orgs
-                (filter #(-> % :login (= org-name)))
-                (first))]
-  (assoc project :org-name org-name
-         :show-insights? (or (config/enterprise?)
-                             (:oss? project)
-                             (> (:num_paid_containers org) 0)))))
-
-(defn add-show-insights?-to-projects [orgs projects]
-  "Returns a new seq with show-insights? added to all projects"
-  (->> projects
-       (map (fn [project]
-              (->> project
-                   (:vcs_url)
-                   (vcs-url/org-name)
-                   (add-show-insights? project orgs))))))
+(defn decorate-projects
+  "Returns a new seq with add-show-insights? added to all projects"
+  [projects plans]
+   (->> projects
+        (map (fn [project]
+               (-> project
+                    (project-model/add-show-insights? plans))))))
 
 (defrender build-insights [state owner]
-  (let [orgs (dissoc (get-in state state/user-organizations-path))
+  (let [plans (get-in state state/user-plans-path)
         projects (get-in state state/projects-path)]
     (html
      [:div#build-insights {:class (case (count projects)
@@ -311,4 +301,4 @@
         (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
-          :else              (om/build-all project-insights (add-show-insights?-to-projects orgs projects)))])))
+          :else              (om/build-all project-insights (decorate-projects projects plans)))])))

@@ -661,3 +661,7 @@
 (defmethod api-event [:doc-manifest :success]
   [target message status {:keys [resp] :as data} state]
   (assoc-in state state/docs-data-path (doc-utils/format-doc-manifest resp)))
+
+(defmethod api-event [:user-plans :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/user-plans-path resp))

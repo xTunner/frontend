@@ -23,6 +23,11 @@
              :organizations
              api-ch))
 
+(defn get-user-plans [api-ch]
+  (ajax/ajax :get "/api/v1/user/organizations/plans"
+             :user-plans
+             api-ch))
+
 (defn get-usage-queue [build api-ch]
   (ajax/ajax :get
              (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
