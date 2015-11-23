@@ -88,8 +88,3 @@
                                    rest#))))
          (catch :default e#
            (html/html body#))))))
-
-(defn current-user
-  []
-  (when-let [user (aget js/window "renderContext" "current_user")]
-    (js->clj user :keywordize-keys true)))

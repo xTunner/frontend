@@ -364,3 +364,8 @@ top.  The remaining keys/values goes into the bottom."
                (max (- remaining (count top))
                     0)))
       [top-map bottom-map])))
+
+(defn current-user
+  []
+  (when-let [user (aget js/window "renderContext" "current_user")]
+    (js->clj user :keywordize-keys true)))
