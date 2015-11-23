@@ -155,15 +155,9 @@
 
 
 (def available-betas
-  [{:id "ui-v2"
-    :name "New UI"
-    :description "If we haven't revisited this text, that was a
-    mistake. Our new UI is meant to help you do your work faster and
-    get mroe out of CircleCI."}
-   {:id "insights"
+  [{:id "insights"
     :name "Insights"
-    :description "Also this text. Insights is super fun for the whole family! "}
-   ])
+    :description "Also this text. Insights is super fun for the whole family! "}])
 
 (defn set-beta-preference! [owner betas id value]
   (raise! owner [:preferences-updated {state/user-betas-key
@@ -262,8 +256,10 @@
                          false)
             :type "submit"
             :value "Leave Beta Program"}]]]
-        [:hr]
-        (om/build beta-programs app)]))))
+        (comment
+          ;; uncomment to turn on beta sub programs
+          [:hr]
+          (om/build beta-programs app))]))))
 
 (defn beta-program [app owner]
   (reify
