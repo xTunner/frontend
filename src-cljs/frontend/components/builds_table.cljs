@@ -77,7 +77,9 @@
               [:button.cancel-build
                {:on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                  :vcs-url vcs-url
-                                                                 :build-num build-num}])}
+                                                                 :build-num build-num}])
+                :data-loading-text "Canceling..."
+                :data-success-text "Canceled"}
                "Cancel"])))])]))
 
 (defn builds-table-v1 [builds owner {:keys [show-actions? show-branch? show-project? show-log? show-parallelism?]
