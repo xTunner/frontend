@@ -218,29 +218,32 @@
     (render [_]
       (let [plan-type-key (keyword (str "osx-" plan-type))
             new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
-                                            {:plan-type   {:template plan-type-key}
-                                             :price       price
-                                             :description (str "OS X " plan-type " - $" price "/month.")}])
+                                            {:plan-type {:template plan-type-key}
+                                             :price price
+                                             :description (str "OS X " (clojure.string/capitalize plan-type) " - $" price "/month.")}])
                              false)
             update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
                                 false)
-            plan-class  (if (= plan-type-key (keyword current-plan)) "selected" "")
-            plan-img [:img {:src (utils/cdn-path (str "img/inner/" plan-type ".png"))}]]
+            plan-selected? (= plan-type-key (keyword current-plan))
+            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type ".png"))}]
+            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading.png"))}]]
         (html
           (if (pm/osx? plan)
+            (if plan-selected?
+              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected.png"))}]
+              (forms/managed-button
+                [:a.unselected
+                 {:data-success-text plan-img
+                  :data-loading-text loading-img
+                  :data-failed-text plan-img
+                  :on-click update-plan-fn}
+                 plan-img]))
             (forms/managed-button
-              [:a {:data-success-text plan-img
-                   :data-loading-text plan-img
-                   :data-failed-text  plan-img
-                   :class plan-class
-                   :on-click          update-plan-fn}
-               plan-img])
-            (forms/managed-button
-              [:a {:data-success-text plan-img
-                   :data-loading-text plan-img
-                   :data-failed-text  plan-img
-                   :class plan-class
-                   :on-click          new-plan-fn}
+              [:a.unselected
+               {:data-success-text plan-img
+                :data-loading-text plan-img
+                :data-failed-text plan-img
+                :on-click new-plan-fn}
                plan-img])))))))
 
 (defn osx-plans [plan owner]
@@ -253,12 +256,11 @@
            [:fieldset
             [:legend (str "OS X Plans")]]
            [:div.plan-selection
-            (om/build osx-plan {:plan plan :plan-type "starter" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :plan-type "standard" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :plan-type "growth" :current-plan current-plan})
-            [:a {:href "mailto:sayhi@circleci.com"}
-             [:img {:src (utils/cdn-path "img/inner/mobile-focused.png")}]]
-            ]])))))
+            (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
+            (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
+            (om/build osx-plan {:plan plan :price 279 :plan-type "growth" :current-plan current-plan})
+            [:a.unselected {:href "mailto:sayhi@circleci.com"}
+             [:img {:src (utils/cdn-path "img/inner/mobile-focused.png")}]]]])))))
 
 (defn containers [app owner]
   (reify
