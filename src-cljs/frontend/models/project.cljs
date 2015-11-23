@@ -170,5 +170,5 @@
                            (:plans)
                            (apply max-key :containers))]
     (assoc project :show-insights? (or (config/enterprise?)
-                                       (:oss? project)
+                                       (:oss project)
                                        (> (:containers org-best-plan) 1)))))
