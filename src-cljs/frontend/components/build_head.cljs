@@ -1270,7 +1270,7 @@
             [tab-tag {:class (when (= :config selected-tab) "active")}
              [tab-link-v2 {:href "#config"} "circle.yml"]]
 
-            (when (and admin? (build-model/finished? build))
+            (when (build-model/finished? build)
               [tab-tag {:class (when (= :build-timing selected-tab) "active")}
                [tab-link-v2 {:href "#build-timing"}
                 "Build Timing"]])
