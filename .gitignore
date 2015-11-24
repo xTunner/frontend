@@ -18,3 +18,4 @@ pom.xml.asc
 *.swp
 *.swo
 karma
+.cljs_rhino_repl
