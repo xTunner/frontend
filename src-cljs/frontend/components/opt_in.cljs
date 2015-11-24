@@ -13,9 +13,12 @@
     (render [_]
       (html
        [:div.ui-v2-opt-in {}
-        [:b "Try our new look. "]
-        [:span "You have been selected for a private beta of our new interface. "]
-        [:button {:on-click #(raise! owner [:try-ui-v2-clicked])} "Try our new look"]]))))
+        [:div.ui-v2-opt-in-wrapper
+         [:div
+          [:b "Try our new look. "]
+          [:span "You have been selected for a private beta of our new interface. "]]
+         [:div.opt-in-right
+          [:button {:on-click #(raise! owner [:try-ui-v2-clicked])} "Try our new look"]]]]))))
 
 (defn ui-v2-opt-out-ui [{} owner]
   (reify
@@ -30,3 +33,18 @@
              :on-click #(raise! owner [:ui-v2-beta-feedback])}
          "Beta Feedback"]
         ]))))
+
+(defn ios-reminder-banner []
+  (reify
+    om/IDisplayName (display-name [_] "iOS Beta End Message")
+    om/IRender
+    (render [_]
+      (html
+       [:div.ui-v2-opt-in {}
+        [:div.ui-v2-opt-in-wrapper
+         [:div
+          "As a reminder, the iOS beta is ending as of Monday, November 30th. If you have not already, please confirm a plan to lock-in pricing and ensure a smooth transition to the limited-release "
+          [:a {:href "http://circleci.com/pricing"} "here"]
+          ". Reach out to "
+          [:a {:href "mailto:sayhi@circleci.com"} "sayhi@circleci.com"]
+          " with any questions!"]]]))))

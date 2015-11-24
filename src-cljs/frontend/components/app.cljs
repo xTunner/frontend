@@ -42,6 +42,7 @@
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
             [frontend.models.feature :as feature]
+            [frontend.models.project :as project]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
@@ -125,7 +126,8 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              show-header-and-footer? (not= :signup (:navigation-point app))]
+              show-header-and-footer? (not= :signup (:navigation-point app))
+              project (get-in app state/project-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
@@ -158,7 +160,9 @@
                           (feature/enabled? :ui-v2-opt-in-banner)
                           (not (feature/enabled-in-cookie? :ui-v2)))
                  (om/build opt-in/ui-v2-opt-in-banner app))
-
+               (when (and (= :build (:navigation-point app))
+                          (project/feature-enabled? project :osx))
+             (om/build opt-in/ios-reminder-banner app))
                (when (and (feature/enabled? :ui-v2))
                  (om/build header/header app-without-container-data))
 
