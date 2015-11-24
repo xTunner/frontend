@@ -254,7 +254,7 @@
         (html
           [:div.osx-plans
            [:fieldset
-            [:legend (str "OS X Plans")]]
+            [:legend (str "OSX Limited Release Plans - The below selection only applies to OSX service and will not affect the LXE Containers above.")]]
            [:div.plan-selection
             (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
@@ -328,7 +328,7 @@
             [:div.main-content
              [:div.left-section
               [:div.pricing-calculator-controls
-               [:h3 "Containers"]
+               [:h3 "LXE Containers"]
                [:form
                 [:div.container-picker
                  [:p "More containers means faster builds and lower queue times."]
