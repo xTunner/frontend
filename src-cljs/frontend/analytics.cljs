@@ -202,12 +202,3 @@
 
 (deftrack track-payment-plan-click [data]
   (mixpanel/track "payment-plan-click" data))
-
-(deftrack track-beta-join-click [data]
-  (mixpanel/track "beta-join-click" data))
-
-(deftrack track-beta-terms-accept [data]
-  (mixpanel/track "beta-terms-accept" data))
-
-(deftrack track-beta-leave-click [data]
-  (mixpanel/track "beta-leave-click" data))
