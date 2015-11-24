@@ -9,7 +9,7 @@
 (defn disable! []
   (when-let [el (get-root)]
     (gdom/removeNode el))
-  (aset js/window "_elev" nil))
+  (aset js/window "_elev" #js {}))
 
 (defn enable! []
   (class-list/add js/document.body "circle-elevio"))
