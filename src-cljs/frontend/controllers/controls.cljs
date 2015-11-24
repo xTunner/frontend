@@ -907,7 +907,7 @@
   (let [before (boolean (get-in state state/user-in-beta-path))
         after (boolean (args state/user-in-beta-key))]
     (case [before after]
-      [true false] (assoc-in state state/general-message-path {:message "You have left the beta program! See you later!"})
+      [true false] (assoc-in state state/general-message-path {:message "You have left the beta program! Come back any time!"})
       [false true] (assoc-in state state/general-message-path {:message "You have joined the beta program! Thanks!"})
       state)))
 
