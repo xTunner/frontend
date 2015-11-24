@@ -101,22 +101,3 @@ Circle has customers deploying to Heroku, Engine Yard, Google App Engine, Elasti
 and [Bluemix](/docs/deploy-bluemix).
 If you'd like help setting up your deployment, please
 [contact us](mailto:sayhi@circleci.com).
-
-### Firewalls, webhooks, and Circle's Public IP address ranges
-
-You may need Circle's AWS information if you have a firewalled server that you need to access as part of your builds.
-
-Circle is hosted in EC2's US East region, so our Amazon
-[EC2 public IP address ranges](https://forums.aws.amazon.com/ann.jspa?annID=1701)
-are there.
-(Be aware that this link can sometimes be broken when Amazon make updates.
-In such cases, you can usually access the list via the service's
-[forum announcements](https://forums.aws.amazon.com/forum.jspa?forumID=30)
-page.)
-
-Circle's AWS security group has id sg-f98a8290 and is named www. Our account id is 183081753049.
-
-Use the IP address ranges and security group number as needed to configure
-a physical or in-the-cloud server under your control.
-If you run into any problems, [contact us](mailto:sayhi@circleci.com)
-and we'll be happy to help.
