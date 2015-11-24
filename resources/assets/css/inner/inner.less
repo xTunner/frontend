@@ -39,14 +39,21 @@
   .ui-v2-opt-in {
     background: @feature-opt-in-banner-bg;
     box-shadow: -1px 0 @feature-opt-in-banner-shadow;
-    font-size: 16px;
-    padding: 25px;
+    font-size: 14px;
     color: @gray-darker;
-    min-height: @tile;
+
+    .ui-v2-opt-in-wrapper {
+      .flexy(center, row);
+
+      margin: 15px;
+      min-height: 40px;
+    }
+
+    .opt-in-right {
+      flex-grow: 1;
+    }
 
     button {
-      margin-top: -5px;
-      margin-right: 5px;
       float: right;
       .circleButton(@green);
       font-size: 14px;
