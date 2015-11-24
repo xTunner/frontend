@@ -162,11 +162,9 @@
       (html/html
        [:div
         [:p
-         "Join our beta program to get a sneak peek into what's
-          happening at CircleCI, help us test new functionality, and
-          stay informed about new beta features. By joining our beta
-          you agree to keep any information provided through the
-          program confidential."]
+         "We invite you to join Inner Circle, our new beta program. As a
+         member of CircleCI’s Inner Circle you get exclusive access to new
+         features and settings before they are released publicly!"]
         [:form
          (if (not clicked-join?)
            [:input.btn
@@ -185,10 +183,9 @@
                the beta program you should be comfortable with these
                expectations:"]
              [:ul
-              [:li "We'll contact you about new features through e-mail and in-app messages"]
-              [:li "You'll try to give feedback about new features when we release them"]
-              [:li "You won't post information about beta features
-                    publicly. Please no tweets, blogs, or other public
+              [:li "You’ll find out about new features through e-mail and in-app messages"]
+              [:li "Please give us feedback about new features when we release them"]
+              [:li "Keep the private beta, private. Please no tweets, blogs, or other public
                     posting, but we do encourage you to talk with your
                     coworkers!"]]]
             [:p]
