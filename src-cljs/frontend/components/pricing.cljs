@@ -68,7 +68,7 @@
              [:div.row
               [:div.pricing-calculator-controls
                [:div.controls-containers
-                [:h2 "Containers"]
+                [:h2 "LXE Containers"]
                 [:p "All of your containers are shared across your entire organization."]
                 ;;TODO Use frontend.components.shared/styled-range-slider
                 [:div.containers-range {:on-click #(om/set-state! owner :drag-percent (calculate-drag-percent owner %))
