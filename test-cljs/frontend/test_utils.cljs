@@ -99,7 +99,7 @@
         (conj % {:org_name "circleci"})
         (apply merge %)))
 
-(defn example-piggieback-plan []
+(def example-piggieback-plan
   (-> (example-plan :paid)
       (dissoc :org_name)
       (assoc :piggieback-orgs ["circleci"]
@@ -107,14 +107,14 @@
 
 ;; The three functions below are to mimic the /api/v1/user/organizations/plans
 ;; payload for different possible cases.
-(defn example-user-plans-free []
-  (-> {:org_name "circleci"}
-      (assoc :plans [(example-plan :free)])))
+(def example-user-plans-free
+  [(-> {:org_name "circleci"}
+       (assoc :plans [(example-plan :free)]))])
 
-(defn example-user-plans-paid []
-  (-> {:org_name "circleci"}
-      (assoc :plans [(example-plan :paid)])))
+(def example-user-plans-paid
+  [(-> {:org_name "circleci"}
+       (assoc :plans [(example-plan :paid)]))])
 
-(defn example-user-plans-piggieback []
-  (-> {:org_name "circleci"}
-      (assoc :plans [(example-piggieback-plan) (example-plan :free)])))
+(def example-user-plans-piggieback
+  [(-> {:org_name "circleci"}
+       (assoc :plans [example-piggieback-plan (example-plan :free)]))])
