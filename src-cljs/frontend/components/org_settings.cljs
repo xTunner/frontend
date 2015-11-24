@@ -924,7 +924,7 @@
           [:p (str (pm/freemium-containers plan) " container is free, forever.")])
         (when-not (config/enterprise?)
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
-          [:p "If you are enabled in the limited-release, you may also choose an iOS plan "
+          [:p "If you are in the limited-release beta, you may also choose an iOS plan "
               [:a {:href "#containers"} "here"]
               ". We will support general release in the near future!"])]]))))
 
