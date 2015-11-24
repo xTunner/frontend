@@ -257,7 +257,7 @@
           [:input.btn
            {:on-click #(do
                          (set-beta-program-preference! owner false)
-                         (analytics/track-beta-leave {})
+                         (analytics/track-beta-leave-click {})
                          false)
             :type "submit"
             :value "Leave Beta Program"}]]]

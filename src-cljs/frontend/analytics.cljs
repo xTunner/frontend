@@ -209,5 +209,5 @@
 (deftrack track-beta-terms-accept [data]
   (mixpanel/track "beta-terms-accept" data))
 
-(deftrack track-beta-leave [data]
-  (mixpanel/track "beta-leave" data))
+(deftrack track-beta-leave-click [data]
+  (mixpanel/track "beta-leave-click" data))
