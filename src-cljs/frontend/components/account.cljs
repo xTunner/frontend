@@ -156,9 +156,10 @@
 
 
 (def available-betas
-  [{:id "insights"
-    :name "Insights"
-    :description "Also this text. Insights is super fun for the whole family! "}])
+  [;; {:id "insights"
+   ;;  :name "Insights"
+   ;;  :description "Also this text. Insights is super fun for the whole family! "}
+   ])
 
 (defn set-beta-preference! [owner betas id value]
   (raise! owner [:preferences-updated {state/user-betas-key
