@@ -73,17 +73,17 @@
     (testing "plans have the correct number of containers"
       (is-re #"Builds will run in a single container."
              (overview (example-plan :free) "circleci"))
-      (is-re #"Builds will be distributed across 4 containers."
+      (is-re #"All non-iOS builds will be distributed across 4 containers."
              (overview (example-plan :paid) "circleci"))
-      (is-re #"Builds will be distributed across 6 containers."
+      (is-re #"All non-iOS builds will be distributed across 6 containers."
              (overview (example-plan :trial) "circleci"))
-      (is-re #"Builds will be distributed across 7 containers."
+      (is-re #"All non-iOS builds will be distributed across 7 containers."
              (overview (example-plan :free :trial) "circleci"))
-      (is-re #"Builds will be distributed across 6 containers."
+      (is-re #"All non-iOS builds will be distributed across 6 containers."
              (overview (example-plan :trial :paid) "circleci"))
-      (is-re #"Builds will be distributed across 5 containers."
+      (is-re #"All non-iOS builds will be distributed across 5 containers."
              (overview (example-plan :free :paid) "circleci"))
-      (is-re #"Builds will be distributed across 7 containers."
+      (is-re #"All non-iOS builds will be distributed across 7 containers."
              (overview (example-plan :free :paid :trial) "circleci")))
     (testing "trials are described appropriately"
       (is-re #"5 more days" (overview (example-plan :trial) "circleci")))
