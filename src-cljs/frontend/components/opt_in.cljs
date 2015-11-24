@@ -46,5 +46,5 @@
           "As a reminder, the iOS beta is ending as of Monday, November 30th. If you have not already, please confirm a plan to lock-in pricing and ensure a smooth transition to the limited-release "
           [:a {:href "http://circleci.com/pricing"} "here"]
           ". Reach out to "
-          [:a {:href "sayhi@circleci.com"} "sayhi@circleci.com"]
+          [:a {:href "mailto:sayhi@circleci.com"} "sayhi@circleci.com"]
           " with any questions!"]]]))))
