@@ -30,3 +30,16 @@
              :on-click #(raise! owner [:ui-v2-beta-feedback])}
          "Beta Feedback"]
         ]))))
+
+(defn ios-reminder-banner []
+  (reify
+    om/IDisplayName (display-name [_] "iOS Beta End Message")
+    om/IRender
+    (render [_]
+      (html
+       [:div.ui-v2-opt-in {}
+        "As a reminder, the iOS beta is ending as of Monday, November 30th. If you have not already, please confirm a plan to lock-in pricing and ensure a smooth transition to the limited-release "
+        [:a {:href "http://circleci.com/pricing"} "here"]
+        ". Reach out to "
+        [:a {:href "sayhi@circleci.com"} "sayhi@circleci.com"]
+        " with any questions!"]))))
