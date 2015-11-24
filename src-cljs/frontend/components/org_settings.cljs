@@ -957,7 +957,7 @@
            [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
             (:org_name plan) "'s plan."]])
         (cond (> containers 1)
-              [:p (str "Builds will be distributed across " containers " containers.")]
+              [:p (str "All Linux builds will be distributed across " containers " containers.")]
               (= containers 1)
               [:p (str "Builds will run in a single container.")]
               :else nil)
@@ -989,7 +989,10 @@
         (when (pm/freemium? plan)
           [:p (str (pm/freemium-containers plan) " container is free, forever.")])
         (when-not (config/enterprise?)
-          [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."])]]))))
+          [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
+          [:p "If you are in the limited-release beta, you may also choose an iOS plan "
+              [:a {:href "#containers"} "here"]
+              ". We will support general release in the near future!"])]]))))
 
 (def main-component
   {:overview overview
