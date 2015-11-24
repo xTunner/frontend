@@ -891,7 +891,7 @@
            [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
             (:org_name plan) "'s plan."]])
         (cond (> containers 1)
-              [:p (str "All non-iOS builds will be distributed across " containers " containers.")]
+              [:p (str "All Linux builds will be distributed across " containers " containers.")]
               (= containers 1)
               [:p (str "Builds will run in a single container.")]
               :else nil)
