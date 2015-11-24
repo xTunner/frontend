@@ -246,6 +246,70 @@
                 :on-click new-plan-fn}
                plan-img])))))))
 
+(def osx-faq-items
+  [{:question (list
+               [:p "This is a separate service? How will I be billed?"])
+    :answer (list
+             [:p "Yes! This is a standalone service. The charge will be pro-rated and added to your existing plan."]
+             [:p (str
+                  "The word \"container\" has been pretty vague in the engineering landscape and we’ve done nothing to help with that :). "
+                  "There is a non-trivial difference regarding an iOS-capable container and a linux container "
+                  "because any commercial provider needs to run iOS builds on Apple hardware.")]
+             [:p (str "The underlying delivery system is very different, from our cost structure to our software tooling."
+                      " Accordingly, we’re currently offering access primarily based on your concurrency needs (use of multiple containers).")])}
+   {:question (list
+               [:p "What is concurrency vs. parallelism?"])
+    :answer (list
+             [:p (str "In a linux setting, parallelism refers to splitting a build across multiple containers. "
+                      "This is not currently a feature of iOS builds - however, there are still speed gains from concurrency.")]
+             [:p "Concurrency refers to running multiple jobs at the same time (e.g., two jobs on two containers).  This is a feature of the iOS product."])}
+   {:question (list
+               [:p "Wait...in the beta, how did my access to containers work?"])
+    :answer (list
+             [:p (str "During the beta, we used your current plan on linux containers as a proxy to enable access to Apple machines. "
+                      "It was just a shortcut on our side to help folks build as soon as possible and a thank-you to customers that pay for multiple linux containers.")])}
+   {:question (list
+               [:p "So what plan should I choose? / I’m concerned about how many minutes I have used?"])
+    :answer (list
+             [:p "If you have questions, please feel free reach out to "
+              [:a {:href "mailto:sayhi@circleci.com"}
+               "sayhi@circleci.com"]
+              (str " and we’ll provide some guidance regarding your recent usage. "
+                   "In the near future, we’ll display your usage within the app.")])}
+   {:question (list
+               [:p "What if I go over the minute limit?"])
+    :answer (list
+             [:p (str "Tiering is to help make sure we can stabilize capacity and offer competitive price points "
+                      "which should hopefully lead to the greatest possible utility all around.")
+              [:p (str "In this release, we will not charge overages. We may suspend accounts if minute usage far exceeds the plan limit. "
+                       "We’ll have our team keeping an eye on usage and we will reach out proactively if you get close to your respective plan limit.")]
+              [:p "In the near future, we’ll display your usage within the app."]])}
+   {:question (list
+               [:p "What if I don’t choose a plan?"])
+    :answer (list
+             [:p (str "Starting November 30th, organizations that have not chosen a plan may see degraded performance (as long as we have "
+                      "capacity, we’ll do our best to build while you determine which plan works best for you!).")])}
+   {:question (list
+               [:p "What if we’re building open-source?"])
+    :answer (list
+             [:p "Please reach out to our team at "
+              [:a {:href "mailto:sayhi@circleci.com"}
+               "sayhi@circleci.com"]
+              " - we’re happy to provide significant discounts for open-source projects!"])}])
+
+(defn osx-faq [items owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:fieldset.osx-faq
+        [:legend "FAQ"]
+        [:dl
+         (for [{:keys [question answer]} items]
+           (list
+            [:dt question]
+            [:dd answer]))]]))))
+
 (defn osx-plans [plan owner]
   (reify
     om/IRender
@@ -403,7 +467,9 @@
                         " ago. Pay now to enable builds of private repositories."])))]]]]]])
            (when (and (feature/enabled? :osx-plans)
                       (get-in app state/org-osx-beta-path))
-             (om/build osx-plans plan))])))))
+             (list
+              (om/build osx-plans plan)
+              (om/build osx-faq osx-faq-items)))])))))
 
 (defn piggyback-organizations [app owner]
   (om/component
