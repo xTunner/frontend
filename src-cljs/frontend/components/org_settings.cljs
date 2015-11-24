@@ -401,7 +401,8 @@
                        [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
                         " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                         " ago. Pay now to enable builds of private repositories."])))]]]]]])
-           (when (feature/enabled? :osx-plans)
+           (when (and (feature/enabled? :osx-plans)
+                      (get-in app state/org-osx-beta-path))
              (om/build osx-plans plan))])))))
 
 (defn piggyback-organizations [app owner]
