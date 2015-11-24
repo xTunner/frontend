@@ -875,7 +875,7 @@
                   (when (not= 0 fail-count)
                     [:span {:class "fail-count"} fail-count]))]])
 
-            (when (and admin? (build-model/finished? build))
+            (when (build-model/finished? build)
               [:li {:class (when (= :build-timing selected-tab) "active")}
                [tab-link {:href "#build-timing"} "Build Timing"]])
 
