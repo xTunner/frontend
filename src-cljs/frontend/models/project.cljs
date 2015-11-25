@@ -156,7 +156,9 @@
 (defn show-build-timing? [project plan]
   (or (config/enterprise?)
       (:oss project)
-      (> (:containers plan) 1)))
+      (plan-model/paid? plan)
+      (plan-model/trial? plan)
+      (plan-model/osx? plan)))
 
 (defn add-show-insights? [project plans]
   (let [org-name (-> project 
@@ -169,6 +171,9 @@
                            (first)
                            (:plans)
                            (apply max-key :containers))]
+
     (assoc project :show-insights? (or (config/enterprise?)
                                        (:oss project)
-                                       (> (:containers org-best-plan) 1)))))
+                                       (plan-model/paid? org-best-plan)
+                                       (plan-model/trial? org-best-plan)
+                                       (plan-model/osx? org-best-plan)))))
