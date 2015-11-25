@@ -39,8 +39,10 @@
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
 
-(defn build-graphable [{:keys [outcome]}]
-  (#{"success" "failed" "canceled"} outcome))
+(defn build-graphable [{:keys [outcome build_time_millis]}]
+  (or (#{"success" "failed"} outcome)
+      (and (= "canceled" outcome)
+           build_time_millis)))
 
 (defn visualize-insights-bar! [el builds owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
