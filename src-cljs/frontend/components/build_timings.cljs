@@ -203,7 +203,7 @@
       (if (project-model/show-build-timing? project plan)
         (draw-chart! build)
         (analytics/track-build-timing-upsell-impression {:org-name (:org_name plan)
-                                                   :reponame (:reponame project)})))
+                                                         :reponame (:reponame project)})))
     om/IRenderState
     (render-state [_ _]
       (html
@@ -213,4 +213,4 @@
           [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
                              :on-click #(analytics/track-build-timing-upsell-click {:org-name (:org_name plan)
-                                                                             :reponame  (:reponame project)})} "upgrade here."]])]))))
+                                                                                    :reponame  (:reponame project)})} "upgrade here."]])]))))

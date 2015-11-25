@@ -19,3 +19,6 @@ pom.xml.asc
 *.swo
 karma
 .cljs_rhino_repl
+.repl-1.7.28
+TESTS*
+out

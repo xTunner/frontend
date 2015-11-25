@@ -70,7 +70,8 @@
          :free {:free {:template {:id "f1"
                                   :free_containers 1
                                   :type "free"}}
-                :amount 0}
+                :amount 0
+                :containers 4}
          :paid {:paid {:template {:id "p18"
                                   :free_containers 0
                                   :price 0
@@ -85,7 +86,6 @@
                                       :type "containers"}}
                     :amount (* 60 5000)
                     :containers 60}
-
          :grandfathered {:paid {:template {:id "p18"
                                            :free_containers 0
                                            :price 0
@@ -93,7 +93,14 @@
                                            :type "containers"}}
                          :containers 4
                          :amount 200 ;; $2
-                         }}
+                         }
+         :osx {:osx {:template {:name "OSX Starter"
+                                :id "osx-starter"
+                                :max-containers 1
+                                :free-containers 0
+                                :container-cost 0
+                                :price 79
+                                :type :osx}}}}
         %
         (map % keys)
         (conj % {:org_name "circleci"})
@@ -114,6 +121,14 @@
 (def example-user-plans-paid
   [(-> {:org_name "circleci"}
        (assoc :plans [(example-plan :paid)]))])
+
+(def example-user-plans-osx
+  [(-> {:org_name "circleci"}
+       (assoc :plans [(example-plan :osx)]))])
+
+(def example-user-plans-trial
+  [(-> {:org_name "circleci"}
+       (assoc :plans [(example-plan :trial)]))])
 
 (def example-user-plans-piggieback
   [(-> {:org_name "circleci"}

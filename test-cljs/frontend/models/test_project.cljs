@@ -21,6 +21,8 @@
     (is (= (project/show-build-timing? oss-project (test-utils/example-plan :free)) true))
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :free)) false))
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :paid)) true)))
+    (is (= (project/show-build-timing? private-project (test-utils/example-plan :osx)) true))
+    (is (= (project/show-build-timing? private-project (test-utils/example-plan :trial)) true))
   (with-redefs [config/enterprise? (constantly true)]
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :free)) true))))
 
