@@ -153,12 +153,15 @@
 (defn feature-enabled? [project feature]
   (get-in project [:feature_flags feature]))
 
-(defn show-build-timing? [project plan]
+(defn- show-premium-content? [project plan]
   (or (config/enterprise?)
       (:oss project)
-      (plan-model/paid? plan)
+      (> (plan-model/paid-containers plan) 0)
       (plan-model/trial? plan)
       (plan-model/osx? plan)))
+
+(defn show-build-timing? [project plan]
+  (show-premium-content? project plan))
 
 (defn add-show-insights? [project plans]
   (let [org-name (-> project 
@@ -170,10 +173,6 @@
                                         (= org-name)))
                            (first)
                            (:plans)
-                           (apply max-key :containers))]
+                           (apply max-key plan-model/paid-containers))]
 
-    (assoc project :show-insights? (or (config/enterprise?)
-                                       (:oss project)
-                                       (plan-model/paid? org-best-plan)
-                                       (plan-model/trial? org-best-plan)
-                                       (plan-model/osx? org-best-plan)))))
+    (assoc project :show-insights? (show-premium-content? project org-best-plan))))
