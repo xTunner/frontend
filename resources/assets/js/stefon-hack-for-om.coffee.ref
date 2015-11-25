@@ -126,7 +126,6 @@ window.stefon_hack_for_om =
     "/docs/deploy-bluemix.md": '(asset-path "docs/deploy-bluemix.md")'
     "/docs/docker.md": '(asset-path "docs/docker.md")'
     "/docs/dont-run.md": '(asset-path "docs/dont-run.md")'
-    "/docs/ec2ip-and-security-group.md": '(asset-path "docs/ec2ip-and-security-group.md")'
     "/docs/environment-variables.md": '(asset-path "docs/environment-variables.md")'
     "/docs/environment.md": '(asset-path "docs/environment.md")'
     "/docs/external-resources.md": '(asset-path "docs/external-resources.md")'

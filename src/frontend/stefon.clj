@@ -60,7 +60,6 @@
            "docs/deploy-bluemix.md"
            "docs/docker.md"
            "docs/dont-run.md"
-           "docs/ec2ip-and-security-group.md"
            "docs/environment-variables.md"
            "docs/environment.md"
            "docs/external-resources.md"
