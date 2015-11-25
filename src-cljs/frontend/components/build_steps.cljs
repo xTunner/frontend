@@ -346,7 +346,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when (om/get-state owner [:autoscroll?])
-        (when-let [node (utils/sel1 "#container_scroll_parent")]
+        (when-let [node (om/get-node owner)]
           (utils/scroll-to-node-bottom node))))
     om/IRender
     (render [_]
