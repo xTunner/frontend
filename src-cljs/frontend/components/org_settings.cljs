@@ -225,12 +225,12 @@
             update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
                                 false)
             plan-selected? (= plan-type-key (keyword current-plan))
-            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type ".png"))}]
-            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading.png"))}]]
+            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
+            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
         (html
           (if (pm/osx? plan)
             (if plan-selected?
-              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected.png"))}]
+              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
               (forms/managed-button
                 [:a.unselected
                  {:data-success-text plan-img
@@ -324,7 +324,7 @@
             (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 279 :plan-type "growth" :current-plan current-plan})
             [:a.unselected {:href "mailto:sayhi@circleci.com"}
-             [:img {:src (utils/cdn-path "img/inner/mobile-focused.png")}]]]])))))
+             [:img {:src (utils/cdn-path "img/inner/mobile-focused-2x.png")}]]]])))))
 
 (defn containers [app owner]
   (reify
