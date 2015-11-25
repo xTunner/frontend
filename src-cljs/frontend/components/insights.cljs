@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.routes :as routes]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
@@ -236,41 +237,51 @@
       (html
        [:div.build-time-visualization]))))
 
-(defrender project-insights [{:keys [show-insights? reponame username branches recent-builds] :as project} owner]
-  (let [builds (chartable-builds recent-builds)]
-    (html
-     (let [branch (-> recent-builds (first) (:branch))]
-       [:div.project-block
-        [:h1 (gstring/format "%s/%s" username reponame)]
-        [:h4 "Branch: " branch]
-        (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-              (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
-                              [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})} "Upgrade here"]]
-              (empty? builds) [:div.no-insights "No tests for this repo"]
-              :else
-              (list
-               [:div.above-info
-                [:dl
-                 [:dt "MEDIAN BUILD"]
-                 [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
-                [:dl
-                 [:dt "MEDIAN QUEUE"]
-                 [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
-                [:dl
-                 [:dt "LAST BUILD"]
-                 [:dd (om/build common/updating-duration
-                                {:start (->> builds
-                                             reverse
-                                             (filter :start_time)
-                                             first
-                                             :start_time)}
-                                {:opts {:formatter datetime/as-time-since
-                                        :formatter-use-start? true}})]]]
-               (om/build project-insights-bar builds)
-               [:div.below-info
-                [:dl
-                 [:dt "BRANCHES"]
-                 [:dd (-> branches keys count)]]]))]))))
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds] :as project} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (when (not show-insights?)
+        (analytics/track-build-insights-upsell-impression {:reponame reponame
+                                                           :username username})))
+    om/IRender
+    (render [_]
+      (let [builds (chartable-builds recent-builds)]
+        (html
+          (let [branch (-> recent-builds (first) (:branch))]
+            [:div.project-block
+             [:h1 (gstring/format "%s/%s" username reponame)]
+             [:h4 "Branch: " branch]
+             (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
+                   (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
+                                         [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
+                                                           :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
+                                                                                                                    :username username})} "Upgrade here"]]
+                   (empty? builds) [:div.no-insights "No tests for this repo"]
+                   :else
+                   (list
+                     [:div.above-info
+                      [:dl
+                       [:dt "MEDIAN BUILD"]
+                       [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
+                      [:dl
+                       [:dt "MEDIAN QUEUE"]
+                       [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
+                      [:dl
+                       [:dt "LAST BUILD"]
+                       [:dd (om/build common/updating-duration
+                                      {:start (->> builds
+                                                   reverse
+                                                   (filter :start_time)
+                                                   first
+                                                   :start_time)}
+                                      {:opts {:formatter datetime/as-time-since
+                                              :formatter-use-start? true}})]]]
+                     (om/build project-insights-bar builds)
+                     [:div.below-info
+                      [:dl
+                       [:dt "BRANCHES"]
+                       [:dd (-> branches keys count)]]]))]))))))
 
 (defrender no-projects [data owner]
   (html

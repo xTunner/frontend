@@ -170,9 +170,6 @@
                            (:plans)
                            (apply max-key :containers))]
 
-    (println org-name)
-    (println plans)
-    (println org-best-plan)
     (assoc project :show-insights? (or (config/enterprise?)
                                        (:oss project)
                                        (> (:containers org-best-plan) 1)))))
