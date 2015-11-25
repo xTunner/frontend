@@ -243,7 +243,7 @@
     (did-mount [_]
       (when (not show-insights?)
         (analytics/track-build-insights-upsell-impression {:reponame reponame
-                                                           :username username})))
+                                                           :org-name username})))
     om/IRender
     (render [_]
       (let [builds (chartable-builds recent-builds)]
@@ -256,7 +256,7 @@
                    (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
                                          [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
                                                            :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
-                                                                                                                    :username username})} "Upgrade here"]]
+                                                                                                                    :org-name username})} "Upgrade here"]]
                    (empty? builds) [:div.no-insights "No tests for this repo"]
                    :else
                    (list
