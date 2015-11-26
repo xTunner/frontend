@@ -202,3 +202,15 @@
 
 (deftrack track-payment-plan-click [data]
   (mixpanel/track "payment-plan-click" data))
+
+(deftrack track-build-insights-upsell-impression [data]
+  (mixpanel/track "build-insights-upsell-impression" data))
+
+(deftrack track-build-insights-upsell-click [data]
+  (mixpanel/track "build-insights-upsell-click" data))
+
+(deftrack track-build-timing-upsell-impression [data]
+  (mixpanel/track "build-timing-upsell-impression" data))
+
+(deftrack track-build-timing-upsell-click [data]
+  (mixpanel/track "build-timing-upsell-click" data))

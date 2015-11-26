@@ -70,13 +70,11 @@
     (om/root insights/build-insights test-projects-data {:target test-node})
     (testing "Simple render of feature container.")))
 
-
 (deftest can-render-project-block
   (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
     (om/root insights/project-insights (first test-projects-data) {:target test-node
                                                                    :shared {:timer-atom (timer/initialize)}})
     (testing "Simple render of feature container.")))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO: Async testing does not work right now, it's not in scope to fix it ;;
