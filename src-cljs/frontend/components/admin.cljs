@@ -131,7 +131,9 @@
   (reify
     om/IRender
     (render [_]
-      (let [fleet-state (sort-by :instance_id (get-in app state/fleet-state-path))
+      (let [fleet-state (->> (get-in app state/fleet-state-path)
+                             (remove #(-> % :builder_tags (= ["os:none"])))
+                             (sort-by :instance_id))
             summary-counts (get-in app state/build-system-summary-path)
             current-tab (or (get-in app [:navigation-data :tab]) :builders)]
         (html
