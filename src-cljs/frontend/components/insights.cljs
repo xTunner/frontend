@@ -307,11 +307,8 @@
   (let [plans (get-in state state/user-plans-path)
         projects (get-in state state/projects-path)]
     (html
-     [:div#build-insights {:class (case (count projects)
-                                    1 "one-project"
-                                    2 "two-projects"
-                                    "three-or-more-projects")}
-        (cond
+     [:div#build-insights {}
+      (cond
           (nil? projects)    [:div.loading-spinner-big common/spinner]
           (empty? projects)  (om/build no-projects state)
           :else              (om/build-all project-insights (decorate-projects projects plans)))])))
