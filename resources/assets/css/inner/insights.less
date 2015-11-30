@@ -92,8 +92,21 @@
     background-color: white;
     width: @block-width;
 
+    &.build-failed {
+      h1 {
+        background-color: @insights-header-fail;
+      }
+    }
+
     svg {
       display: block;
+
+      &.badge-icon {
+        display: inline;
+        vertical-align: text-bottom;
+        margin-right: 5px;
+        width: 15px;
+      }
     }
     h1 {
       color: @gray-light-v2;

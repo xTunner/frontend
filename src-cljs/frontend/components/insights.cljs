@@ -7,6 +7,7 @@
             [frontend.routes :as routes]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
@@ -243,7 +244,7 @@
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds] :as project} owner]
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -253,9 +254,14 @@
     om/IRender
     (render [_]
       (html
-       (let [branch (-> recent-builds (first) (:branch))]
-         [:div.project-block
-          [:h1 (formatted-project-name project)]
+       (let [branch (-> recent-builds (first) (:branch))
+             latest-build (last chartable-builds)]
+         [:div.project-block {:class (str "build-" (name sort-category))}
+          [:h1
+           [:span.last-build-status
+            (om/build svg {:class "badge-icon"
+                           :src (-> latest-build build/status-icon-v2 common/icon-path)})]
+           (formatted-project-name project)]
           [:h4 "Branch: " branch]
           (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
                 (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
@@ -306,11 +312,18 @@ One of #{:pass :fail :other}"
   (let [outcome (some->> chartable-builds
                          (map :outcome)
                          (filter #{"success" "failed"})
-                         first)]
+                         last)]
     (match [show-insights? outcome]
            [true "success"] :success
            [true "failed"] :failed
            :else :other)))
+
+(defn project-latest-build-time [project]
+  (let [start-time (-> project
+                       :chartable-builds
+                       last
+                       :start_time)]
+    (js/Date. start-time)))
 
 (defn decorate-project
   "Add keys to project related to insights - :show-insights? :sort-category :chartable-builds ."
@@ -319,7 +332,8 @@ One of #{:pass :fail :other}"
     (-> project
         (assoc :chartable-builds chartable-builds)
         (#(assoc % :show-insights? (project-model/show-insights? plans %)))
-        (#(assoc % :sort-category (project-sort-category %))))))
+        (#(assoc % :sort-category (project-sort-category %)))
+        (#(assoc % :latest-build-time (project-latest-build-time %))))))
 
 (defn build-insights [state owner]
   (reify
@@ -345,12 +359,7 @@ One of #{:pass :fail :other}"
                                                        :name (->> filtered-projects
                                                                   (sort-by formatted-project-name))
                                                        :recency (->> filtered-projects
-                                                                     (sort-by (fn [project]
-                                                                                (let [start-time (-> project
-                                                                                                     :chartable-builds
-                                                                                                     last
-                                                                                                     :start_time)]
-                                                                                  (js/Date. start-time))))
+                                                                     (sort-by :latest-build-time)
                                                                      reverse))]
                                  (list
                                   [:div.controls
