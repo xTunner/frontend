@@ -24,20 +24,33 @@
   }
 
   .controls {
-    input[type=radio] {
-      display: none;
 
-      &:checked + label {
-        background-color: rgba(0, 0, 0, 0.1);
+    .filtering {
+
+      input[type=radio] {
+        display: none;
+
+        &:checked + label {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+      }
+
+      label {
+        color: @gray-light-v2;
+        font-weight: inherit;
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
 
-    label {
-      color: @gray-light-v2;
-      font-weight: inherit;
-      &:hover {
-        cursor: pointer;
+    .sorting {
+
+      label {
+        color: @gray-light-v2;
+        font-weight: inherit;
       }
+
     }
   }
 

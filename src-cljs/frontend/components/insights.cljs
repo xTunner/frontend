@@ -240,6 +240,9 @@
       (html
        [:div.build-time-visualization]))))
 
+(defn formatted-project-name [{:keys [username reponame]}]
+  (gstring/format "%s/%s" username reponame))
+
 (defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds] :as project} owner]
   (reify
     om/IDidMount
@@ -252,7 +255,7 @@
       (html
        (let [branch (-> recent-builds (first) (:branch))]
          [:div.project-block
-          [:h1 (gstring/format "%s/%s" username reponame)]
+          [:h1 (formatted-project-name project)]
           [:h4 "Branch: " branch]
           (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
                 (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
@@ -322,9 +325,10 @@ One of #{:pass :fail :other}"
   (reify
     om/IInitState
     (init-state [_]
-      {:selected-filter :all})
+      {:selected-filter :all
+       :selected-sorting :name})
     om/IRenderState
-    (render-state [_ {:keys [selected-filter]}]
+    (render-state [_ {:keys [selected-filter selected-sorting]}]
       (let [plans (get-in state state/user-plans-path)
             projects (get-in state state/projects-path)]
         (html
@@ -336,28 +340,47 @@ One of #{:pass :fail :other}"
                                      categories (group-by :sort-category projects')
                                      filtered-projects (if (= selected-filter :all)
                                                          projects'
-                                                         (selected-filter categories))]
+                                                         (selected-filter categories))
+                                     sorted-projects (case selected-sorting
+                                                       :name (->> filtered-projects
+                                                                  (sort-by formatted-project-name))
+                                                       :recency (->> filtered-projects
+                                                                     (sort-by (fn [project]
+                                                                                (let [start-time (-> project
+                                                                                                     :chartable-builds
+                                                                                                     last
+                                                                                                     :start_time)]
+                                                                                  (js/Date. start-time))))
+                                                                     reverse))]
                                  (list
                                   [:div.controls
-                                   [:input {:id "insights-filter-all"
-                                            :type "radio"
-                                            :name "selected-filter"
-                                            :checked (= selected-filter :all)
-                                            :on-change #(om/set-state! owner :selected-filter :all)}]
-                                   [:label {:for "insights-filter-all"}
-                                    (gstring/format"All (%s)" (count projects'))]
-                                   [:input {:id "insights-filter-success"
-                                            :type "radio"
-                                            :name "selected-filter"
-                                            :checked (= selected-filter :success)
-                                            :on-change #(om/set-state! owner :selected-filter :success)}]
-                                   [:label {:for "insights-filter-success"}
-                                    (gstring/format"Success (%s)" (count (:success categories)))]
-                                   [:input {:id "insights-filter-failed"
-                                            :type "radio"
-                                            :name "selected-filter"
-                                            :checked (= selected-filter :failed)
-                                            :on-change #(om/set-state! owner :selected-filter :failed)}]
-                                   [:label {:for "insights-filter-failed"}
-                                    (gstring/format"failed (%s)" (count (:failed categories)))]]
-                                  (om/build-all project-insights filtered-projects))))])))))
+                                   [:div.filtering
+                                    [:input {:id "insights-filter-all"
+                                             :type "radio"
+                                             :name "selected-filter"
+                                             :checked (= selected-filter :all)
+                                             :on-change #(om/set-state! owner :selected-filter :all)}]
+                                    [:label {:for "insights-filter-all"}
+                                     (gstring/format"All (%s)" (count projects'))]
+                                    [:input {:id "insights-filter-success"
+                                             :type "radio"
+                                             :name "selected-filter"
+                                             :checked (= selected-filter :success)
+                                             :on-change #(om/set-state! owner :selected-filter :success)}]
+                                    [:label {:for "insights-filter-success"}
+                                     (gstring/format"Success (%s)" (count (:success categories)))]
+                                    [:input {:id "insights-filter-failed"
+                                             :type "radio"
+                                             :name "selected-filter"
+                                             :checked (= selected-filter :failed)
+                                             :on-change #(om/set-state! owner :selected-filter :failed)}]
+                                    [:label {:for "insights-filter-failed"}
+                                     (gstring/format"failed (%s)" (count (:failed categories)))]]
+                                   [:div.sorting
+                                    [:label "Sort: "]
+                                    [:select {:class "toggle-sorting"
+                                              :on-change #(om/set-state! owner :selected-sorting (keyword (.. % -target -value)))
+                                              :value selected-sorting}
+                                     [:option {:value :name} "By Repo"]
+                                     [:option {:value :recency} "Recent"]]]]
+                                  (om/build-all project-insights sorted-projects))))])))))
