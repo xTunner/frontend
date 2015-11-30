@@ -266,7 +266,13 @@
     :github "JustinC474"
     :email "justin@circleci.com"
     :bio "Justin, a USC graduate, joins the CircleCI team as a web developer. As a product minded software engineer, Justin is excited to grow the CircleCI web platform. As a UX enthusiast, he's excited to continuously improve the usability of the site. In his spare time Justin likes playing tennis, bike riding, and most importantly, traveling the world."}
-])
+   {:name "Bear Taylor"
+    :img-path (scaled-image-path "bear")
+    :role "Operations"
+    :github "bear"
+    :email ""
+    :bio "Bio coming soon!"}
+   ])
 
 
 
