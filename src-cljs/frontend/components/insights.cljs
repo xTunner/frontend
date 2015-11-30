@@ -363,7 +363,7 @@ One of #{:pass :fail :other}"
                                                                      reverse))]
                                  (list
                                   [:div.controls
-                                   [:div.filtering
+                                   [:span.filtering
                                     [:input {:id "insights-filter-all"
                                              :type "radio"
                                              :name "selected-filter"
@@ -385,11 +385,12 @@ One of #{:pass :fail :other}"
                                              :on-change #(om/set-state! owner :selected-filter :failed)}]
                                     [:label {:for "insights-filter-failed"}
                                      (gstring/format"failed (%s)" (count (:failed categories)))]]
-                                   [:div.sorting
+                                   [:span.sorting
                                     [:label "Sort: "]
                                     [:select {:class "toggle-sorting"
                                               :on-change #(om/set-state! owner :selected-sorting (keyword (.. % -target -value)))
                                               :value selected-sorting}
                                      [:option {:value :name} "By Repo"]
                                      [:option {:value :recency} "Recent"]]]]
-                                  (om/build-all project-insights sorted-projects))))])))))
+                                  [:div.blocks-container
+                                   (om/build-all project-insights sorted-projects)])))])))))
