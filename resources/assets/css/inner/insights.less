@@ -1,9 +1,9 @@
-@import "../shared/variables.less";
+@import   "../shared/variables.less";
 
 @tick-color: #999999;
 @spinner-height: 172px;
 
-&.ui-v2 #build-insights .no-insights-block {
+&.ui-v2 #build-insights .no-projects-block {
   background-color: @block-background-color-v2;
 
   .content {
@@ -23,7 +23,25 @@
     font-size: 16px;
   }
 
-  .no-insights-block {
+  .controls {
+    input[type=radio] {
+      display: none;
+
+      &:checked + label {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    label {
+      color: @gray-light-v2;
+      font-weight: inherit;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .no-projects-block {
     margin: 15px;
     padding: 10px;
     background-color: @white;
@@ -105,22 +123,12 @@
       }
     }
 
-    .no-insights, .loading-spinner{
+    .no-builds, .loading-spinner{
       height: @spinner-height;
-      text-align: center;
       .flexy(center, space-around, column);
 
-      &.no-insights {
+      &.no-builds {
         font-weight: bold;
-      }
-      
-      .message {
-        width: 80%;
-        margin-top: 40px;
-      }
-
-      .upgrade-link {
-        margin-bottom: 40px;
       }
     }
   }

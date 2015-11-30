@@ -26,11 +26,11 @@
   (with-redefs [config/enterprise? (constantly true)]
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :free)) true))))
 
-(deftest test-add-show-insights-works
+(deftest test-show-insights-works
    (with-redefs [config/enterprise? (constantly false)]
-    (is (= (:show-insights? (project/add-show-insights? oss-project test-utils/example-user-plans-free) true)))
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-free) false)))
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-paid) true)))
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-piggieback)) true))) 
+     (is (= (project/show-insights? test-utils/example-user-plans-free oss-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-free private-project) false))
+     (is (= (project/show-insights? test-utils/example-user-plans-paid private-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-piggieback private-project) true)))
   (with-redefs [config/enterprise? (constantly true)]
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-free) true)))))
+    (is (= (project/show-insights? test-utils/example-user-plans-free private-project) true))))
