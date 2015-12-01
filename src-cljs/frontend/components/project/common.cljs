@@ -71,7 +71,7 @@
     [:div.alert {:class "alert-success"}
        (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
                              org-name (plan-model/usable-containers plan) (pluralize days "day"))
-             [:a.pay-now-plain-text {:href plan-path} "Please enter your payment information"]
+             [:a.pay-now-plain-text {:href plan-path} "Update your plan"]
              " before the trial expires to continue using these containers."
              )]))
 
