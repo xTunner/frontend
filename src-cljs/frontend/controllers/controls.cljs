@@ -922,10 +922,10 @@
 
 (defmethod post-control-event! :preferences-updated
   [target message args previous-state current-state]
-  (let [beta-params {state/user-in-beta-key   (get-in current-state state/user-in-beta-path)
-                     state/user-betas-key     (get-in current-state state/user-betas-path)}
-        email-params {:basic_email_pref       (get-in current-state (conj state/user-path :basic_email_prefs))
-                      :selected_email         (get-in current-state (conj state/user-path :selected_email))}
+  (let [beta-params {state/user-in-beta-key         (get-in current-state state/user-in-beta-path)
+                     state/user-betas-key           (get-in current-state state/user-betas-path)}
+        email-params {state/user-email-prefs-key    (get-in current-state state/user-email-prefs-path)
+                      state/user-selected-email-key (get-in current-state state/user-selected-email-path)}
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax
      :put

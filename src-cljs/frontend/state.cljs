@@ -142,6 +142,11 @@
 
 (def repos-loading-path (conj user-path :repos-loading))
 
+(def user-email-prefs-key :basic_email_prefs)
+(def user-email-prefs-path (conj user-path :basic_email_prefs))
+(def user-selected-email-key :selected_email)
+(def user-selected-email-path (conj user-path user-selected-email-key))
+
 (def user-in-beta-key :in_beta_program)
 (def user-in-beta-path (conj user-path user-in-beta-key))
 (def user-betas-key :enrolled_betas)
