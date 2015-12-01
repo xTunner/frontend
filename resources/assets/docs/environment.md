@@ -105,7 +105,9 @@ Firefox {{ versions.Firefox }}. Chromedriver 23.0 is also available as
 
 We're using a build of Docker which is patched to work in the CircleCI build environment.
 
-The current version is `{{ versions.docker }}`
+The current version is `{{ versions.docker }}`.
+
+We also pre-install Docker Compose `{{ versions.docker_compose }}`.
 
 ## Languages
 
