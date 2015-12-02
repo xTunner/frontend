@@ -1351,28 +1351,20 @@
                                          :stop (or (:queued_at build) (:stop_time build))})
      " waiting for builds to finish"]))
 
-(defn build-finished-status [build]
-  (let [stop-time  (:stop_time build)
-        start-time (:start_time build)]
-    [:div.summary-item
-     [:span.summary-label "Finished: "]
-     [:span.stop-time
-      (when stop-time
-        {:title (datetime/full-datetime stop-time)})
-      (when stop-time
-        (list (om/build common/updating-duration
-                        {:start stop-time}
-                        {:opts {:formatter datetime/time-ago}}) " ago"))]
-     [:span
-      " ("
-      (if (build-model/running? build)
-        (om/build common/updating-duration {:start start-time
-                                            :stop  stop-time})
-        (build-model/duration build))
-      (om/build expected-duration {:start start-time
-                                   :stop  stop-time
-                                   :build build})
-      ")"]]))
+(defn build-finished-status [{stop-time :stop_time
+                              start-time :start_time
+                              :as build}]
+  {:pre [(some? stop-time)
+         (some? start-time)]}
+  [:div.summary-item
+   [:span.summary-label "Finished: "]
+   [:span.stop-time
+    {:title (datetime/full-datetime stop-time)}
+    (om/build common/updating-duration
+              {:start stop-time}
+              {:opts {:formatter datetime/time-ago}})
+    " ago"]
+   (str " (" (build-model/duration build) ")")])
 
 (defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
   (when-let [build-number (:build_num previous)]
