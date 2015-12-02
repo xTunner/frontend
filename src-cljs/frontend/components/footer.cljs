@@ -8,8 +8,8 @@
       [:div.row
         [:div.col-md-5
           [:p.lead "Over "
-            [:b "200,000"] " projects and 126k users are testing on CircleCI."]
-          [:span "Free Hosted Continuous Integration and Deployment for web and mobile applications. Automated build, test & deployment for public & private projects. Build better apps and ship code faster with CircleCI."]
+            [:b "200,000"] " organizations and developers trust CircleCI."]
+          [:span "CircleCI's continuous integration and deployment platform helps software teams rapidly release code they trust by automating the build, test, and deploy process. Built for developers, CircleCI offers a modern software development platform that lets teams ramp quickly, scale easily, and build confidently every day."]
           [:div.social-btns
             [:a.social-btn-rss {:href "http://blog.circleci.com/", :data-text , :data-url}
              [:div
@@ -42,9 +42,10 @@
               [:li [:a {:href "/mobile"} "Mobile"]]
               [:li [:a {:href "/enterprise"} "Enterprise"]]
               [:li [:a {:href "/pricing"} "Pricing"]]
+              [:li [:a {:href "/customers"} "Customers"]]
               [:li [:a {:href "/changelog"} "Changelog"]]]]
           [:div.col-md-2
-            [:h6 "Contact"]
+            [:h6 "Support"]
             [:ul.list-unstyled
               [:li [:a {:href "/docs"} "Documentation"]]
               [:li [:a {:href "https://discuss.circleci.com/"} "Discuss"]]
