@@ -1363,11 +1363,9 @@
               {:opts {:formatter datetime/time-ago-abbreviated}})
     " ago"]])
 
-(defn build-finished-status [{start-time :start_time
-                              stop-time :stop_time
+(defn build-finished-status [{stop-time :stop_time
                               :as build}]
-  {:pre [(some? start-time)
-         (some? stop-time)]}
+  {:pre [(some? stop-time)]}
   [:div.summary-item
    [:span.summary-label "Finished: "]
    [:span.stop-time
@@ -1412,10 +1410,10 @@
             [:div.summary-items
              [:div.summary-item
               (builds-table/build-status-badge build)]
-             (when (:start_time build)
-               (if-not (:stop_time build)
-                 (build-running-status build)
-                 (build-finished-status build)))]
+             (if-not (:stop_time build)
+               (when (:start_time build)
+                 (build-running-status build))
+               (build-finished-status build))]
             [:div.summary-items
              (om/build previous-build-label build)
              [:div.summary-item
