@@ -360,12 +360,9 @@
         (html
           [:div {:on-wheel (fn [e]
                              (check-autoscroll owner (aget e "deltaY"))
-                             (when (not= 0 (aget e "deltaX"))
-                               (.preventDefault e)
-                               (let [body (.-body js/document)]
-                                 (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY"))))))
-
-                                  :class (str "selected_" current-container-id)}
+                             (let [body (.-body js/document)]
+                               (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY")))))
+                 :class (str "selected_" current-container-id)}
            (om/build container-view-v2
                      {:container (containers current-container-id)
                       :non-parallel-actions non-parallel-actions}
