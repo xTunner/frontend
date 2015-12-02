@@ -1362,7 +1362,7 @@
     {:title (datetime/full-datetime stop-time)}
     (om/build common/updating-duration
               {:start stop-time}
-              {:opts {:formatter datetime/time-ago}})
+              {:opts {:formatter datetime/time-ago-abbreviated}})
     " ago"]
    (str " (" (build-model/duration build) ")")])
 
