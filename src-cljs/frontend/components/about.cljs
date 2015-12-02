@@ -272,7 +272,19 @@
     :github "bear"
     :email ""
     :bio "Bio coming soon!"}
-   ])
+   {:name "Mark Pundsack"
+    :img-path (scaled-image-path "mark")
+    :role "VP Product"
+    :github ""
+    :email ""
+    :bio "Bio coming soon!"}
+   {:name "Brady Lill"
+    :img-path (scaled-image-path "brady")
+    :role "Developer"
+    :github ""
+    :email ""
+    :bio "Bio coming soon!"}]
+  )
 
 
 
