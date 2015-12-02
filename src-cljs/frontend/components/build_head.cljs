@@ -1351,11 +1351,23 @@
                                          :stop (or (:queued_at build) (:stop_time build))})
      " waiting for builds to finish"]))
 
-(defn build-finished-status [{stop-time :stop_time
-                              start-time :start_time
+(defn build-running-status [{start-time :start_time
+                             :as build}]
+  {:pre [(some? start-time)]}
+  [:div.summary-item
+   [:span.summary-label "Started: "]
+   [:span.start-time
+    {:title (datetime/full-datetime start-time)}
+    (om/build common/updating-duration
+              {:start start-time}
+              {:opts {:formatter datetime/time-ago-abbreviated}})
+    " ago"]])
+
+(defn build-finished-status [{start-time :start_time
+                              stop-time :stop_time
                               :as build}]
-  {:pre [(some? stop-time)
-         (some? start-time)]}
+  {:pre [(some? start-time)
+         (some? stop-time)]}
   [:div.summary-item
    [:span.summary-label "Finished: "]
    [:span.stop-time
@@ -1400,8 +1412,10 @@
             [:div.summary-items
              [:div.summary-item
               (builds-table/build-status-badge build)]
-             (when (:stop_time build)
-               (build-finished-status build))]
+             (when (:start_time build)
+               (if-not (:stop_time build)
+                 (build-running-status build)
+                 (build-finished-status build)))]
             [:div.summary-items
              (om/build previous-build-label build)
              [:div.summary-item
@@ -1415,7 +1429,7 @@
               [:div.summary-items
                [:div.summary-item
                 [:span.summary-label "Queued: "]
-                [:span  (queued-time build)]]])
+                [:span (queued-time build)]]])
 
             [:div.summary-build-contents
              [:div.summary-item
