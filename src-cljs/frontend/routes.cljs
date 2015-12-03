@@ -160,12 +160,10 @@
                                       :_description "Build better Android apps with Mobile Continuous Integration. Get testing today!")))
 
   (defroute v1-pricing "/pricing" {:as params}
-    (if authenticated?
-      (open-to-inner! nav-ch :account {:subpage :plans})
-      (open-to-outer! nav-ch :pricing (assoc params
+    (open-to-outer! nav-ch :pricing (assoc params
                                         :_analytics-page "View Pricing Outer"
                                         :_title "Pricing and Information"
-                                        :_description "Save time and cost by making your engineering team more efficient. Get started for free and see how many containers and parallelism you need to scale with your team."))))
+                                        :_description "Save time and cost by making your engineering team more efficient. Get started for free and see how many containers and parallelism you need to scale with your team.")))
 
   (defroute v1-jobs "/jobs" {:as params}
     (open-to-outer! nav-ch :jobs (assoc params

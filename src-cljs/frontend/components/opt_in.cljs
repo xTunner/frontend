@@ -43,7 +43,7 @@
         [:div.ui-v2-opt-in-wrapper
          [:div
           "As a reminder, the iOS beta has ended as of Monday, November 30th. If you have not done so already, please confirm a plan to lock pricing in and ensure a smooth transition to the limited release "
-          [:a {:href "http://circleci.com/pricing"} "here"]
+          [:a {:href "http://circleci.com/account/plans"} "here"]
           ". Reach out to "
           [:a {:href "mailto:sayhi@circleci.com"} "sayhi@circleci.com"]
           " with any questions!"]]]))))
