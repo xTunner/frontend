@@ -845,7 +845,8 @@
   [target message {:keys [containers]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        ;we need to use the org-name on plan incase this org is piggiebacking
+        org-name (get-in current-state state/org-plan-org-name-path)]
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
@@ -860,7 +861,8 @@
   [target message {:keys [plan-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        ;we need to use the org-name on plan incase this org is piggiebacking
+        org-name (get-in current-state state/org-plan-org-name-path)]
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :put
