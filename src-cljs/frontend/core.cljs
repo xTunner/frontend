@@ -135,7 +135,11 @@
        (set-canonical! (:_canonical args))
        (analytics/register-last-touch-utm query-params)
        (when-let [join (:join query-params)] (analytics/track-join-code join))
-       (analytics/track-view-page (if inner? :inner :outer))))))
+       (analytics/track-view-page (if inner? :inner :outer))
+       (when-let [app-dominant (goog.dom.getElementByClass "app-dominant")]
+         (set! (.-scrollTop app-dominant) 0))
+       (when-let [main-body (goog.dom.getElementByClass "main-body")]
+         (set! (.-scrollTop main-body) 0))))))
 
 (defn api-handler
   [value state container]
