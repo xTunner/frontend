@@ -270,19 +270,19 @@
     :img-path (scaled-image-path "bear")
     :role "Operations"
     :github "bear"
-    :email ""
+    :email "bear@circleci.com"
     :bio "Bio coming soon!"}
    {:name "Mark Pundsack"
     :img-path (scaled-image-path "mark")
     :role "VP Product"
-    :github ""
-    :email ""
+    :github "markpundsack"
+    :email "mark@circleci.com"
     :bio "Bio coming soon!"}
    {:name "Brady Lill"
     :img-path (scaled-image-path "brady")
     :role "Developer"
-    :github ""
-    :email ""
+    :github "bradylill"
+    :email "brady@circleci.com"
     :bio "Bio coming soon!"}]
   )
 
