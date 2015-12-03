@@ -58,6 +58,8 @@ window.stefon_hack_for_om =
     "/img/outer/about/laura@2x.png": '(asset-path "img/outer/about/laura@2x.png")'
     "/img/outer/about/lizzie.png": '(asset-path "img/outer/about/lizzie.png")'
     "/img/outer/about/lizzie@2x.png": '(asset-path "img/outer/about/lizzie@2x.png")'
+    "/img/outer/about/le.png": '(asset-path "img/outer/about/le@2x.png")'
+    "/img/outer/about/le@2x.png": '(asset-path "img/outer/about/le@2x.png")'
     "/img/outer/about/lev.png": '(asset-path "img/outer/about/lev@2x.png")'
     "/img/outer/about/lev@2x.png": '(asset-path "img/outer/about/lev@2x.png")'
     "/img/outer/about/mahmood.png": '(asset-path "img/outer/about/mahmood.png")'
