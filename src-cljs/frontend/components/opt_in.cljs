@@ -15,8 +15,7 @@
        [:div.ui-v2-opt-in {}
         [:div.ui-v2-opt-in-wrapper
          [:div
-          [:b "Try our new look. "]
-          [:span "You have been selected for a private beta of our new interface. "]]
+          [:span "CircleCI is getting a new look. "]]
          [:div.opt-in-right
           [:button {:on-click #(raise! owner [:try-ui-v2-clicked])} "Try our new look"]]]]))))
 
