@@ -1314,17 +1314,20 @@
 
 (defn pull-requests [urls]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
-  (list
-    [:span.summary-spacer "•"]
-    [:span.summary-label
-     (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
-    [:span
-     (interpose
-       ", "
-       (map (fn [url] [:a {:href url} "#"
-                       (let [n (re-find #"/\d+$" url)]
-                         (if n (subs n 1) "?"))])
-            urls))]))
+  [:div.summary-item
+   (when-not (feature/enabled? :ui-v2)
+     [:span.summary-spacer "•"])
+   [:span.summary-label
+    (str (if (feature/enabled? :ui-v2) "PR" "Pull Request")
+         (when (< 1 (count urls)) "s")
+         ": ")]
+   [:span
+    (interpose
+     ", "
+     (map (fn [url] [:a {:href url} "#"
+                     (let [n (re-find #"/\d+$" url)]
+                       (if n (subs n 1) "?"))])
+          urls))]])
 
 (defn queued-time [build]
   (if (< 0 (build-model/run-queued-time build))
