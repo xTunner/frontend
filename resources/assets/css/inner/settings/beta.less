@@ -2,11 +2,33 @@
 
   input.btn {
     .circleButton(@grayLightest, @grayLighter);
-    margin-bottom: 1em;
+    margin: 20px 0 10px;
   }
 
-  .badge-enrolled {
+  h2 .badge-enrolled {
     margin: 0 0 10px 5px;
     width: 13px;
+  }
+
+  h3 .badge-enrolled {
+    margin: 0 0 2px 5px;
+    width: 13px;
+  }
+
+  h4 {
+    text-transform: uppercase;
+    color: @beta-header-color;
+    font-size: 12px;
+  }
+
+  .alert-success {
+    backround: @alert-success-color;
+    svg {
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+
+    color: @beta-text-color;
+
   }
 }

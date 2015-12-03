@@ -457,10 +457,7 @@
                          "We'll credit your account, for the prorated difference between your new and old plans."]))
                      (if (pm/in-trial? plan)
                        [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                        ". Please pay for a plan by then or "
-                        (if (pm/freemium? plan)
-                          (str "you will revert to a free " (pluralize (pm/freemium-containers plan) "container") " plan.")
-                          "we will stop building your private repository pushes.")]
+                        "."]
                        ;; TODO: Only show for trial-plans?
                        [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
                         " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
