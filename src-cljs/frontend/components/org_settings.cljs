@@ -189,20 +189,32 @@
        "Need more time to decide? "
        [:a {:href "mailto:sayhi@circleci.com"} "Get in touch."]])]])
 
+(defn piggieback-plan-wording [plan]
+  (let [containers (:containers plan)]
+    (str
+      (when (pos? containers)
+        (str containers " containers"))
+      (when (and (pos? containers) (pm/osx? plan))
+        " and ")
+      (when (pm/osx? plan)
+        (-> plan :osx :template :name)))))
+
+(defn parent-plan-name [plan]
+  [:em (:org_name plan)])
+
 (defn plans-piggieback-plan-notification [plan current-org-name]
   [:div.row-fluid
    [:div.offset1.span10
     [:div.alert.alert-success
      [:p
-      "This organization is covered under " (:org_name plan) "'s plan which has "
-      (:containers plan) " containers."]
+      "This organization is covered under " (parent-plan-name plan) "'s plan which has " (piggieback-plan-wording plan)]
      [:p
-      "If you're an admin in the " (:org_name plan)
+      "If you're an admin in the " (parent-plan-name plan)
       " organization, then you can change plan settings from the "
       [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
        (:org_name plan) " plan page"] "."]
      [:p
-      "You can create a separate plan for " current-org-name " below."]]]])
+      "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " (parent-plan-name plan) "."]]]])
 
 (defn plural-multiples [num word]
   (if (> num 1)
