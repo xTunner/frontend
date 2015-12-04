@@ -64,6 +64,23 @@ test:
     - bundle exec cucumber --format json --out $CIRCLE_TEST_REPORTS/cucumber/tests.cucumber
 ```
 
+
+### RSpec
+
+To add test metadata collection to a project that uses a custom `rspec` build step, add the following gem to your Gemfile:
+
+```
+gem 'rspec_junit_formatter', '0.2.2'
+```
+
+And modify your test command to this:
+
+````
+test:
+  override:
+    - RAILS_ENV=test bundle exec rspec -r rspec_junit_formatter --format RspecJunitFormatter -o $CIRCLE_TEST_REPORTS/rspec/junit.xml
+````
+
 ### Java JUnit results with Maven Surefire Plugin
 
 If you are building a [Gradle](https://gradle.org/) or
