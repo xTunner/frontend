@@ -100,7 +100,28 @@
   display: none;
 }
 
-body.circle-elevio #elevio-widget,
-body.circle-intercom #intercom-container {
-  display: block;
+body.circle-elevio {
+
+  #elevio-widget {
+    display: block;
+  }
+
+  #intercom-launcher {
+    display: none !important;
+  }
+  
+  #intercom-container .intercom-conversations-new-conversation-button {
+    display: none;
+  }
+
+  .intercom-composer-container {
+    display: none;
+  }
+} 
+
+body.circle-intercom {
+
+  #intercom-container {
+    display: block;
+  }
 }
