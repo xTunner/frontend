@@ -338,9 +338,6 @@
                                          (pm/trial-containers plan)))
             min-slider-val (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
             max-slider-val (max 80 (* 2 (pm/usable-containers plan)))
-            old-max-slider-val (if (< selected-containers 50)
-                                 80
-                                 (let [n (* 2 selected-containers)] (+ n (- 10 (mod n 10)))))
             selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
@@ -353,14 +350,13 @@
         (if-not plan
           (cond ;; TODO: fix; add plan
             (nil? plan)
-            [:div.loading-spinner common/spinner]
+              [:div.loading-spinner common/spinner]
             (not (seq plan))
-            [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
-            :else [:h3 "Something is wrong! Please submit a bug report."])
+              [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
+            :else
+              [:h3 "Something is wrong! Please submit a bug report."])
 
           [:div#edit-plan {:class "pricing.page"}
-           (when (pm/piggieback? plan org-name)
-             (plans-piggieback-plan-notification plan org-name))
            (when-not (config/enterprise?)
              [:fieldset
               [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
@@ -381,11 +377,7 @@
                                                         :value (int (.. % -target -value)))}]
                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") (when-not (config/enterprise?) (str " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))))]
                  (when (not (= new-total old-total))
-                   [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])
-                 (when false                                ;; (pm/grandfathered? plan) ;; I don't
-                   ;; think this is useful anymore.
-                   [:i.fa.fa-question-circle#grandfathered-tooltip-hack
-                    {:title "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
+                   [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])]]
                [:fieldset
                 (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
                   (forms/managed-button
