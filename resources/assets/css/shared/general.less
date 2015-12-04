@@ -196,11 +196,17 @@ button [spinner], button [data-spinner]{
 }
 
 .card {
+  // A border-bottom would prevent margins from collapsing out of the bottom of
+  // the .card, but a box-shadow does not. We want to extend the bottom of the
+  // .card to include any margins, as the browser normally would with a border.
+  // Clearfixing accomplishes this.
+  .clearfix;
+
   padding: 15px;
   margin-bottom: 15px;
 
   background: white;
-  box-shadow: inset 0 -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px rgba(0, 0, 0, 0.1);
 
   hr {
     margin: 10px 0;

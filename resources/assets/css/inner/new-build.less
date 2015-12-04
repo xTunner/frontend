@@ -836,14 +836,32 @@
   }
 }
 
-.queued-builds {
-  margin-top: (@grid-gutter-width / 2);
-  // terrible hack because the box shadow is inset into grid
-  margin-bottom: -(@grid-gutter-width / 2) + 1;
-  box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.10);
-}
-
 &.ui-v2 {
+  .sub-head-usage-queue {
+    padding-bottom: 0;
+  }
+
+  .queue-message {
+    margin-bottom: (@grid-gutter-width / 2);
+  }
+
+  .queued-builds {
+    .build {
+      margin-bottom: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: none;
+    }
+
+    .status-area {
+      padding-left: 0;
+      border-right-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .build-info {
+      padding-right: 0;
+    }
+  }
+
   .sub-head-ssh-info {
     p {
       margin: 0px;
