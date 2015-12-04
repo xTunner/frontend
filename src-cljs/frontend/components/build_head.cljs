@@ -23,7 +23,6 @@
             [goog.dom]
             [goog.dom.DomHelper]
             [goog.string :as gstring]
-            [goog.string.format]
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -704,7 +703,11 @@
             failed-sources (filter (fn [[_ {:keys [failures]}]]
                                      (seq failures))
                                    source-hash)
-            build-succeeded? (= "success" build-status)]
+            build-succeeded? (= "success" build-status)
+
+            by-time (reverse (sort-by :run_time (filter (comp number? :run_time)
+                                                        tests)))
+            slowest (first by-time)]
         (html
          [:div.test-results
           (if-not tests
@@ -715,8 +718,16 @@
                            "Your build ran "
                            [:strong (count tests)]
                            " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
-                           [:strong "0 failures"]]
-
+                           [:strong "0 failures"]
+                           (when slowest
+                             [:div.build-tests-summary
+                              [:p
+                               [:strong "Slowest test:"]
+                               (gstring/format
+                                    " %s %s (took %.2f seconds)."
+                                    (:classname slowest)
+                                    (:name slowest)
+                                    (:run_time slowest))]])]
               :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
                      [:div [:img.alert-icon {:src (common/icon-path
                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
