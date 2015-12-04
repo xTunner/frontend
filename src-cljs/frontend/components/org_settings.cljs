@@ -212,7 +212,7 @@
 (defn pluralize-no-val [num word]
   (if (> num 1) (infl/plural word) (infl/singular word)))
 
-(defn osx-plan [{:keys [plan-type plan org-name price current-plan]} owner]
+(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
     om/IRender
     (render [_]
@@ -226,30 +226,25 @@
                                 false)
             plan-selected? (= plan-type-key (keyword current-plan))
             plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
-            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]
-            editable?    (or (not (pm/piggieback? plan org-name)) (pm/admin? plan))]
+            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
         (html
           (if (pm/osx? plan)
             (if plan-selected?
               [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
-              (if editable?
-                (forms/managed-button
-                  [:a.unselected
-                   {:data-success-text plan-img
-                    :data-loading-text loading-img
-                    :data-failed-text  plan-img
-                    :on-click          update-plan-fn}
-                   plan-img])
-                [:img.unselected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]))
-            (if editable?
               (forms/managed-button
                 [:a.unselected
                  {:data-success-text plan-img
-                  :data-loading-text plan-img
-                  :data-failed-text  plan-img
-                  :on-click          new-plan-fn}
-                 plan-img])
-              [:img.unselected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}])))))))
+                  :data-loading-text loading-img
+                  :data-failed-text plan-img
+                  :on-click update-plan-fn}
+                 plan-img]))
+            (forms/managed-button
+              [:a.unselected
+               {:data-success-text plan-img
+                :data-loading-text plan-img
+                :data-failed-text plan-img
+                :on-click new-plan-fn}
+               plan-img])))))))
 
 (def osx-faq-items
   [{:question (list
@@ -315,7 +310,7 @@
             [:dt question]
             [:dd answer]))]]))))
 
-(defn osx-plans [{:keys [plan org-name]} owner]
+(defn osx-plans [plan owner]
   (reify
     om/IRender
     (render [_]
@@ -325,9 +320,9 @@
            [:fieldset
             [:legend (str "iOS Limited Release Plans - The below selection only applies to iOS service and will not affect the Linux Containers above.")]]
            [:div.plan-selection
-            (om/build osx-plan {:plan plan :org-name org-name :price 79 :plan-type "starter" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :org-name org-name :price 139 :plan-type "standard" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :org-name org-name :price 279 :plan-type "growth" :current-plan current-plan})
+            (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
+            (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
+            (om/build osx-plan {:plan plan :price 279 :plan-type "growth" :current-plan current-plan})
             [:a.unselected {:href "mailto:sayhi@circleci.com"}
              [:img {:src (utils/cdn-path "img/inner/mobile-focused-2x.png")}]]]])))))
 
@@ -470,7 +465,7 @@
            (when (and (feature/enabled? :osx-plans)
                       (get-in app state/org-osx-beta-path))
              (list
-              (om/build osx-plans {:plan plan :org-name org-name})
+              (om/build osx-plans plan)
               (om/build osx-faq osx-faq-items)))])))))
 
 (defn piggyback-organizations [app owner]
