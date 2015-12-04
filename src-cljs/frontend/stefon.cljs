@@ -6,10 +6,10 @@
   "Returns the data-uri version of the image for the given url.
    Image must be specified in resources/assets/js/stefon-hack-for-om.coffee.ref!"
   [url]
-  (let [uri-string (-> js/window
-                       (aget "stefon_hack_for_om")
-                       (aget "data_uris")
-                       (aget url))]
+  (let [uri-string (some-> js/window
+                           (aget "stefon_hack_for_om")
+                           (aget "data_uris")
+                           (aget url))]
     (if uri-string
       uri-string
       (utils/mwarn "Unable to find data-uri for" url
@@ -20,10 +20,10 @@
    the link to the cdn version if we're in the right environment.
    Path must be specified in resources/assets/js/stefon-hack-for-om.coffee.ref!"
   [path]
-  (let [uri-string (-> js/window
-                       (aget "stefon_hack_for_om")
-                       (aget "asset_paths")
-                       (aget path))]
+  (let [uri-string (some-> js/window
+                           (aget "stefon_hack_for_om")
+                           (aget "asset_paths")
+                           (aget path))]
     (if uri-string
       (utils/cdn-path uri-string)
       (utils/mwarn "Unable to find asset-path for" path
