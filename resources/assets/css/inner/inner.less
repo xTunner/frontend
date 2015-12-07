@@ -95,8 +95,7 @@
 @import "aside.less";
 @import "top-nav.less";
 
-#elevio-widget,
-#intercom-container {
+#elevio-widget {
   display: none;
 }
 
@@ -104,10 +103,6 @@ body.circle-elevio {
 
   #elevio-widget {
     display: block;
-  }
-
-  #intercom-launcher {
-    display: none !important;
   }
   
   #intercom-container .intercom-conversations-new-conversation-button {
@@ -117,17 +112,10 @@ body.circle-elevio {
   .intercom-composer-container {
     display: none;
   }
-} 
+}
 
-body.circle-intercom {
-
-  #intercom-container {
-    display: block;
-  }
-
-  &:not(.circle-elevio) {
-    #intercom-container #intercom-launcher {
-      display: block !important;
-    }
+body:not(.circle-elevio) {
+  #intercom-container #intercom-launcher {
+    display: block !important;
   }
 }

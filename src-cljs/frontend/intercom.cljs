@@ -25,10 +25,3 @@
 
 (defn get-root []
   (gdom/getElement "intercom-container"))
-
-(defn disable! []
-  (when-let [intercom (aget js/window "Intercom")]
-    (intercom "shutdown")))
-
-(defn enable! []
-  (class-list/add js/document.body "circle-intercom"))
