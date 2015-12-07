@@ -302,11 +302,33 @@
          (datetime/as-duration (container-utilization-duration actions))
          ")"]))))
 
-(defn maybe-override-status [status {:keys [until] :as override-status}]
+(defn compute-override-status
+  "This is called when properties are updated in will-receive-props.
+
+  This exists because the jump between :running and :waiting status is
+  jarring and it can happen very quickly in a sequence of short build
+  steps. To mitigate this, we are introducing a two second delay when
+  transitioning from the :running state to the :waiting state.
+
+  compute-override-status checks if we are transitioning to
+  the :waiting status.  If we are, it generates 'override' data to put
+  into component local state.  This data is used during rendering to
+  decide which status to display."
+  [current-status next-status]
+  (if (and (= next-status :waiting)
+           (not= current-status next-status))
+    {:status current-status
+     :until (+ (datetime/now)
+               2000)}))
+
+(defn maybe-override-status
+  "If there is an override status and its time has not experied, use
+  that status.  If the time has expried, use the real status."
+  [real-status {:keys [until] :as override-status}]
   (if (and override-status
            (>= until (datetime/now)))
     (:status override-status)
-    status))
+    real-status))
 
 (defn container-pill-v2 [{:keys [container status current-container-id build-running?]} owner]
   (reify
@@ -321,12 +343,7 @@
     om/IWillReceiveProps
     (will-receive-props [this next-props]
       (let [next-status (:status next-props)]
-        (if (and (= next-status :waiting)
-                 (not= status next-status))
-          (om/set-state! owner :override-status {:status status
-                                                 :until (+ (datetime/now)
-                                                           2000)})
-          (om/set-state! owner :override-status nil))))
+        (om/set-state! owner :override-status (compute-override-status status next-status))))
     om/IRenderState
     (render-state [_ {:keys [override-status]}]
       (html
