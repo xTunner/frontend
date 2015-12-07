@@ -19,9 +19,5 @@
   "If elevio is enabled, show elevio. Otherwise, disable elevio"
   []
   (if (config/elevio-enabled?)
-    (do
-      (intercom/enable!)
-      (elevio/enable!))
-    (do
-      (elevio/disable!)
-      (intercom/enable!))))
+    (elevio/enable!)
+    (elevio/disable!)))
