@@ -157,7 +157,7 @@
   (or (config/enterprise?)
       (:oss project)
       (> (plan-model/paid-containers plan) 0)
-      (plan-model/trial? plan)
+      (plan-model/in-trial? plan)
       (plan-model/osx? plan)))
 
 (defn show-build-timing? [project plan]
