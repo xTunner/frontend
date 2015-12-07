@@ -8,7 +8,7 @@
       [:div.row
         [:div.col-md-5
           [:p.lead "Over "
-            [:b "200,000"] " organizations and developers trust CircleCI."]
+            [:b "100,000+"] " organizations and developers trust CircleCI."]
           [:span "CircleCI's continuous integration and deployment platform helps software teams rapidly release code they trust by automating the build, test, and deploy process. Built for developers, CircleCI offers a modern software development platform that lets teams ramp quickly, scale easily, and build confidently every day."]
           [:div.social-btns
             [:a.social-btn-rss {:href "http://blog.circleci.com/", :data-text , :data-url}
