@@ -190,7 +190,7 @@
        [:a {:href "mailto:sayhi@circleci.com"} "Get in touch."]])]])
 
 (defn piggieback-plan-wording [plan]
-  (let [containers (:containers plan)]
+  (let [containers (pm/paid-containers plan)]
     (str
       (when (pos? containers)
         (str containers " containers"))
