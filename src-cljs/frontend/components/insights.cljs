@@ -82,8 +82,8 @@
                               (concat (map :build_num builds) scale-filler)))
                     (.rangeBands #js[0 (:width plot-info)] 0.4))
         plot (-> js/d3
-                (.select el)
-                (.select "svg g.plot-area"))
+                 (.select el)
+                 (.select "svg g.plot-area"))
         bars-join (-> plot
                       (.select "g > g.bars")
                       (.selectAll "g.bar-pair")
@@ -296,18 +296,18 @@
 
 (defrender no-projects [data owner]
   (html
-    [:div.no-projects-block
-     [:div.content
-      [:div.row
-       [:div.header.text-center "No Insights yet"]]
-       [:div.details.text-center "Add projects from your Github orgs and start building on CircleCI to view insights."]
-      [:div.row.text-center
-       [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
+   [:div.no-projects-block
+    [:div.content
+     [:div.row
+      [:div.header.text-center "No Insights yet"]]
+     [:div.details.text-center "Add projects from your Github orgs and start building on CircleCI to view insights."]
+     [:div.row.text-center
+      [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
 (defn project-sort-category
   "Returns symbol representing category for sorting.
 
-One of #{:pass :fail :other}"
+  One of #{:pass :fail :other}"
   [{:keys [show-insights? chartable-builds] :as project}]
   (let [outcome (some->> chartable-builds
                          (map :outcome)
@@ -337,7 +337,7 @@ One of #{:pass :fail :other}"
 
 (defrender build-insights [{{:keys [selected-filter selected-sorting]} :insights :as state} owner]
   (let [plans (get-in state state/user-plans-path)
-            projects (get-in state state/projects-path)]
+        projects (get-in state state/projects-path)]
     (html
      [:div#build-insights {}
       (cond
