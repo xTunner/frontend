@@ -72,7 +72,9 @@
    :instrumentation []
    :hamburger-menu "closed"
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
-   :inputs nil})
+   :inputs nil
+   :insights {:selected-filter :all
+              :selected-sorting :name}})
 
 (def user-path [:current-user])
 
@@ -225,3 +227,7 @@
 (def top-nav-orgs-path [:top-nav :orgs])
 (def top-nav-selected-org-path [:top-nav :selected-org])
 (def hamburger-menu-path [:hamburger-menu])
+
+
+(def insights-filter-path [:insights :selected-filter])
+(def insights-sorting-path [:insights :selected-sorting])

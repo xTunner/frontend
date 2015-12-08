@@ -1246,3 +1246,11 @@
 (defmethod post-control-event! :set-admin-scope
   [_ _ {:keys [login scope]} _ {{api-ch :api} :comms}]
   (api/set-user-admin-scope login scope api-ch))
+
+(defmethod control-event :insights-sorting-changed
+  [_ _ {:keys [new-sorting]} state]
+  (assoc-in state state/insights-sorting-path new-sorting))
+
+(defmethod control-event :insights-filter-changed
+  [_ _ {:keys [new-filter]} state]
+  (assoc-in state state/insights-filter-path new-filter))
