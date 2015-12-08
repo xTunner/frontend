@@ -1,6 +1,6 @@
 (ns frontend.test-datetime
   (:require [frontend.datetime :as datetime])
-  (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
+  (:require-macros [cemerick.cljs.test :refer (is are deftest testing)]))
 
 (deftest milli-to-float-duration-works
   (testing "basic"
@@ -42,12 +42,30 @@
 
 (deftest format-duration-works
   (testing "full units"
-    (testing "singular"
-      (is (= (datetime/time-ago 1000) "1 second")))
-    (testing "plural"
-      (is (= (datetime/time-ago 480000) "8 minutes"))))
-  (testing "abbreviated  units"
-    (testing "singular"
-      (is (= (datetime/time-ago 3600000) "1 hour")))
-    (testing "plural"
-      (is (= (datetime/time-ago (* 3600000 48)) "2 days")))))
+    (are [ms formatted] (= (datetime/time-ago ms) formatted)
+      1000 "1 second"
+      2000 "2 seconds"
+      (* 60 1000) "1 minute"
+      (* 60 2000) "2 minutes"
+      (* 60 60 1000) "1 hour"
+      (* 60 60 2000) "2 hours"
+      (* 24 60 60 1000) "1 day"
+      (* 24 60 60 2000) "2 days"
+      (* 30 24 60 60 1000) "1 month"
+      (* 30 24 60 60 2000) "2 months"
+      (* 12 30 24 60 60 1000) "1 year"
+      (* 12 30 24 60 60 2000) "2 years"))
+  (testing "abbreviated units"
+    (are [ms formatted] (= (datetime/time-ago-abbreviated ms) formatted)
+      1000 "1 sec"
+      2000 "2 secs"
+      (* 60 1000) "1 min"
+      (* 60 2000) "2 mins"
+      (* 60 60 1000) "1 hr"
+      (* 60 60 2000) "2 hrs"
+      (* 24 60 60 1000) "1 day"
+      (* 24 60 60 2000) "2 days"
+      (* 30 24 60 60 1000) "1 month"
+      (* 30 24 60 60 2000) "2 months"
+      (* 12 30 24 60 60 1000) "1 year"
+      (* 12 30 24 60 60 2000) "2 years")))
