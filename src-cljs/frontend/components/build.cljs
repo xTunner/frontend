@@ -302,7 +302,35 @@
          (datetime/as-duration (container-utilization-duration actions))
          ")"]))))
 
-(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
+(defn compute-override-status
+  "This is called when properties are updated in will-receive-props.
+
+  This exists because the jump between :running and :waiting status is
+  jarring and it can happen very quickly in a sequence of short build
+  steps. To mitigate this, we are introducing a two second delay when
+  transitioning from the :running state to the :waiting state.
+
+  compute-override-status checks if we are transitioning to
+  the :waiting status.  If we are, it generates 'override' data to put
+  into component local state.  This data is used during rendering to
+  decide which status to display."
+  [current-status next-status]
+  (if (and (= next-status :waiting)
+           (not= current-status next-status))
+    {:status current-status
+     :until (+ (datetime/now)
+               2000)}))
+
+(defn maybe-override-status
+  "If there is an override status and its time has not experied, use
+  that status.  If the time has expried, use the real status."
+  [real-status {:keys [until] :as override-status}]
+  (if (and override-status
+           (>= until (datetime/now)))
+    (:status override-status)
+    real-status))
+
+(defn container-pill-v2 [{:keys [container status current-container-id build-running?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -312,12 +340,23 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (timer/set-updating! owner (not (last-action-end-time container))))
-    om/IRender
-    (render [_]
+    om/IWillReceiveProps
+    (will-receive-props [this next-props]
+      (let [next-status (:status next-props)]
+        (om/set-state! owner :override-status (compute-override-status status next-status))))
+    om/IRenderState
+    (render-state [_ {:keys [override-status]}]
       (html
        (let [container-id (container-model/id container)
-             status (container-model/status container build-running?)
-             duration-ms (container-utilization-duration container)]
+             duration-ms (container-utilization-duration container)
+             status (maybe-override-status status override-status)
+             icon-name (case status
+                         :failed "Status-Failed"
+                         :success "Status-Passed"
+                         :canceled "Status-Canceled"
+                         :running "Status-Running"
+                         :waiting "Status-Queued"
+                         nil)]
          [:a.container-selector-v2
           {:on-click #(raise! owner [:container-selected {:container-id container-id}])
            :class (concat (container-model/status->classes status)
@@ -325,13 +364,7 @@
           [:span.upper-pill-section
            [:span.container-index (str (:index container))]
            [:span.status-icon
-            (om/build container-result-icon {:name (case status
-                                                     :failed "Status-Failed"
-                                                     :success "Status-Passed"
-                                                     :canceled "Status-Canceled"
-                                                     :running "Status-Running"
-                                                     :waiting "Status-Queued"
-                                                     nil)})]]
+            (om/build container-result-icon {:name icon-name})]]
           (om/build container-duration-label {:actions (:actions container)})])))))
 
 (def paging-width 10)
@@ -374,7 +407,8 @@
                     (om/build container-pill-v2
                               {:container container
                                :build-running? build-running?
-                               :current-container-id current-container-id}
+                               :current-container-id current-container-id
+                               :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
                   (if (> subsequent-container-count 0)
                     [:a.container-selector-v2.page-container-pills
