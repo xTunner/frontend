@@ -9,9 +9,9 @@
    ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
 
    ;; Please kebab-case and not snak_case tests and treatments
-   :ab-test-definitions {:a_is_a [true false]
+   :ab-test-definitions {:a-is-a [true false]
                          :multi-test-equal-variants [:a :b :c :d]
-                         :auth-page-test [:control :trust-marks :status-bar]
+                         :auth-button-vs-page [:button :page]
                          :upgrade_banner [:control :banner :button]
                          ;; TODO: The below are ab tests that have been running since December 2014. We should figure out if they are being
                          ;; tracked, which are the winners, launch them, and delete the dead code.
