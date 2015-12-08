@@ -1363,8 +1363,7 @@
    [:span.start-time
     {:title (datetime/full-datetime start-time)}
     (om/build common/updating-duration
-              {:start start-time}
-              {:opts {:formatter datetime/time-ago-abbreviated}})
+              {:start start-time})
     " ago"]])
 
 (defn build-finished-status [{stop-time :stop_time
