@@ -165,16 +165,15 @@
 
 (defn format-duration [duration-ms {:keys [seconds minutes hours days months years]}]
   (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
-        interval (cond (< ago minute){:divisor 1      :unit seconds }
-                       (< ago hour)  {:divisor minute :unit minutes }
-                       (< ago day)   {:divisor hour   :unit hours   }
-                       (< ago month) {:divisor day    :unit days    }
-                       (< ago year)  {:divisor month  :unit months  }
-                       :else         {:divisor year   :unit years   })]
-    (let [time-count (.round js/Math (/ ago (:divisor interval)))]
-      (str time-count " "  (:unit interval) (when-not (or (= 1 time-count)
-                                                          (= 1 (count (:unit interval))))
-                                              "s")))))
+        [divisor unit] (cond
+                         (< ago minute) [1 seconds]
+                         (< ago hour) [minute minutes]
+                         (< ago day) [hour hours]
+                         (< ago month) [day days]
+                         (< ago year) [month months]
+                         :else [year years])
+        time-count (.round js/Math (/ ago divisor))]
+    (str time-count " " unit (when-not (= 1 time-count) "s"))))
 
 (defn time-ago [duration-ms]
   (format-duration duration-ms full-time-units))
