@@ -163,15 +163,16 @@
    :months ["month" "months"]
    :years ["year" "years"]})
 
-(defn format-duration [duration-ms {:keys [seconds minutes hours days months years]}]
+(defn format-duration [duration-ms units]
   (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
-        [divisor [singular plural]] (cond
-                                      (< ago minute) [1 seconds]
-                                      (< ago hour) [minute minutes]
-                                      (< ago day) [hour hours]
-                                      (< ago month) [day days]
-                                      (< ago year) [month months]
-                                      :else [year years])
+        [divisor unit] (cond
+                         (< ago minute) [1 :seconds]
+                         (< ago hour) [minute :minutes]
+                         (< ago day) [hour :hours]
+                         (< ago month) [day :days]
+                         (< ago year) [month :months]
+                         :else [year :years])
+        [singular plural] (units unit)
         time-count (.round js/Math (/ ago divisor))]
     (str time-count " "  (if (= 1 time-count) singular plural))))
 
