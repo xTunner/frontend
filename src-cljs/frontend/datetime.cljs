@@ -148,32 +148,32 @@
 
 
 (def full-time-units
-  {:seconds "second"
-   :minutes "minute"
-   :hours   "hour"
-   :days    "day"
-   :months  "month"
-   :years   "year"})
+  {:seconds ["second" "seconds"]
+   :minutes ["minute" "minutes"]
+   :hours ["hour" "hours"]
+   :days ["day" "days"]
+   :months ["month" "months"]
+   :years ["year" "years"]})
 
 (def abbreviated-time-units
-  {:seconds "sec"
-   :minutes "min"
-   :hours   "hr"
-   :days    "day"
-   :months  "month"
-   :years   "year"})
+  {:seconds ["sec" "sec"]
+   :minutes ["min" "min"]
+   :hours ["hr" "hr"]
+   :days ["day" "days"]
+   :months ["month" "months"]
+   :years ["year" "years"]})
 
 (defn format-duration [duration-ms {:keys [seconds minutes hours days months years]}]
   (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
-        [divisor unit] (cond
-                         (< ago minute) [1 seconds]
-                         (< ago hour) [minute minutes]
-                         (< ago day) [hour hours]
-                         (< ago month) [day days]
-                         (< ago year) [month months]
-                         :else [year years])
+        [divisor [singular plural]] (cond
+                                      (< ago minute) [1 seconds]
+                                      (< ago hour) [minute minutes]
+                                      (< ago day) [hour hours]
+                                      (< ago month) [day days]
+                                      (< ago year) [month months]
+                                      :else [year years])
         time-count (.round js/Math (/ ago divisor))]
-    (str time-count " " unit (when-not (= 1 time-count) "s"))))
+    (str time-count " "  (if (= 1 time-count) singular plural))))
 
 (defn time-ago [duration-ms]
   (format-duration duration-ms full-time-units))
