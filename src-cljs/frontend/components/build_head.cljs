@@ -23,7 +23,6 @@
             [goog.dom]
             [goog.dom.DomHelper]
             [goog.string :as gstring]
-            [goog.string.format]
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -704,7 +703,11 @@
             failed-sources (filter (fn [[_ {:keys [failures]}]]
                                      (seq failures))
                                    source-hash)
-            build-succeeded? (= "success" build-status)]
+            build-succeeded? (= "success" build-status)
+
+            by-time (reverse (sort-by :run_time (filter (comp number? :run_time)
+                                                        tests)))
+            slowest (first by-time)]
         (html
          [:div.test-results
           (if-not tests
@@ -715,8 +718,16 @@
                            "Your build ran "
                            [:strong (count tests)]
                            " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
-                           [:strong "0 failures"]]
-
+                           [:strong "0 failures"]
+                           (when slowest
+                             [:div.build-tests-summary
+                              [:p
+                               [:strong "Slowest test:"]
+                               (gstring/format
+                                    " %s %s (took %.2f seconds)."
+                                    (:classname slowest)
+                                    (:name slowest)
+                                    (:run_time slowest))]])]
               :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
                      [:div [:img.alert-icon {:src (common/icon-path
                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
@@ -1314,17 +1325,20 @@
 
 (defn pull-requests [urls]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
-  (list
-    [:span.summary-spacer "•"]
-    [:span.summary-label
-     (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
-    [:span
-     (interpose
-       ", "
-       (map (fn [url] [:a {:href url} "#"
-                       (let [n (re-find #"/\d+$" url)]
-                         (if n (subs n 1) "?"))])
-            urls))]))
+  [:div.summary-item
+   (when-not (feature/enabled? :ui-v2)
+     [:span.summary-spacer "•"])
+   [:span.summary-label
+    (str (if (feature/enabled? :ui-v2) "PR" "Pull Request")
+         (when (< 1 (count urls)) "s")
+         ": ")]
+   [:span
+    (interpose
+     ", "
+     (map (fn [url] [:a {:href url} "#"
+                     (let [n (re-find #"/\d+$" url)]
+                       (if n (subs n 1) "?"))])
+          urls))]])
 
 (defn queued-time [build]
   (if (< 0 (build-model/run-queued-time build))
@@ -1341,28 +1355,30 @@
                                          :stop (or (:queued_at build) (:stop_time build))})
      " waiting for builds to finish"]))
 
-(defn build-finished-status [build]
-  (let [stop-time  (:stop_time build)
-        start-time (:start_time build)]
-    [:div.summary-item
-     [:span.summary-label "Finished: "]
-     [:span.stop-time
-      (when stop-time
-        {:title (datetime/full-datetime stop-time)})
-      (when stop-time
-        (list (om/build common/updating-duration
-                        {:start stop-time}
-                        {:opts {:formatter datetime/time-ago}}) " ago"))]
-     [:span
-      " ("
-      (if (build-model/running? build)
-        (om/build common/updating-duration {:start start-time
-                                            :stop  stop-time})
-        (build-model/duration build))
-      (om/build expected-duration {:start start-time
-                                   :stop  stop-time
-                                   :build build})
-      ")"]]))
+(defn build-running-status [{start-time :start_time
+                             :as build}]
+  {:pre [(some? start-time)]}
+  [:div.summary-item
+   [:span.summary-label "Started: "]
+   [:span.start-time
+    {:title (datetime/full-datetime start-time)}
+    (om/build common/updating-duration
+              {:start start-time}
+              {:opts {:formatter datetime/time-ago-abbreviated}})
+    " ago"]])
+
+(defn build-finished-status [{stop-time :stop_time
+                              :as build}]
+  {:pre [(some? stop-time)]}
+  [:div.summary-item
+   [:span.summary-label "Finished: "]
+   [:span.stop-time
+    {:title (datetime/full-datetime stop-time)}
+    (om/build common/updating-duration
+              {:start stop-time}
+              {:opts {:formatter datetime/time-ago-abbreviated}})
+    " ago"]
+   (str " (" (build-model/duration build) ")")])
 
 (defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
   (when-let [build-number (:build_num previous)]
@@ -1398,7 +1414,9 @@
             [:div.summary-items
              [:div.summary-item
               (builds-table/build-status-badge build)]
-             (when (:stop_time build)
+             (if-not (:stop_time build)
+               (when (:start_time build)
+                 (build-running-status build))
                (build-finished-status build))]
             [:div.summary-items
              (om/build previous-build-label build)
@@ -1413,7 +1431,7 @@
               [:div.summary-items
                [:div.summary-item
                 [:span.summary-label "Queued: "]
-                [:span  (queued-time build)]]])
+                [:span (queued-time build)]]])
 
             [:div.summary-build-contents
              [:div.summary-item

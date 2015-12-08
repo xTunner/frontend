@@ -23,6 +23,7 @@
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :paid)) true)))
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :osx)) true))
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :trial)) true))
+    (is (= (project/show-build-timing? private-project (test-utils/example-plan :expired-trial)) false))
   (with-redefs [config/enterprise? (constantly true)]
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :free)) true))))
 
@@ -31,6 +32,8 @@
      (is (= (project/show-insights? test-utils/example-user-plans-free oss-project) true))
      (is (= (project/show-insights? test-utils/example-user-plans-free private-project) false))
      (is (= (project/show-insights? test-utils/example-user-plans-paid private-project) true))
-     (is (= (project/show-insights? test-utils/example-user-plans-piggieback private-project) true)))
+     (is (= (project/show-insights? test-utils/example-user-plans-piggieback private-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-trial private-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-expired-trial private-project) false)))
   (with-redefs [config/enterprise? (constantly true)]
     (is (= (project/show-insights? test-utils/example-user-plans-free private-project) true))))

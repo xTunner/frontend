@@ -2,6 +2,7 @@
   (:require [om.core :as om :include-macros true]
             [cljs-time.coerce :as t-coerce]
             [cljs-time.core :as t]
+            [frontend.config :as config]
             [frontend.async :refer [raise!]]
             [frontend.components.forms :refer [managed-button]])
   (:require-macros [frontend.utils :refer [html]]))
@@ -15,8 +16,7 @@
        [:div.ui-v2-opt-in {}
         [:div.ui-v2-opt-in-wrapper
          [:div
-          [:b "Try our new look. "]
-          [:span "You have been selected for a private beta of our new interface. "]]
+          [:span "CircleCI is getting a new look. "]]
          [:div.opt-in-right
           [:button {:on-click #(raise! owner [:try-ui-v2-clicked])} "Try our new look"]]]]))))
 
@@ -40,11 +40,12 @@
     om/IRender
     (render [_]
       (html
-       [:div.ui-v2-opt-in {}
-        [:div.ui-v2-opt-in-wrapper
-         [:div
-          "As a reminder, the iOS beta is ending as of Monday, November 30th. If you have not already, please confirm a plan to lock-in pricing and ensure a smooth transition to the limited-release "
-          [:a {:href "http://circleci.com/pricing"} "here"]
-          ". Reach out to "
-          [:a {:href "mailto:sayhi@circleci.com"} "sayhi@circleci.com"]
-          " with any questions!"]]]))))
+        (when (not (config/enterprise?))
+          [:div.ui-v2-opt-in {}
+           [:div.ui-v2-opt-in-wrapper
+            [:div
+             "As a reminder, the iOS beta has ended as of Monday, November 30th. If you have not done so already, please confirm a plan to lock pricing in and ensure a smooth transition to the limited release "
+             [:a {:href "http://circleci.com/account/plans"} "here"]
+             ". Reach out to "
+             [:a {:href "mailto:sayhi@circleci.com"} "sayhi@circleci.com"]
+             " with any questions!"]]])))))

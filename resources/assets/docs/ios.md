@@ -31,14 +31,14 @@ customization options.
 
 ## Xcode Version
 
-By default, CircleCI will build your project with Xcode 6.3.1. You can select 6.4 or 7.0
+By default, CircleCI will build your project with Xcode 6.4. You can select 7.0 or 7.1
 by specifying the version in a [circle.yml file](/docs/configuration) in the root of your
-repo. For example, for 7.0, add the following:
+repo. For example, for 7.1, add the following:
 
 ```
 machine:
   xcode:
-    version: "7.0"
+    version: "7.1"
 ```
 
 ## Shared Schemes
@@ -179,7 +179,7 @@ You can also use the `sudo` command if necessary to perform customizations outsi
 It is possible to upgrade the version of CocoaPods installed on the container
 by editing your `circle.yml` file. You will need to set the terminal ouput to
 UTF-8, and use `sudo` to install the gem. The example below will install
-CocoaPods version 0.38.2.
+CocoaPods version 0.39.0.
 
 ```
 machine:
@@ -276,10 +276,12 @@ versions installed:
 
 - OS X 10.10.3 (14D136) Darwin 14.3.0
 - Xcode:
-  - 6.3.1 Build version 6D1002
   - 6.4 Build version 6E35b
   - 7.0 Build version 7A218
-- Facebook xctool 0.2.2
-- CocoaPods 0.36.4
-- xcpretty 0.1.8
+  - 7.1.1 Build version 7B1005
+- Facebook xctool 0.2.7
+- CocoaPods 0.39.0
+- xcpretty 0.1.12
+- fastlane 1.39.0
+- carthage 0.10.0
 - shenzhen 0.13.1

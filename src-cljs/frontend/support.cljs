@@ -16,12 +16,8 @@
       (utils/merror e))))
 
 (defn enable-one!
-  "If elevio is enabled, show elevio and disable Intercom. Otherwise, show intercom and disable elevio."
+  "If elevio is enabled, show elevio. Otherwise, disable elevio"
   []
   (if (config/elevio-enabled?)
-    (do
-      (intercom/disable!)
-      (elevio/enable!))
-    (do
-      (elevio/disable!)
-      (intercom/enable!))))
+    (elevio/enable!)
+    (elevio/disable!)))

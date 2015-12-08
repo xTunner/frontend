@@ -95,12 +95,27 @@
 @import "aside.less";
 @import "top-nav.less";
 
-#elevio-widget,
-#intercom-container {
+#elevio-widget {
   display: none;
 }
 
-body.circle-elevio #elevio-widget,
-body.circle-intercom #intercom-container {
-  display: block;
+body.circle-elevio {
+
+  #elevio-widget {
+    display: block;
+  }
+  
+  #intercom-container .intercom-conversations-new-conversation-button {
+    display: none;
+  }
+
+  .intercom-composer-container {
+    display: none;
+  }
+}
+
+body:not(.circle-elevio) {
+  #intercom-container #intercom-launcher {
+    display: block !important;
+  }
 }

@@ -189,20 +189,32 @@
        "Need more time to decide? "
        [:a {:href "mailto:sayhi@circleci.com"} "Get in touch."]])]])
 
+(defn piggieback-plan-wording [plan]
+  (let [containers (pm/paid-containers plan)]
+    (str
+      (when (pos? containers)
+        (str containers " containers"))
+      (when (and (pos? containers) (pm/osx? plan))
+        " and ")
+      (when (pm/osx? plan)
+        (-> plan :osx :template :name)))))
+
+(defn parent-plan-name [plan]
+  [:em (:org_name plan)])
+
 (defn plans-piggieback-plan-notification [plan current-org-name]
   [:div.row-fluid
    [:div.offset1.span10
     [:div.alert.alert-success
      [:p
-      "This organization is covered under " (:org_name plan) "'s plan which has "
-      (:containers plan) " containers."]
+      "This organization is covered under " (parent-plan-name plan) "'s plan which has " (piggieback-plan-wording plan)]
      [:p
-      "If you're an admin in the " (:org_name plan)
+      "If you're an admin in the " (parent-plan-name plan)
       " organization, then you can change plan settings from the "
       [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
        (:org_name plan) " plan page"] "."]
      [:p
-      "You can create a separate plan for " current-org-name " below."]]]])
+      "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " (parent-plan-name plan) "."]]]])
 
 (defn plural-multiples [num word]
   (if (> num 1)
@@ -326,6 +338,100 @@
             [:a.unselected {:href "mailto:sayhi@circleci.com"}
              [:img {:src (utils/cdn-path "img/inner/mobile-focused-2x.png")}]]]])))))
 
+(defn linux-plan [{:keys [app checkout-loaded?]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [org-name (get-in app state/org-name-path)
+            plan (get-in app state/org-plan-path)
+            selected-containers (or (get-in app state/selected-containers-path)
+                                    (max (pm/usable-containers plan)
+                                         (pm/trial-containers plan)))
+            min-slider-val (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
+            max-slider-val (max 80 (* 2 (pm/usable-containers plan)))
+            selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
+            osx-total (or (some-> plan :osx :template :price) 0)
+            old-total (- (pm/stripe-cost plan) osx-total)
+            new-total (pm/cost plan selected-containers)
+            container-cost (pm/per-container-cost plan)
+            piggiebacked? (pm/piggieback? plan org-name)
+            button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
+                                    selected-paid-containers)]
+      (html
+        [:div#edit-plan {:class "pricing.page"}
+         (when-not (config/enterprise?)
+           [:fieldset
+            [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
+                          container-cost "/month each.")]])
+         [:div.main-content
+          [:div.left-section
+           [:div.pricing-calculator-controls
+            [:h3 "Linux Containers"]
+            [:form
+             [:div.container-picker
+              [:p "More containers means faster builds and lower queue times."]
+              (om/build shared/styled-range-slider
+                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
+              [:div.container-input
+               [:input {:style {:margin "4px" :height "calc(2em + 2px)"}
+                        :type "text" :value selected-containers
+                        :on-change #(utils/edit-input owner state/selected-containers-path %
+                                                      :value (int (.. % -target -value)))}]
+               [:span.new-plan-total (str (pluralize-no-val selected-containers "container") (when-not (config/enterprise?) (str " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))))]
+               (when (not (= new-total old-total))
+                 [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])]]
+             [:fieldset
+              (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
+                (forms/managed-button
+                  [:button.btn.btn-large.btn-primary.center
+                   {:data-success-text "Saved",
+                    :data-loading-text "Saving...",
+                    :type "submit"
+                    :disabled (when-not button-clickable? "disabled")
+                    :on-click (when button-clickable?
+                                #(do (raise! owner [:update-containers-clicked
+                                                    {:containers selected-paid-containers}])
+                                     false))}
+                   (if (config/enterprise?)
+                     "Save changes"
+                     "Update plan")])
+                (if-not checkout-loaded?
+                  [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
+                  (forms/managed-button
+                    [:button.btn.btn-large.btn-primary.center
+                     {:data-success-text "Paid!",
+                      :data-loading-text "Paying...",
+                      :data-failed-text "Failed!",
+                      :type "submit"
+                      :disabled (when-not button-clickable? "disabled")
+                      :on-click (when button-clickable?
+                                  #(do (raise! owner [:new-plan-clicked
+                                                      {:containers selected-paid-containers
+                                                       :paid {:template (:id pm/default-template-properties)}
+                                                       :price new-total
+                                                       :description (str "$" new-total "/month, includes "
+                                                                         (pluralize selected-containers "container"))}])
+                                       false))}
+                     "Pay Now"])))
+
+              (when-not (config/enterprise?)
+                ;; TODO: Clean up conditional here - super nested and many interactions
+                (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                  (list
+                    (when (< old-total new-total)
+                      [:span.help-block
+                       "We'll charge your card today, for the prorated difference between your new and old plans."])
+                    (when (> old-total new-total)
+                      [:span.help-block
+                       "We'll credit your account, for the prorated difference between your new and old plans."]))
+                  (if (pm/in-trial? plan)
+                    [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                     "."]
+                    ;; TODO: Only show for trial-plans?
+                    [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                     " ago. Pay now to enable builds of private repositories."])))]]]]]])))))
+
 (defn containers [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
@@ -354,122 +460,27 @@
       (close! (om/get-state owner [:checkout-loaded-chan])))
     om/IRenderState
     (render-state [_ {:keys [checkout-loaded?]}]
-      (let [org-name (get-in app state/org-name-path)
-            plan (get-in app state/org-plan-path)
-            selected-containers (or (get-in app state/selected-containers-path)
-                                    (max (pm/usable-containers plan)
-                                         (pm/trial-containers plan)))
-            min-slider-val (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
-            max-slider-val (max 80 (* 2 (pm/usable-containers plan)))
-            old-max-slider-val (if (< selected-containers 50)
-                                 80
-                                 (let [n (* 2 selected-containers)] (+ n (- 10 (mod n 10)))))
-            selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
-            osx-total (or (some-> plan :osx :template :price) 0)
-            old-total (- (pm/stripe-cost plan) osx-total)
-            new-total (pm/cost plan selected-containers)
-            container-cost (pm/per-container-cost plan)
-            piggiebacked? (pm/piggieback? plan org-name)
-            button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
-                                    selected-paid-containers)]
+      (let [plan (get-in app state/org-plan-path)
+            org-name (get-in app state/org-name-path)]
         (html
-          [:div
-         (if-not plan
-           (cond ;; TODO: fix; add plan
-            (nil? plan)
-              [:div.loading-spinner common/spinner]
-            (not (seq plan))
-              [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
-            :else [:h3 "Something is wrong! Please submit a bug report."])
+          (if-not plan
+            (cond ;; TODO: fix; add plan
+              (nil? plan)
+                [:div.loading-spinner common/spinner]
+              (not (seq plan))
+                [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
+              :else
+                [:h3 "Something is wrong! Please submit a bug report."])
 
-           [:div#edit-plan {:class "pricing.page"}
-            (when (pm/piggieback? plan org-name)
-              (plans-piggieback-plan-notification plan org-name))
-            (when-not (config/enterprise?)
-              [:fieldset
-               [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
-                             container-cost "/month each.")]])
-            [:div.main-content
-             [:div.left-section
-              [:div.pricing-calculator-controls
-               [:h3 "Linux Containers"]
-               [:form
-                [:div.container-picker
-                 [:p "More containers means faster builds and lower queue times."]
-                 (om/build shared/styled-range-slider
-                           (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
-                 [:div.container-input
-                  [:input {:style {:margin "4px" :height "calc(2em + 2px)"}
-                           :type "text" :value selected-containers
-                           :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                         :value (int (.. % -target -value)))}]
-                  [:span.new-plan-total (str (pluralize-no-val selected-containers "container") (when-not (config/enterprise?) (str " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))))]
-                  (when (not (= new-total old-total))
-                    [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])
-                  (when false ;; (pm/grandfathered? plan) ;; I don't
-                    ;; think this is useful anymore.
-                    [:i.fa.fa-question-circle#grandfathered-tooltip-hack
-                     {:title "We've changed plan prices since you signed up, so you're grandfathered in at the old price!"}])]]
-                [:fieldset
-                 (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
-                   (forms/managed-button
-                    [:button.btn.btn-large.btn-primary.center
-                     {:data-success-text "Saved",
-                      :data-loading-text "Saving...",
-                      :type "submit"
-                      :disabled (when-not button-clickable? "disabled")
-                      :on-click (when button-clickable?
-                                  #(do (raise! owner [:update-containers-clicked
-                                                      {:containers selected-paid-containers}])
-                                       false))}
-                     (if (config/enterprise?)
-                       "Save changes"
-                       "Update plan")])
-                   (if-not checkout-loaded?
-                     [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
-                     (forms/managed-button
-                      [:button.btn.btn-large.btn-primary.center
-                       {:data-success-text "Paid!",
-                        :data-loading-text "Paying...",
-                        :data-failed-text "Failed!",
-                        :type "submit"
-                        :disabled (when-not button-clickable? "disabled")
-                        :on-click (when button-clickable?
-                                    #(do (raise! owner [:new-plan-clicked
-                                                        {:containers selected-paid-containers
-                                                         :paid {:template (:id pm/default-template-properties)}
-                                                         :price new-total
-                                                         :description (str "$" new-total "/month, includes "
-                                                                           (pluralize selected-containers "container"))}])
-                                         false))}
-                       "Pay Now"])))
-
-
-                 (when-not (config/enterprise?)
-                   ;; TODO: Clean up conditional here - super nested and many interactions
-                   (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
-                     (list
-                      (when (< old-total new-total)
-                        [:span.help-block
-                         "We'll charge your card today, for the prorated difference between your new and old plans."])
-                      (when (> old-total new-total)
-                        [:span.help-block
-                         "We'll credit your account, for the prorated difference between your new and old plans."]))
-                     (if (pm/in-trial? plan)
-                       [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                        ". Please pay for a plan by then or "
-                        (if (pm/freemium? plan)
-                          (str "you will revert to a free " (pluralize (pm/freemium-containers plan) "container") " plan.")
-                          "we will stop building your private repository pushes.")]
-                       ;; TODO: Only show for trial-plans?
-                       [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
-                        " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                        " ago. Pay now to enable builds of private repositories."])))]]]]]])
-           (when (and (feature/enabled? :osx-plans)
-                      (get-in app state/org-osx-beta-path))
-             (list
-              (om/build osx-plans plan)
-              (om/build osx-faq osx-faq-items)))])))))
+            (if (pm/piggieback? plan org-name)
+              (plans-piggieback-plan-notification plan org-name)
+              [:div
+               (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+               (when (and (feature/enabled? :osx-plans)
+                          (get-in app state/org-osx-beta-path))
+                 (list
+                   (om/build osx-plans plan)
+                   (om/build osx-faq osx-faq-items)))])))))))
 
 (defn piggyback-organizations [app owner]
   (om/component

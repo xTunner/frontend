@@ -147,7 +147,7 @@
     :github "appplemac"
     :bio "Alexey joins Circle from the sunny coasts of Spain. In between mountain biking, partying at art galleries and doing martial arts, he helps to ensure that Circle’s customers get the smoothest experience possible."}
    {:name "Hirokuni Kim"
-    :img-path (scaled-image-path "")
+    :img-path (scaled-image-path "kim")
     :role "Support Engineer"
     :github "kimh"
     :email "kim@circleci.com"
@@ -249,7 +249,7 @@
     :email "rishi@circleci.com"
     :bio "Rishi joins CircleCI to work on Product + Growth.  He's worked at a couple of startups, most recently Infer. He spent some time in VC while getting his MBA and previously worked in Management Consulting. He loves UNC basketball, golf pants, travel, and trivia nights."}
    {:name "Le Wang"
-    :img-path (scaled-image-path "")
+    :img-path (scaled-image-path "le")
     :role "Developer"
     :github "lewang"
     :email "le@circleci.com"
@@ -266,7 +266,25 @@
     :github "JustinC474"
     :email "justin@circleci.com"
     :bio "Justin, a USC graduate, joins the CircleCI team as a web developer. As a product minded software engineer, Justin is excited to grow the CircleCI web platform. As a UX enthusiast, he's excited to continuously improve the usability of the site. In his spare time Justin likes playing tennis, bike riding, and most importantly, traveling the world."}
-])
+   {:name "Bear Taylor"
+    :img-path (scaled-image-path "bear")
+    :role "Operations"
+    :github "bear"
+    :email "bear@circleci.com"
+    :bio "Bio coming soon!"}
+   {:name "Mark Pundsack"
+    :img-path (scaled-image-path "mark")
+    :role "VP Product"
+    :github "markpundsack"
+    :email "mark@circleci.com"
+    :bio "Bio coming soon!"}
+   {:name "Brady Lill"
+    :img-path (scaled-image-path "brady")
+    :role "Developer"
+    :github "bradylill"
+    :email "brady@circleci.com"
+    :bio "Bio coming soon!"}
+   ])
 
 
 

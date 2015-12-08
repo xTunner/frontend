@@ -47,7 +47,9 @@
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
     (when (:failed build)
-      [:div.alert.alert-danger
+      [:div.alert.alert-danger.iconified
+       (when (feature/enabled? :ui-v2)
+         [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]])
        (if (:infrastructure_fail build)
          (infrastructure-fail-message owner)
          [:div.alert-wrap

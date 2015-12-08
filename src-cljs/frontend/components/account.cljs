@@ -1,7 +1,9 @@
 (ns frontend.components.account
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.set :as set]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.project.common :as project]
@@ -152,7 +154,48 @@
                        [:i.fa.fa-times-circle]
                        " Revoke"]]]]))]])]])))))
 
-(defn set-beta-preference! [owner pref]
+
+(def available-betas
+  [;; {:id "insights"
+   ;;  :name "Insights"
+   ;;  :description "Also this text. Insights is super fun for the whole family! "}
+   ])
+
+(defn set-beta-preference! [owner betas id value]
+  (raise! owner [:preferences-updated {state/user-betas-key
+                                       (if value
+                                         (conj (set betas) id)
+                                         (disj (set betas) id))}]))
+
+(defn beta-programs [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [betas (get-in app state/user-betas-path)]
+        (html
+         [:div
+          [:h4.beta-programs "Available Beta Programs"]
+          (interpose
+           [:hr]
+           (map
+            (fn [program]
+              (let [participating? (contains? (set betas) (:id program))]
+                [:div
+                 [:h3 (:name program)
+                  (when participating?
+                    (om/build svg {:class "badge-enrolled"
+                                   :src (common/icon-path "Status-Passed")}))]
+                 [:p (:description program)]
+                 [:input.btn
+                  {:on-click #(do
+                                (set-beta-preference! owner betas (:id program) (not participating?)))
+                   :type "submit"
+                   :value (if participating?
+                            (str "Leave " (:name program) " Beta")
+                            (str "Join " (:name program) " Beta"))}]]))
+            available-betas))])))))
+
+(defn set-beta-program-preference! [owner pref]
   (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
 
 (defn join-beta-program [app owner]
@@ -170,6 +213,7 @@
            [:input.btn
             {:on-click #(do
                           (om/set-state! owner :clicked-join? true)
+                          (analytics/track-beta-join-click {})
                           false)
              :type "submit"
              :value "Join Beta Program"}]
@@ -191,7 +235,8 @@
             [:p]
             [:input.btn
             {:on-click #(do
-                          (set-beta-preference! owner true)
+                          (set-beta-program-preference! owner true)
+                          (analytics/track-beta-terms-accept {})
                           false)
              :type "submit"
              :value "Accept"}]])]]))))
@@ -202,15 +247,21 @@
     (render [_]
       (html
        [:div
-        [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
-        [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
-        [:form
-         [:input.btn
-          {:on-click #(do
-                        (set-beta-preference! owner false)
-                        false)
-           :type "submit"
-           :value "Leave Beta Program"}]]]))))
+        [:div
+         [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
+         [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
+         [:form
+          [:input.btn
+           {:on-click #(do
+                         (set-beta-program-preference! owner false)
+                         (analytics/track-beta-leave-click {})
+                         false)
+            :type "submit"
+            :value "Leave Beta Program"}]]]
+        (comment
+          ;; uncomment to turn on beta sub programs
+          [:hr]
+          (om/build beta-programs app))]))))
 
 (defn beta-program [app owner]
   (reify
@@ -220,12 +271,19 @@
         (html/html
          [:div#settings-beta-program
           [:div
-           [:h2 "Beta Program"
-            (when (get-in app state/user-in-beta-path)
-              (om/build svg {:class "badge-enrolled"
-                             :src (common/icon-path "Status-Passed")}))]
-           (when-let [message (get-in app state/general-message-path)]
-             (common/messages [message] {:show-warning-text? false}))
+           (let [message (get-in app state/general-message-path)
+                 enrolled? (get-in app state/user-in-beta-path)]
+             (list
+              [:h2 "Beta Program"
+               (when (and enrolled? (not message))
+                 (om/build svg {:class "badge-enrolled"
+                                :src (common/icon-path "Status-Passed")}))]
+              (when message
+                [:div.alert.alert-success
+                 (om/build svg {:src (if enrolled?
+                                       (common/icon-path "Status-Passed")
+                                       (common/icon-path "Info-Info"))})
+                 [:span message]])))
            (if (get-in app state/user-in-beta-path)
              (om/build beta-program-member app)
              (om/build join-beta-program app))]])))))
