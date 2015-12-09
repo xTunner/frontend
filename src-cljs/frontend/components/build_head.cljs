@@ -1490,10 +1490,10 @@
             update-status!  #(om/set-state! owner [:rebuild-status] %)
             rebuild!        #(raise! owner %)
             actions         {:rebuild
-                             {:text  "Rebuild with cache"
+                             {:text  "Rebuild"
                               :title "Retry the same tests"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                                           (update-status! "Rebuilding with cache"))}
+                                           (update-status! "Rebuilding"))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
