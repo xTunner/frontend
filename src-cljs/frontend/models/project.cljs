@@ -163,7 +163,7 @@
 (defn show-build-timing? [project plan]
   (show-premium-content? project plan))
 
-(defn add-show-insights? [project plans]
+(defn show-insights? [plans project]
   (let [org-name (-> project 
                      (:vcs_url)
                      (vcs-url/org-name))
@@ -174,8 +174,7 @@
                            (first)
                            (:plans)
                            (apply max-key plan-model/paid-containers))]
-
-    (assoc project :show-insights? (show-premium-content? project org-best-plan))))
+    (show-premium-content? project org-best-plan)))
 
 (defn show-upsell? [project plan]
   (not (show-premium-content? project plan)))
