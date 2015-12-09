@@ -27,6 +27,17 @@
   (with-redefs [config/enterprise? (constantly true)]
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :free)) true))))
 
+(deftest test-show-upsell-works
+  (with-redefs [config/enterprise? (constantly false)]
+    (is (= (project/show-upsell? oss-project (test-utils/example-plan :free)) false))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :free)) true))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :paid)) false)))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :osx)) false))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :trial)) false))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :expired-trial)) true))
+  (with-redefs [config/enterprise? (constantly true)]
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :free)) false))))
+
 (deftest test-add-show-insights-works
    (with-redefs [config/enterprise? (constantly false)]
     (is (= (:show-insights? (project/add-show-insights? oss-project test-utils/example-user-plans-free) true)))

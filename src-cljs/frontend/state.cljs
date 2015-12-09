@@ -12,7 +12,6 @@
    :ab-test-definitions {:a_is_a [true false]
                          :multi-test-equal-variants [:a :b :c :d]
                          :auth-page-test [:control :trust-marks :status-bar]
-                         :upgrade_banner [:control :banner :button]
                          ;; TODO: The below are ab tests that have been running since December 2014. We should figure out if they are being
                          ;; tracked, which are the winners, launch them, and delete the dead code.
                          :pay_now_button [true false]

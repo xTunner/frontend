@@ -1,7 +1,6 @@
 (ns frontend.components.footer
   (:require [frontend.config :as config]))
 
-
 (defn footer []
   [:nav.footer-nav.container-fluid
    [:div.row
