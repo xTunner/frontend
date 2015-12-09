@@ -95,14 +95,24 @@
 @import "aside.less";
 @import "top-nav.less";
 
-#elevio-widget {
+#elevio-widget,
+#intercom-container {
   display: none;
 }
 
 body.circle-elevio {
-
   #elevio-widget {
     display: block;
+
+    .support .elevio-box-warning {
+      a {
+        color: @link-color-v2;
+      }
+      
+      .action-btn {
+        display: none;
+      }
+    }
   }
   
   #intercom-container .intercom-conversations-new-conversation-button {
@@ -112,10 +122,16 @@ body.circle-elevio {
   .intercom-composer-container {
     display: none;
   }
-}
+} 
 
-body:not(.circle-elevio) {
-  #intercom-container #intercom-launcher {
-    display: block !important;
+body.circle-intercom {
+  #intercom-container {
+    display: block;
+  }
+
+  &:not(.circle-elevio) {
+    #intercom-container #intercom-launcher {
+      display: block !important;
+    }
   }
 }

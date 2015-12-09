@@ -25,3 +25,6 @@
 
 (defn get-root []
   (gdom/getElement "intercom-container"))
+
+(defn enable! []
+  (class-list/add js/document.body "circle-intercom"))
