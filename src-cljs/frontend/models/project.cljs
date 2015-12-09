@@ -176,3 +176,6 @@
                            (apply max-key plan-model/paid-containers))]
 
     (assoc project :show-insights? (show-premium-content? project org-best-plan))))
+
+(defn show-upsell? [project plan]
+  (not (show-premium-content? project plan)))

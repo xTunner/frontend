@@ -6,6 +6,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
+            [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
@@ -130,6 +131,7 @@
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
+            show-upsell? (project-model/show-upsell? (:project project-data) (:plan project-data))
             div (html
                   [:div.container-list
                    (for [container containers]
@@ -138,28 +140,16 @@
                                 :build-running? build-running?
                                 :current-container-id current-container-id}
                                {:react-key (:index container)}))
-                   (if (and
-                         user
-                         (contains? (:plan project-data) :paid)
-                         (not (get-in project-data [:plan :paid]))
-                         (not (get-in project-data [:project :feature_flags :oss]))
-                         (= :button (om/get-shared owner  [:ab-tests :upgrade_banner])))
-                     [:a.container-selector.parallelism-tab.upgrade
-                      {:role "button"
-                       :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                             :project-data project-data
-                                                                             :user user})
-                       :title "adjust parallelism"}
-                      [:span "Add Containers +"]]
-                     [:a.container-selector.parallelism-tab
-                      {:role "button"
-                       :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                             :project-data project-data
-                                                                             :user user})
-                       :title "adjust parallelism"}
-                      [:span "+"]])])]
+                   [:a.container-selector.parallelism-tab.upgrade
+                    {:role "button"
+                     :href (build-model/path-for-parallelism build)
+                     :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                           :project-data project-data
+                                                                           :user user})
+                     :title "adjust parallelism"}
+                    (if show-upsell?
+                      [:span "Add Containers +"] 
+                      [:span "+"])]])]
         (om/build sticky {:content div :content-class "containers"})))))
 
 (defn notices [data owner]
@@ -197,27 +187,6 @@
                        (not (:dismiss-config-errors build-data)))
               (om/build build-config/config-errors build))]]])))))
 
-(defn upgrade-banner [{:keys [build project-data user view]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (analytics/track-parallelism-button-impression  {:view view
-                                                       :project-data project-data
-                                                       :user user}))
-    om/IRender
-    (render [_]
-      (html
-        [:div.upgrade-banner
-         [:i.fa.fa-tachometer.fa-lg]
-         [:p.main.message [:b "Build Diagnostics"]
-          [:p.sub.message "Looking for faster builds? "
-           [:a {:href (build-model/path-for-parallelism build)
-                :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                      :project-data project-data
-                                                                      :user user})}
-            "Adding containers"]
-           " can cut down time spent testing."]]]))))
-
 (defn build-v1 [data owner]
   (reify
     om/IRender
@@ -240,16 +209,6 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
-             (when (and
-                     user
-                     (contains? :paid (:plan project-data))
-                     (not (get-in project-data [:plan :paid]))
-                     (not (get-in project-data [:project :feature_flags :oss]))
-                     (= :banner (om/get-shared owner  [:ab-tests :upgrade_banner])))
-               (om/build upgrade-banner {:build build
-                                         :project-data project-data
-                                         :user user
-                                         :view view}))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
                                 :invite-data invite-data})
@@ -391,6 +350,7 @@
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
+            show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) (get-in data [:project-data :plan]))
             div (html
                  [:div.container-list-v2
                   (if (> previous-container-count 0)
@@ -420,8 +380,11 @@
                       [:i.fa.fa-2x.fa-angle-right]]]
                     [:a.container-selector-v2.add-containers
                      {:href (build-model/path-for-parallelism build)
-                      :title "Adjust parallelism"}
-                     "+"])])]
+                      :title "Adjust parallelism"
+                      :class (when show-upsell? "upsell")}
+                     (if show-upsell?
+                       [:span "Add Containers +"]
+                       [:span "+"])])])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
 (def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
@@ -493,7 +456,8 @@
 
               (om/build container-pills-v2 {:container-data container-data
                                             :build-running? (build-model/running? build)
-                                            :build build})
+                                            :build build
+                                            :project-data project-data})
 
               (transition-group {:name (om/get-state owner :action-transition-direction)
                                  :enter true
