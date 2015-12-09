@@ -1363,8 +1363,7 @@
    [:span.start-time
     {:title (datetime/full-datetime start-time)}
     (om/build common/updating-duration
-              {:start start-time}
-              {:opts {:formatter datetime/time-ago-abbreviated}})
+              {:start start-time})
     " ago"]])
 
 (defn build-finished-status [{stop-time :stop_time
@@ -1388,6 +1387,22 @@
        [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
           build-number]])))
 
+(defn expected-duration-v2
+  [build owner opts]
+  (reify
+    om/IDisplayName
+    (display-name [_] "Expected Duration")
+
+    om/IRender
+    (render [_]
+      (let [formatter (get opts :formatter datetime/as-duration)
+            previous-build (:previous_successful_build build)
+            past-ms (:build_time_millis previous-build)]
+        (html
+         [:div.summary-item
+          [:span.summary-label "Estimated: "]
+          [:span (formatter past-ms)]])))))
+
 (defn build-head-v2 [data owner]
   (reify
     om/IRender
@@ -1409,50 +1424,52 @@
                         :vcs-url (:vcs_url build)
                         :build-num (:build_num build)}]
         (html
-          [:div
-           [:div.summary-header
-            [:div.summary-items
-             [:div.summary-item
-              (builds-table/build-status-badge build)]
-             (if-not (:stop_time build)
-               (when (:start_time build)
-                 (build-running-status build))
-               (build-finished-status build))]
-            [:div.summary-items
-             (om/build previous-build-label build)
-             [:div.summary-item
-              [:span.summary-label "Parallelism: "]
-              (if (has-scope :write-settings data)
-                [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                           :href (build-model/path-for-parallelism build)}
-                 (str (:parallel build) "x")]
-                [:span (:parallel build) "x"])]]
-            (when (:usage_queued_at build)
-              [:div.summary-items
-               [:div.summary-item
-                [:span.summary-label "Queued: "]
-                [:span (queued-time build)]]])
+         [:div
+          [:div.summary-header
+           [:div.summary-items
+            [:div.summary-item
+             (builds-table/build-status-badge build)]
+            (if-not (:stop_time build)
+              (when (:start_time build)
+                (build-running-status build))
+              (build-finished-status build))]
+           [:div.summary-items
+            (when (build-model/running? build)
+              (om/build expected-duration-v2 build))
+            (om/build previous-build-label build)
+            [:div.summary-item
+             [:span.summary-label "Parallelism: "]
+             (if (has-scope :write-settings data)
+               [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                          :href (build-model/path-for-parallelism build)}
+                (str (:parallel build) "x")]
+               [:span (:parallel build) "x"])]]
+           (when (:usage_queued_at build)
+             [:div.summary-items
+              [:div.summary-item
+               [:span.summary-label "Queued: "]
+               [:span (queued-time build)]]])
 
-            [:div.summary-build-contents
-             [:div.summary-item
-              [:span.summary-label "Triggered by: "]
-              [:span (trigger-html build)]]
+           [:div.summary-build-contents
+            [:div.summary-item
+             [:span.summary-label "Triggered by: "]
+             [:span (trigger-html build)]]
 
-             (when-let [urls (seq (:pull_request_urls build))]
-               (pull-requests urls))]]
+            (when-let [urls (seq (:pull_request_urls build))]
+              (pull-requests urls))]]
 
-           (when-let  [canceler  (and  (=  (:status build) "canceled")
+          (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]
-             [:div.summary-header
-              [:div.summary-items
-               [:div.summary-item
-                (build-canceler canceler github-endpoint)]]])
-           [:div.card
-            [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
-            (om/build build-commits-v2 build-data)]
-           [:div.build-head-wrapper
-            [:div.build-head
-             (om/build build-sub-head-v2 data)]]])))))
+            [:div.summary-header
+             [:div.summary-items
+              [:div.summary-item
+               (build-canceler canceler github-endpoint)]]])
+          [:div.card
+           [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
+           (om/build build-commits-v2 build-data)]
+          [:div.build-head-wrapper
+           [:div.build-head
+            (om/build build-sub-head-v2 data)]]])))))
 
 (defn rebuild-actions-v2 [{:keys [build project]} owner]
   (reify
@@ -1473,10 +1490,10 @@
             update-status!  #(om/set-state! owner [:rebuild-status] %)
             rebuild!        #(raise! owner %)
             actions         {:rebuild
-                             {:text  "Rebuild with cache"
+                             {:text  "Rebuild"
                               :title "Retry the same tests"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                                           (update-status! "Rebuilding with cache"))}
+                                           (update-status! "Rebuilding"))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
