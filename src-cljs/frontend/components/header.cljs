@@ -251,12 +251,19 @@
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
                   [:a.login.login-link.menu-item {:href (auth-url)
-                                        :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
-                                        :title "Log In with Github"}
+                                                  :on-click #(raise! owner [:track-external-link-clicked {:path (auth-url) :event "login_click" :properties {:source "header log-in" :url js/window.location.pathname}}])
+                                                  :title "Log In with Github"}
                    "Log In"]]
                  [:li
-                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item {:href "/signup" :on-mouse-up #(analytics/track-signup-click {})}
-                   "Sign Up"]]])]]]
+                  (if (= :page (om/get-shared owner [:ab-tests :auth-button-vs-page]))
+                    [:a.signup-link.btn.btn-success.navbar-btn.menu-item {:href "/signup" :on-mouse-up #(analytics/track-signup-click {})} "Sign Up"]
+                    [:a.signup-link.btn.btn-success.navbar-btn.menu-item
+                     {:href (auth-url :destination "/")
+                      :on-click #(raise! owner [:track-external-link-clicked
+                                                {:event "oauth_authorize_click"
+                                                 :properties {"oauth_provider" "github"}
+                                                 :path (auth-url :destination "/")}])}
+                     "Sign Up"])]])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
                         :title "Mobile"}
