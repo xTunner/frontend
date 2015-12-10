@@ -342,8 +342,8 @@
                             decorated-projects
                             (selected-filter categories))
         sorted-projects (case selected-sorting
-                          :name (->> filtered-projects
-                                     (sort-by formatted-project-name))
+                          :alphabetical (->> filtered-projects
+                                             (sort-by formatted-project-name))
                           :recency (->> filtered-projects
                                         (sort-by :latest-build-time)
                                         reverse))]
@@ -376,9 +376,9 @@
         [:label "Sort: "]
         [:select {:class "toggle-sorting"
                   :on-change #(raise! owner [:insights-sorting-changed {:new-sorting (keyword (.. % -target -value))}])
-                  :value selected-sorting}
-         [:option {:value :name} "By Repo"]
-         [:option {:value :recency} "Recent"]]]]
+                  :value (str selected-sorting)}
+         [:option {:value "alphabetical"} "Alphabetical"]
+         [:option {:value "recency"} "Recent"]]]]
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 

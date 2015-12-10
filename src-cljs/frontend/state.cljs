@@ -73,7 +73,7 @@
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
    :inputs nil
    :insights {:selected-filter :all
-              :selected-sorting :name}})
+              :selected-sorting :alphabetical}})
 
 (def user-path [:current-user])
 

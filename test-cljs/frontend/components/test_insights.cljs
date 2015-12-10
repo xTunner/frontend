@@ -77,7 +77,7 @@
              {:plans test-utils/example-user-plans-paid
               :projects [test-project/private-project]
               :selected-filter :all
-              :selected-sorting :name}
+              :selected-sorting :alphabetical}
              {:target test-node
               :shared {:timer-atom (timer/initialize)}})
     (testing "Simple render of feature container.")))
