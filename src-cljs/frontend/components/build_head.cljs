@@ -1554,7 +1554,6 @@
            (when has-write-settings?
              (om/build rebuild-actions-v2 {:build build :project project}))
            [:a.build-action
-            {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
-                                                :repo (get-in data (conj state/project-path :reponame))})}
+            {:href (routes/v1-project-settings (:navigation-data data))}
             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
             "Project Settings"]])))))
