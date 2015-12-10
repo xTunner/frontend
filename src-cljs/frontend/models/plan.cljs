@@ -61,13 +61,7 @@
   don't want this behavior."
   [plan]
   (max 0
-       ;; Subtract the amount of paid containers from the number of trial containers,
-       ;; so that paid-containers + trial-containers = usable-containers for plans
-       ;; with only :paid and :trial.
-       ;; see `circle.model.plan/usable-containers` on the backend.
-       ;; TODO: fix this once that behavior changes.
-       (- (get-in plan [:trial :template :free_containers] 0)
-          (paid-containers plan))))
+       (get-in plan [:trial :template :free_containers] 0)))
 
 (defn enterprise-containers [plan]
   (if (:enterprise plan)

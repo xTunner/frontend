@@ -960,6 +960,7 @@
           price (-> plan :paid :template :price)
           containers (pm/usable-containers plan)
           piggiebacked? (pm/piggieback? plan org-name)]
+      (println plan)
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
        [:div.explanation
