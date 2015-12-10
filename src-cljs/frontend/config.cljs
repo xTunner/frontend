@@ -78,7 +78,7 @@
 
 (defn elevio-enabled?
   []
-  (and (aget js/window "_elev") (feature/enabled? "elevio")))
+  (and (aget js/window "elevSettings") (feature/enabled? "elevio")))
 
 (defn statuspage-header-enabled?
   "If true, we should show statuspage alerts with incidents activated"
