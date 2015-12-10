@@ -1499,30 +1499,29 @@
                              {:text  "Rebuild without cache"
                               :title "Retry without cache"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
-                                           (update-status! "Rebuilding without cache"))}
+                                           (update-status! "Rebuilding"))}
 
                              :with_ssh
                              {:text  "Rebuild with SSH"
                               :title "Retry with SSH in VM",
                               :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
-                                           (update-status! "Rebuilding with SSH"))}}
+                                           (update-status! "Rebuilding"))}}
             text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
         (html
-          [:div.dropdown.rebuild
-           [:button.btn.dropdown-toggle {:data-toggle "dropdown"}
-            [:span.status rebuild-status]
-            (when (= rebuild-status "Rebuild")
-              [:img.chevron {:src (common/icon-path "UI-ArrowChevron")}])]
+         [:span
+          [:button.rebuild {:on-click (action-for :rebuild)}
+           [:img {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
+           rebuild-status]
+          [:span.dropdown.rebuild
+           [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
            [:ul.dropdown-menu
-            [:li
-             [:a {:on-click (action-for :rebuild)} (text-for :rebuild)]]
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
             ;; XXX Temporarily remove the ssh button for OSX builds
             (when (not (project-model/feature-enabled? project :osx))
               [:li
-               [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]])))))
+               [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
 
 (defn build-head-actions
   [data owner]
