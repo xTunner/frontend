@@ -371,12 +371,12 @@
                  :checked (= selected-filter :failed)
                  :on-change #(raise! owner [:insights-filter-changed {:new-filter :failed}])}]
         [:label {:for "insights-filter-failed"}
-         (gstring/format"failed (%s)" (count (:failed categories)))]]
+         (gstring/format"Failed (%s)" (count (:failed categories)))]]
        [:span.sorting
         [:label "Sort: "]
         [:select {:class "toggle-sorting"
                   :on-change #(raise! owner [:insights-sorting-changed {:new-sorting (keyword (.. % -target -value))}])
-                  :value (str selected-sorting)}
+                  :value (name selected-sorting)}
          [:option {:value "alphabetical"} "Alphabetical"]
          [:option {:value "recency"} "Recent"]]]]
       [:div.blocks-container
