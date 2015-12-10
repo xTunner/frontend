@@ -343,7 +343,9 @@
                             (selected-filter categories))
         sorted-projects (case selected-sorting
                           :alphabetical (->> filtered-projects
-                                             (sort-by formatted-project-name))
+                                             (sort-by #(-> %
+                                                           formatted-project-name
+                                                           ((juxt string/lower-case identity)))))
                           :recency (->> filtered-projects
                                         (sort-by :latest-build-time)
                                         reverse))]
