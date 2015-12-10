@@ -1493,29 +1493,29 @@
                              {:text  "Rebuild"
                               :title "Retry the same tests"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                                           (update-status! "Rebuilding"))}
+                                           (update-status! "Rebuilding..."))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
                               :title "Retry without cache"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
-                                           (update-status! "Rebuilding"))}
+                                           (update-status! "Rebuilding..."))}
 
                              :with_ssh
                              {:text  "Rebuild with SSH"
                               :title "Retry with SSH in VM",
                               :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
-                                           (update-status! "Rebuilding"))}}
+                                           (update-status! "Rebuilding..."))}}
             text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
         (html
-         [:span
+         [:div.rebuild-container
           [:button.rebuild {:on-click (action-for :rebuild)}
-           [:img {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
+           [:img.rebuild-icon {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
            rebuild-status]
           [:span.dropdown.rebuild
            [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
-           [:ul.dropdown-menu
+           [:ul.dropdown-menu.pull-right
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
             ;; XXX Temporarily remove the ssh button for OSX builds
