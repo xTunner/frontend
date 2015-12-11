@@ -169,11 +169,20 @@
     }
 
     .no-insights, .no-builds, .loading-spinner {
-      height: @spinner-height;
       .flexy(center, space-around, column);
 
+      height: @spinner-height;
+      padding: 20px;
       &.no-builds {
         font-weight: bold;
+      }
+
+      .upgrade-link {
+        font-weight: bold;
+
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

@@ -79,11 +79,11 @@
              (overview (example-plan :trial) "circleci"))
       (is-re #"All Linux builds will be distributed across 7 containers."
              (overview (example-plan :free :trial) "circleci"))
-      (is-re #"All Linux builds will be distributed across 6 containers."
+      (is-re #"All Linux builds will be distributed across 10 containers."
              (overview (example-plan :trial :paid) "circleci"))
       (is-re #"All Linux builds will be distributed across 5 containers."
              (overview (example-plan :free :paid) "circleci"))
-      (is-re #"All Linux builds will be distributed across 7 containers."
+      (is-re #"All Linux builds will be distributed across 11 containers."
              (overview (example-plan :free :paid :trial) "circleci")))
     (testing "trials are described appropriately"
       (is-re #"5 more days" (overview (example-plan :trial) "circleci")))
@@ -93,11 +93,11 @@
     (testing "it shows the right amounts for trial and paid, and minds their interactions."
       ;; Trials are currently upper bounds on plans...
       (let [text (overview (example-plan :trial :paid) "circleci")]
-        (is-re #"2 of these are provided by a trial" text)
+        (is-re #"6 of these are provided by a trial" text)
         (is-re #"4 of these are paid." text))
       ;; so we shouldn't describe one if the paid plan is bigger then it.
       (let [text (overview (example-plan :trial :big-paid) "circleci")]
-        (is (not (re-find #"provided by a trial" text)))
+        (is (re-find #"provided by a trial" text))
         (is-re #"60 of these are paid." text)))
     (testing "it tells you if you're grandfathered"
       (is-re #"grandfathered" (overview (example-plan :grandfathered) "circleci")))))

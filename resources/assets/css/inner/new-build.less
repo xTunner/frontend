@@ -352,68 +352,75 @@
     }
   }
 
-  .dropdown {
-    @item-spacing: 20px;
-    @toggle-min-width: 145px;
-    @button-height: 30px;
+  .rebuild-container {
 
-    margin-right: @item-spacing;
-    border-radius: 3px;
-    border: solid 1px @dropdown-gray;
-    background: @dropdown-light-gray;
+    @container-height: 30px;
+    @container-width: 160px;
+    @button-right-margin: 3px;
 
-    button {
-      background: @dropdown-light-gray;
-    }
+    margin-right: 15px;
 
-    ul {
-      background: @dropdown-lighter-gray;
+    .button-look() {
+      border-radius: 3px;
+      border: solid 1px rgba(0, 0, 0, 0.1);
+      background-color: @dropdown-gray;
 
-      a {
-        padding-right: 10px;
-        padding-left:  10px;
-        font-size: @font-size-small;
-
-        &:hover {
-          background: @dropdown-light-gray;
-          color: @gray-dark-v2;
-        }
-      }
-    }
-
-    .dropdown-toggle {
-      min-width: @toggle-min-width;
-      min-height: @button-height;
-      font-size: @font-size-base;
-      padding-top: 1px;
-      padding-bottom: (@font-size-base / 3px);
-
-      .chevron {
-        float: right;
-        padding-top: 5px;
-      }
-
-      .status {
-        float: left;
-        max-height: (@button-height / 2px);
-      }
+      cursor: pointer;
 
       &:hover {
         background: @dropdown-lighter-gray;
       }
     }
 
-    .dropdown-menu {
-      margin-top: 0;
+    button.rebuild {
+      .button-look();
 
-      /* Makes sure the dropdown options are
-         exactly in line with the dropdown button. */
-      min-width: (@toggle-min-width + 2px);
-      margin-left: -1px;
+      width: @container-width - @container-height - @button-right-margin;
+      height: @container-height;
+      margin: 0 @button-right-margin 0 0;
+      padding: 0;
+      text-align: inherit;
+      font-size: 14px;
 
-      text-align: left;
-      box-shadow: none;
-      border-radius: 0;
+
+      .rebuild-icon {
+        margin: 8px 10px;
+      }
+    }
+
+
+    .dropdown {
+      .button-look();
+
+      display: inline-block;
+      width: @container-height;
+      height: @container-height;
+
+      vertical-align: top;
+      text-align: center;
+
+      i {
+        line-height: @container-height;
+      }
+
+      .dropdown-menu {
+        .button-look();
+
+        margin-top: 3px;
+        width: @container-width;
+
+        background-color: @dropdown-lighter-gray;
+
+        li:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        a {
+          padding: 3px 10px;
+          color: inherit;
+          background-color: inherit;
+        }
+      }
     }
   }
 }
