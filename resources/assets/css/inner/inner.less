@@ -103,32 +103,34 @@
 body.circle-elevio {
   #elevio-widget {
     display: block;
-
-    .support .elevio-box-warning {
-      a {
-        color: @link-color-v2;
-      }
-      
-      .action-btn {
-        display: none;
-      }
-    }
   }
   
   #intercom-container {
     .intercom-conversations-new-conversation-button {
       display: none;
     }
-    
-    #intercom-launcher {
-      display: none !important;
-    }
 
     .intercom-composer-container {
       display: none;
     }
   }
-} 
+  
+  #intercom-launcher {
+    display: none !important;
+  }
+}
+
+#elevio-widget {
+  #elevio-widget .support .elevio-box-warning {
+    a {
+      color: @link-color-v2;
+    }
+    
+    .action-btn {
+      display: none;
+    }
+  }
+}
 
 body.circle-intercom {
   #intercom-container {
