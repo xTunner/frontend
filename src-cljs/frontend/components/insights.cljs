@@ -244,7 +244,7 @@
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category] :as project} owner]
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -295,7 +295,10 @@
                  [:div.below-info
                   [:dl
                    [:dt "BRANCHES"]
-                   [:dd (-> branches keys count)]]]))])))))
+                   [:dd (-> branches keys count)]]
+                  [:dl
+                   [:dt "PARALLELISM"]
+                   [:dd parallel]]]))])))))
 
 (defrender no-projects [data owner]
   (html
