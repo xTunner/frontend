@@ -262,9 +262,12 @@
             (om/build svg {:class "badge-icon"
                            :src (-> latest-build build/status-icon-v2 common/icon-path)})]
            (formatted-project-name project)]
-          [:h4 "Branch: " branch]
+          [:h4 (if show-insights?
+                 (str "Branch: " branch)
+                 (gstring/unescapeEntities "&nbsp;"))]
           (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-                (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
+                (not show-insights?) [:div.no-insights
+                                      [:div.message "This release of Insights is only available for repos belonging to paid plans."]
                                       [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
                                                         :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
                                                                                                                  :org-name username})} "Upgrade here"]]
