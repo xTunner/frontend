@@ -2,6 +2,7 @@
   (:require [cemerick.cljs.test :as test]
             [frontend.test-utils :as test-utils]
             [frontend.utils :as utils :refer [sel1 sel]]
+            [frontend.models.test-project :as test-project]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
             [frontend.timer :as timer]
@@ -70,10 +71,15 @@
     (om/root insights/build-insights test-projects-data {:target test-node})
     (testing "Simple render of feature container.")))
 
-(deftest can-render-project-block
+(deftest can-render-insights-cards
   (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
-    (om/root insights/project-insights (first test-projects-data) {:target test-node
-                                                                   :shared {:timer-atom (timer/initialize)}})
+    (om/root insights/cards
+             {:plans test-utils/example-user-plans-paid
+              :projects [test-project/private-project]
+              :selected-filter :all
+              :selected-sorting :alphabetical}
+             {:target test-node
+              :shared {:timer-atom (timer/initialize)}})
     (testing "Simple render of feature container.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

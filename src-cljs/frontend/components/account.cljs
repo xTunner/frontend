@@ -280,10 +280,11 @@
                                 :src (common/icon-path "Status-Passed")}))]
               (when message
                 [:div.alert.alert-success
-                 (om/build svg {:src (if enrolled?
-                                       (common/icon-path "Status-Passed")
-                                       (common/icon-path "Info-Info"))})
-                 [:span message]])))
+                 [:span
+                  (om/build svg {:src (if enrolled?
+                                        (common/icon-path "Status-Passed")
+                                        (common/icon-path "Info-Info"))})
+                  [:span message]]])))
            (if (get-in app state/user-in-beta-path)
              (om/build beta-program-member app)
              (om/build join-beta-program app))]])))))

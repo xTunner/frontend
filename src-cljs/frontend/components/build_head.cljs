@@ -23,7 +23,6 @@
             [goog.dom]
             [goog.dom.DomHelper]
             [goog.string :as gstring]
-            [goog.string.format]
             [inflections.core :refer (pluralize)]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -704,7 +703,11 @@
             failed-sources (filter (fn [[_ {:keys [failures]}]]
                                      (seq failures))
                                    source-hash)
-            build-succeeded? (= "success" build-status)]
+            build-succeeded? (= "success" build-status)
+
+            by-time (reverse (sort-by :run_time (filter (comp number? :run_time)
+                                                        tests)))
+            slowest (first by-time)]
         (html
          [:div.test-results
           (if-not tests
@@ -715,8 +718,16 @@
                            "Your build ran "
                            [:strong (count tests)]
                            " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
-                           [:strong "0 failures"]]
-
+                           [:strong "0 failures"]
+                           (when slowest
+                             [:div.build-tests-summary
+                              [:p
+                               [:strong "Slowest test:"]
+                               (gstring/format
+                                    " %s %s (took %.2f seconds)."
+                                    (:classname slowest)
+                                    (:name slowest)
+                                    (:run_time slowest))]])]
               :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
                      [:div [:img.alert-icon {:src (common/icon-path
                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
@@ -1314,17 +1325,20 @@
 
 (defn pull-requests [urls]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
-  (list
-    [:span.summary-spacer "•"]
-    [:span.summary-label
-     (str "Pull Request" (when (< 1 (count urls)) "s") ": ")]
-    [:span
-     (interpose
-       ", "
-       (map (fn [url] [:a {:href url} "#"
-                       (let [n (re-find #"/\d+$" url)]
-                         (if n (subs n 1) "?"))])
-            urls))]))
+  [:div.summary-item
+   (when-not (feature/enabled? :ui-v2)
+     [:span.summary-spacer "•"])
+   [:span.summary-label
+    (str (if (feature/enabled? :ui-v2) "PR" "Pull Request")
+         (when (< 1 (count urls)) "s")
+         ": ")]
+   [:span
+    (interpose
+     ", "
+     (map (fn [url] [:a {:href url} "#"
+                     (let [n (re-find #"/\d+$" url)]
+                       (if n (subs n 1) "?"))])
+          urls))]])
 
 (defn queued-time [build]
   (if (< 0 (build-model/run-queued-time build))
@@ -1341,28 +1355,29 @@
                                          :stop (or (:queued_at build) (:stop_time build))})
      " waiting for builds to finish"]))
 
-(defn build-finished-status [build]
-  (let [stop-time  (:stop_time build)
-        start-time (:start_time build)]
-    [:div.summary-item
-     [:span.summary-label "Finished: "]
-     [:span.stop-time
-      (when stop-time
-        {:title (datetime/full-datetime stop-time)})
-      (when stop-time
-        (list (om/build common/updating-duration
-                        {:start stop-time}
-                        {:opts {:formatter datetime/time-ago}}) " ago"))]
-     [:span
-      " ("
-      (if (build-model/running? build)
-        (om/build common/updating-duration {:start start-time
-                                            :stop  stop-time})
-        (build-model/duration build))
-      (om/build expected-duration {:start start-time
-                                   :stop  stop-time
-                                   :build build})
-      ")"]]))
+(defn build-running-status [{start-time :start_time
+                             :as build}]
+  {:pre [(some? start-time)]}
+  [:div.summary-item
+   [:span.summary-label "Started: "]
+   [:span.start-time
+    {:title (datetime/full-datetime start-time)}
+    (om/build common/updating-duration
+              {:start start-time})
+    " ago"]])
+
+(defn build-finished-status [{stop-time :stop_time
+                              :as build}]
+  {:pre [(some? stop-time)]}
+  [:div.summary-item
+   [:span.summary-label "Finished: "]
+   [:span.stop-time
+    {:title (datetime/full-datetime stop-time)}
+    (om/build common/updating-duration
+              {:start stop-time}
+              {:opts {:formatter datetime/time-ago-abbreviated}})
+    " ago"]
+   (str " (" (build-model/duration build) ")")])
 
 (defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
   (when-let [build-number (:build_num previous)]
@@ -1371,6 +1386,22 @@
        [:span.summary-label "Previous: "]
        [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
           build-number]])))
+
+(defn expected-duration-v2
+  [build owner opts]
+  (reify
+    om/IDisplayName
+    (display-name [_] "Expected Duration")
+
+    om/IRender
+    (render [_]
+      (let [formatter (get opts :formatter datetime/as-duration)
+            previous-build (:previous_successful_build build)
+            past-ms (:build_time_millis previous-build)]
+        (html
+         [:div.summary-item
+          [:span.summary-label "Estimated: "]
+          [:span (formatter past-ms)]])))))
 
 (defn build-head-v2 [data owner]
   (reify
@@ -1393,48 +1424,52 @@
                         :vcs-url (:vcs_url build)
                         :build-num (:build_num build)}]
         (html
-          [:div
-           [:div.summary-header
-            [:div.summary-items
-             [:div.summary-item
-              (builds-table/build-status-badge build)]
-             (when (:stop_time build)
-               (build-finished-status build))]
-            [:div.summary-items
-             (om/build previous-build-label build)
-             [:div.summary-item
-              [:span.summary-label "Parallelism: "]
-              (if (has-scope :write-settings data)
-                [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                           :href (build-model/path-for-parallelism build)}
-                 (str (:parallel build) "x")]
-                [:span (:parallel build) "x"])]]
-            (when (:usage_queued_at build)
-              [:div.summary-items
-               [:div.summary-item
-                [:span.summary-label "Queued: "]
-                [:span  (queued-time build)]]])
+         [:div
+          [:div.summary-header
+           [:div.summary-items
+            [:div.summary-item
+             (builds-table/build-status-badge build)]
+            (if-not (:stop_time build)
+              (when (:start_time build)
+                (build-running-status build))
+              (build-finished-status build))]
+           [:div.summary-items
+            (when (build-model/running? build)
+              (om/build expected-duration-v2 build))
+            (om/build previous-build-label build)
+            [:div.summary-item
+             [:span.summary-label "Parallelism: "]
+             (if (has-scope :write-settings data)
+               [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                          :href (build-model/path-for-parallelism build)}
+                (str (:parallel build) "x")]
+               [:span (:parallel build) "x"])]]
+           (when (:usage_queued_at build)
+             [:div.summary-items
+              [:div.summary-item
+               [:span.summary-label "Queued: "]
+               [:span (queued-time build)]]])
 
-            [:div.summary-build-contents
-             [:div.summary-item
-              [:span.summary-label "Triggered by: "]
-              [:span (trigger-html build)]]
+           [:div.summary-build-contents
+            [:div.summary-item
+             [:span.summary-label "Triggered by: "]
+             [:span (trigger-html build)]]
 
-             (when-let [urls (seq (:pull_request_urls build))]
-               (pull-requests urls))]]
+            (when-let [urls (seq (:pull_request_urls build))]
+              (pull-requests urls))]]
 
-           (when-let  [canceler  (and  (=  (:status build) "canceled")
+          (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]
-             [:div.summary-header
-              [:div.summary-items
-               [:div.summary-item
-                (build-canceler canceler github-endpoint)]]])
-           [:div.card
-            [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
-            (om/build build-commits-v2 build-data)]
-           [:div.build-head-wrapper
-            [:div.build-head
-             (om/build build-sub-head-v2 data)]]])))))
+            [:div.summary-header
+             [:div.summary-items
+              [:div.summary-item
+               (build-canceler canceler github-endpoint)]]])
+          [:div.card
+           [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
+           (om/build build-commits-v2 build-data)]
+          [:div.build-head-wrapper
+           [:div.build-head
+            (om/build build-sub-head-v2 data)]]])))))
 
 (defn rebuild-actions-v2 [{:keys [build project]} owner]
   (reify
@@ -1455,10 +1490,10 @@
             update-status!  #(om/set-state! owner [:rebuild-status] %)
             rebuild!        #(raise! owner %)
             actions         {:rebuild
-                             {:text  "Rebuild with cache"
+                             {:text  "Rebuild"
                               :title "Retry the same tests"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                                           (update-status! "Rebuilding with cache"))}
+                                           (update-status! "Rebuilding"))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
@@ -1519,7 +1554,6 @@
            (when has-write-settings?
              (om/build rebuild-actions-v2 {:build build :project project}))
            [:a.build-action
-            {:href (routes/v1-project-settings {:org  (get-in data (conj state/project-plan-path :org_name))
-                                                :repo (get-in data (conj state/project-path :reponame))})}
+            {:href (routes/v1-project-settings (:navigation-data data))}
             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
             "Project Settings"]])))))

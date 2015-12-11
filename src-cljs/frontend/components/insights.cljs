@@ -1,11 +1,13 @@
 (ns frontend.components.insights
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [cljs.core.match :refer-macros [match]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
             [frontend.analytics :as analytics]
             [frontend.routes :as routes]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
@@ -40,7 +42,7 @@
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
 
-(defn build-graphable [{:keys [outcome build_time_millis]}]
+(defn build-chartable? [{:keys [outcome build_time_millis]}]
   (or (#{"success" "failed"} outcome)
       (and (= "canceled" outcome)
            build_time_millis)))
@@ -80,8 +82,8 @@
                               (concat (map :build_num builds) scale-filler)))
                     (.rangeBands #js[0 (:width plot-info)] 0.4))
         plot (-> js/d3
-                (.select el)
-                (.select "svg g.plot-area"))
+                 (.select el)
+                 (.select "svg g.plot-area"))
         bars-join (-> plot
                       (.select "g > g.bars")
                       (.selectAll "g.bar-pair")
@@ -204,9 +206,9 @@
           (.append "g")
           (.attr "class" "y-axis negative axis")))))
 
-(defn chartable-builds [builds]
+(defn filter-chartable-builds [builds]
   (->> builds
-       (filter build-graphable)
+       (filter build-chartable?)
        (take (:max-bars plot-info))
        reverse
        (map add-queued-time)))
@@ -239,7 +241,10 @@
       (html
        [:div.build-time-visualization]))))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds] :as project} owner]
+(defn formatted-project-name [{:keys [username reponame]}]
+  (gstring/format "%s/%s" username reponame))
+
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -248,70 +253,145 @@
                                                            :org-name username})))
     om/IRender
     (render [_]
-      (let [builds (chartable-builds recent-builds)]
-        (html
-          (let [branch (-> recent-builds (first) (:branch))]
-            [:div.project-block
-             [:h1 (gstring/format "%s/%s" username reponame)]
-             [:h4 "Branch: " branch]
-             (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-                   (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
-                                         [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
-                                                           :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
-                                                                                                                    :org-name username})} "Upgrade here"]]
-                   (empty? builds) [:div.no-insights "No tests for this repo"]
-                   :else
-                   (list
-                     [:div.above-info
-                      [:dl
-                       [:dt "MEDIAN BUILD"]
-                       [:dd (datetime/as-duration (median-builds builds :build_time_millis))]]
-                      [:dl
-                       [:dt "MEDIAN QUEUE"]
-                       [:dd (datetime/as-duration (median-builds builds :queued_time_millis))]]
-                      [:dl
-                       [:dt "LAST BUILD"]
-                       [:dd (om/build common/updating-duration
-                                      {:start (->> builds
-                                                   reverse
-                                                   (filter :start_time)
-                                                   first
-                                                   :start_time)}
-                                      {:opts {:formatter datetime/as-time-since
-                                              :formatter-use-start? true}})]]]
-                     (om/build project-insights-bar builds)
-                     [:div.below-info
-                      [:dl
-                       [:dt "BRANCHES"]
-                       [:dd (-> branches keys count)]]]))]))))))
+      (html
+       (let [branch (-> recent-builds (first) (:branch))
+             latest-build (last chartable-builds)]
+         [:div.project-block {:class (str "build-" (name sort-category))}
+          [:h1
+           [:span.last-build-status
+            (om/build svg {:class "badge-icon"
+                           :src (-> latest-build build/status-icon-v2 common/icon-path)})]
+           (formatted-project-name project)]
+          [:h4 "Branch: " branch]
+          (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
+                (not show-insights?) [:div.no-insights [:span.message "This release of Insights is only available for repos belonging to paid plans"]
+                                      [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
+                                                        :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
+                                                                                                                 :org-name username})} "Upgrade here"]]
+                (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
+                :else
+                (list
+                 [:div.above-info
+                  [:dl
+                   [:dt "MEDIAN BUILD"]
+                   [:dd (datetime/as-duration (median-builds chartable-builds :build_time_millis))]]
+                  [:dl
+                   [:dt "MEDIAN QUEUE"]
+                   [:dd (datetime/as-duration (median-builds chartable-builds :queued_time_millis))]]
+                  [:dl
+                   [:dt "LAST BUILD"]
+                   [:dd (om/build common/updating-duration
+                                  {:start (->> chartable-builds
+                                               reverse
+                                               (filter :start_time)
+                                               first
+                                               :start_time)}
+                                  {:opts {:formatter datetime/as-time-since
+                                          :formatter-use-start? true}})]]]
+                 (om/build project-insights-bar chartable-builds)
+                 [:div.below-info
+                  [:dl
+                   [:dt "BRANCHES"]
+                   [:dd (-> branches keys count)]]]))])))))
 
 (defrender no-projects [data owner]
   (html
-    [:div.no-insights-block
-     [:div.content
-      [:div.row
-       [:div.header.text-center "No Insights yet"]]
-       [:div.details.text-center "Add projects from your Github orgs and start building on CircleCI to view insights."]
-      [:div.row.text-center
-       [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
+   [:div.no-projects-block
+    [:div.content
+     [:div.row
+      [:div.header.text-center "No Insights yet"]]
+     [:div.details.text-center "Add projects from your Github orgs and start building on CircleCI to view insights."]
+     [:div.row.text-center
+      [:a.btn.btn-success {:href (routes/v1-add-projects)} "Add Project"]]]]))
 
-(defn decorate-projects
-  "Returns a new seq with add-show-insights? added to all projects"
-  [projects plans]
-   (->> projects
-        (map (fn [project]
-               (-> project
-                    (project-model/add-show-insights? plans))))))
+(defn project-sort-category
+  "Returns symbol representing category for sorting.
+
+  One of #{:pass :fail :other}"
+  [{:keys [show-insights? chartable-builds] :as project}]
+  (let [outcome (some->> chartable-builds
+                         (map :outcome)
+                         (filter #{"success" "failed"})
+                         last)]
+    (match [show-insights? outcome]
+           [true "success"] :success
+           [true "failed"] :failed
+           :else :other)))
+
+(defn project-latest-build-time [project]
+  (let [start-time (-> project
+                       :chartable-builds
+                       last
+                       :start_time)]
+    (js/Date. start-time)))
+
+(defn decorate-project
+  "Add keys to project related to insights - :show-insights? :sort-category :chartable-builds ."
+  [plans {:keys [recent-builds] :as project}]
+  (let [chartable-builds (filter-chartable-builds recent-builds)]
+    (-> project
+        (assoc :chartable-builds chartable-builds)
+        (#(assoc % :show-insights? (project-model/show-insights? plans %)))
+        (#(assoc % :sort-category (project-sort-category %)))
+        (#(assoc % :latest-build-time (project-latest-build-time %))))))
+
+(defrender cards [{:keys [plans projects selected-filter selected-sorting]} owner]
+  (let [decorated-projects (map (partial decorate-project plans) projects)
+        categories (group-by :sort-category decorated-projects)
+        filtered-projects (if (= selected-filter :all)
+                            decorated-projects
+                            (selected-filter categories))
+        sorted-projects (case selected-sorting
+                          :alphabetical (->> filtered-projects
+                                             (sort-by #(-> %
+                                                           formatted-project-name
+                                                           ((juxt string/lower-case identity)))))
+                          :recency (->> filtered-projects
+                                        (sort-by :latest-build-time)
+                                        reverse))]
+    (html
+     [:div
+      [:div.controls
+       [:span.filtering
+        [:input {:id "insights-filter-all"
+                 :type "radio"
+                 :name "selected-filter"
+                 :checked (= selected-filter :all)
+                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :all}])}]
+        [:label {:for "insights-filter-all"}
+         (gstring/format"All (%s)" (count decorated-projects))]
+        [:input {:id "insights-filter-success"
+                 :type "radio"
+                 :name "selected-filter"
+                 :checked (= selected-filter :success)
+                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :success}])}]
+        [:label {:for "insights-filter-success"}
+         (gstring/format"Success (%s)" (count (:success categories)))]
+        [:input {:id "insights-filter-failed"
+                 :type "radio"
+                 :name "selected-filter"
+                 :checked (= selected-filter :failed)
+                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :failed}])}]
+        [:label {:for "insights-filter-failed"}
+         (gstring/format"Failed (%s)" (count (:failed categories)))]]
+       [:span.sorting
+        [:label "Sort: "]
+        [:select {:class "toggle-sorting"
+                  :on-change #(raise! owner [:insights-sorting-changed {:new-sorting (keyword (.. % -target -value))}])
+                  :value (name selected-sorting)}
+         [:option {:value "alphabetical"} "Alphabetical"]
+         [:option {:value "recency"} "Recent"]]]]
+      [:div.blocks-container
+       (om/build-all project-insights sorted-projects)]])))
 
 (defrender build-insights [state owner]
-  (let [plans (get-in state state/user-plans-path)
-        projects (get-in state state/projects-path)]
+  (let [projects (get-in state state/projects-path)]
     (html
-     [:div#build-insights {:class (case (count projects)
-                                    1 "one-project"
-                                    2 "two-projects"
-                                    "three-or-more-projects")}
-        (cond
-          (nil? projects)    [:div.loading-spinner-big common/spinner]
-          (empty? projects)  (om/build no-projects state)
-          :else              (om/build-all project-insights (decorate-projects projects plans)))])))
+     [:div#build-insights {}
+      (cond
+        (nil? projects)    [:div.loading-spinner-big common/spinner]
+        (empty? projects)  (om/build no-projects state)
+        :else              (om/build cards {:plans (get-in state state/user-plans-path)
+                                            :projects (get-in state state/projects-path)
+                                            :selected-filter (get-in state state/insights-filter-path)
+                                            :selected-sorting (get-in state state/insights-sorting-path)}))])))

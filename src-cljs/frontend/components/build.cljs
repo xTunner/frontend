@@ -6,6 +6,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
+            [frontend.models.project :as project-model]
             [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
@@ -47,7 +48,9 @@
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
     (when (:failed build)
-      [:div.alert.alert-danger
+      [:div.alert.alert-danger.iconified
+       (when (feature/enabled? :ui-v2)
+         [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]])
        (if (:infrastructure_fail build)
          (infrastructure-fail-message owner)
          [:div.alert-wrap
@@ -128,6 +131,7 @@
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
+            show-upsell? (project-model/show-upsell? (:project project-data) (:plan project-data))
             div (html
                   [:div.container-list
                    (for [container containers]
@@ -136,28 +140,16 @@
                                 :build-running? build-running?
                                 :current-container-id current-container-id}
                                {:react-key (:index container)}))
-                   (if (and
-                         user
-                         (contains? (:plan project-data) :paid)
-                         (not (get-in project-data [:plan :paid]))
-                         (not (get-in project-data [:project :feature_flags :oss]))
-                         (= :button (om/get-shared owner  [:ab-tests :upgrade_banner])))
-                     [:a.container-selector.parallelism-tab.upgrade
-                      {:role "button"
-                       :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                             :project-data project-data
-                                                                             :user user})
-                       :title "adjust parallelism"}
-                      [:span "Add Containers +"]]
-                     [:a.container-selector.parallelism-tab
-                      {:role "button"
-                       :href (build-model/path-for-parallelism build)
-                       :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                             :project-data project-data
-                                                                             :user user})
-                       :title "adjust parallelism"}
-                      [:span "+"]])])]
+                   [:a.container-selector.parallelism-tab.upgrade
+                    {:role "button"
+                     :href (build-model/path-for-parallelism build)
+                     :on-click #(analytics/track-parallelism-button-click {:view view
+                                                                           :project-data project-data
+                                                                           :user user})
+                     :title "adjust parallelism"}
+                    (if show-upsell?
+                      [:span "Add Containers +"] 
+                      [:span "+"])]])]
         (om/build sticky {:content div :content-class "containers"})))))
 
 (defn notices [data owner]
@@ -195,27 +187,6 @@
                        (not (:dismiss-config-errors build-data)))
               (om/build build-config/config-errors build))]]])))))
 
-(defn upgrade-banner [{:keys [build project-data user view]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (analytics/track-parallelism-button-impression  {:view view
-                                                       :project-data project-data
-                                                       :user user}))
-    om/IRender
-    (render [_]
-      (html
-        [:div.upgrade-banner
-         [:i.fa.fa-tachometer.fa-lg]
-         [:p.main.message [:b "Build Diagnostics"]
-          [:p.sub.message "Looking for faster builds? "
-           [:a {:href (build-model/path-for-parallelism build)
-                :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                      :project-data project-data
-                                                                      :user user})}
-            "Adding containers"]
-           " can cut down time spent testing."]]]))))
-
 (defn build-v1 [data owner]
   (reify
     om/IRender
@@ -238,16 +209,6 @@
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})
-             (when (and
-                     user
-                     (contains? :paid (:plan project-data))
-                     (not (get-in project-data [:plan :paid]))
-                     (not (get-in project-data [:project :feature_flags :oss]))
-                     (= :banner (om/get-shared owner  [:ab-tests :upgrade_banner])))
-               (om/build upgrade-banner {:build build
-                                         :project-data project-data
-                                         :user user
-                                         :view view}))
              (om/build notices {:build-data (dissoc build-data :container-data)
                                 :project-data project-data
                                 :invite-data invite-data})
@@ -300,7 +261,35 @@
          (datetime/as-duration (container-utilization-duration actions))
          ")"]))))
 
-(defn container-pill-v2 [{:keys [container current-container-id build-running?]} owner]
+(defn compute-override-status
+  "This is called when properties are updated in will-receive-props.
+
+  This exists because the jump between :running and :waiting status is
+  jarring and it can happen very quickly in a sequence of short build
+  steps. To mitigate this, we are introducing a two second delay when
+  transitioning from the :running state to the :waiting state.
+
+  compute-override-status checks if we are transitioning to
+  the :waiting status.  If we are, it generates 'override' data to put
+  into component local state.  This data is used during rendering to
+  decide which status to display."
+  [current-status next-status]
+  (if (and (= next-status :waiting)
+           (not= current-status next-status))
+    {:status current-status
+     :until (+ (datetime/now)
+               2000)}))
+
+(defn maybe-override-status
+  "If there is an override status and its time has not experied, use
+  that status.  If the time has expried, use the real status."
+  [real-status {:keys [until] :as override-status}]
+  (if (and override-status
+           (>= until (datetime/now)))
+    (:status override-status)
+    real-status))
+
+(defn container-pill-v2 [{:keys [container status current-container-id build-running?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -310,12 +299,23 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (timer/set-updating! owner (not (last-action-end-time container))))
-    om/IRender
-    (render [_]
+    om/IWillReceiveProps
+    (will-receive-props [this next-props]
+      (let [next-status (:status next-props)]
+        (om/set-state! owner :override-status (compute-override-status status next-status))))
+    om/IRenderState
+    (render-state [_ {:keys [override-status]}]
       (html
        (let [container-id (container-model/id container)
-             status (container-model/status container build-running?)
-             duration-ms (container-utilization-duration container)]
+             duration-ms (container-utilization-duration container)
+             status (maybe-override-status status override-status)
+             icon-name (case status
+                         :failed "Status-Failed"
+                         :success "Status-Passed"
+                         :canceled "Status-Canceled"
+                         :running "Status-Running"
+                         :waiting "Status-Queued"
+                         nil)]
          [:a.container-selector-v2
           {:on-click #(raise! owner [:container-selected {:container-id container-id}])
            :class (concat (container-model/status->classes status)
@@ -323,13 +323,7 @@
           [:span.upper-pill-section
            [:span.container-index (str (:index container))]
            [:span.status-icon
-            (om/build container-result-icon {:name (case status
-                                                     :failed "Status-Failed"
-                                                     :success "Status-Passed"
-                                                     :canceled "Status-Canceled"
-                                                     :running "Status-Running"
-                                                     :waiting "Status-Queued"
-                                                     nil)})]]
+            (om/build container-result-icon {:name icon-name})]]
           (om/build container-duration-label {:actions (:actions container)})])))))
 
 (def paging-width 10)
@@ -356,6 +350,7 @@
             hide-pills? (or (>= 1 (count containers))
                             (empty? (remove :filler-action (mapcat :actions containers))))
             style {:position "fixed"}
+            show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) (get-in data [:project-data :plan]))
             div (html
                  [:div.container-list-v2
                   (if (> previous-container-count 0)
@@ -372,7 +367,8 @@
                     (om/build container-pill-v2
                               {:container container
                                :build-running? build-running?
-                               :current-container-id current-container-id}
+                               :current-container-id current-container-id
+                               :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
                   (if (> subsequent-container-count 0)
                     [:a.container-selector-v2.page-container-pills
@@ -384,8 +380,11 @@
                       [:i.fa.fa-2x.fa-angle-right]]]
                     [:a.container-selector-v2.add-containers
                      {:href (build-model/path-for-parallelism build)
-                      :title "Adjust parallelism"}
-                     "+"])])]
+                      :title "Adjust parallelism"
+                      :class (when show-upsell? "upsell")}
+                     (if show-upsell?
+                       [:span "Add Containers +"]
+                       [:span "+"])])])]
         (om/build sticky {:content div :content-class "containers-v2"})))))
 
 (def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
@@ -457,7 +456,8 @@
 
               (om/build container-pills-v2 {:container-data container-data
                                             :build-running? (build-model/running? build)
-                                            :build build})
+                                            :build build
+                                            :project-data project-data})
 
               (transition-group {:name (om/get-state owner :action-transition-direction)
                                  :enter true
