@@ -47,6 +47,10 @@
       (and (= "canceled" outcome)
            build_time_millis)))
 
+(defn build-timing-url [build]
+  (str (utils/uri-to-relative (unexterned-prop build "build_url"))
+       "#build-timing"))
+
 (defn visualize-insights-bar! [el builds owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
@@ -116,7 +120,7 @@
     ;; top bars enter and update
     (-> bars-join
         (.select ".top")
-        (.attr #js {"xlink:href" #(utils/uri-to-relative (unexterned-prop % "build_url"))
+        (.attr #js {"xlink:href" build-timing-url
                     "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "build_time_millis"))]
                                      (gstring/format "%s in %s"
                                                      (gstring/toTitleCase (unexterned-prop % "outcome"))
@@ -131,7 +135,7 @@
     ;; bottom bar enter and update
     (-> bars-join
         (.select ".bottom")
-        (.attr #js {"xlink:href" #(utils/uri-to-relative (unexterned-prop % "build_url"))
+        (.attr #js {"xlink:href" build-timing-url
                     "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "queued_time_millis"))]
                                      (gstring/format "Queue time %s" duration-str))})
         (.select "rect.bar")
