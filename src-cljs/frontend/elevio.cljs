@@ -31,4 +31,4 @@
                          "reply_placeholder" "Write your reply here"
                          "no_tickets" "Currently no existing support requests"
                          "back_to_tickets" "Back to your support requests"
-                         "deflect" "Before you submit a support request, please check to see if your question has already been answered on <a href=\"https://discuss.circleci.com/\">Discuss</a>."}}})))
+                         "deflect" "Before you submit a support request, please check to see if your question has already been answered on <a target=\"_blank\" href=\"https://discuss.circleci.com/\">Discuss</a>."}}})))
