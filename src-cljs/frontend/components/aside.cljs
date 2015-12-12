@@ -1,5 +1,6 @@
 (ns frontend.components.aside
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :refer [lower-case]]
             [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
@@ -206,7 +207,7 @@
                (om/build branch-list-v2
                          {:branches (->> project
                                          project-model/branches
-                                         (sort-by :name))
+                                         (sort-by (comp lower-case name :identifier)))
                           :show-all-branches? show-all-branches?
                           :navigation-data navigation-data}
                          {:opts {:login login}})]))))
