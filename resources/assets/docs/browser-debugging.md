@@ -14,7 +14,7 @@ At the end of a build on CircleCI, we will gather up all [build artifacts](/docs
 and make them available from your build. This allows you to save screenshots as part of your build,
 and then view them when the build finishes.
 
-Saving screenshots is straightforward: it's a built-in feature in webkit and selenium, and supported by most test suites:
+Saving screenshots is straightforward: it's a built-in feature in WebKit and Selenium, and supported by most test suites:
 
 *   [Manually, using Selenium directly](http://docs.seleniumhq.org/docs/04_webdriver_advanced.jsp#remotewebdriver)
 *   [Automaticaly on failure, using Cucumber](https://github.com/mattheworiordan/capybara-screenshot)
@@ -49,7 +49,7 @@ ssh -p 64625 ubuntu@54.221.135.43 -L 8080:localhost:3000
 
 You can now open your browser on your local machine and navigate to
 `http://localhost:8080` and this will send requests directly to the server
-running on port `3000` on the CircleCI container.You can now manually start the
+running on port `3000` on the CircleCI container. You can now manually start the
 test server on the CircleCI container if it is not aleady running, and you
 should be able to access from the browser on you development machine.
 
@@ -153,3 +153,7 @@ image than Chicken of the VNC.
 If you have had a good or bad experience with a VNC viewer,
 [let us know](mailto:sayhi@circleci.com) so we can update this page and help
 other customers.
+
+## Troubleshooting
+
+If you find that VNC or X11 disconnects unexpectedly, your build container may be running out of memory. See [our guide to memory limits](https://circleci.com/docs/oom) to learn more.
