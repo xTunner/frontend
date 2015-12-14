@@ -950,19 +950,21 @@
                                           false)}
                   "Cancel Plan"])))]]])))))
 
-(defn progress-bar [{:keys [min max value]} owner]
+(defn progress-bar [{:keys [max value class]} owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (println "mmvdm: " min ", " max ", " value)
-      )
-    om/IDidUpdate
-    (did-update [_ {:keys [min max value]} _]
-      (println "mmv: " min ", " max ", " value)
-      )
     om/IRender
     (render [_]
-      (html [:svg.progress-bar]))))
+      (html [:progress {:class class :value value :max max} (str value "%")]))))
+
+(defn usage-bar [{:keys [usage max month]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.usage-group
+        [:div.month-label month]
+        (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
+        [:div.usage-label (gstring/format "%d/%d minutes (%d%)" usage max (* 100 (/ usage max)))]]))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -974,8 +976,11 @@
          [:div
           [:fieldset [:legend (str org-name "'s iOS usage")]]
           (if true #_(not-empty usage)
-            [:div
-             (om/build progress-bar {:min 0 :max 100 :value 30})]
+            [:div.monthly-usage
+             (om/build usage-bar {:usage 200 :max 1000 :month "December"})
+             (om/build usage-bar {:usage 900 :max 1000 :month "November"})
+             (om/build usage-bar {:usage 700 :max 1000 :month "October"})
+             (om/build usage-bar {:usage 800 :max 1000 :month "September"})]
             [:div.explanation
              [:p "Looks like you haven't run any builds yet."]])])))))
 

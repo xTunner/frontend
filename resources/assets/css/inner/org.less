@@ -221,3 +221,48 @@
     min-width: 10em;
   }
 }
+
+.monthly-usage {
+    @progress-bar-color: @brand-info-v2;
+    @progress-background-color: @background-color-v2;
+
+    .flexy(column);
+
+    .usage-group {
+        .flexy(row, space-between);
+    }
+
+    .monthly-usage-bar {
+        margin-top: 5px;
+        border: 0;
+        height: 10px;
+        width: 70%;
+        background-color: @progress-background-color;
+
+    }
+
+    .monthly-usage-bar::-webkit-progress-bar {
+        background-color: @progress-background-color;
+    }
+
+    .monthly-usage-bar::-webkit-progress-value {
+        background-color: @progress-bar-color;
+    }
+
+    progress::-moz-progress-bar {
+        background-color: @progress-bar-color;
+    }
+
+    .month-label {
+        min-width: 65px;
+    }
+
+    .usage-label {
+        min-width: 65px;
+    }
+
+    .over-usage {
+        color: @brand-red-v2;
+    }
+
+}
