@@ -4,6 +4,8 @@
             [frontend.async :refer [raise!]]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
+            [cljs-time.core :as time]
+            [cljs-time.format :as time-format]
             [frontend.models.organization :as org-model]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
@@ -966,21 +968,29 @@
         (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
         [:div.usage-label (gstring/format "%d/%d minutes (%d%)" usage max (* 100 (/ usage max)))]]))))
 
+(def usage-parser (time-format/formatter "yyyy_MM"))
+(def usage-formatter (time-format/formatter "MMMM"))
+
+(defn key->date [key]
+  (time-format/parse (time-format/formatter "yyyy_MM") key))
+
+(defn date->month [date]
+  (time-format/unparse (time-format/formatter "MMMM") date))
+
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
     om/IRender
     (render [_]
       (let [org-name (:org_name plan)
-            usage (:usage plan)]
+            osx-usage (-> plan :usage :os:osx)]
         (html
          [:div
           [:fieldset [:legend (str org-name "'s iOS usage")]]
-          (if true #_(not-empty usage)
+          (if (not-empty osx-usage)
             [:div.monthly-usage
-             (om/build usage-bar {:usage 200 :max 1000 :month "December"})
-             (om/build usage-bar {:usage 900 :max 1000 :month "November"})
-             (om/build usage-bar {:usage 700 :max 1000 :month "October"})
-             (om/build usage-bar {:usage 800 :max 1000 :month "September"})]
+             (om/build-all usage-bar
+                           (map (fn [[month amount]]
+                                  {:usage amount :max 1000 :month (date->month (key->date (name month)))}) osx-usage))]
             [:div.explanation
              [:p "Looks like you haven't run any builds yet."]])])))))
 
