@@ -950,6 +950,35 @@
                                           false)}
                   "Cancel Plan"])))]]])))))
 
+(defn progress-bar [{:keys [min max value]} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (println "mmvdm: " min ", " max ", " value)
+      )
+    om/IDidUpdate
+    (did-update [_ {:keys [min max value]} _]
+      (println "mmv: " min ", " max ", " value)
+      )
+    om/IRender
+    (render [_]
+      (html [:svg.progress-bar]))))
+
+(defn osx-usage-table [{:keys [plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [org-name (:org_name plan)
+            usage (:usage plan)]
+        (html
+         [:div
+          [:fieldset [:legend (str org-name "'s iOS usage")]]
+          (if true #_(not-empty usage)
+            [:div
+             (om/build progress-bar {:min 0 :max 100 :value 30})]
+            [:div.explanation
+             [:p "Looks like you haven't run any builds yet."]])])))))
+
 (defn overview [app owner]
   (om/component
    (html
@@ -1003,7 +1032,9 @@
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
           [:p "If you are in the limited-release beta, you may also choose an iOS plan "
               [:a {:href "#containers"} "here"]
-              ". We will support general release in the near future!"])]]))))
+              ". We will support general release in the near future!"])]
+       (when (pm/osx? plan)
+         (om/build osx-usage-table {:plan plan}))]))))
 
 (def main-component
   {:overview overview
