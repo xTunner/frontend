@@ -1043,12 +1043,14 @@
               [:tr
                [:th "Parallelism"]
                [:td
-                [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                            :on-click #(analytics/track-parallelism-build-header-click {})
                                            :href (build-model/path-for-parallelism build)}
                  (str (:parallel build) "x out of "
                       (min (+ (plan-model/usable-containers plan)
-                              (if (project-model/oss? project) 3 0))
+                              (if (project-model/oss? project)
+                                plan-model/oss-containers
+                                0))
                            (plan-model/max-parallelism plan)) "x")]]
 
                (when-let [urls (seq (:pull_request_urls build))]
@@ -1073,11 +1075,7 @@
                         (if-not (:committer_email build)
                           [:span (build-model/committer build)]
                           [:a {:href (str "mailto:" (:committer_email build))}
-                           (build-model/committer build)])]))]
-
-              ]]
-
-
+                           (build-model/committer build)])]))]]]
             [:div.build-actions
              (when (has-scope :write-settings data)
                [:div.actions
@@ -1439,12 +1437,14 @@
             (om/build previous-build-label build)
             [:div.summary-item
              [:span.summary-label "Parallelism: "]
-             [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+             [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                         :on-click #(analytics/track-parallelism-build-header-click {})
                                         :href (build-model/path-for-parallelism build)}
               (str (:parallel build) "x out of "
                    (min (+ (plan-model/usable-containers plan)
-                           (if (project-model/oss? project) 3 0))
+                           (if (project-model/oss? project)
+                             plan-model/oss-containers
+                             0))
                         (plan-model/max-parallelism plan)) "x")]]]
            (when (:usage_queued_at build)
              [:div.summary-items
