@@ -962,20 +962,17 @@
   (reify
     om/IRender
     (render [_]
-      (html
-       [:div.usage-group
-        [:div.month-label month]
-        (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
-        [:div.usage-label (gstring/format "%d/%d minutes (%d%)" usage max (* 100 (/ usage max)))]]))))
+      (let [percent (* 100 (/ usage max))]
+        (html
+         [:div.usage-group
+          [:div.month-label month]
+          (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
+          [:div.usage-label
+           (when (>= percent 100) {:class "over-usage"})
+           (gstring/format "%d/%d minutes (%d%)" usage max percent)]])))))
 
-(def usage-parser (time-format/formatter "yyyy_MM"))
-(def usage-formatter (time-format/formatter "MMMM"))
-
-(defn key->date [key]
-  (time-format/parse (time-format/formatter "yyyy_MM") key))
-
-(defn date->month [date]
-  (time-format/unparse (time-format/formatter "MMMM") date))
+(defn usage-key->date [usage-key]
+  (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -987,10 +984,15 @@
          [:div
           [:fieldset [:legend (str org-name "'s iOS usage")]]
           (if (not-empty osx-usage)
-            [:div.monthly-usage
-             (om/build-all usage-bar
-                           (map (fn [[month amount]]
-                                  {:usage amount :max 1000 :month (date->month (key->date (name month)))}) osx-usage))]
+            (let [osx-usage (->> osx-usage
+                                 (sort)
+                                 (reverse)
+                                 (take 12)
+                                 (map (fn [[month amount]]
+                                        {:usage amount :max 1000
+                                         :month ((comp datetime/date->month-name usage-key->date) month)})))]
+              [:div.monthly-usage
+               (om/build-all usage-bar osx-usage)])
             [:div.explanation
              [:p "Looks like you haven't run any builds yet."]])])))))
 
