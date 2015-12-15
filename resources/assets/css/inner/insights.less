@@ -173,16 +173,13 @@
 
       height: @spinner-height;
       padding: 20px;
-      &.no-builds {
+      &.no-builds, &.no-insights {
         font-weight: bold;
+        text-align: center;
       }
 
-      .upgrade-link {
-        font-weight: bold;
-
-        &:hover {
-          text-decoration: underline;
-        }
+      .upgrade-link:hover {
+        text-decoration: underline;
       }
     }
   }

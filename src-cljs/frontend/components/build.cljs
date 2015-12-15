@@ -54,14 +54,16 @@
        (if (:infrastructure_fail build)
          (infrastructure-fail-message owner)
          [:div.alert-wrap
-          "Error! "
+          "Error! Check out our "
           [:a {:href "/docs/troubleshooting"}
-           "Check out common problems "]
-          "or, if there's a problem in how CircleCI ran this build, "
-          [:a (merge {:title "Report an error in how Circle ran this build"}
-                     (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}]))
-           "report this issue"]
-          " and we'll investigate."])])))
+           "help docs "]
+          "or our "
+          [:a {:href "http://discuss.circleci.com/"}
+           "community site "]
+          "for more information. If you are a paid customer, you may also consider "
+          [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
+           "requesting for help"]
+          " from a support engineer."])])))
 
 (defn container-pill [{:keys [container current-container-id build-running?]} owner]
   (reify

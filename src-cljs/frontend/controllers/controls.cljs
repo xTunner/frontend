@@ -112,6 +112,14 @@
   [target message value state]
   (assoc-in state state/show-all-branches-path value))
 
+(defmethod control-event :expand-repo-toggled
+  [target message {:keys [repo-name]} state]
+  (update-in state state/expanded-repos-path (fn [expanded-repos]
+                                               ((if (expanded-repos repo-name)
+                                                  disj
+                                                  conj)
+                                                expanded-repos repo-name))))
+
 (defmethod control-event :sort-branches-toggled
   [target message value state]
   (assoc-in state state/sort-branches-by-recency-path value))
