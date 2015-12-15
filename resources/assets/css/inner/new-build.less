@@ -783,10 +783,6 @@
 
   .build-tests-list-container {
     padding-top: 0;
-
-    .filename {
-      margin: 10px 0;
-    }
   }
 
   .build-tests-list {
@@ -799,9 +795,7 @@
   }
 
   .build-test {
-    .rotating-chevron;
 
-    pointer-events: none;
 
     &:last-child {
       .build-test-output, .build-test-name {
@@ -809,22 +803,44 @@
       }
     }
 
-    .test-name:before {
-      margin-left: 5px;
-      content: counter(test-list) ". ";
-      counter-increment: test-list;
+    .properties {
+      .flexy(center, row);
+      flex-wrap: nowrap;
+    }
+
+    .test-name {
+      max-width: 66%;
+
+      &:before {
+         margin-left: 5px;
+         content: counter(test-list) ". ";
+         counter-increment: test-list;
+      }
+    }
+
+    .test-file {
+      max-width: 30%;
+      text-align: right;
+      margin-left: auto;
+      margin-right: 0;
+      .wrap-words;
+    }
+
+    .build-test-output {
+      margin: 10px 0;
+      .wrap-words;
+
+      .expander {
+        float: right;
+        padding-left: @padding-small-horizontal;
+        color: @grayLighter;
+        .user-select(none);
+      }
+
     }
 
   }
 
-
-  .build-test-name {
-    display: inline-block;
-  }
-
-  .build-test-output {
-    margin: 10px 0;
-  }
   .alert {
     .build-tests-toggle {
       margin: 0;
