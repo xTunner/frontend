@@ -969,7 +969,9 @@
           (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
           [:div.usage-label
            (when (>= percent 100) {:class "over-usage"})
-           (gstring/format "%d/%d minutes (%d%)" usage max percent)]])))))
+           [:div.percent-label (str percent "%")]
+           [:div usage]
+           [:div (str "/" max " minutes")]]])))))
 
 (defn usage-key->date [usage-key]
   (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))

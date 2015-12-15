@@ -253,16 +253,21 @@
         background-color: @progress-bar-color;
     }
 
+    .usage-label {
+        .flexy(row, flex-end);
+        min-width: 185px;
+    }
+
     .month-label {
         min-width: 80px;
     }
 
-    .usage-label {
-        padding-left: 20px
+    .percent-label {
+        min-width: 30px;
+        margin-right: 10px;
     }
 
     .over-usage {
         color: @brand-red-v2;
     }
-
 }
