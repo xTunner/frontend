@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.analytics :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
@@ -1040,13 +1041,17 @@
                             (:name canceler)
                             (:login canceler))])])]]
               [:tr
-              [:th "Parallelism"]
+               [:th "Parallelism"]
                [:td
-                (if (has-scope :write-settings data)
-                  [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                             :href (build-model/path-for-parallelism build)}
-                   (str (:parallel build) "x")]
-                  [:span (:parallel build) "x"])]
+                [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                           :on-click #(analytics/track-parallelism-build-header-click {})
+                                           :href (build-model/path-for-parallelism build)}
+                 (str (:parallel build) "x out of "
+                      (min (+ (plan-model/usable-containers plan)
+                              (if (project-model/oss? project)
+                                plan-model/oss-containers
+                                0))
+                           (plan-model/max-parallelism plan)) "x")]]
 
                (when-let [urls (seq (:pull_request_urls build))]
                  ;; It's possible for a build to be part of multiple PRs, but it's rare
@@ -1057,10 +1062,7 @@
                          (map (fn [url] [:a {:href url} "#"
                                          (let [n (re-find #"/\d+$" url)]
                                            (if n (subs n 1) "?"))])
-                              urls))]))
-               ]
-
-
+                              urls))]))]
             [:tr
              [:th "Author"]
              [:td (if-not (:author_email build)
@@ -1073,11 +1075,7 @@
                         (if-not (:committer_email build)
                           [:span (build-model/committer build)]
                           [:a {:href (str "mailto:" (:committer_email build))}
-                           (build-model/committer build)])]))]
-
-              ]]
-
-
+                           (build-model/committer build)])]))]]]
             [:div.build-actions
              (when (has-scope :write-settings data)
                [:div.actions
@@ -1439,11 +1437,15 @@
             (om/build previous-build-label build)
             [:div.summary-item
              [:span.summary-label "Parallelism: "]
-             (if (has-scope :write-settings data)
-               [:a.parallelsim-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                          :href (build-model/path-for-parallelism build)}
-                (str (:parallel build) "x")]
-               [:span (:parallel build) "x"])]]
+             [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                        :on-click #(analytics/track-parallelism-build-header-click {})
+                                        :href (build-model/path-for-parallelism build)}
+              (str (:parallel build) "x out of "
+                   (min (+ (plan-model/usable-containers plan)
+                           (if (project-model/oss? project)
+                             plan-model/oss-containers
+                             0))
+                        (plan-model/max-parallelism plan)) "x")]]]
            (when (:usage_queued_at build)
              [:div.summary-items
               [:div.summary-item
