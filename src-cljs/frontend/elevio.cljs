@@ -16,10 +16,6 @@
 (defn enable! []
   (class-list/add js/document.body "circle-elevio")
   (aset js/window "_elev" (or (aget js/window "_elev") #js {}))
-  ;; Make sure there are non-whitespace characters in the last_name field to get around Elevio form validation
-  (let [last-name (aget js/elevSettings "last_name")]
-    (when-not (re-find #"\S+" last-name)
-      (aset js/elevSettings "last_name" "<nolastname>")))
   (let [set-elev! (partial aset (aget js/window "_elev"))]
     (set-elev! "account_id" account-id)
     (set-elev! "user" (aget js/window "elevSettings"))
