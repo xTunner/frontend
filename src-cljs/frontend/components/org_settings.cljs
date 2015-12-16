@@ -970,8 +970,8 @@
           [:div.usage-label
            (when (>= percent 100) {:class "over-usage"})
            [:div.percent-label (str percent "%")]
-           [:div usage]
-           [:div (str "/" max " minutes")]]])))))
+           [:div (.toLocaleString usage)]
+           [:div (str "/" (.toLocaleString max) " minutes")]]])))))
 
 (defn usage-key->date [usage-key]
   (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))
