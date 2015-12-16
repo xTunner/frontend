@@ -207,6 +207,11 @@
   (defroute v1-stories "/stories/:story" [story]
     (open-to-outer! nav-ch :stories {:story (keyword story)}))
 
+  (defroute v1-features "/features" {:as params}
+    (open-to-outer! nav-ch :features (assoc params
+                                       :_title "Continuous Integration Product and Features"
+                                       :_description "Build a better product and let CircleCI handle your testing. CircleCI helps your team improve productivity with faster development, reduced risk, and better code.")))
+
   (defroute v1-languages "/features/:language" {:as params}
     (open-to-outer! nav-ch :language-landing params))
 
