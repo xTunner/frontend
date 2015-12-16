@@ -600,12 +600,16 @@
          [:div.test-file (:file test)]]
         [:div {:style {"clear" "both"}}]
         (let [message (:message test)
+              message (if (or (nil? message)
+                              (= 0 (count message)))
+                        "no output"
+                        message)
               newline (.indexOf message "\n")
               rendered-message (if (:show-message test)
                                  message
                                  (.substring message 0
                                              (if (> newline 0) newline
-                                                 (.length message))))
+                                                 (count message))))
               expander-label (if (:show-message test) "less" "more")]
           [:pre.build-test-output
            [:div.expander {:role "button"
