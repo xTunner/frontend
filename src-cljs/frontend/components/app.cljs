@@ -1,46 +1,44 @@
 (ns frontend.components.app
-  (:require [ankha.core :as ankha]
-            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :as string]
-            [frontend.api :as api]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
-            [frontend.components.about :as about]
             [frontend.components.account :as account]
-            [frontend.components.add-projects :as add-projects]
+            [frontend.components.about :as about]
             [frontend.components.admin :as admin]
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
-            [frontend.components.changelog :as changelog]
-            [frontend.components.common :as common]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
+            [frontend.components.features :as features]
+            [frontend.components.mobile :as mobile]
+            [frontend.components.press :as press]
+            [frontend.components.add-projects :as add-projects]
+            [frontend.components.insights :as insights]
+            [frontend.components.invites :as invites]
+            [frontend.components.changelog :as changelog]
             [frontend.components.enterprise :as enterprise]
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
-            [frontend.components.features :as features]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
-            [frontend.components.insights :as insights]
             [frontend.components.inspector :as inspector]
             [frontend.components.integrations :as integrations]
-            [frontend.components.invites :as invites]
             [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
-            [frontend.components.landing :as landing]
-            [frontend.components.language-landing :as language-landing]
-            [frontend.components.mobile :as mobile]
-            [frontend.components.opt-in :as opt-in]
-            [frontend.components.org-settings :as org-settings]
             [frontend.components.placeholder :as placeholder]
-            [frontend.components.press :as press]
             [frontend.components.pricing :as pricing]
             [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.security :as security]
             [frontend.components.shared :as shared]
-            [frontend.components.signup :as signup]
             [frontend.components.stories :as stories]
+            [frontend.components.language-landing :as language-landing]
+            [frontend.components.landing :as landing]
+            [frontend.components.org-settings :as org-settings]
+            [frontend.components.opt-in :as opt-in]
+            [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
+            [frontend.components.signup :as signup]
+            [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
             [frontend.models.feature :as feature]
@@ -49,7 +47,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [ankha.core :as ankha])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def keymap
@@ -127,17 +126,18 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              project (get-in app state/project-path)
-              inner? (get-in app state/inner?-path)]
+              show-header-and-footer? (not= :signup (:navigation-point app))
+              project (get-in app state/project-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
-           [:div#app {:class (string/join " "
-                               (cond-> [(if inner? "inner" "outer")
-                                        (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")]
-                                 (not logged-in?) (conj "aside-nil")
-                                 ;; The following is meant for the landing ab test to hide old header/footer
-                                 (= :pricing (:navigation-point app)) (conj "pricing")))}
+           (let [inner? (get-in app state/inner?-path)]
+
+             [:div#app {:class (concat [(if inner? "inner" "outer")]
+                                       (when-not logged-in? ["aside-nil"])
+                                       (if (feature/enabled? :ui-v2) ["ui-v2"] ["ui-v1"])
+                                       ;; The following is meant for the landing ab test to hide old header/footer
+                                       (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
@@ -173,16 +173,16 @@
 
                 [:div.main-body
                  (when (and (not (feature/enabled? :ui-v2))
-                            (not inner?))
+                            show-header-and-footer?)
                    (om/build header/header app-without-container-data))
                  (om/build dom-com app)
 
-                 (when (and (not inner?) (config/footer-enabled?))
+                 (when (and show-header-and-footer? (config/footer-enabled?))
                    [:footer.main-foot
                     (footer/footer)])]]
 
                 (when (and (config/help-tab-enabled?) (not logged-in?))
-                  (om/build shared/sticky-help-link app))]]))))))
+                  (om/build shared/sticky-help-link app))]])))))))
 
 
 (defn app [app owner opts]
