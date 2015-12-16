@@ -88,14 +88,13 @@
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
-
     om/IRenderState
     (render-state [_ {:keys [stick]}]
       (let [wrapper-style (when stick
                             {:height (:height stick)})
             content-style (when stick
                             {:position :fixed
-                             :top 0
+                             :top (:top stick)
                              :left (:left stick)
                              :width (:width stick)})]
         (html [:div {:ref "wrapper" :class wrapper-class :style wrapper-style}
@@ -104,17 +103,21 @@
 
     om/IDidMount
     (did-mount [_]
-      (scroll/register owner
-        #(let [wrapper (om/get-node owner "wrapper")
-               content (om/get-node owner "content")
-               wrapper-rect (.getBoundingClientRect wrapper)
-               content-height (.-height (.getBoundingClientRect content))
-               stick? (<= (.-top wrapper-rect) 0)]
-           (om/set-state! owner :stick
-             (when stick?
-               {:left (.-left wrapper-rect)
-                :width (.-width wrapper-rect)
-                :height content-height})))))
+      (let [scroll-window (utils/sel1 ".main-body")]
+        (scroll/register owner
+                         #(let [scroll-rect (.getBoundingClientRect scroll-window)
+                                wrapper (om/get-node owner "wrapper")
+                                content (om/get-node owner "content")
+                                wrapper-rect (.getBoundingClientRect wrapper)
+                                content-height (.-height (.getBoundingClientRect content))
+                                stick? (<= (.-top wrapper-rect) (.-top scroll-rect))]
+                            (om/set-state! owner :stick
+                                           (when stick?
+                                             {:top (.-top scroll-rect)
+                                              :left (.-left scroll-rect)
+                                              :width (.-width scroll-rect)
+                                              :height content-height})))
+                         scroll-window)))
 
     om/IWillUnmount
     (will-unmount [_]
