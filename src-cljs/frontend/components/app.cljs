@@ -126,7 +126,6 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              show-header-and-footer? (not= :signup (:navigation-point app))
               project (get-in app state/project-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
@@ -173,11 +172,11 @@
 
                 [:div.main-body
                  (when (and (not (feature/enabled? :ui-v2))
-                            show-header-and-footer?)
+                            (not inner?))
                    (om/build header/header app-without-container-data))
                  (om/build dom-com app)
 
-                 (when (and show-header-and-footer? (config/footer-enabled?))
+                 (when (and (not inner?) (config/footer-enabled?))
                    [:footer.main-foot
                     (footer/footer)])]]
 
