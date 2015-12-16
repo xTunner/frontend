@@ -21,6 +21,7 @@
                  [ankha "0.1.5.1-64423e"]
                  [org.clojure/clojurescript "1.7.28"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/core.match "0.3.0-alpha4"]
                  [cljs-ajax "0.3.13"]
                  [cljsjs/react-with-addons "0.12.2-4"]
                  [org.omcljs/om "0.8.8" :exclusions [cljsjs/react]]

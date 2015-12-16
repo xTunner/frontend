@@ -67,6 +67,15 @@
                                  (time/days)
                                  (time/from-now)
                                  (time-format/unparse (:basic-date-time time-format/formatters)))}
+         :expired-trial {:trial {:template {:free_containers 6
+                                            :id "t1"
+                                            :price 0
+                                            :type "trial"}}
+                         :amount 0
+                         :trial_end (->> 5
+                                         (time/days)
+                                         (time/ago)
+                                         (time-format/unparse (:basic-date-time time-format/formatters)))}
          :free {:free {:template {:id "f1"
                                   :free_containers 1
                                   :type "free"}}
@@ -129,6 +138,10 @@
 (def example-user-plans-trial
   [(-> {:org_name "circleci"}
        (assoc :plans [(example-plan :trial)]))])
+
+(def example-user-plans-expired-trial
+  [(-> {:org_name "circleci"}
+       (assoc :plans [(example-plan :expired-trial)]))])
 
 (def example-user-plans-piggieback
   [(-> {:org_name "circleci"}

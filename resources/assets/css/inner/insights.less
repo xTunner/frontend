@@ -3,7 +3,7 @@
 @tick-color: #999999;
 @spinner-height: 172px;
 
-&.ui-v2 #build-insights .no-insights-block {
+&.ui-v2 #build-insights .no-projects-block {
   background-color: @block-background-color-v2;
 
   .content {
@@ -23,7 +23,54 @@
     font-size: 16px;
   }
 
-  .no-insights-block {
+  .controls {
+
+    margin-top: 15px;
+
+    .filtering {
+
+      color: @gray-light-v2;
+
+      input[type=radio] {
+        display: none;
+
+        &:checked + label {
+          background-color: rgba(0, 0, 0, 0.1);
+          border-radius: 3px;
+        }
+      }
+
+      label {
+        padding: 5px;
+        margin: 0 10px 0 0;
+        font-weight: inherit;
+
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .sorting {
+
+      color: @gray-dark-v2;
+      label {
+        font-weight: inherit;
+        margin: 0 10px 0 15px;
+      }
+
+      select {
+        .fancy-select(@arrow-margin: 34px; @color: inherit);
+
+        border-radios: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding-left: 10px;
+      }
+    }
+  }
+
+  .no-projects-block {
     margin: 15px;
     padding: 10px;
     background-color: @white;
@@ -52,23 +99,39 @@
     }
   }
 
-  .project-block {
+  .blocks-container {
+    margin-top: 15px;
+  }
 
+  .project-block {
     display: inline-block;
-    margin: 15px 0 0 15px;
+    margin: 0 15px 15px 0;
     vertical-align: top;
     border-bottom: #e5e5e5 1px solid;
     background-color: white;
     width: @block-width;
 
+    &.build-failed {
+      h1 {
+        background-color: @insights-header-fail;
+      }
+    }
+
     svg {
       display: block;
+
+      &.badge-icon {
+        display: inline;
+        vertical-align: text-bottom;
+        margin-right: 5px;
+        width: 15px;
+      }
     }
     h1 {
       color: @gray-light-v2;
       border-bottom: #e5e5e5 1px solid;
       margin: 0;
-      padding: 19px 0 13px 15px;
+      padding: 19px 0 13px 10px;
     }
 
     h4 {
@@ -84,6 +147,8 @@
       width: 100%;
 
       &.below-info dl {
+        .flex(0 0 50%);
+
         dt, dd {
           display: inline;
         }
@@ -105,22 +170,18 @@
       }
     }
 
-    .no-insights, .loading-spinner{
-      height: @spinner-height;
-      text-align: center;
+    .no-insights, .no-builds, .loading-spinner {
       .flexy(center, space-around, column);
 
-      &.no-insights {
+      height: @spinner-height;
+      padding: 20px;
+      &.no-builds, &.no-insights {
         font-weight: bold;
-      }
-      
-      .message {
-        width: 80%;
-        margin-top: 40px;
+        text-align: center;
       }
 
-      .upgrade-link {
-        margin-bottom: 40px;
+      .upgrade-link:hover {
+        text-decoration: underline;
       }
     }
   }

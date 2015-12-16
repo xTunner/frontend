@@ -223,3 +223,6 @@
 
 (deftrack track-beta-leave-click [data]
   (mixpanel/track "beta-leave-click" data))
+
+(deftrack track-parallelism-build-header-click [data]
+  (mixpanel/track "parallelism-build-header-click" data))

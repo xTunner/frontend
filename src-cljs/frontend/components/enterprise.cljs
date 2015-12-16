@@ -242,7 +242,7 @@
              [:article
               (common/feature-icon "circle")
               [:h2.text-center "We come to you"]
-              [:p.text-center "Run your own CircleCI installation together with your existing Azure infrastructure. You've invested time, money, and people in your cloud infrastructure. CircleCI Enterprise on Azure makes those investments pay dividends by integrating seemlessly with your existing setup."]]]
+              [:p.text-center "Run your own CircleCI installation together with your existing Azure infrastructure. You've invested time, money, and people in your cloud infrastructure. CircleCI Enterprise on Azure makes those investments pay dividends by integrating seamlessly with your existing setup."]]]
             [:div.col-xs-6
              [:article
               (common/feature-icon "security")
@@ -289,7 +289,7 @@
              [:article
               (common/feature-icon "circle")
               [:h2.text-center "Don't go anywhere"]
-              [:p.text-center "You can run your own CircleCI installation right on your existing AWS account. Whether you manage your infrastructure with AWS CloudFormation, Chef, Puppet, Terraform, or none of the above, we'll meet you where you are and integrate seemlessly with your setup."]]]
+              [:p.text-center "You can run your own CircleCI installation right on your existing AWS account. Whether you manage your infrastructure with AWS CloudFormation, Chef, Puppet, Terraform, or none of the above, we'll meet you where you are and integrate seamlessly with your setup."]]]
             [:div.col-xs-6
              [:article
               (common/feature-icon "security")

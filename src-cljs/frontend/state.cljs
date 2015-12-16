@@ -9,10 +9,9 @@
    ;; 3. Record your tests here: https://docs.google.com/a/circleci.com/spreadsheet/ccc?key=0AiVfWAkOq5p2dE1MNEU3Vkw0Rk9RQkJNVXIzWTAzUHc&usp=sharing
 
    ;; Please kebab-case and not snak_case tests and treatments
-   :ab-test-definitions {:a_is_a [true false]
+   :ab-test-definitions {:a-is-a [true false]
                          :multi-test-equal-variants [:a :b :c :d]
-                         :auth-page-test [:control :trust-marks :status-bar]
-                         :upgrade_banner [:control :banner :button]
+                         :auth-button-vs-page [:button :page]
                          ;; TODO: The below are ab tests that have been running since December 2014. We should figure out if they are being
                          ;; tracked, which are the winners, launch them, and delete the dead code.
                          :pay_now_button [true false]
@@ -25,7 +24,8 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}
-                             :show-forks false}}
+                             :show-forks false}
+              :browser-settings {:expanded-repos #{}}}
    :selected-home-technology-tab nil
    :modal-video-id nil
    :builds-per-page 30
@@ -72,7 +72,9 @@
    :instrumentation []
    :hamburger-menu "closed"
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
-   :inputs nil})
+   :inputs nil
+   :insights {:selected-filter :all
+              :selected-sorting :alphabetical}})
 
 (def user-path [:current-user])
 
@@ -184,6 +186,7 @@
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))
+(def expanded-repos-path (conj browser-settings-path :expanded-repos))
 (def sort-branches-by-recency-path (conj browser-settings-path :sort-branches-by-recency))
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
@@ -232,3 +235,7 @@
 (def top-nav-orgs-path [:top-nav :orgs])
 (def top-nav-selected-org-path [:top-nav :selected-org])
 (def hamburger-menu-path [:hamburger-menu])
+
+
+(def insights-filter-path [:insights :selected-filter])
+(def insights-sorting-path [:insights :selected-sorting])

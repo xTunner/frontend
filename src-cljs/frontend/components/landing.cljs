@@ -147,11 +147,19 @@
     om/IRender
     (render [_]
       (html
-       [:a.home-action {:class (str cta-class " new-outer")
-                        :href "/signup"
-                        :role "button"
-                        :on-mouse-up #(analytics/track-signup-click {:view source})}
-       (str (common/sign-up-text))]))))
+        (if (= :page (om/get-shared owner [:ab-tests :auth-button-vs-page]))
+          [:a.home-action {:class (str cta-class " new-outer")
+                           :href "/signup"
+                           :role "button"
+                           :on-mouse-up #(analytics/track-signup-click {:view source})}
+           (str (common/sign-up-text))]
+          [:a.home-action
+           {:href  (auth-url :destination "/")
+            :on-click #(raise! owner  [:track-external-link-clicked
+                                       {:event "oauth_authorize_click"
+                                        :properties  {"oauth_provider" "github"}
+                                        :path  (auth-url :destination "/")}])}
+           (str (common/sign-up-text))])))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback
                                  cta-visibility-callback

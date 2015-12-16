@@ -112,6 +112,14 @@
   [target message value state]
   (assoc-in state state/show-all-branches-path value))
 
+(defmethod control-event :expand-repo-toggled
+  [target message {:keys [repo-name]} state]
+  (update-in state state/expanded-repos-path (fn [expanded-repos]
+                                               ((if (expanded-repos repo-name)
+                                                  disj
+                                                  conj)
+                                                expanded-repos repo-name))))
+
 (defmethod control-event :sort-branches-toggled
   [target message value state]
   (assoc-in state state/sort-branches-by-recency-path value))
@@ -1252,3 +1260,11 @@
 (defmethod post-control-event! :set-admin-scope
   [_ _ {:keys [login scope]} _ {{api-ch :api} :comms}]
   (api/set-user-admin-scope login scope api-ch))
+
+(defmethod control-event :insights-sorting-changed
+  [_ _ {:keys [new-sorting]} state]
+  (assoc-in state state/insights-sorting-path new-sorting))
+
+(defmethod control-event :insights-filter-changed
+  [_ _ {:keys [new-filter]} state]
+  (assoc-in state state/insights-filter-path new-filter))

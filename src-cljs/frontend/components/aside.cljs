@@ -1,5 +1,6 @@
 (ns frontend.components.aside
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :refer [lower-case]]
             [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
@@ -184,11 +185,12 @@
                  (when show-project?
                    (project-settings-link project))]))])))))
 
-(defn project-aside-v2 [{:keys [project show-all-branches? navigation-data]} owner {:keys [login]}]
+(defn project-aside-v2 [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
   (reify
-      om/IDisplayName (display-name [_] "Aside Project")
-      om/IRender
-      (render [_]
+    om/IDisplayName (display-name [_] "Aside Project")
+    om/IRender
+    (render [_]
+      (let [{repo-name :reponame} project]
         (html [:li
                [:.project-heading
                 {:class (when (and (= (vcs-url/org-name (:vcs_url project))
@@ -198,18 +200,23 @@
                                    (not (contains? navigation-data :branch)))
                           "selected")
                  :title (project-model/project-name project)}
+                [:i.fa.rotating-chevron {:class (when (expanded-repos repo-name) "expanded")
+                                         :on-click #(do
+                                                      (raise! owner [:expand-repo-toggled {:repo-name repo-name}])
+                                                      nil)}]
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})
                                   :on-click #(analytics/track "branch-list-project-clicked")}
                  (project-model/project-name project)]
                 (project-settings-link project)]
-               (om/build branch-list-v2
-                         {:branches (->> project
-                                         project-model/branches
-                                         (sort-by :name))
-                          :show-all-branches? show-all-branches?
-                          :navigation-data navigation-data}
-                         {:opts {:login login}})]))))
+               (when (expanded-repos repo-name)
+                 (om/build branch-list-v2
+                           {:branches (->> project
+                                           project-model/branches
+                                           (sort-by (comp lower-case name :identifier)))
+                            :show-all-branches? show-all-branches?
+                            :navigation-data navigation-data}
+                           {:opts {:login login}}))])))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -366,6 +373,7 @@
     om/IRender
     (render [_]
       (let [show-all-branches? (get-in app state/show-all-branches-path)
+            expanded-repos (get-in app state/expanded-repos-path)
             sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
@@ -412,7 +420,7 @@
                                         project-model/sort-branches-by-recency-v2
                                         ;; Arbitrary limit on visible branches.
                                         (take 100))
-                         :show-all-branches? (get-in app state/show-all-branches-path)
+                         :show-all-branches? show-all-branches?
                          :navigation-data (:navigation-data app)}
                         {:opts {:login (:login opts)
                                 :show-project? true}})
@@ -420,7 +428,8 @@
                (for [project (sort project-model/sidebar-sort projects)]
                  (om/build project-aside-v2
                            {:project project
-                            :show-all-branches? (get-in app state/show-all-branches-path)
+                            :show-all-branches? show-all-branches?
+                            :expanded-repos expanded-repos
                             :navigation-data (:navigation-data app)}
                            {:react-key (project-model/id project)
                             :opts {:login (:login opts)}}))])

@@ -23,14 +23,28 @@
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :paid)) true)))
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :osx)) true))
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :trial)) true))
+    (is (= (project/show-build-timing? private-project (test-utils/example-plan :expired-trial)) false))
   (with-redefs [config/enterprise? (constantly true)]
     (is (= (project/show-build-timing? private-project (test-utils/example-plan :free)) true))))
 
+(deftest test-show-upsell-works
+  (with-redefs [config/enterprise? (constantly false)]
+    (is (= (project/show-upsell? oss-project (test-utils/example-plan :free)) false))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :free)) true))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :paid)) false)))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :osx)) false))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :trial)) false))
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :expired-trial)) true))
+  (with-redefs [config/enterprise? (constantly true)]
+    (is (= (project/show-upsell? private-project (test-utils/example-plan :free)) false))))
+
 (deftest test-add-show-insights-works
    (with-redefs [config/enterprise? (constantly false)]
-    (is (= (:show-insights? (project/add-show-insights? oss-project test-utils/example-user-plans-free) true)))
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-free) false)))
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-paid) true)))
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-piggieback)) true))) 
+     (is (= (project/show-insights? test-utils/example-user-plans-free oss-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-free private-project) false))
+     (is (= (project/show-insights? test-utils/example-user-plans-paid private-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-piggieback private-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-trial private-project) true))
+     (is (= (project/show-insights? test-utils/example-user-plans-expired-trial private-project) false)))
   (with-redefs [config/enterprise? (constantly true)]
-    (is (= (:show-insights? (project/add-show-insights? private-project test-utils/example-user-plans-free) true)))))
+    (is (= (project/show-insights? test-utils/example-user-plans-free private-project) true))))

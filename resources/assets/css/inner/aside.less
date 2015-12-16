@@ -128,31 +128,7 @@
       border-bottom: solid 1px @border-gray-v2;
 
       .toggle-sorting {
-        // Width of the arrow itself.
-        @arrow-width: 11px;
-
-        // Margin between the selector text and the arrow.
-        @arrow-margin: 4px;
-
-        // Space to the right of the arrow that's still clickable.
-        @extra-click-target: 5px;
-
-        margin: 0;
-        padding-right: @arrow-margin + @arrow-width + @extra-click-target;
-
-        color: @grayDark;
-
-        -webkit-appearance: none; // gets rid of ugly shadow in safari
-        -moz-appearance: none; // gets rid of extra arrow in FF
-        border: none;
-
-        background-image: url('@{imgPath}/inner/icons/UI-DropdownArrow.svg');
-        background-size: @arrow-width;
-        background-repeat: no-repeat;
-        background-position: ~"calc(100% - @{extra-click-target})" ~"calc(50% + 1px)";
-        background-color: transparent;
-
-        cursor: pointer;
+        .fancy-select();
       }
 
       .toggle-all-branches {
@@ -590,6 +566,18 @@
 
       &:first-child {
         border-top: none;
+      }
+
+      .rotating-chevron {
+        margin-right: 10px;
+        font-size: 14px;
+
+        &:before {
+          vertical-align: bottom;
+          line-height: 18px;
+          width:18px;
+          text-align: center
+        }
       }
     }
 
