@@ -962,7 +962,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [percent (* 100 (/ usage max))]
+      (let [percent (.round js/Math (* 100 (/ usage max)))]
         (html
          [:div.usage-group
           [:div.month-label month]
