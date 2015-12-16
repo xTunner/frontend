@@ -331,7 +331,7 @@
             (om/build container-result-icon {:name icon-name})]]
           (om/build container-duration-label {:actions (:actions container)})])))))
 
-(def paging-width 10)
+(def paging-width 20)
 
 (defn container-pills-v2 [data owner]
   (reify
