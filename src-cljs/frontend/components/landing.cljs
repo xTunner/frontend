@@ -255,7 +255,7 @@
                        Continuous integration and delivery is revolutionizing the way development teams operate by reducing barriers between your ideas and your production code.
                        Remember, it doesn't count until it ships."]
            [:p
-            [:a.shopify-link {:href "/stories/shopify" :class "new-outer"}
+            [:a.shopify-link {:href "/stories/shopify/" :class "new-outer"}
              "See how Shopify does it"
              (common/ico :slim-arrow-right)]]]]]
         [:div.home-bottom-shelf
@@ -426,7 +426,7 @@
           "So, ready to ship faster?"]
          [:h3.slogan.context.top-line {:item-prop "Next you'll just need to log in using your GitHub account. Still not convinced? Check out our pricing."}
           "Next you'll just need to log in using your GitHub account. Still not convinced? Check out our "
-          [:a {:href "pricing" :class "new-outer"} "pricing"]
+          [:a {:href "/pricing/" :class "new-outer"} "pricing"]
           "."]]
         [:div.home-avatars
          [:div.avatars
