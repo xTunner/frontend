@@ -981,17 +981,18 @@
     om/IRender
     (render [_]
       (let [org-name (:org_name plan)
+            osx-max-minutes (some-> plan :osx :template :max_minutes)
             osx-usage (-> plan :usage :os:osx)]
         (html
          [:div
           [:fieldset [:legend (str org-name "'s iOS usage")]]
-          (if (not-empty osx-usage)
+          (if (and (not-empty osx-usage) osx-max-minutes)
             (let [osx-usage (->> osx-usage
                                  (sort)
                                  (reverse)
                                  (take 12)
                                  (map (fn [[month amount]]
-                                        {:usage amount :max 1000
+                                        {:usage amount :max osx-max-minutes
                                          :month ((comp datetime/date->month-name usage-key->date) month)})))]
               [:div.monthly-usage
                (om/build-all usage-bar osx-usage)])
