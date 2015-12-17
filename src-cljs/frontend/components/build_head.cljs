@@ -598,26 +598,15 @@
         [:div.properties
          [:div.test-name (format-test-name-v2 test)]
          [:div.test-file (:file test)]]
-        [:div {:style {"clear" "both"}}]
         (let [message (:message test)
-              message (if (or (nil? message)
-                              (= 0 (count message)))
-                        "no output"
-                        message)
-              newline (.indexOf message "\n")
-              rendered-message (if (:show-message test)
-                                 message
-                                 (.substring message 0
-                                             (if (> newline 0) newline
-                                                 (count message))))
               expander-label (if (:show-message test) "less" "more")]
           [:pre.build-test-output
            [:div.expander {:role "button"
-                           :on-click #(do
-                                        (.log js/console "yo")
-                                        (raise! owner [:show-test-message-toggled {:test-index (:i test)}]))}
+                           :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
             expander-label]
-           rendered-message])]))))
+           [:span {:class (when-not (:show-message test)
+                            "preview")}
+            message]])]))))
 
 (defn build-tests-list [data owner]
   (reify

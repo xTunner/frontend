@@ -819,7 +819,6 @@
     }
 
     .test-file {
-      max-width: 30%;
       text-align: right;
       margin-left: auto;
       padding-left: @padding-small-horizontal;
@@ -830,6 +829,13 @@
     .build-test-output {
       margin: 10px 0;
       .wrap-words;
+
+      .preview {
+        overflow: hidden;
+        height: 18px;
+        line-height: 18px;
+        display: block;
+      }
 
       .expander {
         float: right;
