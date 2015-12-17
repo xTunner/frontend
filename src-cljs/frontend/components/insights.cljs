@@ -376,7 +376,7 @@
                  :checked (= selected-filter :success)
                  :on-change #(raise! owner [:insights-filter-changed {:new-filter :success}])}]
         [:label {:for "insights-filter-success"}
-         (gstring/format"Success (%s)" (count (:success categories)))]
+         (gstring/format"Successful (%s)" (count (:success categories)))]
         [:input {:id "insights-filter-failed"
                  :type "radio"
                  :name "selected-filter"
