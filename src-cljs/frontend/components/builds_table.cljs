@@ -131,7 +131,7 @@
                   :src (-> build build-model/status-icon-v2 common/icon-path)})
    (build-status-badge-wording build)])
 
-(defn avatar [user & {:keys [size trigger] :or {size 20} :as opts}]
+(defn avatar [user & {:keys [size trigger] :or {size 40} :as opts}]
   (if-let [avatar-url (-> user :avatar_url)]
     [:img.dashboard-icon
      ;; Adding `&s=N` to the avatar URL returns an NxN version of the
