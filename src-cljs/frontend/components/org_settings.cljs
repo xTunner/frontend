@@ -1052,7 +1052,8 @@
           [:p "If you are in the limited-release beta, you may also choose an iOS plan "
               [:a {:href "#containers"} "here"]
               ". We will support general release in the near future!"])]
-       (when (pm/osx? plan)
+       (when (and (feature/enabled? :ios-build-usage)
+                  (pm/osx? plan))
          (om/build osx-usage-table {:plan plan}))]))))
 
 (def main-component
