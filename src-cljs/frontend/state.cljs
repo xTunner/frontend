@@ -53,15 +53,6 @@
                           :tokens nil
                           :checkout-keys nil
                           :envvars nil}
-   :current-build-data {:build nil
-                        :usage-queue-data {:builds nil
-                                           :show-usage-queue false}
-                        :artifact-data {:artifacts nil
-                                        :show-artifacts false}
-                        :config-data {:show-config false}
-                        :current-container-id 0
-                        :container-data {:current-container-id 0
-                                         :containers nil}}
    :current-org-data {:plan nil
                       :projects nil
                       :users nil
@@ -101,6 +92,8 @@
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
 (def current-container-path [:current-build-data :container-data :current-container-id])
+(def current-container-filter-path [:current-build-data :container-data :current-filter])
+(def container-paging-offset-path [:current-build-data :container-data :paging-offset])
 (def build-header-tab-path [:current-build-data :selected-header-tab])
 
 

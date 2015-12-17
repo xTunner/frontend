@@ -1,5 +1,6 @@
 (ns frontend.components.build
-  (:require [frontend.async :refer [raise!]]
+  (:require [clojure.string :as string]
+            [frontend.async :refer [raise!]]
             [frontend.analytics :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -20,8 +21,9 @@
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true])
-    (:require-macros [frontend.utils :refer [html]]))
+    (:require-macros [frontend.utils :refer [html defrender]]))
 
 (def view "build")
 
@@ -333,40 +335,64 @@
 
 (def paging-width 20)
 
+(defrender container-controls [{:keys [current-filter containers categorized-containers]} owner]
+  (let [filters [{:filter :all
+                  :containers containers
+                  :label "All"}
+                 {:filter :success
+                  :containers (:success categorized-containers)
+                  :label "Successful"}
+                 {:filter :failed
+                  :containers (:failed categorized-containers)
+                  :label "Failed"}]]
+    (html
+     [:.controls
+      [:.filtering
+       [:span.filter-help "Show containers:"]
+       (for [{:keys [filter containers label]} filters
+             :let [c-name (name filter)
+                   id (gstring/format "containers-filter-%s" c-name)
+                   cnt (count containers)]]
+         (list
+          [:input {:id id
+                   :type "radio"
+                   :name "container-filter"
+                   :checked (= current-filter filter)
+                   :disabled (zero? cnt)
+                   :on-change #(raise! owner [:container-filter-changed {:new-filter filter :containers containers}])}]
+          [:label {:for id}
+           (gstring/format "%s (%s)" label cnt)]))]])))
+
 (defn container-pills-v2 [data owner]
   (reify
     om/IDisplayName
     (display-name [_]
       "Container Pills")
-    om/IInitState
-    (init-state [_]
-      {:paging-offset 0})
-    om/IRenderState
-    (render-state [_ state]
+    om/IRender
+    (render [_]
       (let [container-data (:container-data data)
             build-running? (:build-running? data)
             build (:build data)
-            {:keys [containers current-container-id]} container-data
-            container-count (count containers)
-            paging-offset (:paging-offset state)
+            {:keys [containers current-container-id current-filter paging-offset]} container-data
+            categorized-containers (group-by #(container-model/status % build-running?) containers)
+            filtered-containers (condp some [current-filter]
+                                  #{:all} containers
+                                  #{:success :failed} :>> categorized-containers)
+            container-count (count filtered-containers)
             previous-container-count (max 0 (- paging-offset 1))
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
-
-            hide-pills? (or (>= 1 (count containers))
-                            (empty? (remove :filler-action (mapcat :actions containers))))
-            style {:position "fixed"}
             show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) (get-in data [:project-data :plan]))
             div (html
                  [:div.container-list-v2
                   (if (> previous-container-count 0)
                     [:a.container-selector-v2.page-container-pills
-                     {:on-click #(om/set-state! owner :paging-offset (- paging-offset paging-width))}
+                     {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (- paging-offset paging-width)}])}
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-left]]
                      [:div.pill-details ;; just for flexbox container
                       [:div "Previous " paging-width]
-                      [:div (count containers) " total"]]])
-                  (for [container (subvec containers
+                      [:div container-count " total"]]])
+                  (for [container (subvec filtered-containers
                                           paging-offset
                                           (min container-count (+ paging-offset paging-width)))]
                     (om/build container-pill-v2
@@ -377,7 +403,7 @@
                               {:react-key (:index container)}))
                   (if (> subsequent-container-count 0)
                     [:a.container-selector-v2.page-container-pills
-                     {:on-click #(om/set-state! owner :paging-offset (+ paging-offset paging-width))}
+                     {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (+ paging-offset paging-width )}])}
                      [:div.pill-details ;; just for flexbox container
                       [:div "Next " subsequent-container-count]
                       [:div container-count " total"]]
@@ -390,7 +416,14 @@
                      (if show-upsell?
                        [:span "Add Containers +"]
                        [:span "+"])])])]
-        (om/build sticky {:content div :content-class "containers-v2"})))))
+        (html
+         [:div.container-pills-container
+          (when (build-model/finished? build)
+            (om/build container-controls {:current-filter current-filter
+                                          :containers containers
+                                          :categorized-containers categorized-containers
+                                          :build-running? build-running?}))
+          (om/build sticky {:content div :content-class "containers-v2"})])))))
 
 (def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
 
