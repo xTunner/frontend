@@ -1,5 +1,6 @@
 (ns frontend.components.footer
-  (:require [frontend.config :as config]))
+  (:require [frontend.config :as config]
+            [frontend.utils.html :refer [open-ext]]))
 
 (defn footer []
   [:footer.footer
@@ -29,28 +30,28 @@
           [:div.col-md-2.col-md-offset-1
             [:h6 "CircleCI"]
             [:ul.list-unstyled
-              [:li [:a {:href "/about/" :class "new-outer"} "About Us"]]
-              [:li [:a {:href "/about/team/" :class "new-outer"} "Team"]]
-              [:li [:a {:href "/press/" :class "new-outer"} "Press"]]
-              [:li [:a {:href "/jobs/" :class "new-outer"} "Jobs"]]
+              [:li [:a (open-ext {:href "/about/"}) "About Us"]]
+              [:li [:a (open-ext {:href "/about/team/"}) "Team"]]
+              [:li [:a (open-ext {:href "/press/"}) "Press"]]
+              [:li [:a (open-ext {:href "/jobs/"}) "Jobs"]]
               [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]
           [:div.col-md-2
             [:h6 "Product"]
             [:ul.list-unstyled
-              [:li [:a {:href "/features/" :class "new-outer"} "Features"]]
-              [:li [:a {:href "/mobile/" :class "new-outer"} "Mobile"]]
-              [:li [:a {:href "/enterprise/" :class "new-outer"} "Enterprise"]]
-              [:li [:a {:href "/pricing/" :class "new-outer"} "Pricing"]]
-              [:li [:a {:href "/customers/" :class "new-outer"} "Customers"]]
+              [:li [:a (open-ext {:href "/features/"}) "Features"]]
+              [:li [:a (open-ext {:href "/mobile/"}) "Mobile"]]
+              [:li [:a (open-ext {:href "/enterprise/"}) "Enterprise"]]
+              [:li [:a (open-ext {:href "/pricing/"}) "Pricing"]]
+              [:li [:a (open-ext {:href "/customers/"}) "Customers"]]
               [:li [:a {:href "/changelog"} "Changelog"]]]]
           [:div.col-md-2
             [:h6 "Support"]
             [:ul.list-unstyled
               [:li [:a {:href "/docs"} "Documentation"]]
               [:li [:a {:href "https://discuss.circleci.com/"} "Discuss"]]
-              [:li [:a {:href "/security/" :class "new-outer"} "Security"]]
-              [:li [:a {:href "/privacy/" :class "new-outer"} "Privacy"]]
-              [:li [:a {:href "/contact/" :class "new-outer"} "Contact Us"]]]]]]
+              [:li [:a (open-ext {:href "/security/"}) "Security"]]
+              [:li [:a (open-ext {:href "/privacy/"}) "Privacy"]]
+              [:li [:a (open-ext {:href "/contact/"}) "Contact Us"]]]]]]
       [:div.row
         [:div.col-md-5.additional-links
           [:span "Copyright © 2015 CircleCI"]]]]])
