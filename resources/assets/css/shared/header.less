@@ -91,7 +91,7 @@
     color: @grayDark;
     background-color: @grayLightest;
   }
-  
+
 
   .message {
     .flex(1 0 auto);
@@ -132,9 +132,12 @@
 }
 
 #statuspage-bar {
+  min-height: 70px;
+
   &.none {
     visibility: hidden;
     height: 0px;
+    min-height: 0;
     padding: 0px;
   }
 
@@ -156,7 +159,6 @@
   &.critical {
     .status-page-color(@alert-danger-text, @alert-danger-bg);
   }
-
 }
 
 .environment {
