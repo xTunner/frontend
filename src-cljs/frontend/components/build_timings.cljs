@@ -198,8 +198,8 @@
 ;;;; Main component
 (defn build-timings [{:keys [build project plan]} owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
+    om/IDidUpdate
+    (did-update [_ _ _]
       (if (project-model/show-build-timing? project plan)
         (draw-chart! build)
         (analytics/track-build-timing-upsell-impression {:org-name (:org_name plan)
