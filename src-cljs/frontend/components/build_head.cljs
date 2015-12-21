@@ -1141,7 +1141,7 @@
     om/IRender
     (render [_]
       (html
-       [:div
+       [:div.build-commits-list-item
         [:span.metadata-item
          (if-not (:author_email commit-details)
            [:span
