@@ -162,9 +162,15 @@
 .recent-builds-pager {
   .flexy();
   .justify-content(space-between);
+
   margin: 1em;
+
+  a:hover {
+    text-decoration: underline;
+  }
+
   a.disabled {
-    color: @gray;
+    color: @grayLighter;
     cursor: default;
     pointer-events: none;
   }
