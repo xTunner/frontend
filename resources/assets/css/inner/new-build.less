@@ -356,12 +356,11 @@
 
     @container-height: 30px;
     @container-width: 160px;
-    @button-right-margin: 3px;
+    @button-right-margin: 2px;
 
     margin-right: 15px;
 
     .button-look() {
-      border-radius: 3px;
       border: solid 1px rgba(0, 0, 0, 0.1);
       background-color: @dropdown-gray;
 
@@ -377,17 +376,17 @@
 
       width: @container-width - @container-height - @button-right-margin;
       height: @container-height;
+      border-radius: 3px 0 0 3px;
+
       margin: 0 @button-right-margin 0 0;
       padding: 0;
       text-align: inherit;
       font-size: 14px;
 
-
       .rebuild-icon {
         margin: 8px 10px;
       }
     }
-
 
     .dropdown {
       .button-look();
@@ -395,6 +394,7 @@
       display: inline-block;
       width: @container-height;
       height: @container-height;
+      border-radius: 0 3px 3px 0;
 
       vertical-align: top;
       text-align: center;
@@ -420,6 +420,7 @@
           padding: 3px 10px;
           color: inherit;
           background-color: inherit;
+          font-size: @fontSizeSmall;
         }
       }
     }

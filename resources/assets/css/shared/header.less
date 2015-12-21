@@ -139,8 +139,10 @@
 }
 
 #statuspage-bar {
+  min-height: 70px;
+
   &.none {
-    visibility: hidden;
+    display:none;
     height: 0px;
     padding: 0px;
   }
@@ -163,7 +165,6 @@
   &.critical {
     .status-page-color(@alert-danger-text, @alert-danger-bg);
   }
-
 }
 
 .environment {
