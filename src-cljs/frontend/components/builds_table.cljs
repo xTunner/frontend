@@ -151,20 +151,19 @@
            :title (build-model/status-words build)}
        (build-status-badge build)]
 
-      (when show-actions?
+      (when (build-model/can-cancel? build)
         [:div.build-actions
-         (when (build-model/can-cancel? build)
-           (let [build-id (build-model/id build)
-                 vcs-url (:vcs_url build)
-                 build-num (:build_num build)]
-             (forms/managed-button
-              [:button.cancel-build
-               {:data-loading-text "Canceling..."
-                :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                 :vcs-url vcs-url
-                                                                 :build-num build-num}])}
-               [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
-               [:span.cancel-text "Cancel"]])))])]
+         (let [build-id (build-model/id build)
+               vcs-url (:vcs_url build)
+               build-num (:build_num build)]
+           (forms/managed-button
+            [:button.cancel-build
+             {:data-loading-text "Canceling..."
+              :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                               :vcs-url vcs-url
+                                                               :build-num build-num}])}
+             [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
+             [:span.cancel-text "Cancel"]]))])]
 
      [:div.build-info
       [:div.build-info-header
