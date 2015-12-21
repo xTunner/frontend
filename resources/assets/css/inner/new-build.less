@@ -467,7 +467,15 @@
   .controls {
     .flexy(stretch, flex-end, row);
 
-    margin-bottom: 15px;
+    margin-bottom: 3px;
+
+    @media (max-width: @pills-breakpoint) {
+      .flexy(stretch, flex-start, row);
+      label {
+        display: block
+      };
+    }
+
     .filtering {
       .fancy-toggle();
 
@@ -486,7 +494,7 @@
 
     &.prev-and-next {
       .page-container-pills {
-        .flex(0 0 49.5%);
+        .flex(0 0 ~"calc(50% - 1px)");
       }
     }
 
@@ -513,7 +521,7 @@
     width: 14px;
   }
 
-  & + .container-selector-v2 {
+  & + .container-selector-v2:not(.page-container-pills) {
     margin-left: 1px;
   }
 
@@ -649,7 +657,7 @@
     }
 
     &.page-container-pills, &.add-containers {
-      @container-pill-vertical-spacing: 15px;
+      @container-pill-vertical-spacing: 5px;
 
       padding: 3px;
 
@@ -660,7 +668,7 @@
       }
 
       &:last-child {
-        margin-top: @container-pill-vertical-spacing;
+        margin-bottom: @container-pill-vertical-spacing;
       }
     }
   }
