@@ -1130,48 +1130,42 @@
            (om/build build-sub-head data)]])))))
 
 (defn commit-line-v2 [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
-  (let [author-icon [:img.dashboard-icon {:src (common/icon-path "Default-Avatar")}]]
-    (reify
-      om/IDidMount
-      (did-mount [_]
-        (when (seq body)
-          (utils/tooltip (str "#commit-line-tooltip-hack-" commit)
-                         {:placement "bottom"
-                          :animation false
-                          :viewport ".build-commits-container"})))
-      om/IRender
-      (render [_]
-        (html
-          [:div
-           [:span.metadata-item
-            (if-not (:author_email commit-details)
-              [:span
-               author-icon
-               (build-model/author commit-details)]
-              [:a {:href (str "mailto:" (:author_email commit-details))}
-               author-icon
-               (build-model/author commit-details)])]
-           (when (build-model/author-isnt-committer commit-details)
-             [:span.metadata-item
-              (if-not (:committer_email commit-details)
-                [:span
-                 author-icon
-                 (build-model/committer commit-details)]
-                [:a {:href (str "mailto:" (:committer_email commit-details))}
-                 author-icon
-                 (build-model/committer commit-details)])])
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (when (seq body)
+        (utils/tooltip (str "#commit-line-tooltip-hack-" commit)
+                       {:placement "bottom"
+                        :animation false
+                        :viewport ".build-commits-container"})))
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        [:span.metadata-item
+         (if-not (:author_email commit-details)
+           [:span
+            (build-model/author commit-details)]
+           [:a {:href (str "mailto:" (:author_email commit-details))}
+            (build-model/author commit-details)])]
+        (when (build-model/author-isnt-committer commit-details)
+          [:span.metadata-item
+           (if-not (:committer_email commit-details)
+             [:span
+              (build-model/committer commit-details)]
+             [:a {:href (str "mailto:" (:committer_email commit-details))}
+              (build-model/committer commit-details)])])
 
-           [:a.metadata-item.sha-one {:href commit_url
-                                      :title commit}
-            [:img.dashboard-icon {:src (common/icon-path "Builds-CommitNumber")}]
-            (subs commit 0 7)]
-           [:span.commit-message
-            {:title body
-             :id (str "commit-line-tooltip-hack-" commit)
-             :dangerouslySetInnerHTML {:__html (-> subject
-                                                   (gstring/htmlEscape)
-                                                   (linkify)
-                                                   (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]])))))
+        [:a.metadata-item.sha-one {:href commit_url
+                                   :title commit}
+         (subs commit 0 7)]
+        [:span.commit-message
+         {:title body
+          :id (str "commit-line-tooltip-hack-" commit)
+          :dangerouslySetInnerHTML {:__html (-> subject
+                                                (gstring/htmlEscape)
+                                                (linkify)
+                                                (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]]))))
 
 (def initial-build-commits-count 3)
 
