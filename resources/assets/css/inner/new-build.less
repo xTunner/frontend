@@ -482,7 +482,18 @@
   display: flex;
 
   @media (max-width: @pills-breakpoint) {
-    flex-wrap: wrap;
+    .flexy(flex-start, space-between, row, wrap);
+
+    &.prev-and-next {
+      .page-container-pills {
+        .flex(0 0 49.5%);
+      }
+    }
+
+    .page-container-pills {
+      order: -1;
+      .flex(0, 0, 100%);
+    }
   }
 }
 
@@ -640,7 +651,6 @@
     &.page-container-pills, &.add-containers {
       @container-pill-vertical-spacing: 15px;
 
-      min-width: 100%;
       padding: 3px;
 
       text-align: center;

@@ -383,7 +383,9 @@
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
             show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) (get-in data [:project-data :plan]))
             div (html
-                 [:div.container-list-v2
+                 [:div.container-list-v2 {:class (when (and (> previous-container-count 0)
+                                                            (> subsequent-container-count 0))
+                                                   "prev-and-next")}
                   (if (> previous-container-count 0)
                     [:a.container-selector-v2.page-container-pills
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (- paging-offset paging-width)}])}
