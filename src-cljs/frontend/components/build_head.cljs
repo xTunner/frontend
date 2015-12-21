@@ -253,8 +253,8 @@
                       (when someone-else? "someone other than you")]
                      (filter identity)
                      (string/join " and ")
-                     (#(str % " enabled SSH for this build."))
-                     (string/capitalize))]))))
+                     (string/capitalize)
+                     (#(str % " enabled SSH for this build.")))]))))
 
 (defn ssh-buttons
   "Show the enable-SSH button(s) for the SSH tab
@@ -302,7 +302,7 @@
   [build owner]
     [:div.ssh-ad
      [:p
-      "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on.
+      "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
        This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
        More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."
      (om/build ssh-buttons build)]])
@@ -342,17 +342,17 @@
   [build owner]
   (let [nodes (:node build)]
     (html
-      [:div.ssh-info-container
-       [:div.build-ssh-title
-        [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
-        [:div
-         "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
-         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
-         " on how to use VNC with CircleCI."]]
+     [:div.ssh-info-container
+      [:div.build-ssh-title
+       [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
+       [:div
+        "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
+        [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
+        " on how to use VNC with CircleCI."]]
 
-       (if  (feature/enabled? :ui-v2)
-         (om/build ssh-node-list-v2 nodes)
-         (om/build ssh-node-list nodes))])))
+      (if (feature/enabled? :ui-v2)
+        (om/build ssh-node-list-v2 nodes)
+        (om/build ssh-node-list nodes))])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
