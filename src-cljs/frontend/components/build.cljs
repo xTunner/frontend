@@ -333,7 +333,7 @@
             (om/build container-result-icon {:name icon-name})]]
           (om/build container-duration-label {:actions (:actions container)})])))))
 
-(def paging-width 20)
+(def paging-width 10)
 
 (defrender container-controls [{:keys [current-filter containers categorized-containers]} owner]
   (let [filters [{:filter :all
