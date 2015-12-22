@@ -992,7 +992,8 @@
                                  (reverse)
                                  (take 12)
                                  (map (fn [[month amount]]
-                                        {:usage amount :max osx-max-minutes
+                                        {:usage (.round js/Math (/ amount 1000 60))
+                                         :max osx-max-minutes
                                          :month ((comp datetime/date->month-name usage-key->date) month)})))]
               [:div.monthly-usage
                (om/build-all usage-bar osx-usage)])
