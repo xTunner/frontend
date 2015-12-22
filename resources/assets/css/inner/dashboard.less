@@ -441,7 +441,7 @@
     }
 
     .metadata-row {
-      .flexy(row);
+      .flexy(row, flex-end);
       padding-left: @build-padding;
       padding-right: @build-padding;
 
@@ -458,13 +458,14 @@
       }
 
       .metadata-item {
+        .flex(1 0 auto);
         padding-top: 3px;
         padding-bottom: 3px;
 
         font-size: @fontSizeSmall;
 
-        &:first-child {
-          width: 60%;
+        &:last-child {
+          .flex(0 0 40%);
         }
 
         span {
