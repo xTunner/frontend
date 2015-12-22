@@ -687,10 +687,6 @@
   }
 }
 
-.recent-status-badge {
-  min-width: 105px;
-}
-
 .summary-header {
   .flexy();
   margin-bottom: 15px;
@@ -701,7 +697,7 @@
 }
 
 .summary-label {
-  color: @gray-lighter-v2;
+  color: @gray;
 }
 
 .summary-spacer {
@@ -709,9 +705,25 @@
 }
 
 .build-commits-list {
+  .build-commits-list-item {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   .metadata-item, .commit-message {
     font-size: 13px;
-    margin-right: 25px;
+    margin-right: 20px;
+    color: @gray;
+  }
+
+  .sha-one:before {
+    font-family: 'octicons';
+    content: '\f01f';
+    margin-right: 8px;
+    font-size: @fontSizeLarge;
+    vertical-align: middle;
+    color: @grayLighter;
   }
 
   .chevron-label {
