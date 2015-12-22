@@ -478,10 +478,10 @@
           padding-left: @build-padding;
 
 
-          &:first-child {
-            width: 50%;
-            padding-left: 0;
-            border-right: @build-item-inner-border;
+          &:last-child {
+            .flex(0 0 50%);
+            padding-right: 0;
+            border-left: @build-item-inner-border;
           }
         }
 
