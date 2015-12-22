@@ -1046,12 +1046,17 @@
                 [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                            :on-click #(analytics/track-parallelism-build-header-click {})
                                            :href (build-model/path-for-parallelism build)}
-                 (str (:parallel build) "x out of "
-                      (min (+ (plan-model/usable-containers plan)
-                              (if (project-model/oss? project)
-                                plan-model/oss-containers
-                                0))
-                           (plan-model/max-parallelism plan)) "x")]]
+                 (let [parallelism (str (:parallel build) "x")]
+                   (if (enterprise?)
+                     parallelism
+                     (str parallelism
+                          " out of "
+                          (min (+ (plan-model/usable-containers plan)
+                                  (if (project-model/oss? project)
+                                    plan-model/oss-containers
+                                    0))
+                               (plan-model/max-parallelism plan))
+                          "x")))]]
 
                (when-let [urls (seq (:pull_request_urls build))]
                  ;; It's possible for a build to be part of multiple PRs, but it's rare
@@ -1432,12 +1437,17 @@
              [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                         :on-click #(analytics/track-parallelism-build-header-click {})
                                         :href (build-model/path-for-parallelism build)}
-              (str (:parallel build) "x out of "
-                   (min (+ (plan-model/usable-containers plan)
-                           (if (project-model/oss? project)
-                             plan-model/oss-containers
-                             0))
-                        (plan-model/max-parallelism plan)) "x")]]]
+              (let [parallelism (str (:parallel build) "x")]
+                (if (enterprise?)
+                  parallelism
+                  (str parallelism
+                       " out of "
+                       (min (+ (plan-model/usable-containers plan)
+                               (if (project-model/oss? project)
+                                 plan-model/oss-containers
+                                 0))
+                            (plan-model/max-parallelism plan))
+                       "x")))]]]
            (when (:usage_queued_at build)
              [:div.summary-items
               [:div.summary-item
