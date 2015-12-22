@@ -1,28 +1,53 @@
 svg.status {
-  path.circle {
-    fill: @white
+  .icon {
+    fill: @white;
   }
-  // .icon {
-  //   fill: @white;
-  // }
 
-  &.passed .icon {
+  &.passed .circle {
     fill: @brand-success-v2;
   }
 
-  &.failed .icon {
+  &.failed .circle {
     fill: @brand-danger-v2;
   }
 
-  &.canceled .icon {
+  &.canceled .circle {
     fill: @brand-canceled-v2;
   }
 
-  &.running .icon {
+  &.running .circle {
     fill: @brand-info-v2;
   }
 
-  &.queued .icon {
+  &.queued .circle {
     fill: @brand-pending-v2;
+  }
+}
+
+.invert-status-icons {
+  svg.status {
+    .circle {
+      fill: @white;
+    }
+
+    &.passed .icon {
+      fill: @brand-success-v2;
+    }
+
+    &.failed .icon {
+      fill: @brand-danger-v2;
+    }
+
+    &.canceled .icon {
+      fill: @brand-canceled-v2;
+    }
+
+    &.running .icon {
+      fill: @brand-info-v2;
+    }
+
+    &.queued .icon {
+      fill: @brand-pending-v2;
+    }
   }
 }

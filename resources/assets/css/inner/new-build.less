@@ -502,43 +502,27 @@
   }
 
   &.active {
+    .invert-status-icons;
     color: @white;
 
-    // When a container is selected, color its selector and invert the status
-    // icon colors.
-    .selected-color(@color) {
-      background: @color;
-
-      .status {
-        .circle {
-          fill: @white;
-        }
-
-        .icon {
-          fill: @color;
-        }
-      }
-    }
-
-
     &.success {
-      .selected-color(@brand-success-v2);
+      background-color: @brand-success-v2;
     }
 
     &.waiting {
-      .selected-color(@brand-pending-v2);
+      background-color: @brand-pending-v2;
     }
 
     &.running {
-      .selected-color(@brand-primary-v2);
+      background-color: @brand-primary-v2;
     }
 
     &.failed {
-      .selected-color(@brand-danger-v2);
+      background-color: @brand-danger-v2;
     }
 
     &.canceled {
-      .selected-color(@brand-canceled-v2);
+      background-color: @brand-canceled-v2;
     }
   }
 
