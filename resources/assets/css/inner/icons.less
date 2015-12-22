@@ -1,25 +1,28 @@
 svg.status {
-  .icon {
-    fill: @white;
+  path.circle {
+    fill: @white
   }
+  // .icon {
+  //   fill: @white;
+  // }
 
-  &.passed .circle {
+  &.passed .icon {
     fill: @brand-success-v2;
   }
 
-  &.failed .circle {
+  &.failed .icon {
     fill: @brand-danger-v2;
   }
 
-  &.canceled .circle {
+  &.canceled .icon {
     fill: @brand-canceled-v2;
   }
 
-  &.running .circle {
+  &.running .icon {
     fill: @brand-info-v2;
   }
 
-  &.queued .circle {
+  &.queued .icon {
     fill: @brand-pending-v2;
   }
 }

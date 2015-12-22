@@ -204,29 +204,29 @@
     .badge-text {
       .flex(1 0 auto);
       font-size: 11px;
-      font-weight: 300;
+      font-weight: 600;
       text-transform: uppercase;
-      color: @black;
+      color: @white;
     }
 
     &.pass {
-      background: lighten(@brand-success-v2, @brand-lighten-ratio-v2);
+      background: @brand-success-v2;
     }
 
     &.fail {
-      background: lighten(@brand-danger-v2, @brand-lighten-ratio-v2);
+      background: @brand-danger-v2;
     }
 
     &.busy {
-      background: lighten(@brand-primary-v2, @brand-lighten-ratio-v2);
+      background: @brand-primary-v2;
     }
 
     &.stop {
-      background: lighten(@brand-canceled-v2, @brand-lighten-ratio-v2);
+      background: @brand-canceled-v2;
     }
 
     &.queued {
-      background: lighten(@brand-pending-v2, @brand-lighten-ratio-v2);
+      background: @brand-pending-v2;
     }
   }
 
@@ -273,6 +273,10 @@
     .flex(0 0 130px);
     padding: 7px (@build-padding / 2);
     border-right: 1px solid rgba(0, 0, 0, 0.05);
+
+    a:hover {
+      text-decoration: none !important;
+    }
 
     .build-actions {
       .flexy(center);
