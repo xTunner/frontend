@@ -5,7 +5,8 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build]
             [frontend.models.project :as project-model]
-            [frontend.routes :as routes])
+            [frontend.routes :as routes]
+            [frontend.components.common :as common])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def padding-right 20)
@@ -40,8 +41,7 @@
         (.range  #js [0 (timings-width)]))))
 
 (defn create-root-svg [number-of-containers]
-  (-> (.select js/d3 ".build-timings")
-      (.select "svg")
+  (-> (.select js/d3 "#build-timings")
         (.attr "width"  (+ (timings-width)
                            left-axis-width
                            padding-right))
@@ -198,18 +198,28 @@
 ;;;; Main component
 (defn build-timings [{:keys [build project plan]} owner]
   (reify
+
+    om/IInitState
+    (init-state [_]
+      {:loading? true})
+
     om/IDidUpdate
     (did-update [_ _ _]
       (if (project-model/show-build-timing? project plan)
-        (draw-chart! build)
+        (do
+          (draw-chart! build)
+          (om/set-state! owner [:loading?] false))
         (analytics/track-build-timing-upsell-impression {:org-name (:org_name plan)
                                                          :reponame (:reponame project)})))
     om/IRenderState
-    (render-state [_ _]
+    (render-state [_ {:keys [loading?]}]
       (html
        [:div.build-timings
         (if (project-model/show-build-timing? project plan)
-          [:svg]
+          [:div
+           (when loading?
+             [:div.loading-spinner common/spinner])
+           [:svg#build-timings]]
           [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
                              :on-click #(analytics/track-build-timing-upsell-click {:org-name (:org_name plan)
