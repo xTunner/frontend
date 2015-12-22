@@ -122,6 +122,8 @@
 (def year-month-day-date
   (partial format-date year-month-day-date-format))
 
+(defn date->month-name [date]
+  (time-format/unparse (time-format/formatter "MMMM") date))
 
 (defn date-in-ms [date]
   (let [[y m d] (map js/parseInt (.split (name date) #"-"))]
