@@ -437,6 +437,8 @@
 
     .metadata-row {
       .flexy(row);
+      padding-left: @build-padding;
+      padding-right: @build-padding;
 
       &:first-of-type {
         margin-top: 3px;
@@ -453,7 +455,6 @@
       .metadata-item {
         padding-top: 3px;
         padding-bottom: 3px;
-        padding-left: @build-padding;
 
         font-size: @fontSizeSmall;
 
@@ -468,9 +469,12 @@
         @media (max-width: @screen-md-max) {
           padding-top: 6px;
           padding-bottom: 6px;
+          padding-left: @build-padding;
+
 
           &:first-child {
             width: 50%;
+            padding-left: 0;
             border-right: @build-item-inner-border;
           }
         }
