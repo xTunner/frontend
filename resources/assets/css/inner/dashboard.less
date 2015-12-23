@@ -451,6 +451,7 @@
 
       @media (max-width: @screen-md-max) {
         border-bottom: @build-item-inner-border;
+        padding: 0;
 
         &:first-of-type {
           margin-top: 0;
@@ -473,14 +474,10 @@
         }
 
         @media (max-width: @screen-md-max) {
-          padding-top: 6px;
-          padding-bottom: 6px;
-          padding-left: @build-padding;
-
+          padding: (@build-padding / 2) @build-padding;
 
           &:last-child {
             .flex(0 0 50%);
-            padding-right: 0;
             border-left: @build-item-inner-border;
           }
         }
