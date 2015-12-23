@@ -4,6 +4,15 @@
             [frontend.utils.launchdarkly :as ld])
   (:import goog.Uri))
 
+(def feature-manifest
+  "Feature manifest intended to be fall back in environments where LaunchDarkly
+  isn't available
+  In an ideal world, when a feature launches to 100%, the code will be updated
+  and old behavior branches and conditionals get removed.  This manifest intends
+  to be a stop-gap until it's removed"
+  {"ui-v2" true
+   "ui-v2-opt-in-banner" false})
+
 (defn- feature-flag-value-true? [value]
   (= value "true"))
 
@@ -18,7 +27,7 @@
       (.get (str "feature-" (name feature)))))
 
 (defn set-in-query-string? [feature]
-  (not (nil? (get-in-query-string feature))))
+  (some? (get-in-query-string feature)))
 
 (defn enabled-in-query-string? [feature]
   (feature-flag-value-true? (get-in-query-string feature)))
@@ -50,8 +59,8 @@
   default."
   [feature]
   (let [feature-name (name feature)]
-   (if (set-in-query-string? feature-name)
-     (enabled-in-query-string? feature-name)
-     (if (ld/exists? feature-name)
-       (ld/feature-on? feature-name)
-       (enabled-in-cookie? feature-name)))))
+    (cond
+      (set-in-query-string? feature-name) (get-in-query-string feature-name)
+      (ld/exists? feature-name) (ld/feature-on? feature-name)
+      (contains? feature-manifest feature-name) (get feature-manifest feature-name)
+      (some? (get-in-cookie feature-name)) (enabled-in-cookie? feature-name))))
