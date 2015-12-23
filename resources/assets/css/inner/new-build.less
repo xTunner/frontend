@@ -361,12 +361,11 @@
 
     @container-height: 30px;
     @container-width: 160px;
-    @button-right-margin: 3px;
+    @button-right-margin: 2px;
 
     margin-right: 15px;
 
     .button-look() {
-      border-radius: 3px;
       border: solid 1px rgba(0, 0, 0, 0.1);
       background-color: @dropdown-gray;
 
@@ -382,17 +381,17 @@
 
       width: @container-width - @container-height - @button-right-margin;
       height: @container-height;
+      border-radius: 3px 0 0 3px;
+
       margin: 0 @button-right-margin 0 0;
       padding: 0;
       text-align: inherit;
       font-size: 14px;
 
-
       .rebuild-icon {
         margin: 8px 10px;
       }
     }
-
 
     .dropdown {
       .button-look();
@@ -400,6 +399,7 @@
       display: inline-block;
       width: @container-height;
       height: @container-height;
+      border-radius: 0 3px 3px 0;
 
       vertical-align: top;
       text-align: center;
@@ -425,6 +425,7 @@
           padding: 3px 10px;
           color: inherit;
           background-color: inherit;
+          font-size: @fontSizeSmall;
         }
       }
     }
@@ -537,43 +538,27 @@
   }
 
   &.active {
+    .invert-status-icons;
     color: @white;
 
-    // When a container is selected, color its selector and invert the status
-    // icon colors.
-    .selected-color(@color) {
-      background: @color;
-
-      .status {
-        .circle {
-          fill: @white;
-        }
-
-        .icon {
-          fill: @color;
-        }
-      }
-    }
-
-
     &.success {
-      .selected-color(@brand-success-v2);
+      background-color: @brand-success-v2;
     }
 
     &.waiting {
-      .selected-color(@brand-pending-v2);
+      background-color: @brand-pending-v2;
     }
 
     &.running {
-      .selected-color(@brand-primary-v2);
+      background-color: @brand-primary-v2;
     }
 
     &.failed {
-      .selected-color(@brand-danger-v2);
+      background-color: @brand-danger-v2;
     }
 
     &.canceled {
-      .selected-color(@brand-canceled-v2);
+      background-color: @brand-canceled-v2;
     }
   }
 
@@ -721,10 +706,6 @@
   }
 }
 
-.recent-status-badge {
-  min-width: 105px;
-}
-
 .summary-header {
   .flexy();
   margin-bottom: 15px;
@@ -735,7 +716,7 @@
 }
 
 .summary-label {
-  color: @gray-lighter-v2;
+  color: @gray;
 }
 
 .summary-spacer {
@@ -743,8 +724,25 @@
 }
 
 .build-commits-list {
+  .build-commits-list-item {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   .metadata-item, .commit-message {
     font-size: 13px;
+    margin-right: 20px;
+    color: @gray;
+  }
+
+  .sha-one:before {
+    font-family: 'octicons';
+    content: '\f01f';
+    margin-right: 8px;
+    font-size: @fontSizeLarge;
+    vertical-align: middle;
+    color: @grayLighter;
   }
 
   .chevron-label {
