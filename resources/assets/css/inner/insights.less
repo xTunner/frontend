@@ -28,27 +28,7 @@
     margin-top: 15px;
 
     .filtering {
-
-      color: @gray-light-v2;
-
-      input[type=radio] {
-        display: none;
-
-        &:checked + label {
-          background-color: rgba(0, 0, 0, 0.1);
-          border-radius: 3px;
-        }
-      }
-
-      label {
-        padding: 5px;
-        margin: 0 10px 0 0;
-        font-weight: inherit;
-
-        &:hover {
-          cursor: pointer;
-        }
-      }
+      .fancy-radio();
     }
 
     .sorting {
