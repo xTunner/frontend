@@ -259,8 +259,7 @@
     (render [_]
       (html
        (let [branch (-> recent-builds (first) (:branch))
-             latest-build (last chartable-builds)
-             p (js/console.log (clj->js project))]
+             latest-build (last chartable-builds)]
          [:div.project-block {:class (str "build-" (name sort-category))}
           [:h1.project-header
            [:div.last-build-status
