@@ -8,7 +8,7 @@
   (hiccups/html hiccup-form))
 
 (defn open-ext [attrs]
-  "Add attributes to a link so that it not try to render the destination page in place in the current dom."
+  "Add attributes to a link so that it won't try to render the destination page in place in the current dom."
   (assoc attrs :data-external true))
 
 (defn external-link? [link]
