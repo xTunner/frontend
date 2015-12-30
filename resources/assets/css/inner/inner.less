@@ -1,31 +1,17 @@
 .inner {
-  footer { display: none; }
 
   .flexy();
 
-  &.ui-v1 {
-    background-color: @appBackgroundColor;
+  font-family: @brand-sans-serif-v2;
+  background-color: @background-color-v2;
 
-    p {
-      > a {
-        color: @blueDark;
-        border-bottom: 1px dotted @blueLight;
-        &:hover {
-          color: @blueLight;
-          border-bottom-color: @blueDark;
-        }
-      }
-    }
+  footer {
+    display: none;
   }
 
   span.strikeout {
     text-decoration: line-through;
     align: right;
-  }
-
-  &.ui-v2 {
-    font-family: @brand-sans-serif-v2;
-    background-color: @background-color-v2;
   }
 
   .app-dominant {
