@@ -4,153 +4,117 @@
   white-space: pre-wrap;
 }
 
-&.ui-v1 {
-  pre {
-    background: @terminal-background-color;
-    color:      @terminal-color;
-    &.solarized {
-      .brblack { color: #002b36; }
-      .black { color: #073642; }
-      .brgreen { color: #586e75; }
-      .bryellow { color: #657b83; }
-      .brblue { color: #839496; }
-      .brcyan { color: #93a1a1; }
-      .white { color: #eee8d5; }
-      .brwhite { color: #fdf6e3; }
-      .yellow { color: #b58900; }
-      .brred { color: #cb4b16; }
-      .red { color: #dc322f; }
-      .magenta { color: #d33682; }
-      .brmagenta { color: #6c71c4; }
-      .blue { color: #268bd2; }
-      .cyan { color: #2aa198; }
-      .green { color: #859900; }
-      .italic { font-style: italic; }
-      .bg-white { background: #eee8d5; }
-      .bg-red { background: #dc322f; color: #002b36; }
-      .bg-green { background: #859900; color: #002b36; }
-      .bg-yellow { background: #b58900; color: #002b36; }
-      .bg-blue { background: #268bd2; color: #002b36; }
-      .bg-magenta { background: #d33682; color: #002b36; }
-      .bg-cyan { background: #2aa198; color: #002b36; }
-      .bg-brblack { background: #002b36; }
-    }
-  }
-}
-
 // TODO, probably can just use bootstrap variables once v2 ships
-&.ui-v2 {
-  @standard-color-lighten-factor: 13%;
+@standard-color-lighten-factor: 13%;
 
-  pre {
-    background: @terminal-background-color-v2;
-    color: @terminal-foreground-color-v2;
+pre {
+  background: @terminal-background-color-v2;
+  color: @terminal-foreground-color-v2;
 
-    // temporary? bootstrap override
-    border: none;
-    border-radius: 0;
+  // temporary? bootstrap override
+  border: none;
+  border-radius: 0;
 
-    // TODO We have to lie about the color scheme for precedence reasons.
-    &.solarized {
-      .white {
-        color: @terminal-foreground-color-v2;
-      }
+  // TODO We have to lie about the color scheme for precedence reasons.
+  &.solarized {
+    .white {
+      color: @terminal-foreground-color-v2;
+    }
 
-      .blue {
-        color: @brand-blue-v2;
-      }
+    .blue {
+      color: @brand-blue-v2;
+    }
 
-      .brblue {
-        color: saturate(@brand-blue-v2, 10%);
-      }
+    .brblue {
+      color: saturate(@brand-blue-v2, 10%);
+    }
 
-      .cyan {
-        color: #65d8ee;
-      }
+    .cyan {
+      color: #65d8ee;
+    }
 
-      .brcyan {
-        color: saturate(#65d8ee, 10%);
-      }
+    .brcyan {
+      color: saturate(#65d8ee, 10%);
+    }
 
-      .green {
-        color: @brand-green-v2;
-      }
+    .green {
+      color: @brand-green-v2;
+    }
 
-      .brgreen {
-        color: saturate(@brand-green-v2, 10%);
-      }
+    .brgreen {
+      color: saturate(@brand-green-v2, 10%);
+    }
 
-      .yellow {
-        color: #d6cc75;
-      }
+    .yellow {
+      color: #d6cc75;
+    }
 
-      .bryellow {
-        color: saturate(#d6cc75, 10%);
-      }
+    .bryellow {
+      color: saturate(#d6cc75, 10%);
+    }
 
-      .red {
-        color: @brand-red-v2;
-      }
+    .red {
+      color: @brand-red-v2;
+    }
 
-      .brred {
-        color: saturate(@brand-red-v2, 10%);
-      }
+    .brred {
+      color: saturate(@brand-red-v2, 10%);
+    }
 
-      .magenta {
-        color: @brand-purple-v2;
-      }
+    .magenta {
+      color: @brand-purple-v2;
+    }
 
-      .brmagenta {
-        color: saturate(@brand-purple-v2, 10%);
-      }
+    .brmagenta {
+      color: saturate(@brand-purple-v2, 10%);
+    }
 
-      .bg-white {
-        background: @terminal-foreground-color-v2;
-      }
+    .bg-white {
+      background: @terminal-foreground-color-v2;
+    }
 
-      .bg-red {
-        background: @brand-red-v2;
-      }
+    .bg-red {
+      background: @brand-red-v2;
+    }
 
-      .bg-green {
-        background: @brand-green-v2;
-      }
+    .bg-green {
+      background: @brand-green-v2;
+    }
 
-      .bg-yellow {
-        background: #d6cc75;
-      }
+    .bg-yellow {
+      background: #d6cc75;
+    }
 
-      .bg-blue {
-        background: @brand-blue-v2;
-      }
+    .bg-blue {
+      background: @brand-blue-v2;
+    }
 
-      .bg-magenta {
-        background: @brand-purple-v2;
-      }
+    .bg-magenta {
+      background: @brand-purple-v2;
+    }
 
-      .bg-cyan {
-        background: #65d8ee;
-      }
+    .bg-cyan {
+      background: #65d8ee;
+    }
 
-      .bg-brblack {
-        background: @terminal-background-color-v2;
-      }
+    .bg-brblack {
+      background: @terminal-background-color-v2;
+    }
 
-      .key {
-        .yellow();
-      }
+    .key {
+      .yellow();
+    }
 
-      .boolean {
-        .green();
-      }
+    .boolean {
+      .green();
+    }
 
-      .string {
-        .cyan();
-      }
+    .string {
+      .cyan();
+    }
 
-      .comment {
-        color: @gray-lighter-v2;
-      }
+    .comment {
+      color: @gray-lighter-v2;
     }
   }
 }
