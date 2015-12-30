@@ -22,3 +22,4 @@ karma
 .repl-1.7.28
 TESTS*
 out
+.#*
