@@ -19,7 +19,7 @@
                  ;; Prerelease version to avoid conflict with cljs.core/record?
                  ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
                  [ankha "0.1.5.1-64423e"]
-                 [org.clojure/clojurescript "1.7.28"]
+                 [org.clojure/clojurescript "1.7.170"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [cljs-ajax "0.3.13"]
@@ -34,8 +34,8 @@
                  [com.cemerick/clojurescript.test "0.3.0"]
                  [org.clojure/tools.reader "0.9.2"]]
 
-  :plugins [[lein-cljsbuild "1.1.0"]
-            [lein-figwheel "0.4.0"]
+  :plugins [[lein-cljsbuild "1.1.1"]
+            [lein-figwheel "0.5.0-2"]
             [cider/cider-nrepl "0.9.1"]]
 
   :exclusions [[org.clojure/clojure]
