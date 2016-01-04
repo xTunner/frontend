@@ -60,7 +60,7 @@
   [feature]
   (let [feature-name (name feature)]
     (cond
-      (set-in-query-string? feature-name) (get-in-query-string feature-name)
+      (set-in-query-string? feature-name) (enabled-in-query-string? feature-name)
       (ld/exists? feature-name) (ld/feature-on? feature-name)
       (contains? feature-manifest feature-name) (get feature-manifest feature-name)
       (some? (get-in-cookie feature-name)) (enabled-in-cookie? feature-name))))
