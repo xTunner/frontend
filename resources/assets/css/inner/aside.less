@@ -28,6 +28,11 @@
 &.ui-v2 {
   .aside-left-nav {
     background: @aside-nav-bg-color-v2;
+
+    hr {
+      margin: 0;
+      border-top: 1px solid @gray;
+    }
   }
 
   .aside-item {
@@ -47,10 +52,6 @@
       &:hover, &:focus {
         background: lighten(@aside-nav-logo-bg-color-v2, 12%);
       }
-    }
-
-    &.avatar {
-      opacity: 1;
     }
   }
 
@@ -73,8 +74,23 @@
   > * { pointer-events: auto; }
 
   a {
+    flex-direction: column;
+    justify-content: center;
     outline: none;
     text-decoration: none;
+
+    .nav-label {
+      font-size: 10px;
+      margin-top: 6px;
+      text-align: center;
+      white-space: normal;
+      text-transform: uppercase;
+
+      @media screen and ( max-height: 650px ){
+        display: none;
+      }
+    }
+
     &:not(:hover) {
       color: inherit;
     }
@@ -274,8 +290,11 @@
   > i {
     position: relative;
 
-    min-width: @baseFontSize;
-    margin: 0 @baseFontSize 0 ((@tile - @baseFontSize) / 2);
+    min-width: 24px;
+    margin: 0 23px;
+
+    font-size: 21px;
+    text-align: center;
 
     transition: margin @aside-transition-speed;
   }
@@ -717,7 +736,7 @@
     left: 0;
     color: @gray;
     .flex(1 0 1px);
-    
+
     h5 {
       color: @black;
     }
