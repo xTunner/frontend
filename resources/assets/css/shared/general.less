@@ -3,35 +3,33 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.ui-v2 {
-  a {
-    color: @link-color-v2;
-  }
+a {
+  color: @link-color-v2;
+}
 
-  pre, code, samp, kbd {
-    font-family: @monoFontFamilyV2;
-  }
+pre, code, samp, kbd {
+  font-family: @monoFontFamilyV2;
+}
 
-  .main-head {
-    .flex(0 0 auto);
+.main-head {
+  .flex(0 0 auto);
 
-    .head-user {
-      height: @navbar-height;
-      padding: 15px;
+  .head-user {
+    height: @navbar-height;
+    padding: 15px;
 
-      .settings {
-        height: initial;
+    .settings {
+      height: initial;
+      padding: 0;
+
+      color: @link-color-v2;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      span {
         padding: 0;
-
-        color: @link-color-v2;
-
-        &:hover {
-          text-decoration: underline;
-        }
-
-        span {
-          padding: 0;
-        }
       }
     }
   }
