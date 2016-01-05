@@ -152,10 +152,6 @@
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
 
-               (when (and (#{:dashboard :account} (:navigation-point app))
-                          (feature/enabled? :ui-v2-opt-in-banner)
-                          (not (feature/enabled-in-cookie? :ui-v2)))
-                 (om/build opt-in/ui-v2-opt-in-banner app))
                (when (and (= :build (:navigation-point app))
                           (project/feature-enabled? project :osx))
              (om/build opt-in/ios-reminder-banner app))
