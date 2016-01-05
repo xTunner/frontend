@@ -96,16 +96,20 @@
     }
   }
 
-  .tooltip {                    //
-    font-size: @baseFontSize;   //
-    .tooltip-inner {            //
-      border-radius: (@em * 2); //
+  .tooltip {
+    font-size: @baseFontSize;
+    visibility: hidden;
+    .tooltip-inner {
+      border-radius: (@em * 2);
       padding: (@em / 2) @em;   // BS RESET
-    }                           //
-    .tooltip-arrow {            //
-      display: none;            //
-    }                           //
-  }                             //
+    }
+    .tooltip-arrow {
+      display: none;
+    }
+    @media screen and ( max-height: 650px ){
+      visibility: visible;
+    }
+  }
 }
 
 .app-aside {
