@@ -67,7 +67,9 @@
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none
-                                   :source-map "resources/public/cljs/out/sourcemap-dev.js"}}
+                                   :source-map "resources/public/cljs/out/sourcemap-dev.js"
+                                   ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
+                                   :recompile-dependents false}}
                        {:id "whitespace"
                         :source-paths ["src-cljs"]
                         :compiler {:output-to "resources/public/cljs/whitespace/frontend.js"
