@@ -164,9 +164,6 @@
 
 
                 [:div.main-body
-                 (when (and (not (feature/enabled? :ui-v2))
-                            show-header-and-footer?)
-                   (om/build header/header app-without-container-data))
                  (om/build dom-com app)
 
                  (when (and show-header-and-footer? (config/footer-enabled?))
