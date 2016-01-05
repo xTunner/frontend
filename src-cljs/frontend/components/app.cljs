@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
-            [frontend.components.about :as about]
             [frontend.components.admin :as admin]
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
@@ -15,23 +14,16 @@
             [frontend.components.insights :as insights]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
-            [frontend.components.enterprise :as enterprise]
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
-            [frontend.components.integrations :as integrations]
-            [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.pricing :as pricing]
-            [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
-            [frontend.components.security :as security]
             [frontend.components.shared :as shared]
-            [frontend.components.stories :as stories]
-            [frontend.components.language-landing :as language-landing]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.opt-in :as opt-in]
@@ -77,27 +69,8 @@
     :loading loading
 
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
-    :about about/about
-    :contact about/contact
-    :team about/team
-    :features features/features
-    :pricing pricing/pricing
-    :jobs jobs/jobs
-    :press press/press
-    :privacy privacy/privacy
-    :security security/security
-    :security-hall-of-fame security/hall-of-fame
-    :enterprise enterprise/enterprise
-    :azure enterprise/enterprise-azure
-    :aws enterprise/enterprise-aws
-    :stories stories/story
-    :language-landing language-landing/language-landing
-    :integrations integrations/integration
     :changelog changelog/changelog
     :documentation docs/documentation
-    :mobile mobile/mobile
-    :ios mobile/ios
-    :android mobile/android
 
     :signup signup/signup
 
