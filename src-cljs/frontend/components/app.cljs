@@ -135,7 +135,6 @@
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
-                                       (if (feature/enabled? :ui-v2) ["ui-v2"] ["ui-v1"])
                                        ;; The following is meant for the landing ab test to hide old header/footer
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
