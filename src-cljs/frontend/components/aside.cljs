@@ -162,7 +162,7 @@
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
-                                   :src (-> latest-build build-model/status-icon-v2 common/icon-path)})]
+                                   :src (-> latest-build build-model/status-icon common/icon-path)})]
                    [:.branch-info
                     (when show-project?
                       [:.project-name

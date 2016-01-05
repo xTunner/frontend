@@ -66,27 +66,6 @@
            "requesting for help"]
           " from a support engineer."])])))
 
-(defn container-pill [{:keys [container current-container-id build-running?]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       (let [container-id (container-model/id container)
-             status (container-model/status container build-running?)]
-        [:a.container-selector
-         {:on-click #(raise! owner [:container-selected {:container-id container-id}])
-          :role "button"
-          :class (concat (container-model/status->classes status)
-                         (when (= container-id current-container-id) ["active"]))}
-         (str (:index container))
-         (case status
-           :failed (common/ico :fail-light)
-           :success (common/ico :pass-light)
-           :canceled (common/ico :fail-light)
-           :running (common/ico :logo-light)
-           :waiting (common/ico :none-light)
-           nil)])))))
-
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
     om/IRenderState
@@ -124,40 +103,6 @@
     (will-unmount [_]
       (scroll/dispose owner))))
 
-(defn container-pills [{:keys [build-running? build container-data project-data user view]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (analytics/track-parallelism-button-impression  {:view view
-                                                       :project-data project-data
-                                                       :user user}))
-    om/IRender
-    (render [_]
-      (let [{:keys [containers current-container-id]} container-data
-            hide-pills? (or (>= 1 (count containers))
-                            (empty? (remove :filler-action (mapcat :actions containers))))
-            style {:position "fixed"}
-            show-upsell? (project-model/show-upsell? (:project project-data) (:plan project-data))
-            div (html
-                  [:div.container-list
-                   (for [container containers]
-                     (om/build container-pill
-                               {:container container
-                                :build-running? build-running?
-                                :current-container-id current-container-id}
-                               {:react-key (:index container)}))
-                   [:a.container-selector.parallelism-tab.upgrade
-                    {:role "button"
-                     :href (build-model/path-for-parallelism build)
-                     :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                           :project-data project-data
-                                                                           :user user})
-                     :title "adjust parallelism"}
-                    (if show-upsell?
-                      [:span "Add Containers +"] 
-                      [:span "+"])]])]
-        (om/build sticky {:content div :content-class "containers"})))))
-
 (defn notices [data owner]
   (reify
     om/IRender
@@ -192,42 +137,6 @@
             (when (and (build-model/config-errors? build)
                        (not (:dismiss-config-errors build-data)))
               (om/build build-config/config-errors build))]]])))))
-
-(defn build-v1 [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [build (get-in data state/build-path)
-            build-data (get-in data state/build-data-path)
-            container-data (get-in data state/container-data-path)
-            invite-data (:invite-data data)
-            project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path)]
-        (html
-         [:div#build-log-container
-          (if-not build
-           [:div
-             (om/build common/flashes (get-in data state/error-message-path))
-             [:div.loading-spinner-big common/spinner]]
-
-            [:div
-             (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :project-data project-data
-                                              :user user
-                                              :scopes (get-in data state/project-scopes-path)})
-             (om/build notices {:build-data (dissoc build-data :container-data)
-                                :project-data project-data
-                                :invite-data invite-data})
-             (om/build container-pills {:build build
-                                        :build-running? (build-model/running? build)
-                                        :container-data container-data
-                                        :project-data project-data
-                                        :user user
-                                        :view view})
-             (om/build build-steps/container-build-steps container-data)
-
-             (when (< 1 (count (:steps build)))
-               [:div (common/messages (:messages build))])])])))))
 
 (defn container-result-icon [{:keys [name]} owner]
   (reify
@@ -295,7 +204,7 @@
     (:status override-status)
     real-status))
 
-(defn container-pill-v2 [{:keys [container status current-container-id build-running?]} owner]
+(defn container-pill [{:keys [container status current-container-id build-running?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -362,7 +271,7 @@
           [:label {:for id}
            (gstring/format "%s (%s)" label cnt)]))]])))
 
-(defn container-pills-v2 [data owner]
+(defn container-pills [data owner]
   (reify
     om/IDisplayName
     (display-name [_]
@@ -396,7 +305,7 @@
                   (for [container (subvec filtered-containers
                                           paging-offset
                                           (min container-count (+ paging-offset paging-width)))]
-                    (om/build container-pill-v2
+                    (om/build container-pill
                               {:container container
                                :build-running? build-running?
                                :current-container-id current-container-id
@@ -451,7 +360,7 @@
 (defn selected-container-index [data]
   (get-in data [:current-build-data :container-data :current-container-id]))
 
-(defn build-v2 [data owner]
+(defn build [data owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -493,10 +402,10 @@
                                  :project-data project-data
                                  :invite-data invite-data})
 
-              (om/build container-pills-v2 {:container-data container-data
-                                            :build-running? (build-model/running? build)
-                                            :build build
-                                            :project-data project-data})
+              (om/build container-pills {:container-data container-data
+                                         :build-running? (build-model/running? build)
+                                         :build build
+                                         :project-data project-data})
 
               (transition-group {:name (om/get-state owner :action-transition-direction)
                                  :enter true
@@ -506,7 +415,3 @@
                                            container-data
                                            {:key :current-container-id})])]])])))))
 
-(defn build []
-  (if (feature/enabled? :ui-v2)
-    build-v2
-    build-v1))

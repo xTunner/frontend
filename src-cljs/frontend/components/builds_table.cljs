@@ -128,7 +128,7 @@
 (defn build-status-badge [build]
   [:div.recent-status-badge {:class (build-model/status-class build)}
    (om/build svg {:class "badge-icon"
-                  :src (-> build build-model/status-icon-v2 common/icon-path)})
+                  :src (-> build build-model/status-icon common/icon-path)})
    (build-status-badge-wording build)])
 
 (defn avatar [user & {:keys [size trigger] :or {size 40} :as opts}]
