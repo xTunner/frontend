@@ -143,10 +143,7 @@
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
-              [:main.app-main {:ref "app-main"
-                               :class (when (feature/enabled? :ui-v2)
-                                        "new-app-main-margin")}
-
+              [:main.app-main.new-app-main-margin {:ref "app-main"}
                (when (and inner? logged-in? (feature/enabled? :ui-fp-top-bar))
                  (om/build top-nav/top-nav app-without-container-data))
 
