@@ -288,7 +288,7 @@
                  :on-click #(raise! owner [:ssh-build-clicked build-info])}
                 "Retry this build with SSH enabled"]))])))))
 
-(defn ssh-ad-v2
+(defn ssh-ad
   "Note about why you might want to SSH into a build and buttons to do so"
   [build owner]
     [:div.ssh-ad
@@ -358,8 +358,8 @@
            (if for-current-user?
              (cond
                (build-model/ssh-enabled-now? build) (ssh-instructions build owner)
-               (build-model/finished? build) (ssh-ad-v2 build owner))
-             (ssh-ad-v2 build owner))])))))
+               (build-model/finished? build) (ssh-ad build owner))
+             (ssh-ad build owner))])))))
 
 (defn cleanup-artifact-path [path]
   (-> path
