@@ -468,7 +468,7 @@
 (defn nav-icon
   [v1 v2]
   (if (feature/enabled? :ui-v2)
-    [:img.aside-icon {:src (utils/cdn-path (str "/img/inner/icons/Aside-" v2 ".svg"))}]
+    #_[:img.aside-icon {:src (utils/cdn-path (str "/img/inner/icons/Aside-" v2 ".svg"))}]
     [:i.fa {:class v1}]))
 
 (defn aside-nav [app owner]
