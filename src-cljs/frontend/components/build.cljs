@@ -502,7 +502,7 @@
                                  :enter true
                                  :leave true
                                  :class "build-steps-animator"}
-                                [(om/build build-steps/container-build-steps-v2
+                                [(om/build build-steps/container-build-steps
                                            container-data
                                            {:key :current-container-id})])]])])))))
 
