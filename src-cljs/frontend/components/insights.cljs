@@ -268,7 +268,7 @@
            [:span.project-name (formatted-project-name project)]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
-             [:i.fa.fa-github]]]
+             [:i.octicon.octicon-mark-github]]]
            [:div.settings-icon
             [:a {:href (routes/v1-project-settings {:org username
                                                     :repo reponame})}

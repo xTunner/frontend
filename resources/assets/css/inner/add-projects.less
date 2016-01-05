@@ -34,8 +34,8 @@
     padding: 8px;
     margin-right: @big-number-margin-right;
 
-    font-size: 32px;
-    line-height: 28px;
+    font-size: 24px;
+    line-height: 24px;
     font-weight: 300;
     text-align: center;
     color: @white;
@@ -72,10 +72,10 @@
        makes more sense to use content-box. */
     .box-sizing(content-box);
 
-    padding: 5px;
-    margin: 5px;
     width: 206px;
     height: 1.4em;
+    margin: 5px;
+    padding: 5px 5px 5px 15px;
   }
 
   .org-listing {
@@ -154,6 +154,7 @@
     @org-item-margin: 5px;
 
     margin: 0;
+    padding: 0;
 
     > li {
       position: relative;
@@ -386,6 +387,8 @@
 
     .repo-nofollow {
       .notice {
+        .flexy();
+        .align-items(center);
         color: @gray;
       }
     }
@@ -401,10 +404,13 @@
   }
 
   .proj-name {
+    .flexy();
+    .align-items(center);
     margin-right: auto;
     .fa-external-link {
       font-size: @fontSizeMini;
     }
+
     .forked {
       color: @grayLighter;
     }
@@ -450,11 +456,12 @@
 
     .table-container {
       display: inline-block;
+      width: 100%
     }
 
     .table {
       float: left;
-      width: 400px;
+      width: 48%;
       margin-top: 20px;
       line-height: 40px;
       color: @gray-dark;
@@ -463,11 +470,17 @@
       border: 1px solid darken(@grayLightest, 5.7);
       font-size: 14px;
 
+      @media (max-width: @screen-sm-max) {
+        width: 100%;
+      }
+
       &.comparison {
-        margin-left: 70px;
+        min-width: 48%;
       }
 
       &.payment-plan {
+        margin-right: 4%;
+
         .row:not(.top):hover {
           background-color: darken(@whiten, 1);
         }
@@ -481,10 +494,6 @@
           text-align: center;
         }
 
-        &.metric {
-          text-align: right;
-        }
-
         &.paid, &.unpaid {
           text-align: center;
         }
@@ -496,6 +505,10 @@
         .fa-close {
           color: @dark-red;
         }
+      }
+
+      tr:nth-of-type(odd) {
+        background-color: @grayLightest;
       }
 
       .row.top {
