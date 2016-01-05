@@ -1,89 +1,89 @@
 #invite-teammates {
-    h3 {
-        font-size: 1.846em; // 24px
-        font-weight: 300;
-        color: @gray;
+  h3 {
+    font-size: 1.846em; // 24px
+    font-weight: 300;
+    color: @gray;
+  }
+
+  div.org-invites {
+    margin: 1em;
+
+    overflow: hidden;
+    color: @grayDark;
+  }
+
+  div.invite-profile {
+    label.no-email {
+      cursor: pointer;
+    }
+    input:focus + label.no-email {
+      cursor: auto;
+    }
+  }
+
+  ul.side-list {
+    padding: 1em 0;
+
+    list-style-type: none;
+    .pull-left();
+
+    width: 25%;
+    padding-left: 15px;
+    .flex(0 0 auto);
+
+    .nav-header {
+      background: #d7dce3;
+      color: #455C78;
     }
 
-    div.org-invites {
-        margin: 1em;
-
-        overflow: hidden;
-        color: @grayDark;
+    .orgname {
+      padding-top: 3px;
+      overflow: hidden;
+      margin-left: 3%;
+      width: 70%;
+      display: inline-block;
     }
 
-    div.invite-profile {
-        label.no-email {
-            cursor: pointer;
-        }
-        input:focus + label.no-email {
-            cursor: auto;
-        }
+    li {
+      clear: both;
+      line-height: 20px;
     }
 
-    ul.side-list {
-        padding: 1em 0;
-
-        list-style-type: none;
-        .pull-left();
-
-        width: 25%;
-        padding-left: 15px;
-        .flex(0 0 auto);
-
-        .nav-header {
-            background: #d7dce3;
-            color: #455C78;
-        }
-
-        .orgname {
-            padding-top: 3px;
-            overflow: hidden;
-            margin-left: 3%;
-            width: 70%;
-            display: inline-block;
-        }
-
-        li {
-            clear: both;
-            line-height: 20px;
-        }
-
-        img {
-            .pull-left();
-            width: 25px;
-            height: 25px;
-            border-radius: 25px;
-        }
-
-        a {
-            cursor: pointer;
-            color: @gray;
-            text-decoration: none;
-            &:hover {
-                color: @blueLight;
-                text-decoration: none;
-            }
-        }
-
-        & > span {
-            text-align: center;
-            display: block;
-            line-height: 13em;
-        }
-
-        .tooltip {
-            white-space: normal;
-        }
-
-        .side-item.active {
-            a {
-                color: @blueDark;
-                &:hover {
-                    color: @blueLight;
-                }
-            }
-        }
+    img {
+      .pull-left();
+      width: 25px;
+      height: 25px;
+      border-radius: 25px;
     }
+
+    a {
+      cursor: pointer;
+      color: @gray;
+      text-decoration: none;
+      &:hover {
+        color: @blueLight;
+        text-decoration: none;
+      }
+    }
+
+    & > span {
+      text-align: center;
+      display: block;
+      line-height: 13em;
+    }
+
+    .tooltip {
+      white-space: normal;
+    }
+
+    .side-item.active {
+      a {
+        color: @blueDark;
+        &:hover {
+          color: @blueLight;
+        }
+      }
+    }
+  }
 }
 
