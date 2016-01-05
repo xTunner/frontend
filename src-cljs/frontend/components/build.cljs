@@ -390,10 +390,10 @@
              [:div.loading-spinner-big common/spinner]]
 
             [:div
-             (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
-                                                 :project-data project-data
-                                                 :user user
-                                                 :scopes (get-in data state/project-scopes-path)})
+             (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
+                                              :project-data project-data
+                                              :user user
+                                              :scopes (get-in data state/project-scopes-path)})
              [:div.card.col-sm-12
 
               (om/build common/flashes (get-in data state/error-message-path))

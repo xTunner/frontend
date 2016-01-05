@@ -70,7 +70,7 @@
        [:span "Check " [:a {:href "/admin/fleet-state"} "Fleet State"] " for details and potentially start new builders"]
        "Ask a CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
 
-(defn build-queue-v2 [data owner]
+(defn build-queue [data owner]
   (reify
     om/IWillMount
     (will-mount [_]
@@ -116,7 +116,7 @@
 
               (when (seq builds)
                [:div.queued-builds
-                (om/build builds-table/builds-table-v2 builds {:opts {:show-actions? true}})])]))))))
+                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})])]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -136,69 +136,6 @@
       (-> text
           (string/replace issue-pattern
                           (gstring/format "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>" (gh-utils/http-endpoint) project-name))))))
-
-(defn commit-line [{:keys [build subject body commit_url commit] :as commit-details} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (when (seq body)
-        (utils/tooltip (str "#commit-line-tooltip-hack-" commit)
-                       {:placement "bottom"
-                        :animation false
-                        :viewport "#build-log-container"})))
-    om/IRender
-    (render [_]
-      (html
-       [:div
-        [:span.commit-message
-         {:title body
-          :id (str "commit-line-tooltip-hack-" commit)
-          :dangerouslySetInnerHTML {:__html (-> subject
-                                                (gstring/htmlEscape)
-                                                (linkify)
-                                                (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]
-        [:a.sha-one {:href commit_url
-                     :title commit}
-         " "
-         (subs commit 0 7)
-         " "
-         [:i.fa.fa-github]]]))))
-
-(defn build-commits [build-data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [build (:build build-data)
-            build-id (build-model/id build)]
-        (html
-         [:div.build-commits-container
-          [:div.build-commits-title
-           (when (:compare build)
-             [:a {:href (:compare build)}
-              "compare "
-              [:i.fa.fa-github]
-              " "])
-           (when (< 3 (count (:all_commit_details build)))
-             [:a {:role "button"
-                  :on-click #(raise! owner [:show-all-commits-toggled {:build-id build-id}])}
-              (str (- (count (:all_commit_details build)) 3) " more ")
-              (if (:show-all-commits? build-data)
-                [:i.fa.fa-caret-up]
-                [:i.fa.fa-caret-down])])]
-          (when (:subject build)
-            [:div.build-commits-list
-             (if-not (seq (:all_commit_details build))
-               (om/build commit-line {:build build
-                                      :subject (:subject build)
-                                      :body (:body build)
-                                      :commit_url (build-model/github-commit-url build)
-                                      :commit (:vcs_revision build)})
-               (list
-                (om/build-all commit-line (take 3 (map #(assoc % :build build)
-                                                       (:all_commit_details build))))
-                (when (:show-all-commits? build-data)
-                  (om/build-all commit-line (drop 3 (map #(assoc % :build build)
-                                                         (:all_commit_details build)))))))])])))))
 
 (defn ssh-enabled-note
   "Note that SSH has been enabled for the build, with list of users"
@@ -258,7 +195,7 @@
 (defn ssh-command [node]
   (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node)))
 
-(defrender ssh-node-list-v2 [nodes owner]
+(defrender ssh-node-list [nodes owner]
   (html
     [:ul.ssh-nodes-list
      (map-indexed (fn [i node]
@@ -285,7 +222,7 @@
         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
         " on how to use VNC with CircleCI."]]
 
-        (om/build ssh-node-list-v2 nodes)])))
+        (om/build ssh-node-list nodes)])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
@@ -326,7 +263,7 @@
                {})
        :children))
 
-(defn artifacts-node-v2 [{:keys [depth artifacts show-artifact-links?] :as data} owner opts]
+(defn artifacts-node [{:keys [depth artifacts show-artifact-links?] :as data} owner opts]
   (reify
     om/IRender
     (render [_]
@@ -367,7 +304,7 @@
                    tag]
                   tag)
                 [:div {:style (when closed? {:display "none"})}
-                 (om/build artifacts-node-v2
+                 (om/build artifacts-node
                            {:depth (+ depth 1)
                             :artifacts children
                             :show-artifact-links? show-artifact-links?}
@@ -381,7 +318,7 @@
   (or (not= env "production")
       (not admin?)))
 
-(defn build-artifacts-list-v2 [data owner]
+(defn build-artifacts-list [data owner]
   (reify
     om/IWillMount
     (will-mount [_]
@@ -399,9 +336,9 @@
             (if artifacts
               (interpose [:hr]
                          (map (fn artifact-node-builder [[node-index node-artifacts]]
-                                (om/build artifacts-node-v2 {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
-                                                             :depth 0
-                                                             :show-artifact-links? (should-show-artifact-links? (env) (:admin (:user data)))}
+                                (om/build artifacts-node {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
+                                                          :depth 0
+                                                          :show-artifact-links? (should-show-artifact-links? (env) (:admin (:user data)))}
                                           ))
                               (->> artifacts
                                    (group-by :node_index)
@@ -437,7 +374,7 @@
              (:classname test)
              (:name test))])
 
-(defn test-item-v2 [test owner]
+(defn test-item [test owner]
   (reify
     om/IRender
     (render [_]
@@ -457,7 +394,7 @@
       (html
        [:div
         (when file [:li.filename (str file ":")])
-        (om/build-all test-item-v2 (vec failures))]))))
+        (om/build-all test-item (vec failures))]))))
 
 (defn build-tests-source-block [[source {:keys [failures successes]}] owner]
   (reify om/IRender
@@ -496,7 +433,7 @@
                  (when (om/get-state owner :is-open?)
                    (om/build-all build-tests-file-block bottom-map))))))]]]]))))
 
-(defn build-tests-list-v2 [{{tests :tests} :tests-data
+(defn build-tests-list [{{tests :tests} :tests-data
                             {build-status :status} :build
                             :as data}
                            owner]
@@ -582,36 +519,6 @@
                     :let [pname (name k) pval (pr-str v)]]
                 (str pname "=" pval \newline))]]))))
 
-(defn expected-duration
-  [{:keys [start stop build]} owner opts]
-  (reify
-
-    om/IDisplayName
-    (display-name [_] "Expected Duration")
-
-    om/IDidMount
-    (did-mount [_]
-      (timer/set-updating! owner (not stop)))
-
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (timer/set-updating! owner (not stop)))
-
-    om/IRender
-    (render [_]
-      (let [end-ms (if stop
-                     (.getTime (js/Date. stop))
-                     (datetime/server-now))
-            formatter (get opts :formatter datetime/as-duration)
-            duration-ms (- end-ms (.getTime (js/Date. start)))
-            previous-build (:previous_successful_build build)
-            past-ms (:build_time_millis previous-build)]
-        (if (and past-ms
-                 (= (:status build) "running")
-                 (< duration-ms (* 1.5 past-ms)))
-          (dom/span nil "/~" (formatter past-ms))
-          (dom/span nil ""))))))
-
 (defn default-tab
   "The default tab to show in the build page head, if they have't clicked a different tab."
   [build scopes]
@@ -624,16 +531,12 @@
         (build-model/in-usage-queue? build))
    :usage-queue
    ;; If there's no SSH info, build isn't finished, show the config or commits.
-   (build-model/running? build) (if (feature/enabled? :ui-v2)
-                                  ;; "config" takes up too much room for paid customers.
-                                  (if (:read-settings scopes)
+    ;; "config" takes up too much room for paid customers.
+   (build-model/running? build) (if (:read-settings scopes)
                                     :usage-queue
                                     :config)
-                                  :commits)
    ;; Otherwise, just use the first one.
    :else :tests))
-
-(def tab-link :a.tab-link)
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
@@ -673,7 +576,7 @@
         (:job_name build)
         "unknown"))))
 
-(defn commit-line-v2 [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
+(defn commit-line [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -713,7 +616,7 @@
 
 (def initial-build-commits-count 3)
 
-(defn build-commits-v2 [{:keys [build show-all-commits?]} owner]
+(defn build-commits [{:keys [build show-all-commits?]} owner]
   (reify
     om/IRender
     (render [_]
@@ -727,13 +630,13 @@
           (when (:subject build)
             [:div.build-commits-list
              (if-not (seq commits)
-               (om/build commit-line-v2 {:build build
-                                         :subject (:subject build)
-                                         :body (:body build)
-                                         :commit_url (build-model/github-commit-url build)
-                                         :commit (:vcs_revision build)})
+               (om/build commit-line {:build build
+                                      :subject (:subject build)
+                                      :body (:body build)
+                                      :commit_url (build-model/github-commit-url build)
+                                      :commit (:vcs_revision build)})
                (list
-                 (om/build-all commit-line-v2 top-commits)
+                 (om/build-all commit-line top-commits)
                  (when (< initial-build-commits-count (count commits))
                    (list
                      [:hr]
@@ -745,13 +648,13 @@
                         "Less"
                         "More")]))
                  (when show-all-commits?
-                   (om/build-all commit-line-v2 bottom-commits))))])])))))
+                   (om/build-all commit-line bottom-commits))))])])))))
 
 
 (def tab-tag :li.build-info-tab)
-(def tab-link-v2 :a.tab-link-v2)
+(def tab-link :a.tab-link-v2)
 
-(defn build-sub-head-v2 [data owner]
+(defn build-sub-head [data owner]
   (reify
     om/IRender
     (render [_]
@@ -780,9 +683,9 @@
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [tab-tag {:class (when (= :tests selected-tab) "active")}
-               [tab-link-v2 {:href "#tests"} (if (= "success" (:status build))
-                                               "Test Results "
-                                               "Test Failures ")
+               [tab-link {:href "#tests"} (if (= "success" (:status build))
+                                            "Test Results "
+                                            "Test Failures ")
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
@@ -793,8 +696,8 @@
 
             (when (has-scope :read-settings data)
               [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
-               [tab-link-v2 {:id "queued_explanation"
-                             :href "#usage-queue"} "Queue"
+               [tab-link {:id "queued_explanation"
+                          :href "#usage-queue"} "Queue"
                 (when (:usage_queued_at build)
                   [:span " ("
                    (om/build common/updating-duration {:start (:usage_queued_at build)
@@ -805,37 +708,37 @@
             (when (and (has-scope :write-settings data)
                        (not (project-model/feature-enabled? project :osx)))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
-               [tab-link-v2 {:href "#ssh-info"}
+               [tab-link {:href "#ssh-info"}
                 "Debug via SSH"]])
 
             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
             (when (and logged-in? (build-model/finished? build))
               [tab-tag {:class (when (= :artifacts selected-tab) "active")}
-               [tab-link-v2 {:href "#artifacts"}
+               [tab-link {:href "#artifacts"}
                 "Artifacts"]])
 
             [tab-tag {:class (when (= :config selected-tab) "active")}
-             [tab-link-v2 {:href "#config"} "circle.yml"]]
+             [tab-link {:href "#config"} "circle.yml"]]
 
             (when (build-model/finished? build)
               [tab-tag {:class (when (= :build-timing selected-tab) "active")}
-               [tab-link-v2 {:href "#build-timing"}
+               [tab-link {:href "#build-timing"}
                 "Build Timing"]])
 
             (when (seq build-params)
               [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
-               [tab-link-v2 {:href "#build-parameters"} "Build Parameters"]])]]
+               [tab-link {:href "#build-parameters"} "Build Parameters"]])]]
 
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
            (case selected-tab
 
-             :tests (om/build build-tests-list-v2 build-data)
+             :tests (om/build build-tests-list build-data)
 
              :build-timing (om/build build-timings/build-timings {:build build
                                                                   :project project
                                                                   :plan plan})
 
-             :artifacts (om/build build-artifacts-list-v2
+             :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
 
@@ -843,9 +746,9 @@
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
 
-             :usage-queue (om/build build-queue-v2 {:build build
-                                                    :builds (:builds usage-queue-data)
-                                                    :plan plan})
+             :usage-queue (om/build build-queue {:build build
+                                                 :builds (:builds usage-queue-data)
+                                                 :plan plan})
              :ssh-info (om/build build-ssh {:build build :user user})
 
              ;; avoid errors if a nonexistent tab is typed in the URL
@@ -921,7 +824,7 @@
        [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
           build-number]])))
 
-(defn expected-duration-v2
+(defn expected-duration
   [build owner opts]
   (reify
     om/IDisplayName
@@ -937,7 +840,7 @@
           [:span.summary-label "Estimated: "]
           [:span (formatter past-ms)]])))))
 
-(defn build-head-v2 [data owner]
+(defn build-head [data owner]
   (reify
     om/IRender
     (render [_]
@@ -969,7 +872,7 @@
               (build-finished-status build))]
            [:div.summary-items
             (when (build-model/running? build)
-              (om/build expected-duration-v2 build))
+              (om/build expected-duration build))
             (om/build previous-build-label build)
             [:div.summary-item
              [:span.summary-label "Parallelism: "]
@@ -1009,12 +912,12 @@
                (build-canceler canceler github-endpoint)]]])
           [:div.card
            [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
-           (om/build build-commits-v2 build-data)]
+           (om/build build-commits build-data)]
           [:div.build-head-wrapper
            [:div.build-head
-            (om/build build-sub-head-v2 data)]]])))))
+            (om/build build-sub-head data)]]])))))
 
-(defn rebuild-actions-v2 [{:keys [build project]} owner]
+(defn rebuild-actions [{:keys [build project]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -1094,7 +997,7 @@
                                                                   :build-num build-num}])}
                 "Cancel Build"]))
            (when has-write-settings?
-             (om/build rebuild-actions-v2 {:build build :project project}))
+             (om/build rebuild-actions {:build build :project project}))
            [:a.build-action
             {:href (routes/v1-project-settings (:navigation-data data))}
             [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
