@@ -154,9 +154,9 @@
 
                (when (and (= :build (:navigation-point app))
                           (project/feature-enabled? project :osx))
-             (om/build opt-in/ios-reminder-banner app))
-               (when (and (feature/enabled? :ui-v2))
-                 (om/build header/header app-without-container-data))
+                 (om/build opt-in/ios-reminder-banner app))
+
+               (om/build header/header app-without-container-data)
 
                [:div.app-dominant
                 (when (and inner? logged-in?)
