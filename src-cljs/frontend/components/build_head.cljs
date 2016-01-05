@@ -288,15 +288,6 @@
                  :on-click #(raise! owner [:ssh-build-clicked build-info])}
                 "Retry this build with SSH enabled"]))])))))
 
-(defn ssh-ad
-  "Note about why you might want to SSH into a build and buttons to do so"
-  [build owner]
-    [:div.ssh-ad
-     [:p "Often the best way to troubleshoot problems is to ssh into a running or finished build to look at log files, running processes, and so on."]
-     (om/build ssh-buttons build)
-     [:p "This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate."]
-     [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."]])
-
 (defn ssh-ad-v2
   "Note about why you might want to SSH into a build and buttons to do so"
   [build owner]
@@ -367,12 +358,8 @@
            (if for-current-user?
              (cond
                (build-model/ssh-enabled-now? build) (ssh-instructions build owner)
-               (build-model/finished? build) (if (feature/enabled? :ui-v2)
-                                               (ssh-ad-v2 build owner)
-                                               (ssh-ad build owner)))
-             (if (feature/enabled? :ui-v2)
-               (ssh-ad-v2 build owner)
-               (ssh-ad build owner)))])))))
+               (build-model/finished? build) (ssh-ad-v2 build owner))
+             (ssh-ad-v2 build owner))])))))
 
 (defn cleanup-artifact-path [path]
   (-> path
