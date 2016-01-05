@@ -85,7 +85,7 @@
                  [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
 
                :else
-               [:div.dashboard {:class (when (feature/enabled? :ui-v2) "ui-v2")}
+               [:div.dashboard.ui-v2
                 (when (and (feature/enabled? :build-diagnostics)
                            project)
                   (om/build build-diagnostics {:data data :project project}))

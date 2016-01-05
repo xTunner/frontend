@@ -146,8 +146,8 @@
         state-utils/clear-page-state
         (assoc :navigation-point navigation-point
                :navigation-data (assoc args
-                                       :show-aside-menu? (not (feature/enabled? :ui-v2))
-                                       :show-settings-link? (not (feature/enabled? :ui-v2)))
+                                       :show-aside-menu? false
+                                       :show-settings-link? false)
                :project-settings-project-name project-name)
         (assoc-in state/crumbs-path [{:type :dashboard}
                                      {:type :org :username org}

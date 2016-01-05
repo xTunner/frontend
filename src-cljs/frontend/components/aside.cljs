@@ -382,7 +382,7 @@
                                      (partial project-model/personal-recent-project? (:login opts))
                                      identity)]
         (html
-         [:div.aside-activity.open {:class (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")}
+         [:div.aside-activity.open
           [:header
            [:select {:class "toggle-sorting"
                      :name "toggle-sorting"

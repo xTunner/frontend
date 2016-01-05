@@ -1318,10 +1318,8 @@
 (defn pull-requests [urls]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
   [:div.summary-item
-   (when-not (feature/enabled? :ui-v2)
-     [:span.summary-spacer "•"])
    [:span.summary-label
-    (str (if (feature/enabled? :ui-v2) "PR" "Pull Request")
+    (str "PR"
          (when (< 1 (count urls)) "s")
          ": ")]
    [:span
