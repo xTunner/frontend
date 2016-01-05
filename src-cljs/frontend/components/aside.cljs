@@ -485,70 +485,90 @@
         (html
           [:nav.aside-left-nav
 
-           [:a.aside-item.logo {:title "Home"
+            [:a.aside-item.logo {:title "Home"
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href "/"}
             [:div.logomark
              (common/ico :logo)]]
 
-           [:a.aside-item.avatar {:data-placement "right"
-                                  :data-trigger "hover"
-                                  :title "Settings"
-                                  :href "/account"}
-            [:img.account-avatar {:src avatar-url}]]
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Builds"
+                            :href "/"}
+             (nav-icon "fa-list" "Builds")
+             [:div.nav-label "Builds"]]
 
-           [:a.aside-item {:title "Documentation"
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :href "/docs"}
-            (nav-icon "fa-copy" "Docs")]
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Insights"
+                            :href "/build-insights"}
+             (nav-icon "fa-bar-chart" "Insights")
+             [:div.nav-label "Insights"]]
 
-           [:a.aside-item (merge (common/contact-support-a-info owner)
+            [:a.aside-item {:href "/add-projects",
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :title "Add projects"}
+             (nav-icon "fa-plus-circle" "AddProject")
+             [:div.nav-label "Projects"]]
+
+            [:a.aside-item {:href "/invite-teammates",
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :title "Invite your teammates"}
+              (nav-icon "fa-user-plus" "Team")
+              [:div.nav-label "Team"]]
+
+            [:a.aside-item {:data-placement "right"
+                                   :data-trigger "hover"
+                                   :title "Account Settings"
+                                   :href "/account"}
+              (nav-icon "fa-cog" "Builds")
+              [:div.nav-label "Account Settings"]]
+
+            [:hr]
+
+            [:a.aside-item {:title "Documentation"
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :href "/docs"}
+              (nav-icon "fa-copy" "Docs")
+              [:div.nav-label "Docs"]]
+
+            [:a.aside-item (merge (common/contact-support-a-info owner)
                                  {:title "Support"
                                   :data-placement "right"
                                   :data-trigger "hover"
                                   :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
-            (nav-icon "fa-comments" "Support")]
+              (nav-icon "fa-comments" "Support")
+              [:div.nav-label "Support"]]
 
-           [:a.aside-item {:href "/add-projects",
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Add Projects"}
-            (nav-icon "fa-plus-circle" "AddProject")]
-
-           [:a.aside-item {:href "/invite-teammates",
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Invite your teammates"}
-            (nav-icon "fa-user" "Team")]
-
-           [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Changelog"
-                           :href "/changelog"
-                           :class (when (changelog-updated-since? (:last_viewed_changelog user))
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Changelog"
+                            :href "/changelog"
+                            :class (when (changelog-updated-since? (:last_viewed_changelog user))
                                     "unread")}
-            (nav-icon "fa-bell" "Notifications")]
+              (nav-icon "fa-bell" "Changelog")
+              [:div.nav-label "Changelog"]]
 
-	   [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Insights"
-                           :href "/build-insights"}
-            (nav-icon "fa-bar-chart" "Insights")]
+            [:hr]
 
-           (when (:admin user)
-             [:a.aside-item {:data-placement "right"
-                             :data-trigger "hover"
-                             :title "Admin"
-                             :href "/admin"}
-              (nav-icon "fa-cogs" "Admin")])
+            (when (:admin user)
+              [:a.aside-item {:data-placement "right"
+                              :data-trigger "hover"
+                              :title "Admin"
+                              :href "/admin"}
+                (nav-icon "fa-cogs" "Admin")
+                [:div.nav-label "Admin"]])
 
-           [:a.aside-item.push-to-bottom {:data-placement "right"
-                                          :data-trigger "hover"
-                                          :title "Logout"
-                                          :href "/logout"}
-            (nav-icon "fa-power-off" "Power")]])))))
+            [:a.aside-item.push-to-bottom {:data-placement "right"
+                                           :data-trigger "hover"
+                                           :title "Logout"
+                                           :href "/logout"}
+              (nav-icon "fa-power-off" "Power")
+              [:div.nav-label "Logout"]]])))))
 
 (defn aside [app owner]
   (reify
