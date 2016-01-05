@@ -18,4 +18,5 @@ resources/assets/css/app.css
 resources/public/assets/
 resources/assets/docs/manifest.json
 resources/public/vendor/font-awesome
+resources/public/vendor/material-design-icons
 resources/public/vendor/octicons

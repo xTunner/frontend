@@ -24,6 +24,8 @@
                                   :mime-types {:svg "image/svg"}})
   (compojure.route/resources "/vendor/font-awesome" {:root "components/font-awesome"
                                                      :mime-types {:svg "image/svg"}})
+  (compojure.route/resources "/vendor/material-design-icons" {:root "components/material-design-icons"
+                                                     :mime-types {:svg "image/svg"}})
   (compojure.route/resources "/vendor/octicons" {:root "components/octicons"
                                                  :mime-types {:svg "image/svg"}})
   (GET "/docs/manifest-dev.json" []

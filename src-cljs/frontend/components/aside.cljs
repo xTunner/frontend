@@ -469,7 +469,7 @@
   [v1 v2]
   (if (feature/enabled? :ui-v2)
     #_[:img.aside-icon {:src (utils/cdn-path (str "/img/inner/icons/Aside-" v2 ".svg"))}]
-    [:i.fa {:class v1}]))
+    [:i {:class v1} v2]))
 
 (defn aside-nav [app owner]
   (reify
@@ -496,35 +496,36 @@
                             :data-trigger "hover"
                             :title "Builds"
                             :href "/"}
-             (nav-icon "fa-list" "Builds")
+             (nav-icon "material-icons" "storage")
              [:div.nav-label "Builds"]]
 
             [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
                             :title "Insights"
                             :href "/build-insights"}
-             (nav-icon "fa-bar-chart" "Insights")
+             (nav-icon "material-icons" "assessment")
              [:div.nav-label "Insights"]]
 
             [:a.aside-item {:href "/add-projects",
                             :data-placement "right"
                             :data-trigger "hover"
-                            :title "Add projects"}
-             (nav-icon "fa-plus-circle" "AddProject")
+                            :title "Add Projects"}
+             (nav-icon "material-icons" "library_add")
+
              [:div.nav-label "Projects"]]
 
             [:a.aside-item {:href "/invite-teammates",
                             :data-placement "right"
                             :data-trigger "hover"
-                            :title "Invite your teammates"}
-              (nav-icon "fa-user-plus" "Team")
+                            :title "Add Teammates"}
+              (nav-icon "material-icons" "group_add")
               [:div.nav-label "Team"]]
 
             [:a.aside-item {:data-placement "right"
                                    :data-trigger "hover"
                                    :title "Account Settings"
                                    :href "/account"}
-              (nav-icon "fa-cog" "Builds")
+              (nav-icon "material-icons" "settings")
               [:div.nav-label "Account Settings"]]
 
             [:hr]
@@ -533,7 +534,7 @@
                             :data-placement "right"
                             :data-trigger "hover"
                             :href "/docs"}
-              (nav-icon "fa-copy" "Docs")
+              (nav-icon "material-icons" "description")
               [:div.nav-label "Docs"]]
 
             [:a.aside-item (merge (common/contact-support-a-info owner)
@@ -541,7 +542,7 @@
                                   :data-placement "right"
                                   :data-trigger "hover"
                                   :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
-              (nav-icon "fa-comments" "Support")
+              (nav-icon "material-icons" "chat")
               [:div.nav-label "Support"]]
 
             [:a.aside-item {:data-placement "right"
@@ -550,7 +551,7 @@
                             :href "/changelog"
                             :class (when (changelog-updated-since? (:last_viewed_changelog user))
                                     "unread")}
-              (nav-icon "fa-bell" "Changelog")
+              (nav-icon "material-icons" "receipt")
               [:div.nav-label "Changelog"]]
 
             [:hr]
@@ -560,14 +561,14 @@
                               :data-trigger "hover"
                               :title "Admin"
                               :href "/admin"}
-                (nav-icon "fa-cogs" "Admin")
+                (nav-icon "material-icons" "build")
                 [:div.nav-label "Admin"]])
 
             [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
                                            :title "Logout"
                                            :href "/logout"}
-              (nav-icon "fa-power-off" "Power")
+              (nav-icon "material-icons" "power_settings_new")
               [:div.nav-label "Logout"]]])))))
 
 (defn aside [app owner]
