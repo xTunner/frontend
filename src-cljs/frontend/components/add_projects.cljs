@@ -43,7 +43,7 @@
      [:div.orgname login]
      [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
                     :target "_blank"}
-      [:i.octicon.octicon-mark-github ""]]]))
+      [:i.octicon.octicon-mark-github]]]))
 
 (defn missing-org-info
   "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
