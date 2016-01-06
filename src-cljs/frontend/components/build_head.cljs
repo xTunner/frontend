@@ -755,7 +755,27 @@
     (render [_]
       (html
        (if (seq config-string)
-         [:div.build-config-string [:pre.solarized.language-yaml config-string]]
+         [:div.build-config-string [:pre.solarized.line-numbers
+                                    [:code.language-yaml config-string]]]
+         (circle-yml-ad))))))
+
+(defn build-config-v2 [{:keys [config-string build build-data]} owner opts]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [node (om/get-node owner)
+            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
+        (js/Prism.highlightElement highlight-target)))
+    om/IRender
+    (render [_]
+      (html
+       (if (seq config-string)
+         [:div
+          (when (and (build-model/config-errors? build)
+                     (not (:dismiss-config-errors build-data)))
+            (om/build build-cfg/config-errors build))
+          [:div.build-config-string [:pre.solarized.line-numbers
+                                     [:code.language-yaml config-string]]]]
          (circle-yml-ad))))))
 
 (defn build-parameters [{:keys [build-parameters]} owner opts]

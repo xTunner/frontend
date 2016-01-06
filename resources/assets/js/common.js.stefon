@@ -10,6 +10,7 @@
   "../../components/svg-injector/svg-injector.js"
   "../../components/prism/prism.js" ;; syntax highlighting
   "../../components/prism/components/prism-yaml.min.js" ;; syntax highlighting
+  "../../components/prism/plugins/line-numbers/prism-line-numbers.js" ;; line numbers
 
   "bootstrap.js.stefon" ;; TODO: replace with the om version
 
