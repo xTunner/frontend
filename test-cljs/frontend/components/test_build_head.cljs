@@ -20,9 +20,9 @@
         test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
     (om/root bh/artifacts-node tree {:target test-node})
     (testing "Simple render test"
-      (is (= "▾  Container 0/"
+      (is (re-find #"Container 0"
              (-> test-node
-                 (sel1 ".build-artifacts-toggle-children")
+                 (sel1 ".artifact-directory-text")
                  utils/text))
           "Top level simply renders appropriate text with given data, without verification of behavior"))))
 
