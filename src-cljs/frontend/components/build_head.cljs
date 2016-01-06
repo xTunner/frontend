@@ -1169,6 +1169,7 @@
              [:a {:href (str "mailto:" (:committer_email commit-details))}
               (build-model/committer commit-details)])])
 
+        [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
                                    :title commit}
          (subs commit 0 7)]
