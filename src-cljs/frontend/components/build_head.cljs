@@ -1170,7 +1170,8 @@
               (build-model/committer commit-details)])])
 
         [:a.metadata-item.sha-one {:href commit_url
-                                   :title commit}
+                                   :title commit
+                                   :on-click #(analytics/track "build-page-revision-link-clicked")}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -1340,10 +1341,12 @@
    [:span
     (interpose
      ", "
-     (map (fn [url] [:a {:href url} "#"
-                     (let [n (re-find #"/\d+$" url)]
-                       (if n (subs n 1) "?"))])
-          urls))]])
+     (for [url urls]
+       [:a {:href url
+            :on-click #(analytics/track "build-page-pr-link-clicked")}
+        "#"
+        (let [[_ number] (re-find #"/(\d+)$" url)]
+          (or number "?"))]))]])
 
 (defn queued-time [build]
   (if (< 0 (build-model/run-queued-time build))
