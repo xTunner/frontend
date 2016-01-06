@@ -484,12 +484,12 @@
         (html
           [:nav.aside-left-nav
 
-            [:a.aside-item.logo {:title "Home"
+           [:a.aside-item.logo {:title "Home"
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href "/"}
-            [:div.logomark
-             (common/ico :logo)]]
+             [:div.logomark
+              (common/ico :logo)]]
 
             [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
