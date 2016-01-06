@@ -429,6 +429,7 @@
 
     @media (max-width: @pills-breakpoint) {
       .flexy(stretch, flex-start, row);
+
       label {
         display: block
       };
@@ -437,8 +438,15 @@
     .filtering {
       .fancy-radio();
 
+      font-size: 13px;
+
       .filter-help {
         margin-right: 10px;
+      }
+
+      label {
+        padding: 6px 8px;
+        margin: 0 0 12px 0;
       }
     }
   }
