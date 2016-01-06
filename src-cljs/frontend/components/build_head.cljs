@@ -12,6 +12,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.build-config :as build-cfg]
             [frontend.config :refer [intercom-enabled? github-endpoint env enterprise?]]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -1315,7 +1316,9 @@
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
 
-             :config (om/build build-config {:config-string (get-in build [:circle_yml :string])})
+             :config (om/build build-config-v2 {:config-string (get-in build [:circle_yml :string])
+                                                :build build
+                                                :build-data build-data})
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
 

@@ -194,6 +194,37 @@
                        (not (:dismiss-config-errors build-data)))
               (om/build build-config/config-errors build))]]])))))
 
+(defn notices-v2 [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (let [build-data (:build-data data)
+             project-data (:project-data data)
+             plan (:plan project-data)
+             project (:project project-data)
+             build (:build build-data)]
+         [:div.notices
+          (common/messages (set (:messages build)))
+          [:div.row
+           [:div.col-xs-12
+            (when (empty? (:messages build))
+              [:div (report-error build owner)])
+
+            (when (and plan (project-common/show-trial-notice? project plan))
+              (om/build project-common/trial-notice project-data))
+
+            (when (plan-model/suspended? plan)
+              (om/build project-common/suspended-notice plan))
+
+            (when (and project (project-common/show-enable-notice project))
+              (om/build project-common/enable-notice project))
+
+            (when (build-model/display-build-invite build)
+              (om/build invites/build-invites
+                        (:invite-data data)
+                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))]]])))))
+
 (defn build-v1 [data owner]
   (reify
     om/IRender
@@ -490,9 +521,9 @@
 
               (om/build common/flashes (get-in data state/error-message-path))
 
-              (om/build notices {:build-data (dissoc build-data :container-data)
-                                 :project-data project-data
-                                 :invite-data invite-data})
+              (om/build notices-v2 {:build-data (dissoc build-data :container-data)
+                                    :project-data project-data
+                                    :invite-data invite-data})
 
               (om/build container-pills-v2 {:container-data container-data
                                             :build-running? (build-model/running? build)
