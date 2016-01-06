@@ -564,15 +564,15 @@
   (->> [[(:name test)] [(:classname test)]]
        (map (fn [s] (some #(when-not (string/blank? %) %) s)))
        (filter identity)
-       (string/join " - in ")))
+       (string/join " - ")))
 
 (defmethod format-test-name-v2 "lein-test" [test]
-  [:strong.build-test-name (str (:classname test) "/" (:name test))])
+  (str (:classname test) "/" (:name test)))
 
 (defmethod format-test-name-v2 "cucumber" [test]
-  [:strong.build-test-name (if (string/blank? (:name test))
-             (:classname test)
-             (:name test))])
+  (if (string/blank? (:name test))
+    (:classname test)
+    (:name test)))
 
 (defn test-item [test owner]
   (reify
@@ -594,12 +594,21 @@
     om/IRender
     (render [_]
       (html
-       [:li.build-test {:class (when (:show-message test) "expanded")
-                        :on-click #(when-not (string/blank? (:message test))
-                                     (raise! owner [:show-test-message-toggled {:test-index (:i test)}]))}
-        [:span.test-name (format-test-name-v2 test)]
-        (when (:show-message test)
-           [:pre.build-test-output (:message test)])]))))
+       [:li.build-test
+        [:div.properties
+         [:div.test-name (format-test-name-v2 test)]
+         [:div.test-file (:file test)]]
+        (let [message (:message test)
+              message (if (:show-message test) message
+                          (.replace message (js/RegExp. "^\\s+" "m") ""))
+              expander-label (if (:show-message test) "less" "more")]
+          [:pre.build-test-output
+           [:div.expander {:role "button"
+                           :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
+            expander-label]
+           [:span {:class (when-not (:show-message test)
+                            "preview")}
+            message]])]))))
 
 (defn build-tests-list [data owner]
   (reify
@@ -635,14 +644,13 @@
                              (om/build-all test-item
                                            (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
 
-(def initial-test-render-count 5)
+(def initial-test-render-count 3)
 
 (defn build-tests-file-block [[file failures] owner]
   (reify om/IRender
     (render [_]
       (html
        [:div
-        (when file [:li.filename (str file ":")])
         (om/build-all test-item-v2 (vec failures))]))))
 
 (defn build-tests-source-block [[source {:keys [failures successes]}] owner]

@@ -791,10 +791,6 @@
 
   .build-tests-list-container {
     padding-top: 0;
-
-    .filename {
-      margin: 10px 0;
-    }
   }
 
   .build-tests-list {
@@ -807,9 +803,7 @@
   }
 
   .build-test {
-    .rotating-chevron;
 
-    pointer-events: none;
 
     &:last-child {
       .build-test-output, .build-test-name {
@@ -817,22 +811,54 @@
       }
     }
 
-    .test-name:before {
-      margin-left: 5px;
-      content: counter(test-list) ". ";
-      counter-increment: test-list;
+    .properties {
+      .flexy(center, row);
+      flex-wrap: wrap;
+    }
+
+
+    .test-name {
+
+      &:before {
+         margin-left: 5px;
+         content: counter(test-list) ". ";
+         counter-increment: test-list;
+      }
+    }
+
+    .test-file {
+      text-align: right;
+      margin-left: auto;
+      padding-left: @padding-small-horizontal;
+      margin-right: 0;
+      .wrap-words;
+    }
+
+    .build-test-output {
+      margin: 10px 0;
+      .wrap-words;
+
+      .preview {
+        overflow: hidden;
+        height: 18px;
+        line-height: 18px;
+        display: block;
+      }
+
+      .expander {
+        float: right;
+        padding-left: @padding-small-horizontal;
+        padding-right: @padding-small-horizontal;
+        margin-left: @padding-small-horizontal;
+        color: #ccc;
+        background-color: rgba(255,255,255, 0.2);
+        .user-select(none);
+      }
+
     }
 
   }
 
-
-  .build-test-name {
-    display: inline-block;
-  }
-
-  .build-test-output {
-    margin: 10px 0;
-  }
   .alert {
     .build-tests-toggle {
       margin: 0;
