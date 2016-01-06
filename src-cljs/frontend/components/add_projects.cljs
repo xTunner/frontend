@@ -145,7 +145,7 @@
                       :title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
                       :href (vcs-url/project-path (:vcs_url repo))}
                   " "
-                  [:i.material-icons "open_in_new"]]
+                  [:i.material-icons "visibility"]]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 (managed-button
