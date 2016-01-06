@@ -599,6 +599,8 @@
          [:div.test-name (format-test-name-v2 test)]
          [:div.test-file (:file test)]]
         (let [message (:message test)
+              message (if (:show-message test) message
+                          (.replace message (js/RegExp. "^\\s+" "m") ""))
               expander-label (if (:show-message test) "less" "more")]
           [:pre.build-test-output
            [:div.expander {:role "button"
