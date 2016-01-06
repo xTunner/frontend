@@ -79,18 +79,6 @@
     outline: none;
     text-decoration: none;
 
-    .nav-label {
-      font-size: 10px;
-      margin-top: 6px;
-      text-align: center;
-      white-space: normal;
-      text-transform: uppercase;
-
-      @media screen and ( max-height: 650px ){
-        display: none;
-      }
-    }
-
     &:not(:hover) {
       color: inherit;
     }
@@ -273,6 +261,18 @@
       .icon-style(@white, (@em * 2));
       width: @tile;
       min-height: @tile;
+    }
+  }
+
+  .nav-label {
+    font-size: 10px;
+    margin-top: 6px;
+    text-align: center;
+    white-space: normal;
+    text-transform: uppercase;
+
+    @media screen and ( max-height: 650px ){
+      display: none;
     }
   }
 
