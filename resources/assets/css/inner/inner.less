@@ -78,6 +78,59 @@
   @import "invites.less";
   @import "insights.less";
   @import "icons.less";
+
+  .recent-status-badge {
+    @badge-height: 25px;
+
+    .flexy(center, flex-start);
+    .invert-status-icons;
+
+    height: @badge-height;
+    min-width: 118px;
+    padding: 0;
+
+    border-radius: 2 * @badge-height;
+    background: lighten(@brand-canceled-v2, @brand-lighten-ratio-v2);
+
+    .badge-icon {
+      @badge-icon-margin: 4px;
+      @badge-icon-size: @badge-height - (2 * @badge-icon-margin);
+
+      height: @badge-icon-size;
+      width: @badge-icon-size;
+      margin: @badge-icon-margin (2 * @badge-icon-margin) @badge-icon-margin @badge-icon-margin;
+    }
+
+    .badge-text {
+      .flex(1 0 auto);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: @white;
+    }
+
+    .invert-status-icons();
+
+    &.pass {
+      background: @brand-success-v2;
+    }
+
+    &.fail {
+      background: @brand-danger-v2;
+    }
+
+    &.busy {
+      background: @brand-primary-v2;
+    }
+
+    &.stop {
+      background: @brand-canceled-v2;
+    }
+
+    &.queued {
+      background: @brand-pending-v2;
+    }
+  }
 }
 
 @import "aside.less";
