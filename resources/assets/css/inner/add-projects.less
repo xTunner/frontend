@@ -415,6 +415,14 @@
       vertical-align: middle;
     }
 
+    .tooltip {
+      font-size: @baseFontSize;
+      .tooltip-inner {
+        border-radius: (@em * 2);
+        padding: (@em / 2) @em;   // BS RESET
+      }
+    }
+
     .forked {
       color: @grayLighter;
     }
