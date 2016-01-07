@@ -142,6 +142,7 @@
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
                  [:a {:id tooltip-id
+                      :data-placement "right"
                       :title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
                       :href (vcs-url/project-path (:vcs_url repo))}
                   " "
