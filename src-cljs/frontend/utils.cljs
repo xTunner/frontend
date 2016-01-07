@@ -4,7 +4,7 @@
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
             [clojure.string :as string]
-            [frontend.async :refer [raise!]]
+            [frontend.async :refer [raise! put!]]
             [frontend.config :as config]
             [goog.Uri]
             [goog.async.AnimationDelay]
@@ -84,8 +84,8 @@
     (.update container content)
     (crypt/byteArrayToHex (.digest container))))
 
-(defn notify-error [owner message]
-  (raise! owner [:error-triggered message]))
+(defn notify-error [ch message]
+  (put! ch [:error-triggered message]))
 
 (defn trim-middle [s length]
   (let [str-len (count s)]
