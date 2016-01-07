@@ -39,7 +39,7 @@
           [:div.plans-item
            [:h4 "Set up a plan for one of your Organizations:"]
            [:p "You can set up plans for any organization that you admin."]
-           [:div
+           [:div.plans-accounts
             (map
              (fn [org]
                (let [;; TODO: this link is sometimes dead. We should not link, or make
@@ -88,7 +88,7 @@
                  :type      "text",
                  :value heroku-api-key}]
                [:label {:placeholder "Current Heroku key"}]])
-            [:input
+            [:input#heroku-key
              {:required  true
               :type      "text",
               :value     heroku-api-key-input
@@ -115,7 +115,9 @@
           [:div.api-item
            [:h2 "API Tokens"]
            [:p
-            "Create and revoke API tokens to access this account's details using our API. Apps using these tokens can act as you, and have full read- and write-permissions!"]
+            "Create and revoke API tokens to access this account's details using our API."
+            [:br]
+            "Apps using these tokens can act as you, and have full read- and write-permissions!"]
            [:form
             [:input#api-token
              {:required  true
