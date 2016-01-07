@@ -1,7 +1,8 @@
 .org-page {
   max-width: 1400px;
   margin: 0;
-  padding: 2em;
+  padding-top: (@grid-gutter-width / 2);
+
   .pricing-plans {
     margin-top: 0;
   }
@@ -20,7 +21,7 @@
     }
     .well {
       position: relative;
-      padding: 5px 15px;
+      padding: 5px (@grid-gutter-width / 2);
       &:before {
         content: "";
         position: absolute;
@@ -54,7 +55,7 @@
     .followers-container {
       //margin-left: 10px;
       border-top: 1px solid #eee;
-      padding-top: 15px;
+      padding-top: (@grid-gutter-width / 2);
     }
     .follower-container {
       margin-right: 10px;

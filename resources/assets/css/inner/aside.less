@@ -319,8 +319,8 @@
   height: 100%;
   position: relative;
 
-  background: @appBackgroundColor;
-  color: @appBackgroundColor;
+  background: @white;
+  color: @white;
   transition: (@aside-transition-speed / 2);
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   overflow: hidden;
@@ -337,8 +337,9 @@
     h5 {
       color: @black;
     }
+
     .aside-item {
-      padding: 0 (@em * 2);
+      padding: 0 (@grid-gutter-width / 2);
     }
   }
   header {
@@ -348,7 +349,7 @@
   }
   h5 {
     font-weight: normal;
-    color: @appBackgroundColor;
+    color: @white;
     white-space: nowrap;
     transition: (@aside-transition-speed / 2);
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);

@@ -23,7 +23,7 @@
     margin-top: 0;
   }
   h2 {
-    font-family: @sansFontFamily;
+    font-family: @font-family-base;
     font-weight: bold;
     color: @gray;
     font-size: 2em;
@@ -35,7 +35,7 @@
     padding: .25em 0;
   }
   h4 {
-    font-family: @sansFontFamily;
+    font-family: @font-family-base;
     font-weight: bold;
     color: @gray;
     margin: 0;
@@ -131,7 +131,6 @@
   }
   .project-settings-inner {
     .flex(1 1 auto);
-    padding: 0 2em;
     min-height: 89vh;
     overflow: auto;
 
@@ -423,7 +422,7 @@
     }
 
     textarea {
-      font-family: @codeFontFamily;
+      font-family: @font-family-monospace;
     }
   }
   .dependencies-inner {
@@ -440,7 +439,7 @@
     }
 
     textarea {
-      font-family: @codeFontFamily;
+      font-family: @font-family-monospace;
     }
   }
   .tests-inner {
@@ -596,7 +595,6 @@
   // SSH Keys Page
   .sshkeys-page {
     table {
-      .skin-table();
       margin: 2em 0;
       &:empty {
         display: none;
@@ -647,8 +645,8 @@
     ul {
       list-style: disc inside;
     }
+
     table {
-      .skin-table();
       margin-bottom: 1em;
       tr.preferred {
         td {
@@ -660,7 +658,7 @@
         }
       }
     }
-    margin: 2em 0;
+
     .tooltip {
       font-size: @baseFontSize;
     }
@@ -682,7 +680,6 @@
   // Circle API & Status Badge pages
   .circle-api-page, .status-page {
     table {
-      .skin-table();
       overflow: visible;
       th {
         text-align: left;
