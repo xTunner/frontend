@@ -26,7 +26,7 @@
                  [cljsjs/react-with-addons "0.13.3-0"]
                  [org.omcljs/om "0.9.0" :exclusions [cljsjs/react]]
                  [hiccups "0.3.0"]
-                 [sablono "0.2.22"]
+                 [sablono "0.3.6" :exclusions [cljsjs/react]]
                  [secretary "1.2.2"]
                  [com.andrewmcveigh/cljs-time "0.3.10"]
 
