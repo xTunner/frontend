@@ -18,6 +18,7 @@
       font-size: 26px;
       margin-top: 20px;
     }
+
     .well {
       position: relative;
       padding: 0;
@@ -44,24 +45,9 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
-      .gravatar {
-        @s: (@tile / 2);
-        min-width: @s;
-        height: @s;
-        margin-right: 8px;
-        border-radius: (@s / 2);
-      }
     }
 
     .users {
-      .gravatar {
-        @s: (@tile / 2);
-        min-width: @s;
-        height: @s;
-        margin-right: @baseFontSize;
-        border-radius: (@s / 2);
-      }
       .row-fluid {
         .well:nth-of-type(odd) {
           margin-left: 0
@@ -86,6 +72,14 @@
           flex: 1 1 50%;
         }
       }
+    }
+
+    .gravatar {
+      @size: (@tile / 2);
+      min-width: @size;
+      height: @size;
+      margin-right: 8px;
+      border-radius: (@size / 2);
     }
   }
 
