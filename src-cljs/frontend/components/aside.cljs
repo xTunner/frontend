@@ -186,36 +186,36 @@
 
 (defn project-aside-v2 [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
   (reify
-      om/IDisplayName (display-name [_] "Aside Project")
-      om/IRender
-      (render [_]
-        (let [{repo-name :reponame} project]
-          (html [:li
-                 [:.project-heading
-                  {:class (when (and (= (vcs-url/org-name (:vcs_url project))
-                                        (:org navigation-data))
-                                     (= (vcs-url/repo-name (:vcs_url project))
-                                        (:repo navigation-data))
-                                     (not (contains? navigation-data :branch)))
-                            "selected")
-                   :title (project-model/project-name project)}
-                  [:i.fa.rotating-chevron {:class (when (expanded-repos repo-name) "expanded")
-                                           :on-click #(do
-                                                        (raise! owner [:expand-repo-toggled {:repo-name repo-name}])
-                                                        nil)}]
-                  [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
-                                                                        :repo (:reponame project)})
-                                    :on-click #(analytics/track "branch-list-project-clicked")}
-                   (project-model/project-name project)]
-                  (project-settings-link project)]
-                 (when (expanded-repos repo-name)
-                   (om/build branch-list-v2
-                             {:branches (->> project
-                                             project-model/branches
-                                             (sort-by :name))
-                              :show-all-branches? show-all-branches?
-                              :navigation-data navigation-data}
-                             {:opts {:login login}}))])))))
+    om/IDisplayName (display-name [_] "Aside Project")
+    om/IRender
+    (render [_]
+      (let [repo  (project-model/project-name project)]
+        (html [:li
+               [:.project-heading
+                {:class (when (and (= (vcs-url/org-name (:vcs_url project))
+                                      (:org navigation-data))
+                                   (= (vcs-url/repo-name (:vcs_url project))
+                                      (:repo navigation-data))
+                                   (not (contains? navigation-data :branch)))
+                          "selected")
+                 :title (project-model/project-name project)}
+                [:i.fa.rotating-chevron {:class (when (expanded-repos repo) "expanded")
+                                         :on-click #(do
+                                                      (raise! owner [:expand-repo-toggled {:repo repo}])
+                                                      nil)}]
+                [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
+                                                                      :repo (:reponame project)})
+                                  :on-click #(analytics/track "branch-list-project-clicked")}
+                 (project-model/project-name project)]
+                (project-settings-link project)]
+               (when (expanded-repos repo)
+                 (om/build branch-list-v2
+                           {:branches (->> project
+                                           project-model/branches
+                                           (sort-by :name))
+                            :show-all-branches? show-all-branches?
+                            :navigation-data navigation-data}
+                           {:opts {:login login}}))])))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
