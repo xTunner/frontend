@@ -21,8 +21,9 @@
                                                        :show-usage-queue false}
                                     :artifact-data {:artifacts nil
                                                     :show-artifacts false}
-                                    :current-container-id 0
                                     :container-data {:current-container-id 0
+                                                     :current-filter :all
+                                                     :paging-offset 0
                                                      :containers nil}}))
 
 (defn reset-current-project [state]

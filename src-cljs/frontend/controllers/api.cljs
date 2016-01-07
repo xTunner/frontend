@@ -4,6 +4,7 @@
             [frontend.async :refer [put! raise!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
+            [frontend.models.container :as container-model]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.pusher :as pusher]
@@ -179,6 +180,21 @@
                     (some-> build :branch utils/encode-branch))
           (assoc-in state/containers-path containers)))))
 
+(defn set-containers-filter!
+  "Takes project hash and filter down to keys that identify the build."
+  [state]
+  (let [build (get-in state state/build-path)
+        containers (get-in state state/containers-path)
+        build-running? (not (build-model/finished? build))
+        failed-containers (filter #(= :failed (container-model/status % build-running?))
+                                  containers)
+        controls-ch (get-in state [:comms :controls])]
+    ;; set filter
+    (if (and (not build-running?)
+             (seq failed-containers))
+      (put! controls-ch [:container-filter-changed {:new-filter :failed
+                                                    :containers failed-containers}]))))
+
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name]} (:context args)]
@@ -195,7 +211,8 @@
                                 :index (:index action)
                                 :output-url (:output_url action)}
                                (get-in current-state [:comms :api])))
-      (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path))))))
+      (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
+      (set-containers-filter! current-state))))
 
 
 (defmethod api-event [:cancel-build :success]

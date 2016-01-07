@@ -13,6 +13,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.seq :refer [select-in]]
+            [frontend.utils.html :refer [open-ext]]
             [goog.events]
             [goog.dom]
             [goog.style]
@@ -148,10 +149,11 @@
     (render [_]
       (html
         (if (= :page (om/get-shared owner [:ab-tests :auth-button-vs-page]))
-          [:a.home-action {:class cta-class
-                           :href "/signup"
-                           :role "button"
-                           :on-mouse-up #(analytics/track-signup-click {:view source})}
+          [:a.home-action (open-ext
+                           {:class cta-class
+                            :href "/signup"
+                            :role "button"
+                            :on-mouse-up #(analytics/track-signup-click {:view source})})
            (str (common/sign-up-text))]
           [:a.home-action
            {:href  (auth-url :destination "/")
@@ -255,7 +257,7 @@
                        Continuous integration and delivery is revolutionizing the way development teams operate by reducing barriers between your ideas and your production code.
                        Remember, it doesn't count until it ships."]
            [:p
-            [:a.shopify-link {:href "/stories/shopify"}
+            [:a.shopify-link (open-ext {:href "/stories/shopify/"})
              "See how Shopify does it"
              (common/ico :slim-arrow-right)]]]]]
         [:div.home-bottom-shelf
@@ -426,7 +428,7 @@
           "So, ready to ship faster?"]
          [:h3.slogan.context.top-line {:item-prop "Next you'll just need to log in using your GitHub account. Still not convinced? Check out our pricing."}
           "Next you'll just need to log in using your GitHub account. Still not convinced? Check out our "
-          [:a {:href "pricing"} "pricing"]
+          [:a (open-ext {:href "/pricing/"}) "pricing"]
           "."]]
         [:div.home-avatars
          [:div.avatars

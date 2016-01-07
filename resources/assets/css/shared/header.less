@@ -10,14 +10,21 @@
   .breadcrumb {
     margin-left: 0;
     font-size: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
-    & > li + li:before {
-      padding: 0 0 0 5px;
+    > li {
+      display: inline;
+
+      &:before {
+        padding: 0;
+      }
     }
 
     a {
       &:not(:hover) {
-        color: @gray-light-v2;
+        color: @grayDark;
       }
 
       &:hover {
@@ -91,7 +98,7 @@
     color: @grayDark;
     background-color: @grayLightest;
   }
-  
+
 
   .message {
     .flex(1 0 auto);
@@ -132,8 +139,10 @@
 }
 
 #statuspage-bar {
+  min-height: 70px;
+
   &.none {
-    visibility: hidden;
+    display:none;
     height: 0px;
     padding: 0px;
   }
@@ -156,7 +165,6 @@
   &.critical {
     .status-page-color(@alert-danger-text, @alert-danger-bg);
   }
-
 }
 
 .environment {

@@ -11,6 +11,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.seq :refer [select-in]]
+            [frontend.utils.html :refer [open-ext]]
             [goog.events]
             [goog.dom]
             [goog.style]
@@ -62,7 +63,7 @@
               [:h1.text-center "Transparent pricing, built to scale."]
               [:h3.text-center "The first container is free and each additional one is $50/mo. "
                [:br]
-               [:a {:href "/enterprise"} "Need enterprise pricing?" ]]]]]
+               [:a (open-ext {:href "/enterprise"}) "Need enterprise pricing?" ]]]]]
            [:div.outer-section
             [:section.container.pricing-calculator
              [:div.row
@@ -84,9 +85,9 @@
                 [:p
                  [:span "You can run "]
                  [:strong {:class (when (> concurrent-count 9) "double-digits")} (str concurrent-count)]
-                 [:span (str " concurrent build" (if (> concurrent-count 1) "s" "") " with ")] 
+                 [:span (str " concurrent build" (if (> concurrent-count 1) "s" "") " with ")]
                  [:strong {:class (when (> container-count 9) "double-digits")} (str container-count)]
-                 [:span (str " container" (if (> container-count 1) "s" "") " and ")] 
+                 [:span (str " container" (if (> container-count 1) "s" "") " and ")]
                  [:strong (str pricing-parallelism "x")]
                  [:span " parallelism."]]
                 [:div.parallelism-options

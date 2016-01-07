@@ -122,6 +122,8 @@
 (def year-month-day-date
   (partial format-date year-month-day-date-format))
 
+(defn date->month-name [date]
+  (time-format/unparse (time-format/formatter "MMMM") date))
 
 (defn date-in-ms [date]
   (let [[y m d] (map js/parseInt (.split (name date) #"-"))]
@@ -148,33 +150,33 @@
 
 
 (def full-time-units
-  {:seconds "second"
-   :minutes "minute"
-   :hours   "hour"
-   :days    "day"
-   :months  "month"
-   :years   "year"})
+  {:seconds ["second" "seconds"]
+   :minutes ["minute" "minutes"]
+   :hours ["hour" "hours"]
+   :days ["day" "days"]
+   :months ["month" "months"]
+   :years ["year" "years"]})
 
 (def abbreviated-time-units
-  {:seconds "sec"
-   :minutes "min"
-   :hours   "hr"
-   :days    "day"
-   :months  "month"
-   :years   "year"})
+  {:seconds ["sec" "sec"]
+   :minutes ["min" "min"]
+   :hours ["hr" "hr"]
+   :days ["day" "days"]
+   :months ["month" "months"]
+   :years ["year" "years"]})
 
-(defn format-duration [duration-ms {:keys [seconds minutes hours days months years]}]
+(defn format-duration [duration-ms units]
   (let [ago (max (.floor js/Math (/ duration-ms 1000)) 0)
-        interval (cond (< ago minute){:divisor 1      :unit seconds }
-                       (< ago hour)  {:divisor minute :unit minutes }
-                       (< ago day)   {:divisor hour   :unit hours   }
-                       (< ago month) {:divisor day    :unit days    }
-                       (< ago year)  {:divisor month  :unit months  }
-                       :else         {:divisor year   :unit years   })]
-    (let [time-count (.round js/Math (/ ago (:divisor interval)))]
-      (str time-count " "  (:unit interval) (when-not (or (= 1 time-count)
-                                                          (= 1 (count (:unit interval))))
-                                              "s")))))
+        [divisor unit] (cond
+                         (< ago minute) [1 :seconds]
+                         (< ago hour) [minute :minutes]
+                         (< ago day) [hour :hours]
+                         (< ago month) [day :days]
+                         (< ago year) [month :months]
+                         :else [year :years])
+        [singular plural] (units unit)
+        time-count (.round js/Math (/ ago divisor))]
+    (str time-count " "  (if (= 1 time-count) singular plural))))
 
 (defn time-ago [duration-ms]
   (format-duration duration-ms full-time-units))

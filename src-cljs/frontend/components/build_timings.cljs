@@ -5,7 +5,10 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build]
             [frontend.models.project :as project-model]
-            [frontend.routes :as routes])
+            [frontend.routes :as routes]
+            [frontend.components.common :as common]
+            [goog.events :as gevents]
+            [frontend.disposable :as disposable])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def padding-right 20)
@@ -40,15 +43,20 @@
         (.range  #js [0 (timings-width)]))))
 
 (defn create-root-svg [number-of-containers]
-  (-> (.select js/d3 ".build-timings")
-      (.select "svg")
-        (.attr "width"  (+ (timings-width)
-                           left-axis-width
-                           padding-right))
+  (let [root (.select js/d3 "#build-timings")]
+    (-> root
+        (.attr "width" (+ (timings-width)
+                         left-axis-width
+                         padding-right))
         (.attr "height" (+ (timings-height number-of-containers)
-                           top-axis-height))
-      (.append "g") ;move everything over to see the axis
-        (.attr "transform" (gstring/format "translate(%d,%d)" left-axis-width top-axis-height))))
+                          top-axis-height)))
+    (-> root
+        (.select "g")
+        (.remove))
+
+    (-> root
+        (.append "g")
+        (.attr "transform" (gstring/format "translate(%d,%d)" left-axis-width top-axis-height)))))
 
 (defn create-y-axis [number-of-containers]
   (let [range-start (+ bar-height (/ container-bar-height 2))
@@ -198,18 +206,37 @@
 ;;;; Main component
 (defn build-timings [{:keys [build project plan]} owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
+
+    om/IInitState
+    (init-state [_]
+      {:loading? true
+       :drawn? false
+       :resize-key (disposable/register
+                     (gevents/listen js/window "resize" #(om/set-state! owner [:drawn?] false))
+                     gevents/unlistenByKey)})
+
+    om/IWillUnmount
+    (will-unmount [_]
+      (disposable/dispose (om/get-state owner [:resize-key])))
+
+    om/IDidUpdate
+    (did-update [_ _ _]
       (if (project-model/show-build-timing? project plan)
-        (draw-chart! build)
+        (when-not (om/get-state owner [:drawn?])
+          (draw-chart! build)
+          (om/set-state! owner [:loading?] false)
+          (om/set-state! owner [:drawn?] true))
         (analytics/track-build-timing-upsell-impression {:org-name (:org_name plan)
                                                          :reponame (:reponame project)})))
     om/IRenderState
-    (render-state [_ _]
+    (render-state [_ {:keys [loading?]}]
       (html
        [:div.build-timings
         (if (project-model/show-build-timing? project plan)
-          [:svg]
+          [:div
+           (when loading?
+             [:div.loading-spinner common/spinner])
+           [:svg#build-timings]]
           [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
                              :on-click #(analytics/track-build-timing-upsell-click {:org-name (:org_name plan)

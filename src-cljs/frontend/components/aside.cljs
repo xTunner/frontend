@@ -1,5 +1,6 @@
 (ns frontend.components.aside
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [clojure.string :refer [lower-case]]
             [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
@@ -184,11 +185,12 @@
                  (when show-project?
                    (project-settings-link project))]))])))))
 
-(defn project-aside-v2 [{:keys [project show-all-branches? navigation-data]} owner {:keys [login]}]
+(defn project-aside-v2 [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
   (reify
-      om/IDisplayName (display-name [_] "Aside Project")
-      om/IRender
-      (render [_]
+    om/IDisplayName (display-name [_] "Aside Project")
+    om/IRender
+    (render [_]
+      (let [{repo-name :reponame} project]
         (html [:li
                [:.project-heading
                 {:class (when (and (= (vcs-url/org-name (:vcs_url project))
@@ -198,18 +200,23 @@
                                    (not (contains? navigation-data :branch)))
                           "selected")
                  :title (project-model/project-name project)}
+                [:i.fa.rotating-chevron {:class (when (expanded-repos repo-name) "expanded")
+                                         :on-click #(do
+                                                      (raise! owner [:expand-repo-toggled {:repo-name repo-name}])
+                                                      nil)}]
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})
                                   :on-click #(analytics/track "branch-list-project-clicked")}
                  (project-model/project-name project)]
                 (project-settings-link project)]
-               (om/build branch-list-v2
-                         {:branches (->> project
-                                         project-model/branches
-                                         (sort-by :name))
-                          :show-all-branches? show-all-branches?
-                          :navigation-data navigation-data}
-                         {:opts {:login login}})]))))
+               (when (expanded-repos repo-name)
+                 (om/build branch-list-v2
+                           {:branches (->> project
+                                           project-model/branches
+                                           (sort-by (comp lower-case name :identifier)))
+                            :show-all-branches? show-all-branches?
+                            :navigation-data navigation-data}
+                           {:opts {:login login}}))])))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -366,6 +373,7 @@
     om/IRender
     (render [_]
       (let [show-all-branches? (get-in app state/show-all-branches-path)
+            expanded-repos (get-in app state/expanded-repos-path)
             sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
@@ -412,7 +420,7 @@
                                         project-model/sort-branches-by-recency-v2
                                         ;; Arbitrary limit on visible branches.
                                         (take 100))
-                         :show-all-branches? (get-in app state/show-all-branches-path)
+                         :show-all-branches? show-all-branches?
                          :navigation-data (:navigation-data app)}
                         {:opts {:login (:login opts)
                                 :show-project? true}})
@@ -420,7 +428,8 @@
                (for [project (sort project-model/sidebar-sort projects)]
                  (om/build project-aside-v2
                            {:project project
-                            :show-all-branches? (get-in app state/show-all-branches-path)
+                            :show-all-branches? show-all-branches?
+                            :expanded-repos expanded-repos
                             :navigation-data (:navigation-data app)}
                            {:react-key (project-model/id project)
                             :opts {:login (:login opts)}}))])
@@ -459,8 +468,7 @@
 (defn nav-icon
   [v1 v2]
   (if (feature/enabled? :ui-v2)
-    [:img.aside-icon {:src (utils/cdn-path (str "/img/inner/icons/Aside-" v2 ".svg"))}]
-    [:i.fa {:class v1}]))
+    [:i {:class v1} v2]))
 
 (defn aside-nav [app owner]
   (reify
@@ -480,66 +488,87 @@
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href "/"}
-            [:div.logomark
-             (common/ico :logo)]]
+             [:div.logomark
+              (common/ico :logo)]]
 
-           [:a.aside-item.avatar {:data-placement "right"
-                                  :data-trigger "hover"
-                                  :title "Settings"
-                                  :href "/account"}
-            [:img.account-avatar {:src avatar-url}]]
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Builds"
+                            :href "/"}
+             (nav-icon "material-icons" "storage")
+             [:div.nav-label "Builds"]]
 
-           [:a.aside-item {:title "Documentation"
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :href "/docs"}
-            (nav-icon "fa-copy" "Docs")]
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Insights"
+                            :href "/build-insights"}
+             (nav-icon "material-icons" "assessment")
+             [:div.nav-label "Insights"]]
 
-           [:a.aside-item (merge (common/contact-support-a-info owner)
+            [:a.aside-item {:href "/add-projects",
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :title "Add Projects"}
+             (nav-icon "material-icons" "library_add")
+
+             [:div.nav-label "Projects"]]
+
+            [:a.aside-item {:href "/invite-teammates",
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :title "Add Teammates"}
+              (nav-icon "material-icons" "group_add")
+              [:div.nav-label "Team"]]
+
+            [:a.aside-item {:data-placement "right"
+                                   :data-trigger "hover"
+                                   :title "Account Settings"
+                                   :href "/account"}
+              (nav-icon "material-icons" "settings")
+              [:div.nav-label "Account Settings"]]
+
+            [:hr]
+
+            [:a.aside-item {:title "Documentation"
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :href "/docs"}
+              (nav-icon "material-icons" "description")
+              [:div.nav-label "Docs"]]
+
+            [:a.aside-item (merge (common/contact-support-a-info owner)
                                  {:title "Support"
                                   :data-placement "right"
                                   :data-trigger "hover"
                                   :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
-            (nav-icon "fa-comments" "Support")]
+              (nav-icon "material-icons" "chat")
+              [:div.nav-label "Support"]]
 
-           [:a.aside-item {:href "/add-projects",
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Add Projects"}
-            (nav-icon "fa-plus-circle" "AddProject")]
-
-           [:a.aside-item {:href "/invite-teammates",
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Invite your teammates"}
-            (nav-icon "fa-user" "Team")]
-
-           [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Changelog"
-                           :href "/changelog"
-                           :class (when (changelog-updated-since? (:last_viewed_changelog user))
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Changelog"
+                            :href "/changelog"
+                            :class (when (changelog-updated-since? (:last_viewed_changelog user))
                                     "unread")}
-            (nav-icon "fa-bell" "Notifications")]
+              (nav-icon "material-icons" "receipt")
+              [:div.nav-label "Changelog"]]
 
-	   [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Insights"
-                           :href "/build-insights"}
-            (nav-icon "fa-bar-chart" "Insights")]
+            [:hr]
 
-           (when (:admin user)
-             [:a.aside-item {:data-placement "right"
-                             :data-trigger "hover"
-                             :title "Admin"
-                             :href "/admin"}
-              (nav-icon "fa-cogs" "Admin")])
+            (when (:admin user)
+              [:a.aside-item {:data-placement "right"
+                              :data-trigger "hover"
+                              :title "Admin"
+                              :href "/admin"}
+                (nav-icon "material-icons" "build")
+                [:div.nav-label "Admin"]])
 
-           [:a.aside-item.push-to-bottom {:data-placement "right"
-                                          :data-trigger "hover"
-                                          :title "Logout"
-                                          :href "/logout"}
-            (nav-icon "fa-power-off" "Power")]])))))
+            [:a.aside-item.push-to-bottom {:data-placement "right"
+                                           :data-trigger "hover"
+                                           :title "Logout"
+                                           :href "/logout"}
+              (nav-icon "material-icons" "power_settings_new")
+              [:div.nav-label "Logout"]]])))))
 
 (defn aside [app owner]
   (reify

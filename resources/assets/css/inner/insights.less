@@ -28,33 +28,13 @@
     margin-top: 15px;
 
     .filtering {
-
-      color: @gray-light-v2;
-
-      input[type=radio] {
-        display: none;
-
-        &:checked + label {
-          background-color: rgba(0, 0, 0, 0.1);
-          border-radius: 3px;
-        }
-      }
-
-      label {
-        padding: 5px;
-        margin: 0 10px 0 0;
-        font-weight: inherit;
-
-
-        &:hover {
-          cursor: pointer;
-        }
-      }
+      .fancy-radio();
     }
 
     .sorting {
 
       color: @gray-dark-v2;
+
       label {
         font-weight: inherit;
         margin: 0 10px 0 15px;
@@ -103,6 +83,43 @@
     margin-top: 15px;
   }
 
+  .project-header {
+    @header-icon-color: @gray-lighter-v2;
+    .flexy(center, row);
+    justify-content: center;
+
+    padding: 15px 10px 15px 10px;
+
+    .project-name {
+      padding-bottom: 2px;
+    }
+
+    .fa-github {
+      font-size: 18px;
+      color: @header-icon-color;
+      margin-right: 7px;
+    }
+
+    .settings-icon {
+      svg {
+	width: 16px;
+	height: 16px;
+	margin-bottom: 1px;
+
+	stroke: @header-icon-color;
+
+	path:first-child {
+	  stroke-width: 8;
+	}
+      }
+    }
+  }
+
+  .project-name {
+    flex-grow: 1;
+    width: 100%;
+  }
+
   .project-block {
     display: inline-block;
     margin: 0 15px 15px 0;
@@ -127,11 +144,11 @@
         width: 15px;
       }
     }
+
     h1 {
       color: @gray-light-v2;
       border-bottom: #e5e5e5 1px solid;
       margin: 0;
-      padding: 19px 0 13px 10px;
     }
 
     h4 {
@@ -140,6 +157,7 @@
       margin: 15px 0 8px;
       padding-left: @chart-padding-left;
     }
+
     .above-info, .below-info {
       .flexy(center, space-around, row);
       padding-left: @chart-padding-left;
@@ -147,9 +165,12 @@
       width: 100%;
 
       &.below-info dl {
+        .flex(0 0 50%);
+
         dt, dd {
           display: inline;
         }
+
         dt {
           padding-right: 5px;
         }
@@ -158,9 +179,11 @@
       dl {
         .flex(0 0 33%);
         margin: 0;
+
         dt {
           font-weight: inherit;
         }
+
         dd {
           font-weight: bold;
           line-height: 0.9;
@@ -173,27 +196,24 @@
 
       height: @spinner-height;
       padding: 20px;
-      &.no-builds {
+      &.no-builds, &.no-insights {
         font-weight: bold;
+        text-align: center;
       }
 
-      .upgrade-link {
-        font-weight: bold;
-
-        &:hover {
-          text-decoration: underline;
-        }
+      .upgrade-link:hover {
+        text-decoration: underline;
       }
     }
   }
 
   .head-user {
+    padding: 0 10px;
+
     h1 {
       font-size: @fontSizeLarge;
       font-weight: normal;
     }
-
-    padding: 0 10px;
   }
 
   .build-time-visualization {
@@ -211,33 +231,42 @@
       stroke-opacity: 0.7;
       shape-rendering: crispEdges;
     }
+
     .y-axis {
       .tick {
         line {
           visibility: hidden;
         }
+
         text {
           fill: @tick-color;
           font-size: 10px;
         }
       }
+
       > path.domain {
         visibility: hidden;
       }
     }
 
-    rect.success {
-      fill: #42c88a;
+    rect {
+      &.success {
+        fill: #42c88a;
+      }
+
+      &.failed {
+        fill: #ed5c5c;
+      }
+
+      &.canceled {
+        fill: #999999;
+      }
+
+      &.queue {
+        fill: #e6d9f2;
+      }
     }
-    rect.failed {
-      fill: #ed5c5c;
-    }
-    rect.canceled {
-      fill: #999999;
-    }
-    rect.queue {
-      fill: #e6d9f2;
-    }
+
     .legend text {
       fill: @gray-light-v2;
     }

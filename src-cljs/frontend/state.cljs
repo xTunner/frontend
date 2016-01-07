@@ -24,7 +24,8 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}
-                             :show-forks false}}
+                             :show-forks false}
+              :browser-settings {:expanded-repos #{}}}
    :selected-home-technology-tab nil
    :modal-video-id nil
    :builds-per-page 30
@@ -52,15 +53,6 @@
                           :tokens nil
                           :checkout-keys nil
                           :envvars nil}
-   :current-build-data {:build nil
-                        :usage-queue-data {:builds nil
-                                           :show-usage-queue false}
-                        :artifact-data {:artifacts nil
-                                        :show-artifacts false}
-                        :config-data {:show-config false}
-                        :current-container-id 0
-                        :container-data {:current-container-id 0
-                                         :containers nil}}
    :current-org-data {:plan nil
                       :projects nil
                       :users nil
@@ -100,6 +92,8 @@
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
 (def current-container-path [:current-build-data :container-data :current-container-id])
+(def current-container-filter-path [:current-build-data :container-data :current-filter])
+(def container-paging-offset-path [:current-build-data :container-data :paging-offset])
 (def build-header-tab-path [:current-build-data :selected-header-tab])
 
 
@@ -185,6 +179,7 @@
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))
+(def expanded-repos-path (conj browser-settings-path :expanded-repos))
 (def sort-branches-by-recency-path (conj browser-settings-path :sort-branches-by-recency))
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
