@@ -268,11 +268,11 @@
            [:span.project-name (formatted-project-name project)]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
-             [:i.octicon.octicon-mark-github]]]
+             [:i.fa.fa-github]]]
            [:div.settings-icon
             [:a {:href (routes/v1-project-settings {:org username
                                                     :repo reponame})}
-             [:i.material-icons "settings"]]]]
+             (common/ico :settings-light)]]]
           [:h4 (if show-insights?
                  (str "Branch: " branch)
                  (gstring/unescapeEntities "&nbsp;"))]
