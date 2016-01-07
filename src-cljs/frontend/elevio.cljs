@@ -27,6 +27,7 @@
               (aset "free" is-free))]
     (set-elev! "account_id" account-id)
     (set-elev! "user" user-info)
+    (set-elev! "pushin" "false")
     (set-elev! "translations"
           #js {"loading"
                #js {"loading_ticket" "Loading support request"
