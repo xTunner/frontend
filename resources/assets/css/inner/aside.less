@@ -74,8 +74,6 @@
   > * { pointer-events: auto; }
 
   a {
-    flex-direction: column;
-    justify-content: center;
     outline: none;
     text-decoration: none;
 
@@ -228,8 +226,9 @@
 
 .aside-item {
   .flex(0 1 @tile);
-  .flexy(center);
+  .flexy(center, center, column);
   .shadow-noboss();
+
   background: transparent;
   white-space: nowrap;
   transition: (@aside-transition-speed / 2) ease-in-out;
