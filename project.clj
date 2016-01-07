@@ -28,7 +28,7 @@
                  [hiccups "0.3.0"]
                  [sablono "0.3.6" :exclusions [cljsjs/react]]
                  [secretary "1.2.2"]
-                 [com.andrewmcveigh/cljs-time "0.3.10"]
+                 [com.andrewmcveigh/cljs-time "0.4.0"]
 
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
