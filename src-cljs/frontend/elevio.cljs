@@ -21,10 +21,10 @@
                                  (aget "ldUser")
                                  (aget "custom")
                                  (aget "free")))
-        user-info (aget js/window "elevSettings")
-        _ (-> user-info
-              (aget "traits")
-              (aset "free" is-free))]
+        user-info (aget js/window "elevSettings")]
+    (-> user-info
+        (aget "traits")
+        (aset "free" is-free))
     (set-elev! "account_id" account-id)
     (set-elev! "user" user-info)
     (set-elev! "pushin" "false")
