@@ -2,35 +2,55 @@
   (:require [frontend.config :as config]))
 
 (defn footer []
-  [:nav.footer-nav.container-fluid
-   [:div.row
-    [:div.col-sm-4.col-sm-push-1
-     [:ul.list-unstyled
-      [:li.header "CircleCI"]
-      [:li [:a {:href "/about"} "About Us"]]
-      [:li [:a {:href "/about/team"} "Team"]]
-      [:li [:a {:href "/press"} "Press"]]
-      (when-not (config/enterprise?)
-        [:li [:a {:href "/jobs"} "Jobs"]])
-      [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]
-    [:div.col-sm-3
-     [:ul.list-unstyled
-      [:li.header "Product"]
-      [:li [:a {:href "/features"} "Features"]]
-      [:li [:a {:href "/mobile"} "Mobile"]]
-      [:li [:a {:href "/enterprise"} "Enterprise"]]
-      (when-not (config/enterprise?)
-        [:li [:a {:href "/pricing"} "Pricing"]])
-      [:li [:a {:href "/changelog"} "Changelog"]]]]
-    [:div.col-sm-3
-     [:ul.list-unstyled
-      [:li.header "Help"]
-      [:li [:a {:href "/docs"} "Documentation"]]
-      [:li [:a {:href "/security"} "Security"]]
-      [:li [:a {:href "/privacy"} "Privacy"]]
-      [:li [:a {:href "/contact"} "Contact Us"]]]]
-    [:div.col-sm-1
-     [:a.fa.fa-twitter
-      {:title "Follow CircleCI on Twitter",
-       :href "https://twitter.com/circleci"
-       :target "_blank"}]]]])
+  [:footer.footer
+    [:div.container
+      [:div.row
+        [:div.col-md-5
+          [:p.lead "Over "
+            [:b "100,000"] " organizations and developers trust CircleCI."]
+          [:span "CircleCI's continuous integration and deployment platform helps software teams rapidly release code they trust by automating the build, test, and deploy process. Built for developers, CircleCI offers a modern software development platform that lets teams ramp quickly, scale easily, and build confidently every day."]
+          [:div.social-btns
+            [:a.social-btn-rss {:href "http://blog.circleci.com/", :data-text , :data-url}
+             [:div
+              [:i.fa.fa-rss]]]
+            [:a.social-btn-facebook {:href "https://www.facebook.com/circletest", :data-text , :data-url}
+             [:div
+              [:i.fa.fa-facebook-official]]]
+            [:a.social-btn-twitter {:href "https://twitter.com/circleci", :data-text , :data-url}
+             [:div
+              [:i.fa.fa-twitter]]]
+            [:a.social-btn-github {:href "https://github.com/circleci", :data-text , :data-url}
+             [:div
+              [:i.fa.fa-github]]]
+            [:a.social-btn-linkedin {:href "https://www.linkedin.com/company/circleci", :data-text , :data-url}
+             [:div
+              [:i.fa.fa-linkedin]]]]]
+        [:nav
+          [:div.col-md-2.col-md-offset-1
+            [:h6 "CircleCI"]
+            [:ul.list-unstyled
+              [:li [:a {:href "/about/" :class "new-outer"} "About Us"]]
+              [:li [:a {:href "/about/team/" :class "new-outer"} "Team"]]
+              [:li [:a {:href "/press/" :class "new-outer"} "Press"]]
+              [:li [:a {:href "/jobs/" :class "new-outer"} "Jobs"]]
+              [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]
+          [:div.col-md-2
+            [:h6 "Product"]
+            [:ul.list-unstyled
+              [:li [:a {:href "/features/" :class "new-outer"} "Features"]]
+              [:li [:a {:href "/mobile/" :class "new-outer"} "Mobile"]]
+              [:li [:a {:href "/enterprise/" :class "new-outer"} "Enterprise"]]
+              [:li [:a {:href "/pricing/" :class "new-outer"} "Pricing"]]
+              [:li [:a {:href "/customers/" :class "new-outer"} "Customers"]]
+              [:li [:a {:href "/changelog"} "Changelog"]]]]
+          [:div.col-md-2
+            [:h6 "Support"]
+            [:ul.list-unstyled
+              [:li [:a {:href "/docs"} "Documentation"]]
+              [:li [:a {:href "https://discuss.circleci.com/"} "Discuss"]]
+              [:li [:a {:href "/security/" :class "new-outer"} "Security"]]
+              [:li [:a {:href "/privacy/" :class "new-outer"} "Privacy"]]
+              [:li [:a {:href "/contact/" :class "new-outer"} "Contact Us"]]]]]]
+      [:div.row
+        [:div.col-md-5.additional-links
+          [:span "Copyright © 2015 CircleCI"]]]]])

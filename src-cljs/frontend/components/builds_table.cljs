@@ -131,7 +131,7 @@
                   :src (-> build build-model/status-icon-v2 common/icon-path)})
    (build-status-badge-wording build)])
 
-(defn avatar [user & {:keys [size trigger] :or {size 20} :as opts}]
+(defn avatar [user & {:keys [size trigger] :or {size 40} :as opts}]
   (if-let [avatar-url (-> user :avatar_url)]
     [:img.dashboard-icon
      ;; Adding `&s=N` to the avatar URL returns an NxN version of the
@@ -144,26 +144,27 @@
 
 (defn build-row-v2 [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
-    [:div.build {:class (when (:dont_build build) "dont_build")}
+    [:div.build {:class (cond-> [(build-model/status-class build)]
+                          (:dont_build build) (conj "dont_build"))}
      [:div.status-area
-      [:a {:href url}
+      [:a {:href url
+           :title (build-model/status-words build)}
        (build-status-badge build)]
 
-      (when show-actions?
+      (when (build-model/can-cancel? build)
         [:div.build-actions
-         (when (build-model/can-cancel? build)
-           (let [build-id (build-model/id build)
-                 vcs-url (:vcs_url build)
-                 build-num (:build_num build)]
-             (list
-               (forms/managed-button
-               [:button.cancel-build
-                {:data-loading-text "Canceling..."
-                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
-                [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
-                [:span.cancel-text " Cancel"]]))))])]
+         (let [build-id (build-model/id build)
+               vcs-url (:vcs_url build)
+               build-num (:build_num build)]
+           (forms/managed-button
+            [:button.cancel-build
+             {:data-loading-text "Canceling..."
+              :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
+                                                               :vcs-url vcs-url
+                                                               :build-num build-num}])}
+             [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
+             [:span.cancel-text "Cancel"]]))])]
+
      [:div.build-info
       [:div.build-info-header
        [:div.contextual-identifier
@@ -178,61 +179,55 @@
          (when show-branch?
            (-> build build-model/vcs-ref-name))
          " #"
-         (:build_num build)]]
+         (:build_num build)]]]
+      [:div.recent-commit-msg
+       (let [pusher-name (build-model/ui-user build)
+             trigger (:why build)]
+         [:div.recent-user
+          {:title (if (= "api" trigger)
+                    "API"
+                    pusher-name)
+           :data-toggle "tooltip"
+           :data-placement "right"}
+          (avatar (:user build) :trigger trigger)])
+       [:span.recent-log
+        {:title (:body build)}
+        (:subject build)]]]
 
-       [:div.metadata
-        (let [pusher-name (build-model/ui-user build)
-              trigger     (:why build)]
-          [:div.metadata-item.recent-user
-           {:title (if (= trigger "api")
-                     "API"
-                     pusher-name)}
-           (avatar (:user build) :trigger trigger)])
-
-        (when-let [urls (seq (:pull_request_urls build))]
-          [:div.metadata-item.pull-requests {:title "Pull Requests"}
-           (dashboard-icon "Builds-PullRequest")
-           [:span
-            (interpose
-              ", "
-              (map (fn [url] [:a {:href url} "#"
-                              (let [n (re-find #"/\d+$" url)]
-                                (if n (subs n 1) "?"))])
-                   urls))]])
-
-        [:div.metadata-item.revision
-         (when (:vcs_revision build)
-           (list (dashboard-icon "Builds-CommitNumber")
-                 [:a {:title (build-model/github-revision build)
-                      :href (build-model/github-commit-url build)}
-                  (build-model/github-revision build)]))]
-
+     [:div.metadata
+      [:div.metadata-row.timing
         (if (or (not (:start_time build))
                 (= "not_run" (:status build)))
           (list
            [:div.metadata-item.recent-time.start-time
             {:title "Started: not started"}
-            (dashboard-icon "Builds-StartTime")
             "–"]
            [:div.metadata-item.recent-time.duration
             {:title "Duration: not run"}
-            (dashboard-icon "Builds-Duration")
             "–"])
           (list [:div.metadata-item.recent-time.start-time
                  {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
-                 (dashboard-icon "Builds-StartTime")
                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
                  " ago"]
                 [:div.metadata-item.recent-time.duration
                  {:title (str "Duration: " (build-model/duration build))}
-                 (dashboard-icon "Builds-Duration")
                  (om/build common/updating-duration {:start (:start_time build)
-                                                     :stop (:stop_time build)})]))]]
-      [:div.recent-commit-msg
-       [:a.recent-log
-        {:title (:body build)
-         :href url}
-        (:subject build)]]]]))
+                                                     :stop (:stop_time build)})]))]
+      [:div.metadata-row.pull-revision
+        (when-let [urls (seq (:pull_request_urls build))]
+          [:div.metadata-item.pull-requests {:title "Pull Requests"}
+           (interpose
+            ", "
+            (for [url urls]
+              [:a {:href url} "#"
+               (let [[_ number] (re-find #"/(\d+)$" url)]
+                 (or number "?"))]))])
+
+        [:div.metadata-item.revision
+         (when (:vcs_revision build)
+           [:a {:title (build-model/github-revision build)
+                :href (build-model/github-commit-url build)}
+            (build-model/github-revision build)])]]]]))
 
 (defn builds-table-v2 [builds owner {:keys [show-actions? show-branch? show-project?]
                                      :or {show-branch? true

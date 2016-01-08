@@ -23,3 +23,31 @@ svg.status {
     fill: @brand-pending-v2;
   }
 }
+
+.invert-status-icons {
+  svg.status {
+    .circle {
+      fill: @white;
+    }
+
+    &.passed .icon {
+      fill: @brand-success-v2;
+    }
+
+    &.failed .icon {
+      fill: @brand-danger-v2;
+    }
+
+    &.canceled .icon {
+      fill: @brand-canceled-v2;
+    }
+
+    &.running .icon {
+      fill: @brand-info-v2;
+    }
+
+    &.queued .icon {
+      fill: @brand-pending-v2;
+    }
+  }
+}

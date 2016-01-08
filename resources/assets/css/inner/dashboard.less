@@ -1,12 +1,14 @@
-@dashboard-item-vertical-spacing: 5px;
-
 .first-run-hint {
   padding-right: 1em;
 }
 
 .dashboard {
   &.ui-v2 {
-    margin-top: @dashboard-item-vertical-spacing + 1px;
+    margin-top: 15px;
+
+    a {
+      color: @link-color-v2;
+    }
   }
 
   .alert {
@@ -69,7 +71,6 @@
     list-style: none;
     overflow: hidden;
     max-height: 10000px;
-
     // Wait for the chevron to turn before revealing.
     transition: max-height 1ms .2s;
   }
@@ -96,9 +97,7 @@
     text-align: center;
   }
 }
-.recent-user {
-  white-space: nowrap;
-}
+
 .recent-log {
   word-break: break-all;
 }
@@ -121,20 +120,24 @@
       }
     }
   }
+
   tr {
     border-bottom: 1px solid @grayBoxBorder;
   }
+
   th {
     font-weight: normal;
     color: @blacken;
     white-space: nowrap;
     text-align: left;
     padding: 2em .5em 2em;
-    height: (@baseFontSize - 1);      //
+    height: (@baseFontSize - 1);
     line-height: (@baseFontSize - 1); // minus 1px to compensate for border height
+
     &:first-child {
       padding-left: @baseFontSize;
     }
+
     &.condense {
       .box-sizing(border-box);
       width: 70px;
@@ -159,22 +162,34 @@
 .recent-builds-pager {
   .flexy();
   .justify-content(space-between);
+
   margin: 1em;
+
+  a:hover {
+    text-decoration: underline;
+  }
+
   a.disabled {
-    color: @gray;
+    color: @grayLighter;
     cursor: default;
     pointer-events: none;
   }
 }
 
 &.ui-v2 {
+  @build-padding: 12px;
+  @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
+
   .recent-status-badge {
     @badge-height: 25px;
 
     .flexy(center, flex-start);
+    .invert-status-icons;
 
     height: @badge-height;
+    min-width: 118px;
     padding: 0;
+
     border-radius: 2 * @badge-height;
     background: lighten(@brand-canceled-v2, @brand-lighten-ratio-v2);
 
@@ -184,105 +199,164 @@
 
       height: @badge-icon-size;
       width: @badge-icon-size;
-      margin: @badge-icon-margin 10px @badge-icon-margin @badge-icon-margin;
+      margin: @badge-icon-margin (2 * @badge-icon-margin) @badge-icon-margin @badge-icon-margin;
     }
 
     .badge-text {
       .flex(1 0 auto);
-
       font-size: 11px;
-      line-height: 1;
-      font-weight: 300;
+      font-weight: 600;
       text-transform: uppercase;
-      color: @black;
-    }
-
-    .small-text {
-      font-size: 10px;
-      margin-left: -5px;
+      color: @white;
     }
 
     &.pass {
-      background: lighten(@brand-success-v2, @brand-lighten-ratio-v2);
+      background: @brand-success-v2;
     }
 
     &.fail {
-      background: lighten(@brand-danger-v2, @brand-lighten-ratio-v2);
+      background: @brand-danger-v2;
     }
 
     &.busy {
-      background: lighten(@brand-primary-v2, @brand-lighten-ratio-v2);
+      background: @brand-primary-v2;
     }
 
     &.stop {
-      background: lighten(@brand-canceled-v2, @brand-lighten-ratio-v2);
+      background: @brand-canceled-v2;
     }
 
     &.queued {
-      background: lighten(@brand-pending-v2, @brand-lighten-ratio-v2);
+      background: @brand-pending-v2;
     }
   }
-
 
   .build {
     .flexy;
     .row;
 
-    min-height: 75px;
-    margin-bottom: @dashboard-item-vertical-spacing;
-
+    margin-bottom: 4px;
     background-color: @white;
-    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.10);
+    box-shadow: 0 1px 0 0 rgba(0,0,0,0.1);
 
     a:hover {
       text-decoration: underline;
     }
+
+    .tooltip {
+      // Turn off Bootstrap's fade-in.
+      opacity: 1;
+
+      .tooltip-arrow {
+        display: none;
+      }
+
+      .tooltip-inner {
+        color: #fff;
+        line-height: 1em;
+        background: @grayDark;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 16px;
+        transform: scale(1.1);
+      }
+    }
+
+    @media (max-width: @screen-md-max) {
+      .flex-direction(column);
+      .flex-wrap(nowrap);
+      min-width: 285px;
+      margin-bottom: 8px;
+    }
   }
 
-  @build-padding: 10px;
-
   .status-area {
-    flex: 0 0 125px;
-    padding: @build-padding;
+    .flex(0 0 130px);
+    padding: 7px (@build-padding / 2);
     border-right: 1px solid rgba(0, 0, 0, 0.05);
 
-    .cancel-build {
-      background: none;
-      border: none;
-      padding: 0;
+    a:hover {
+      text-decoration: none !important;
+    }
 
-      color: @gray-dark-v2;
+    .build-actions {
+      .flexy(center);
+      margin-top: 5px;
+      vertical-align: middle;
 
-      .cancel-text {
-        flex-grow: 1;
-        text-align: left;
-        &:hover {
-          text-decoration: underline;
+      .cancel-build {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+
+        color: @gray-dark-v2;
+
+        .cancel-icon {
+          // Specific margins are a firefox hack:
+          // Since it doesn't support flexbox properly in buttons,
+          // we have to do a bit of manual positioning.
+          margin: 0 7px 1px 4px;
+          height: 17px;
+          width: 17px;
+        }
+
+        .cancel-text {
+          .flex(1 0 auto);
+          text-align: left;
+          font-size: @fontSizeSmall;
+
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }
 
-    .cancel-icon {
-      // Specific mragins are a firefox hack:
-      // Since it doesn't support flexbox properly in buttons,
-      // we have to do a bit of manual positioning.
-      margin: 0 7px 1px 4px;
-      height: 17px;
-      width: 17px;
-    }
-
-    .cancel-build.disabled {
-        color: @gray-lighter-v2;
+    @media (max-width: @screen-md-max) {
+      width: 100%;
+      .flex(0 0 auto);
+      border-right: 0;
+      border-bottom: @build-item-inner-border;
     }
   }
 
   .build-info {
-    padding: @build-padding 0 @build-padding @build-padding;
-    flex-grow: 1;
+    .flex(1 0 auto);
+    padding: (@build-padding / 2) @build-padding;
+    border-right: @build-item-inner-border;
+    line-height: 1.8;
 
-    .recent-commit-msg a {
-      color: @gray-lighter-v2;
-      font-size: 11px;
+    .recent-commit-msg {
+      // TODO: Make these fiddly margins unnecessary.
+      margin-top: 6px;
+      margin-bottom: 2px;
+
+      color: @gray;
+      font-size: @fontSizeSmall;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      // TODO: Instead of this, use flexboxes to make the .recent-commit-msg
+      // take up the remaining space.
+      @media (max-width: @screen-lg-min) {
+        max-width: 440px;
+      }
+
+      @media (min-width: 1200px) {
+        max-width: 440px;
+      }
+
+      @media (min-width: 1400px) {
+        max-width: 640px;
+      }
+    }
+
+    @media (max-width: @screen-md-max) {
+      width: 100%;
+      border-right: 0;
+      border-bottom: @build-item-inner-border;
     }
   }
 
@@ -293,49 +367,56 @@
   }
 
   .contextual-identifier {
-    margin-bottom: 3px;
-    font-size: 13px;
+    font-size: @baseFontSize;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     a {
-      color: @gray-light-v2;
-    }
-  }
-
-  .metadata {
-    .flexy(wrap);
-  }
-
-  .metadata-item {
-    margin-right: 25px;
-    margin-bottom: 3px;
-
-    font-size: 12px;
-
-    &a {
-      color: @link-color-v2;
+      color: @grayDarker;
     }
 
-    // We set the widths of these so the icons all line up. We use min-width so
-    // that the line will slide over nicely if something does go long, but these
-    // values are picked with the expectation that there will always be enough
-    // room for the values.
-    &.revision { min-width: 75px; }
-    &.start-time { min-width: 100px; }
-    &.duration { min-width: 60px; }
+    // TODO: Instead of this, use flexboxes to make the .contextual-identifier
+    // take up the remaining space.
+    @media (max-width: @screen-lg-min) {
+      max-width: 440px;
+    }
+
+    @media (min-width: @screen-lg-min) {
+      max-width: 440px;
+    }
+
+    @media (min-width: 1400px) {
+      max-width: 640px;
+    }
   }
 
   .dashboard-icon {
     width: 16px;
     height: 16px;
     margin-right: 10px;
+    opacity: 0.4;
   }
 
-  .recent-user .dashboard-icon {
-    width: 20px;
-    height: 20px;
+  @avatar-size: 20px;
+  .recent-user {
+    display: inline-block;
 
-    margin: 0;
-    border-radius: 50%;
+    width: @avatar-size;
+    height: @avatar-size;
+
+    margin-right: 8px;
+
+    .dashboard-icon {
+      width: @avatar-size;
+      height: @avatar-size;
+      margin: 0;
+
+      vertical-align: bottom;
+
+      border-radius: 50%;
+      opacity: 1;
+    }
   }
 
   .recent-time {
@@ -348,12 +429,137 @@
     font-family: @monoFontFamilyV2;
     word-break: normal;
   }
+
+  .metadata {
+    .flexy(column);
+    border-right: 2px solid transparent;
+    width: 214px;
+
+    @media (max-width: @screen-md-max) {
+      width: 100%;
+      border-right: none;
+    }
+
+    .metadata-row {
+      .flexy(row, flex-end);
+      padding-left: @build-padding;
+      padding-right: @build-padding;
+
+      &:first-of-type {
+        margin-top: 3px;
+      }
+
+      @media (max-width: @screen-md-max) {
+        border-bottom: @build-item-inner-border;
+        padding: 0;
+
+        &:first-of-type {
+          margin-top: 0;
+        }
+      }
+
+      .metadata-item {
+        .flex(1 0 auto);
+        padding-top: 3px;
+        padding-bottom: 3px;
+
+        font-size: @fontSizeSmall;
+
+        &:last-child {
+          .flex(0 0 40%);
+        }
+
+        span {
+          vertical-align: middle;
+        }
+
+        @media (max-width: @screen-md-max) {
+          padding: (@build-padding / 2) @build-padding;
+
+          &:last-child {
+            .flex(0 0 50%);
+            border-left: @build-item-inner-border;
+          }
+        }
+
+        &:before {
+          margin-right: 8px;
+          vertical-align: middle;
+          font-size: @fontSizeLarge;
+          color: @grayLighter;
+        }
+
+        &.start-time:before {
+          font-family: 'FontAwesome';
+          content: '\f133';
+        }
+
+        &.duration:before {
+          font-family: 'FontAwesome';
+          content: '\f017';
+        }
+
+        &.pull-requests {
+          padding-top: 1px;
+
+          @media (max-width: @screen-md-max) {
+            padding-top: 6px;
+            padding-bottom: 6px;
+          }
+
+          &:before {
+            font-family: 'octicons';
+            content: '\f009';
+          }
+        }
+
+        &.revision {
+          padding-top: 1px;
+
+          @media (max-width: @screen-md-max) {
+            padding-top: 6px;
+            padding-bottom: 6px;
+          }
+
+          a {
+            vertical-align: middle;
+          }
+
+          &:before {
+            font-family: 'octicons';
+            content: '\f01f';
+          }
+        }
+      }
+    }
+  }
+
+  .build.pass .metadata {
+    border-color: @brand-success-v2;
+  }
+
+  .build.fail .metadata {
+    border-color: @brand-danger-v2;
+  }
+
+  .build.busy .metadata {
+    border-color: @brand-primary-v2;
+  }
+
+  .build.stop .metadata {
+    border-color: @brand-canceled-v2;
+  }
+
+  .build.queued .metadata {
+    border-color: @brand-pending-v2;
+  }
 }
 
 &.ui-v1 {
   .recent-status-badge {
     @half_height: (@baseLineHeight / 2);
     padding: @half_height;
+
     a {
       vertical-align: middle;
       text-align: center;
@@ -365,11 +571,13 @@
       text-transform: capitalize;
       white-space: nowrap;
       padding: (@half_height / 5);
+
       &.pass {background: @green}
       &.fail {background: @redLight}
       &.busy {background: @blueLight}
       &.stop {background: @orange}
     }
+
     span {
       display: block;
       color: @white;
@@ -398,4 +606,3 @@
     }
   }
 }
-

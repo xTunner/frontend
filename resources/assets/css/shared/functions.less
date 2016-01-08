@@ -320,6 +320,33 @@
   cursor: pointer;
 }
 
+.fancy-radio() {
+
+  color: @gray-light-v2;
+
+  input[type=radio] {
+    display: none;
+
+    &:checked + label {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+    }
+
+    &:disabled + label {
+      color: @brand-gray-v2;
+      cursor: not-allowed;
+    }
+  }
+
+  label {
+    padding: 5px;
+    margin: 0 10px 0 0;
+    font-weight: inherit;
+    cursor: pointer;
+  }
+
+}
+
 @import "mixins/transforms.less";
 @import "mixins/skins.less";
 @import "mixins/buttons.less";

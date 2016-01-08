@@ -4,6 +4,8 @@
             [frontend.async :refer [raise!]]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
+            [cljs-time.core :as time]
+            [cljs-time.format :as time-format]
             [frontend.models.organization :as org-model]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
@@ -950,6 +952,54 @@
                                           false)}
                   "Cancel Plan"])))]]])))))
 
+(defn progress-bar [{:keys [max value class]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:progress {:class class :value value :max max} (str value "%")]))))
+
+(defn usage-bar [{:keys [usage max month]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [percent (.round js/Math (* 100 (/ usage max)))]
+        (html
+         [:div.usage-group
+          [:div.month-label month]
+          (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
+          [:div.usage-label
+           (when (>= percent 100) {:class "over-usage"})
+           [:div.percent-label (str percent "%")]
+           [:div.amounts-label
+            (str (.toLocaleString usage) "/" (.toLocaleString max) " minutes")]]])))))
+
+(defn usage-key->date [usage-key]
+  (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))
+
+(defn osx-usage-table [{:keys [plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [org-name (:org_name plan)
+            osx-max-minutes (some-> plan :osx :template :max_minutes)
+            osx-usage (-> plan :usage :os:osx)]
+        (html
+         [:div
+          [:fieldset [:legend (str org-name "'s iOS usage")]]
+          (if (and (not-empty osx-usage) osx-max-minutes)
+            (let [osx-usage (->> osx-usage
+                                 (sort)
+                                 (reverse)
+                                 (take 12)
+                                 (map (fn [[month amount]]
+                                        {:usage (.round js/Math (/ amount 1000 60))
+                                         :max osx-max-minutes
+                                         :month ((comp datetime/date->month-name usage-key->date) month)})))]
+              [:div.monthly-usage
+               (om/build-all usage-bar osx-usage)])
+            [:div.explanation
+             [:p "Looks like you haven't run any builds yet."]])])))))
+
 (defn overview [app owner]
   (om/component
    (html
@@ -1003,7 +1053,10 @@
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
           [:p "If you are in the limited-release beta, you may also choose an iOS plan "
               [:a {:href "#containers"} "here"]
-              ". We will support general release in the near future!"])]]))))
+              ". We will support general release in the near future!"])]
+       (when (and (feature/enabled? :ios-build-usage)
+                  (pm/osx? plan))
+         (om/build osx-usage-table {:plan plan}))]))))
 
 (def main-component
   {:overview overview

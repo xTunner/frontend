@@ -6,6 +6,7 @@
             [goog.events :as events]
             [goog.history.Html5History :as html5-history]
             [goog.window :as window]
+            [goog.dom.classes :as classes]
             [secretary.core :as sec])
   (:import [goog.history Html5History]
            [goog.events EventType Event BrowserEvent]
@@ -126,6 +127,7 @@
             new-token (when (seq attr-href) (subs attr-href 1))]
       (when (and (= (-> js/window .-location .-hostname)
                     host-name)
+                 (not (classes/has -target "new-outer"))
                  (not (or (new-window-click? %)
                           (= attr-target "_blank"))))
         (.preventDefault %)

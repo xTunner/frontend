@@ -47,6 +47,10 @@
       (and (= "canceled" outcome)
            build_time_millis)))
 
+(defn build-timing-url [build]
+  (str (utils/uri-to-relative (unexterned-prop build "build_url"))
+       "#build-timing"))
+
 (defn visualize-insights-bar! [el builds owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
@@ -116,7 +120,7 @@
     ;; top bars enter and update
     (-> bars-join
         (.select ".top")
-        (.attr #js {"xlink:href" #(utils/uri-to-relative (unexterned-prop % "build_url"))
+        (.attr #js {"xlink:href" build-timing-url
                     "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "build_time_millis"))]
                                      (gstring/format "%s in %s"
                                                      (gstring/toTitleCase (unexterned-prop % "outcome"))
@@ -131,7 +135,7 @@
     ;; bottom bar enter and update
     (-> bars-join
         (.select ".bottom")
-        (.attr #js {"xlink:href" #(utils/uri-to-relative (unexterned-prop % "build_url"))
+        (.attr #js {"xlink:href" build-timing-url
                     "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "queued_time_millis"))]
                                      (gstring/format "Queue time %s" duration-str))})
         (.select "rect.bar")
@@ -244,7 +248,7 @@
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category] :as project} owner]
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -257,11 +261,18 @@
        (let [branch (-> recent-builds (first) (:branch))
              latest-build (last chartable-builds)]
          [:div.project-block {:class (str "build-" (name sort-category))}
-          [:h1
-           [:span.last-build-status
+          [:h1.project-header
+           [:div.last-build-status
             (om/build svg {:class "badge-icon"
                            :src (-> latest-build build/status-icon-v2 common/icon-path)})]
-           (formatted-project-name project)]
+           [:span.project-name (formatted-project-name project)]
+           [:div.github-icon
+            [:a {:href (:vcs_url project)}
+             [:i.fa.fa-github]]]
+           [:div.settings-icon
+            [:a {:href (routes/v1-project-settings {:org username
+                                                    :repo reponame})}
+             (common/ico :settings-light)]]]
           [:h4 (if show-insights?
                  (str "Branch: " branch)
                  (gstring/unescapeEntities "&nbsp;"))]
@@ -295,7 +306,10 @@
                  [:div.below-info
                   [:dl
                    [:dt "BRANCHES"]
-                   [:dd (-> branches keys count)]]]))])))))
+                   [:dd (-> branches keys count)]]
+                  [:dl
+                   [:dt "PARALLELISM"]
+                   [:dd parallel]]]))])))))
 
 (defrender no-projects [data owner]
   (html
@@ -369,7 +383,7 @@
                  :checked (= selected-filter :success)
                  :on-change #(raise! owner [:insights-filter-changed {:new-filter :success}])}]
         [:label {:for "insights-filter-success"}
-         (gstring/format"Success (%s)" (count (:success categories)))]
+         (gstring/format"Successful (%s)" (count (:success categories)))]
         [:input {:id "insights-filter-failed"
                  :type "radio"
                  :name "selected-filter"
