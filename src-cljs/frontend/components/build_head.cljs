@@ -381,7 +381,7 @@
       (html
        [:li.build-test
         [:div.properties
-         [:div.test-name (format-test-name-v2 test)]
+         [:div.test-name (format-test-name test)]
          [:div.test-file (:file test)]]
         (let [message (:message test)
               message (if (:show-message test) message
@@ -396,40 +396,6 @@
             message]])]))))
 
 (def initial-test-render-count 3)
-
-(defn build-tests-list [data owner]
-  (reify
-    om/IWillMount
-    (will-mount [_]
-      (raise! owner [:tests-showed]))
-
-    om/IRender
-    (render [_]
-      (let [tests-data (:tests-data data)
-            tests (when (:tests tests-data)
-                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
-            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
-            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
-        (html
-         [:div.build-tests-container
-          (if-not tests
-            [:div.loading-spinner common/spinner]
-            (if (empty? tests)
-              (tests-ad owner)
-              [:div.build-tests-info
-               [:div.build-tests-summary
-                (str "Your build ran " (pluralize (count tests) "test") " in "
-                     (string/join ", " (map test-model/pretty-source sources))
-                     " with " (pluralize (count failed-tests) "failure") ".")]
-               (when (seq failed-tests)
-                 (for [[source tests-by-source] (group-by test-model/source failed-tests)]
-                   [:div.build-tests-list-container
-                    [:span.failure-source (str (test-model/pretty-source source) " failures:")]
-                    [:ol.build-tests-list
-                     (for [[file tests-by-file] (group-by :file tests-by-source)]
-                       (list (when file [:div.filename (str file ":")])
-                             (om/build-all test-item
-                                           (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
 
 (defn build-tests-file-block [[file failures] owner]
   (reify om/IRender
@@ -476,9 +442,9 @@
                    (om/build-all build-tests-file-block bottom-map))))))]]]]))))
 
 (defn build-tests-list [{{tests :tests} :tests-data
-                            {build-status :status} :build
-                            :as data}
-                           owner]
+                         {build-status :status} :build
+                         :as data}
+                        owner]
   (reify
     om/IWillMount
     (will-mount [_]
