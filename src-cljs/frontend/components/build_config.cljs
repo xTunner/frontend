@@ -143,7 +143,11 @@
              ". "
              "These may be causing your builds to fail. "
              "We recommend that you fix them as soon as possible. "
-             "You may want to look at our docs or contact us if you’re having trouble."]
+             "You may want to look at "
+             [:a {:href "/docs/configuration"} "our docs"]
+             " or "
+             (common/contact-us-inner owner)
+             " us if you’re having trouble."]
             [:ol
              (for [error errors]
                (om/build config-error {:error error
