@@ -43,7 +43,7 @@
      [:div.orgname login]
      [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
                     :target "_blank"}
-      [:i.fa.fa-github-alt ""]]]))
+      [:i.octicon.octicon-mark-github]]]))
 
 (defn missing-org-info
   "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
@@ -142,10 +142,11 @@
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
                  [:a {:id tooltip-id
+                      :data-placement "right"
                       :title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
                       :href (vcs-url/project-path (:vcs_url repo))}
                   " "
-                  [:i.fa.fa-external-link]]
+                  [:i.material-icons "visibility"]]
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 (managed-button
@@ -164,7 +165,7 @@
                  (when (:fork repo)
                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 [:div.notice {:title "You must be an admin to add a project on CircleCI"}
-                 [:i.fa.fa-lock]
+                 [:i.material-icons.lock "lock"]
                  "Contact repo admin"]]))))))
 
 (defrender repo-filter [settings owner]
@@ -294,7 +295,7 @@
        [:tr.top.row
         [:td.cell.first "Plan"]
         [:td.cell "Cost"]
-        [:td.cell "Containers"]
+        [:td.cell.container-amount "Containers"]
         [:td.cell.last]]
        [:tr.row
         [:td.cell "Business"]
@@ -326,7 +327,7 @@
         [:td.cell.container-amount "2"]
         [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
                                                               :subpage "containers"})
-                       :on-click #(analytics/track-payment-plan-click {:view view})} 
+                       :on-click #(analytics/track-payment-plan-click {:view view})}
                    "Select"]]]
        [:tr.row
         [:td.cell "Free"]
@@ -334,7 +335,7 @@
         [:td.cell.container-amount "1"]
         [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
                                                               :subpage "containers"})
-                       :on-click #(analytics/track-payment-plan-click {:view view})} 
+                       :on-click #(analytics/track-payment-plan-click {:view view})}
                    "Selected"]]]]
       [:table.comparison.table
        [:tr.top.row
@@ -351,28 +352,28 @@
         [:td.cell.paid "Unlimited"]]
        [:tr.row
         [:td.cell.metric "Testing Inference"]
-        [:td.cell.unpaid [:i.fa.fa-check]]
-        [:td.cell.paid [:i.fa.fa-check]]]
+        [:td.cell.unpaid [:i.material-icons.check "check"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]
        [:tr.row
         [:td.cell.metric "3rd Party Integrations"]
-        [:td.cell.unpaid [:i.fa.fa-check]]
-        [:td.cell.paid [:i.fa.fa-check]]]
+        [:td.cell.unpaid [:i.material-icons.check "check"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]
        [:tr.row
         [:td.cell.metric "Community Forum"]
-        [:td.cell.unpaid [:i.fa.fa-check]]
-        [:td.cell.paid [:i.fa.fa-check]]]
+        [:td.cell.unpaid [:i.material-icons.check "check"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]
        [:tr.row
         [:td.cell.metric "Engineer Ticket Support"]
-        [:td.cell.unpaid [:i.fa.fa-close]]
-        [:td.cell.paid [:i.fa.fa-check]]]
+        [:td.cell.unpaid [:i.material-icons.ex "close"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]
        [:tr.row
         [:td.cell.metric "Parallelization"]
-        [:td.cell.unpaid [:i.fa.fa-close]]
-        [:td.cell.paid [:i.fa.fa-check]]]
+        [:td.cell.unpaid [:i.material-icons.ex "close"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]
        [:tr.row
         [:td.cell.metric "iOS Support"]
-        [:td.cell.unpaid [:i.fa.fa-close]]
-        [:td.cell.paid [:i.fa.fa-check]]]]]]))
+        [:td.cell.unpaid [:i.material-icons.ex "close"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]]]]))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
@@ -408,7 +409,7 @@
                           :settings settings})
           [:hr]
           ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
-          ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then 
+          ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then
           ;; show the payment plan.
           (let [org (->> user
                          :organizations

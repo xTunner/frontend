@@ -18,33 +18,16 @@
       font-size: 26px;
       margin-top: 20px;
     }
+
     .well {
       position: relative;
-      padding: 5px 15px;
-      &:before {
-        content: "";
-        position: absolute;
-        z-index: 1;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 5px;
-        background: #eee;
-      }
-
-      &.success:before {
-        background: @green;
-      }
-
-      &.fail:before {
-        background: @redLight;
-      }
-
+      padding: 0;
       border-radius: 0;
-      border-left: 1px solid white;
       background-color: white;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: none;
+      border-bottom: #e5e5e5 1px solid;
     }
+
     ul { list-style-type: none; }
 
     .followed-projects {
@@ -52,35 +35,19 @@
     }
 
     .followers-container {
-      //margin-left: 10px;
       border-top: 1px solid #eee;
-      padding-top: 15px;
+      padding: 15px;
     }
+
     .follower-container {
       margin-right: 10px;
       margin-bottom: 10px;
-      .gravatar {
-        width: 30px;
-        height: 30px;
-      }
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .edit-icon {
-      color: #999;
-      .transition(color 600ms);
-      &:hover {
-        color: #777;
-        text-decoration: none;
-      }
-    }
     .users {
-      .gravatar {
-        vertical-align: text-top;
-        margin-right: 10px;
-        margin-top: 10px;
-        width: 45px;
-        height: 45px;
-      }
       .row-fluid {
         .well:nth-of-type(odd) {
           margin-left: 0
@@ -91,6 +58,12 @@
       }
       .om-org-user-projects-container {
         flex: 1;
+        padding: 15px;
+
+        .heading {
+          width: 100%;
+          margin-top: 0;
+        }
       }
       .om-org-user-projects {
         display: flex;
@@ -100,11 +73,16 @@
         }
       }
     }
+
     .gravatar {
-      border: 2px solid @blueDarker;
-      border-radius: 5px;
+      @size: (@tile / 2);
+      min-width: @size;
+      height: @size;
+      margin-right: 8px;
+      border-radius: (@size / 2);
     }
   }
+
   #edit-plan {
     .main-content {
       margin-bottom: 100px;
@@ -187,6 +165,7 @@
       }
   }
 }
+
 .org-cancel {
   .hint {
     margin: 0;
@@ -273,4 +252,33 @@
             color: @brand-red-v2;
         }
     }
+}
+
+.project-header {
+  @header-icon-color: @grayDark;
+  .flexy(center, row);
+  justify-content: center;
+
+  padding: 15px 10px 15px 10px;
+
+  .project-name {
+    font-size: @fontSizeMedium;
+  }
+
+  a {
+    vertical-align: middle;
+  }
+
+  .octicon,
+  .material-icons {
+    font-size: @fontSizeLarge;
+    color: @grayLight;
+    margin-left: 1ex;
+    vertical-align: middle;
+  }
+}
+
+.project-name {
+  flex-grow: 1;
+  width: 100%;
 }

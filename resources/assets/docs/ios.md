@@ -31,14 +31,14 @@ customization options.
 
 ## Xcode Version
 
-By default, CircleCI will build your project with Xcode 6.4. You can select 7.0 or 7.1
+By default, CircleCI will build your project with Xcode 6.4. You can select 7.0, 7.1 or 7.2
 by specifying the version in a [circle.yml file](/docs/configuration) in the root of your
-repo. For example, for 7.1, add the following:
+repo. For example, for 7.2, add the following:
 
 ```
 machine:
   xcode:
-    version: "7.1"
+    version: 7.2
 ```
 
 ## Shared Schemes
@@ -200,8 +200,8 @@ dependencies:
 You can build a signed app and deploy to various destinations using the customization options
 mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in
 the UI are encrypted and secure and can be used to store credentials related to signing and deployment.
-Contact support at [sayhi@circleci.com](mailto:sayhi@circleci.com) if you need help with code signing
-or deployment.
+
+Please see [this post](https://discuss.circleci.com/t/ios-code-signing/1231) for a detailed guide on how to configure code signing and deployment of your app. 
 
 ##A note on code-generating tools
 Many iOS app developers use tools that generate substantial amounts of code. In such
@@ -274,14 +274,15 @@ We will be happy to help you work around the issue.
 The OSX container that CircleCI uses to build has the following software
 versions installed:
 
-- OS X 10.10.3 (14D136) Darwin 14.3.0
+- OS X 10.10.5 (14F27) Darwin 14.5.0
 - Xcode:
   - 6.4 Build version 6E35b
   - 7.0 Build version 7A218
   - 7.1.1 Build version 7B1005
+  - 7.2 Build version 7C68
 - Facebook xctool 0.2.7
 - CocoaPods 0.39.0
-- xcpretty 0.1.12
-- fastlane 1.39.0
-- carthage 0.10.0
+- xcpretty 0.2.1
+- fastlane 1.48.0
+- carthage 0.11.0
 - shenzhen 0.13.1
