@@ -390,8 +390,8 @@
                                                    :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
 
 (defn nav-icon
-  [v2]
-  [:img.aside-icon {:src (utils/cdn-path (str "/img/inner/icons/Aside-" v2 ".svg"))}])
+  [icon-name]
+  [:i.material-icons icon-name])
 
 (defn aside-nav [app owner]
   (reify
@@ -411,66 +411,87 @@
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href "/"}
-            [:div.logomark
-             (common/ico :logo)]]
+             [:div.logomark
+              (common/ico :logo)]]
 
-           [:a.aside-item.avatar {:data-placement "right"
-                                  :data-trigger "hover"
-                                  :title "Settings"
-                                  :href "/account"}
-            [:img.account-avatar {:src avatar-url}]]
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Builds"
+                            :href "/"}
+             (nav-icon "storage")
+             [:div.nav-label "Builds"]]
 
-           [:a.aside-item {:title "Documentation"
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :href "/docs"}
-            (nav-icon "Docs")]
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Insights"
+                            :href "/build-insights"}
+             (nav-icon "assessment")
+             [:div.nav-label "Insights"]]
 
-           [:a.aside-item (merge (common/contact-support-a-info owner)
+            [:a.aside-item {:href "/add-projects",
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :title "Add Projects"}
+             (nav-icon "library_add")
+
+             [:div.nav-label "Projects"]]
+
+            [:a.aside-item {:href "/invite-teammates",
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :title "Add Teammates"}
+              (nav-icon "group_add")
+              [:div.nav-label "Team"]]
+
+            [:a.aside-item {:data-placement "right"
+                                   :data-trigger "hover"
+                                   :title "Account Settings"
+                                   :href "/account"}
+              (nav-icon "settings")
+              [:div.nav-label "Account Settings"]]
+
+            [:hr]
+
+            [:a.aside-item {:title "Documentation"
+                            :data-placement "right"
+                            :data-trigger "hover"
+                            :href "/docs"}
+              (nav-icon "description")
+              [:div.nav-label "Docs"]]
+
+            [:a.aside-item (merge (common/contact-support-a-info owner)
                                  {:title "Support"
                                   :data-placement "right"
                                   :data-trigger "hover"
                                   :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
-            (nav-icon "Support")]
+              (nav-icon "chat")
+              [:div.nav-label "Support"]]
 
-           [:a.aside-item {:href "/add-projects",
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Add Projects"}
-            (nav-icon "AddProject")]
-
-           [:a.aside-item {:href "/invite-teammates",
-                           :data-placement "right"
-                           :data-trigger "hover"
-                           :title "Invite your teammates"}
-            (nav-icon "Team")]
-
-           [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Changelog"
-                           :href "/changelog"
-                           :class (when (changelog-updated-since? (:last_viewed_changelog user))
+            [:a.aside-item {:data-placement "right"
+                            :data-trigger "hover"
+                            :title "Changelog"
+                            :href "/changelog"
+                            :class (when (changelog-updated-since? (:last_viewed_changelog user))
                                     "unread")}
-            (nav-icon "Notifications")]
+              (nav-icon "receipt")
+              [:div.nav-label "Changelog"]]
 
-	   [:a.aside-item {:data-placement "right"
-                           :data-trigger "hover"
-                           :title "Insights"
-                           :href "/build-insights"}
-            (nav-icon "Insights")]
+            [:hr]
 
-           (when (:admin user)
-             [:a.aside-item {:data-placement "right"
-                             :data-trigger "hover"
-                             :title "Admin"
-                             :href "/admin"}
-              (nav-icon "Admin")])
+            (when (:admin user)
+              [:a.aside-item {:data-placement "right"
+                              :data-trigger "hover"
+                              :title "Admin"
+                              :href "/admin"}
+                (nav-icon "build")
+                [:div.nav-label "Admin"]])
 
-           [:a.aside-item.push-to-bottom {:data-placement "right"
-                                          :data-trigger "hover"
-                                          :title "Logout"
-                                          :href "/logout"}
-            (nav-icon "Power")]])))))
+            [:a.aside-item.push-to-bottom {:data-placement "right"
+                                           :data-trigger "hover"
+                                           :title "Logout"
+                                           :href "/logout"}
+              (nav-icon "power_settings_new")
+              [:div.nav-label "Logout"]]])))))
 
 (defn aside [app owner]
   (reify

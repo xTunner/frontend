@@ -11,6 +11,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.seq :refer [select-in]]
+            [frontend.utils.html :refer [open-ext]]
             [goog.events]
             [goog.dom]
             [goog.style]
@@ -62,7 +63,7 @@
               [:h1.text-center "Transparent pricing, built to scale."]
               [:h3.text-center "The first container is free and each additional one is $50/mo. "
                [:br]
-               [:a {:href "/enterprise" :class "new-outer"} "Need enterprise pricing?" ]]]]]
+               [:a (open-ext {:href "/enterprise"}) "Need enterprise pricing?" ]]]]]
            [:div.outer-section
             [:section.container.pricing-calculator
              [:div.row

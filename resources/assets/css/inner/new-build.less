@@ -695,12 +695,9 @@
   .metadata-item, .commit-message {
     font-size: 13px;
     margin-right: 20px;
-    color: @gray;
   }
 
-  .sha-one:before {
-    font-family: 'octicons';
-    content: '\f01f';
+  i.octicon {
     margin-right: 8px;
     font-size: @fontSizeLarge;
     vertical-align: middle;
@@ -760,32 +757,55 @@
 }
 
 .build-test {
-  .rotating-chevron;
-
   pointer-events: none;
 
-  &:last-child {
-    .build-test-output, .build-test-name {
-      margin-bottom: 0;
-    }
+  .properties {
+    .flexy(center, row);
+    flex-wrap: wrap;
   }
+}
 
-  .test-name:before {
+.test-name {
+
+  &:before {
     margin-left: 5px;
     content: counter(test-list) ". ";
     counter-increment: test-list;
   }
-
 }
 
-
-.build-test-name {
-  display: inline-block;
+.test-file {
+  text-align: right;
+  margin-left: auto;
+  padding-left: @padding-small-horizontal;
+  margin-right: 0;
+  .wrap-words;
 }
 
 .build-test-output {
   margin: 10px 0;
+  .wrap-words;
+
+  .preview {
+    overflow: hidden;
+    height: 18px;
+    line-height: 18px;
+    display: block;
+  }
+
+  .expander {
+    float: right;
+    padding-left: @padding-small-horizontal;
+    padding-right: @padding-small-horizontal;
+    margin-left: @padding-small-horizontal;
+    color: #ccc;
+    background-color: rgba(255,255,255, 0.2);
+    .user-select(none);
+  }
+
 }
+
+
 .alert {
   .build-tests-toggle {
     margin: 0;
@@ -796,6 +816,7 @@
     }
   }
 }
+
 
 .build-tests-toggle-icon {
   .rotating-chevron;

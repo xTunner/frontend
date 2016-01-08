@@ -364,36 +364,78 @@
   (->> [[(:name test)] [(:classname test)]]
        (map (fn [s] (some #(when-not (string/blank? %) %) s)))
        (filter identity)
-       (string/join " - in ")))
+       (string/join " - ")))
 
 (defmethod format-test-name "lein-test" [test]
-  [:strong.build-test-name (str (:classname test) "/" (:name test))])
+  (str (:classname test) "/" (:name test)))
 
 (defmethod format-test-name "cucumber" [test]
-  [:strong.build-test-name (if (string/blank? (:name test))
-             (:classname test)
-             (:name test))])
+  (if (string/blank? (:name test))
+    (:classname test)
+    (:name test)))
 
 (defn test-item [test owner]
   (reify
     om/IRender
     (render [_]
       (html
-       [:li.build-test {:class (when (:show-message test) "expanded")
-                        :on-click #(when-not (string/blank? (:message test))
-                                     (raise! owner [:show-test-message-toggled {:test-index (:i test)}]))}
-        [:span.test-name (format-test-name test)]
-        (when (:show-message test)
-           [:pre.build-test-output (:message test)])]))))
+       [:li.build-test
+        [:div.properties
+         [:div.test-name (format-test-name-v2 test)]
+         [:div.test-file (:file test)]]
+        (let [message (:message test)
+              message (if (:show-message test) message
+                          (.replace message (js/RegExp. "^\\s+" "m") ""))
+              expander-label (if (:show-message test) "less" "more")]
+          [:pre.build-test-output
+           [:div.expander {:role "button"
+                           :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
+            expander-label]
+           [:span {:class (when-not (:show-message test)
+                            "preview")}
+            message]])]))))
 
-(def initial-test-render-count 5)
+(def initial-test-render-count 3)
+
+(defn build-tests-list [data owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (raise! owner [:tests-showed]))
+
+    om/IRender
+    (render [_]
+      (let [tests-data (:tests-data data)
+            tests (when (:tests tests-data)
+                    (map-indexed #(assoc %2 :i %1) (:tests tests-data)))
+            sources (reduce (fn [s test] (conj s (test-model/source test))) #{} tests)
+            failed-tests (filter #(contains? #{"failure" "error"} (:result %)) tests)]
+        (html
+         [:div.build-tests-container
+          (if-not tests
+            [:div.loading-spinner common/spinner]
+            (if (empty? tests)
+              (tests-ad owner)
+              [:div.build-tests-info
+               [:div.build-tests-summary
+                (str "Your build ran " (pluralize (count tests) "test") " in "
+                     (string/join ", " (map test-model/pretty-source sources))
+                     " with " (pluralize (count failed-tests) "failure") ".")]
+               (when (seq failed-tests)
+                 (for [[source tests-by-source] (group-by test-model/source failed-tests)]
+                   [:div.build-tests-list-container
+                    [:span.failure-source (str (test-model/pretty-source source) " failures:")]
+                    [:ol.build-tests-list
+                     (for [[file tests-by-file] (group-by :file tests-by-source)]
+                       (list (when file [:div.filename (str file ":")])
+                             (om/build-all test-item
+                                           (vec (sort-by test-model/format-test-name tests-by-file)))))]]))]))])))))
 
 (defn build-tests-file-block [[file failures] owner]
   (reify om/IRender
     (render [_]
       (html
        [:div
-        (when file [:li.filename (str file ":")])
         (om/build-all test-item (vec failures))]))))
 
 (defn build-tests-source-block [[source {:keys [failures successes]}] owner]
@@ -603,8 +645,10 @@
              [:a {:href (str "mailto:" (:committer_email commit-details))}
               (build-model/committer commit-details)])])
 
+        [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
-                                   :title commit}
+                                   :title commit
+                                   :on-click #(analytics/track "build-page-revision-link-clicked")}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -772,10 +816,12 @@
    [:span
     (interpose
      ", "
-     (map (fn [url] [:a {:href url} "#"
-                     (let [n (re-find #"/\d+$" url)]
-                       (if n (subs n 1) "?"))])
-          urls))]])
+     (for [url urls]
+       [:a {:href url
+            :on-click #(analytics/track "build-page-pr-link-clicked")}
+        "#"
+        (let [[_ number] (re-find #"/(\d+)$" url)]
+          (or number "?"))]))]])
 
 (defn queued-time [build]
   (if (< 0 (build-model/run-queued-time build))

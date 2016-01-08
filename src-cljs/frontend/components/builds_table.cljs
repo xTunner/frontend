@@ -1,6 +1,7 @@
 (ns frontend.components.builds-table
   (:require [cemerick.url :as url]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.components.common :as common]
@@ -118,14 +119,17 @@
            (interpose
             ", "
             (for [url urls]
-              [:a {:href url} "#"
+              [:a {:href url
+                   :on-click #(analytics/track "build-card-pr-link-clicked")}
+               "#"
                (let [[_ number] (re-find #"/(\d+)$" url)]
                  (or number "?"))]))])
 
         [:div.metadata-item.revision
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
-                :href (build-model/github-commit-url build)}
+                :href (build-model/github-commit-url build)
+                :on-click #(analytics/track "build-card-revision-link-clicked")}
             (build-model/github-revision build)])]]]]))
 
 (defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
