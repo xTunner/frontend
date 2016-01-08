@@ -1292,7 +1292,9 @@
                 "Artifacts"]])
 
             [tab-tag {:class (when (= :config selected-tab) "active")}
-             [tab-link-v2 {:href "#config"} "circle.yml"]]
+             [tab-link-v2 {:href "#config"} (str "circle.yml"
+                                                 (when-let [errors (-> build build-model/config-errors)]
+                                                   (gstring/format " (%s)" (count errors))))]]
 
             (when (build-model/finished? build)
               [tab-tag {:class (when (= :build-timing selected-tab) "active")}
