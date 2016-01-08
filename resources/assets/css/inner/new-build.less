@@ -971,6 +971,7 @@
     }
     ol {
       padding-left: 20px;
+      margin-bottom: 0;
 
       li {
 
@@ -981,6 +982,10 @@
           code {
             color: @brand-red-v2;
           }
+        }
+
+        &:last-child > pre {
+            margin: 10px 0 0 -20px;
         }
       }
     }
