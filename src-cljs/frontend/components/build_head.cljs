@@ -756,7 +756,7 @@
     (render [_]
       (html
        (if (seq config-string)
-         [:div.build-config-string [:pre.solarized.line-numbers
+         [:div.build-config-string [:pre.solarized
                                     [:code.language-yaml config-string]]]
          (circle-yml-ad))))))
 
@@ -765,7 +765,7 @@
     om/IDidMount
     (did-mount [_]
       (let [node (om/get-node owner)
-            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
+            highlight-target (goog.dom.getElementByClass "config-yml" node)]
         (js/Prism.highlightElement highlight-target)))
     om/IRender
     (render [_]
@@ -774,9 +774,9 @@
          [:div
           (when (and (build-model/config-errors? build)
                      (not (:dismiss-config-errors build-data)))
-            (om/build build-cfg/config-errors build))
+            (om/build build-cfg/config-errors-v2 build))
           [:div.build-config-string [:pre.solarized.line-numbers
-                                     [:code.language-yaml config-string]]]]
+                                     [:code.config-yml.language-yaml config-string]]]]
          (circle-yml-ad))))))
 
 (defn build-parameters [{:keys [build-parameters]} owner opts]

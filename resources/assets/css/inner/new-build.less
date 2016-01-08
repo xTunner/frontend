@@ -929,6 +929,31 @@
     height: @icon-size;
     width: @icon-size;
   }
+
+  .circle-yml-highlight {
+    color: @brand-red-v2;
+  }
+
+  .config-errors {
+    .dang {
+      margin-bottom: 15px;
+    }
+    ol {
+      padding-left: 20px;
+
+      li {
+
+
+        > pre {
+          margin: 10px 0 20px -20px;
+
+          code {
+            color: @brand-red-v2;
+          }
+        }
+      }
+    }
+  }
 }
 
 .build-timings {
