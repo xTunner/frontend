@@ -5,6 +5,7 @@
 }
 #project-settings {
   .flexy();
+
   a {
     color: @blueDark;
     transition-property: color, text-shadow;
@@ -19,9 +20,11 @@
       color: white;
     }
   }
+
   h1 {
     margin-top: 0;
   }
+
   h2 {
     font-family: @sansFontFamily;
     font-weight: bold;
@@ -34,6 +37,7 @@
     line-height: 1.25em;
     padding: .25em 0;
   }
+
   h4 {
     font-family: @sansFontFamily;
     font-weight: bold;
@@ -42,15 +46,20 @@
     font-size: 1em;
     line-height: 2em;
   }
+
   ul {
     list-style: none;
     margin: 0;
+    padding: 0;
   }
+
   aside {
+    .flex(0 1.1 auto);
+
     width: @aside-menu-width;
     min-width: 200px;
-    .flex(0 1.1 auto);
   }
+
   .try-out-build {
     @input-width: 7em;
     max-height: 8em;
@@ -94,6 +103,7 @@
       }
     }
   }
+
   .side-list {
     margin: 0;
     list-style: none;
@@ -104,6 +114,7 @@
       display: block;
     }
   }
+
   .side-title {
     line-height: 1em;
     margin: .5em 0;
@@ -115,6 +126,7 @@
       padding-top: 0;
     }
   }
+
   #subpage {
     label:not([placeholder]) {
       display: inline-block;
@@ -129,6 +141,7 @@
       }
     }
   }
+
   .project-settings-inner {
     .flex(1 1 auto);
     padding: 0 2em;
@@ -139,6 +152,7 @@
       margin-right: 1em;
     }
   }
+
   .project-setting-watch {
     &:not(.unwatched) {
       button {
@@ -151,6 +165,7 @@
       }
     }
   }
+
   .styled-select {
     position: relative;
     width: 100%;
@@ -183,11 +198,13 @@
       }
     }
   }
+
   // Overview Page
   .overview-options {
     margin: 2em 0;
     .clearfix();
   }
+
   .overview-item {
     margin-right: 2%;
     float: left;
@@ -197,12 +214,14 @@
       margin-right: 0;
     }
   }
+
   // Parallelism Page
   .parallelism-picker {
     .try-out-build {
       padding-top: 1em;
     }
   }
+
   .parallelism-items {
     .clearfix();
     @blockSize: 10em;
@@ -356,6 +375,7 @@
       }
     }
   }
+
   .parallelism-info {
     width: 48ex;
     order: 1;
@@ -368,6 +388,7 @@
       display: none;
     }
   }
+
   .mini-faq {
     display: flex;
     flex-flow: row wrap;
@@ -382,6 +403,7 @@
       }
     }
   }
+
   // Environment Variables Page
   .environment-variables-inner{
     margin: 2em 0;
@@ -408,6 +430,7 @@
       .tableDrawerBtn();
     }
   }
+
   // Dependencies Page
   .dependencies-page {
     fieldset {
@@ -426,9 +449,11 @@
       font-family: @codeFontFamily;
     }
   }
+
   .dependencies-inner {
     margin: 2em 0;
   }
+
   // Tests Page
   .tests-page {
     p {
@@ -443,6 +468,7 @@
       font-family: @codeFontFamily;
     }
   }
+
   .tests-inner {
     margin: 2em 0;
     input {
@@ -451,6 +477,7 @@
       }
     }
   }
+
   // Chatrooms Page
   .chat-rooms {
     .clearfix();
@@ -465,6 +492,7 @@
       }
     }
   }
+
   .chat-room-item {
     width: 21em;
     .outlineFlat();
@@ -515,6 +543,7 @@
       }
     }
   }
+
   .chat-room-head {
     @logoHeight: 20px;
     padding: 1em;
@@ -564,6 +593,7 @@
       &:after  { background-position: (-@logoHeight * 5)  0          ;}
     }
   }
+
   .chat-room-body {
     .clearfix();
     section:first-of-type {
@@ -584,6 +614,7 @@
       position: absolute;
     }
   }
+
   .chat-room-buttons {
     padding-bottom: 1em;
     text-align: center;
@@ -593,6 +624,7 @@
       float: none;
     }
   }
+
   // SSH Keys Page
   .sshkeys-page {
     table {
@@ -622,6 +654,7 @@
       }
     }
   }
+
   .sshkeys-inner {
     margin: 2em 0;
     a {
@@ -633,6 +666,7 @@
       }
     }
   }
+
   // Checkout keys page
   .checkout-page {
     .btn {
@@ -643,6 +677,7 @@
       color: @grayLight;
     }
   }
+
   .checkout-page-inner {
     ul {
       list-style: disc inside;
@@ -679,6 +714,7 @@
       white-space: nowrap;
     }
   }
+
   // Circle API & Status Badge pages
   .circle-api-page, .status-page {
     table {
@@ -703,6 +739,7 @@
       }
     }
   }
+
   .circle-api-page-inner, .status-page-inner {
     margin: 2em 0;
     .popover {
@@ -723,6 +760,7 @@
       cursor: pointer;
     }
   }
+
   .status-page-inner {
     .token .warning {
       font-weight: bold;
@@ -735,6 +773,7 @@
       height: 8em;
     }
   }
+
   // Heroku Page
   .heroku-step {
     margin-bottom: 3em;
@@ -757,6 +796,7 @@
       .circleButton();
     }
   }
+
   .heroku-item {
     > h2 {
       display: none;
