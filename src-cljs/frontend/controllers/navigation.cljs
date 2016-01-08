@@ -452,8 +452,8 @@
     (if logged-in?
        (-> state
            state-utils/clear-page-state
-           (assoc :navigation-point navigation-point)
-           (assoc :navigation-data args)
+           (assoc :navigation-point navigation-point
+                  :navigation-data (assoc args :show-aside-menu? false))
            (assoc :account-settings-subpage subpage)
            (assoc-in state/crumbs-path [{:type :account}]))
        (do

@@ -38,8 +38,6 @@
   > * { pointer-events: auto; }
 
   a {
-    flex-direction: column;
-    justify-content: center;
     outline: none;
     text-decoration: none;
 
@@ -443,7 +441,7 @@
 
 .aside-item {
   .flex(0 1 @tile);
-  .flexy(center);
+  .flexy(center, center, column);
 
   opacity: 0.8;
   background: transparent;
@@ -504,6 +502,10 @@
 
   > i {
     transition: margin @aside-transition-speed;
+
+    @media screen and ( max-height: 650px ){
+      font-size: @fontSizeLarge;
+    }
   }
 
   &.unread > i:after {

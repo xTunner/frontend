@@ -200,8 +200,8 @@ dependencies:
 You can build a signed app and deploy to various destinations using the customization options
 mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in
 the UI are encrypted and secure and can be used to store credentials related to signing and deployment.
-Contact support at [sayhi@circleci.com](mailto:sayhi@circleci.com) if you need help with code signing
-or deployment.
+
+Please see [this post](https://discuss.circleci.com/t/ios-code-signing/1231) for a detailed guide on how to configure code signing and deployment of your app. 
 
 ##A note on code-generating tools
 Many iOS app developers use tools that generate substantial amounts of code. In such

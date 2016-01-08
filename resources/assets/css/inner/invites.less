@@ -6,51 +6,51 @@
   }
 
   div.org-invites {
-    margin: 1em;
-
     overflow: hidden;
+    margin: 1em;
     color: @grayDark;
   }
 
   div.invite-profile {
-    label.no-email {
-      cursor: pointer;
-    }
     input:focus + label.no-email {
       cursor: auto;
+    }
+    label.no-email {
+      cursor: pointer;
     }
   }
 
   ul.side-list {
-    padding: 1em 0;
-
-    list-style-type: none;
+    .flex(0 0 auto);
     .pull-left();
 
     width: 25%;
+    padding: 1em 0;
     padding-left: 15px;
-    .flex(0 0 auto);
+    list-style-type: none;
 
     .nav-header {
+      color: #455c78;
       background: #d7dce3;
-      color: #455C78;
     }
 
     .orgname {
-      padding-top: 3px;
-      overflow: hidden;
-      margin-left: 3%;
-      width: 70%;
       display: inline-block;
+      overflow: hidden;
+      width: 70%;
+      margin-left: 3%;
+      padding-top: 3px;
     }
 
     li {
-      clear: both;
       line-height: 20px;
+      clear: both;
+      padding-bottom: 1em;
     }
 
     img {
       .pull-left();
+
       width: 25px;
       height: 25px;
       border-radius: 25px;
@@ -58,18 +58,19 @@
 
     a {
       cursor: pointer;
-      color: @gray;
       text-decoration: none;
+      color: @gray;
+
       &:hover {
-        color: @blueLight;
         text-decoration: none;
+        color: @blueLight;
       }
     }
 
     & > span {
-      text-align: center;
-      display: block;
       line-height: 13em;
+      display: block;
+      text-align: center;
     }
 
     .tooltip {
@@ -79,6 +80,7 @@
     .side-item.active {
       a {
         color: @blueDark;
+
         &:hover {
           color: @blueLight;
         }

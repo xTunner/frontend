@@ -83,13 +83,13 @@
                          "fail"
                          "success")}
 
-               [:img.gravatar {:src (gh-utils/make-avatar-url user :size 45)}]
                [:div.om-org-user-projects-container
-                [:h4
-                 (if (seq followed-projects)
-                   (str login " is following:")
-                   (str login " is not following any " org-name  " projects"))]
                 [:div.om-org-user-projects
+                 [:h4.heading
+                  [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
+                  (if (seq followed-projects)
+                    (str login " is following:")
+                    (str login " is not following any " org-name  " projects"))]
                  (for [project (sort-by (fn [p] (- (count (:followers p)))) followed-projects)
                        :let [vcs-url (:vcs_url project)]]
                    [:div.om-org-user-project
@@ -108,13 +108,13 @@
     om/IRender
     (render [_]
       (html
-       [:div.followers-container.row-fluid
+       [:div.followers-container
         [:div.row-fluid
          (for [follower followers]
            [:span.follower-container
             {:style {:display "inline-block"}}
             [:img.gravatar
-             {:src (gh-utils/make-avatar-url follower :size 30)}]
+             {:src (gh-utils/make-avatar-url follower :size 60)}]
             " "
             [:span (:login follower)]])]]))))
 
@@ -138,20 +138,21 @@
               (for [project followed-projects
                     :let [vcs-url (:vcs_url project)]]
                 [:div.row-fluid
-                 [:div.span12.success.well
-                  [:div.row-fluid
-                   [:div.span12
-                    [:h4
+                 [:div.span12.well
+
+                   [:div.project-header
+                    [:span.project-name
                      [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
                                                               :repo (vcs-url/repo-name vcs-url)})}
                       (vcs-url/project-name vcs-url)]
-                     " "
+                     " "]
+                    [:div.github-icon
+                     [:a {:href vcs-url}
+                      [:i.octicon.octicon-mark-github]]]
+                    [:div.settings-icon
                      [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
                                                                        :repo (vcs-url/repo-name vcs-url)})}
-                      [:i.fa.fa-gear]]
-                     " "
-                     [:a.github-icon-link {:href vcs-url}
-                      [:i.fa.fa-github]]]]]
+                      [:i.material-icons "settings"]]]]
                   (om/build followers-container (:followers project))]])])]
           [:div.row-fluid
            [:h2 "Untested repos"]
@@ -162,18 +163,22 @@
               (for [project unfollowed-projects
                     :let [vcs-url (:vcs_url project)]]
                 [:div.row-fluid
-                 [:div.fail.span12.well
-                  [:h4
-                   [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
-                                                            :repo (vcs-url/repo-name vcs-url)})}
-                    (vcs-url/project-name vcs-url)]
-                   " "
-                   [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
-                                                                     :repo (vcs-url/repo-name vcs-url)})}
-                    [:i.fa.fa-gear]]
-                   " "
-                   [:a.github-icon-link {:href vcs-url}
-                    [:i.fa.fa-github]]]]])])]])))))
+                 [:div.span12.well
+
+                   [:div.project-header
+                    [:span.project-name
+                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
+                                                              :repo (vcs-url/repo-name vcs-url)})}
+                      (vcs-url/project-name vcs-url)]
+                     " "]
+                    [:div.github-icon
+                     [:a {:href vcs-url}
+                      [:i.octicon.octicon-mark-github]]]
+                    [:div.settings-icon
+                     [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
+                                                                       :repo (vcs-url/repo-name vcs-url)})}
+                      [:i.material-icons "settings"]]]]
+                  (om/build followers-container (:followers project))]])])]])))))
 
 (defn plans-trial-notification [plan org-name owner]
   [:div.row-fluid

@@ -433,8 +433,7 @@
                             :data-trigger "hover"
                             :title "Add Projects"}
              (nav-icon "library_add")
-
-             [:div.nav-label "Projects"]]
+             [:div.nav-label "Add Projects"]]
 
             [:a.aside-item {:href "/invite-teammates",
                             :data-placement "right"
