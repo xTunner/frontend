@@ -15,13 +15,10 @@
   }
   .account-top {
     box-shadow: 0 -1px @grayBoxBorder inset;
-    padding: 0 1em;
   }
   .nav {
     border: none; // BS RESET
     &.nav-tabs {
-      max-width: @minimumContentWidth;
-      margin: 0 auto;
       .active a {
         background: none; // BS RESET
         color: @blue; // BS RESET
@@ -65,10 +62,14 @@
   }
 }
 .settings-item {
-  padding: 2em;
-  .settings-item-inner {
-    max-width: @minimumContentWidth;
-    margin: 0 auto;
+  padding: 2em 1.4em;
+
+  label {
+    padding-left: 2em;
+  }
+
+  .plans-accounts {
+    margin-top: 2em;
   }
 }
 
