@@ -837,6 +837,7 @@
                                     :usage-queue
                                     :config)
                                   :commits)
+   (build-model/config-errors? build) :config
    ;; Otherwise, just use the first one.
    :else :tests))
 
