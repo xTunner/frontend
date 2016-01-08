@@ -190,7 +190,7 @@
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
     (render [_]
-      (let [{repo-name :reponame} project]
+      (let [repo  (project-model/project-name project)]
         (html [:li
                [:.project-heading
                 {:class (when (and (= (vcs-url/org-name (:vcs_url project))
@@ -200,16 +200,16 @@
                                    (not (contains? navigation-data :branch)))
                           "selected")
                  :title (project-model/project-name project)}
-                [:i.fa.rotating-chevron {:class (when (expanded-repos repo-name) "expanded")
+                [:i.fa.rotating-chevron {:class (when (expanded-repos repo) "expanded")
                                          :on-click #(do
-                                                      (raise! owner [:expand-repo-toggled {:repo-name repo-name}])
+                                                      (raise! owner [:expand-repo-toggled {:repo repo}])
                                                       nil)}]
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})
                                   :on-click #(analytics/track "branch-list-project-clicked")}
                  (project-model/project-name project)]
                 (project-settings-link project)]
-               (when (expanded-repos repo-name)
+               (when (expanded-repos repo)
                  (om/build branch-list-v2
                            {:branches (->> project
                                            project-model/branches
