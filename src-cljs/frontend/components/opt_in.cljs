@@ -14,8 +14,8 @@
     (render [_]
       (html
         (when (not (config/enterprise?))
-          [:div.ui-v2-opt-in {}
-           [:div.ui-v2-opt-in-wrapper
+          [:div.opt-in-banner {}
+           [:div.opt-in-wrapper
             [:div
              "As a reminder, the iOS beta has ended as of Monday, November 30th. If you have not done so already, please confirm a plan to lock pricing in and ensure a smooth transition to the limited release "
              [:a {:href "http://circleci.com/account/plans"} "here"]
