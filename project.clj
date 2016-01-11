@@ -24,9 +24,9 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [cljs-ajax "0.3.13"]
                  [cljsjs/react-with-addons "0.13.3-0"]
-                 [org.omcljs/om "0.9.0" :exclusions [cljsjs/react]]
+                 [org.omcljs/om "0.9.0"]
                  [hiccups "0.3.0"]
-                 [sablono "0.3.6" :exclusions [cljsjs/react]]
+                 [sablono "0.3.6"]
                  [secretary "1.2.2"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
 
@@ -38,8 +38,9 @@
             [lein-figwheel "0.5.0-2"]
             [cider/cider-nrepl "0.9.1"]]
 
-  :exclusions [[org.clojure/clojure]
-               [org.clojure/clojurescript]]
+  :exclusions [org.clojure/clojure
+               org.clojure/clojurescript
+               cljsjs/react]
 
   :main frontend.core
 
