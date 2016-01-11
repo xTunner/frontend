@@ -130,29 +130,6 @@
     }
   }
 
-  .project-settings-inner {
-    .flex(1 1 auto);
-    min-height: 89vh;
-    overflow: auto;
-
-    button {
-      margin-right: 1em;
-    }
-  }
-
-  .project-setting-watch {
-    &:not(.unwatched) {
-      button {
-        .circleButton(@grayLightest, @redLight);
-      }
-    }
-    &.unwatched {
-      button {
-        .circleButton(@grayLightest, @green);
-      }
-    }
-  }
-
   // Overview Page
   .overview-options {
     margin: 2em 0;
@@ -360,7 +337,7 @@
 
   // Environment Variables Page
   .environment-variables-inner{
-    margin: 2em 0;
+
     table {
       .tableLight();
       td {
@@ -373,9 +350,7 @@
         }
       }
     }
-    input[type=submit] {
-      .circleButton(@grayLightest, @green);
-    }
+
     a {
       .tableDrawerBtn();
     }
@@ -384,23 +359,15 @@
   // Dependencies Page
   .dependencies-page {
     fieldset {
-      input {
-        &[type="submit"] {
-          .circleButton();
-        }
-      }
       p {
         margin-bottom: 2em;
+        margin-top: 1em;
       }
     }
 
     textarea {
       font-family: @font-family-monospace;
     }
-  }
-
-  .dependencies-inner {
-    margin: 2em 0;
   }
 
   // Tests Page
@@ -720,20 +687,12 @@
     h4 {
       margin: 1em 0;
     }
-    input[type="submit"] {
-      outline: none;
-    }
+
     form {
       margin: 1em 0;
       &:empty {
         display: none;
       }
-    }
-    .set-user {
-      .circleButton();
-    }
-    .remove-user {
-      .circleButton();
     }
   }
 

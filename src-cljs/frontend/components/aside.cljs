@@ -161,7 +161,7 @@
                  (project-model/project-name project)]
                 (project-settings-link project)]
 
-               (when (expanded-repos repo-name)
+               (when (expanded-repos repo)
                  (om/build branch-list
                            {:branches (->> project
                                            project-model/branches

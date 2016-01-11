@@ -82,18 +82,21 @@
               "You'll also need to set yourself as the Heroku deploy user from your project's settings page.")]
            [:form
             (when heroku-api-key
-              [:div
+              [:div.form-group
                [:label "Current Heroku key"]
-               [:input.form-control.disabled
+               [:input.form-control.dumb
                 {:required  true
                  :type      "text",
+                 :readonly  "readonly"
                  :value heroku-api-key}]])
-            [:label "Add new key"]
-            [:input.form-control#heroku-key
-             {:required  true
-              :type      "text",
-              :value     heroku-api-key-input
-              :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
+            [:div.form-group
+             [:label "Add new key"]
+             [:input.form-control.dumb#heroku-key
+              {:required  true
+               :type      "text",
+               :value     heroku-api-key-input
+               :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]]
+            [:div.form-group
             (forms/managed-button
              [:input.btn.btn-success
               {:data-loading-text "Saving...",
@@ -101,7 +104,7 @@
                :data-success-text "Saved",
                :type "submit"
                :value "Save Heroku key"
-               :on-click #(do (submit-form!) false)}])]]])))))
+               :on-click #(do (submit-form!) false)}])]]]])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -119,22 +122,24 @@
             [:br]
             "Apps using these tokens can act as you, and have full read- and write-permissions!"]
            [:form
-            [:label "Token name"]
-            [:input.form-control#api-token
-             {:required  true
-              :name      "label",
-              :type      "text",
-              :value     (str new-user-token)
-              :on-change #(utils/edit-input owner state/new-user-token-path %)}]
-            (forms/managed-button
-             [:input.btn.btn-success
-              {:data-loading-text "Creating...",
-               :data-failed-text  "Failed to add token",
-               :data-success-text "Created",
-               :on-click          #(do (create-token! new-user-token)
-                                       false)
-               :type "submit"
-               :value "Create"}])]]
+            [:div.form-group
+             [:label "Token name"]
+             [:input.form-control#api-token
+              {:required  true
+               :name      "label",
+               :type      "text",
+               :value     (str new-user-token)
+               :on-change #(utils/edit-input owner state/new-user-token-path %)}]]
+            [:div.form-group
+             (forms/managed-button
+               [:input.btn.btn-success
+                {:data-loading-text "Creating...",
+                 :data-failed-text  "Failed to add token",
+                 :data-success-text "Created",
+                 :on-click          #(do (create-token! new-user-token)
+                                         false)
+                 :type "submit"
+                 :value "Create"}])]]
           [:div.api-item
            (when (seq tokens)
              [:table.table
@@ -154,7 +159,7 @@
                         :data-success-text "Revoked",
                         :on-click          #(raise! owner [:api-token-revocation-attempted {:token token}])}
                        [:i.fa.fa-times-circle]
-                       " Revoke"]]]]))]])]])))))
+                       " Revoke"]]]]))]])]]])))))
 
 
 (def available-betas
