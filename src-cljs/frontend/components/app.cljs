@@ -139,7 +139,7 @@
                 [:div.main-body
                  (om/build dom-com app)
 
-                 (when (and show-footer? (config/footer-enabled?))
+                 (when (and (not inner?) show-footer? (config/footer-enabled?))
                    [:footer.main-foot
                     (footer/footer)])]]
 
