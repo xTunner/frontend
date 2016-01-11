@@ -201,57 +201,54 @@
   }
 }
 
-&.ui-v2 {
-    .monthly-usage {
-        @progress-bar-color: @brand-info-v2;
-        @progress-background-color: @background-color-v2;
+.monthly-usage {
+  @progress-bar-color: @brand-info-v2;
+  @progress-background-color: @background-color-v2;
 
-        .flexy(column);
+  .flexy(column);
 
-        .usage-group {
-            .flexy(row, flex-start);
-        }
+  .usage-group {
+    .flexy(row, flex-start);
+  }
 
-        .monthly-usage-bar {
-            margin-top: 5px;
-            border: 0;
-            height: 10px;
-            width: 70%;
-            background-color: @progress-background-color;
+  .monthly-usage-bar {
+    margin-top: 5px;
+    border: 0;
+    height: 10px;
+    width: 70%;
+    background-color: @progress-background-color;
 
-        }
+  }
 
-        .monthly-usage-bar::-webkit-progress-bar {
-            background-color: @progress-background-color;
-        }
+  .monthly-usage-bar::-webkit-progress-bar {
+    background-color: @progress-background-color;
+  }
 
-        .monthly-usage-bar::-webkit-progress-value {
-            background-color: @progress-bar-color;
-        }
+  .monthly-usage-bar::-webkit-progress-value {
+    background-color: @progress-bar-color;
+  }
 
-        progress::-moz-progress-bar {
-            background-color: @progress-bar-color;
-        }
+  progress::-moz-progress-bar {
+    background-color: @progress-bar-color;
+  }
 
-        .usage-label {
-            .flexy(row, flex-end);
-            min-width: 175px;
-            margin-left: 10px;
+  .usage-label {
+    .flexy(row, flex-end);
+    min-width: 175px;
+    margin-left: 10px;
 
-            .percent-label {
-                .flex(1,0,auto);
-            }
-        }
-
-        .month-label {
-            min-width: 80px;
-        }
-
-
-        .over-usage {
-            color: @brand-red-v2;
-        }
+    .percent-label {
+      .flex(1,0,auto);
     }
+  }
+
+  .month-label {
+    min-width: 80px;
+  }
+
+  .over-usage {
+    color: @brand-red-v2;
+  }
 }
 
 .project-header {
