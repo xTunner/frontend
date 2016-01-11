@@ -83,19 +83,19 @@
            [:form
             (when heroku-api-key
               [:div
-               [:input.disabled
+               [:label "Current Heroku key"]
+               [:input.form-control.disabled
                 {:required  true
                  :type      "text",
-                 :value heroku-api-key}]
-               [:label {:placeholder "Current Heroku key"}]])
-            [:input#heroku-key
+                 :value heroku-api-key}]])
+            [:label "Add new key"]
+            [:input.form-control#heroku-key
              {:required  true
               :type      "text",
               :value     heroku-api-key-input
               :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
-            [:label {:placeholder "Add new key"}]
             (forms/managed-button
-             [:input
+             [:input.btn.btn-success
               {:data-loading-text "Saving...",
                :data-failed-text  "Failed to save Heroku key",
                :data-success-text "Saved",
@@ -119,15 +119,15 @@
             [:br]
             "Apps using these tokens can act as you, and have full read- and write-permissions!"]
            [:form
-            [:input#api-token
+            [:label "Token name"]
+            [:input.form-control#api-token
              {:required  true
               :name      "label",
               :type      "text",
               :value     (str new-user-token)
               :on-change #(utils/edit-input owner state/new-user-token-path %)}]
-            [:label {:placeholder "Token name"}]
             (forms/managed-button
-             [:input.btn
+             [:input.btn.btn-success
               {:data-loading-text "Creating...",
                :data-failed-text  "Failed to add token",
                :data-success-text "Created",
@@ -188,7 +188,7 @@
                     (om/build svg {:class "badge-enrolled"
                                    :src (common/icon-path "Status-Passed")}))]
                  [:p (:description program)]
-                 [:input.btn
+                 [:input.btn.btn-info
                   {:on-click #(do
                                 (set-beta-preference! owner betas (:id program) (not participating?)))
                    :type "submit"
@@ -253,7 +253,7 @@
          [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
          [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
          [:form
-          [:input.btn
+          [:input.btn.btn-danger
            {:on-click #(do
                          (set-beta-program-preference! owner false)
                          (analytics/track-beta-leave-click {})
@@ -294,42 +294,44 @@
 (defn preferred-email-address [owner user]
   [:div.notification-item
    [:form#email_address.form-horizontal
-    [:fieldset
-     [:legend
-      "Email Addresses"
-      [:i.fa.fa-info-circle#email-addresses-tooltip-hack
-       {:title "Addresses added to your GitHub account will be reflected here"}]]
-     [:div
-      (for [email (:all_emails user)]
-        [:label.radio
+    [:h3#email-address-tooltip-parent
+     "Email Addresses"
+     [:i.fa.fa-info-circle#email-addresses-tooltip-hack
+      {:title "Addresses added to your GitHub account will be reflected here"}]]
+    [:div
+     (for [email (:all_emails user)]
+       [:div.radio
+        [:label
          [:input
           {:checked (= (:selected_email user) email)
            :value email
            :name "selected_email"
            :type "radio"
            :on-click #(raise! owner [:preferences-updated {:selected_email email}])}]
-         [:span email]])]]]])
+         email]])]]])
 
 (defn default-email-pref [owner email-pref]
   [:div.notification-item
    [:form
-    [:fieldset
-     [:legend "Default Email Notifications"]
-     [:label.radio
+    [:h3 "Default Email Notifications"]
+    [:div.radio
+     [:label
       [:input
        {:name "email_pref",
         :type "radio"
         :checked (= email-pref "all")
         :on-change (partial handle-email-notification-change owner "all")}]
-      "Send me a personalized email for every build in my projects."]
-     [:label.radio
+      "Send me a personalized email for every build in my projects."]]
+    [:div.radio
+     [:label
       [:input
        {:name "email_pref",
         :type "radio"
         :checked (= email-pref "smart")
         :on-change (partial handle-email-notification-change owner "smart")}]
-      "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]
-     [:label.radio
+      "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
+    [:div.radio
+     [:label
       [:input
        {:name "email_pref",
         :type "radio"
@@ -340,13 +342,12 @@
 (defn project-email-prefs [{:keys [projects user]}]
   [:div.notification-item
    [:form
-    [:fieldset
-     [:legend "Project Email Preferences"]
-     [:p "You can override your default email preferences for individual projects here."]
-     [:p "Other project settings can be configured via the project's 'Settings' page."]
-     [:div
-      (for [project projects]
-        (om/build project/email-pref {:project project :user user}))]]]])
+    [:h3 "Project Email Preferences"]
+    [:p "You can override your default email preferences for individual projects here."]
+    [:p "Other project settings can be configured via the project's 'Settings' page."]
+    [:div
+     (for [project projects]
+       (om/build project/email-pref {:project project :user user}))]]])
 
 (defn notifications [app owner]
   (reify
