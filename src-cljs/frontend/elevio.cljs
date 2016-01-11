@@ -16,9 +16,18 @@
 (defn enable! []
   (class-list/add js/document.body "circle-elevio")
   (aset js/window "_elev" (or (aget js/window "_elev") #js {}))
-  (let [set-elev! (partial aset (aget js/window "_elev"))]
+  (let [set-elev! (partial aset (aget js/window "_elev"))
+        is-free (boolean (some-> js/window
+                                 (aget "ldUser")
+                                 (aget "custom")
+                                 (aget "free")))
+        user-info (aget js/window "elevSettings")]
+    (-> user-info
+        (aget "traits")
+        (aset "free" is-free))
     (set-elev! "account_id" account-id)
-    (set-elev! "user" (aget js/window "elevSettings"))
+    (set-elev! "user" user-info)
+    (set-elev! "pushin" "false")
     (set-elev! "translations"
           #js {"loading"
                #js {"loading_ticket" "Loading support request"
