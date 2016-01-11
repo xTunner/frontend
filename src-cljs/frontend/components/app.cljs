@@ -71,6 +71,7 @@
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
     :changelog changelog/changelog
     :documentation docs/documentation
+    :pricing pricing/pricing
 
     :signup signup/signup
 
