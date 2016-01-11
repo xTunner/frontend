@@ -514,7 +514,7 @@
     (render [_]
       (html
        (if (seq config-string)
-         [:div.build-config-string [:pre.solarized.language-yaml config-string]]
+         [:div.build-config-string [:pre.language-yaml config-string]]
          (circle-yml-ad))))))
 
 (defn build-parameters [{:keys [build-parameters]} owner opts]
