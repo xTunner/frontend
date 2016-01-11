@@ -41,201 +41,8 @@
 }
 
 .containers {
-  z-index: 10;
-
-  &.fixed {
-    position: fixed;
-    top: 0px;
-    width: 100%;
-  }
-}
-
-.containers-v2 {
   z-index: 2;
   background-color: @background-color-v2;
-}
-
-/* Set up a :after pseudo-element to reflect the build status */
-.container-list {
-  .flexy();
-  margin: 0;
-  list-style: none;
-  margin: 0 8.5%;
-}
-
-.container-selector {
-  .flex(1, 1);
-  .flexy(column);
-  .align-items(center);
-  position: relative;
-  background: white;
-  color: @grayLight;
-  padding: 1ex 0;
-  border: 1px solid @grayBoxBorder;
-  border-left-width: 0;
-
-  &:hover {
-    &.waiting {
-      color: @blueLight;
-      border: 1px solid @blueLight;
-    }
-
-    &.running {
-      color: @blueLight;
-      border: 1px solid @blueLight;
-    }
-
-    &.success {
-      color: @green;
-      border: 1px solid @green;
-    }
-
-    &.failed,
-    &.canceled {
-      color: @redLight;
-      border: 1px solid @redLight;
-      background: white;
-      svg {
-        path {
-          stroke: @redLight;
-        }
-      }
-    }
-    color: @grayDark;
-    border: 1px solid @grayDark;
-  }
-
-  &.waiting {
-    svg {
-      path {
-        stroke: @blueLight;
-        stroke-linecap: round;
-        stroke-width: 20;
-      }
-    }
-  }
-
-  &.running {
-    svg {
-      path {
-        stroke: @blueLight;
-      }
-    }
-  }
-
-  &.success {
-    svg {
-      path {
-        stroke: @green;
-      }
-    }
-  }
-
-  &.failed,
-  &.canceled {
-    color: @white;
-    background: @redLight;
-    border-color: @redLight;
-    + .failed,
-    + .canceled {
-      box-shadow: -1px 0 @red;
-    }
-    svg {
-      path {
-        stroke: @white;
-      }
-    }
-  }
-
-  &.active {
-    &:before,
-    &:after {
-      content: " ";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      height: 0;
-      width: 0;
-      border: solid transparent;
-      pointer-events: none;
-    }
-
-    &:before {
-      border-top-color: @grayLighter;
-      border-width: (@baseFontSize / 2) + 1;
-      margin-left: (-@baseFontSize / 2) - 1;
-    }
-
-    &:after {
-      border-top-color: @white;
-      border-width: (@baseFontSize / 2);
-      margin-left: (-@baseFontSize / 2);
-    }
-
-    &.waiting {
-      &:hover {
-        &:before {
-          border-top-color: @blueLight;
-        }
-      }
-    }
-
-    &.running {
-      &:hover {
-        &:before {
-          border-top-color: @blueLight;
-        }
-      }
-    }
-
-    &.success {
-      &:hover {
-        &:before {
-          border-top-color: @green;
-        }
-      }
-    }
-
-    &.failed,
-    &.canceled {
-      &:before,
-      &:after {
-        border-top-color: @redLight;
-      }
-      &:hover {
-        &:after {
-          border-top-color: @white;
-        }
-      }
-    }
-  }
-
-  &:first-child {
-    border-left-width: 1px;
-    border-radius: 4px 0 0 4px;
-  }
-
-  &:not(:first-child) {
-    &:hover {
-      margin-left: -1px;
-    }
-  }
-
-  &:last-child {
-    border-radius: 0 4px 4px 0;
-  }
-
-  svg {
-    path {
-      stroke: @grayDark;
-      stroke-width: 8;
-
-      &:nth-child(2) {
-        stroke-linecap: round;
-        stroke-width: 20;
-      }
-    }
-  }
 }
 
 // V2 from here on !!!!
@@ -408,7 +215,7 @@
     text-decoration: underline;
   }
 
-  .container-selector-v2:hover {
+  .container-selector:hover {
     text-decoration: none;
   }
 
@@ -452,7 +259,7 @@
   }
 }
 
-.container-list-v2 {
+.container-list {
   display: flex;
 
   @media (max-width: @pills-breakpoint) {
@@ -471,7 +278,7 @@
   }
 }
 
-.container-selector-v2 {
+.container-selector {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -487,7 +294,7 @@
     width: 14px;
   }
 
-  & + .container-selector-v2:not(.page-container-pills) {
+  & + .container-selector:not(.page-container-pills) {
     margin-left: 1px;
   }
 
@@ -621,21 +428,6 @@
         margin-bottom: @container-pill-vertical-spacing;
       }
     }
-  }
-}
-
-// Used by om frontend to hide scrollers it needs for find in firefox
-.container-scroll-parent-v2 {
-  // hides scrollbar on container_parent
-  overflow: hidden;
-  overflow-x: scroll;
-
-  .container-parent-v2 {
-    overflow-y: hidden;
-
-    // hides scrollbar
-    margin-bottom: -25px;
-    padding-bottom: 25px;
   }
 }
 

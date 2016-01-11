@@ -662,7 +662,7 @@
 
 
 (def tab-tag :li.build-info-tab)
-(def tab-link :a.tab-link-v2)
+(def tab-link :a.tab-link)
 
 (defn build-sub-head [data owner]
   (reify
