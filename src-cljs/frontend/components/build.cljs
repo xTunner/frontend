@@ -8,7 +8,6 @@
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]

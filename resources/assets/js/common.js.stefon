@@ -20,7 +20,6 @@
   "libs/terminal.coffee"
   "libs/phantomjs-hack.js" ;; previously provided by ko, defines Function.prototype.bind
                            ;; should be able to remove after upgrading om/react
-  "inner/config_diagnostic.coffee"
 
   "outer/versions.coffee"
   "outer/api_data.coffee"

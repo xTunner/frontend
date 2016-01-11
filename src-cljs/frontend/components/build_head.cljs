@@ -499,27 +499,7 @@
    [:p "We didn't find a circle.yml for this build. You can specify deployment or override our inferred test steps from a circle.yml checked in to your repo's root directory."]
    [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "configuration"})} "in our docs"] "."]])
 
-(defn build-config [{:keys [config-string]} owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (let [node (om/get-node owner)
-            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
-        (js/Prism.highlightElement highlight-target)))
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (let [node (om/get-node owner)
-            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
-        (js/Prism.highlightElement highlight-target)))
-    om/IRender
-    (render [_]
-      (html
-       (if (seq config-string)
-         [:div.build-config-string [:pre.solarized
-                                    [:code.language-yaml config-string]]]
-         (circle-yml-ad))))))
-
-(defn build-config-v2 [{:keys [config-string build build-data]} owner opts]
+(defn build-config [{:keys [config-string build build-data]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -533,7 +513,7 @@
          [:div
           (when (and (build-model/config-errors? build)
                      (not (:dismiss-config-errors build-data)))
-            (om/build build-cfg/config-errors-v2 build))
+            (om/build build-cfg/config-errors build))
           [:div.build-config-string [:pre.solarized.line-numbers
                                      [:code.config-yml.language-yaml config-string]]]]
          (circle-yml-ad))))))
@@ -776,9 +756,9 @@
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
 
-             :config (om/build build-config-v2 {:config-string (get-in build [:circle_yml :string])
-                                                :build build
-                                                :build-data build-data})
+             :config (om/build build-config {:config-string (get-in build [:circle_yml :string])
+                                             :build build
+                                             :build-data build-data})
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
 
