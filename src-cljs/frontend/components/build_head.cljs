@@ -222,7 +222,7 @@
         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
         " on how to use VNC with CircleCI."]]
 
-        (om/build ssh-node-list nodes)])))
+      (om/build ssh-node-list nodes)])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
