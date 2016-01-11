@@ -264,7 +264,7 @@
           [:h1.project-header
            [:div.last-build-status
             (om/build svg {:class "badge-icon"
-                           :src (-> latest-build build/status-icon-v2 common/icon-path)})]
+                           :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name (formatted-project-name project)]
            [:div.github-icon
             [:a {:href (:vcs_url project)}

@@ -34,10 +34,10 @@
 //** Background color for `<body>`.
 @body-bg:               #fff;
 //** Global text color on `<body>`.
-@text-color:            @gray-dark;
+@text-color:            @gray-dark-v2;
 
 //** Global textual link color.
-@link-color:            @brand-primary;
+@link-color:            @link-color-v2;
 //** Link hover color set via `darken()` function.
 @link-hover-color:      darken(@link-color, 15%);
 //** Link hover decoration.
@@ -48,11 +48,11 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  "ProximaNova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif:  @brand-sans-serif-v2;
 @font-family-serif:       Georgia, "Times New Roman", Times, serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
-@font-family-monospace:   Monaco, Menlo, Consolas, "Courier New", monospace;
-@font-family-base:        @font-family-sans-serif;
+@font-family-monospace:   @monoFontFamilyV2;
+@font-family-base:        @brand-sans-serif-v2;
 
 @font-size-base:          14px;
 @font-size-large:         ceil((@font-size-base * 1.25));

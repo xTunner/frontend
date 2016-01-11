@@ -3,14 +3,6 @@
 @tick-color: #999999;
 @spinner-height: 172px;
 
-&.ui-v2 #build-insights .no-projects-block {
-  background-color: @block-background-color-v2;
-
-  .content {
-    color: @gray-dark-v2;
-  }
-}
-
 #build-insights {
   @block-width: 425px;
   @chart-padding-left: 30px;
@@ -53,14 +45,14 @@
   .no-projects-block {
     margin: 15px;
     padding: 10px;
-    background-color: @white;
+    background-color: @block-background-color-v2;
 
     .content {
       background: url('@{imgPath}/empty-state-insights@2x.png') no-repeat center center;
       background-size: contain;
       height: @standardBlockSize + 40px;
       font-size: @fontSizeLarge;
-      color: @grayDark;
+      color: @gray-dark-v2;
 
       .header {
         font-weight: bolder;

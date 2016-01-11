@@ -6,56 +6,12 @@
   }
 }
 
-.ui-v2 {
-  .breadcrumb {
-    margin-left: 0;
-    font-size: 20px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
-    > li {
-      display: inline;
-
-      &:before {
-        padding: 0;
-      }
-    }
-
-    a {
-      &:not(:hover) {
-        color: @grayDark;
-      }
-
-      &:hover {
-        color: @gray-dark-v2;
-        text-decoration: underline;
-      }
-    }
-  }
-
-  #follow-project-button {
-    .button_outline(@brand-success-v2, (@tile / 2));
-    margin-right: 1em;
-  }
-}
-
-.ui-v1 {
-  .breadcrumb {
-    & > li + li:before {
-      content: '/';
-      color: @grayLight;
-      margin-right: 3px; // from trial and error
-    }
-
-    & > li a {
-      color: @grayLight;
-    }
-  }
-}
-
 .breadcrumb {
-  margin: 10px 1em;
+  margin-left: 0;
+  font-size: 20px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 
   &[disabled] {
     pointer-events: none;
@@ -64,6 +20,30 @@
   &:last-child{
     pointer-events: none;
   }
+
+  > li {
+    display: inline;
+
+    &:before {
+      padding: 0;
+    }
+  }
+
+  a {
+    &:not(:hover) {
+      color: @grayDark;
+    }
+
+    &:hover {
+      color: @gray-dark-v2;
+      text-decoration: underline;
+    }
+  }
+}
+
+#follow-project-button {
+  .button_outline(@brand-success-v2, (@tile / 2));
+  margin-right: 1em;
 }
 
 #follow-project-button {
@@ -269,7 +249,7 @@
   }
 }
 
-.ui-v2 .head-admin:not(.open) {
+.head-admin:not(.open) {
   margin-top: -@tile - @top-nav-height;
   margin-bottom: @top-nav-height;
 }

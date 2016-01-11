@@ -323,7 +323,7 @@
                                       (raise! owner [:created-env-var {:project-id project-id}])
                                       false)}])]
              (when-let [env-vars (seq (:envvars project-data))]
-               [:table
+               [:table.table
                 [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
                 [:tbody
                  (for [{:keys [name value]} env-vars]
@@ -802,7 +802,7 @@
                                                                         :private_key private-key}}])
                                false)}])]
             (when-let [ssh-keys (seq (:ssh_keys project))]
-              [:table
+              [:table.table
                [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
                [:tbody
                 (for [{:keys [hostname fingerprint]} ssh-keys]
@@ -857,7 +857,7 @@
                    "Here are the keys we can currently use to check out your project, submodules, "
                    "and private GitHub dependencies. The currently preferred key is highlighted, but "
                    "we will automatically fall back to the other keys if the preferred key is revoked."]
-                  [:table
+                  [:table.table
                    [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
                    [:tbody
                     (for [checkout-key checkout-keys
@@ -1015,7 +1015,7 @@
                 :value "Create token",
                 :type "submit"}])]
             (when-let [tokens (seq (:tokens project-data))]
-              [:table
+              [:table.table
                [:thead
                 [:th "Scope"]
                 [:th "Label"]

@@ -31,9 +31,7 @@
         :else nil))
 
 (defn new-converter [action type]
-  (let [default-color (if (feature/enabled? :ui-v2)
-                        "white"
-                        (if (= :err type) "red" "brblue"))
+  (let [default-color "white"
         starting-state (clj->js (get-in action [:converters-state type]))]
     (js/CI.terminal.ansiToHtmlConverter default-color "brblack" starting-state)))
 

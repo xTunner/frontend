@@ -47,15 +47,6 @@
       ;; recognize that as a sentinel value.
       (not= "none" (:login user)) (:login user))))
 
-(defn status-icon [build]
-  (cond (= "success" (:outcome build)) "fa-check"
-        (= "running" (:status build)) "fa-refresh"
-        (= "scheduled" (:status build)) "fa-calendar-o"
-        (#{"canceled" "killed" "failed" "timedout" "no_tests"} (:status build)) "fa-times"
-        (#{"queued" "not_running"} (:status build)) "fa-clock-o"
-        (#{"not_run" "infrastructure_fail"} (:status build)) "fa-ban"
-        :else nil))
-
 (defn running? [build]
   (and (:start_time build)
        (not (:stop_time build))))
@@ -141,7 +132,7 @@
 
         :else nil))
 
-(defn status-icon-v2 [build]
+(defn status-icon [build]
   (case (status-class build)
     "fail" "Status-Failed"
     "stop" "Status-Canceled"

@@ -3,35 +3,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.ui-v2 {
-  a {
-    color: @link-color-v2;
-  }
+.main-head {
+  .flex(0 0 auto);
 
-  pre, code, samp, kbd {
-    font-family: @monoFontFamilyV2;
-  }
+  .head-user {
+    height: @navbar-height;
+    padding: 15px;
 
-  .main-head {
-    .flex(0 0 auto);
+    .settings {
+      height: initial;
+      padding: 0;
 
-    .head-user {
-      height: @navbar-height;
-      padding: 15px;
+      color: @link-color-v2;
 
-      .settings {
-        height: initial;
+      &:hover {
+        text-decoration: underline;
+      }
+
+      span {
         padding: 0;
-
-        color: @link-color-v2;
-
-        &:hover {
-          text-decoration: underline;
-        }
-
-        span {
-          padding: 0;
-        }
       }
     }
   }
@@ -53,7 +43,7 @@ body {
 
     .settings {
       .flexy(center, center);
-      height: @tile;
+
       path {
         stroke: @grayLight;
         &:first-child {

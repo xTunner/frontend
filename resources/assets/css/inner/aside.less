@@ -5,13 +5,8 @@
 @aside-nav-width: @tile;
 
 @em: @baseFontSize;
-@cascade-delay: 30ms;
-@aside-items: 7;
 @aside-transition-speed: 200ms;
-@activity-color: fade(@white, 55);
-@activity-ico: (@em - 2);
-@activity-line: (@em * 1.5);
-@activity-toggle: round((@em + (@em / 4) + (1px * 2) + @em + (@em / 2)) * -1);
+@border-width: 1px;
 
 .inner {
   height: 100vh;
@@ -25,44 +20,13 @@
   }
 }
 
-&.ui-v2 {
-  .aside-left-nav {
-    background: @aside-nav-bg-color-v2;
-
-    hr {
-      margin: 0;
-      border-top: 1px solid @gray;
-    }
-  }
-
-  .aside-item {
-    opacity: .8;
-
-    &:hover, &:focus {
-      opacity: 1;
-      background: lighten(@aside-nav-bg-color-v2, 12%);
-      box-shadow: none;
-    }
-
-    &.logo {
-      opacity: 1;
-      background: @aside-nav-logo-bg-color-v2;
-      box-shadow: none;
-
-      &:hover, &:focus {
-        background: lighten(@aside-nav-logo-bg-color-v2, 12%);
-      }
-    }
-  }
-
-  .aside-icon {
-    margin: auto;
-  }
+.aside-icon {
+  margin: auto;
 }
 
 .aside-left-nav {
   width: @aside-nav-width;
-  background: @blueDarkest;
+  background: @aside-nav-bg-color-v2;
   color: fade(@white, 66);
   overflow: visible;
 
@@ -96,6 +60,11 @@
       visibility: visible;
     }
   }
+
+  hr {
+    margin: 0;
+    border-top: 1px solid @gray;
+  }
 }
 
 .app-aside {
@@ -115,7 +84,6 @@
 .aside-left-menu {
   .flex(1 0 1px);
   width: @aside-menu-width;
-  box-shadow: 1px 0 @grayBoxBorder;
   overflow: hidden;
 
   background-color: @white;
@@ -165,151 +133,26 @@
     }
   }
 
-  .aside-activity.ui-v1 {
-    ul {
-      padding-left: 0;
-    }
-
-    &:hover {
-      .project-settings-icon {
-        svg {
-          stroke: @grayLight;
-          &:hover {
-            stroke: @linkColorHover;
-          }
-        }
-      }
-    }
-    .status {
-      .icon-style(transparent, @activity-ico);
-      i {
-        &.ico {
-          .busy-light {stroke: @blueLight;}
-          .pass-light {stroke: @green;}
-          .fail-light {stroke: @redLight;}
-          .hold-light {stroke: @gray;}
-          .stop-light {stroke: @orange;}
-          .none-light {stroke: @white;}
-          [class$="-light"] {stroke-width: 10;}
-        }
-      }
-    }
-    .project {
-      a {
-        &:not(:hover) {
-          color: @grayDark;
-        }
-      }
-    }
-  }
-
-  &.ui-v2 {
-    width: @new-aside-menu-width;
-  }
-
-  &.ui-v1 {
-    .aside-activity header {
-      height: 70px;
-      padding-left: 15px;
-      padding-right: 15px;
-
-      align-items: center;
-
-      border-bottom: solid 1px @grayBoxBorder;
-
-      label {
-        margin-left: 10px;
-      }
-    }
-  }
+  width: @new-aside-menu-width;
 }
 
-.aside-item {
-  .flex(0 1 @tile);
-  .flexy(center, center, column);
-  .shadow-noboss();
+.aside-activity.open {
 
-  background: transparent;
-  white-space: nowrap;
-  transition: (@aside-transition-speed / 2) ease-in-out;
-  min-height: 1.5em;
+  .flexy(column);
+  .flex(1 0 1px);
 
-  &:hover,
-  &:focus {
-    .shadow-emboss(@blueDarker);
-    color: @white;
-    background: @blueDarker;
-    transition-duration: 0;
+  font-size: 12px;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  &:active,
-  &.open {
-    .shadow-deboss(@blueDarkest);
-    color: @white;
-    background: fade(@black, 8);
-    transition-duration: 0;
-  }
-
-  &.logo {
-    .justify-content(center);
-    .underline-deboss();
-    min-height: @tile;
-
-    .logomark {
-      .flexy(center, center);
-      .icon-style(@white, (@em * 2));
-      width: @tile;
-      min-height: @tile;
-    }
-  }
-
-  .nav-label {
-    font-size: 10px;
-    margin-top: 6px;
-    text-align: center;
-    white-space: normal;
-    text-transform: uppercase;
-
-    @media screen and ( max-height: 650px ){
-      display: none;
-    }
-  }
-
-  &.push-to-bottom {
-    margin-top: auto;
-  }
-
-  &:nth-child(2)  > i {transition-delay: @cascade-delay *  1;}
-  &:nth-child(3)  > i {transition-delay: @cascade-delay *  2;}
-  &:nth-child(4)  > i {transition-delay: @cascade-delay *  3;}
-  &:nth-child(5)  > i {transition-delay: @cascade-delay *  4;}
-  &:nth-child(6)  > i {transition-delay: @cascade-delay *  5;}
-  &:nth-child(7)  > i {transition-delay: @cascade-delay *  6;}
-  &:nth-child(8)  > i {transition-delay: @cascade-delay *  7;}
-  &:nth-child(9)  > i {transition-delay: @cascade-delay *  8;}
-  &:nth-child(10) > i {transition-delay: @cascade-delay *  9;}
-  &:nth-child(11) > i {transition-delay: @cascade-delay * 10;}
-
-  > i {
-    font-size: 24px;
-    transition: margin @aside-transition-speed;
-
-    @media screen and ( max-height: 650px ){
-      font-size: @fontSizeLarge;
-    }
-  }
-
-  &.unread > i:after {
-    position: absolute;
-    top: -3px;
-    right: -5px;
-
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-
-    content: ' ';
-    background-color: @white;
+  // Opt out all <a>s in here from the normal link styles.
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 
   span {
@@ -317,390 +160,174 @@
     visibility: visible;
     transition: visibility 0ms (@aside-transition-speed / 2), opacity (@aside-transition-speed * 2) 0ms;
   }
-}
 
-.aside-activity.ui-v1 {
-  .flexy(column);
-  font-size: @em;
-  background: fade(@black, 0);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 400ms, background 400ms, visibility 0ms 1000ms, height 200ms ease-in-out;
-  &.open {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 400ms 100ms, background 200ms, visibility 0ms 0ms, height 200ms ease-in-out;
-    height: 100vh;
-    .wrapper {
-      height: 100vh; // needed to fix safari bug preventing accordion from opening up
-    }
+  // <ul>s at this level scroll.
+  > ul {
+    .flex(1 0 1px);
+    overflow-y: auto;
   }
 
   .projects {
-    .flex(1 0 1px);
-    overflow-y: auto;
+    > li {
+      border-top: solid @border-width #c5c5c5;
 
-    a {
-      outline: none;
-      text-decoration: none;
-      &:not(:hover) {
-        color: inherit;
+      &:first-child {
+        border-top: none;
       }
     }
   }
-  ul {
-    margin: 0;
-    list-style: none;
-    &:not(.open) {
-      li {
-        a {
-          &.latest {
-            .flexy(center, center);
-          }
-        }
-      }
-    }
-  }
-  li {
-    .flexy(center, flex-end);
-    line-height: @em; // BS RESET
-    overflow: hidden;
+
+  .selectable() {
     &:hover {
-      .statuses {
-        a {
-          &:not(:last-child) {
-            transition-delay: 1000ms; // delay meant to give user time to hover over to branch name
-          }
-        }
-        &:hover {
-          a {
-            &:not(:last-child) {
-              width: @activity-ico;
-              margin: 0 round((@activity-line - @activity-ico) / 2);
-              transition: 100ms 100ms;
-            }
-            &:hover {
-              &:nth-child(-n + 5) {
-                path {
-                  opacity: 1;
-                }
-              }
-            }
-            &:nth-last-of-type(1) path {opacity: .89}
-            &:nth-last-of-type(2) path {opacity: .55}
-            &:nth-last-of-type(3) path {opacity: .34}
-            &:nth-last-of-type(4) path {opacity: .21}
-            &:nth-last-of-type(5) path {opacity: .13}
-          }
-        }
-      }
+      background-color: fade(@white, 60%);
     }
-    &:not(:first-of-type) {
-      margin: 0 @em;
+
+    &.selected {
+      background-color: @white;
     }
   }
-  .project {
-    .flexy(center);
-    padding-right: @em;
-    width: 100%;
-    a {
-      height: @activity-line;
-      line-height: @activity-line;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      &:not(:hover) {
-        color: fadein(@activity-color, 34);
-      }
-      &.toggle {
-        .box-sizing(border-box);
-        .flex(0 0 (@em * 2));
-        .icon-style(@grayDark, 100%);
-        width: @em * 2;
-        height: @em *2;
-        padding: 5px; // got this from trial and error
-        &:hover {
-          .ico {
-            .repo {
-              fill: @linkColorHover;
-            }
-          }
-        }
-        .ico {
-          width: 100%;
-          height: 100%;
-        }
-        .ico {
-          .repo {
-            fill: @grayDark;
-          }
-        }
-      }
-      &.title {
-        .flex(1 1 auto);
-      }
-      &.project-settings-icon {
-        .flexy(center, center);
-        .flex(0 0 auto);
 
-        height: @activity-line;
-        line-height: @activity-line;
+  .project-heading {
+    .flexy;
+    .selectable;
 
-        svg {
-          stroke: fade(@grayLight, 0);
-          transition: 200ms;
-          path {
-            &:first-child {
-              stroke-width: 8;
-            }
-          }
-        }
-      }
-      &.latest {
-        .flex(0 0 @activity-ico);
-        display: none;
+    padding: 10px;
+    background-color: #eaeaea;
 
-        width: @activity-ico;
-        height: @activity-line;
-        line-height: @activity-line;
-      }
-    }
-  }
-  .branch,
-  .statuses {
-    a {
-      height: @activity-line;
-      line-height: @activity-line;
-    }
-  }
-  .branch {
-    .flex(0 1 auto);
-    .flexy(center);
-    a {
-      width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      position: relative;
-    }
-  }
-  .statuses {
-    .flex(1 0 auto);
-    .flexy(center, flex-end);
-    a {
-      .flexy(center, center);
-      overflow: hidden;
-      &:not(:last-child) {
-        width: 0;
-        transition: 400ms;
-      }
-      &:last-child {
-        padding-left: round((@activity-line - @activity-ico) / 2);
-      }
-    }
-  }
-  .when {
-    .flexy(left, flex-start);
-    height: @activity-line;
-    line-height: @activity-line;
-    font-family: @monoFontFamily;
-    font-size: @fontSizeMini;
-    color: @grayLight;
-  }
-}
-
-.ui-v2 {
-  .aside-activity.open {
-    @border-width: 1px;
-
-    .flexy(column);
-    .flex(1 0 1px);
-
-    font-size: 12px;
-
-    ul {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    // Opt out all <a>s in here from the normal link styles.
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    // <ul>s at this level scroll.
-    > ul {
-      .flex(1 0 1px);
-      overflow-y: auto;
-    }
-
-    .projects {
-      > li {
-        border-top: solid @border-width #c5c5c5;
-
-        &:first-child {
-          border-top: none;
-        }
-      }
-    }
-
-    .selectable() {
+    > .project-name {
+      .flex(1 1 auto);
+      font-size: 12px;
+      font-weight: bold;
+      color: @gray-dark-v2;
       &:hover {
-        background-color: fade(@white, 60%);
-      }
-
-      &.selected {
-        background-color: @white;
+        text-decoration: underline;
       }
     }
 
-    .project-heading {
+    &:first-child {
+      border-top: none;
+    }
+
+    .rotating-chevron {
+      margin-right: 10px;
+      font-size: 14px;
+
+      &:before {
+        vertical-align: bottom;
+        line-height: 18px;
+        width:18px;
+        text-align: center
+      }
+    }
+  }
+
+  .branches > li {
+    @border-color-between-branches: #dcdcdc;
+    @border-color-above-selected-branch: #e5e5e5;
+    @border-color-below-selected-branch: #c5c5c5;
+
+    .selectable;
+    position: relative;
+
+    border-top: @border-width solid @border-color-between-branches;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    &.selected {
+      border-top-color: @border-color-above-selected-branch;
+
+      & + li {
+        border-top-color: @border-color-below-selected-branch;
+      }
+    }
+
+    &:hover {
+      .branch-name {
+        text-decoration: underline;
+      }
+    }
+
+    .branch {
       .flexy;
-      .selectable;
 
       padding: 10px;
-      background-color: #eaeaea;
 
-      > .project-name {
-        .flex(1 1 auto);
-        font-size: 12px;
-        font-weight: bold;
-        color: @gray-dark-v2;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      &:first-child {
-        border-top: none;
-      }
-
-      .rotating-chevron {
+      .last-build-status {
         margin-right: 10px;
-        font-size: 14px;
-
-        &:before {
-          vertical-align: bottom;
-          line-height: 18px;
-          width:18px;
-          text-align: center
-        }
-      }
-    }
-
-    .branches > li {
-      @border-color-between-branches: #dcdcdc;
-      @border-color-above-selected-branch: #e5e5e5;
-      @border-color-below-selected-branch: #c5c5c5;
-
-      .selectable;
-      position: relative;
-
-      border-top: @border-width solid @border-color-between-branches;
-
-      &:first-child {
-        border-top: none;
       }
 
-      &.selected {
-        border-top-color: @border-color-above-selected-branch;
-
-        & + li {
-          border-top-color: @border-color-below-selected-branch;
-        }
+      .project-name {
+        color: @gray-dark-v2;
+        font-weight: bold;
       }
 
-      &:hover {
-        .branch-name {
-          text-decoration: underline;
-        }
+      .branch-name {
+        color: @gray-dark-v2;
       }
 
-      .branch {
-        .flexy;
-
-        padding: 10px;
-
-        .last-build-status {
-          margin-right: 10px;
-        }
-
-        .project-name {
-          color: @gray-dark-v2;
-          font-weight: bold;
-        }
-
-        .branch-name {
-          color: @gray-dark-v2;
-        }
-
-        .last-build-info {
-          color: @gray-lighter-v2;
-        }
-      }
-
-      .project-settings-icon {
-        position: absolute;
-        top: 10px + @border-width;
-        right: 10px;
+      .last-build-info {
+        color: @gray-lighter-v2;
       }
     }
 
     .project-settings-icon {
-      svg {
-        width: 16px;
-        height: 16px;
+      position: absolute;
+      top: 10px + @border-width;
+      right: 10px;
+    }
+  }
 
-        stroke: fade(@gray-lighter-v2, 0);
-        transition: 200ms;
+  .project-settings-icon {
+    svg {
+      width: 16px;
+      height: 16px;
 
-        path {
-          &:first-child {
-            stroke-width: 8;
-          }
+      stroke: fade(@gray-lighter-v2, 0);
+      transition: 200ms;
+
+      path {
+        &:first-child {
+          stroke-width: 8;
         }
       }
     }
+  }
 
-    &:hover {
-      .project-settings-icon {
-        svg {
-          stroke: fade(@gray-lighter-v2, 60%);
+  &:hover {
+    .project-settings-icon {
+      svg {
+        stroke: fade(@gray-lighter-v2, 60%);
 
-          &:hover {
-            stroke: @gray-lighter-v2;
-          }
+        &:hover {
+          stroke: @gray-lighter-v2;
         }
       }
     }
   }
 }
 
-&.ui-v2 .aside-activity .when {
+.aside-activity .when {
   font-family: @monoFontFamilyV2;
 }
 
-.ui-v2 {
-  .aside-activity.open {
-    margin-left: 15px;
-  }
+.aside-activity.open {
+  margin-left: 15px;
+}
 
-  .aside-left-menu {
-    background-color: transparent;
-    box-shadow: none;
-  }
+.aside-left-menu {
+  background-color: transparent;
+}
 
-  .aside-user.open {
-    .flex(1 0 1px);
-    width: @new-aside-menu-width;
-  }
+.aside-user.open {
+  .flex(1 0 1px);
+  width: @new-aside-menu-width;
+}
 
-  .aside-user .close-menu {
-    // TODO a magic number. the close menu should be removed on completion of v2 anyways.
-    height: 47px;
-  }
+.aside-user .close-menu {
+  // TODO a magic number. the close menu should be removed on completion of v2 anyways.
+  height: 47px;
 }
 
 .aside-user {
@@ -708,30 +335,27 @@
   height: 100%;
   position: relative;
 
-  background: @appBackgroundColor;
-  color: @appBackgroundColor;
-  box-shadow: 1px 0 @grayBoxBorder;
+  background: @white;
+  color: @white;
   transition: (@aside-transition-speed / 2);
   transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
   overflow: hidden;
 
   &.open {
     .flexy(column);
+    .flex(1 0 1px);
 
-    &.ui-v2 {
-      width: @new-aside-menu-width;
-    }
+    width: @new-aside-menu-width;
 
-    width: @aside-menu-width;
     left: 0;
     color: @gray;
-    .flex(1 0 1px);
 
     h5 {
       color: @black;
     }
+
     .aside-item {
-      padding: 0 (@em * 2);
+      padding: 0 (@grid-gutter-width / 2);
     }
   }
   header {
@@ -741,7 +365,7 @@
   }
   h5 {
     font-weight: normal;
-    color: @appBackgroundColor;
+    color: @white;
     white-space: nowrap;
     transition: (@aside-transition-speed / 2);
     transition-timing-function: cubic-bezier(0.5, -.25, 0.5, 1.25);
@@ -785,13 +409,11 @@
     &:hover,
     &:focus {
       color: @grayDarker;
-      box-shadow: none;
       background: @grayLightest;
     }
 
     &a:active {
       &:not(.active) {
-        .shadow-deboss(@white);
         color: inherit;
         background: @grayLightest;
       }
@@ -809,11 +431,109 @@
       font-weight: bold;
       color: @gray;
       background: @white;
-      box-shadow: none;
     }
 
     &:last-child {
       margin-bottom: 1em;
     }
+  }
+}
+
+.aside-item {
+  .flex(0 1 @tile);
+  .flexy(center, center, column);
+
+  opacity: 0.8;
+  background: transparent;
+  white-space: nowrap;
+  transition: (@aside-transition-speed / 2) ease-in-out;
+  min-height: 1.5em;
+
+  &:hover,
+  &:focus {
+    color: @white;
+    transition-duration: 0;
+  }
+
+  &:active,
+  &.open {
+    color: white;
+    background: fade(@black, 8%);
+    transition-duration: 0;
+  }
+
+  &.logo {
+    .justify-content(center);
+
+    background: @aside-nav-logo-bg-color-v2;
+    min-height: @tile;
+
+    &:hover, &:focus {
+      background: lighten(@aside-nav-logo-bg-color-v2, 12%);
+    }
+
+    .logomark {
+      .flexy(center, center);
+      .icon-style(@white, (@em * 2));
+      width: @tile;
+      min-height: @tile;
+    }
+  }
+
+  .nav-label {
+    font-size: 10px;
+    margin-top: 6px;
+    text-align: center;
+    white-space: normal;
+    text-transform: uppercase;
+
+    @media screen and ( max-height: 650px ){
+      display: none;
+    }
+  }
+
+  &.avatar {
+    opacity: 1;
+  }
+
+  &.push-to-bottom {
+    margin-top: auto;
+  }
+
+  > i {
+    transition: margin @aside-transition-speed;
+
+    @media screen and ( max-height: 650px ){
+      font-size: @fontSizeLarge;
+    }
+  }
+
+  &.unread > i:after {
+    position: absolute;
+    top: -3px;
+    right: -5px;
+
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    content: ' ';
+    background-color: @white;
+  }
+
+  .account-avatar {
+    @s: (@tile / 2);
+    min-width: @s;
+    height: @s;
+    margin: 0 @baseFontSize 0 ((@tile - @s) / 2);
+    border-radius: (@s / 2);
+    transition: margin (@aside-transition-speed * 2);
+    pointer-events: none;
+  }
+
+  span {
+    opacity: 1;
+    visibility: visible;
+    transition: visibility 0ms (@aside-transition-speed / 2), opacity (@aside-transition-speed * 2) 0ms;
   }
 }

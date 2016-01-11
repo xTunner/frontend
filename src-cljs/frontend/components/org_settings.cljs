@@ -529,8 +529,8 @@
                ;; orgs that this user can add to piggyback orgs and existing piggyback orgs
                (for [org (sort (clojure.set/union elligible-piggyback-orgs
                                                   (set (:piggieback_orgs plan))))]
-                 [:div.control
-                  [:label.checkbox
+                 [:div.checkbox
+                  [:label
                    [:input
                     (let [checked? (contains? selected-piggyback-orgs org)]
                       {:value org
@@ -588,8 +588,8 @@
               [:form
                [:div.controls
                 (for [org elligible-transfer-orgs]
-                  [:div.control
-                   [:label.radio {:name org}
+                  [:div.radio
+                   [:label {:name org}
                     [:input {:value org
                              :checked (= org selected-transfer-org)
                              :on-change #(utils/edit-input owner state/selected-transfer-org-path %)
@@ -1079,19 +1079,18 @@
       (let [org-data (get-in app state/org-data-path)
             subpage (or (get app :org-settings-subpage) :overview)
             plan (get-in app state/org-plan-path)]
-        (html [:div.container-fluid.org-page
+        (html [:div.org-page
                (if-not (:loaded org-data)
                  [:div.loading-spinner common/spinner]
-                 [:div.row-fluid
-                  [:div.span9
-                   (when (pm/suspended? plan)
-                     (om/build project-common/suspended-notice plan))
-                   (om/build common/flashes (get-in app state/error-message-path))
-                   [:div#subpage
-                    [:div
-                     (if (:authorized? org-data)
-                       (om/build (get main-component subpage projects) app)
-                       [:div (om/build non-admin-plan
-                                       {:login (get-in app [:current-user :login])
-                                        :org-name (:org-settings-org-name app)
-                                        :subpage subpage})])]]]])])))))
+                 [:div
+                  (when (pm/suspended? plan)
+                    (om/build project-common/suspended-notice plan))
+                  (om/build common/flashes (get-in app state/error-message-path))
+                  [:div#subpage
+                   [:div
+                    (if (:authorized? org-data)
+                      (om/build (get main-component subpage projects) app)
+                      [:div (om/build non-admin-plan
+                                      {:login (get-in app [:current-user :login])
+                                       :org-name (:org-settings-org-name app)
+                                       :subpage subpage})])]]])])))))
