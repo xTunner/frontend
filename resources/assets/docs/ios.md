@@ -201,7 +201,22 @@ You can build a signed app and deploy to various destinations using the customiz
 mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in
 the UI are encrypted and secure and can be used to store credentials related to signing and deployment.
 
-Please see [this post](https://discuss.circleci.com/t/ios-code-signing/1231) for a detailed guide on how to configure code signing and deployment of your app. 
+[FastLane](https://fastlane.tools/) and [Shenzhen](http://nomad-cli.com/#shenzhen)
+are pre-installed on the container image. These are the tools that we suggest that
+you use to build a signed iOS app and distribute to your beta-testers.
+
+### Provision Profiles and Developer Certificates
+CircleCI will automatically locate any provisioning profiles that are present in
+your repository and install them to `~/Library/MobileDevice/Provisioning Profiles`.
+
+During the build we automatically create a keychain named `circle.keychain` with
+password `circle`. The developer certificates contained in any provisioning
+profiles in your repository are automatically added to this keychain. The
+keychain is unlocked for the duration of the build, and added the default
+keychain search-path so that any applications can access the keys.
+
+Please see [this post](https://discuss.circleci.com/t/ios-code-signing/1231) for
+a detailed guide on how to configure code signing and deployment of your app.
 
 ##A note on code-generating tools
 Many iOS app developers use tools that generate substantial amounts of code. In such
