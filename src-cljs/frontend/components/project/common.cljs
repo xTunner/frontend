@@ -130,10 +130,10 @@
         (html
           [:div
            [:h3 (project-model/project-name project)]
-           [:select {:value pref
-                     :on-change #(let [value (.. % -target -value)
-                                       args {vcs_url {:emails value}}]
-                                   (raise! owner [:project-preferences-updated args]))}
+           [:select.form-control {:value pref
+                                  :on-change #(let [value (.. % -target -value)
+                                                    args {vcs_url {:emails value}}]
+                                                (raise! owner [:project-preferences-updated args]))}
             (for [[pref label] email-prefs]
               [:option {:value pref} label])]])))))
 

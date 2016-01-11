@@ -455,31 +455,31 @@
            [:div.dependencies-inner
             [:form.spec_form
              [:fieldset
-              [:textarea {:name "setup",
-                          :required true
-                          :value (str (:setup settings))
-                          :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
+              [:textarea.form-control {:name "setup",
+                                       :required true
+                                       :value (str (:setup settings))
+                                       :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
               [:label {:placeholder "Pre-dependency commands"}]
               [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
-              [:textarea {:name "dependencies",
-                          :required true
-                          :value (str (:dependencies settings))
-                          :on-change #(utils/edit-input owner (conj state/inputs-path :dependencies) %)}]
+              [:textarea.form-control {:name "dependencies",
+                                       :required true
+                                       :value (str (:dependencies settings))
+                                       :on-change #(utils/edit-input owner (conj state/inputs-path :dependencies) %)}]
               [:label {:placeholder "Dependency overrides"}]
               [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
                [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
                [:code "configure"] ", " [:code "make"] ", etc."]
-              [:textarea {:required true
-                          :value (str (:post_dependencies settings))
-                          :on-change #(utils/edit-input owner (conj state/inputs-path :post_dependencies) %)}]
+              [:textarea.form-control {:required true
+                                       :value (str (:post_dependencies settings))
+                                       :on-change #(utils/edit-input owner (conj state/inputs-path :post_dependencies) %)}]
               [:label {:placeholder "Post-dependency commands"}]
               [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
               (forms/managed-button
-               [:input {:value "Next, set up your tests",
-                        :type "submit"
-                        :data-loading-text "Saving..."
-                        :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
-                                       false)}])]]]]])))))
+               [:input.form-control {:value "Next, set up your tests",
+                                     :type "submit"
+                                     :data-loading-text "Saving..."
+                                     :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
+                                                    false)}])]]]]])))))
 
 (defn tests [project-data owner]
   (reify
@@ -502,10 +502,10 @@
             " instead."]
            [:div.tests-inner
             [:fieldset.spec_form
-             [:textarea {:name "test",
-                         :required true
-                         :value (str (:test settings))
-                         :on-change #(utils/edit-input owner (conj state/inputs-path :test) %)}]
+             [:textarea.form-control {:name "test",
+                                      :required true
+                                      :value (str (:test settings))
+                                      :on-change #(utils/edit-input owner (conj state/inputs-path :test) %)}]
              [:label {:placeholder "Test commands"}]
              [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
              [:textarea {:name "extra",
@@ -721,27 +721,23 @@
          [:form
           [:div.branch
            [:h4 "Branch"]
-           [:div.styled-select
-            [:select {:value branch
-                      :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :branch) %)}
-             [:option {:value ""} "Default"]
-             [:option {:disabled "disabled"} "-----"]
-             (for [branch branches]
-               [:option {:value branch} branch])]
-            [:i.fa.fa-chevron-down]]]
+           [:select.form-control {:value branch
+                                  :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :branch) %)}
+            [:option {:value ""} "Default"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [branch branches]
+              [:option {:value branch} branch])]]
 
           [:div.token
            [:h4 "API Token"]
            (when-not (or oss (seq token))
              [:p [:span.warning "Warning: "] "Private projects require an API token - " [:a {:href "#api"} "add one with status scope"] "."])
-           [:div.styled-select
-            [:select {:value token
-                      :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :token) %)}
-             [:option {:value ""} "None"]
-             [:option {:disabled "disabled"} "-----"]
-             (for [{:keys [token label]} tokens]
-               [:option {:value token} label])]
-            [:i.fa.fa-chevron-down]]]
+           [:select.form-control {:value token
+                                  :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :token) %)}
+            [:option {:value ""} "None"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [{:keys [token label]} tokens]
+              [:option {:value token} label])]]
 
           ;; Hide style selector until "badge" style is improved. See PR #3140 discussion.
           #_[:div.style
@@ -759,15 +755,13 @@
 
           [:div.embed
            [:h4 "Embed Code"]
-           [:div.styled-select
-            [:select {:value format
-                      :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :format) %)}
-             (for [[id {:keys [label]}] status-formats]
-               [:option {:value id} label])]
-            [:i.fa.fa-chevron-down]]
-           [:textarea {:readonly true
-                       :value code
-                       :on-click #(.select (.-target %))}]]]]]]))))
+           [:select.form-control {:value format
+                                  :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :format) %)}
+            (for [[id {:keys [label]}] status-formats]
+              [:option {:value id} label])]
+           [:textarea.form-control {:readonly true
+                                    :value code
+                                    :on-click #(.select (.-target %))}]]]]]]))))
 
 (defn ssh-keys [project-data owner]
   (reify
@@ -992,13 +986,11 @@
              [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
              " and then create a label."]
             [:form
-             [:div.styled-select
-              [:select {:name "scope" :value scope
-                        :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)}
-               [:option {:value "status"} "Status"]
-               [:option {:value "view-builds"} "Build Artifacts"]
-               [:option {:value "all"} "All"]]
-              [:i.fa.fa-chevron-down]]
+             [:select.form-control {:name "scope" :value scope
+                                    :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)}
+              [:option {:value "status"} "Status"]
+              [:option {:value "view-builds"} "Build Artifacts"]
+              [:option {:value "all"} "All"]]
              [:input
               {:required true, :type "text" :value (str label)
                :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :label) %)}]
@@ -1244,16 +1236,14 @@
           [:legend (name app-name)]
 
           [:fieldset
-           [:div.styled-select
-            [:select {:class (when (not aws-region) "placeholder")
-                      :value (or aws-region "")
-                      ;; Updates the project cursor in order to trigger a re-render
-                      :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
-             [:option {:value ""} "Choose AWS Region..."]
-             [:option {:disabled "disabled"} "-----"]
-             [:option {:value "us-east-1"} "us-east-1"]
-             [:option {:value "us-west-2"} "us-west-2"]]
-            [:i.fa.fa-chevron-down]]
+           [:select.form-control {:class (when (not aws-region) "placeholder")
+                                  :value (or aws-region "")
+                                  ;; Updates the project cursor in order to trigger a re-render
+                                  :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+            [:option {:value ""} "Choose AWS Region..."]
+            [:option {:disabled "disabled"} "-----"]
+            [:option {:value "us-east-1"} "us-east-1"]
+            [:option {:value "us-west-2"} "us-west-2"]]
 
            [:div.input-with-help
             [:input#application-root

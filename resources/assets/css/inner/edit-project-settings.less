@@ -6,15 +6,6 @@
 #project-settings {
   .flexy();
   a {
-    color: @blueDark;
-    transition-property: color, text-shadow;
-    transition-duration: .3s;
-    transition-timing-function: ease-in-out;
-    text-decoration: none;
-    &:hover {
-      color: @blueLight;
-      transition-duration: .1s;
-    }
     &.btn-primary {
       color: white;
     }
@@ -25,7 +16,6 @@
   h2 {
     font-family: @font-family-base;
     font-weight: bold;
-    color: @gray;
     font-size: 2em;
     display: block;
     width: 100%;
@@ -37,7 +27,6 @@
   h4 {
     font-family: @font-family-base;
     font-weight: bold;
-    color: @gray;
     margin: 0;
     font-size: 1em;
     line-height: 2em;
@@ -108,7 +97,6 @@
     line-height: 1em;
     margin: .5em 0;
     padding-top: 1em;
-    color: @gray;
     font-weight: bold;
     &:first-of-type {
       margin-top: 0;
@@ -150,38 +138,7 @@
       }
     }
   }
-  .styled-select {
-    position: relative;
-    width: 100%;
-    display: inline-block;
-    select {
-      background: transparent;
-      -webkit-appearance: none;
-      outline: none;
-      .outlineInside(@grayLighter);
-      border-radius: 5em;
-      .box-sizing(border-box);
-      line-height: 2em;
-      height: 3em;
-      width: 100%;
-      padding: .5em 1.34em;
-      margin-bottom: 1em;
-      -webkit-font-smoothing: antialiased;
-      &:hover ~ i.fa-chevron-down {
-        color: @blueLight;
-        transition-duration: .1s;
-      }
-    }
-    i {
-      &.fa-chevron-down {
-        right: 1.5em;
-        pointer-events: none;
-        position: absolute;
-        top: 24%;
-        transition: color .3s ease-in-out;
-      }
-    }
-  }
+  
   // Overview Page
   .overview-options {
     margin: 2em 0;
@@ -384,10 +341,6 @@
   // Environment Variables Page
   .environment-variables-inner{
     margin: 2em 0;
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
     table {
       .tableLight();
       td {
@@ -416,7 +369,6 @@
         }
       }
       p {
-        max-width: 66%;
         margin-bottom: 2em;
       }
     }
@@ -431,7 +383,6 @@
   // Tests Page
   .tests-page {
     p {
-      max-width: 66%;
       margin-bottom: 2em;
     }
     .try-out-build {
@@ -609,10 +560,7 @@
         vertical-align: middle;
       }
     }
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     input {
       &[type="submit"] {
         .circleButton();
@@ -707,10 +655,7 @@
       top: 66px;
       left: 340px;
     }
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     input {
       &[type="submit"] {
         .circleButton();
@@ -794,9 +739,6 @@
       h4 {
         margin: 1em 0;
       }
-    }
-    .styled-select .placeholder {
-      color: @grayLight;
     }
     .input-with-help {
       position: relative;

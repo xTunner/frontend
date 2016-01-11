@@ -3,16 +3,27 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.app-main {
+  height: 100vh;
+  width: 100%;
+}
+
 .main-head {
   .flex(0 0 auto);
+  .flexy(column);
 
   .head-user {
+    .flexy(center, space-between);
+    height: @tile;
+    box-sizing: border-box;
+    border-bottom: solid 1px @border-gray-v2;
     height: @navbar-height;
     padding: 15px;
 
     .settings {
+      .flexy(center, center);
       height: initial;
-      padding: 0;
+      padding: @padding-large-vertical @padding-large-horizontal;
 
       color: @link-color-v2;
 
@@ -21,39 +32,14 @@ body {
       }
 
       span {
-        padding: 0;
+        padding: @padding-xs-vertical @padding-xs-horizontal;
       }
-    }
-  }
-}
-
-.app-main {
-  height: 100vh;
-  width: 100%;
-}
-
-.main-head {
-  .flexy(column);
-
-  .head-user {
-    .flexy(center, space-between);
-    height: @tile;
-    box-sizing: border-box;
-    border-bottom: solid 1px @border-gray-v2;
-
-    .settings {
-      .flexy(center, center);
 
       path {
         stroke: @grayLight;
         &:first-child {
           stroke-width: 5;
         }
-      }
-      padding: @padding-large-vertical @padding-large-horizontal;
-
-      span {
-        padding: @padding-xs-vertical @padding-xs-horizontal;
       }
 
       &:after {
@@ -77,9 +63,10 @@ body {
   overflow-y: scroll;
 
   .loading-spinner-big {
-    @reserved_height: (@tile * 2);
+    @reserved-height: (@tile * 2);
+
     .flexy(center, center);
-    height: ~"calc(100vh - @{reserved_height})";
+    height: ~"calc(100vh - @{reserved-height})";
   }
 }
 
@@ -95,24 +82,6 @@ body {
     background-size: @footerItemSize;
     background-position: center left;
     background-repeat: no-repeat;
-  }
-}
-
-// .btn-primary {
-//  @btnPrimaryBackground: #1f4d80;
-//  @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
-//  .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
-// }
-
-// Provide a way to force blue border without worrying about .smart_label
-.blue-focus-border:focus {
-  border-color: @blueLighter !important; // BS RESET = "!important"
-}
-
-a {
-  &:hover {
-    cursor: pointer;
-    text-decoration: none;
   }
 }
 
