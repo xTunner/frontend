@@ -57,11 +57,11 @@
          [:div.alert-wrap
           "Error! Check out our "
           [:a {:href "/docs/troubleshooting"}
-           "help docs "]
-          "or our "
-          [:a {:href "http://discuss.circleci.com/"}
-           "community site "]
-          "for more information. If you are a paid customer, you may also consider "
+           "help docs"]
+          " or our "
+          [:a {:href "https://discuss.circleci.com/"}
+           "community site"]
+          " for more information. If you are a paid customer, you may also consider "
           [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
            "requesting for help"]
           " from a support engineer."])])))
