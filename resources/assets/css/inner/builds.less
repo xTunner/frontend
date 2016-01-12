@@ -1,79 +1,8 @@
 @import "../shared/variables.less";
 
-@aqua-marine: #33c1db;
 @side-line-width: 5px;
 @tab-background: #dcdcdc;
 @tab-separator-border: #c7c7c7;
-
-.build-head-wrapper {
-  color: @gray;
-  box-shadow: 0 1px @grayBorder;
-  padding: @innerContentPadding 0;
-  *[role="button"] {
-    cursor: pointer;
-  }
-}
-
-.container-selector.parallelism-tab.upgrade  {
-  max-width: 50%;
-  font-size: 18px;
-  background-color: @aqua-marine;
-  border: @aqua-marine 1px solid;
-
-  &:hover {
-    background-color: @green;
-    border: @green 1px solid;
-  }
-}
-
-.build-info {
-  .flexy();
-  table {
-    .flex(1 0 50%);
-    display: block;
-    line-height: 1.5em;
-  }
-  th {
-    width: 1%;
-    font-weight: bold;
-    text-align: left;
-    white-space: nowrap;
-    padding: 0;
-  }
-  td {
-    width: 40%;
-    padding: 0 .5em;
-  }
-  .build-status {
-    padding: 2px 5px;
-    border-radius: 1em;
-    color: @white;
-    text-transform: capitalize;
-    background: @grayLight; // for queued, not_running, canceled
-    .statusColor(@color) {
-      background: @color;
-    }
-    &.success,
-    &.fixed {
-      .statusColor(@green);
-    }
-    &.no_tests,
-    &.failed,
-    &.timedout {
-      .statusColor(@redLight);
-    }
-    &.running {
-      .statusColor(@blueLight);
-    }
-    &.not_run,
-    &.circle_bug {
-      .statusColor(@orange);
-    }
-  }
-  .build-canceler {
-    padding: 2px 5px;
-  }
-}
 
 .additional-containers-offer {
   a {
@@ -120,10 +49,6 @@
   i {
     display: inline-block;
   }
-}
-.build-ssh-doc {
-  font-size: .9em;
-  margin-top: .5em;
 }
 
 .build-tests-list-container {
@@ -229,7 +154,6 @@
 
 
 .build-output  {
-  box-shadow: inset 1px 1px 0 rgba(255,255,255, .2);
   margin-bottom: 5px;
   color: @gray;
   font-weight: normal;
@@ -360,100 +284,6 @@
   }
 }
 
-#build-log-container {
-  // Make the bootstrap tooltip for the commit message large enough to show a full sha1.
-  .tooltip-inner {
-    max-width: 500px;
-  }
-  .container-fluid.row-fluid {
-    padding: 0 2%;
-    width: 96%;
-  }
-  .stages {
-    margin: 0;
-    h4 {
-      margin: 0 0 10px 20px;
-      line-height: 22px;
-    }
-    > ul {
-      padding: 10px 0 0 0;
-      list-style-type: none;
-      li:not(:first-child) {
-        counter-increment: stage-counter;
-        border-top: 1px solid #e3e3e3;
-        padding: 0;
-        a {
-          display: block;
-          margin: 0;
-          position: relative;
-          padding: 8px 0 8px 45px;
-          cursor: pointer;
-          .fa.fa-refresh {
-            float: right;
-            margin: 3px 10px 0 0;
-          }
-          &.active {
-            background: #EBF3FC;
-            font-weight: bold;
-            &:before {
-              background: #366aa4;
-            }
-          }
-          &:before {
-            content: counter(stage-counter);
-            position: absolute;
-            top: 8px;
-            left: 15px;
-            border-radius: 20px;
-            height: 20px;
-            width: 20px;
-            color: white;
-            background: #D4D4D4;
-            font-weight: bold;
-            font-size: .8em;
-            text-align: center;
-            text-shadow: none;
-          }
-          ul {
-            margin: 10px 0 0 20px;
-            list-style-type: decimal;
-            li {
-              border-top: none;
-              font-size: 11px;
-            }
-          }
-        }
-      }
-    }
-  }
-  .output-spin {
-    font-size: 20px;
-    text-align: center;
-  }
-  .alert {
-    margin-bottom: 1.5em;
-    &.alert-danger {
-      background: @buildErrorBackground;
-      border: @buildErrorBorder;
-      text-shadow: none;
-      color: @redLightest;
-      padding: 1em;
-      border-bottom-color: transparent;
-      a {
-        color: @white;
-        font-weight: bold;
-      }
-    }
-    .close {
-      right: 0;
-    }
-  }
-  .alert-wrap {
-    text-align: center;
-    margin: 0 auto;
-  }
-
-}
 .invite-form {
   @box_padding: 1em;
   @box_height: 5em;
@@ -651,27 +481,6 @@
         height: @box_height;
         box-shadow: 1px 0 @grayBoxBorder inset;
       }
-    }
-  }
-  footer {
-    .flexy();
-    .align-items(center);
-    .justify-content(center);
-    height: @foot_height;
-    button {
-      .circleButton(@grayLightest, @green);
-      font-size: 1.2em;
-      display: block;
-      &:hover {
-        i {
-          .translate(.3em, 0);
-          transition: .1s;
-        }
-      }
-    }
-    i {
-      font-size: .8em;
-      transition: .2s;
     }
   }
 }
@@ -899,7 +708,7 @@ table.code {
     }
   }
 
-  .tab-link-v2 {
+  .tab-link {
     color: @gray-dark-v2; // BS RESET
     border: none; // BS RESET
     margin: 0; // BS RESET

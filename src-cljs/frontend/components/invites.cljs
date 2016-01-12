@@ -66,13 +66,13 @@
            (om/build-all invite-tile users {:key :login})]]
          [:footer
           (forms/managed-button
-           [:button (let [users-to-invite (invitees users)]
-                      {:data-success-text "Sent"
-                       :on-click #(raise! owner [:invited-github-users
-                                                 (merge {:invitees users-to-invite}
-                                                        (if (:project-name opts)
-                                                          {:project-name (:project-name opts)}
-                                                          {:org-name (:org-name opts)}))])})
+           [:button.btn.btn-success (let [users-to-invite (invitees users)]
+                                      {:data-success-text "Sent"
+                                       :on-click #(raise! owner [:invited-github-users
+                                                                 (merge {:invitees users-to-invite}
+                                                                        (if (:project-name opts)
+                                                                          {:project-name (:project-name opts)}
+                                                                          {:org-name (:org-name opts)}))])})
 
             "Send Invites "
             [:i.fa.fa-envelope-o]])]]))))
@@ -134,5 +134,5 @@
               [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
               (let [current-uri (Uri. js/location.href)
                     root-uri (.resolve current-uri (Uri. "/"))]
-                [:p [:input {:value root-uri :type "text"}]])
+                [:p [:input.form-control {:value root-uri :type "text"}]])
               [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]])])))))

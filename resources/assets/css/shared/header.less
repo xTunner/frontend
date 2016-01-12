@@ -7,7 +7,7 @@
 }
 
 .breadcrumb {
-  margin-left: 0;
+  margin: 0;
   font-size: 20px;
   overflow: hidden;
   white-space: nowrap;
@@ -158,11 +158,22 @@
   border-radius: 4px 4px 0 0;
   z-index: 9001; // see intercom hack in shame.less
   background: @orange;
-  &.env-production  { background: @redLight;  }
-  &.env-staging     { background: @orange;    }
-  &.env-development { background: @blueLight; }
-  &.env-test        { background: @green;     }
-  &.env-dwwoelfel   { background: #500000;  }
+
+  &.env-production {
+    background: @brand-red-v2;
+  }
+
+  &.env-staging {
+    background: @orange;
+  }
+
+  &.env-development {
+    background: @brand-blue-v2;
+  }
+
+  &.env-test {
+    background: @brand-green-v2;
+  }
 }
 
 .head-admin {

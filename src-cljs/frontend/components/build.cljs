@@ -75,7 +75,8 @@
                             {:position :fixed
                              :top (:top stick)
                              :left (:left stick)
-                             :width (:width stick)})]
+                             :width (:width stick)
+                             :background-color "#f5f5f5"})]
         (html [:div {:ref "wrapper" :class wrapper-class :style wrapper-style}
                [:div {:ref "content" :class content-class :style content-style}
                 content]])))
@@ -226,7 +227,7 @@
                          :running "Status-Running"
                          :waiting "Status-Queued"
                          nil)]
-         [:a.container-selector-v2
+         [:a.container-selector
           {:on-click #(raise! owner [:container-selected {:container-id container-id}])
            :class (concat (container-model/status->classes status)
                           (when (= container-id current-container-id) ["active"]))}
@@ -286,11 +287,11 @@
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
             show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) (get-in data [:project-data :plan]))
             div (html
-                 [:div.container-list-v2 {:class (when (and (> previous-container-count 0)
-                                                            (> subsequent-container-count 0))
-                                                   "prev-and-next")}
+                 [:div.container-list {:class (when (and (> previous-container-count 0)
+                                                         (> subsequent-container-count 0))
+                                                "prev-and-next")}
                   (if (> previous-container-count 0)
-                    [:a.container-selector-v2.page-container-pills
+                    [:a.container-selector.page-container-pills
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (- paging-offset paging-width)}])}
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-left]]
@@ -307,14 +308,14 @@
                                :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
                   (if (> subsequent-container-count 0)
-                    [:a.container-selector-v2.page-container-pills
+                    [:a.container-selector.page-container-pills
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (+ paging-offset paging-width )}])}
                      [:div.pill-details ;; just for flexbox container
                       [:div "Next " subsequent-container-count]
                       [:div container-count " total"]]
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-right]]]
-                    [:a.container-selector-v2.add-containers
+                    [:a.container-selector.add-containers
                      {:href (build-model/path-for-parallelism build)
                       :title "Adjust parallelism"
                       :class (when show-upsell? "upsell")}
@@ -328,7 +329,7 @@
                                           :containers containers
                                           :categorized-containers categorized-containers
                                           :build-running? build-running?}))
-          (om/build sticky {:content div :content-class "containers-v2"})])))))
+          (om/build sticky {:content div :content-class "containers"})])))))
 
 (def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
 

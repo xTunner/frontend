@@ -5,10 +5,6 @@
   font-family: @brand-sans-serif-v2;
   background-color: @background-color-v2;
 
-  footer {
-    display: none;
-  }
-
   span.strikeout {
     text-decoration: line-through;
     align: right;
@@ -24,14 +20,14 @@
     padding: 0 15px 100px;
   }
 
-  .ui-v2-opt-in {
+  .opt-in-banner {
     .flex(0 0 auto);
     background: @feature-opt-in-banner-bg;
     box-shadow: -1px 0 @feature-opt-in-banner-shadow;
     font-size: 14px;
     color: @gray-darker;
 
-    .ui-v2-opt-in-wrapper {
+    .opt-in-wrapper {
       .flexy(center, row);
 
       margin: 15px;
@@ -51,17 +47,6 @@
       box-shadow: none;
       text-shadow: none;
       padding: 0.25em 1.25em;
-    }
-  }
-
-  .ui-v2-opt-out {
-    a {
-      margin-left: 10px;
-      margin-right: 10px;
-    }
-    button {
-      .subtleButton(@green);
-      float: none;
     }
   }
 
@@ -134,7 +119,6 @@
 }
 
 @import "aside.less";
-@import "top-nav.less";
 
 #elevio-widget,
 #intercom-container {

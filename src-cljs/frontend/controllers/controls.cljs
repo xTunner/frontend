@@ -114,12 +114,12 @@
   (assoc-in state state/show-all-branches-path value))
 
 (defmethod control-event :expand-repo-toggled
-  [target message {:keys [repo-name]} state]
+  [target message {:keys [repo]} state]
   (update-in state state/expanded-repos-path (fn [expanded-repos]
-                                               ((if (expanded-repos repo-name)
+                                               ((if (expanded-repos repo)
                                                   disj
                                                   conj)
-                                                expanded-repos repo-name))))
+                                                expanded-repos repo))))
 
 (defmethod control-event :sort-branches-toggled
   [target message value state]

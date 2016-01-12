@@ -223,7 +223,7 @@
         [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc"} "our docs"]
         " on how to use VNC with CircleCI."]]
 
-        (om/build ssh-node-list nodes)])))
+      (om/build ssh-node-list nodes)])))
 
 (defn build-ssh [{:keys [build user]} owner]
   (reify
@@ -664,7 +664,7 @@
 
 
 (def tab-tag :li.build-info-tab)
-(def tab-link :a.tab-link-v2)
+(def tab-link :a.tab-link)
 
 (defn build-sub-head [data owner]
   (reify

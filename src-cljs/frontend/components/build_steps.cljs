@@ -150,7 +150,7 @@
                        [:pre.bash-command
                         {:title "The full bash command used to run this setup"}
                         (:bash_command action)]])
-                    [:pre.output.solarized {:style {:white-space "normal"}}
+                    [:pre.output {:style {:white-space "normal"}}
                      (when (:truncated action)
                        [:span.truncated "(this output has been truncated)"])
 

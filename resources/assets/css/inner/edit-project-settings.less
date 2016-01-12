@@ -5,27 +5,20 @@
 }
 #project-settings {
   .flexy();
+
   a {
-    color: @blueDark;
-    transition-property: color, text-shadow;
-    transition-duration: .3s;
-    transition-timing-function: ease-in-out;
-    text-decoration: none;
-    &:hover {
-      color: @blueLight;
-      transition-duration: .1s;
-    }
     &.btn-primary {
       color: white;
     }
   }
+
   h1 {
     margin-top: 0;
   }
+
   h2 {
     font-family: @font-family-base;
     font-weight: bold;
-    color: @gray;
     font-size: 2em;
     display: block;
     width: 100%;
@@ -34,23 +27,28 @@
     line-height: 1.25em;
     padding: .25em 0;
   }
+
   h4 {
     font-family: @font-family-base;
     font-weight: bold;
-    color: @gray;
     margin: 0;
     font-size: 1em;
     line-height: 2em;
   }
+
   ul {
     list-style: none;
     margin: 0;
+    padding: 0;
   }
+
   aside {
+    .flex(0 1.1 auto);
+
     width: @aside-menu-width;
     min-width: 200px;
-    .flex(0 1.1 auto);
   }
+
   .try-out-build {
     @input-width: 7em;
     max-height: 8em;
@@ -94,6 +92,7 @@
       }
     }
   }
+
   .side-list {
     margin: 0;
     list-style: none;
@@ -104,17 +103,18 @@
       display: block;
     }
   }
+
   .side-title {
     line-height: 1em;
     margin: .5em 0;
     padding-top: 1em;
-    color: @gray;
     font-weight: bold;
     &:first-of-type {
       margin-top: 0;
       padding-top: 0;
     }
   }
+
   #subpage {
     label:not([placeholder]) {
       display: inline-block;
@@ -129,64 +129,13 @@
       }
     }
   }
-  .project-settings-inner {
-    .flex(1 1 auto);
-    min-height: 89vh;
-    overflow: auto;
 
-    button {
-      margin-right: 1em;
-    }
-  }
-  .project-setting-watch {
-    &:not(.unwatched) {
-      button {
-        .circleButton(@grayLightest, @redLight);
-      }
-    }
-    &.unwatched {
-      button {
-        .circleButton(@grayLightest, @green);
-      }
-    }
-  }
-  .styled-select {
-    position: relative;
-    width: 100%;
-    display: inline-block;
-    select {
-      background: transparent;
-      -webkit-appearance: none;
-      outline: none;
-      .outlineInside(@grayLighter);
-      border-radius: 5em;
-      .box-sizing(border-box);
-      line-height: 2em;
-      height: 3em;
-      width: 100%;
-      padding: .5em 1.34em;
-      margin-bottom: 1em;
-      -webkit-font-smoothing: antialiased;
-      &:hover ~ i.fa-chevron-down {
-        color: @blueLight;
-        transition-duration: .1s;
-      }
-    }
-    i {
-      &.fa-chevron-down {
-        right: 1.5em;
-        pointer-events: none;
-        position: absolute;
-        top: 24%;
-        transition: color .3s ease-in-out;
-      }
-    }
-  }
   // Overview Page
   .overview-options {
     margin: 2em 0;
     .clearfix();
   }
+
   .overview-item {
     margin-right: 2%;
     float: left;
@@ -196,12 +145,14 @@
       margin-right: 0;
     }
   }
+
   // Parallelism Page
   .parallelism-picker {
     .try-out-build {
       padding-top: 1em;
     }
   }
+
   .parallelism-items {
     .clearfix();
     @blockSize: 10em;
@@ -355,6 +306,7 @@
       }
     }
   }
+
   .parallelism-info {
     width: 48ex;
     order: 1;
@@ -367,6 +319,7 @@
       display: none;
     }
   }
+
   .mini-faq {
     display: flex;
     flex-flow: row wrap;
@@ -381,13 +334,10 @@
       }
     }
   }
+
   // Environment Variables Page
   .environment-variables-inner{
-    margin: 2em 0;
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     table {
       .tableLight();
       td {
@@ -400,24 +350,18 @@
         }
       }
     }
-    input[type=submit] {
-      .circleButton(@grayLightest, @green);
-    }
+
     a {
       .tableDrawerBtn();
     }
   }
+
   // Dependencies Page
   .dependencies-page {
     fieldset {
-      input {
-        &[type="submit"] {
-          .circleButton();
-        }
-      }
       p {
-        max-width: 66%;
         margin-bottom: 2em;
+        margin-top: 1em;
       }
     }
 
@@ -425,13 +369,10 @@
       font-family: @font-family-monospace;
     }
   }
-  .dependencies-inner {
-    margin: 2em 0;
-  }
+
   // Tests Page
   .tests-page {
     p {
-      max-width: 66%;
       margin-bottom: 2em;
     }
     .try-out-build {
@@ -442,6 +383,7 @@
       font-family: @font-family-monospace;
     }
   }
+
   .tests-inner {
     margin: 2em 0;
     input {
@@ -450,6 +392,7 @@
       }
     }
   }
+
   // Chatrooms Page
   .chat-rooms {
     .clearfix();
@@ -464,6 +407,7 @@
       }
     }
   }
+
   .chat-room-item {
     width: 21em;
     .outlineFlat();
@@ -514,6 +458,7 @@
       }
     }
   }
+
   .chat-room-head {
     @logoHeight: 20px;
     padding: 1em;
@@ -563,6 +508,7 @@
       &:after  { background-position: (-@logoHeight * 5)  0          ;}
     }
   }
+
   .chat-room-body {
     .clearfix();
     section:first-of-type {
@@ -583,6 +529,7 @@
       position: absolute;
     }
   }
+
   .chat-room-buttons {
     padding-bottom: 1em;
     text-align: center;
@@ -592,6 +539,7 @@
       float: none;
     }
   }
+
   // SSH Keys Page
   .sshkeys-page {
     table {
@@ -609,10 +557,7 @@
         vertical-align: middle;
       }
     }
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     input {
       &[type="submit"] {
         .circleButton();
@@ -620,6 +565,7 @@
       }
     }
   }
+
   .sshkeys-inner {
     margin: 2em 0;
     a {
@@ -631,6 +577,7 @@
       }
     }
   }
+
   // Checkout keys page
   .checkout-page {
     .btn {
@@ -641,6 +588,7 @@
       color: @grayLight;
     }
   }
+
   .checkout-page-inner {
     ul {
       list-style: disc inside;
@@ -677,6 +625,7 @@
       white-space: nowrap;
     }
   }
+
   // Circle API & Status Badge pages
   .circle-api-page, .status-page {
     table {
@@ -700,6 +649,7 @@
       }
     }
   }
+
   .circle-api-page-inner, .status-page-inner {
     margin: 2em 0;
     .popover {
@@ -707,10 +657,7 @@
       top: 66px;
       left: 340px;
     }
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     input {
       &[type="submit"] {
         .circleButton();
@@ -720,6 +667,7 @@
       cursor: pointer;
     }
   }
+
   .status-page-inner {
     .token .warning {
       font-weight: bold;
@@ -732,28 +680,22 @@
       height: 8em;
     }
   }
+
   // Heroku Page
   .heroku-step {
     margin-bottom: 3em;
     h4 {
       margin: 1em 0;
     }
-    input[type="submit"] {
-      outline: none;
-    }
+
     form {
       margin: 1em 0;
       &:empty {
         display: none;
       }
     }
-    .set-user {
-      .circleButton();
-    }
-    .remove-user {
-      .circleButton();
-    }
   }
+
   .heroku-item {
     > h2 {
       display: none;
@@ -794,9 +736,6 @@
       h4 {
         margin: 1em 0;
       }
-    }
-    .styled-select .placeholder {
-      color: @grayLight;
     }
     .input-with-help {
       position: relative;
