@@ -21,7 +21,7 @@ module.exports = function(config) {
 
     client: {
       // main function
-      args: ['circle.karma.run_tests_for_karma']
+      args: ['frontend.test_runner.run_tests_for_karma']
     },
 
     browsers: ['Chrome'],
