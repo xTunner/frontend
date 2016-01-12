@@ -28,6 +28,10 @@
 (defn osx? [plan]
   (boolean (:osx plan)))
 
+(defn osx-trial? [plan]
+  (and (osx? plan)
+       (some-> plan :osx_trial_active)))
+
 (defn trial? [plan]
   (boolean (:trial plan)))
 
@@ -158,6 +162,14 @@
   "Normalizes the Stripe amount on the plan to dollars."
   [plan]
   (/ (:amount plan) 100))
+
+(defn osx-cost
+  [plan]
+  (or (some-> plan :osx :template :price) 0))
+
+(defn linux-cost
+  [plan]
+  (- (stripe-cost plan) (osx-cost plan)))
 
 (defn grandfathered? [plan]
   (and (paid? plan)
