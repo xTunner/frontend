@@ -116,7 +116,7 @@
             should-build? (repo-model/should-do-first-follower-build? repo)]
         (html
          (cond (repo-model/can-follow? repo)
-               [:li.repo-follow
+               [:li.repo-follow {:class (when (repo-model/likely-osx-repo? repo) "osx")}
                 [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
