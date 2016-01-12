@@ -7,7 +7,7 @@
   margin: 0 0 @margin;
   padding: @margin;
   border: @border solid @grayLighter;
-  background: @appBackgroundColor;
+  background: @white;
   border-radius: @radius;
   resize: none;
   box-shadow: none !important; // BS RESET = "!important"
@@ -20,11 +20,11 @@
       }
     }
     &:focus {
-      border-color: @blueLighter !important; // BS RESET = "!important"
+      border-color: @brand-blue-v2 !important; // BS RESET = "!important"
       + label {
         &[placeholder] {
           &:before {
-            color: @blueLighter;
+            color: @brand-blue-v2;
           }
         }
       }
@@ -72,7 +72,7 @@
           color: @grayLight;
           white-space: nowrap;
           transition: .3s ease-in-out;
-          background-image: linear-gradient(to bottom, @appBackgroundColor, @appBackgroundColor);
+          background-image: linear-gradient(to bottom, @white, @white);
           background-size: 100% 5px;
           background-repeat: no-repeat;
           background-position: center;

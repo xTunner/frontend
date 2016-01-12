@@ -10,7 +10,6 @@
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
-            [frontend.components.opt-in :as opt-in]
             [frontend.models.project :as project-model]
             [frontend.models.feature :as feature]
             [frontend.routes :as routes]
@@ -41,15 +40,12 @@
     (let [navigation-data (:navigation-data app)]
       (cond (:repo navigation-data) [:a.settings.project-settings
                                      {:href (routes/v1-project-settings navigation-data) }
-                                     (if (feature/enabled? :ui-v2)
-                                       [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                                       (common/ico :settings-light))
+                                     [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                                      "Project Settings"]
             (:org navigation-data) [:a.settings.org-settings
                                     {:href (routes/v1-org-settings navigation-data)}
-                                    (if (feature/enabled? :ui-v2)
                                       [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                                      (common/ico :settings-light)) "Organization Settings"]
+                                    "Organization Settings"]
             :else nil))))
 
 (defn head-user [app owner]
@@ -65,17 +61,7 @@
             vcs-url (:vcs_url project)]
         (html
           [:div.head-user
-           [:ol.breadcrumb
-            (when (and (not (feature/enabled? :ui-v2)) (seq crumbs-data))
-              [:li
-               [:a {:title "home", :href "/"} [:i.fa.fa-home] " "]])
-            (crumbs/crumbs crumbs-data)]
-           (when (and (#{:dashboard :account} (:navigation-point app))
-                      (not (-> app :navigation-data :repo))
-                      (not (-> app :navigation-data :org))
-                      (feature/enabled? :ui-v2-opt-in-banner)
-                      (feature/enabled-in-cookie? :ui-v2))
-             (om/build opt-in/ui-v2-opt-out-ui app))
+           [:ol.breadcrumb (crumbs/crumbs crumbs-data)]
            (when (show-follow-project-button? app)
              (forms/managed-button
                [:button#follow-project-button
@@ -83,10 +69,10 @@
                  :data-spinner true}
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app owner)
-           (when (and (feature/enabled? :ui-v2) (= :project-settings (:navigation-point app)))
+           (when (= :project-settings (:navigation-point app))
              [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
               (str "View " project-name " »")])
-           (when (and (feature/enabled? :ui-v2) (= :build (:navigation-point app)))
+           (when (= :build (:navigation-point app))
              (om/build build-head/build-head-actions app))])))))
 
 (defn head-admin [app owner]

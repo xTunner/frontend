@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
-            [frontend.components.about :as about]
             [frontend.components.admin :as admin]
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
@@ -15,23 +14,16 @@
             [frontend.components.insights :as insights]
             [frontend.components.invites :as invites]
             [frontend.components.changelog :as changelog]
-            [frontend.components.enterprise :as enterprise]
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
-            [frontend.components.integrations :as integrations]
-            [frontend.components.jobs :as jobs]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
             [frontend.components.pricing :as pricing]
-            [frontend.components.privacy :as privacy]
             [frontend.components.project-settings :as project-settings]
-            [frontend.components.security :as security]
             [frontend.components.shared :as shared]
-            [frontend.components.stories :as stories]
-            [frontend.components.language-landing :as language-landing]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.opt-in :as opt-in]
@@ -61,7 +53,7 @@
 
 (defn dominant-component [app-state owner]
   (case (:navigation-point app-state)
-    :build (build-com/build)
+    :build build-com/build
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
     :build-insights insights/build-insights
@@ -77,27 +69,9 @@
     :loading loading
 
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
-    :about about/about
-    :contact about/contact
-    :team about/team
-    :features features/features
-    :pricing pricing/pricing
-    :jobs jobs/jobs
-    :press press/press
-    :privacy privacy/privacy
-    :security security/security
-    :security-hall-of-fame security/hall-of-fame
-    :enterprise enterprise/enterprise
-    :azure enterprise/enterprise-azure
-    :aws enterprise/enterprise-aws
-    :stories stories/story
-    :language-landing language-landing/language-landing
-    :integrations integrations/integration
     :changelog changelog/changelog
     :documentation docs/documentation
-    :mobile mobile/mobile
-    :ios mobile/ios
-    :android mobile/android
+    :pricing pricing/pricing
 
     :signup signup/signup
 
@@ -126,7 +100,7 @@
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               dom-com (dominant-component app owner)
-              show-header-and-footer? (not= :signup (:navigation-point app))
+              show-footer? (not= :signup (:navigation-point app))
               project (get-in app state/project-path)]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
@@ -135,7 +109,6 @@
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
-                                       (if (feature/enabled? :ui-v2) ["ui-v2"] ["ui-v1"])
                                        ;; The following is meant for the landing ab test to hide old header/footer
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
@@ -144,10 +117,7 @@
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
-              [:main.app-main {:ref "app-main"
-                               :class (when (feature/enabled? :ui-v2)
-                                        "new-app-main-margin")}
-
+              [:main.app-main.new-app-main-margin {:ref "app-main"}
                (when (and inner? logged-in? (feature/enabled? :ui-fp-top-bar))
                  (om/build top-nav/top-nav app-without-container-data))
 
@@ -156,15 +126,11 @@
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
 
-               (when (and (#{:dashboard :account} (:navigation-point app))
-                          (feature/enabled? :ui-v2-opt-in-banner)
-                          (not (feature/enabled-in-cookie? :ui-v2)))
-                 (om/build opt-in/ui-v2-opt-in-banner app))
                (when (and (= :build (:navigation-point app))
                           (project/feature-enabled? project :osx))
-             (om/build opt-in/ios-reminder-banner app))
-               (when (and (feature/enabled? :ui-v2))
-                 (om/build header/header app-without-container-data))
+                 (om/build opt-in/ios-reminder-banner app))
+
+               (om/build header/header app-without-container-data)
 
                [:div.app-dominant
                 (when (and inner? logged-in?)
@@ -172,12 +138,9 @@
 
 
                 [:div.main-body
-                 (when (and (not (feature/enabled? :ui-v2))
-                            show-header-and-footer?)
-                   (om/build header/header app-without-container-data))
                  (om/build dom-com app)
 
-                 (when (and show-header-and-footer? (config/footer-enabled?))
+                 (when (and (not inner?) show-footer? (config/footer-enabled?))
                    [:footer.main-foot
                     (footer/footer)])]]
 

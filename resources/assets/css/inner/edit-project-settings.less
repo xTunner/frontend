@@ -7,15 +7,6 @@
   .flexy();
 
   a {
-    color: @blueDark;
-    transition-property: color, text-shadow;
-    transition-duration: .3s;
-    transition-timing-function: ease-in-out;
-    text-decoration: none;
-    &:hover {
-      color: @blueLight;
-      transition-duration: .1s;
-    }
     &.btn-primary {
       color: white;
     }
@@ -26,9 +17,8 @@
   }
 
   h2 {
-    font-family: @sansFontFamily;
+    font-family: @font-family-base;
     font-weight: bold;
-    color: @gray;
     font-size: 2em;
     display: block;
     width: 100%;
@@ -39,9 +29,8 @@
   }
 
   h4 {
-    font-family: @sansFontFamily;
+    font-family: @font-family-base;
     font-weight: bold;
-    color: @gray;
     margin: 0;
     font-size: 1em;
     line-height: 2em;
@@ -119,7 +108,6 @@
     line-height: 1em;
     margin: .5em 0;
     padding-top: 1em;
-    color: @gray;
     font-weight: bold;
     &:first-of-type {
       margin-top: 0;
@@ -138,63 +126,6 @@
     > section {
       > article {
         padding: 1em 0;
-      }
-    }
-  }
-
-  .project-settings-inner {
-    .flex(1 1 auto);
-    padding: 0 2em;
-    min-height: 89vh;
-    overflow: auto;
-
-    button {
-      margin-right: 1em;
-    }
-  }
-
-  .project-setting-watch {
-    &:not(.unwatched) {
-      button {
-        .circleButton(@grayLightest, @redLight);
-      }
-    }
-    &.unwatched {
-      button {
-        .circleButton(@grayLightest, @green);
-      }
-    }
-  }
-
-  .styled-select {
-    position: relative;
-    width: 100%;
-    display: inline-block;
-    select {
-      background: transparent;
-      -webkit-appearance: none;
-      outline: none;
-      .outlineInside(@grayLighter);
-      border-radius: 5em;
-      .box-sizing(border-box);
-      line-height: 2em;
-      height: 3em;
-      width: 100%;
-      padding: .5em 1.34em;
-      margin-bottom: 1em;
-      -webkit-font-smoothing: antialiased;
-      &:hover ~ i.fa-chevron-down {
-        color: @blueLight;
-        transition-duration: .1s;
-      }
-    }
-    i {
-      &.fa-chevron-down {
-        right: 1.5em;
-        pointer-events: none;
-        position: absolute;
-        top: 24%;
-        transition: color .3s ease-in-out;
       }
     }
   }
@@ -406,11 +337,7 @@
 
   // Environment Variables Page
   .environment-variables-inner{
-    margin: 2em 0;
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     table {
       .tableLight();
       td {
@@ -423,9 +350,7 @@
         }
       }
     }
-    input[type=submit] {
-      .circleButton(@grayLightest, @green);
-    }
+
     a {
       .tableDrawerBtn();
     }
@@ -434,30 +359,20 @@
   // Dependencies Page
   .dependencies-page {
     fieldset {
-      input {
-        &[type="submit"] {
-          .circleButton();
-        }
-      }
       p {
-        max-width: 66%;
         margin-bottom: 2em;
+        margin-top: 1em;
       }
     }
 
     textarea {
-      font-family: @codeFontFamily;
+      font-family: @font-family-monospace;
     }
-  }
-
-  .dependencies-inner {
-    margin: 2em 0;
   }
 
   // Tests Page
   .tests-page {
     p {
-      max-width: 66%;
       margin-bottom: 2em;
     }
     .try-out-build {
@@ -465,7 +380,7 @@
     }
 
     textarea {
-      font-family: @codeFontFamily;
+      font-family: @font-family-monospace;
     }
   }
 
@@ -628,7 +543,6 @@
   // SSH Keys Page
   .sshkeys-page {
     table {
-      .skin-table();
       margin: 2em 0;
       &:empty {
         display: none;
@@ -643,10 +557,7 @@
         vertical-align: middle;
       }
     }
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     input {
       &[type="submit"] {
         .circleButton();
@@ -682,8 +593,8 @@
     ul {
       list-style: disc inside;
     }
+
     table {
-      .skin-table();
       margin-bottom: 1em;
       tr.preferred {
         td {
@@ -695,7 +606,7 @@
         }
       }
     }
-    margin: 2em 0;
+
     .tooltip {
       font-size: @baseFontSize;
     }
@@ -718,7 +629,6 @@
   // Circle API & Status Badge pages
   .circle-api-page, .status-page {
     table {
-      .skin-table();
       overflow: visible;
       th {
         text-align: left;
@@ -747,10 +657,7 @@
       top: 66px;
       left: 340px;
     }
-    form {
-      margin-top: 2em;
-      width: 50%;
-    }
+
     input {
       &[type="submit"] {
         .circleButton();
@@ -780,20 +687,12 @@
     h4 {
       margin: 1em 0;
     }
-    input[type="submit"] {
-      outline: none;
-    }
+
     form {
       margin: 1em 0;
       &:empty {
         display: none;
       }
-    }
-    .set-user {
-      .circleButton();
-    }
-    .remove-user {
-      .circleButton();
     }
   }
 
@@ -837,9 +736,6 @@
       h4 {
         margin: 1em 0;
       }
-    }
-    .styled-select .placeholder {
-      color: @grayLight;
     }
     .input-with-help {
       position: relative;

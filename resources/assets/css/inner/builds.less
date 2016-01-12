@@ -1,221 +1,8 @@
 @import "../shared/variables.less";
 
-@aqua-marine: #33c1db;
 @side-line-width: 5px;
-
-.build-head-wrapper {
-  color: @gray;
-  box-shadow: 0 1px @grayBorder;
-  padding: @innerContentPadding 0;
-  *[role="button"] {
-    cursor: pointer;
-  }
-}
-
-&.ui-v1 {
-  .notices {
-    margin-top: 1.5em;
-  }
-}
-
-.container-selector.parallelism-tab.upgrade  {
-  max-width: 50%;
-  font-size: 18px;
-  background-color: @aqua-marine;
-  border: @aqua-marine 1px solid;
-
-  &:hover {
-    background-color: @green;
-    border: @green 1px solid;
-  }
-}
-
-&.ui-v2 {
-  @tab-background: #dcdcdc;
-  @tab-separator-border: #c7c7c7;
-
-  .build-head {
-    .sub-head-top {
-      padding: 0;
-    }
-
-    .nav {
-      .flexy();
-    }
-
-    .build-info-tab {
-      flex-grow: 1;
-      background: @tab-background;
-      border-right: 1px solid @tab-separator-border;
-
-      &:last-child {
-        border-right: none;
-      }
-
-      &.active {
-        background: @white;
-      }
-    }
-
-    .tab-link-v2 {
-      color: @gray-dark-v2; // BS RESET
-      border: none; // BS RESET
-      margin: 0; // BS RESET
-
-      &:hover {
-        background: none; // BS RESET
-        color: @gray-light-v2; // BS RESET
-        border: none; // BS RESET
-      }
-    }
-  }
-
-  // TODO: remove once the build-info block has been totally ported
-  .build-info {
-    display: block;
-  }
-
-  .sub-head-usage-queue {
-    .build:last-child {
-      margin-bottom: 0;
-      box-shadow: none;
-    }
-  }
-}
-
-&.ui-v1 {
-  .build-head {
-    margin: 0;
-    section {
-      margin: @innerContentPadding 0 0 0;
-      padding-top: @innerContentPadding;
-    }
-
-    .build-info {
-      margin: 0 1em;
-    }
-
-    .compare {
-      padding-left: 0.5ex;
-      font-weight: normal;
-    }
-
-    .sub-head-top {
-      box-shadow: 0 -1px @grayBoxBorder inset;
-      padding: 0 1em;
-    }
-
-    .nav {
-      border: none; // BS RESET
-      &.nav-tabs {
-        margin: 0;
-        .active .tab-link {
-          background: none; // BS RESET
-          color: @blue; // BS RESET
-          box-shadow: 0 -1px @blue inset,
-          0  1px @blue;
-        }
-        span.fail-count {
-          background: @redLight;
-          color: @white;
-          border-radius: 1em;
-          padding: 2px 5px;
-        }
-      }
-      li {
-        margin: 0; // BS RESET
-      }
-      .tab-link {
-        color: @grayLight;
-        line-height: 1em;
-        padding: 1em;
-        border: none; // BS RESET
-        margin: 0; // BS RESET
-        &:hover {
-          background: none; // BS RESET
-          color: @blue; // BS RESET
-          border: none; // BS RESET
-          box-shadow: 0 -1px @blue inset,
-          0  1px @blue;
-        }
-      }
-    }
-  }
-
-  .sub-head-content {
-    padding-top: 1em;
-    padding-left: 1em;
-    padding-right: 1em;
-
-    pre, p {
-      margin: 0;
-    }
-  }
-
-  .build-tests-list {
-    .filename {
-      &:not(:first-child) {
-        padding-top: 1em;
-      }
-
-      margin-left: -2em;
-    }
-  }
-}
-
-&.ui-v2 .commit-message, .sha-one {
-  font-family: @monoFontFamilyV2;
-}
-
-
-.build-info {
-  .flexy();
-  table {
-    .flex(1 0 50%);
-    display: block;
-    line-height: 1.5em;
-  }
-  th {
-    width: 1%;
-    font-weight: bold;
-    text-align: left;
-    white-space: nowrap;
-    padding: 0;
-  }
-  td {
-    width: 40%;
-    padding: 0 .5em;
-  }
-  .build-status {
-    padding: 2px 5px;
-    border-radius: 1em;
-    color: @white;
-    text-transform: capitalize;
-    background: @grayLight; // for queued, not_running, canceled
-    .statusColor(@color) {
-      background: @color;
-    }
-    &.success,
-    &.fixed {
-      .statusColor(@green);
-    }
-    &.no_tests,
-    &.failed,
-    &.timedout {
-      .statusColor(@redLight);
-    }
-    &.running {
-      .statusColor(@blueLight);
-    }
-    &.not_run,
-    &.circle_bug {
-      .statusColor(@orange);
-    }
-  }
-  .build-canceler {
-    padding: 2px 5px;
-  }
-}
+@tab-background: #dcdcdc;
+@tab-separator-border: #c7c7c7;
 
 .additional-containers-offer {
   a {
@@ -242,53 +29,7 @@
   }
 }
 
-&.ui-v1 .build-queue {
-  .cancel-build {
-    .subtleButton(@grayLight);
-    .subtleButtonColor(@redLight, @redLight);
-  }
 
-  .queue-message {
-    padding-bottom: 15px;
-  }
-}
-
-&.ui-v2 .build-actions {
-  .flexy(center);
-  margin-top: 6px;
-  vertical-align: middle;
-}
-
-&.ui-v1 {
-  .build-actions {
-    .flexy(column);
-    padding-top: 4px; // to match space from line height in table
-
-    > .actions {
-      .flexy(center, flex-end);
-      margin-bottom: .5em;
-
-      border-radius: 2em;
-
-      > button {
-        .subtleButton(@grayLight);
-        .aRowOfButtons(2em);
-        float: none;
-      }
-
-      // When a button next to the main Rebuild button is hovered, indicate that
-      // it's also a rebuild action by lightly shading the Rebuild button.
-      &:hover > .retry_build:not(:hover) {
-        .subtleBtnTextColor(@whiten);
-      }
-
-      > .report-build,
-      > .cancel-build {
-        .subtleButtonColor(@redLight, @redLight);
-      }
-    }
-  }
-}
 
 .build-ssh-list {
   padding: 1em;
@@ -309,10 +50,6 @@
     display: inline-block;
   }
 }
-.build-ssh-doc {
-  font-size: .9em;
-  margin-top: .5em;
-}
 
 .build-tests-list-container {
   padding-top: 1em;
@@ -326,7 +63,7 @@
 
 .build-artifacts-list {
   .clearfix();
-  font-family: @codeFontFamily;
+  font-family: @font-family-monospace;
   font-size: @codeFontSize;
   list-style-type: none;
   padding: 0;
@@ -349,14 +86,6 @@
     a {
       margin-left: ~'calc(-@{codeCharacterWidth} * 1)';
     }
-  }
-}
-
-&.ui-v2 .action-log-messages {
-  background: @terminal-background-color-v2;
-
-  &.exit-code {
-    font-family: @monoFontFamilyV2;
   }
 }
 
@@ -393,37 +122,6 @@
   font-style: italic;
 }
 
-&.ui-v1 {
-  .type-divider {
-    text-align: center;
-    border-bottom: 1px solid #777;
-    line-height: 0.1em;
-    margin: 30px 0 7px;
-    span {
-      background: @appBackgroundColor;
-      color: #777;
-      font-size: 16px;
-      padding: 0 10px;
-    }
-  }
-}
-
-&.ui-v2 {
-  .type-divider {
-    text-align: center;
-    border-bottom: 1px solid #777;
-    line-height: 0.1em;
-    margin: 25px 0 15px;
-
-    span {
-      padding: 0 10px;
-      background: @appBackgroundColor;
-      color: #777;
-      font-size: 14px;
-      text-transform: uppercase;
-    }
-  }
-}
 
 .zerothdivider(@type) {
   .container-view > .type-@{type} {
@@ -453,99 +151,9 @@
   }
 }
 
-&.ui-v1 {
-  .build-head-wrapper {
-    dl {
-      margin: 0; // try to eliminate
-    }
-  }
 
-  .build-output {
-    margin-left: 2px;
-    margin-right: 2px;
-
-    border-radius: 5px;
-
-    .failed {
-      .command-text, .time {
-        color: @whiten;
-      }
-
-      .fa-chevron-down, .fa-chevron-right {
-        text-shadow: none;
-      }
-    }
-  }
-
-  .action_header {
-    &.success > .ah_wrapper:before { background: @green; }
-    &.failed > .ah_wrapper:before { background: @redLight; }
-    &.running > .ah_wrapper:before { background: @yellow; }
-    &.canceled > .ah_wrapper:before { background: @grayLight; }
-    &.failed .header.running { background: @lightYellow; }
-    &.failed .header.failed { background: @redLight; height: 40px; }
-    &.failed .header.running { background: @lightYellow; }
-  }
-
-  .action-log-messages {
-    border-radius: 5px;
-    background: @terminal-background-color;
-  }
-
-  .ah_wrapper {
-    border-radius: 0 3px 3px 0;
-
-    &:before {
-      content: "";
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: @side-line-width;
-    }
-  }
-}
-
-&.ui-v2 {
-  .action_header {
-    &.success {
-      border-left: @side-line-width solid @brand-success-v2;
-    }
-
-    &.failed {
-      border-left: @side-line-width solid @brand-danger-v2;
-
-      // make sure failed command text color is not white on a white background
-      .command-text {
-        color: @component-header-text-v2;
-      }
-
-      .action-source, .time {
-        color: @component-body-text-v2;
-      }
-    }
-
-    &.running {
-      border-left: @side-line-width solid @brand-primary-v2;
-    }
-
-    &.canceled {
-      border-left: @side-line-width solid @brand-canceled-v2;
-    }
-
-    .command-text {
-      color: @component-header-text-v2;
-    }
-
-    .action-source, .time {
-      color: @component-body-text-v2;
-    }
-  }
-}
 
 .build-output  {
-  box-shadow: inset 1px 1px 0 rgba(255,255,255, .2);
   margin-bottom: 5px;
   color: @gray;
   font-weight: normal;
@@ -676,100 +284,6 @@
   }
 }
 
-#build-log-container {
-  // Make the bootstrap tooltip for the commit message large enough to show a full sha1.
-  .tooltip-inner {
-    max-width: 500px;
-  }
-  .container-fluid.row-fluid {
-    padding: 0 2%;
-    width: 96%;
-  }
-  .stages {
-    margin: 0;
-    h4 {
-      margin: 0 0 10px 20px;
-      line-height: 22px;
-    }
-    > ul {
-      padding: 10px 0 0 0;
-      list-style-type: none;
-      li:not(:first-child) {
-        counter-increment: stage-counter;
-        border-top: 1px solid #e3e3e3;
-        padding: 0;
-        a {
-          display: block;
-          margin: 0;
-          position: relative;
-          padding: 8px 0 8px 45px;
-          cursor: pointer;
-          .fa.fa-refresh {
-            float: right;
-            margin: 3px 10px 0 0;
-          }
-          &.active {
-            background: #EBF3FC;
-            font-weight: bold;
-            &:before {
-              background: #366aa4;
-            }
-          }
-          &:before {
-            content: counter(stage-counter);
-            position: absolute;
-            top: 8px;
-            left: 15px;
-            border-radius: 20px;
-            height: 20px;
-            width: 20px;
-            color: white;
-            background: #D4D4D4;
-            font-weight: bold;
-            font-size: .8em;
-            text-align: center;
-            text-shadow: none;
-          }
-          ul {
-            margin: 10px 0 0 20px;
-            list-style-type: decimal;
-            li {
-              border-top: none;
-              font-size: 11px;
-            }
-          }
-        }
-      }
-    }
-  }
-  .output-spin {
-    font-size: 20px;
-    text-align: center;
-  }
-  .alert {
-    margin-bottom: 1.5em;
-    &.alert-danger {
-      background: @buildErrorBackground;
-      border: @buildErrorBorder;
-      text-shadow: none;
-      color: @redLightest;
-      padding: 1em;
-      border-bottom-color: transparent;
-      a {
-        color: @white;
-        font-weight: bold;
-      }
-    }
-    .close {
-      right: 0;
-    }
-  }
-  .alert-wrap {
-    text-align: center;
-    margin: 0 auto;
-  }
-
-}
 .invite-form {
   @box_padding: 1em;
   @box_height: 5em;
@@ -969,27 +483,6 @@
       }
     }
   }
-  footer {
-    .flexy();
-    .align-items(center);
-    .justify-content(center);
-    height: @foot_height;
-    button {
-      .circleButton(@grayLightest, @green);
-      font-size: 1.2em;
-      display: block;
-      &:hover {
-        i {
-          .translate(.3em, 0);
-          transition: .1s;
-        }
-      }
-    }
-    i {
-      font-size: .8em;
-      transition: .2s;
-    }
-  }
 }
 
 .icon-pass {
@@ -1066,7 +559,7 @@
     }
     h5, h6 {
       font-weight: normal;
-      font-family: @codeFontFamily;
+      font-family: @font-family-monospace;
     }
     table.code {
       color: @grayLighter;
@@ -1133,7 +626,7 @@ table.code {
   border-radius: 4px;
   font-size: @codeFontSize;
   line-height: @fontSizeLarge;
-  font-family: @codeFontFamily;
+  font-family: @font-family-monospace;
   thead {
     th {
       padding: 0;      //
@@ -1189,5 +682,121 @@ table.code {
     span {
       white-space: pre-wrap;
     }
+  }
+}
+
+.build-head {
+  .sub-head-top {
+    padding: 0;
+  }
+
+  .nav {
+    .flexy();
+  }
+
+  .build-info-tab {
+    flex-grow: 1;
+    background: @tab-background;
+    border-right: 1px solid @tab-separator-border;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.active {
+      background: @white;
+    }
+  }
+
+  .tab-link {
+    color: @gray-dark-v2; // BS RESET
+    border: none; // BS RESET
+    margin: 0; // BS RESET
+
+    &:hover {
+      background: none; // BS RESET
+      color: @gray-light-v2; // BS RESET
+      border: none; // BS RESET
+    }
+  }
+}
+
+// TODO: remove once the build-info block has been totally ported
+.build-info {
+  display: block;
+}
+
+.sub-head-usage-queue {
+  .build:last-child {
+    margin-bottom: 0;
+    box-shadow: none;
+  }
+}
+
+.commit-message, .sha-one {
+  font-family: @monoFontFamilyV2;
+}
+
+.build-actions {
+  .flexy(center);
+  margin-top: 6px;
+  vertical-align: middle;
+}
+
+.action-log-messages {
+  background: @terminal-background-color-v2;
+
+  &.exit-code {
+    font-family: @monoFontFamilyV2;
+  }
+}
+
+.type-divider {
+  text-align: center;
+  border-bottom: 1px solid #777;
+  line-height: 0.1em;
+  margin: 25px 0 15px;
+
+  span {
+    padding: 0 10px;
+    background: @white;
+    color: #777;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+}
+
+.action_header {
+  &.success {
+    border-left: @side-line-width solid @brand-success-v2;
+  }
+
+  &.failed {
+    border-left: @side-line-width solid @brand-danger-v2;
+
+    // make sure failed command text color is not white on a white background
+    .command-text {
+      color: @component-header-text-v2;
+    }
+
+    .action-source, .time {
+      color: @component-body-text-v2;
+    }
+  }
+
+  &.running {
+    border-left: @side-line-width solid @brand-primary-v2;
+  }
+
+  &.canceled {
+    border-left: @side-line-width solid @brand-canceled-v2;
+  }
+
+  .command-text {
+    color: @component-header-text-v2;
+  }
+
+  .action-source, .time {
+    color: @component-body-text-v2;
   }
 }

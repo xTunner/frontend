@@ -1139,20 +1139,6 @@
             (put! (:errors comms) [:api-error api-result]))
           (api/get-project-settings project-name (:api comms))))))
 
-(defmethod post-control-event! :try-ui-v2-clicked
-  [target message _ state]
-  (feature/enable-in-cookie :ui-v2)
-  (track-and-redirect "Try UI V2 Clicked" {} js/location))
-
-(defmethod post-control-event! :disable-ui-v2-clicked
-  [target message _ state]
-  (feature/disable-in-cookie :ui-v2)
-  (track-and-redirect "Disable UI V2 Clicked" {} js/location))
-
-(defmethod post-control-event! :ui-v2-beta-feedback
-  [target message _ state]
-  (analytics/track "UI V2 Beta Feedback Clicked"))
-
 (defmethod post-control-event! :project-experiments-feedback-clicked
   [target message _ previous-state current-state]
   (support/raise-dialog (get-in current-state [:comms :errors])))
