@@ -76,7 +76,8 @@
                             {:position :fixed
                              :top (:top stick)
                              :left (:left stick)
-                             :width (:width stick)})]
+                             :width (:width stick)
+                             :background-color "#f5f5f5"})]
         (html [:div {:ref "wrapper" :class wrapper-class :style wrapper-style}
                [:div {:ref "content" :class content-class :style content-style}
                 content]])))
