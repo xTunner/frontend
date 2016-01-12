@@ -20,8 +20,8 @@
        (not (:has_followers repo))))
 
 (defn likely-osx-repo? [repo]
-  (let [osx-languages ["Swift" "Objective-C"]]
-    (some (partial = (:language repo)) osx-languages)))
+  (let [osx-languages #{"Swift" "Objective-C"}]
+    (contains? osx-languages (:language repo))))
 
 (defn id [repo]
   (:vcs_url repo))
