@@ -6,6 +6,7 @@
             [frontend.datetime :as datetime]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
+            [frontend.analytics :as analytics]
             [frontend.models.organization :as org-model]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
@@ -223,7 +224,7 @@
     word))
 
 (defn pluralize-no-val [num word]
-  (if (> num 1) (infl/plural word) (infl/singular word)))
+  (if (= num 1) (infl/singular word) (infl/plural word)))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
@@ -346,14 +347,13 @@
       (let [org-name (get-in app state/org-name-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                    (max (pm/usable-containers plan)
-                                         (pm/trial-containers plan)))
-            min-slider-val (max 1 (+ (pm/freemium-containers plan) (pm/paid-plan-min-containers plan)))
-            max-slider-val (max 80 (* 2 (pm/usable-containers plan)))
-            selected-paid-containers (max 0 (- selected-containers (pm/freemium-containers plan)))
+                                     (pm/paid-containers plan))
+            min-slider-val 0
+            max-slider-val (max 80 (* 2 (pm/paid-containers plan)))
+            selected-paid-containers (max 0 selected-containers)
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
-            new-total (pm/cost plan selected-containers)
+            new-total (pm/cost plan (+ selected-containers (pm/freemium-containers plan)))
             container-cost (pm/per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
@@ -377,24 +377,31 @@
                                     :type "text" :value selected-containers
                                     :on-change #(utils/edit-input owner state/selected-containers-path %
                                                                   :value (int (.. % -target -value)))}]
-              [:span.new-plan-total (str (pluralize-no-val selected-containers "container") (when-not (config/enterprise?) (str " for " (if (= 0 new-total) "Free!" (str "$" new-total "/month")))))]
+              [:span.new-plan-total (str "paid " (pluralize-no-val selected-containers "container") (when-not (config/enterprise?) (str (when-not (= 0 new-total) (str " for $" new-total "/month")))))]
               (when (not (= new-total old-total))
                 [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])]]
             [:fieldset
              (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
                (forms/managed-button
-                 [:button.btn.btn-large.btn-primary.center
-                  {:data-success-text "Saved",
-                   :data-loading-text "Saving...",
-                   :type "submit"
-                   :disabled (when-not button-clickable? "disabled")
-                   :on-click (when button-clickable?
-                               #(do (raise! owner [:update-containers-clicked
-                                                   {:containers selected-paid-containers}])
-                                    false))}
-                  (if (config/enterprise?)
-                    "Save changes"
-                    "Update plan")])
+                 (let [enterprise-text "Save changes"]
+                   (if (and (= 0 new-total) (not (config/enterprise?)))
+                     [:a.btn.btn-large.btn-primary.center.cancel
+                      {:href "#cancel"
+                       :disabled (when-not button-clickable? "disabled")
+                       :on-click #(analytics/track-cancel-button-clicked {:view "org-settings"})}
+                      "Cancel plan"]
+                     [:button.btn.btn-large.btn-primary.center.upgrade
+                      {:data-success-text "Saved",
+                       :data-loading-text "Saving...",
+                       :type "submit"
+                       :disabled (when-not button-clickable? "disabled")
+                       :on-click (when button-clickable?
+                                   #(do (raise! owner [:update-containers-clicked
+                                                       {:containers selected-paid-containers}])
+                                        false))}
+                      (if (config/enterprise?)
+                        enterprise-text
+                        "Update plan")])))
                (if-not checkout-loaded?
                  [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
                  (forms/managed-button
