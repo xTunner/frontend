@@ -8,7 +8,7 @@ Before using the `gcloud` command line tool to deploy your app to Google Cloud P
 
 ## Creating and downloading the JSON Service Account
 
-To download a Service Account, click this [link](https://console.developers.google.com/apis/credentials/serviceaccountkey?project=_), or just go to go to [https://console.developers.google.com/], and then on the left-hand menu click 'API Manager', then 'Credentials', then 'New credentials', then select 'Service account key'. Create a new service account, give it a name, make sure it's in the JSON format, then click 'Create'. This will download the Service Account JSON file.
+To download a Service Account, click this [link](https://console.developers.google.com/apis/credentials/serviceaccountkey?project=_), or just go to go to https://console.developers.google.com/, and then on the left-hand menu click 'API Manager', then 'Credentials', then 'New credentials', then select 'Service account key'. Create a new service account, give it a name, make sure it's in the JSON format, then click 'Create'. This will download the Service Account JSON file.
 
 Please keep in mind that the Service Account is a credential that can be used to interact with the project on your behalf, so keep it secret along with any other credentials.
 
@@ -18,7 +18,7 @@ Once the Service Account is created, the next step is to add it as an environmen
 
     base64 <your-service-account.json>
 
-and then copy the result of that command. Windows users will need to use [certutil](http://stackoverflow.com/questions/16945780/decoding-base64-in-batch), or try a website like [base64encode](https://www.base64decode.org/) to encode the credentials.
+and then copy the result of that command. Windows users will need to use [certutil](http://stackoverflow.com/questions/16945780/decoding-base64-in-batch).
 
 Once you have copied the value of your JSON Service Account, go to your CircleCI project, click 'Project Settings' in the top right, then click 'Environment variables' on the left hand side. Add a new Name called `CLIENT_SECRET`, and paste the value of your encoded Service Account into the Value form, then click 'Save variables'. Your Service Account can now be accessed from within your CircleCI build job.
 
