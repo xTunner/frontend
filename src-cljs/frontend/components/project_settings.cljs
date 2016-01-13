@@ -432,9 +432,8 @@
             (describe-flag {:flag :smart-cocoapods-caching
                            :title "Smart CocoaPods Caching"
                            :blurb [:p
-                                   "Enable aggressive caching of CocoaPods to remove the need to call the `pod install`
-                                   command on every build. This feature is under active development and might cause
-                                   spurious build failures from time to time."]})
+                                   "Enable caching of CocoaPods to remove the need to call the `pod install`
+                                   command on every build."]})
 
             ]]])))))
 
