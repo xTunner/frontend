@@ -3,6 +3,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+a {
+  color: @link-color-v2;
+  i {
+    opacity: .6;
+    .transition(all 0.1s ease-in);
+  }
+  &:hover {
+    i {
+      opacity: 1;
+    }
+  }
+}
+
 .app-main {
   height: 100vh;
   width: 100%;
@@ -129,13 +142,16 @@ button [spinner], button [data-spinner]{
   animation: spin 1s infinite linear;
 }
 
-.github-icon-link {
-  color: #333;
-  .transition(all 0.1s ease-in);
-  &:hover {
-    text-decoration: none;
-    color: #4183c4;
-  }
+.octicon,
+.material-icons {
+  font-size: 18px;
+  color: @grayLight;
+  margin-left: 1ex;
+  vertical-align: middle;
+}
+
+.octicon {
+  color: @grayLight;
 }
 
 .center{

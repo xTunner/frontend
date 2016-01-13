@@ -257,7 +257,7 @@
         }
       }
     }
-  } 
+  }
 
   @media (max-width: @screen-md-max) {
     width: 100%;
@@ -371,7 +371,6 @@
 }
 
 .recent-log {
-  font-size: @fontSizeMini;
   font-family: @monoFontFamilyV2;
   word-break: normal;
 }
@@ -436,34 +435,16 @@
       }
 
       &.start-time:before {
-        font-family: 'FontAwesome';
-        content: '\f133';
+        font-family: 'Material Icons';
+        content: '\e8df';
       }
 
       &.duration:before {
-        font-family: 'FontAwesome';
-        content: '\f017';
+        font-family: 'Material Icons';
+        content: '\e425';
       }
 
-      &.pull-requests {
-        padding-top: 1px;
-
-        @media (max-width: @screen-md-max) {
-          padding-top: 6px;
-          padding-bottom: 6px;
-        }
-
-        &.start-time:before {
-          font-family: 'Material Icons';
-          content: '\e8df';
-        }
-
-        &.duration:before {
-          font-family: 'Material Icons';
-          content: '\e425';
-        }
-      }
-
+      &.pull-requests,
       &.revision {
         padding-top: 1px;
 
@@ -471,10 +452,19 @@
           padding-top: 6px;
           padding-bottom: 6px;
         }
+      }
 
-        a {
-          vertical-align: middle;
+      &.pull-requests {
+        padding-left: 2px;
+
+        &:before {
+          font-family: 'octicons';
+          content: '\f009';
         }
+      }
+
+      &.revision {
+        padding-left: 1px;
 
         &:before {
           font-family: 'octicons';

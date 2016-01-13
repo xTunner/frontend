@@ -42,7 +42,7 @@
     text-decoration: none;
 
     &:not(:hover) {
-      color: inherit;
+      color: @grayLightest;
     }
   }
 
@@ -280,6 +280,13 @@
   }
 
   .project-settings-icon {
+    visibility: hidden;
+    transition: all .2s ease;
+    opacity: .6;
+    > i {
+      transition: all .2s ease;
+      opacity: .6;
+    }
     svg {
       width: 16px;
       height: 16px;
@@ -297,12 +304,9 @@
 
   &:hover {
     .project-settings-icon {
-      svg {
-        stroke: fade(@gray-lighter-v2, 60%);
-
-        &:hover {
-          stroke: @gray-lighter-v2;
-        }
+      visibility: visible;
+      > i:hover {
+        opacity: 1;
       }
     }
   }
@@ -503,6 +507,10 @@
   }
 
   > i {
+    margin: 0;
+    color: inherit;
+    font-size: 24px;
+
     transition: margin @aside-transition-speed;
 
     @media screen and ( max-height: 650px ){
