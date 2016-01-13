@@ -5,85 +5,36 @@ last_updated: July 19, 2013
 
 -->
 
-Setting up continuous deployment to Google App Engine is pretty straightforward. Here's
-how you do it.
+App Engine projects can be deployed using the gcloud command as follows:
 
-## Add Google App Engine SDK as a Dependency
+    gcloud -q preview app deploy app.yaml --promote --version=staging
 
-First, you have to **install the SDK on your build VM.**
-We don't do this by default, because it's very fast (under 10 seconds) and there are many
-supported SDK versions to choose from.
-
-You'll need to find the download URL for the SDK that you need. The official source for
-SDK downloads is
-[https://developers.google.com/appengine/downloads](https://developers.google.com/appengine/downloads).
-
-This example [circle.yml](/docs/configuration)
-fragment installs version 1.5.1 of the Python Google App Engine SDK. Modify it to
-download the SDK you need:
+Note that while the gcloud command can be used to interact with your App Engine project, it does not include the App Engine SDK, which you may want if you are running local unit tests. It can be downloaded separately by doing the following:
 
 ```
-dependencies:
-  pre:
-    - curl -o $HOME/google_appengine_1.9.13.zip https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.13.zip
-    - unzip -q -d $HOME $HOME/google_appengine_1.9.13.zip
+curl -o $HOME/google_appengine_1.9.30.zip https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.30.zip
+unzip -q -d $HOME $HOME/google_appengine_1.9.30.zip
 ```
 
-## Configure Deployment to Google App Engine
+## Google Managed VMs
 
-With the SDK installed, next you need to **configure continuous deployment.**
-You may want to read up on configuring
-[continuous deployment with circle.yml](/docs/configuration#deployment)
-in general if your needs are more complex than what's shown in these examples.
+Managed VMs projects are deployed similarly to App Engine:
 
-For the sake of this example, let's deploy the master branch to
-Google App Engine every time the tests are green. The commands differ slightly
-depending on which language you're using, but they're all doing basically
-the same thing:
+    gcloud -q preview app deploy app.yaml --promote --version=staging
 
-### Python
+## Google Compute Engine And Google Container Engine
 
-Using [appcfg.py update](https://developers.google.com/appengine/docs/python/gettingstarted/uploading):
+Deployment processes to Compute Engine and Container Engine can vary, but the gcloud tool is usually the foundational piece for interacting with these environments. For compute engine, you can use
 
-```
-deployment:
-  appengine:
-    branch: master
-    commands:
-      - echo $APPENGINE_PASSWORD | $HOME/google_appengine/appcfg.py update --email=$APPENGINE_EMAIL --passin .
-```
+    gcloud compute copy-files <artifact> <instance_name:path_to_artifact>
 
-### Java
+to copy artifacts to your instance. For Container Engine, the gcloud command can download the kubectl command
 
-Using [appcfg.sh update](https://developers.google.com/appengine/docs/java/tools/uploadinganapp):
+    gcloud --quiet components update kubectl
+    gcloud container clusters get-credentials <your-cluster>
 
-```
-deployment:
-  appengine:
-    branch: master
-    commands:
-      - echo $APPENGINE_PASSWORD | $HOME/appengine-java-sdk/bin/appcfg.sh update --email=$APPENGINE_EMAIL --passin .
-```
+which can then be used to interact with your Kubernetes cluster.
 
-### Go
+# Reference Repo
 
-Using [appcfg.py update](https://developers.google.com/appengine/docs/go/tools/uploadinganapp):
-
-```
-deployment:
-  appengine:
-    branch: master
-    commands:
-      - echo $APPENGINE_PASSWORD | $HOME/google_appengine/appcfg.py update --email=$APPENGINE_EMAIL --passin .
-```
-
-### Credentials
-
-In all three cases, the deployment command passes an email address and password to
-the appcfg command. The credentials are stored in environment variables, which you can
-manage through the web UI as described
-[in this document](/docs/environment-variables#setting-environment-variables-for-all-commands-without-adding-them-to-git).
-
-Python and Go users can also configure it to use non-interactive
-oauth2 authentication, instead (The Java SDK's appcfg.sh does not appear to support this
-usage.)
+A sample app that deploys a project to App Engine can be found from CircleCI and runs end-to-end tests against the environment can be found [here](https://github.com/GoogleCloudPlatform/continuous-deployment-circle). It also contains a `managed_vms` branch that shows a similar project that deploys to Managed VMs. The sample app also requires an API Key to interact with the Google Books API, which is added to the project in a similar way to the Service Account.
