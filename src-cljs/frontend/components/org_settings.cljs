@@ -1025,7 +1025,12 @@
         (cond (> containers 1)
               [:p (str "All Linux builds will be distributed across " containers " containers.")]
               (= containers 1)
-              [:p (str "Builds will run in a single container.")]
+              [:div 
+               [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
+               [:p "By " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                               :subpage "containers"})}
+                    "upgrading"]
+                (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
               :else nil)
         (when (> (pm/trial-containers plan) 0)
           [:p
@@ -1052,13 +1057,13 @@
               (when-not piggiebacked?
                 (list " at $" container-cost " per container"))
               " for more parallelism and shorter queue times."))])
-        (when (pm/freemium? plan)
-          [:p (str (pm/freemium-containers plan) " container is free, forever.")])
+        (when (and (pm/freemium? plan) (> containers 1))
+          [:p (str (pm/freemium-containers plan) " container is free.")])
         (when-not (config/enterprise?)
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
-          [:p "If you are in the limited-release beta, you may also choose an iOS plan "
+          [:p "If enabled, you may also choose a seperate iOS plan "
               [:a {:href "#containers"} "here"]
-              ". We will support general release in the near future!"])]
+              ". If you would like to join the limited relase, please contact sayhi@circleci.com. We will support general release soon!"])]
        (when (and (feature/enabled? :ios-build-usage)
                   (pm/osx? plan))
          (om/build osx-usage-table {:plan plan}))]))))
