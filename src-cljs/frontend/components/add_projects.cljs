@@ -14,6 +14,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
@@ -401,6 +402,7 @@
          [:hr]
          [:div#project-listing.project-listing
           [:div.overview
+           [:span [:a {:href (bitbucket/auth-url)} "bitbucket"]]
            [:span.big-number "2"]
            [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
           (om/build main {:user user
