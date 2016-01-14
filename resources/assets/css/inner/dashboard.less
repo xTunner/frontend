@@ -405,7 +405,7 @@
 
     .metadata-item {
       .flex(1 0 auto);
-      padding-top: 3px;
+      padding-top: 5px;
       padding-bottom: 3px;
 
       font-size: @fontSizeSmall;
@@ -419,7 +419,7 @@
       }
 
       @media (max-width: @screen-md-max) {
-        padding: (@build-padding / 2) @build-padding;
+        padding: 8px;
 
         &:last-child {
           .flex(0 0 50%);
@@ -427,48 +427,38 @@
         }
       }
 
-      &:before {
-        margin-right: 8px;
-        vertical-align: middle;
-        font-size: @fontSizeLarge;
-        color: @grayLighter;
-      }
-
-      &.start-time:before {
-        font-family: 'Material Icons';
-        content: '\e8df';
-      }
-
-      &.duration:before {
-        font-family: 'Material Icons';
-        content: '\e425';
+      &.start-time,
+      &.duration,
+      &.pull-requests,
+      &.revision {
+        i{
+          font-size: @fontSizeLarge;
+          height: 19px; // magic number to make all the things the same height
+          margin-right: 8px;
+          margin-left: 0;
+          padding-top: 1px;
+          vertical-align: bottom;
+          color: @grayLighter;
+        }
       }
 
       &.pull-requests,
       &.revision {
-        padding-top: 1px;
-
-        @media (max-width: @screen-md-max) {
-          padding-top: 6px;
-          padding-bottom: 6px;
-        }
+        padding-top: 8px;
+        padding-bottom: 8px;
       }
 
       &.pull-requests {
-        padding-left: 2px;
-
-        &:before {
-          font-family: 'octicons';
-          content: '\f009';
+        padding-left: 3px;
+        @media (max-width: @screen-md-max) {
+          padding-left: 11px;
         }
       }
 
       &.revision {
         padding-left: 1px;
-
-        &:before {
-          font-family: 'octicons';
-          content: '\f01f';
+        @media (max-width: @screen-md-max) {
+          padding-left: 9px;
         }
       }
     }
