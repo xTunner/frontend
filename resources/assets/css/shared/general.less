@@ -5,9 +5,10 @@ body {
 
 a {
   color: @link-color-v2;
+  .transition(all .2s ease-in);
   i {
     opacity: .6;
-    .transition(all 0.1s ease-in);
+    .transition(all .1s ease-in);
   }
   &:hover {
     i {
@@ -74,6 +75,19 @@ a {
   .flex(auto);
   overflow-x: auto;
   overflow-y: scroll;
+
+  input:not(.dumb) {
+     @height: 3em;
+     &[type="text"],
+     &[type="search"],
+     &[type="email"] {
+       .smart_label(@height, (@height / 2));
+     }
+   }
+
+   textarea:not(.dumb) {
+     .smart_label(13em, 3px);
+   }
 
   .loading-spinner-big {
     @reserved-height: (@tile * 2);
@@ -192,7 +206,6 @@ button [spinner], button [data-spinner]{
   }
 }
 
-
 #sticky-help-link {
   bottom: 0;
   border: 1px solid @black;
@@ -257,6 +270,16 @@ button [spinner], button [data-spinner]{
     th, td { text-align: left; }
     tr:not(:last-child) { border-bottom: 1px dashed fade(white, 10%); }
     .number { text-align: right; }
+  }
+}
+
+.alert {
+  a.close {
+    color: @grayDarker !important;
+    &:hover {
+      color: @grayDarkest !important;
+      text-decoration: none !important;
+    }
   }
 }
 

@@ -16,9 +16,10 @@ children:
   - continuous-deployment-with-heroku
   - continuous-deployment-with-aws-codedeploy
   - pushing-packages-to-packagecloud
+  - google-cloud-platform
+  - google-auth
   - deploy-google-app-engine
   - deploy-bluemix
   - continuous-deployment-with-ninefold
 
 -->
-

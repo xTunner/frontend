@@ -70,7 +70,7 @@
             submit-form! #(raise! owner [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
             project-page? (:project-page? opts)]
         (html/html
-         [:div#settings-heroku
+         [:div#settings-heroku.settings
           [:div.heroku-item
            [:h2 "Heroku API key"]
            [:p
@@ -82,29 +82,26 @@
               "You'll also need to set yourself as the Heroku deploy user from your project's settings page.")]
            [:form
             (when heroku-api-key
-              [:div.form-group
-               [:label "Current Heroku key"]
-               [:input.form-control.dumb
+              [:div
+               [:input.disabled
                 {:required  true
                  :type      "text",
-                 :readonly  "readonly"
-                 :value heroku-api-key}]])
-            [:div.form-group
-             [:label "Add new key"]
-             [:input.form-control.dumb#heroku-key
-              {:required  true
-               :type      "text",
-               :value     heroku-api-key-input
-               :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]]
-            [:div.form-group
+                 :value heroku-api-key}]
+               [:label {:placeholder "Current Heroku key"}]])
+            [:input#heroku-key
+             {:required  true
+              :type      "text",
+              :value     heroku-api-key-input
+              :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
+            [:label {:placeholder "Add new key"}]
             (forms/managed-button
-             [:input.btn.btn-success
+             [:input.btn
               {:data-loading-text "Saving...",
                :data-failed-text  "Failed to save Heroku key",
                :data-success-text "Saved",
                :type "submit"
                :value "Save Heroku key"
-               :on-click #(do (submit-form!) false)}])]]]])))))
+               :on-click #(do (submit-form!) false)}])]]])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -114,32 +111,32 @@
             create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
             new-user-token (get-in app state/new-user-token-path)]
         (html/html
-         [:div#settings-api
+         [:div#settings-api.settings
           [:div.api-item
            [:h2 "API Tokens"]
            [:p
             "Create and revoke API tokens to access this account's details using our API."
             [:br]
             "Apps using these tokens can act as you, and have full read- and write-permissions!"]
+
            [:form
-            [:div.form-group
-             [:label "Token name"]
-             [:input.form-control#api-token
-              {:required  true
-               :name      "label",
-               :type      "text",
-               :value     (str new-user-token)
-               :on-change #(utils/edit-input owner state/new-user-token-path %)}]]
-            [:div.form-group
-             (forms/managed-button
-               [:input.btn.btn-success
-                {:data-loading-text "Creating...",
-                 :data-failed-text  "Failed to add token",
-                 :data-success-text "Created",
-                 :on-click          #(do (create-token! new-user-token)
-                                         false)
-                 :type "submit"
-                 :value "Create"}])]]
+            [:input#api-token
+             {:required  true
+              :name      "label",
+              :type      "text",
+              :value     (str new-user-token)
+              :on-change #(utils/edit-input owner state/new-user-token-path %)}]
+            [:label {:placeholder "Token name"}]
+            (forms/managed-button
+             [:input.btn
+              {:data-loading-text "Creating...",
+               :data-failed-text  "Failed to add token",
+               :data-success-text "Created",
+               :on-click          #(do (create-token! new-user-token)
+                                       false)
+               :type "submit"
+               :value "Create new token"}])]
+
           [:div.api-item
            (when (seq tokens)
              [:table.table
@@ -158,8 +155,8 @@
                         :data-failed-text  "Failed to revoke token",
                         :data-success-text "Revoked",
                         :on-click          #(raise! owner [:api-token-revocation-attempted {:token token}])}
-                       [:i.fa.fa-times-circle]
-                       " Revoke"]]]]))]])]]])))))
+                       [:i.material-icons "remove_circle"]
+                       "Revoke"]]]]))]])]]])))))
 
 
 (def available-betas
@@ -301,8 +298,8 @@
    [:form#email_address.form-horizontal
     [:h3#email-address-tooltip-parent
      "Email Addresses"
-     [:i.fa.fa-info-circle#email-addresses-tooltip-hack
-      {:title "Addresses added to your GitHub account will be reflected here"}]]
+     [:i.material-icons#email-addresses-tooltip-hack
+      {:title "These are the email addresses associated with your GitHub account."} "info_outline"]]
     [:div
      (for [email (:all_emails user)]
        [:div.radio
@@ -350,9 +347,10 @@
     [:h3 "Project Email Preferences"]
     [:p "You can override your default email preferences for individual projects here."]
     [:p "Other project settings can be configured via the project's 'Settings' page."]
-    [:div
-     (for [project projects]
-       (om/build project/email-pref {:project project :user user}))]]])
+    [:div.row
+     [:div.col-md-6
+      (for [project projects]
+        (om/build project/email-pref {:project project :user user}))]]]])
 
 (defn notifications [app owner]
   (reify
