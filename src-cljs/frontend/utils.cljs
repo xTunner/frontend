@@ -24,7 +24,8 @@
   (aget js/window "CSRFToken"))
 
 (defn oauth-csrf-token []
-  (aget js/window "OAuthCSRFToken"))
+  (or (aget js/window "OAuthCSRFToken")
+      (aget js/window "GitHubCSRFToken")))
 
 (def parsed-uri
   (goog.Uri. (-> (.-location js/window) (.-href))))
