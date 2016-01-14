@@ -350,8 +350,7 @@
     [:div.row
      [:div.col-md-6
       (for [project projects]
-        (om/build project/email-pref {:project project :user user}))]
-     ]]])
+        (om/build project/email-pref {:project project :user user}))]]]])
 
 (defn notifications [app owner]
   (reify
