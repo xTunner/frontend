@@ -25,14 +25,9 @@
   line-height: 1.5em;
   background-color: @colorOfBackground;
   transition: all .3s ease-in-out;
-  .vertGradient(@lightSoft 0%, @shadowSoft 100%);
-  .dynamicTextColor(@colorOfBackground);
-  .outlineEmboss(@colorOfBackground);
-  .stretchOutBkg();
   .roundedOff();
-  &:hover, &:active {
+  &:hover {
     .dynamicTextColor(@colorOfHover);
-    background-size: 300%;
   }
   &:hover {
     @hoverDark: darken(saturate(@colorOfHover, 3), 3);
@@ -44,9 +39,10 @@
   &:active {
     @activeDark: darken(saturate(@colorOfHover, 5), 8);
     background-color: @activeDark;
-    text-shadow: 0 2px darken(@activeDark, 5);
+    text-shadow: none;
+    box-shadow: none;
     transition-duration: .2s;
-    .outlinePress(@activeDark);
+
   }
 }
 
