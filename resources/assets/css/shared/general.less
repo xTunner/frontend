@@ -62,6 +62,19 @@ body {
   overflow-x: auto;
   overflow-y: scroll;
 
+  input:not(.dumb) {
+     @height: 3em;
+     &[type="text"],
+     &[type="search"],
+     &[type="email"] {
+       .smart_label(@height, (@height / 2));
+     }
+   }
+
+   textarea:not(.dumb) {
+     .smart_label(13em, 3px);
+   }
+
   .loading-spinner-big {
     @reserved-height: (@tile * 2);
 
