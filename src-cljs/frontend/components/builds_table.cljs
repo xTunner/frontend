@@ -15,7 +15,7 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn dashboard-icon [name]
-  [:img.dashboard-icon {:src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
+  [:i.material-icons "settings"])
 
 (defn build-status-badge-wording [build]
   (let [wording       (build-model/status-words build)
@@ -101,21 +101,26 @@
           (list
            [:div.metadata-item.recent-time.start-time
             {:title "Started: not started"}
+            [:i.material-icons "today"]
             "–"]
            [:div.metadata-item.recent-time.duration
             {:title "Duration: not run"}
+            [:i.material-icons "timer"]
             "–"])
           (list [:div.metadata-item.recent-time.start-time
                  {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
+                 [:i.material-icons "today"]
                  (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
                  " ago"]
                 [:div.metadata-item.recent-time.duration
                  {:title (str "Duration: " (build-model/duration build))}
+                 [:i.material-icons "timer"]
                  (om/build common/updating-duration {:start (:start_time build)
                                                      :stop (:stop_time build)})]))]
       [:div.metadata-row.pull-revision
         (when-let [urls (seq (:pull_request_urls build))]
           [:div.metadata-item.pull-requests {:title "Pull Requests"}
+           [:i.octicon.octicon-git-pull-request]
            (interpose
             ", "
             (for [url urls]
@@ -126,6 +131,7 @@
                  (or number "?"))]))])
 
         [:div.metadata-item.revision
+         [:i.octicon.octicon-git-commit]
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
                 :href (build-model/github-commit-url build)

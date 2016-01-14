@@ -83,7 +83,7 @@
                                                                   :repo (:reponame project)})
                                :title (project-model/project-name project)
                                :on-click #(analytics/track "branch-list-project-settings-clicked")}
-     (common/ico :settings-light)]))
+     [:i.material-icons "settings"]]))
 
 (defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
   (reify
