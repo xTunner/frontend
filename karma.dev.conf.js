@@ -7,14 +7,17 @@ module.exports = function(config) {
     frameworks: ['cljs-test'],
 
     files: [
-      // Provide a stub `window.renderContext`
+      // Provide a stub `window.renderContext`.
       'test-js/test-render-context.js',
 
+      // Load the dependencies we manage outside of Closure.
+      // NB: This file has nothing to do with Om.
       'resources/public/assets/js/om-dev*.js',
 
+      // Add Google Closure.
       path.join(root, 'goog/base.js'),
 
-
+      // Give Closure the dependency info it needs.
       path.join(root, 'frontend-dev.js'),
 
       // Require the actual tests.
