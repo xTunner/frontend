@@ -70,7 +70,7 @@
             submit-form! #(raise! owner [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
             project-page? (:project-page? opts)]
         (html/html
-         [:div#settings-heroku
+         [:div#settings-heroku.settings
           [:div.heroku-item
            [:h2 "Heroku API key"]
            [:p
@@ -137,7 +137,7 @@
             create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
             new-user-token (get-in app state/new-user-token-path)]
         (html/html
-         [:div#settings-api
+         [:div#settings-api.settings
           [:div.api-item
            [:h2 "API Tokens"]
            [:p

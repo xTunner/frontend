@@ -1,35 +1,16 @@
 #settings-api {
-  #api-token {
-    width: @standardBlockSize * 2;
-    margin-top: 2em;
-  }
-  form {
-    margin-top: 1em;
-    margin-bottom: 2em;
-    width: @standardBlockSize * 2;
-  }
-  input[type="submit"] {
-    .circleButton(@grayLighter);
-  }
   table {
     .skin-table();
   }
   .revoke-token {
     i {
       margin-right: 4px;
+      font-size: @fontSizeLarge;
       vertical-align: text-bottom;
       color: @brand-red-v2;
     }
-  }
-}
-
-#settings-heroku {
-  form {
-    margin-top: 1em;
-    margin-bottom: 2em;
-    width: @standardBlockSize * 2;
-  }
-  input[type="submit"] {
-    .circleButton(@grayLighter);
+    span {
+      cursor: pointer;
+    }
   }
 }
