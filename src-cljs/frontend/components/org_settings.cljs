@@ -1005,6 +1005,26 @@
             [:div.explanation
              [:p "Looks like you haven't run any builds yet."]])])))))
 
+(defn osx-overview [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         [:h4 "iOS"]
+         [:p "If you are in the limited-release beta, you may also choose an iOS plan "
+          [:a {:href "#containers"} "here"] "."]
+         (when (pm/osx? plan)
+           (let [plan-name (some-> plan :osx :template :name)
+                 plan-start (some-> plan :osx_plan_started_on)
+                 trial-end (some-> plan :osx_trial_end_date)]
+             [:p
+              (if (pm/osx-trial? plan)
+                (gstring/format "You're currently on the iOS trial for %d more days. "
+                  (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
+                (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
+              [:span "We will support general release in the near future!"]]))]))))
+
 (defn overview [app owner]
   (om/component
    (html
@@ -1022,6 +1042,7 @@
           [:p "This organization's projects will build under "
            [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
             (:org_name plan) "'s plan."]])
+        [:h4 "Linux"]
         (cond (> containers 1)
               [:p (str "All Linux builds will be distributed across " containers " containers.")]
               (= containers 1)
@@ -1041,7 +1062,7 @@
           [:p
            (str (pm/paid-containers plan) " of these are paid")
            (if piggiebacked? ". "
-               (list ", at $" (pm/stripe-cost plan) "/month. "))
+               (list ", at $" (pm/linux-cost plan) "/month. "))
            (if (pm/grandfathered? plan)
              (list "We've changed our pricing model since this plan began, so its current price "
                    "is grandfathered in. "
@@ -1062,9 +1083,10 @@
         (when-not (config/enterprise?)
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
           [:p "If enabled, you may also choose a seperate iOS plan "
-              [:a {:href "#containers"} "here"]
-              ". If you would like to join the limited relase, please contact sayhi@circleci.com. We will support general release soon!"])]
-       (when (and (feature/enabled? :ios-build-usage)
+           [:a {:href "#containers"} "here"]
+           ". If you would like to join the limited relase, please contact sayhi@circleci.com. We will support general release soon!"])]]
+    (om/build osx-overview plan))]
+    (when (and (feature/enabled? :ios-build-usage)
                   (pm/osx? plan))
          (om/build osx-usage-table {:plan plan}))]))))
 
