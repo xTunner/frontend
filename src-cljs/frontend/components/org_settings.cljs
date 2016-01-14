@@ -332,8 +332,7 @@
         (html
           [:div.osx-plans
            [:fieldset
-            [:legend (str "iOS Limited Release Plans - The below selection only applies to iOS service and will not affect the Linux Containers above.")]]
-           [:div.plan-selection
+            [:legend (str "iOS Limited Release Plans - The below selection only applies to iOS service and will not affect the Linux Containers above.")]] [:div.plan-selection
             (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 279 :plan-type "growth" :current-plan current-plan})
@@ -362,14 +361,13 @@
         [:div#edit-plan {:class "pricing.page"}
          (when-not (config/enterprise?)
            [:fieldset
-            [:legend (str "Our pricing is flexible and scales with you. Add as many containers as you want for $"
-                          container-cost "/month each.")]])
+            [:legend "More containers means faster builds and lower queue times."]])
          [:div.main-content
           [:div
-           [:h3 "Linux Containers"]
+           [:legend "Linux Plan"]
            [:form
             [:div.container-picker
-             [:p "More containers means faster builds and lower queue times."]
+             [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" container-cost "/month each.")]
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
              [:div.container-input
@@ -483,11 +481,12 @@
               (plans-piggieback-plan-notification plan org-name)
               [:div
                (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-               (when (and (feature/enabled? :osx-plans)
+               (if (and (feature/enabled? :osx-plans)
                           (get-in app state/org-osx-beta-path))
                  (list
                    (om/build osx-plans plan)
-                   (om/build osx-faq osx-faq-items)))])))))))
+                   (om/build osx-faq osx-faq-items))
+                 (project-common/mini-parallelism-faq {}))])))))))
 
 (defn piggyback-organizations [app owner]
   (om/component
@@ -1084,11 +1083,11 @@
           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
           [:p "If enabled, you may also choose a seperate iOS plan "
            [:a {:href "#containers"} "here"]
-           ". If you would like to join the limited relase, please contact sayhi@circleci.com. We will support general release soon!"])]]
-    (om/build osx-overview plan))]
-    (when (and (feature/enabled? :ios-build-usage)
-                  (pm/osx? plan))
-         (om/build osx-usage-table {:plan plan}))]))))
+           ". If you would like to join the limited relase, please contact sayhi@circleci.com. We will support general release soon!"]
+          (om/build osx-overview plan)) 
+        (when (and (feature/enabled? :ios-build-usage)
+                   (pm/osx? plan))
+          (om/build osx-usage-table {:plan plan}))]]))))
 
 (def main-component
   {:overview overview
