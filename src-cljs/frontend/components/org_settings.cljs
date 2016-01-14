@@ -106,7 +106,10 @@
         [:div.row-fluid
          (for [follower followers]
            [:span.follower-container
-            {:style {:display "inline-block"}}
+            {:style {:display "inline-block"}
+             :title (:login follower)
+             :data-toggle "tooltip"
+             :data-placement "right"}
             [:img.gravatar
              {:src (gh-utils/make-avatar-url follower :size 60)}]
             " "
