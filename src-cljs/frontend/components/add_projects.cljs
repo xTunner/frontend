@@ -116,11 +116,13 @@
             should-build? (repo-model/should-do-first-follower-build? repo)]
         (html
          (cond (repo-model/can-follow? repo)
-               [:li.repo-follow {:class (when (repo-model/likely-osx-repo? repo) "osx")}
+               [:li.repo-follow
                 [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
-                  (:name repo)]]
+                  (:name repo)]
+                 (when (repo-model/likely-osx-repo? repo)
+                   [:i.fa.fa-apple])]
                 (when building?
                   [:div.building "Starting first build..."])
                 (managed-button
@@ -140,7 +142,9 @@
                 [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
-                  (:name repo)]
+                  (:name repo)
+                  (when (repo-model/likely-osx-repo? repo)
+                    [:i.fa.fa-apple])]
                  [:a {:id tooltip-id
                       :data-placement "right"
                       :title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
