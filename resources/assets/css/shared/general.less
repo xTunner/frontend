@@ -260,6 +260,16 @@ button [spinner], button [data-spinner]{
   }
 }
 
+.alert {
+  a.close {
+    color: @grayDarker !important;
+    &:hover {
+      color: @grayDarkest !important;
+      text-decoration: none !important;
+    }
+  }
+}
+
 @keyframes admin-slide-down {
   0%   { .translate(0, -100%);}
   100% { .translate(0, 0);}
