@@ -332,7 +332,8 @@
         (html
           [:div.osx-plans
            [:fieldset
-            [:legend (str "iOS Limited Release Plans - The below selection only applies to iOS service and will not affect the Linux Containers above.")]] [:div.plan-selection
+            [:legend (str "iOS Limited Release Plans - The below selection only applies to iOS service and will not affect the Linux Containers above.")]]
+           [:div.plan-selection
             (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 279 :plan-type "growth" :current-plan current-plan})
@@ -375,14 +376,16 @@
                                     :type "text" :value selected-containers
                                     :on-change #(utils/edit-input owner state/selected-containers-path %
                                                                   :value (int (.. % -target -value)))}]
-              [:span.new-plan-total (str "paid " (pluralize-no-val selected-containers "container") (when-not (config/enterprise?) (str (when-not (= 0 new-total) (str " for $" new-total "/month")))))]
+              [:span.new-plan-total (str "paid " (pluralize-no-val selected-containers "container")
+                                         (when-not (config/enterprise?)
+                                           (str (when-not (zero? new-total) (str " for $" new-total "/month")))))]
               (when (not (= new-total old-total))
                 [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])]]
             [:fieldset
              (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
-                   (if (and (= 0 new-total) (not (config/enterprise?)))
+                   (if (and (zero? new-total) (not (config/enterprise?)))
                      [:a.btn.btn-large.btn-primary.center.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
@@ -482,7 +485,7 @@
               [:div
                (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
                (if (and (feature/enabled? :osx-plans)
-                          (get-in app state/org-osx-beta-path))
+                        (get-in app state/org-osx-beta-path))
                  (list
                    (om/build osx-plans plan)
                    (om/build osx-faq osx-faq-items))
@@ -1011,7 +1014,7 @@
       (html
         [:div
          [:h4 "iOS"]
-         [:p "If you are in the limited-release beta, you may also choose an iOS plan "
+         [:p "You are in the iOS limited-release, you may also choose an iOS plan "
           [:a {:href "#containers"} "here"] "."]
          (when (pm/osx? plan)
            (let [plan-name (some-> plan :osx :template :name)
@@ -1020,7 +1023,7 @@
              [:p
               (if (pm/osx-trial? plan)
                 (gstring/format "You're currently on the iOS trial for %d more days. "
-                  (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
+                                (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
                 (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
               [:span "We will support general release in the near future!"]]))]))))
 
