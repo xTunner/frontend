@@ -1002,12 +1002,12 @@
            (when (and (build-model/can-cancel? build) has-write-settings?)
              (forms/managed-button
                [:a.cancel-build
-                {:data-loading-text "Canceling"
-                 :title             "Cancel this build"
+                {:data-loading-text "canceling"
+                 :title             "cancel this build"
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
-                "Cancel Build"]))
+                "cancel build"]))
            (when has-write-settings?
              (om/build rebuild-actions {:build build :project project}))
            [:div.build-settings
