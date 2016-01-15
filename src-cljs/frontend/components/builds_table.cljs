@@ -15,7 +15,7 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn dashboard-icon [name]
-  [:i.material-icons "settings"])
+  [:img.dashboard-icon {:src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
 
 (defn build-status-badge-wording [build]
   (let [wording       (build-model/status-words build)
