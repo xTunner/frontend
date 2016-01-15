@@ -1,6 +1,7 @@
 (ns frontend.components.build
   (:require [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.routes :as routes]
             [frontend.analytics :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -290,7 +291,8 @@
             container-count (count filtered-containers)
             previous-container-count (max 0 (- paging-offset 1))
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
-            show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) (get-in data [:project-data :plan]))
+            plan (get-in data [:project-data :plan])
+            show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) plan)
             div (html
                  [:div.container-list {:class (when (and (> previous-container-count 0)
                                                          (> subsequent-container-count 0))
@@ -321,8 +323,9 @@
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-right]]]
                     [:a.container-selector.add-containers
-                     {:href (build-model/path-for-parallelism build)
-                      :title "Adjust parallelism"
+                     {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                             :subpage "containers"})
+                      :title "Adjust containers"
                       :class (when show-upsell? "upsell")}
                      (if show-upsell?
                        [:span "Add Containers +"]
