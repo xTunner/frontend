@@ -36,20 +36,24 @@
 
 (defn organization [org settings owner]
   (let [login (:login org)
-        type (if (:org org) :org :user)]
+        type (if (:org org) :org :user)
+        vcs-type (:vcs_type org)]
     [:li.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
                         :class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
      [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
             :height 50}]
      [:div.orgname login]
-     [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
-                    :target "_blank"}
-      [:i.octicon.octicon-mark-github]]]))
+     (if (= "github" vcs-type)
+       [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
+                      :target "_blank"}
+        [:i.octicon.octicon-mark-github]]
+       [:a.visit-org
+        [:i.fa.fa-bitbucket]])]))
 
 (defn missing-org-info
   "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
   [owner]
-  [:p.missing-org-info
+  [:p
    "Missing an organization? You or an admin may need to enable CircleCI for your organization in "
    [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
     "GitHub's application permissions"]
@@ -65,16 +69,33 @@
     om/IDidMount
     (did-mount [_]
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
-    om/IRender
-    (render [_]
-      (let [{:keys [user settings repos]} data]
+    om/IInitState
+    (init-state [_]
+      {:vcs-type "github"})
+    om/IRenderState
+    (render-state [_ state]
+      (let [{:keys [user settings repos]} data
+            github-active? (= "github" (:vcs-type state))
+            bitbucket-active? (= "bitbucket" (:vcs-type state))]
         (html
          [:div
           [:div.overview
            [:span.big-number "1"]
-           [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-          [:div.organizations
-           [:h4 "Your accounts"]
+           [:div.instruction "Choose a GitHub or Bitbucket account that you are a member of or have access to."]]
+          [:ul.nav.nav-tabs
+           [:li {:class (when github-active? "active")}
+            [:a {:on-click #(om/set-state! owner {:vcs-type "github"})}
+             [:i.octicon.octicon-mark-github]
+             " GitHub"]]
+           [:li {:class (when bitbucket-active? "active")}
+            [:a {:on-click #(om/set-state! owner {:vcs-type "bitbucket"})}
+             [:i.fa.fa-bitbucket]
+             " Bitbucket"]]]
+          [:div.organizations.card
+           (when github-active?
+             (missing-org-info owner))
+           (when bitbucket-active?
+             [:div.text-center [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
            [:ul.organizations
             (map (fn [org] (organization org settings owner))
                  ;; here we display you, then all of your organizations, then all of the owners of
@@ -84,13 +105,18 @@
                  ;; so that new ones don't jump up in the middle as they're loaded.
                  (concat [user]
                          (:organizations user)
-                         (let [org-names (->> user :organizations (cons user) (map :login) set)
+                         (let [org-names (->> user
+                                              :organizations
+                                              (cons user)
+                                              (map :login)
+                                              set)
                                in-orgs? (comp org-names :login)]
-                           (->> repos (map :owner) (remove in-orgs?) (set)))))]
+                           (->> repos (map :owner)
+                                (remove in-orgs?)
+                                (set)))))]
            (when (:repos-loading user)
              [:div.orgs-loading
-              [:div.loading-spinner common/spinner]])
-           (missing-org-info owner)]])))))
+              [:div.loading-spinner common/spinner]])]])))))
 
 (def repos-explanation
   [:div.add-repos
@@ -402,7 +428,6 @@
          [:hr]
          [:div#project-listing.project-listing
           [:div.overview
-           [:span [:a {:href (bitbucket/auth-url)} "bitbucket"]]
            [:span.big-number "2"]
            [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
           (om/build main {:user user
