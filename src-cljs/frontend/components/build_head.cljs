@@ -1013,5 +1013,4 @@
            [:a.build-action
             {:href (routes/v1-project-settings (:navigation-data data))}
             [:i.material-icons "settings"]
-            [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
             "Project Settings"]])))))
