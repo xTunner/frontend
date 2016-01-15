@@ -358,7 +358,7 @@
         "Set up your test runner to output in JUnit-style XML"] ", so we can:"
        [:ul
         [:li "Show a summary of all test failures across all containers"]
-        [:li "Identify the slowest test"]
+        [:li "Identify your slowest tests"]
         [:li "Balance tests between containers when using properly configured parallelization"]]
        ])
 
