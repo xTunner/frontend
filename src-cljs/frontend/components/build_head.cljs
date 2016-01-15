@@ -1001,17 +1001,17 @@
           [:div.build-actions-v2
            (when (and (build-model/can-cancel? build) has-write-settings?)
              (forms/managed-button
-               [:a.build-action
-                {:data-loading-text "Canceling"
-                 :title             "Cancel this build"
+               [:a.cancel-build
+                {:data-loading-text "canceling"
+                 :title             "cancel this build"
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
-                "Cancel Build"]))
+                "cancel build"]))
            (when has-write-settings?
              (om/build rebuild-actions {:build build :project project}))
-           [:a.build-action
-            {:href (routes/v1-project-settings (:navigation-data data))}
-            [:i.material-icons "settings"]
-            [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-            "Project Settings"]])))))
+           [:div.build-settings
+            [:a.build-action
+             {:href (routes/v1-project-settings (:navigation-data data))}
+             [:i.material-icons "settings"]
+             "Project Settings"]]])))))
