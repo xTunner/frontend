@@ -37,16 +37,21 @@
 (defn organization [org settings owner]
   (let [login (:login org)
         type (if (:org org) :org :user)
-        vcs-type (:vcs_type org)]
-    [:li.organization {:on-click #(raise! owner [:selected-add-projects-org {:login login :type type}])
-                        :class (when (= {:login login :type type} (get-in settings [:add-projects :selected-org])) "active")}
+        vcs-type (:vcs_type org)
+        selected-org-view {:login login :type type :vcs-type vcs-type}]
+    [:li.organization {:on-click #(raise! owner [:selected-add-projects-org selected-org-view])
+                       :class (when (= selected-org-view (get-in settings [:add-projects :selected-org])) "active")}
      [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
             :height 50}]
      [:div.orgname login]
-     (if (= "github" vcs-type)
+     (cond
+       ;; TODO remove the nil check after a migration adds vcs-type to all entities
+       (contains? #{"github" nil} vcs-type)
        [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
                       :target "_blank"}
         [:i.octicon.octicon-mark-github]]
+
+       (= "bitbucket" vcs-type)
        [:a.visit-org
         [:i.fa.fa-bitbucket]])]))
 
