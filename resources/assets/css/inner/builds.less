@@ -685,16 +685,10 @@ table.code {
   }
 }
 
-.build-head {
-  .sub-head-top {
-    padding: 0;
-  }
+.nav-tabs {
+  .flexy();
 
-  .nav {
-    .flexy();
-  }
-
-  .build-info-tab {
+  > li {
     flex-grow: 1;
     background: @tab-background;
     border-right: 1px solid @tab-separator-border;
@@ -706,18 +700,24 @@ table.code {
     &.active {
       background: @white;
     }
-  }
 
-  .tab-link {
-    color: @gray-dark-v2; // BS RESET
-    border: none; // BS RESET
-    margin: 0; // BS RESET
-
-    &:hover {
-      background: none; // BS RESET
-      color: @gray-light-v2; // BS RESET
+    a {
+      color: @gray-dark-v2; // BS RESET
       border: none; // BS RESET
+      margin: 0; // BS RESET
+
+      &:hover {
+	background: none; // BS RESET
+	color: @gray-light-v2; // BS RESET
+	border: none; // BS RESET
+      }
     }
+  }
+}
+
+.build-head {
+  .sub-head-top {
+    padding: 0;
   }
 }
 
