@@ -78,7 +78,7 @@
     (init-state [_]
       {:vcs-type "github"})
     om/IRenderState
-    (render-state [_ state]
+    (render-state [_ {:keys [vcs-type] :as state}]
       (let [{:keys [user settings repos]} data
             github-active? (= "github" (:vcs-type state))
             bitbucket-active? (= "bitbucket" (:vcs-type state))]
@@ -108,17 +108,17 @@
                  ;; organizations route is much faster than the repos route. We show them
                  ;; in this order (rather than e.g. putting the whole thing into a set)
                  ;; so that new ones don't jump up in the middle as they're loaded.
-                 (concat [user]
-                         (:organizations user)
-                         (let [org-names (->> user
-                                              :organizations
-                                              (cons user)
-                                              (map :login)
-                                              set)
-                               in-orgs? (comp org-names :login)]
-                           (->> repos (map :owner)
-                                (remove in-orgs?)
-                                (set)))))]
+                 (filter #(= (:vcs_type %) vcs-type) (concat [user]
+                                     (:organizations user)
+                                     (let [org-names (->> user
+                                                          :organizations
+                                                          (cons user)
+                                                          (map :login)
+                                                          set)
+                                           in-orgs? (comp org-names :login)]
+                                       (->> repos (map :owner)
+                                            (remove in-orgs?)
+                                            (set))))))]
            (when (:repos-loading user)
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])]])))))
