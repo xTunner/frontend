@@ -359,7 +359,7 @@
        [:ul
         [:li "Show a summary of all test failures across all containers"]
         [:li "Identify your slowest tests"]
-        [:li "Balance tests between containers when using properly configured parallelization"]]
+        [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]
        ])
 
 (defmulti format-test-name test-model/source)
@@ -493,7 +493,7 @@
                                     (:classname slowest)
                                     (:name slowest)
                                     (:run_time slowest))]])]
-              :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
+              :else [:div.alert.iconified {:class "alert-info" }
                      [:div [:img.alert-icon {:src (common/icon-path
                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
                      (tests-ad owner (:language project))]))])))))
