@@ -7,6 +7,7 @@
             [frontend.components.forms :refer [managed-button]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.feature :as feature]
             [frontend.models.organization :as organization]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -24,6 +25,9 @@
                    [frontend.utils :refer [html defrender]]))
 
 (def view "add-projects")
+
+(defn vcs-github? [item] (contains? #{"github" nil} (:vcs_type item)))
+(defn vcs-bitbucket? [item] (= "bitbucket" (:vcs_type item)))
 
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div
@@ -46,12 +50,12 @@
      [:div.orgname login]
      (cond
        ;; TODO remove the nil check after a migration adds vcs-type to all entities
-       (contains? #{"github" nil} vcs-type)
+       (vcs-github? org)
        [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
                       :target "_blank"}
         [:i.octicon.octicon-mark-github]]
 
-       (= "bitbucket" vcs-type)
+       (vcs-bitbucket? org)
        [:a.visit-org
         [:i.fa.fa-bitbucket]])]))
 
@@ -69,6 +73,45 @@
    "."])
 
 (defn organization-listing [data owner]
+  (reify
+    om/IDisplayName (display-name [_] "Organization Listing")
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
+    om/IRender
+    (render [_]
+      (let [{:keys [user settings repos]} data]
+        (html
+         [:div
+          [:div.overview
+           [:span.big-number "1"]
+           [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
+          [:div.organizations
+           [:h4 "Your accounts"]
+           [:ul.organizations
+            (map (fn [org] (organization org settings owner))
+                 ;; here we display you, then all of your organizations, then all of the owners of
+                 ;; repos that aren't organizations and aren't you. We do it this way because the
+                 ;; organizations route is much faster than the repos route. We show them
+                 ;; in this order (rather than e.g. putting the whole thing into a set)
+                 ;; so that new ones don't jump up in the middle as they're loaded.
+                 (filter vcs-github?
+                  (concat [user]
+                          (:organizations user)
+                          (let [org-names (->> user :organizations (cons user) (map :login) set)
+                                in-orgs? (comp org-names :login)]
+                            (->> repos (map :owner) (remove in-orgs?) (set))))))]
+           (when (:repos-loading user)
+             [:div.orgs-loading
+              [:div.loading-spinner common/spinner]])
+           (missing-org-info owner)]])))))
+
+(defn select-vcs-type [vcs-type item]
+  (case vcs-type
+    "bitbucket" (vcs-bitbucket? item)
+    "github"    (vcs-github?    item)))
+
+(defn organization-listing-with-bitbucket [data owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
     om/IDidMount
@@ -108,17 +151,18 @@
                  ;; organizations route is much faster than the repos route. We show them
                  ;; in this order (rather than e.g. putting the whole thing into a set)
                  ;; so that new ones don't jump up in the middle as they're loaded.
-                 (filter #(= (:vcs_type %) vcs-type) (concat [user]
-                                     (:organizations user)
-                                     (let [org-names (->> user
-                                                          :organizations
-                                                          (cons user)
-                                                          (map :login)
-                                                          set)
-                                           in-orgs? (comp org-names :login)]
-                                       (->> repos (map :owner)
-                                            (remove in-orgs?)
-                                            (set))))))]
+                 (filter (partial select-vcs-type vcs-type)
+                         (concat [user]
+                                 (:organizations user)
+                                 (let [org-names (->> user
+                                                      :organizations
+                                                      (cons user)
+                                                      (map :login)
+                                                      set)
+                                       in-orgs? (comp org-names :login)]
+                                   (->> repos (map :owner)
+                                        (remove in-orgs?)
+                                        (set))))))]
            (when (:repos-loading user)
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])]])))))
@@ -427,9 +471,12 @@
          [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
          [:hr]
          [:div.org-listing
-          (om/build organization-listing {:user user
-                                          :settings settings
-                                          :repos repos})]
+          (om/build (if (feature/enabled? :bitbucket)
+                      organization-listing-with-bitbucket
+                      organization-listing)
+                    {:user user
+                     :settings settings
+                     :repos repos})]
          [:hr]
          [:div#project-listing.project-listing
           [:div.overview
