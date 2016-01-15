@@ -63,7 +63,7 @@
                                                                :vcs-url vcs-url
                                                                :build-num build-num}])}
              [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
-             [:span.cancel-text "Cancel"]]))])]
+             [:span.cancel-text "cancel"]]))])]
 
      [:div.build-info
       [:div.build-info-header
