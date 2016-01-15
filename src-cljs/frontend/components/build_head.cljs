@@ -1001,7 +1001,7 @@
           [:div.build-actions-v2
            (when (and (build-model/can-cancel? build) has-write-settings?)
              (forms/managed-button
-               [:a.build-action
+               [:a.cancel-build
                 {:data-loading-text "Canceling"
                  :title             "Cancel this build"
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
