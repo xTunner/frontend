@@ -700,9 +700,7 @@
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [tab-tag {:class (when (= :tests selected-tab) "active")}
-               [tab-link {:href "#tests"} (if (= "success" (:status build))
-                                            "Test Results "
-                                            "Test Failures ")
+               [tab-link {:href "#tests"} "Test Summary "
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
