@@ -429,12 +429,6 @@
                                    "If this option is selected, then CircleCI will run builds for this project "
                                    "on Mac OSX rather than Linux. Select this if you have an iOS application "
                                    "that you want to build using CircleCI."]})
-            (describe-flag {:flag :smart-cocoapods-caching
-                           :title "Smart CocoaPods Caching"
-                           :blurb [:p
-                                   "Enable caching of CocoaPods to remove the need to call the `pod install`
-                                   command on every build."]})
-
             ]]])))))
 
 (defn dependencies [project-data owner]
