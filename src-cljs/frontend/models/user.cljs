@@ -22,3 +22,8 @@
 (defn project-preferences [user]
   (into {} (for [[vcs-url prefs] (:projects user)]
              [(unkeyword vcs-url) prefs])))
+
+(def free? (boolean (some-> js/window
+                            (aget "ldUser")
+                            (aget "custom")
+                            (aget "free"))))

@@ -1,5 +1,6 @@
 (ns frontend.elevio
   (:require [frontend.utils :as utils]
+            [frontend.models.user :as user]
             [goog.dom :as gdom]
             [goog.dom.classlist :as class-list]))
 
@@ -17,15 +18,11 @@
   (class-list/add js/document.body "circle-elevio")
   (aset js/window "_elev" (or (aget js/window "_elev") #js {}))
   (let [set-elev! (partial aset (aget js/window "_elev"))
-        is-free (boolean (some-> js/window
-                                 (aget "ldUser")
-                                 (aget "custom")
-                                 (aget "free")))
         user-info (aget js/window "elevSettings")
         support-module-id "2968"
         discuss-link-module-id "3003"
         discuss-support-link-module-id "3762"]
-    (if is-free
+    (if user/free?
       ;; disable support module, discuss link module
       (set-elev! "disabledModules" #js [support-module-id discuss-link-module-id])
       ;; else disable discuss support link module
