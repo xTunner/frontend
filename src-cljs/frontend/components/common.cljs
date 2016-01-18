@@ -5,6 +5,7 @@
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.feature :as feature]
+            [frontend.models.user :as user]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]
@@ -19,10 +20,11 @@
 
 (defn contact-support-a-info [owner & {:keys [tags]
                                        :or {tags [:support-dialog-raised]}}]
-  (if (config/intercom-enabled?)
-        {:on-click #(raise! owner tags)}
-        {:href (str "mailto:" (config/support-email))
-         :target "_blank"}))
+  (cond (not (config/elevio-enabled?)) {:href (str "mailto:" (config/support-email))
+                                        :target "_blank"}
+        user/free? {:href "https://discuss.circleci.com/t/community-support/1470"
+                    :target "_blank"}
+        :else {:on-click #(raise! owner tags)}))
 
 (defn contact-us-inner [owner]
   [:a (contact-support-a-info owner)
