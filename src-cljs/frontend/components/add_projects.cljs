@@ -142,7 +142,7 @@
           [:div.organizations.card
            (when github-active?
              (missing-org-info owner))
-           (when bitbucket-active?
+           (when (and bitbucket-active? (-> user :bitbucket_authorized not))
              [:div.text-center [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
            [:ul.organizations
             (map (fn [org] (organization org settings owner))
@@ -459,42 +459,40 @@
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
     (html
-      [:div#add-projects
-       [:div#follow-contents
-        [:div.follow-wrapper
-         (when (seq (user-model/missing-scopes user))
-           (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
-         (when (seq followed-inaccessible)
-           (inaccessible-orgs-notice followed-inaccessible settings))
-         [:h2 "Welcome!"]
-         [:h3 "You're about to set up a new project in CircleCI."]
-         [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
-         [:hr]
-         [:div.org-listing
-          (om/build (if (feature/enabled? :bitbucket)
-                      organization-listing-with-bitbucket
-                      organization-listing)
-                    {:user user
-                     :settings settings
-                     :repos repos})]
-         [:hr]
-         [:div#project-listing.project-listing
-          [:div.overview
-           [:span.big-number "2"]
-           [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
-          (om/build main {:user user
-                          :repos repos
-                          :selected-org selected-org
-                          :settings settings})
-          [:hr]
-          ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
-          ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then
-          ;; show the payment plan.
-          (let [org (->> user
-                         :organizations
-                         (filter some?)
-                         (first))]
-            (when (and (not (config/enterprise?))
-                       (or (= selected-org (:login user)) (organization/show-upsell? org)))
-              (om/build payment-plan {:selected-org selected-org
-                                      :view view})))]]]])))
+     [:div#add-projects
+      (when (seq (user-model/missing-scopes user))
+        (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+      (when (seq followed-inaccessible)
+        (inaccessible-orgs-notice followed-inaccessible settings))
+      [:h2 "Welcome!"]
+      [:h3 "You're about to set up a new project in CircleCI."]
+      [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+      [:hr]
+      [:div.org-listing
+       (om/build (if (feature/enabled? :bitbucket)
+                   organization-listing-with-bitbucket
+                   organization-listing)
+                 {:user user
+                  :settings settings
+                  :repos repos})]
+      [:hr]
+      [:div#project-listing.project-listing
+       [:div.overview
+        [:span.big-number "2"]
+        [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+       (om/build main {:user user
+                       :repos repos
+                       :selected-org selected-org
+                       :settings settings})
+       [:hr]
+       ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
+       ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then
+       ;; show the payment plan.
+       (let [org (->> user
+                      :organizations
+                      (filter some?)
+                      (first))]
+         (when (and (not (config/enterprise?))
+                    (or (= selected-org (:login user)) (organization/show-upsell? org)))
+           (om/build payment-plan {:selected-org selected-org
+                                   :view view})))]])))
