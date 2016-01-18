@@ -354,8 +354,7 @@
            "JavaScript" "/docs/test-metadata#js"
            "Python" "/docs/test-metadata#python"
            "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-           "/docs/test-metadata#metadata-collection-in-custom-test-steps"
-           )
+           "/docs/test-metadata#metadata-collection-in-custom-test-steps")
             :on-mouse-up #(analytics/track-build-tests-ad-click language)}
         "Set up your test runner to output in JUnit-style XML"] ", so we can:"
        [:ul
