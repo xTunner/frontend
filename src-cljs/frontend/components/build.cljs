@@ -395,8 +395,8 @@
               (om/build common/flashes (get-in data state/error-message-path))
 
               (om/build notices {:build-data (dissoc build-data :container-data)
-                                    :project-data project-data
-                                    :invite-data invite-data})
+                                 :project-data project-data
+                                 :invite-data invite-data})
 
               (om/build container-pills {:container-data container-data
                                          :build-running? (build-model/running? build)
