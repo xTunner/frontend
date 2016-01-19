@@ -165,7 +165,7 @@
                                              (if (in-orgs? owner)
                                                accum
                                                (conj accum (assoc owner :vcs_type vcs_type))))
-                                           []
+                                           #{}
                                            repos)))))]
            (when (get-in user [:repos-loading (keyword vcs-type)])
              [:div.orgs-loading
