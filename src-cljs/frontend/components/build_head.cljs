@@ -354,7 +354,8 @@
            "JavaScript" "/docs/test-metadata#js"
            "Python" "/docs/test-metadata#python"
            "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-           "/docs/test-metadata#metadata-collection-in-custom-test-steps")}
+           "/docs/test-metadata#metadata-collection-in-custom-test-steps")
+            :on-mouse-up #(analytics/track-build-tests-ad-click language)}
         "Set up your test runner to output in JUnit-style XML"] ", so we can:"
        [:ul
         [:li "Show a summary of all test failures across all containers"]
@@ -698,9 +699,7 @@
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [tab-tag {:class (when (= :tests selected-tab) "active")}
-               [tab-link {:href "#tests"} (if (= "success" (:status build))
-                                            "Test Results "
-                                            "Test Failures ")
+               [tab-link {:href "#tests"} "Test Summary "
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
