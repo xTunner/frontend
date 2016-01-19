@@ -11,8 +11,6 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.github :as gh-utils]
-            ;; TODO: Remove; see :allowFullscreen TODO below.
-            [goog.dom :as dom]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -185,16 +183,8 @@
         (html [:div.product-page.integrations
                (if-let [video-id (get-in app state/modal-video-id-path)]
                  [:div.modal-overlay {:on-click #(raise! owner [:close-video])}
-                  ;; TODO: Once React supports :allowFullscreen (v.0.13.1),
-                  ;; replace this hack with the :iframe below. Then remove the
-                  ;; `> div > .modal-video` selector in CSS.
-                  [:div {:dangerouslySetInnerHTML
-                         {:__html (dom/getOuterHtml
-                                    (dom/createDom "iframe" #js {:class "modal-video"
-                                                                 :src (video-embed-url video-id)
-                                                                 :allowFullscreen true}))}}]
-                  ; [:iframe.modal-video {:src (video-embed-url video-id)
-                  ;                       :allowFullscreen true}]
+                  [:iframe.modal-video {:src (video-embed-url video-id)
+                                        :allowFullscreen true}]
                   [:button.close {:aria-label "Close"
                                   :on-click #(raise! owner [:close-video])}]])
                (let [hero (:hero integration)]
