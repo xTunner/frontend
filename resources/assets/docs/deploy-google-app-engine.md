@@ -5,7 +5,12 @@ last_updated: July 19, 2013
 
 -->
 
-App Engine projects can be deployed using the gcloud command as follows:
+Note that there are a few common dependencies like the `gcloud` command line tool and Service Account authentication that are required
+for all Google Cloud Platform deployments. Please see the general [Google Cloud Platform doc](/docs/google-cloud-platform) for more info.
+
+## App Engine
+
+Once you're finished following the above instructions on authentication linked to above, App Engine projects can be deployed using the gcloud command as follows:
 
     gcloud -q preview app deploy app.yaml --promote --version=staging
 
