@@ -135,7 +135,8 @@
 (def repos-path (conj user-path :repos))
 (defn repo-path [repo-index] (conj repos-path repo-index))
 
-(def repos-loading-path (conj user-path :repos-loading))
+(def github-repos-loading-path (conj user-path :repos-loading :github))
+(def bitbucket-repos-loading-path (conj user-path :repos-loading :bitbucket))
 
 (def user-email-prefs-key :basic_email_prefs)
 (def user-email-prefs-path (conj user-path :basic_email_prefs))

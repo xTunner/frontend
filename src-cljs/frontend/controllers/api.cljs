@@ -223,16 +223,22 @@
       state
       (update-in state state/build-path merge (:resp args)))))
 
-(defmethod api-event [:repos :success]
+(defmethod api-event [:github-repos :success]
   [target message status args state]
   (if (empty? (:resp args))
     ;; this is the last api request, update the loading flag.
-    (assoc-in state state/repos-loading-path false)
+    (assoc-in state state/github-repos-loading-path false)
     ;; otherwise trigger a fetch for the next page, and return the state
     ;; with the items we got here added.
     (let [page (-> args :context :page)]
-      (api/get-repos (get-in state [:comms :api]) :page (inc page))
+      (api/get-github-repos (get-in state [:comms :api]) :page (inc page))
       (update-in state state/repos-path #(into % (:resp args))))))
+
+(defmethod api-event [:bitbucket-repos :success]
+  [target message status args state]
+  (-> state
+      (assoc-in state/bitbucket-repos-loading-path false)
+      (update-in state/repos-path #(into % (:resp args)))))
 
 (defn filter-piggieback [orgs]
   "Return subset of orgs that aren't covered by piggyback plans."
