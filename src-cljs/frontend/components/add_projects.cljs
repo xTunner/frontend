@@ -152,7 +152,7 @@
                  ;; in this order (rather than e.g. putting the whole thing into a set)
                  ;; so that new ones don't jump up in the middle as they're loaded.
                  (filter (partial select-vcs-type vcs-type)
-                         (concat [(assoc user :vcs_type vcs-type)]
+                         (concat (if (= "github" vcs-type) [(assoc user :vcs_type vcs-type)])
                                  (:organizations user)
                                  (let [org-names (->> user
                                                       :organizations
