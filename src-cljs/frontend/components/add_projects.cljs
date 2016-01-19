@@ -160,9 +160,12 @@
                                                       (map :login)
                                                       set)
                                        in-orgs? (comp org-names :login)]
-                                   (->> repos (map :owner)
-                                        (remove in-orgs?)
-                                        (set))))))]
+                                   (reduce (fn [accum {:keys [owner vcs_type]}]
+                                             (if (in-orgs? owner)
+                                               accum
+                                               (conj accum (assoc owner :vcs_type vcs_type))))
+                                           []
+                                           repos)))))]
            (when (get-in user [:repos-loading (keyword vcs-type)])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])]])))))
