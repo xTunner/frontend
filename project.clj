@@ -38,6 +38,13 @@
             [lein-figwheel "0.5.0-2"]
             [cider/cider-nrepl "0.9.1"]]
 
+  ;; Don't include these dependencies transitively. These are foundational
+  ;; dependencies that lots of our direct dependencies depend on. We want to
+  ;; make sure we get the version *we* asked for, not the version one of *them*
+  ;; asked for (which means we're taking responsibility for the versions working
+  ;; together). If Maven had useful version ranges like Bundler or npm, we could
+  ;; let it take care of resolving the versions for us, but Maven's version
+  ;; ranges are considered dysfuntional, so we can't.
   :exclusions [org.clojure/clojure
                org.clojure/clojurescript
                cljsjs/react]
