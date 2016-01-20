@@ -6,7 +6,4 @@ CI.terminal.append;
 CI.terminal.get_trailing;
 CI.terminal.currentState;
 
-CI.inner;
-CI.inner.Diagnostics;
-
 CI.ExistingUserHeuristics;
