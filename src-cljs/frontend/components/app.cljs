@@ -7,6 +7,9 @@
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.documentation :as docs]
+            [frontend.components.features :as features]
+            [frontend.components.mobile :as mobile]
+            [frontend.components.press :as press]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.insights :as insights]
             [frontend.components.invites :as invites]
@@ -18,6 +21,7 @@
             [frontend.components.inspector :as inspector]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
+            [frontend.components.pricing :as pricing]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.shared :as shared]
             [frontend.components.landing :as landing]
@@ -25,6 +29,7 @@
             [frontend.components.opt-in :as opt-in]
             [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
+            [frontend.components.signup :as signup]
             [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
@@ -66,6 +71,9 @@
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
     :changelog changelog/changelog
     :documentation docs/documentation
+    :pricing pricing/pricing
+
+    :signup signup/signup
 
     :error errors/error-page))
 
@@ -100,7 +108,9 @@
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
-                                       (when-not logged-in? ["aside-nil"]))}
+                                       (when-not logged-in? ["aside-nil"])
+                                       ;; The following is meant for the landing ab test to hide old header/footer
+                                       (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
