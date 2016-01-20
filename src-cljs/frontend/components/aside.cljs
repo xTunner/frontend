@@ -229,7 +229,7 @@
    (if-not (pm/can-edit-plan? plan org-name)
      [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
      (concat
-      [{:type :subpage :title "Adjust containers" :href "#containers" :subpage :containers}]
+      [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
       (when (pm/transferrable-or-piggiebackable-plan? plan)
         [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
       (when (pm/paid? plan)
