@@ -265,7 +265,9 @@
            [:div.last-build-status
             (om/build svg {:class "badge-icon"
                            :src (-> latest-build build/status-icon common/icon-path)})]
-           [:span.project-name (formatted-project-name project)]
+           [:a {:href (str "/build-insights/dashboard/"
+                           (project :username) "/" (project :reponame))}
+            [:span.project-name (formatted-project-name project)]]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
              [:i.octicon.octicon-mark-github]]]
@@ -401,6 +403,24 @@
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 
+(defrender project-insight [data owner]
+  (html
+   [:div
+    [:div.content
+    (let [project (first (filter (fn [project]
+                     (and
+                       (= (:reponame project)
+                          (get-in data [:navigation-data :repo]))
+                       )
+                       (= (:username project)
+                          (get-in data [:navigation-data :org]))
+                       )
+                     (get-in data state/projects-path)
+                     ))]
+        (println project)
+        (om/build project-insights (decorate-project
+                                    (get-in state state/user-plans-path) project)))]]))
+
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]
     (html
@@ -408,6 +428,7 @@
       (cond
         (nil? projects)    [:div.loading-spinner-big common/spinner]
         (empty? projects)  (om/build no-projects state)
+        (some? ((state :navigation-data) :repo)) (om/build project-insight state)
         :else              (om/build cards {:plans (get-in state state/user-plans-path)
                                             :projects (get-in state state/projects-path)
                                             :selected-filter (get-in state state/insights-filter-path)
