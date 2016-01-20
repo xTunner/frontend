@@ -514,7 +514,7 @@
           (when (and (build-model/config-errors? build)
                      (not (:dismiss-config-errors build-data)))
             (om/build build-cfg/config-errors build))
-          [:div.build-config-string [:pre.solarized.line-numbers
+          [:div.build-config-string [:pre.line-numbers
                                      [:code.config-yml.language-yaml config-string]]]]
          (circle-yml-ad))))))
 
