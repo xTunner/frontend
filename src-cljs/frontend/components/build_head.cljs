@@ -668,6 +668,14 @@
                  (when show-all-commits?
                    (om/build-all commit-line bottom-commits))))])])))))
 
+(defn- show-ssh-button?
+  "Always show the SSH button on Linux builds.
+  Only show the SSH button on OSX builds if the Launch Darkly flag is enabled.
+  https://en.wikipedia.org/wiki/Truth_table#Logical_implication
+  osx -> launch-darkly"
+  [project]
+  (or (not (project-model/feature-enabled? project :osx))
+      (feature/enabled? :ios-ssh-builds)))
 
 (def tab-tag :li.build-info-tab)
 (def tab-link :a.tab-link)
@@ -720,9 +728,8 @@
                                                        :stop (or (:start_time build) (:stop_time build))})
                    ")"])]])
 
-            ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
-                       (not (project-model/feature-enabled? project :osx)))
+                       (show-ssh-button? project))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link {:href "#ssh-info"}
                 "Debug via SSH"]])
@@ -987,8 +994,7 @@
            [:ul.dropdown-menu.pull-right
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            ;; XXX Temporarily remove the ssh button for OSX builds
-            (when (not (project-model/feature-enabled? project :osx))
+            (when (show-ssh-button? project)
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
 
