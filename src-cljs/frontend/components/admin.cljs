@@ -130,6 +130,7 @@
     om/IRender
     (render [_]
       (let [fleet-state (->> (get-in app state/fleet-state-path)
+                             (filter #(-> % :ec2_instance_type not-empty)) ;; remove corrupt entries
                              (remove #(-> % :builder_tags (= ["os:none"])))
                              (sort-by :instance_id))
             summary-counts (get-in app state/build-system-summary-path)
