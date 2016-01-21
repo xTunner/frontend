@@ -408,18 +408,15 @@
    [:div
     [:div.content
     (let [project (first (filter (fn [project]
-                     (and
-                       (= (:reponame project)
-                          (get-in data [:navigation-data :repo]))
-                       )
-                       (= (:username project)
-                          (get-in data [:navigation-data :org]))
-                       )
-                     (get-in data state/projects-path)
-                     ))]
-        (println project)
+                    (and
+                      (= (:reponame project)
+                        (get-in data [:navigation-data :repo])))
+                      (= (:username project)
+                        (get-in data [:navigation-data :org])))
+                    (get-in data state/projects-path)
+                    ))]
         (om/build project-insights (decorate-project
-                                    (get-in state state/user-plans-path) project)))]]))
+                                    (get-in data state/user-plans-path) project)))]]))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)]
