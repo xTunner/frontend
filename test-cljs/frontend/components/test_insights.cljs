@@ -74,13 +74,20 @@
 (deftest can-render-insights-cards
   (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
     (om/root insights/cards
-             {:plans test-utils/example-user-plans-paid
-              :projects [test-project/private-project]
+             {:projects [(insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)]
               :selected-filter :all
               :selected-sorting :alphabetical}
              {:target test-node
               :shared {:timer-atom (timer/initialize)}})
-    (testing "Simple render of feature container.")))
+    (testing "Simple render of cards.")))
+
+(deftest can-render-single-project-insights
+  (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
+    (om/root insights/single-project-insights
+             (insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)
+             {:target test-node
+              :shared {:timer-atom (timer/initialize)}})
+    (testing "Simple render of single-project insights.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO: Async testing does not work right now, it's not in scope to fix it ;;
