@@ -354,11 +354,10 @@
         (#(assoc % :sort-category (project-sort-category %)))
         (#(assoc % :latest-build-time (project-latest-build-time %))))))
 
-(defrender cards [{:keys [plans projects selected-filter selected-sorting]} owner]
-  (let [decorated-projects (map (partial decorate-project plans) projects)
-        categories (group-by :sort-category decorated-projects)
+(defrender cards [{:keys [projects selected-filter selected-sorting]} owner]
+  (let [categories (group-by :sort-category projects)
         filtered-projects (if (= selected-filter :all)
-                            decorated-projects
+                            projects
                             (selected-filter categories))
         sorted-projects (case selected-sorting
                           :alphabetical (->> filtered-projects
@@ -378,7 +377,7 @@
                  :checked (= selected-filter :all)
                  :on-change #(raise! owner [:insights-filter-changed {:new-filter :all}])}]
         [:label {:for "insights-filter-all"}
-         (gstring/format"All (%s)" (count decorated-projects))]
+         (gstring/format"All (%s)" (count projects))]
         [:input {:id "insights-filter-success"
                  :type "radio"
                  :name "selected-filter"
@@ -403,30 +402,37 @@
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 
-(defrender project-insight [data owner]
+(defrender single-project-insights [project owner]
   (html
    [:div
-    [:div.content
-    (let [project (first (filter (fn [project]
-                    (and
-                      (= (:reponame project)
-                        (get-in data [:navigation-data :repo])))
-                      (= (:username project)
-                        (get-in data [:navigation-data :org])))
-                    (get-in data state/projects-path)
-                    ))]
-        (om/build project-insights (decorate-project
-                                    (get-in data state/user-plans-path) project)))]]))
+    [:div.content (om/build project-insights project)]]))
 
 (defrender build-insights [state owner]
-  (let [projects (get-in state state/projects-path)]
+  (let [projects (get-in state state/projects-path)
+        plans (get-in state state/user-plans-path)
+        navigation-data (state :navigation-data)
+        decorate (partial decorate-project plans)]
     (html
-     [:div#build-insights {}
+     [:div#build-insights
       (cond
-        (nil? projects)    [:div.loading-spinner-big common/spinner]
-        (empty? projects)  (om/build no-projects state)
-        (some? ((state :navigation-data) :repo)) (om/build project-insight state)
-        :else              (om/build cards {:plans (get-in state state/user-plans-path)
-                                            :projects (get-in state state/projects-path)
-                                            :selected-filter (get-in state state/insights-filter-path)
-                                            :selected-sorting (get-in state state/insights-sorting-path)}))])))
+        ;; Still loading projects
+        (nil? projects)
+        [:div.loading-spinner-big common/spinner]
+
+        ;; User has no projects
+        (empty? projects)
+        (om/build no-projects state)
+
+        ;; User is looking at a single project
+        (some? (:repo navigation-data))
+        (om/build single-project-insights (->> projects
+                                               (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                             (= (:username %) (:org navigation-data))))
+                                               first
+                                               decorate))
+
+        ;; User is looking at all projects
+        :else
+        (om/build cards {:projects (map decorate projects)
+                         :selected-filter (get-in state state/insights-filter-path)
+                         :selected-sorting (get-in state state/insights-sorting-path)}))])))
