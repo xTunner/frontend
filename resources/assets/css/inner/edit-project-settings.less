@@ -320,21 +320,6 @@
     }
   }
 
-  .mini-faq {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    margin-top: 2em;
-    .mini-faq-item {
-      padding-right: 4em;
-      .flex(1 1 30%);
-      min-width: 300px;
-      &:last-child {
-        padding-right: 0;
-      }
-    }
-  }
-
   // Environment Variables Page
   .environment-variables-inner{
 
@@ -756,4 +741,24 @@ input.radio[type="checkbox"] {
   -webkit-appearance: radio;
   -moz-appearance: radio;
   appearance: radio;
+}
+
+#project-settings, .org-page {
+  .mini-faq {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    margin-top: 2em;
+    .mini-faq-item {
+      padding-right: 4em;
+      .flex(1 1 30%);
+      min-width: 300px;
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+    ul {
+      padding-left: 0;
+    }
+  }
 }

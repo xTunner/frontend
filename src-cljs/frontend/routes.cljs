@@ -129,11 +129,94 @@
       (.replace js/location (str "https://circleci.com/docs/" subpage))
       (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage)))))
 
+  (defroute v1-about "/about" {:as params}
+    (open-to-outer! nav-ch :about (assoc params
+                                    :_title "About Us"
+                                    :_description "Learn more about the CircleCI story and why we're building the leading Continuous Integration and Deployment platform.")))
+
+  (defroute v1-team "/about/team" {:as params}
+    (open-to-outer! nav-ch :team (assoc params
+                                    :_title "About the Team"
+                                    :_description "Meet the team behind CircleCI, the state-of-the-art automated testing, continuous integration, and continuous deployment tool made for developers.")))
+
+  (defroute v1-contact "/contact" {:as params}
+    (open-to-outer! nav-ch :contact (assoc params
+                                      :_title "Contact Us"
+                                      :_description "Get in touch with CircleCI.")))
+
+  (defroute v1-mobile "/mobile" {:as params}
+    (open-to-outer! nav-ch :mobile (assoc params
+                                     :_title "Mobile Continuous Integration and Mobile App Testing"
+                                     :_description "Build 5-star mobile apps with Mobile Continuous Integration by automating your build, test, and deployment workflow on iOS and Android. ")))
+
+  (defroute v1-ios "/mobile/ios" {:as params}
+    (open-to-outer! nav-ch :ios (assoc params
+                                  :_title "Apple iOS App Testing"
+                                  :_description "Build 5-star iOS apps by automating your development workflow with Mobile Continuous Integration and Delivery.")))
+
+  (defroute v1-android "/mobile/android" {:as params}
+    (open-to-outer! nav-ch :android (assoc params
+                                      :_title "Android App Testing"
+                                      :_description "Build better Android apps with Mobile Continuous Integration. Get testing today!")))
+
+  (defroute v1-pricing "/pricing" {:as params}
+    (open-to-outer! nav-ch :pricing (assoc params
+                                        :_analytics-page "View Pricing Outer"
+                                        :_title "Pricing and Information"
+                                        :_description "Save time and cost by making your engineering team more efficient. Get started for free and see how many containers and parallelism you need to scale with your team.")))
+
   (defroute v1-jobs "/jobs" {:as params}
     (open-to-outer! nav-ch :jobs (assoc params
                                    :_analytics-page "View jobs"
                                    :_title "Search for Jobs at CircleCI"
                                    :_description "Come work with us. Join our amazing team of highly technical engineers and business leaders to help us build great developer tools.")))
+
+  (defroute v1-privacy "/privacy" {:as params}
+    (open-to-outer! nav-ch :privacy (assoc params
+                                      :_analytics-page "View Privacy"
+                                      :_title "Privacy Policy"
+                                      :_description "Read our privacy policy to understand how we collect and use information about you.")))
+
+  (defroute v1-security "/security" {:as params}
+    (open-to-outer! nav-ch :security (assoc params
+                                       :_analytics-page "View Security"
+                                       :_title "Security Policy"
+                                       :_description "Read our security policy and guidelines and see how your data is safe with CircleCI.")))
+
+  (defroute v1-security-hall-of-fame "/security/hall-of-fame" {:as params}
+    (open-to-outer! nav-ch :security-hall-of-fame (assoc params
+                                                    :_title "Security Hall of Fame"
+                                                    :_description "Join our Security Hall of Fame by helping us make our platform more secure."
+                                                    :_analytics-page "View Security Hall of Fame")))
+
+  (defroute v1-enterprise "/enterprise" {:as params}
+    (open-to-outer! nav-ch :enterprise (assoc params
+                                         :_title "Enterprise Continuous Integration and Deployment"
+                                         :_description "Reduce risk with Enterprise Continuous Integration from CircleCI. Integrates seamlessly with Github Enterprise and the rest of your technology stack.")))
+
+  (defroute v1-enterprise-aws "/enterprise/aws" {:as params}
+    (open-to-outer! nav-ch :aws (assoc params
+                                         :_title "CircleCI Enterprise on AWS"
+                                         :_description "Run CircleCI Enterprise on the same AWS infrastructure you use for everything else. Integrates seamlessly with GitHub Enterprise on AWS.")))
+
+  (defroute v1-enterprise-azure "/enterprise/azure" {:as params}
+    (open-to-outer! nav-ch :azure (assoc params
+                                         :_title "CircleCI Enterprise on Azure"
+                                         :_description "Install CircleCI Enterprise in your own Microsoft Azure account. Integrates with GitHub Enterprise on Azure and Active Directory authentication.")))
+
+  (defroute v1-stories "/stories/:story" [story]
+    (open-to-outer! nav-ch :stories {:story (keyword story)}))
+
+  (defroute v1-features "/features" {:as params}
+    (open-to-outer! nav-ch :features (assoc params
+                                       :_title "Continuous Integration Product and Features"
+                                       :_description "Build a better product and let CircleCI handle your testing. CircleCI helps your team improve productivity with faster development, reduced risk, and better code.")))
+
+  (defroute v1-languages "/features/:language" {:as params}
+    (open-to-outer! nav-ch :language-landing params))
+
+  (defroute v1-integrations "/integrations/:integration" [integration]
+    (open-to-outer! nav-ch :integrations {:integration (keyword integration)}))
 
   (defroute v1-changelog-individual "/changelog/:id" {:as params}
     (open-to-outer! nav-ch :changelog params))
@@ -147,7 +230,15 @@
       (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-home "/home" {:as params}
-    (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
+    (open-to-outer! nav-ch :landing (assoc params :_canonical "/")))
+
+  (defroute v1-press "/press" {:as params}
+    (open-to-outer! nav-ch :press (assoc params
+                                         :_title "Press Releases and Updates"
+                                         :_description "Find the latest CircleCI news and updates here.")))
+
+  (defroute v1-signup "/signup" {:as params}
+    (open-to-outer! nav-ch :signup params)))
 
 (defn define-spec-routes! [nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]
