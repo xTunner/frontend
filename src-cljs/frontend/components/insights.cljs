@@ -265,9 +265,10 @@
            [:div.last-build-status
             (om/build svg {:class "badge-icon"
                            :src (-> latest-build build/status-icon common/icon-path)})]
-           [:a {:href (str "/build-insights/dashboard/"
-                           (project :username) "/" (project :reponame))}
-            [:span.project-name (formatted-project-name project)]]
+           [:span.project-name
+            [:a {:href (routes/v1-insights-dashboard {:org (:username project)
+                                                      :repo (:reponame project)})}
+             (formatted-project-name project)]]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
              [:i.octicon.octicon-mark-github]]]
