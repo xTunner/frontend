@@ -234,7 +234,8 @@
     ;; load orgs, collaborators, and repos.
     (api/get-orgs api-ch)
     (api/get-github-repos api-ch)
-    (api/get-bitbucket-repos api-ch))
+    (when (feature/enabled? :bitbucket)
+      (api/get-bitbucket-repos api-ch)))
   (set-page-title! "Add projects")
   (analytics/track-signup))
 
