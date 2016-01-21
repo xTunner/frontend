@@ -13,6 +13,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
+            [frontend.models.feature :as feature]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect] :refer [unexterned-prop]]
             [frontend.utils.github :as gh-utils]
@@ -265,7 +266,12 @@
            [:div.last-build-status
             (om/build svg {:class "badge-icon"
                            :src (-> latest-build build/status-icon common/icon-path)})]
-           [:span.project-name (formatted-project-name project)]
+           [:span.project-name
+            (if (feature/enabled? :insights-dashboard)
+              [:a {:href (routes/v1-insights-dashboard {:org (:username project)
+                                                        :repo (:reponame project)})}
+               (formatted-project-name project)]
+              (formatted-project-name project))]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
              [:i.octicon.octicon-mark-github]]]
@@ -352,12 +358,10 @@
         (#(assoc % :sort-category (project-sort-category %)))
         (#(assoc % :latest-build-time (project-latest-build-time %))))))
 
-(defrender cards [{:keys [plans projects selected-filter selected-sorting]} owner]
-  (let [decorated-projects (map (partial decorate-project plans) projects)
-        categories (group-by :sort-category decorated-projects)
-        filtered-projects (if (= selected-filter :all)
-                            decorated-projects
-                            (selected-filter categories))
+(defrender cards [{:keys [projects selected-filter selected-sorting]} owner]
+  (let [categories (-> (group-by :sort-category projects)
+                       (assoc :all projects))
+        filtered-projects (selected-filter categories)
         sorted-projects (case selected-sorting
                           :alphabetical (->> filtered-projects
                                              (sort-by #(-> %
@@ -370,27 +374,18 @@
      [:div
       [:div.controls
        [:span.filtering
-        [:input {:id "insights-filter-all"
-                 :type "radio"
-                 :name "selected-filter"
-                 :checked (= selected-filter :all)
-                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :all}])}]
-        [:label {:for "insights-filter-all"}
-         (gstring/format"All (%s)" (count decorated-projects))]
-        [:input {:id "insights-filter-success"
-                 :type "radio"
-                 :name "selected-filter"
-                 :checked (= selected-filter :success)
-                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :success}])}]
-        [:label {:for "insights-filter-success"}
-         (gstring/format"Successful (%s)" (count (:success categories)))]
-        [:input {:id "insights-filter-failed"
-                 :type "radio"
-                 :name "selected-filter"
-                 :checked (= selected-filter :failed)
-                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :failed}])}]
-        [:label {:for "insights-filter-failed"}
-         (gstring/format"Failed (%s)" (count (:failed categories)))]]
+        (for [[filter-name filter-label] [[:all "All"]
+                                          [:success "Success"]
+                                          [:failed "Failed"]]]
+          (let [filter-input-id (str "insights-filter-" (name filter-name))]
+            (list
+             [:input {:id filter-input-id
+                      :type "radio"
+                      :name "selected-filter"
+                      :checked (= selected-filter filter-name)
+                      :on-change #(raise! owner [:insights-filter-changed {:new-filter filter-name}])}]
+             [:label {:for filter-input-id}
+              (gstring/format "%s (%s)" filter-label (count (filter-name categories)))])))]
        [:span.sorting
         [:label "Sort: "]
         [:select {:class "toggle-sorting"
@@ -401,14 +396,37 @@
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 
+(defrender single-project-insights [project owner]
+  (html
+   [:div
+    [:div.content (om/build project-insights project)]]))
+
 (defrender build-insights [state owner]
-  (let [projects (get-in state state/projects-path)]
+  (let [projects (get-in state state/projects-path)
+        plans (get-in state state/user-plans-path)
+        navigation-data (:navigation-data state)
+        decorate (partial decorate-project plans)]
     (html
-     [:div#build-insights {}
+     [:div#build-insights
       (cond
-        (nil? projects)    [:div.loading-spinner-big common/spinner]
-        (empty? projects)  (om/build no-projects state)
-        :else              (om/build cards {:plans (get-in state state/user-plans-path)
-                                            :projects (get-in state state/projects-path)
-                                            :selected-filter (get-in state state/insights-filter-path)
-                                            :selected-sorting (get-in state state/insights-sorting-path)}))])))
+        ;; Still loading projects
+        (nil? projects)
+        [:div.loading-spinner-big common/spinner]
+
+        ;; User has no projects
+        (empty? projects)
+        (om/build no-projects state)
+
+        ;; User is looking at a single project
+        (some? (:repo navigation-data))
+        (om/build single-project-insights (->> projects
+                                               (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                             (= (:username %) (:org navigation-data))))
+                                               first
+                                               decorate))
+
+        ;; User is looking at all projects
+        :else
+        (om/build cards {:projects (map decorate projects)
+                         :selected-filter (get-in state state/insights-filter-path)
+                         :selected-sorting (get-in state state/insights-sorting-path)}))])))
