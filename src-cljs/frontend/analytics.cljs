@@ -229,3 +229,6 @@
 
 (deftrack track-parallelism-build-header-click [data]
   (mixpanel/track "parallelism-build-header-click" data))
+
+(deftrack track-cancel-button-clicked [data]
+  (mixpanel/track "cancel-button-clicked" data))
