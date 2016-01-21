@@ -268,10 +268,10 @@
                            :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name
             (if (feature/enabled? :insights-dashboard)
-            [:a {:href (routes/v1-insights-dashboard {:org (:username project)
-                                                      :repo (:reponame project)})}
-             (formatted-project-name project)]
-             (formatted-project-name project))]
+              [:a {:href (routes/v1-insights-dashboard {:org (:username project)
+                                                        :repo (:reponame project)})}
+               (formatted-project-name project)]
+              (formatted-project-name project))]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
              [:i.octicon.octicon-mark-github]]]
