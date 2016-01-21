@@ -101,7 +101,7 @@
                           (let [org-names (->> user :organizations (cons user) (map :login) set)
                                 in-orgs? (comp org-names :login)]
                             (->> repos (map :owner) (remove in-orgs?) (set))))))]
-           (when (:github-repos-loading user)
+           (when (get-in user [:repos-loading :github])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])
            (missing-org-info owner)]])))))
