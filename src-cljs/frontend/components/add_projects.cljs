@@ -275,14 +275,15 @@
         show-forks (true? (get-in settings [:add-projects :show-forks]))]
     (html
      [:div.proj-wrapper
-      (if-let [selected-login (get-in settings [:add-projects :selected-org :login])]
+      (if selected-org-login
         (let [;; we display a repo if it belongs to this org, matches the filter string,
               ;; and matches the fork settings.
               display? (fn [repo]
                          (and
                           (or show-forks (not (:fork repo)))
-                          (select-vcs-type (:vcs-type selected-org) repo)
-                          (= (:username repo) selected-login)
+                          (select-vcs-type (or (:vcs-type selected-org)
+                                               "github") repo)
+                          (= (:username repo) selected-org-login)
                           (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
               filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
           [:div (om/build repo-filter settings)
