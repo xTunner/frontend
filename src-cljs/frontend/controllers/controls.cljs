@@ -420,6 +420,7 @@
                  (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
                  :follow-repo
                  api-ch
+                 :params {:vcs-type (:vcs_type repo)}
                  :context repo))
   (analytics/track-follow-repo))
 
