@@ -404,7 +404,7 @@
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
-        navigation-data (state :navigation-data)
+        navigation-data (:navigation-data state)
         decorate (partial decorate-project plans)]
     (html
      [:div#build-insights
