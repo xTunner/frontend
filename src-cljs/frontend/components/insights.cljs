@@ -355,10 +355,9 @@
         (#(assoc % :latest-build-time (project-latest-build-time %))))))
 
 (defrender cards [{:keys [projects selected-filter selected-sorting]} owner]
-  (let [categories (group-by :sort-category projects)
-        filtered-projects (if (= selected-filter :all)
-                            projects
-                            (selected-filter categories))
+  (let [categories (-> (group-by :sort-category projects)
+                       (assoc :all projects))
+        filtered-projects (selected-filter categories)
         sorted-projects (case selected-sorting
                           :alphabetical (->> filtered-projects
                                              (sort-by #(-> %
@@ -371,27 +370,18 @@
      [:div
       [:div.controls
        [:span.filtering
-        [:input {:id "insights-filter-all"
-                 :type "radio"
-                 :name "selected-filter"
-                 :checked (= selected-filter :all)
-                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :all}])}]
-        [:label {:for "insights-filter-all"}
-         (gstring/format"All (%s)" (count projects))]
-        [:input {:id "insights-filter-success"
-                 :type "radio"
-                 :name "selected-filter"
-                 :checked (= selected-filter :success)
-                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :success}])}]
-        [:label {:for "insights-filter-success"}
-         (gstring/format"Successful (%s)" (count (:success categories)))]
-        [:input {:id "insights-filter-failed"
-                 :type "radio"
-                 :name "selected-filter"
-                 :checked (= selected-filter :failed)
-                 :on-change #(raise! owner [:insights-filter-changed {:new-filter :failed}])}]
-        [:label {:for "insights-filter-failed"}
-         (gstring/format"Failed (%s)" (count (:failed categories)))]]
+        (for [[filter-name filter-label] [[:all "All"]
+                                          [:success "Success"]
+                                          [:failed "Failed"]]]
+          (let [filter-input-id (str "insights-filter-" (name filter-name))]
+            (list
+             [:input {:id filter-input-id
+                      :type "radio"
+                      :name "selected-filter"
+                      :checked (= selected-filter filter-name)
+                      :on-change #(raise! owner [:insights-filter-changed {:new-filter filter-name}])}]
+             [:label {:for filter-input-id}
+              (gstring/format "%s (%s)" filter-label (count (filter-name categories)))])))]
        [:span.sorting
         [:label "Sort: "]
         [:select {:class "toggle-sorting"
