@@ -13,6 +13,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
+            [frontend.models.feature :as feature]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect] :refer [unexterned-prop]]
             [frontend.utils.github :as gh-utils]
@@ -266,9 +267,11 @@
             (om/build svg {:class "badge-icon"
                            :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name
+            (if (feature/enabled? :insights-dashboard)
             [:a {:href (routes/v1-insights-dashboard {:org (:username project)
                                                       :repo (:reponame project)})}
-             (formatted-project-name project)]]
+             (formatted-project-name project)]
+             (formatted-project-name project))]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
              [:i.octicon.octicon-mark-github]]]
