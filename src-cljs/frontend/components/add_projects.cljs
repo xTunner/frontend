@@ -196,11 +196,13 @@
             should-build? (repo-model/should-do-first-follower-build? repo)]
         (html
          (cond (repo-model/can-follow? repo)
-               [:li.repo-follow {:class (when (repo-model/likely-osx-repo? repo) "osx")}
+               [:li.repo-follow
                 [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
-                  (:name repo)]]
+                  (:name repo)]
+                 (when (repo-model/likely-osx-repo? repo)
+                   [:i.fa.fa-apple])]
                 (when building?
                   [:div.building "Starting first build..."])
                 (managed-button
@@ -217,18 +219,19 @@
 
                (:following repo)
                [:li.repo-unfollow
-                [:div.proj-name
-                 [:span {:title (str (vcs-url/project-name (:vcs_url repo))
-                                     (when (:fork repo) " (forked)"))}
-                  (:name repo)]
-                 [:a {:id tooltip-id
-                      :data-placement "right"
-                      :title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
-                      :href (vcs-url/project-path (:vcs_url repo))}
-                  " "
-                  [:i.material-icons "visibility"]]
-                 (when (:fork repo)
-                   [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
+                [:a {:title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
+                     :href (vcs-url/project-path (:vcs_url repo))}
+                 " "
+                 [:div.proj-name
+                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
+                                      (when (:fork repo) " (forked)"))}
+                   (:name repo)
+                   (when (repo-model/likely-osx-repo? repo)
+                     [:i.fa.fa-apple])]
+
+                  (when (:fork repo)
+                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]]
+
                 (managed-button
                  [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
                                                                              :login login

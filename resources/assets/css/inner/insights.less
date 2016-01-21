@@ -76,7 +76,7 @@
   }
 
   .project-header {
-    @header-icon-color: @gray-lighter-v2;
+    @header-icon-color: @grayDark;
     .flexy(center, row);
     justify-content: center;
 
@@ -86,24 +86,12 @@
       padding-bottom: 2px;
     }
 
-    .fa-github {
+    .octicon,
+    .material-icons {
       font-size: 18px;
-      color: @header-icon-color;
-      margin-right: 7px;
-    }
-
-    .settings-icon {
-      svg {
-	width: 16px;
-	height: 16px;
-	margin-bottom: 1px;
-
-	stroke: @header-icon-color;
-
-	path:first-child {
-	  stroke-width: 8;
-	}
-      }
+      color: @grayLight;
+      margin-left: 1ex;
+      vertical-align: middle;
     }
   }
 
@@ -146,14 +134,15 @@
     h4 {
       font-size: 13px;
       color: #333;
-      margin: 15px 0 8px;
-      padding-left: @chart-padding-left;
+      margin: 0;
+      padding: 15px;
+      padding-bottom: 0;
+
     }
 
     .above-info, .below-info {
       .flexy(center, space-around, row);
-      padding-left: @chart-padding-left;
-      padding-bottom: 10px;
+      padding: 15px;
       width: 100%;
 
       &.below-info dl {

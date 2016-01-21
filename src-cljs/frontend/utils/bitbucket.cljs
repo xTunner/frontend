@@ -4,9 +4,7 @@
    [cemerick.url :refer [url]]))
 
 (defn http-endpoint []
-  "https://bitbucket.org"
-  ;;(config/bitbucket-endpoint)
-  )
+  "https://bitbucket.org")
 
 (defn auth-url []
   (let [state {"return-to" (str js/window.location.pathname

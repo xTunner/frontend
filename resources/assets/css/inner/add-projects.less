@@ -51,7 +51,7 @@
   }
 
   .repo-filter {
-    & > .fa {
+    & > .material-icons {
       font-size: 1.2em;
     }
 
@@ -246,7 +246,7 @@
         line-height: 24px;
       }
 
-      .fa {
+      .material-icons {
         padding: 0 8px 0 4px;
         display: inline-block;
         color: #fbfbfb;
@@ -300,6 +300,7 @@
     li {
       .flexy();
       .align-items(center);
+      .justify-content(space-between);
       border-top: solid 1px lighten(@grayLightest, .5);
       line-height: 1.5em;
       position: relative;
@@ -313,9 +314,8 @@
         background-color: darken(@whiten, 1);
         box-shadow: none;
       }
-      .fa-lock {
-        width: 1em;
-        height: 1em;
+      .material-icons.lock {
+        font-size: @fontSizeLarge;
         margin-right: .5ex;
         color: @grayLight;
       }
@@ -328,6 +328,8 @@
           display: none;
         }
       }
+
+      min-width: 180px;
 
       svg {
         height: 1em;
@@ -374,6 +376,7 @@
         .flexy();
         .align-items(center);
         color: @gray;
+        min-width: 180px;
       }
     }
 
@@ -399,29 +402,20 @@
       vertical-align: middle;
     }
 
-    .tooltip {
-      font-size: @baseFontSize;
-      .tooltip-inner {
-        border-radius: (@em * 2);
-        padding: (@em / 2) @em;   // BS RESET
-      }
-    }
-    .tooltip.right .tooltip-arrow {
-      left: 1px;
-    }
-
     .forked {
       color: @grayLighter;
     }
   }
 
   .tooltip {
-    font-size: inherit;
-    opacity: .89;
+    font-size: @baseFontSize;
     .tooltip-inner {
-      padding: 1em;
-      .box-sizing(border-box);
+      border-radius: (@em * 2);
+      padding: (@em / 2) @em;   // BS RESET
     }
+  }
+  .tooltip.right .tooltip-arrow {
+    display: none;
   }
 
   .head-user {
@@ -441,9 +435,10 @@
     margin: 10px 20px 0 0;
   }
 
-  .fa {
-    display: inline;
-    padding-top: 0;
+  i.fa {
+    vertical-align: text-bottom;
+    opacity: .6;
+    color: @grayLight;
   }
 
   .payment-plan {

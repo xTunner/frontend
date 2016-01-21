@@ -67,11 +67,11 @@
                    org-settings/overview
                    {:current-org-data {:plan %1 :name %2}})]
     (testing "free plans mention the free containers"
-      (is-re #"1 container is free" (overview (example-plan :free) "circleci"))
+      (is-re #"Builds will run in a single, free container." (overview (example-plan :free) "circleci"))
       (is-re #"1 container is free" (overview (example-plan :free :paid) "circleci"))
       (is-re #"1 container is free" (overview (example-plan :free :paid :trial) "circleci")))
     (testing "plans have the correct number of containers"
-      (is-re #"Builds will run in a single container."
+      (is-re #"Builds will run in a single, free container."
              (overview (example-plan :free) "circleci"))
       (is-re #"All Linux builds will be distributed across 4 containers."
              (overview (example-plan :paid) "circleci"))

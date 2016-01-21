@@ -25,9 +25,6 @@
         support-module-id "2968"
         discuss-link-module-id "3003"
         discuss-support-link-module-id "3762"]
-    (-> user-info
-        (aget "traits")
-        (aset "free" is-free))
     (if is-free
       ;; disable support module, discuss link module
       (set-elev! "disabledModules" #js [support-module-id discuss-link-module-id])
