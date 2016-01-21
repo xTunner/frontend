@@ -848,7 +848,7 @@
                   [:div.authorization
                    (if-not (user-model/public-key-scope? user)
                      (list
-                      [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account. (Feel free to drop this additional scope after we've added the key!)"]
+                      [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account."]
                       [:a.btn.ghu-authorize
                        {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
                         :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
