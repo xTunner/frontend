@@ -3,6 +3,7 @@ goog.require('frontend.sample_test');
 goog.require('frontend.components.project.test_common');
 goog.require('frontend.components.test_build_head');
 goog.require('frontend.components.test_documentation');
+goog.require('frontend.components.test_integrations');
 goog.require('frontend.components.test_org_settings');
 goog.require('frontend.components.test_statuspage');
 goog.require('frontend.components.test_build_head');
