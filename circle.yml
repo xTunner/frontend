@@ -1,12 +1,7 @@
-machine:
-  python:
-    version: 2.7.9
-
 dependencies:
   cache_directories:
     - "~/.cache/bower"
   post:
-    - pip install awscli
     - node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
     - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
     - set -o pipefail; case $CIRCLE_NODE_INDEX in 0) lein cljsbuild once test;; 1) lein cljsbuild once production;; esac |& tee cljsbuild.log:
