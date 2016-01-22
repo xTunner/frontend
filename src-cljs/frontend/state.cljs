@@ -166,6 +166,7 @@
 ;; Map of reason to boolean (selected or not selected)
 (defn selected-cancel-reason-path [reason] (conj selected-cancel-reasons-path reason))
 (def cancel-notes-path (conj org-data-path :cancel-notes))
+(def osx-keys-path (conj org-data-path :osx-keys))
 
 (def settings-path [:settings])
 

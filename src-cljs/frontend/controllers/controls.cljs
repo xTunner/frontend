@@ -1282,3 +1282,17 @@
 (defmethod control-event :dismiss-statuspage
   [_ _ {:keys [last-update]} state]
   (assoc-in state state/statuspage-dismissed-update-path last-update))
+
+(defmethod post-control-event! :upload-p12
+  [_ _ {:keys [file-content file-name password description]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        org-name (get-in current-state [:navigation-data :org])
+        api-ch (get-in current-state [:comms :api])]
+    (api/set-code-signing-keys org-name file-content file-name password description api-ch uuid)))
+
+(defmethod post-control-event! :delete-p12
+  [_ _ {:keys [id]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        org-name (get-in current-state [:navigation-data :org])
+        api-ch (get-in current-state [:comms :api])]
+    (api/delete-code-signing-key org-name id api-ch uuid)))
