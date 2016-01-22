@@ -399,7 +399,36 @@
 (defrender single-project-insights [project owner]
   (html
    [:div
-    [:div.content (om/build project-insights project)]]))
+    [:div.container.dashboard
+     [:div.row
+      [:div.card.col-sm-2
+        [:dl
+          [:dt "LAST BUILD"]
+          [:dd (om/build common/updating-duration
+                {:start (->> (:chartable-builds project)
+                            reverse
+                            (filter :start_time)
+                            first
+                            :start_time)}
+                {:opts {:formatter datetime/as-time-since
+                        :formatter-use-start? true}})]]]
+    [:div.card.col-sm-2
+      [:dl
+        [:dt "ACTIVE BRANCHES"]
+        [:dd (-> (:branches project) keys count)]]]
+    [:div.card.col-sm-2
+      [:dl
+        [:dt "MEDIAN QUEUE"]
+        [:dd (datetime/as-duration (median-builds (:chartable-builds project) :queued_time_millis))]]]
+    [:div.card.col-sm-2
+      [:dl
+        [:dt "MEDIAN BUILD"]
+        [:dd (datetime/as-duration (median-builds (:chartable-builds project) :build_time_millis))]]]
+    [:div.card.col-sm-2
+      [:dl
+        [:dt "PARALLELISM"]
+        [:dd (:parallel project)]]]]
+    [:div.content (om/build project-insights project)]]]))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)
