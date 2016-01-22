@@ -268,7 +268,7 @@
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
 
-(defrender main [{:keys [user repos selected-org settings]} data owner]
+(defrender main [{:keys [user repos selected-org settings] :as data} owner]
   (let [selected-org-login (:login selected-org)
         loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
         repo-filter-string (get-in settings [:add-projects :repo-filter-string])
