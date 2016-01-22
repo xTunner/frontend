@@ -189,11 +189,11 @@
              :ab-tests ab-tests
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state}
-    ;; :instrument (let [methods (cond-> om/pure-methods
-    ;;                             instrument? instrumentation/instrument-methods)
-    ;;                   descriptor (om/specify-state-methods! (clj->js methods))]
-    ;;               (fn [f cursor m]
-    ;;                 (om/build* f cursor (assoc m :descriptor descriptor))))
+    :instrument (let [methods (cond-> om/no-local-state-methods
+                                instrument? instrumentation/instrument-methods)
+                      descriptor (om/no-local-descriptor methods)]
+                  (fn [f cursor m]
+                    (om/build* f cursor (assoc m :descriptor descriptor))))
     :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []

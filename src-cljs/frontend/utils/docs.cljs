@@ -67,26 +67,26 @@
 
 (defn replace-variables [html]
   (string/replace html #"\{\{\s*([^\s]*)\s*(?:\|\s*([\w-]*)\s*)?\}\}"
-                  (fn [[match var-name-and-path filter-name]]
-                    (let [[name & path] (string/split var-name-and-path #"\.")
+                  (fn [s m1 m2]
+                    (let [[name & path] (string/split m1 #"\.")
                           var (case name
                                 "versions" (aget js/window "CI" "Versions")
                                 "api_data" (aget js/window "circle_api_data")
                                 nil)
                           val (when var (apply aget var path))
-                          filter (case filter-name
+                          filter (case m2
                                    "code-list" code-list-filter
                                    "api-endpoint" api-endpoint-filter
                                    identity)]
-                      ;; Fall back to the matched string if it we don't have a value for it.
+                      ;; Fall back to the full string if it doesn't match here.
                       (if-not val
-                        match
+                        s
                         (filter (utils/js->clj-kw val)))))))
 
 (defn replace-asset-paths [html]
   (string/replace html #"\(asset:/(/.*?)\)"
-                  (fn [[_ asset]]
-                    (str "(" (stefon/asset-path asset) ")"))))
+                  (fn [s match]
+                    (str "(" (stefon/asset-path match) ")"))))
 
 (defn render-markdown [input]
   (when input

@@ -7,9 +7,9 @@ dependencies:
     - set -o pipefail; case $CIRCLE_NODE_INDEX in 0) lein cljsbuild once test;; 1) lein cljsbuild once production;; esac |& tee cljsbuild.log:
         parallel: true
         timeout: 600
-    # Fail if there are any warnings in the cljsbuild output that *aren't* cljs-time.format/constructor.
-    # See: https://github.com/andrewmcveigh/cljs-time/issues/57
-    - "! grep WARNING < cljsbuild.log | grep -v 'WARNING: Use of undeclared Var cljs-time.format/constructor'"
+    # fail if there are any warnings in the cljsbuild output that *aren't* the sablano `string` thing.
+    # See: https://github.com/r0man/sablono/issues/33
+    - "! grep WARNING < cljsbuild.log | grep -v 'WARNING: Use of undeclared Var [a-z0-9\\.]*/string' || cat cljsbuild.log"
     - rsync -avz --ignore-existing node1:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/production ./resources/public/cljs/: {parallel: true}
     - rsync -avz --ignore-existing node0:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/test ./resources/public/cljs/: {parallel: true}
     - lein run -m frontend.tasks.http/precompile-assets
