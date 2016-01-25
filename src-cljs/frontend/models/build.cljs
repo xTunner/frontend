@@ -175,14 +175,13 @@
 (defn display-build-invite [build]
   (:is_first_green_build build))
 
-(defn config-errors? [build]
-  (-> build :circle_yml :errors seq boolean))
-
 (defn config-errors [build]
   (-> build :circle_yml :errors seq))
 
-(defn config-string? [build]
-  (-> build :circle_yml :string boolean))
+(defn config-errors? [build]
+  (-> build
+      config-errors
+      boolean))
 
 (defn fill-steps
   "Canceled builds can have missing intermediate steps"
