@@ -521,17 +521,21 @@
     }
   }
 
-  &.unread > i:after {
-    position: absolute;
-    top: -3px;
-    right: -5px;
+  &.unread > i {
+    position: relative;
+    
+    &::after {
+      position: absolute;
+      top: -3px;
+      right: -5px;
 
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
 
-    content: ' ';
-    background-color: @white;
+      content: ' ';
+      background-color: @white;
+    }
   }
 
   .account-avatar {
