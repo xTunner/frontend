@@ -9,7 +9,7 @@
             [goog.dom]
             [frontend.components.insights :as insights]
             [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
+  (:require-macros [cemerick.cljs.test :refer (is are deftest with-test run-tests testing test-var)]))
 
 (def test-projects-data
   [{:reponame "test repo"
@@ -67,27 +67,36 @@
                     ]}])
 
 (deftest can-render-feature-container
-  (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
-    (om/root insights/build-insights test-projects-data {:target test-node})
-    (testing "Simple render of feature container.")))
+  (testing "Simple render of feature container."
+    (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
+      (om/root insights/build-insights test-projects-data {:target test-node}))))
 
 (deftest can-render-insights-cards
-  (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
-    (om/root insights/cards
-             {:projects [(insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)]
-              :selected-filter :all
-              :selected-sorting :alphabetical}
-             {:target test-node
-              :shared {:timer-atom (timer/initialize)}})
-    (testing "Simple render of cards.")))
+  (testing "Simple render of cards."
+    (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
+      (om/root insights/cards
+               {:projects [(insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)]
+                :selected-filter :all
+                :selected-sorting :alphabetical}
+               {:target test-node
+                :shared {:timer-atom (timer/initialize)}}))))
 
 (deftest can-render-single-project-insights
-  (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
-    (om/root insights/single-project-insights
-             (insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)
-             {:target test-node
-              :shared {:timer-atom (timer/initialize)}})
-    (testing "Simple render of single-project insights.")))
+  (testing "Simple render of single-project insights."
+    (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
+      (om/root insights/single-project-insights
+               (insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)
+               {:target test-node
+                :shared {:timer-atom (timer/initialize)}}))))
+
+(deftest median
+  (are [m xs] (= m (insights/median xs))
+      nil []
+      1 [1]
+      1.5 [1 2]
+      2 [1 2 3]
+      1.5 [1 1 2 3]
+      1 [1 1 1 2 3]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO: Async testing does not work right now, it's not in scope to fix it ;;
