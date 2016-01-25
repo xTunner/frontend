@@ -20,7 +20,7 @@
 
 (defn get-bitbucket-repos [api-ch & {:keys [page]
                                   :or {page 1}}]
-  (ajax/ajax :get (str "/api/v2/user/repos/bitbucket?page=" page)
+  (ajax/ajax :get (str "/api/dangerzone/user/repos/bitbucket?page=" page)
              :bitbucket-repos
              api-ch
              :context {:page page}))
