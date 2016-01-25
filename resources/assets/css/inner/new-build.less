@@ -105,8 +105,11 @@
   color: @gray-dark-v2;
 
   .build-action {
+
     .flexy();
+
     margin-right: 20px;
+
     &:last-of-type {
       margin-right: 0;
     }
@@ -118,6 +121,10 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .cancel-build {
+    margin-right: 1em;
   }
 
   .rebuild-container {
@@ -195,6 +202,26 @@
   }
 }
 
+.build-settings {
+  .flexy(center);
+
+  a:hover {
+    text-decoration: none !important;
+  }
+
+  a:hover span {
+    text-decoration: underline;
+  }
+
+  a i.material-icons {
+    text-decoration: none;
+    margin-right: 1ex;
+  }
+
+  a:hover i.material-icons {
+    text-decoration:none;
+  }
+}
 // Build page V2 stuff
 
 @pills-breakpoint: @screen-xs-max;

@@ -100,9 +100,12 @@
                 "svg" nil
                 (recur (.-parentElement e)))))))))
 
+(defn closest-a-tag [target]
+   (closest-tag target "A"))
+
 (defn closest-a-tag-and-populate-properties [target]
   "Find closest <a> ancestor of target and add some properties to it."
-  (let [a (closest-tag target "A")]
+  (let [a (closest-a-tag target)]
     (cond (instance? js/SVGElement a)   ; SVG
           (let [href (-> a (.-href) (unexterned-prop "baseVal"))]
             {:attr-href href
@@ -123,12 +126,12 @@
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (events/listen
    top-level-node "click"
-     #(let [-target (.. % -target)
-            {:keys [attr-href attr-target host-name]} (closest-a-tag-and-populate-properties -target)
-            new-token (when (seq attr-href) (subs attr-href 1))]
+   #(let [-target (.. % -target)
+          {:keys [attr-href attr-target host-name]} (closest-a-tag-and-populate-properties -target)
+          new-token (when (seq attr-href) (subs attr-href 1))]
       (when (and (= (-> js/window .-location .-hostname)
                     host-name)
-                 (not (html/external-link? -target))
+                 (not (html/external-link? (closest-a-tag -target)))
                  (not (or (new-window-click? %)
                           (= attr-target "_blank"))))
         (.preventDefault %)

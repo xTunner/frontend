@@ -346,18 +346,23 @@
                                    (sort-by first))))
               [:div.loading-spinner common/spinner]))])))))
 
-(defn tests-ad [owner]
-  [:div
-   "With some of our inferred build commands we collect test metadata automatically, but that didn't happen for this project.  Collecting metadata allows us to list the specific failures, and in some cases makes parallel builds more efficient.  Here's how to get it:"
-   [:ul
-    [:li "For an inferred ruby test command, simply add the necessary "
-     [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "formatter gem"]]
-    [:li "Python should work automatically, except for django you'll need to " [:a {:href "/docs/test-metadata#automatic-test-metadata-collection"} "use django-nose"] "."]
-    [:li "For another inferred test runner that you'd like us to add metadata support for, "
-     [:a (common/contact-support-a-info owner)
-      "let us know"] "."]
-    [:li "For a custom test command, configure your test runner to write a JUnit XML report to a directory in $CIRCLE_TEST_REPORTS - see "
-     [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"} "the docs"] " for more information."]]])
+(defn tests-ad [owner language]
+      [:div
+       "Help us provide better insight around your tests and failures. "
+       [:a {:href (case language
+           "Clojure" "/docs/test-metadata#test2junit-for-clojure-tests"
+           "Ruby" "/docs/test-metadata#rspec"
+           "JavaScript" "/docs/test-metadata#js"
+           "Python" "/docs/test-metadata#python"
+           "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
+           "/docs/test-metadata#metadata-collection-in-custom-test-steps")
+            :on-mouse-up #(analytics/track-build-tests-ad-click language)}
+        "Set up your test runner to output in JUnit-style XML"] ", so we can:"
+       [:ul
+        [:li "Show a summary of all test failures across all containers"]
+        [:li "Identify your slowest tests"]
+        [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]
+       ])
 
 (defmulti format-test-name test-model/source)
 
@@ -442,9 +447,10 @@
                  (when (om/get-state owner :is-open?)
                    (om/build-all build-tests-file-block bottom-map))))))]]]]))))
 
-(defn build-tests-list [{{tests :tests} :tests-data
+(defn build-tests-list [{project :project
+                        {{tests :tests} :tests-data
                          {build-status :status} :build
-                         :as data}
+                         :as data} :build-data}
                         owner]
   (reify
     om/IWillMount
@@ -489,10 +495,10 @@
                                     (:classname slowest)
                                     (:name slowest)
                                     (:run_time slowest))]])]
-              :else [:div.alert.iconified {:class (if build-succeeded? "alert-info" "alert-danger")}
+              :else [:div.alert.iconified {:class "alert-info" }
                      [:div [:img.alert-icon {:src (common/icon-path
                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
-                     (tests-ad owner)]))])))))
+                     (tests-ad owner (:language project))]))])))))
 
 (defn circle-yml-ad []
   [:div
@@ -695,9 +701,7 @@
             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
             (when (build-model/finished? build)
               [tab-tag {:class (when (= :tests selected-tab) "active")}
-               [tab-link {:href "#tests"} (if (= "success" (:status build))
-                                            "Test Results "
-                                            "Test Failures ")
+               [tab-link {:href "#tests"} "Test Summary "
                 (when-let [fail-count (some->> build-data
                                                :tests-data
                                                :tests
@@ -746,7 +750,8 @@
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
            (case selected-tab
 
-             :tests (om/build build-tests-list build-data)
+             :tests (om/build build-tests-list {:build-data build-data
+                                                :project project})
 
              :build-timing (om/build build-timings/build-timings {:build build
                                                                   :project project
@@ -1007,16 +1012,17 @@
           [:div.build-actions-v2
            (when (and (build-model/can-cancel? build) has-write-settings?)
              (forms/managed-button
-               [:a.build-action
-                {:data-loading-text "Canceling"
-                 :title             "Cancel this build"
+               [:a.cancel-build
+                {:data-loading-text "canceling"
+                 :title             "cancel this build"
                  :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
-                "Cancel Build"]))
+                "cancel build"]))
            (when has-write-settings?
              (om/build rebuild-actions {:build build :project project}))
-           [:a.build-action
-            {:href (routes/v1-project-settings (:navigation-data data))}
-            [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-            "Project Settings"]])))))
+           [:div.build-settings
+            [:a.build-action
+             {:href (routes/v1-project-settings (:navigation-data data))}
+             [:i.material-icons "settings"]
+             "Project Settings"]]])))))

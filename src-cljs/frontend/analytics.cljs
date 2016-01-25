@@ -215,6 +215,9 @@
 (deftrack track-build-timing-upsell-click [data]
   (mixpanel/track "build-timing-upsell-click" data))
 
+(deftrack track-build-tests-ad-click [data]
+  (mixpanel/track "build-tests-ad-click" data))
+
 (deftrack track-beta-join-click [data]
   (mixpanel/track "beta-join-click" data))
 

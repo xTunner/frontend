@@ -1,4 +1,4 @@
-goog.require('circle.karma');
+goog.require('frontend.test_runner');
 goog.require('frontend.sample_test');
 goog.require('frontend.components.project.test_common');
 goog.require('frontend.components.test_build_head');

@@ -89,7 +89,7 @@
                 (= company-short "shopify"))
        (list
          " – "
-         [:a.customer-story {:href (str "/stories/" company-short)}
+         [:a.customer-story {:href (str "/customers/" company-short)}
           "Read the story"]))]]])
 
 (defrender features [app owner]
