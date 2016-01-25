@@ -538,21 +538,22 @@
   "The default tab to show in the build page head, if they have't clicked a different tab."
   [build scopes]
   (cond
-   ;; default to ssh-info for SSH builds
-   (build-model/ssh-enabled-now? build) :ssh-info
-   ;; default to the queue tab if the build is currently usage queued, and
-   ;; the user is has the right permissions (and is logged in).
-   (and (:read-settings scopes)
-        (build-model/in-usage-queue? build))
-   :usage-queue
-   ;; If there's no SSH info, build isn't finished, show the config or commits.
+    ;; show circle.yml errors first
+    (build-model/config-errors? build) :config
+    ;; default to ssh-info for SSH builds
+    (build-model/ssh-enabled-now? build) :ssh-info
+    ;; default to the queue tab if the build is currently usage queued, and
+    ;; the user is has the right permissions (and is logged in).
+    (and (:read-settings scopes)
+         (build-model/in-usage-queue? build))
+    :usage-queue
+    ;; If there's no SSH info, build isn't finished, show the config or commits.
     ;; "config" takes up too much room for paid customers.
-   (build-model/running? build) (if (:read-settings scopes)
-                                    :usage-queue
-                                    :config)
-   (build-model/config-errors? build) :config
-   ;; Otherwise, just use the first one.
-   :else :tests))
+    (build-model/running? build) (if (:read-settings scopes)
+                                   :usage-queue
+                                   :config)
+    ;; Otherwise, just use the first one.
+    :else :tests))
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
