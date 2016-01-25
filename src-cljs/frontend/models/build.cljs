@@ -178,9 +178,6 @@
 (defn config-errors? [build]
   (-> build :circle_yml :errors seq boolean))
 
-(defn config-errors [build]
-  (-> build :circle_yml :errors seq))
-
 (defn config-string? [build]
   (-> build :circle_yml :string boolean))
 

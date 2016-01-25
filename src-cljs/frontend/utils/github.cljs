@@ -35,7 +35,7 @@
                      str)]
     (-> (url (http-endpoint) "login/oauth/authorize")
         (assoc :query {"redirect_uri" redirect
-                       "state" (utils/github-csrf-token)
+                       "state" (utils/oauth-csrf-token)
                        "scope" (string/join "," scope)
                        "client_id" (aget js/window "renderContext" "githubClientId")})
         str)))

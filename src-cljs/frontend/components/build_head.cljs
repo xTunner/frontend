@@ -12,7 +12,6 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
-            [frontend.components.build-config :as build-cfg]
             [frontend.config :refer [intercom-enabled? github-endpoint env enterprise?]]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -505,23 +504,23 @@
    [:p "We didn't find a circle.yml for this build. You can specify deployment or override our inferred test steps from a circle.yml checked in to your repo's root directory."]
    [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "configuration"})} "in our docs"] "."]])
 
-(defn build-config [{:keys [config-string build build-data]} owner opts]
+(defn build-config [{:keys [config-string]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_]
       (let [node (om/get-node owner)
-            highlight-target (goog.dom.getElementByClass "config-yml" node)]
+            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
+        (js/Prism.highlightElement highlight-target)))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (let [node (om/get-node owner)
+            highlight-target (goog.dom.getElementByClass "language-yaml" node)]
         (js/Prism.highlightElement highlight-target)))
     om/IRender
     (render [_]
       (html
        (if (seq config-string)
-         [:div
-          (when (and (build-model/config-errors? build)
-                     (not (:dismiss-config-errors build-data)))
-            (om/build build-cfg/config-errors build))
-          [:div.build-config-string [:pre.line-numbers
-                                     [:code.config-yml.language-yaml config-string]]]]
+         [:div.build-config-string [:pre.language-yaml config-string]]
          (circle-yml-ad))))))
 
 (defn build-parameters [{:keys [build-parameters]} owner opts]
@@ -550,7 +549,6 @@
    (build-model/running? build) (if (:read-settings scopes)
                                     :usage-queue
                                     :config)
-   (build-model/config-errors? build) :config
    ;; Otherwise, just use the first one.
    :else :tests))
 
@@ -668,6 +666,14 @@
                  (when show-all-commits?
                    (om/build-all commit-line bottom-commits))))])])))))
 
+(defn- show-ssh-button?
+  "Always show the SSH button on Linux builds.
+  Only show the SSH button on OSX builds if the Launch Darkly flag is enabled.
+  https://en.wikipedia.org/wiki/Truth_table#Logical_implication
+  osx -> launch-darkly"
+  [project]
+  (or (not (project-model/feature-enabled? project :osx))
+      (feature/enabled? :ios-ssh-builds)))
 
 (def tab-tag :li.build-info-tab)
 (def tab-link :a.tab-link)
@@ -720,9 +726,8 @@
                                                        :stop (or (:start_time build) (:stop_time build))})
                    ")"])]])
 
-            ;; XXX Temporarily remove the ssh info for OSX builds
             (when (and (has-scope :write-settings data)
-                       (not (project-model/feature-enabled? project :osx)))
+                       (show-ssh-button? project))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link {:href "#ssh-info"}
                 "Debug via SSH"]])
@@ -734,9 +739,7 @@
                 "Artifacts"]])
 
             [tab-tag {:class (when (= :config selected-tab) "active")}
-             [tab-link {:href "#config"} (str "circle.yml"
-                                              (when-let [errors (-> build build-model/config-errors)]
-                                                (gstring/format " (%s)" (count errors))))]]
+             [tab-link {:href "#config"} "circle.yml"]]
 
             (when (build-model/finished? build)
               [tab-tag {:class (when (= :build-timing selected-tab) "active")}
@@ -761,9 +764,7 @@
                                   {:artifacts-data (get build-data :artifacts-data) :user user
                                    :has-artifacts? (:has_artifacts build)})
 
-             :config (om/build build-config {:config-string (get-in build [:circle_yml :string])
-                                             :build build
-                                             :build-data build-data})
+             :config (om/build build-config {:config-string (get-in build [:circle_yml :string])})
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
 
@@ -987,8 +988,7 @@
            [:ul.dropdown-menu.pull-right
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            ;; XXX Temporarily remove the ssh button for OSX builds
-            (when (not (project-model/feature-enabled? project :osx))
+            (when (show-ssh-button? project)
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
 
