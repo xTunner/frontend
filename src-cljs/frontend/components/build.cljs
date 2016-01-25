@@ -9,7 +9,6 @@
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
@@ -134,11 +133,7 @@
             (when (build-model/display-build-invite build)
               (om/build invites/build-invites
                         (:invite-data data)
-                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
-
-            (when (and (build-model/config-errors? build)
-                       (not (:dismiss-config-errors build-data)))
-              (om/build build-config/config-errors build))]]])))))
+                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))]]])))))
 
 (defn container-result-icon [{:keys [name]} owner]
   (reify
