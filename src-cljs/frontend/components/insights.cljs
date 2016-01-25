@@ -218,10 +218,8 @@
        reverse
        (map add-queued-time)))
 
-(defn median-builds [builds f]
-  (let [nums (->> builds
-                  (map f)
-                  sort)
+(defn median [xs]
+  (let [nums (sort xs)
         c (count nums)
         mid-i (js/Math.floor (/ c 2))]
     (cond
@@ -295,10 +293,10 @@
                  [:div.above-info
                   [:dl
                    [:dt "MEDIAN BUILD"]
-                   [:dd (datetime/as-duration (median-builds chartable-builds :build_time_millis))]]
+                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds)))]]
                   [:dl
                    [:dt "MEDIAN QUEUE"]
-                   [:dd (datetime/as-duration (median-builds chartable-builds :queued_time_millis))]]
+                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds)))]]
                   [:dl
                    [:dt "LAST BUILD"]
                    [:dd (om/build common/updating-duration
@@ -403,30 +401,30 @@
     [:div.container.dashboard
      [:div.row
       [:div.card.col-sm-2
-        [:dl
-          [:dt "LAST BUILD"]
-          [:dd (om/build common/updating-duration
-                {:start (->> (:chartable-builds project)
-                            reverse
-                            (filter :start_time)
-                            first
-                            :start_time)}
-                {:opts {:formatter datetime/as-time-since
-                        :formatter-use-start? true}})]]]
-    [:div.card.col-sm-2
-      [:dl
+       [:dl
+        [:dt "LAST BUILD"]
+        [:dd (om/build common/updating-duration
+                       {:start (->> (:chartable-builds project)
+                                    reverse
+                                    (filter :start_time)
+                                    first
+                                    :start_time)}
+                       {:opts {:formatter datetime/as-time-since
+                               :formatter-use-start? true}})]]]
+      [:div.card.col-sm-2
+       [:dl
         [:dt "ACTIVE BRANCHES"]
         [:dd (-> (:branches project) keys count)]]]
-    [:div.card.col-sm-2
-      [:dl
+      [:div.card.col-sm-2
+       [:dl
         [:dt "MEDIAN QUEUE"]
-        [:dd (datetime/as-duration (median-builds (:chartable-builds project) :queued_time_millis))]]]
-    [:div.card.col-sm-2
-      [:dl
+        [:dd (datetime/as-duration (median (map :queued_time_millis (:chartable-builds project))))]]]
+      [:div.card.col-sm-2
+       [:dl
         [:dt "MEDIAN BUILD"]
-        [:dd (datetime/as-duration (median-builds (:chartable-builds project) :build_time_millis))]]]
-    [:div.card.col-sm-2
-      [:dl
+        [:dd (datetime/as-duration (median (map :build_time_millis (:chartable-builds project))))]]]
+      [:div.card.col-sm-2
+       [:dl
         [:dt "PARALLELISM"]
         [:dd (:parallel project)]]]]
     [:div.content (om/build project-insights project)]]]))

@@ -89,8 +89,8 @@
                {:target test-node
                 :shared {:timer-atom (timer/initialize)}}))))
 
-(deftest median-builds
-  (are [median values] (= median (insights/median-builds values identity))
+(deftest median
+  (are [m xs] (= m (insights/median xs))
       nil []
       1 [1]
       1.5 [1 2]
