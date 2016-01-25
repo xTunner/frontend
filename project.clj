@@ -32,11 +32,21 @@
 
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
-                 [org.clojure/tools.reader "0.9.2"]]
+                 [org.clojure/tools.reader "0.9.2"]
+
+                 ;; Dirac DevTools
+                 [environ "1.0.1"]
+                 [org.clojure/tools.logging "0.3.1"]
+                 [clj-logging-config "1.9.12"]
+                 [http-kit "2.1.21-alpha2"]
+                 [org.clojure/tools.nrepl "0.2.12"]
+                 [binaryage/dirac "0.1.0"]
+                 [binaryage/devtools "0.5.2"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.0"]
-            [cider/cider-nrepl "0.9.1"]]
+            [cider/cider-nrepl "0.9.1"]
+            [lein-environ "1.0.1"]]
 
   :exclusions [[org.clojure/clojure]
                [org.clojure/clojurescript]]
@@ -110,4 +120,10 @@
                                    :source-map "resources/public/cljs/production/sourcemap-frontend.js"
                                    }}]
               :test-commands {"frontend-unit-tests"
-                              ["node_modules/karma/bin/karma" "start" "karma.conf.js" "--single-run"]}})
+                              ["node_modules/karma/bin/karma" "start" "karma.conf.js" "--single-run"]}}
+  :profiles {:devtools {:repl-options {:port 8230
+                                       :nrepl-middleware [dirac.nrepl.middleware/dirac-repl]
+                                       :init (do
+                                               (require 'dirac.agent)
+                                               (dirac.agent/boot!))}
+                        :env {:devtools true}}})

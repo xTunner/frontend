@@ -156,3 +156,20 @@ Figwheel runs its own bREPL, which you'll see on the terminal at your `lein figw
 ```
 
 Unfortunately for vim-fireplace, Figwheel doesn't expose the repl-env to pass to `:Piggieback` in any nice way. (If you'd like to work on making it possible, have a look at `figwheel-sidecar.repl/repl-env`. Unfortunately, it takes an entire build map as an argument, rather than just a build ID, as `figwheel-sidecar.repl/cljs-repl` does.) However, you can still run an out-of-browser Rhino REPL using `:Piggieback` (which vim-fireplace will probably run for you automatically.)
+
+### CLJS Dev Tools
+
+[Dirac](https://github.com/binaryage/dirac) is a fork of Chrome DevTools that works for ClojureScript.
+
+Requirements:
+
+1. Mac OSX
+2. [Google Chrome Canary](https://www.google.com/chrome/browser/canary.html) installed in /Applications
+3. [Dirac Chrome Extension](https://chrome.google.com/webstore/detail/dirac-devtools/kbkdngfljkchidcjpnfcgcokkbhlkogi) installed in Chrome Canary
+
+Running devtools:
+
+1. Run the frontend as usual with `foreman`
+2. In another terminal, `cd` to the project directory and run `./script/devtools.sh`. This will open a Chrome Canary window capable of running dev tools.
+3. After the script opens Chrome Canary, click on the Dirac extension icon to the right of the address bar to open the dev tools.
+4. Toggle CLJS on/off by pressing pgUp/pgDn (fn + up/down arrow on Mac) with focus on the prompt field.

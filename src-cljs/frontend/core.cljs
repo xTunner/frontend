@@ -1,5 +1,6 @@
 (ns frontend.core
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [frontend.devtools]
+            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [clojure.string :as string]
             [goog.dom]
@@ -29,7 +30,10 @@
             [frontend.support :as support]
             [secretary.core :as sec])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing swallow-errors]]))
+                   [frontend.utils :refer [inspect timing swallow-errors]]
+                   [frontend.devtools :refer [require-devtools!]]))
+
+(require-devtools!)
 
 (enable-console-print!)
 
