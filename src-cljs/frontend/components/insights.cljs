@@ -224,11 +224,12 @@
                   sort)
         c (count nums)
         mid-i (js/Math.floor (/ c 2))]
-    (if (odd? c)
-      (nth nums mid-i)
-      (/ (+ (nth nums mid-i)
-            (nth nums (dec mid-i)))
-         2))))
+    (cond
+      (zero? c) nil
+      (odd? c) (nth nums mid-i)
+      :else (/ (+ (nth nums mid-i)
+                  (nth nums (dec mid-i)))
+               2))))
 
 (defn project-insights-bar [builds owner]
   (reify
