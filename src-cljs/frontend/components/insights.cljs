@@ -427,7 +427,8 @@
       [:dl
        [:dt "PARALLELISM"]
        [:dd parallel]]]]
-    (om/build project-insights-bar chartable-builds)]))
+    [:div.card
+     (om/build project-insights-bar chartable-builds)]]))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)
