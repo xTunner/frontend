@@ -11,10 +11,17 @@
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
 
-(defn get-repos [api-ch & {:keys [page]
+(defn get-github-repos [api-ch & {:keys [page]
                            :or {page 1}}]
   (ajax/ajax :get (str "/api/v1/user/repos?page=" page)
-             :repos
+             :github-repos
+             api-ch
+             :context {:page page}))
+
+(defn get-bitbucket-repos [api-ch & {:keys [page]
+                                  :or {page 1}}]
+  (ajax/ajax :get (str "/api/dangerzone/user/repos/bitbucket?page=" page)
+             :bitbucket-repos
              api-ch
              :context {:page page}))
 

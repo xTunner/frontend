@@ -223,7 +223,8 @@
              :navigation-data (assoc args :show-aside-menu? false))
       ;; force a reload of repos.
       (assoc-in state/repos-path [])
-      (assoc-in state/repos-loading-path true)
+      (assoc-in state/github-repos-loading-path true)
+      (assoc-in state/bitbucket-repos-loading-path true)
       (assoc-in state/crumbs-path [{:type :add-projects}])))
 
 (defmethod post-navigated-to! :add-projects
@@ -232,7 +233,9 @@
   (let [api-ch (get-in current-state [:comms :api])]
     ;; load orgs, collaborators, and repos.
     (api/get-orgs api-ch)
-    (api/get-repos api-ch))
+    (api/get-github-repos api-ch)
+    (when (feature/enabled? :bitbucket)
+      (api/get-bitbucket-repos api-ch)))
   (set-page-title! "Add projects")
   (analytics/track-signup))
 

@@ -101,7 +101,7 @@
                           (let [org-names (->> user :organizations (cons user) (map :login) set)
                                 in-orgs? (comp org-names :login)]
                             (->> repos (map :owner) (remove in-orgs?) (set))))))]
-           (when (:repos-loading user)
+           (when (get-in user [:repos-loading :github])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])
            (missing-org-info owner)]])))))
@@ -123,8 +123,8 @@
     om/IRenderState
     (render-state [_ {:keys [vcs-type] :as state}]
       (let [{:keys [user settings repos]} data
-            github-active? (= "github" (:vcs-type state))
-            bitbucket-active? (= "bitbucket" (:vcs-type state))]
+            github-active? (= "github" vcs-type)
+            bitbucket-active? (= "bitbucket" vcs-type)]
         (html
          [:div
           [:div.overview
@@ -142,7 +142,7 @@
           [:div.organizations.card
            (when github-active?
              (missing-org-info owner))
-           (when bitbucket-active?
+           (when (and bitbucket-active? (-> user :bitbucket_authorized not))
              [:div.text-center [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
            [:ul.organizations
             (map (fn [org] (organization org settings owner))
@@ -152,7 +152,8 @@
                  ;; in this order (rather than e.g. putting the whole thing into a set)
                  ;; so that new ones don't jump up in the middle as they're loaded.
                  (filter (partial select-vcs-type vcs-type)
-                         (concat [user]
+                         (concat [(when (= "github" vcs-type)
+                                    (assoc user :vcs_type "github"))]
                                  (:organizations user)
                                  (let [org-names (->> user
                                                       :organizations
@@ -160,10 +161,13 @@
                                                       (map :login)
                                                       set)
                                        in-orgs? (comp org-names :login)]
-                                   (->> repos (map :owner)
-                                        (remove in-orgs?)
-                                        (set))))))]
-           (when (:repos-loading user)
+                                   (reduce (fn [accum {:keys [owner vcs_type]}]
+                                             (if (in-orgs? owner)
+                                               accum
+                                               (conj accum (assoc owner :vcs_type vcs_type))))
+                                           #{}
+                                           repos)))))]
+           (when (get-in user [:repos-loading (keyword vcs-type)])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])]])))))
 
@@ -264,22 +268,22 @@
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
 
-(defrender main [data owner]
-  (let [user (:user data)
-        loading-repos? (:repos-loading user)
-        settings (:settings data)
-        repos (:repos data)
+(defrender main [{:keys [user repos selected-org settings] :as data} owner]
+  (let [selected-org-login (:login selected-org)
+        loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
         repo-filter-string (get-in settings [:add-projects :repo-filter-string])
         show-forks (true? (get-in settings [:add-projects :show-forks]))]
     (html
      [:div.proj-wrapper
-      (if-let [selected-login (get-in settings [:add-projects :selected-org :login])]
+      (if selected-org-login
         (let [;; we display a repo if it belongs to this org, matches the filter string,
               ;; and matches the fork settings.
               display? (fn [repo]
                          (and
                           (or show-forks (not (:fork repo)))
-                          (= (:username repo) selected-login )
+                          (select-vcs-type (or (:vcs-type selected-org)
+                                               "github") repo)
+                          (= (:username repo) selected-org-login)
                           (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
               filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
           [:div (om/build repo-filter settings)
@@ -288,8 +292,8 @@
                [:div.loading-spinner common/spinner]
                [:div.add-repos
                 (if repo-filter-string
-                  (str "No matching repos for organization " (:selected-org data))
-                  (str "No repos found for organization " (:selected-org data)))])
+                  (str "No matching repos for organization " selected-org-login)
+                  (str "No repos found for organization " selected-org-login))])
              [:ul.proj-list.list-unstyled
               (for [repo filtered-repos]
                 (om/build repo-item {:repo repo :settings settings}))])])
@@ -458,46 +462,45 @@
   (let [user (:current-user data)
         repos (:repos user)
         settings (:settings data)
-        selected-org (get-in settings [:add-projects :selected-org :login])
+        selected-org (get-in settings [:add-projects :selected-org])
+        selected-org-login (:login selected-org)
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
     (html
-      [:div#add-projects
-       [:div#follow-contents
-        [:div.follow-wrapper
-         (when (seq (user-model/missing-scopes user))
-           (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
-         (when (seq followed-inaccessible)
-           (inaccessible-orgs-notice followed-inaccessible settings))
-         [:h2 "Welcome!"]
-         [:h3 "You're about to set up a new project in CircleCI."]
-         [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
-         [:hr]
-         [:div.org-listing
-          (om/build (if (feature/enabled? :bitbucket)
-                      organization-listing-with-bitbucket
-                      organization-listing)
-                    {:user user
-                     :settings settings
-                     :repos repos})]
-         [:hr]
-         [:div#project-listing.project-listing
-          [:div.overview
-           [:span.big-number "2"]
-           [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
-          (om/build main {:user user
-                          :repos repos
-                          :selected-org selected-org
-                          :settings settings})
-          [:hr]
-          ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
-          ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then
-          ;; show the payment plan.
-          (let [org (->> user
-                         :organizations
-                         (filter some?)
-                         (first))]
-            (when (and (not (config/enterprise?))
-                       (or (= selected-org (:login user)) (organization/show-upsell? org)))
-              (om/build payment-plan {:selected-org selected-org
-                                      :view view})))]]]])))
+     [:div#add-projects
+      (when (seq (user-model/missing-scopes user))
+        (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+      (when (seq followed-inaccessible)
+        (inaccessible-orgs-notice followed-inaccessible settings))
+      [:h2 "Welcome!"]
+      [:h3 "You're about to set up a new project in CircleCI."]
+      [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+      [:hr]
+      [:div.org-listing
+       (om/build (if (feature/enabled? :bitbucket)
+                   organization-listing-with-bitbucket
+                   organization-listing)
+                 {:user user
+                  :settings settings
+                  :repos repos})]
+      [:hr]
+      [:div#project-listing.project-listing
+       [:div.overview
+        [:span.big-number "2"]
+        [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+       (om/build main {:user user
+                       :repos repos
+                       :selected-org selected-org
+                       :settings settings})
+       [:hr]
+       ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
+       ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then
+       ;; show the payment plan.
+       (let [org (->> user
+                      :organizations
+                      (filter some?)
+                      (first))]
+         (when (and (not (config/enterprise?))
+                    (or (= selected-org-login (:login user)) (organization/show-upsell? org)))
+           (om/build payment-plan {:selected-org selected-org-login
+                                   :view view})))]])))
