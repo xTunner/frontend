@@ -15,22 +15,6 @@
     font-size: 16px;
   }
 
-  .card {
-    min-height: 75px;
-    padding: 15px 15px 0px;
-    margin: 0 15px 15px 15px;
-
-    dt {
-      margin-bottom: 5px;
-      font-weight: 100;
-      color: #B0B0B0;
-    }
-
-    dl {
-      margin-bottom: inherit;
-    }
-  }
-
   .controls {
 
     margin-top: 15px;
@@ -266,6 +250,42 @@
 
     .legend text {
       fill: @gray-light-v2;
+    }
+  }
+
+  .single-project-insights {
+    margin-top: 15px;
+
+    .insights-metadata-header {
+      .flexy;
+
+      .insights-metadata {
+        .flex(1 0 auto);
+
+        padding: 15px;
+        margin-right: 15px;
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        dt {
+          margin-bottom: 5px;
+          font-weight: 100;
+          color: #B0B0B0;
+        }
+
+        dl {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .build-time-visualization {
+      > svg {
+        width: 100%;
+        height: auto;
+      }
     }
   }
 }

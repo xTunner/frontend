@@ -183,7 +183,8 @@
                       (.append "svg")
                       (.attr #js {"xlink" "http://www.w3.org/1999/xlink"
                                   "width" (:width svg-info)
-                                  "height" (:height svg-info)})
+                                  "height" (:height svg-info)
+                                  "viewBox" (string/join " " [0 0 (:width svg-info) (:height svg-info)])})
                       (.append "g")
                       (.attr "class" "plot-area")
                       (.attr "transform" (gstring/format "translate(%s,%s)"
@@ -395,39 +396,39 @@
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 
-(defrender single-project-insights [project owner]
+(defrender single-project-insights [{:keys [chartable-builds branches parallel]} owner]
   (html
-   [:div
-    [:div.container.dashboard
-     [:div.row
-      [:div.card.col-sm-2
-       [:dl
-        [:dt "LAST BUILD"]
-        [:dd (om/build common/updating-duration
-                       {:start (->> (:chartable-builds project)
-                                    reverse
-                                    (filter :start_time)
-                                    first
-                                    :start_time)}
-                       {:opts {:formatter datetime/as-time-since
-                               :formatter-use-start? true}})]]]
-      [:div.card.col-sm-2
-       [:dl
-        [:dt "ACTIVE BRANCHES"]
-        [:dd (-> (:branches project) keys count)]]]
-      [:div.card.col-sm-2
-       [:dl
-        [:dt "MEDIAN QUEUE"]
-        [:dd (datetime/as-duration (median (map :queued_time_millis (:chartable-builds project))))]]]
-      [:div.card.col-sm-2
-       [:dl
-        [:dt "MEDIAN BUILD"]
-        [:dd (datetime/as-duration (median (map :build_time_millis (:chartable-builds project))))]]]
-      [:div.card.col-sm-2
-       [:dl
-        [:dt "PARALLELISM"]
-        [:dd (:parallel project)]]]]
-    [:div.content (om/build project-insights project)]]]))
+   [:div.single-project-insights
+    [:div.insights-metadata-header
+     [:div.card.insights-metadata
+      [:dl
+       [:dt "LAST BUILD"]
+       [:dd (om/build common/updating-duration
+                      {:start (->> chartable-builds
+                                   reverse
+                                   (filter :start_time)
+                                   first
+                                   :start_time)}
+                      {:opts {:formatter datetime/as-time-since
+                              :formatter-use-start? true}})]]]
+     [:div.card.insights-metadata
+      [:dl
+       [:dt "ACTIVE BRANCHES"]
+       [:dd (-> branches keys count)]]]
+     [:div.card.insights-metadata
+      [:dl
+       [:dt "MEDIAN QUEUE"]
+       [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds)))]]]
+     [:div.card.insights-metadata
+      [:dl
+       [:dt "MEDIAN BUILD"]
+       [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds)))]]]
+     [:div.card.insights-metadata
+      [:dl
+       [:dt "PARALLELISM"]
+       [:dd parallel]]]]
+    [:div.card
+     (om/build project-insights-bar chartable-builds)]]))
 
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)
