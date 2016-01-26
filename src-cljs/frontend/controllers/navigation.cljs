@@ -135,7 +135,7 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [project-name build-num org repo tab] :as args} state]
+  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab] :as args} state]
   (mlog "navigated-to :build with args " args)
   (if (and (= :build (:navigation-point state))
            (not (state-utils/stale-current-build? state project-name build-num)))
