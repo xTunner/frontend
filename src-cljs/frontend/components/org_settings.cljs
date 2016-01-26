@@ -368,22 +368,21 @@
             [:legend "More containers means faster builds and lower queue times."]])
          [:div.main-content
           [:div
-           [:legend "Linux Plan"]
+           [:legend "Linux Plan - "
+            [:div.container-input
+             [:input.form-control {:style {:margin "4px" :height "calc(2em + 2px)"}
+                                   :type "text" :value selected-containers
+                                   :on-change #(utils/edit-input owner state/selected-containers-path %
+                                                                 :value (int (.. % -target -value)))}]
+             [:span.new-plan-total (str "paid " (pluralize-no-val selected-containers "container")
+                                        (when-not (config/enterprise?)
+                                          (str (when-not (zero? new-total) (str " for $" new-total "/month"))))
+                                        " + 1 free container")]]]
            [:form
             [:div.container-picker
              [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" container-cost "/month each.")]
              (om/build shared/styled-range-slider
-                       (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))
-             [:div.container-input
-              [:input.form-control {:style {:margin "4px" :height "calc(2em + 2px)"}
-                                    :type "text" :value selected-containers
-                                    :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                                  :value (int (.. % -target -value)))}]
-              [:span.new-plan-total (str "paid " (pluralize-no-val selected-containers "container")
-                                         (when-not (config/enterprise?)
-                                           (str (when-not (zero? new-total) (str " for $" new-total "/month")))))]
-              (when (not (= new-total old-total))
-                [:span.strikeout {:style {:margin "auto"}} (str "$" old-total "/month")])]]
+                       (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
              (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
                (forms/managed-button
@@ -428,13 +427,10 @@
              (when-not (config/enterprise?)
                ;; TODO: Clean up conditional here - super nested and many interactions
                (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
-                 (list
-                   (when (< old-total new-total)
-                     [:span.help-block
-                      "We'll charge your card today, for the prorated difference between your new and old plans."])
-                   (when (> old-total new-total)
-                     [:span.help-block
-                      "We'll credit your account, for the prorated difference between your new and old plans."]))
+                 [:span.help-block
+                  (cond
+                    (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
+                    (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")] 
                  (if (pm/in-trial? plan)
                    [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     "."]
