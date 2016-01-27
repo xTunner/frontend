@@ -388,12 +388,12 @@
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
                    (if (and (zero? new-total) (not (config/enterprise?)))
-                     [:a.btn.btn-large.btn-primary.center.cancel
+                     [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
                        :on-click #(analytics/track-cancel-button-clicked {:view "org-settings"})}
                       "Cancel plan"]
-                     [:button.btn.btn-large.btn-primary.center.upgrade
+                     [:button.btn.btn-large.btn-primary.upgrade
                       {:data-success-text "Saved",
                        :data-loading-text "Saving...",
                        :type "submit"
@@ -430,7 +430,7 @@
                  [:span.help-block
                   (cond
                     (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
-                    (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")] 
+                    (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]
                  (if (pm/in-trial? plan)
                    [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     "."]
