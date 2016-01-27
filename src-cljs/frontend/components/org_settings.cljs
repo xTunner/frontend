@@ -902,14 +902,13 @@
       (let [org-name (get-in app state/org-name-path)
             plan (get-in app state/org-plan-path)]
         (html
-         [:div.org-cancel
-          [:div.row-fluid [:fieldset [:legend "Cancel"]]]
-          [:p "If you cancel your plan, you'll stop being billed and no longer have access to the "
-           (pluralize (pm/paid-containers plan) "paid container") " in your plan."]
-          (when (pm/freemium? plan)
-            [:p (str "However, your builds will still use your "
-                     (pluralize (pm/freemium-containers plan) "free container")
-                     " indefinitely.")])
+          [:div.org-cancel
+           [:div.row-fluid [:fieldset [:legend "Is this goodbye? Are you sure you don't want to reconsider?"]]]
+           [:div.top-value
+            [:p.value-prop "If you cancel your plan, you will no longer have access to speed enabled by parallelism and concurrency."]
+            [:p.value-prop "You will also lose access to engineer support, insights, and more premium features."]]
+           [:div.bottom-value
+            [:p.value-prop "Your cancelation will be effective immediately"]]
           [:div.row-fluid
            [:h3
             {:data-bind "attr: {alt: cancelFormErrorText}"}
