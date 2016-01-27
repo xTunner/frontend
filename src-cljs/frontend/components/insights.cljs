@@ -213,11 +213,11 @@
           (.attr "class" "y-axis negative axis")))))
 
 (defn filter-chartable-builds [builds]
-  (->> builds
-       (filter build-chartable?)
-       (take (:max-bars plot-info))
-       reverse
-       (map add-queued-time)))
+  (some->> builds
+           (filter build-chartable?)
+           (take (:max-bars plot-info))
+           reverse
+           (map add-queued-time)))
 
 (defn median [xs]
   (let [nums (sort xs)
@@ -268,8 +268,8 @@
                            :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name
             (if (feature/enabled? :insights-dashboard)
-              [:a {:href (routes/v1-insights-dashboard {:org (:username project)
-                                                        :repo (:reponame project)})}
+              [:a {:href (routes/v1-insights-project {:org (:username project)
+                                                      :repo (:reponame project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon
@@ -396,40 +396,6 @@
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 
-(defrender single-project-insights [{:keys [chartable-builds branches parallel]} owner]
-  (html
-   [:div.single-project-insights
-    [:div.insights-metadata-header
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "LAST BUILD"]
-       [:dd (om/build common/updating-duration
-                      {:start (->> chartable-builds
-                                   reverse
-                                   (filter :start_time)
-                                   first
-                                   :start_time)}
-                      {:opts {:formatter datetime/as-time-since
-                              :formatter-use-start? true}})]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "ACTIVE BRANCHES"]
-       [:dd (-> branches keys count)]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "MEDIAN QUEUE"]
-       [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds)))]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "MEDIAN BUILD"]
-       [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds)))]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "PARALLELISM"]
-       [:dd parallel]]]]
-    [:div.card
-     (om/build project-insights-bar chartable-builds)]]))
-
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
@@ -445,14 +411,6 @@
         ;; User has no projects
         (empty? projects)
         (om/build no-projects state)
-
-        ;; User is looking at a single project
-        (some? (:repo navigation-data))
-        (om/build single-project-insights (->> projects
-                                               (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                             (= (:username %) (:org navigation-data))))
-                                               first
-                                               decorate))
 
         ;; User is looking at all projects
         :else

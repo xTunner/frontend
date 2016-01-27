@@ -257,6 +257,28 @@
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
+(defmethod navigated-to :project-insights
+  [history-imp navigation-point {:keys [org repo] :as args} state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data (assoc args :show-aside-menu? false))
+      state-utils/clear-page-state
+      (assoc-in state/crumbs-path [{:type :build-insights}
+                                   {:type :insights-repositories}
+                                   {:type :org
+                                    :username org}
+                                   {:type :project
+                                    :username org
+                                    :project repo}])
+      (assoc-in state/projects-path nil)))
+
+(defmethod post-navigated-to! :project-insights
+  [history-imp navigation-point _ previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (api/get-projects api-ch)
+    (api/get-user-plans api-ch))
+  (set-page-title! "Insights"))
+
 (defmethod navigated-to :invite-teammates
   [history-imp navigation-point args state]
   (-> state
