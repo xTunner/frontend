@@ -24,46 +24,43 @@
                :path (routes/v1-dashboard-path {})}))
 
 (defmethod render-crumb :project
-  [{:keys [vcs_type username project active]}]
+  [{:keys [username project active]}]
   (crumb-node {:name project
-               :path (routes/v1-dashboard-path {:vcs_type (routes/->short-vcs vcs_type) :org username :repo project})
+               :path (routes/v1-dashboard-path {:org username :repo project})
                :active active}))
 
 (defmethod render-crumb :project-settings
-  [{:keys [vcs_type username project active]}]
+  [{:keys [username project active]}]
   (crumb-node {:name "project settings"
-               :path (routes/v1-project-settings {:vcs_type (routes/->short-vcs vcs_type) :org username :repo project})
+               :path (routes/v1-project-settings {:org username :repo project})
                :active active}))
 
 (defmethod render-crumb :project-branch
-  [{:keys [vcs_type username project branch active]}]
+  [{:keys [username project branch active]}]
   (crumb-node {:name (if branch
                        (utils/trim-middle (utils/display-branch branch) 45)
                        "...")
-               :path (routes/v1-dashboard-path {:vcs_type (routes/->short-vcs vcs_type)
-                                                :org username
+               :path (routes/v1-dashboard-path {:org username
                                                 :repo project
                                                 :branch branch})
                :active active}))
 
 (defmethod render-crumb :build
-  [{:keys [vcs_type username project build-num active]}]
+  [{:keys [username project build-num active]}]
   (crumb-node {:name (str "build " build-num)
-               :path (routes/v1-build-path vcs_type username project build-num)
+               :path (routes/v1-build-path username project build-num)
                :active active}))
 
 (defmethod render-crumb :org
-  [{:keys [vcs_type username active]}]
+  [{:keys [username active]}]
   (crumb-node {:name username
-               :path (routes/v1-dashboard-path {:vcs_type (routes/->short-vcs vcs_type)
-                                                :org username})
+               :path (routes/v1-dashboard-path {:org username})
                :active active}))
 
 (defmethod render-crumb :org-settings
-  [{:keys [vcs_type username active]}]
+  [{:keys [username active]}]
   (crumb-node {:name "organization settings"
-               :path (routes/v1-org-settings {:org username
-                                              :vcs_type (routes/->short-vcs vcs_type)})
+               :path (routes/v1-org-settings {:org username})
                :active active}))
 
 (defmethod render-crumb :add-projects

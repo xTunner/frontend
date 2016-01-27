@@ -850,10 +850,10 @@
 (defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
   (when-let [build-number (:build_num previous)]
     (html
-     [:div.summary-item
-      [:span.summary-label "Previous: "]
-      [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
-       build-number]])))
+      [:div.summary-item
+       [:span.summary-label "Previous: "]
+       [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
+          build-number]])))
 
 (defn expected-duration
   [build owner opts]
