@@ -320,7 +320,7 @@
     (render [_]
       (html
        [:fieldset.osx-faq
-        [:legend "FAQ"]
+        [:legend "FAQs"]
         [:dl
          (for [{:keys [question answer]} items]
            (list
@@ -335,7 +335,8 @@
         (html
           [:div.osx-plans
            [:fieldset
-            [:legend (str "iOS Limited Release Plans - The below selection only applies to iOS service and will not affect the Linux Containers above.")]]
+            [:legend (str "iOS Limited Release Plans")]
+            [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers above."]]
            [:div.plan-selection
             (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
@@ -1047,7 +1048,7 @@
         (cond (> containers 1)
               [:p (str "All Linux builds will be distributed across " containers " containers.")]
               (= containers 1)
-              [:div 
+              [:div
                [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
                [:p "By " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                                :subpage "containers"})}
@@ -1086,7 +1087,7 @@
           [:p "If enabled, you may also choose a seperate iOS plan "
            [:a {:href "#containers"} "here"]
            ". If you would like to join the limited relase, please contact sayhi@circleci.com. We will support general release soon!"]
-          (om/build osx-overview plan)) 
+          (om/build osx-overview plan))
         (when (and (feature/enabled? :ios-build-usage)
                    (pm/osx? plan))
           (om/build osx-usage-table {:plan plan}))]]))))
