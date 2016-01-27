@@ -247,8 +247,7 @@
              :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}
-                                   {:type :insights-repositories}])
-      (assoc-in state/projects-path nil)))
+                                   {:type :insights-repositories}])))
 
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
@@ -269,8 +268,7 @@
                                     :username org}
                                    {:type :project
                                     :username org
-                                    :project repo}])
-      (assoc-in state/projects-path nil)))
+                                    :project repo}])))
 
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point _ previous-state current-state]
