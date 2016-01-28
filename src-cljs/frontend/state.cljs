@@ -184,6 +184,7 @@
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
+(def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
 
 (def account-subpage-path [:account-settings-subpage])
 (def new-user-token-path (conj user-path :new-user-token))
