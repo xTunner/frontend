@@ -147,22 +147,27 @@
           .center;
         }
       }
-      .container-input {
-        input {
-          width: 50px;
-          text-align: center;
-          padding: 4px 10px;
-          .center;
-        }
+    }
+
+    .container-input {
+      display: inline-flex;
+      input {
+        width: 50px;
+        text-align: center;
+        padding: 4px 10px;
+        .center;
       }
     }
 
     .help-block {
-      max-width: 450px;
+      display: inline;
+      margin-left: 16px;
+      font-style: italic;
     }
 
     .upgrade, .cancel {
       width: 110px;
+      margin-left: 0;
     }
 
     .cancel {
@@ -173,6 +178,15 @@
 }
 
 .org-cancel {
+  .value-prop {
+    margin-bottom: 5px;
+    font-size: 18px;
+  }
+
+  .bottom-value {
+    margin: 30px 0;
+  }
+
   .hint {
     margin: 0;
     line-height: 1em;
