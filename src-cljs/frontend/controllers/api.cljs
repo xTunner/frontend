@@ -125,8 +125,11 @@
                                                                              first)]
                                          (assoc project :recent-builds recent-builds)
                                          project)))
-                                   resp)]
-         (api/get-projects-builds project-build-ids api-ch)
+                                   resp)
+             build-count (case navigation-point
+                           :build-insights 60
+                           :project-insights 100)]
+         (api/get-projects-builds project-build-ids build-count api-ch)
          updated-projects)))
     true (assoc-in current-state state/projects-path)))
 
