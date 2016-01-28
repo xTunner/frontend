@@ -213,11 +213,11 @@
           (.attr "class" "y-axis negative axis")))))
 
 (defn filter-chartable-builds [builds]
-  (->> builds
-       (filter build-chartable?)
-       (take (:max-bars plot-info))
-       reverse
-       (map add-queued-time)))
+  (some->> builds
+           (filter build-chartable?)
+           (take (:max-bars plot-info))
+           reverse
+           (map add-queued-time)))
 
 (defn median [xs]
   (let [nums (sort xs)
@@ -268,8 +268,8 @@
                            :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name
             (if (feature/enabled? :insights-dashboard)
-              [:a {:href (routes/v1-insights-dashboard {:org (:username project)
-                                                        :repo (:reponame project)})}
+              [:a {:href (routes/v1-insights-project {:org (:username project)
+                                                      :repo (:reponame project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon
@@ -447,14 +447,6 @@
         ;; User has no projects
         (empty? projects)
         (om/build no-projects state)
-
-        ;; User is looking at a single project
-        (some? (:repo navigation-data))
-        (om/build single-project-insights (->> projects
-                                               (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                             (= (:username %) (:org navigation-data))))
-                                               first
-                                               decorate))
 
         ;; User is looking at all projects
         :else

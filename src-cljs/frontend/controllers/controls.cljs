@@ -1278,3 +1278,7 @@
 (defmethod control-event :insights-filter-changed
   [_ _ {:keys [new-filter]} state]
   (assoc-in state state/insights-filter-path new-filter))
+
+(defmethod control-event :dismiss-statuspage
+  [_ _ {:keys [last-update]} state]
+  (assoc-in state state/statuspage-dismissed-update-path last-update))

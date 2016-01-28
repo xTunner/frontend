@@ -81,14 +81,6 @@
                {:target test-node
                 :shared {:timer-atom (timer/initialize)}}))))
 
-(deftest can-render-single-project-insights
-  (testing "Simple render of single-project insights."
-    (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
-      (om/root insights/single-project-insights
-               (insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)
-               {:target test-node
-                :shared {:timer-atom (timer/initialize)}}))))
-
 (deftest median
   (are [m xs] (= m (insights/median xs))
       nil []
