@@ -1,5 +1,6 @@
 (ns frontend.api
-  (:require [frontend.models.user :as user-model]
+  (:require [clojure.set :as set]
+            [frontend.models.user :as user-model]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
@@ -7,6 +8,16 @@
             [goog.string :as gstring]
             [goog.string.format]
             [secretary.core :as sec]))
+
+(def build-keys-mapping {:username :org
+                         :reponame :repo
+                         :default_branch :branch})
+
+(defn project-build-id [project]
+  "Takes project hash and filter down to keys that identify the build."
+  (-> project
+      (set/rename-keys build-keys-mapping)
+      (select-keys (vals build-keys-mapping))))
 
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
