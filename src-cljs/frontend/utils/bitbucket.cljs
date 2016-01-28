@@ -7,10 +7,12 @@
   "https://bitbucket.org")
 
 (defn auth-url []
-  (let [state {"return-to" (str js/window.location.pathname
-                                js/window.location.hash)
-               "token" (utils/oauth-csrf-token)
-               "delegate" (str js/window.location.protocol "//" js/window.location.host)}
+  (let [auth-host (aget js/window "renderContext" "auth_host")
+        state (merge {"return-to" (str js/window.location.pathname
+                                       js/window.location.hash)
+                      "token" (utils/oauth-csrf-token)}
+                     (when (not= auth-host js/window.location.host)
+                       {"delegate" (str js/window.location.protocol "//" js/window.location.host)}))
         state-str (.stringify js/JSON (clj->js state))]
     (-> (url (http-endpoint) "site/oauth2/authorize")
         (assoc :query {"state"        state-str
