@@ -113,7 +113,7 @@
     ;; For the insights screen:
     ;;   1. copy old recent_builds so page doesn't empty out.
     ;;   2. we go on to update recent_builds default_branch of each project
-    (= navigation-point :build-insights)
+    (#{:build-insights :project-insights} navigation-point)
     ((fn [resp]
        (let [old-projects (get-in current-state state/projects-path)
              api-ch (get-in current-state [:comms :api])
