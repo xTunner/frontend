@@ -28,7 +28,7 @@
         [:div.insights-metadata-header
          [:div.card.insights-metadata
           [:dl
-           [:dt "LAST BUILD"]
+           [:dt "last build"]
            [:dd (om/build common/updating-duration
                           {:start (->> chartable-builds
                                        reverse
@@ -39,19 +39,21 @@
                                   :formatter-use-start? true}})]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "ACTIVE BRANCHES"]
+           [:dt "active branches"]
            [:dd (-> branches keys count)]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "MEDIAN QUEUE"]
+           [:dt "median queue"]
            [:dd (datetime/as-duration (insights/median (map :queued_time_millis chartable-builds)))]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "MEDIAN BUILD"]
+           [:dt "median build"]
            [:dd (datetime/as-duration (insights/median (map :build_time_millis chartable-builds)))]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "PARALLELISM"]
-           [:dd parallel]]]]
+           [:dt "parallelism"]
+           [:dd parallel
+            [:button.btn.btn-xs.btn-default
+             [:i.material-icons "tune"]]]]]]
         [:div.card
          (om/build insights/project-insights-bar chartable-builds)]]))))
