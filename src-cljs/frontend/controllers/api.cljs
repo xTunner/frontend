@@ -534,7 +534,11 @@
       (put! nav-ch [:navigate! {:path build-path}]))
     (when (repo-model/should-do-first-follower-build? (:context args))
       (ajax/ajax :post
-                 (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
+                 (case (:vcs_type (:context args))
+                   "github"
+                   (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
+                   "bitbucket"
+                   (gstring/format "/api/dangerzone/project/bitbucket/%s" (vcs-url/project-name (:vcs_url (:context args)))))
                  :start-build
                  (get-in current-state [:comms :api])))))
 
