@@ -43,7 +43,7 @@
               [:li [:a (open-ext {:href "/enterprise/"}) "Enterprise"]]
               [:li [:a (open-ext {:href "/pricing/"}) "Pricing"]]
               [:li [:a (open-ext {:href "/customers/"}) "Customers"]]
-              [:li [:a {:href "/changelog"} "Changelog"]]]]
+              [:li [:a (open-ext {:href "/changelog"}) "Changelog"]]]]
           [:div.col-md-2
             [:h6 "Support"]
             [:ul.list-unstyled

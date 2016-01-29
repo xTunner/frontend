@@ -52,14 +52,12 @@
   (str (utils/uri-to-relative (unexterned-prop build "build_url"))
        "#build-timing"))
 
-(defn visualize-insights-bar! [el builds owner]
+(defn visualize-insights-bar! [plot-info el builds owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
                                               (map %)
                                               (apply max))))
-        y-zero (->> [:height :positive-y%]
-                    (map plot-info)
-                    (apply *))
+        y-zero (apply * ((juxt :height :positive-y%) plot-info))
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-pos-max])
                         (.range #js[y-zero 0]))
@@ -67,7 +65,7 @@
                         (.domain #js[0 y-neg-max])
                         (.range #js[y-zero (:height plot-info)]))
         y-pos-floored-max (datetime/nice-floor-duration y-pos-max)
-        y-pos-tick-values (list y-pos-floored-max 0)
+        y-pos-tick-values [y-pos-floored-max 0]
         y-neg-tick-values [(datetime/nice-floor-duration y-neg-max)]
         [y-pos-axis y-neg-axis] (for [[scale tick-values] [[y-pos-scale y-pos-tick-values]
                                                            [y-neg-scale y-neg-tick-values]]]
@@ -78,13 +76,12 @@
                                       (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0})))
                                       (.tickSize 0 0)
                                       (.tickPadding 3)))
-        scale-filler (->> (list (:max-bars plot-info) (count builds))
-                          (apply -)
+        scale-filler (->> (- (:max-bars plot-info) (count builds))
                           range
                           (map (partial str "xx-")))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
-                              (concat (map :build_num builds) scale-filler)))
+                              (concat scale-filler (map :build_num builds))))
                     (.rangeBands #js[0 (:width plot-info)] 0.4))
         plot (-> js/d3
                  (.select el)
@@ -236,11 +233,11 @@
     (did-mount [_]
       (let [el (om/get-node owner)]
         (insert-skeleton el)
-        (visualize-insights-bar! el builds owner)))
+        (visualize-insights-bar! plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! el builds owner)))
+        (visualize-insights-bar! plot-info el builds owner)))
     om/IRender
     (render [_]
       (html
@@ -269,7 +266,8 @@
            [:span.project-name
             (if (feature/enabled? :insights-dashboard)
               [:a {:href (routes/v1-insights-project {:org (:username project)
-                                                      :repo (:reponame project)})}
+                                                      :repo (:reponame project)
+                                                      :branch (:default_branch project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon
