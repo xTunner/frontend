@@ -21,12 +21,9 @@
             [frontend.utils.seq :refer [select-in]]
             [goog.style]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [frontend.utils.html :refer [open-ext]])
   (:require-macros [frontend.utils :refer [html]]))
-
-(defn changelog-updated-since?
-  [date]
-  (< date (config/changelog-updated-at)))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -463,12 +460,10 @@
               [:i.material-icons "chat"]
               [:div.nav-label "Support"]]
 
-            [:a.aside-item {:data-placement "right"
-                            :data-trigger "hover"
-                            :title "Changelog"
-                            :href "/changelog"
-                            :class (when (changelog-updated-since? (:last_viewed_changelog user))
-                                    "unread")}
+           [:a.aside-item (open-ext {:data-placement "right"
+                                     :data-trigger "hover"
+                                     :title "Changelog"
+                                     :href "/changelog"})
               [:i.material-icons "receipt"]
               [:div.nav-label "Changelog"]]
 

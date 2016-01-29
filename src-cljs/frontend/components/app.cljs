@@ -14,7 +14,6 @@
             [frontend.components.insights :as insights]
             [frontend.components.insights.project :as project-insights]
             [frontend.components.invites :as invites]
-            [frontend.components.changelog :as changelog]
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
@@ -71,7 +70,6 @@
     :loading loading
 
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
-    :changelog changelog/changelog
     :documentation docs/documentation
     :pricing pricing/pricing
 
