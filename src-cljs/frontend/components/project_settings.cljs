@@ -4,6 +4,7 @@
             [frontend.analytics :as analytics]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
@@ -376,6 +377,14 @@
                                    "If this option is selected, then CircleCI will run builds for this project "
                                    "on Mac OSX rather than Linux. Select this if you have an iOS application "
                                    "that you want to build using CircleCI."]})
+
+           (when (feature/enabled? :enable-trusty-setting)
+             (describe-flag {:flag :trusty-beta
+                             :title "Ubuntu 14.04 Trusty container"
+                             :blurb [:p
+                                     "Select this option to run builds in our Ubuntu 14.04 (Trusty) container."
+                                     "This container is currently in beta."
+                                     "Our default container is Ubuntu 12.04 (Precise)."]}))
             ]]])))))
 
 (defn dependencies [project-data owner]
