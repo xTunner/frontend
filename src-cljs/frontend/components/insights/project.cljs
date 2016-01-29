@@ -93,4 +93,4 @@
            [:dt "PARALLELISM"]
            [:dd parallel]]]]
         [:div.card
-         (om/build insights/project-insights-bar chartable-builds)]]))))
+         (om/build project-insights-bar chartable-builds)]]))))
