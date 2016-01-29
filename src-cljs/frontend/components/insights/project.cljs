@@ -7,17 +7,56 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html defrender]]))
 
+(def svg-info
+  {:width 425
+   :height 100
+   :top 10, :right 10, :bottom 10, :left 30})
+
+(def plot-info
+  {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
+   :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
+   :max-bars 100
+   :positive-y% 0.60})
+
+(defn filter-chartable-builds [builds]
+  (some->> builds
+           (filter insights/build-chartable?)
+           (take (:max-bars plot-info))
+           reverse
+           (map insights/add-queued-time)))
+
+(defn decorate-project
+  "Add keys to project related to insights - :show-insights? :sort-category :chartable-builds ."
+  [plans {:keys [recent-builds] :as project}]
+  (let [chartable-builds (filter-chartable-builds recent-builds)]
+    (-> project
+        (assoc :chartable-builds chartable-builds))))
+
+(defn project-insights-bar [builds owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [el (om/get-node owner)]
+        (insights/insert-skeleton el)
+        (insights/visualize-insights-bar! plot-info el builds owner)))
+    om/IDidUpdate
+    (did-update [_ prev-props prev-state]
+      (let [el (om/get-node owner)]
+        (insights/visualize-insights-bar! plot-info el builds owner)))
+    om/IRender
+    (render [_]
+      (html
+       [:div.build-time-visualization]))))
+
 (defrender project-insights [state owner]
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
-
-        {:keys [chartable-builds branches parallel] :as project}
-        (some->> projects
-                 (filter #(and (= (:reponame %) (:repo navigation-data))
-                               (= (:username %) (:org navigation-data))))
-                 first
-                 (insights/decorate-project plans))]
+        {:keys [branches parallel] :as project} (some->> projects
+                                                         (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                                       (= (:username %) (:org navigation-data))))
+                                                         first)
+        chartable-builds (filter-chartable-builds (:recent-builds project))]
     (html
      (if (nil? chartable-builds)
        ;; Loading...

@@ -52,7 +52,7 @@
   (str (utils/uri-to-relative (unexterned-prop build "build_url"))
        "#build-timing"))
 
-(defn visualize-insights-bar! [el builds owner]
+(defn visualize-insights-bar! [plot-info el builds owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
                                               (map %)
@@ -236,11 +236,11 @@
     (did-mount [_]
       (let [el (om/get-node owner)]
         (insert-skeleton el)
-        (visualize-insights-bar! el builds owner)))
+        (visualize-insights-bar! plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! el builds owner)))
+        (visualize-insights-bar! plot-info el builds owner)))
     om/IRender
     (render [_]
       (html
@@ -269,7 +269,8 @@
            [:span.project-name
             (if (feature/enabled? :insights-dashboard)
               [:a {:href (routes/v1-insights-project {:org (:username project)
-                                                      :repo (:reponame project)})}
+                                                      :repo (:reponame project)
+                                                      :branch (:default_branch project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon
