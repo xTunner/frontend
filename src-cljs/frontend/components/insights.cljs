@@ -394,42 +394,6 @@
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 
-(defrender single-project-insights [{:keys [chartable-builds branches parallel]} owner]
-  (html
-   [:div.single-project-insights
-    [:div.insights-metadata-header
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "last build"]
-       [:dd (om/build common/updating-duration
-                      {:start (->> chartable-builds
-                                   reverse
-                                   (filter :start_time)
-                                   first
-                                   :start_time)}
-                      {:opts {:formatter datetime/as-time-since
-                              :formatter-use-start? true}})]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "active branches"]
-       [:dd (-> branches keys count)]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "median queue"]
-       [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds)))]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "median build"]
-       [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds)))]]]
-     [:div.card.insights-metadata
-      [:dl
-       [:dt "parallelism"]
-       [:dd parallel
-        [:button.btn.btn-xs.btn-default
-         [:i.material-icons "tune"]]]]]]
-    [:div.card
-     (om/build project-insights-bar chartable-builds)]]))
-
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
