@@ -340,7 +340,7 @@
                          js/React.createFactory))
 
 (defn transition-group
-  [opts component]
+  [opts & components]
   (let [[group-name enter? leave? appear? class-name]
         (if (map? opts)
           [(:name opts)
@@ -357,7 +357,7 @@
            :transitionAppear appear?
            :component "div"
            :className class-name}
-      component)))
+      components)))
 
 (defn selected-container-index [data]
   (get-in data [:current-build-data :container-data :current-container-id]))
@@ -413,7 +413,7 @@
                                  :enter true
                                  :leave true
                                  :class "build-steps-animator"}
-                                [(om/build build-steps/container-build-steps
+                                (om/build build-steps/container-build-steps
                                            container-data
-                                           {:key :current-container-id})])]])])))))
+                                           {:key :current-container-id}))]])])))))
 
