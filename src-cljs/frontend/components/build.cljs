@@ -334,7 +334,10 @@
                                           :build-running? build-running?}))
           (om/build sticky {:content div :content-class "containers"})])))))
 
-(def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
+(def css-trans-group (-> js/React
+                         (aget "addons")
+                         (aget "CSSTransitionGroup")
+                         js/React.createFactory))
 
 (defn transition-group
   [opts component]
