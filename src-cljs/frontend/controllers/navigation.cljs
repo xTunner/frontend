@@ -4,7 +4,6 @@
             [frontend.analytics :as analytics]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
-            [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
             [frontend.models.feature :as feature]
@@ -454,20 +453,6 @@
                      404 "Page not found"
                      500 "Internal server error"
                      "Something unexpected happened")))
-
-(defmethod post-navigated-to! :changelog
-  [history-imp navigation-point args previous-state current-state]
-  (set-page-title! "Track CircleCI Updates")
-  (set-page-description! "Track our platform changes and updates via the CircleCI Changelog. Stay up to date with the latest in Continuous Integration.")
-  (scroll! args)
-  (go (let [comms (get-in current-state [:comms])
-            api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
-        (if (= :success (:status api-result))
-          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))
-                                                       :context {:show-id (:id args)}}])
-              ;; might need to scroll to the fragment
-              (utils/rAF #(scroll! args)))
-          (put! (:errors comms) [:api-error api-result])))))
 
 (defmethod navigated-to :account
   [history-imp navigation-point {:keys [subpage] :as args} state]

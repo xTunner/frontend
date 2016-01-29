@@ -17,7 +17,6 @@
                          :pay_now_button [true false]
                          :follow_notice [true false]
                          :new_usage_queued_upsell [true false]}
-   :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
               :organizations  {:circleci  {:plan {}}}
@@ -199,8 +198,6 @@
 (def modal-video-id-path [:modal-video-id])
 
 (def language-testimonial-tab-path [:selected-language-testimonial-tab])
-
-(def changelog-path [:changelog])
 
 (def build-state-path [:build-state])
 

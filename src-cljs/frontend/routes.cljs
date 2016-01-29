@@ -220,12 +220,6 @@
   (defroute v1-integrations "/integrations/:integration" [integration]
     (open-to-outer! nav-ch :integrations {:integration (keyword integration)}))
 
-  (defroute v1-changelog-individual "/changelog/:id" {:as params}
-    (open-to-outer! nav-ch :changelog params))
-
-  (defroute v1-changelog "/changelog" {:as params}
-    (open-to-outer! nav-ch :changelog params))
-
   (defroute v1-root "/" {:as params}
     (if authenticated?
       (open-to-inner! nav-ch :dashboard params)
