@@ -97,6 +97,7 @@
 
 (defn transferrable-or-piggiebackable-plan? [plan]
   (or (paid? plan)
+      (osx? plan)
       ;; Trial plans shouldn't really be transferrable
       ;; but they are piggiebackable and the UI mixes the two :(
       (trial? plan)))
