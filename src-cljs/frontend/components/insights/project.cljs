@@ -4,7 +4,8 @@
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
             [frontend.state :as state]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            cljsjs.c3)
   (:require-macros [frontend.utils :refer [html defrender]]))
 
 (def svg-info
@@ -32,7 +33,7 @@
     (-> project
         (assoc :chartable-builds chartable-builds))))
 
-(defn project-insights-bar [builds owner]
+(defn build-time-bar-chart [builds owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -47,6 +48,19 @@
     (render [_]
       (html
        [:div.build-time-visualization]))))
+
+(defn build-time-line-chart [builds owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (let [el (om/get-node owner)]
+        (js/c3.generate (clj->js {:bindto el
+                                  :data  {:columns [["data1" 30 200 100 400 150 250]
+                                                    ["data2" 50 20 10 40 15 25]]}}))))
+    om/IRender
+    (render [_]
+      (html
+       [:div]))))
 
 (defrender project-insights [state owner]
   (let [projects (get-in state state/projects-path)
@@ -95,4 +109,6 @@
             [:button.btn.btn-xs.btn-default
              [:i.material-icons "tune"]]]]]]
         [:div.card
-         (om/build project-insights-bar chartable-builds)]]))))
+         (om/build build-time-bar-chart chartable-builds)]
+        [:div.card
+         (om/build build-time-line-chart chartable-builds)]]))))
