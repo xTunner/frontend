@@ -19,27 +19,35 @@
                  ;; Prerelease version to avoid conflict with cljs.core/record?
                  ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
                  [ankha "0.1.5.1-64423e"]
-                 [org.clojure/clojurescript "1.7.28"]
+                 [org.clojure/clojurescript "1.7.228"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [cljs-ajax "0.3.13"]
-                 [cljsjs/react-with-addons "0.12.2-4"]
-                 [org.omcljs/om "0.8.8" :exclusions [cljsjs/react]]
+                 [cljsjs/react-with-addons "0.13.3-0"]
+                 [org.omcljs/om "0.9.0"]
                  [hiccups "0.3.0"]
-                 [sablono "0.2.22"]
+                 [sablono "0.3.6"]
                  [secretary "1.2.2"]
-                 [com.andrewmcveigh/cljs-time "0.3.10"]
+                 [com.andrewmcveigh/cljs-time "0.4.0"]
 
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
                  [org.clojure/tools.reader "0.9.2"]]
 
-  :plugins [[lein-cljsbuild "1.1.0"]
-            [lein-figwheel "0.4.0"]
+  :plugins [[lein-cljsbuild "1.1.1"]
+            [lein-figwheel "0.5.0-2"]
             [cider/cider-nrepl "0.9.1"]]
 
-  :exclusions [[org.clojure/clojure]
-               [org.clojure/clojurescript]]
+  ;; Don't include these dependencies transitively. These are foundational
+  ;; dependencies that lots of our direct dependencies depend on. We want to
+  ;; make sure we get the version *we* asked for, not the version one of *them*
+  ;; asked for (which means we're taking responsibility for the versions working
+  ;; together). If Maven had useful version ranges like Bundler or npm, we could
+  ;; let it take care of resolving the versions for us, but Maven's version
+  ;; ranges are considered dysfuntional, so we can't.
+  :exclusions [org.clojure/clojure
+               org.clojure/clojurescript
+               cljsjs/react]
 
   :main frontend.core
 
@@ -67,19 +75,18 @@
                         :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                    :output-dir "resources/public/cljs/out"
                                    :optimizations :none
-                                   :source-map "resources/public/cljs/out/sourcemap-dev.js"}}
+                                   ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
+                                   :recompile-dependents false}}
                        {:id "whitespace"
                         :source-paths ["src-cljs"]
-                        :compiler {:output-to "resources/public/cljs/whitespace/frontend.js"
+                        :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
                                    :output-dir "resources/public/cljs/whitespace"
                                    :optimizations :whitespace
-                                   ;; :source-map "resources/public/cljs/whitespace/sourcemap.js"
-                                   }}
+                                   :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
 
                        {:id "test"
                         :source-paths ["src-cljs" "test-cljs"]
-                        :compiler {:pretty-print true
-                                   :output-to "resources/public/cljs/test/frontend-test.js"
+                        :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                    :output-dir "resources/public/cljs/test"
                                    :optimizations :advanced
                                    :foreign-libs [{:provides ["cljsjs.react"]
@@ -93,21 +100,17 @@
                                              "src-cljs/js/intercom-jquery-externs.js"
                                              "src-cljs/js/d3-externs.js"
                                              "src-cljs/js/prismjs-externs.js"]
-                                   :source-map "resources/public/cljs/test/sourcemap-dev.js"}}
+                                   :source-map "resources/public/cljs/test/frontend-test.js.map"}}
                        {:id "production"
                         :source-paths ["src-cljs"]
                         :compiler {:pretty-print false
                                    :output-to "resources/public/cljs/production/frontend.js"
                                    :output-dir "resources/public/cljs/production"
                                    :optimizations :advanced
-                                   :output-wrapper false
                                    :externs ["src-cljs/js/pusher-externs.js"
                                              "src-cljs/js/ci-externs.js"
                                              "src-cljs/js/analytics-externs.js"
                                              "src-cljs/js/intercom-jquery-externs.js"
                                              "src-cljs/js/d3-externs.js"
                                              "src-cljs/js/prismjs-externs.js"]
-                                   :source-map "resources/public/cljs/production/sourcemap-frontend.js"
-                                   }}]
-              :test-commands {"frontend-unit-tests"
-                              ["node_modules/karma/bin/karma" "start" "karma.conf.js" "--single-run"]}})
+                                   :source-map "resources/public/cljs/production/frontend.js.map"}}]})
