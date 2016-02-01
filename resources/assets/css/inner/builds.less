@@ -693,13 +693,6 @@ table.code {
     background: @tab-background;
     border-right: 1px solid @tab-separator-border;
 
-    &.active a,
-    &.active a:hover,
-    &.active a:focus {
-      border: none;
-      border-radius: 0;
-    }
-
     &:last-child {
       border-right: none;
     }
@@ -708,15 +701,21 @@ table.code {
       background: @white;
     }
 
+    &.active a,
+    &.active a:hover,
+    &.active a:focus {
+      border: none; // BS RESET
+    }
+
     a {
       color: @gray-dark-v2; // BS RESET
       border: none; // BS RESET
       margin: 0; // BS RESET
 
       &:hover {
-	background: none; // BS RESET
-	color: @gray-light-v2; // BS RESET
-	border: none; // BS RESET
+        background: none; // BS RESET
+        color: @gray-light-v2; // BS RESET
+        border: none; // BS RESET
       }
     }
   }
