@@ -59,7 +59,7 @@
     om/IDisplayName (display-name [_] "Aside Branch Activity")
     om/IRender
     (render [_]
-      (let [{:keys [org repo branch-data vcs_type]} (inspect data)
+      (let [{:keys [org repo branch-data vcs_type]} data
             [name-kw branch-builds] branch-data
             display-builds (take-last 5 (sort-by :build_num (concat (:running_builds branch-builds)
                                                                     (:recent_builds branch-builds))))]
