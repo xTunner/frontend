@@ -2,6 +2,7 @@
   (:require [clojure.set :as set]
             [frontend.models.user :as user-model]
             [frontend.models.build :as build-model]
+            [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
@@ -58,13 +59,13 @@
 
 ;; Note that dashboard-builds-url can take a :page (within :query-params)
 ;; and :builds-per-page, or :limit and :offset directly.
-(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page offset limit]
+(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page vcs_type offset limit]
                              :or {offset (* (get query-params :page 0) builds-per-page)
                                   limit builds-per-page}}]
   (let [url (cond admin "/api/v1/admin/recent-builds"
                   deployments "/api/v1/admin/deployments"
-                  branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
-                  repo (gstring/format "/api/v1/project/%s/%s" org repo)
+                  branch (gstring/format "/api/dangerzone/project/%s/%s/%s/tree/%s" (routes/->lengthen-vcs vcs_type) org repo branch)
+                  repo (gstring/format "/api/dangerzone/project/%s/%s/%s" (routes/->lengthen-vcs vcs_type) org repo)
                   org (gstring/format "/api/v1/organization/%s" org)
                   :else "/api/v1/recent-builds")]
     (str url "?" (sec/encode-query-params (merge {:shallow true
@@ -111,7 +112,8 @@
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]
   (let [url (or output-url
-                (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
+                (gstring/format "/api/dangerzone/project/%s/%s/%s/output/%s/%s"
+                                (vcs-url/vcs-type vcs-url)
                                 (vcs-url/project-name vcs-url)
                                 build-num
                                 step

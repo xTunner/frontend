@@ -161,7 +161,7 @@
         (assoc-in state/build-header-tab-path tab))))
 
 (defmethod post-navigated-to! :build
-  [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
+  [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])
         nav-ch (get-in current-state [:comms :nav])
@@ -173,7 +173,7 @@
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
+    (go (let [build-url (gstring/format "/api/dangerzone/project/%s/%s/%s" (routes/->lengthen-vcs vcs_type) project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
               scopes (:scopes api-result)]
