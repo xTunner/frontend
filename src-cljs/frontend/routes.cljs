@@ -6,6 +6,36 @@
   (:require-macros [frontend.utils :refer [inspect]]
                    [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+(def short-to-long-vcs
+  {"gh" "github"
+   "bb" "bitbucket"
+   ;; If the key is already in long form, that's fine
+   "github" "github"
+   "bitbucket" "bitbucket"})
+
+(def long-to-short-vcs
+  ;; If key is already in short form, that's fine
+  {"gh" "gh"
+   "bb" "bb"
+   "github" "gh"
+   "bitbucket" "bb"})
+
+(defn adjust-vcs
+  [vcs-map val]
+  (let [kw (cond
+             (map? val) (-> val :vcs_type keyword vcs-map)
+             (string? val) (-> val vcs-map)
+             (keyword? val) (-> val name vcs-map)
+             :default nil)]
+    (if (map? val)
+      (assoc val :vcs_type kw)
+      kw)))
+
+(def ->lengthen-vcs
+  (partial adjust-vcs short-to-long-vcs))
+
+(def ->short-vcs
+  (partial adjust-vcs long-to-short-vcs))
 
 (defn open-to-inner! [nav-ch navigation-point args]
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
@@ -19,16 +49,16 @@
 (defn v1-build-path
   "Temporary helper method for v1-build until we figure out how to make
    secretary's render-route work for regexes"
-  [org repo build-num]
-  (str "/gh/" org "/" repo "/" build-num))
+  [vcs_type org repo build-num]
+  (str "/" (->short-vcs vcs_type) "/" org "/" repo "/" build-num))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to
    make secretary's render-route work for multiple pages"
-  [{:keys [org repo branch page]}]
-  (let [url (cond branch (str "/gh/" org "/" repo "/tree/" branch)
-                  repo (str "/gh/" org "/" repo)
-                  org (str "/gh/" org)
+  [{:keys [vcs_type org repo branch page]}]
+  (let [url (cond branch (str "/" (->short-vcs vcs_type) "/" org "/" repo "/tree/" branch)
+                  repo (str "/" (->short-vcs vcs_type) "/" org "/" repo)
+                  org (str "/" (->short-vcs vcs_type) "/" org)
                   :else "/")]
     (str url (when page (str "?page=" page)))))
 
@@ -70,34 +100,41 @@
 
 
 (defn define-user-routes! [nav-ch authenticated?]
-  (defroute v1-org-settings "/gh/organizations/:org/settings"
-    [org _fragment]
-    (open-to-inner! nav-ch :org-settings {:org org :subpage (keyword _fragment)}))
+  (defroute v1-org-settings "/:vcs_type/organizations/:org/settings"
+    [vcs_type org _fragment]
+    (open-to-inner! nav-ch :org-settings {:vcs_type (->short-vcs vcs_type)
+                                          :org org
+                                          :subpage (keyword _fragment)}))
   (defn v1-org-settings-subpage [params]
     (apply str (v1-org-settings params)
          (when-let [subpage (:subpage params)]
            ["#" subpage])))
-  (defroute v1-org-dashboard-alternative "/gh/organizations/:org" {:as params}
-    (open-to-inner! nav-ch :dashboard params))
-  (defroute v1-org-dashboard "/gh/:org" {:as params}
-    (open-to-inner! nav-ch :dashboard params))
-  (defroute v1-project-dashboard "/gh/:org/:repo" {:as params}
-    (open-to-inner! nav-ch :dashboard params))
-  (defroute v1-project-branch-dashboard #"/gh/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
-    [org repo branch args]
-    (open-to-inner! nav-ch :dashboard (merge args {:org org :repo repo :branch branch})))
-  (defroute v1-build #"/gh/([^/]+)/([^/]+)/(\d+)"
-    [org repo build-num _ maybe-fragment]
+  (defroute v1-org-dashboard-alternative "/:vcs_type/organizations/:org" {:as params}
+    (open-to-inner! nav-ch :dashboard (->short-vcs params)))
+  (defroute v1-org-dashboard "/:vcs_type/:org" {:as params}
+    (open-to-inner! nav-ch :dashboard (->short-vcs params)))
+  (defroute v1-project-dashboard "/:vcs_type/:org/:repo" {:as params}
+    (open-to-inner! nav-ch :dashboard (->short-vcs params)))
+  (defroute v1-project-branch-dashboard #"/([^/]+)/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
+    [vcs_type org repo branch args]
+    (open-to-inner! nav-ch :dashboard (merge args {:vcs_type (->short-vcs vcs_type)
+                                                   :org org
+                                                   :repo repo
+                                                   :branch branch})))
+  (defroute v1-build #"/([^/]+)/([^/]+)/([^/]+)/(\d+)"
+    [vcs_type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
     (let [_fragment (:_fragment maybe-fragment)]
-      (open-to-inner! nav-ch :build {:project-name (str org "/" repo)
-                                    :build-num (js/parseInt build-num)
-                                    :org org
-                                    :repo repo
-                                    :tab (keyword _fragment)})))
-  (defroute v1-project-settings "/gh/:org/:repo/edit"
-    [org repo _fragment]
-    (open-to-inner! nav-ch :project-settings {:project-name (str org "/" repo)
+      (open-to-inner! nav-ch :build {:vcs_type (->short-vcs vcs_type)
+                                     :project-name (str org "/" repo)
+                                     :build-num (js/parseInt build-num)
+                                     :org org
+                                     :repo repo
+                                     :tab (keyword _fragment)})))
+  (defroute v1-project-settings "/:vcs_type/:org/:repo/edit"
+    [vcs_type org repo _fragment]
+    (open-to-inner! nav-ch :project-settings {:vcs_type (->short-vcs vcs_type)
+                                              :project-name (str org "/" repo)
                                               :subpage (keyword _fragment)
                                               :org org
                                               :repo repo}))
@@ -222,7 +259,7 @@
 
   (defroute v1-root "/" {:as params}
     (if authenticated?
-      (open-to-inner! nav-ch :dashboard params)
+      (open-to-inner! nav-ch :dashboard (->short-vcs params))
       (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-home "/home" {:as params}

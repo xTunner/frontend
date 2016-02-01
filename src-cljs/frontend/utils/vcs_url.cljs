@@ -1,8 +1,15 @@
 (ns frontend.utils.vcs-url
   (:require [clojure.string :as string]))
 
+(def url-project-re #"^https?://([^/]+)/(.*)")
+
 (defn project-name [vcs-url]
-  (last (re-find #"^https?://[^/]+/(.*)" vcs-url)))
+  (last (re-matches url-project-re vcs-url)))
+
+(defn vcs-type [vcs-url]
+  (or ({"github.com" "github"
+        "bitbucket.org" "bitbucket"} (first (re-matches url-project-re vcs-url)))
+      "github"))
 
 ;; slashes aren't allowed in github org/user names or project names
 (defn org-name [vcs-url]
