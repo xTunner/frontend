@@ -1,6 +1,5 @@
 (ns frontend.core
-  (:require [frontend.devtools]
-            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [put!]]
             [clojure.string :as string]
             [goog.dom]

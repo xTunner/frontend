@@ -36,8 +36,7 @@
 
                  ;; Dirac DevTools
                  [environ "1.0.1"]
-                 [binaryage/dirac "0.1.3"]
-                 [binaryage/devtools "0.5.2"]]
+                 [binaryage/dirac "0.1.3"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
@@ -73,56 +72,54 @@
   :figwheel {:css-dirs ["resources/assets/css"]
              :nrepl-port 7888}
 
-  :cljsbuild {:builds [{:id "dev"
-                        :source-paths ["src-cljs" "test-cljs"]
-                        :figwheel {:websocket-host "prod.circlehost"
-                                   :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
-                                   :on-jsload "frontend.core/reinstall-om!"}
-                        :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
-                                   :output-dir "resources/public/cljs/out"
-                                   :optimizations :none
-                                   ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
-                                   :recompile-dependents false}}
-                       {:id "whitespace"
-                        :source-paths ["src-cljs"]
-                        :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
-                                   :output-dir "resources/public/cljs/whitespace"
-                                   :optimizations :whitespace
-                                   :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
+  :cljsbuild {:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
+                             :figwheel {:websocket-host "prod.circlehost"
+                                        :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
+                                        :on-jsload "frontend.core/reinstall-om!"}
+                             :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
+                                        :output-dir "resources/public/cljs/out"
+                                        :optimizations :none
+                                        ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
+                                        :recompile-dependents false}}
+                       :whitespace {:source-paths ["src-cljs"]
+                                    :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
+                                               :output-dir "resources/public/cljs/whitespace"
+                                               :optimizations :whitespace
+                                               :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
 
-                       {:id "test"
-                        :source-paths ["src-cljs" "test-cljs"]
-                        :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
-                                   :output-dir "resources/public/cljs/test"
-                                   :optimizations :advanced
-                                   :foreign-libs [{:provides ["cljsjs.react"]
-                                                   ;; Unminified React necessary for TestUtils addon.
-                                                   :file "resources/components/react/react-with-addons.js"
-                                                   :file-min "resources/components/react/react-with-addons.js"}]
-                                   :externs ["test-js/externs.js"
-                                             "src-cljs/js/pusher-externs.js"
-                                             "src-cljs/js/ci-externs.js"
-                                             "src-cljs/js/analytics-externs.js"
-                                             "src-cljs/js/intercom-jquery-externs.js"
-                                             "src-cljs/js/d3-externs.js"
-                                             "src-cljs/js/prismjs-externs.js"]
-                                   :source-map "resources/public/cljs/test/frontend-test.js.map"}}
-                       {:id "production"
-                        :source-paths ["src-cljs"]
-                        :compiler {:pretty-print false
-                                   :output-to "resources/public/cljs/production/frontend.js"
-                                   :output-dir "resources/public/cljs/production"
-                                   :optimizations :advanced
-                                   :externs ["src-cljs/js/pusher-externs.js"
-                                             "src-cljs/js/ci-externs.js"
-                                             "src-cljs/js/analytics-externs.js"
-                                             "src-cljs/js/intercom-jquery-externs.js"
-                                             "src-cljs/js/d3-externs.js"
-                                             "src-cljs/js/prismjs-externs.js"]
-                                   :source-map "resources/public/cljs/production/frontend.js.map"}}]}
+                       :test {:source-paths ["src-cljs" "test-cljs"]
+                              :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
+                                         :output-dir "resources/public/cljs/test"
+                                         :optimizations :advanced
+                                         :foreign-libs [{:provides ["cljsjs.react"]
+                                                         ;; Unminified React necessary for TestUtils addon.
+                                                         :file "resources/components/react/react-with-addons.js"
+                                                         :file-min "resources/components/react/react-with-addons.js"}]
+                                         :externs ["test-js/externs.js"
+                                                   "src-cljs/js/pusher-externs.js"
+                                                   "src-cljs/js/ci-externs.js"
+                                                   "src-cljs/js/analytics-externs.js"
+                                                   "src-cljs/js/intercom-jquery-externs.js"
+                                                   "src-cljs/js/d3-externs.js"
+                                                   "src-cljs/js/prismjs-externs.js"]
+                                         :source-map "resources/public/cljs/test/frontend-test.js.map"}}
+                       :production {:source-paths ["src-cljs"]
+                                    :compiler {:pretty-print false
+                                               :output-to "resources/public/cljs/production/frontend.js"
+                                               :output-dir "resources/public/cljs/production"
+                                               :optimizations :advanced
+                                               :externs ["src-cljs/js/pusher-externs.js"
+                                                         "src-cljs/js/ci-externs.js"
+                                                         "src-cljs/js/analytics-externs.js"
+                                                         "src-cljs/js/intercom-jquery-externs.js"
+                                                         "src-cljs/js/d3-externs.js"
+                                                         "src-cljs/js/prismjs-externs.js"]
+                                               :source-map "resources/public/cljs/production/frontend.js.map"}}}}
   :profiles {:devtools {:repl-options {:port 8230
                                        :nrepl-middleware [dirac.nrepl.middleware/dirac-repl]
                                        :init (do
                                                (require 'dirac.agent)
                                                (dirac.agent/boot!))}
-                        :env {:devtools true}}})
+                        :env {:devtools true}
+                        :cljsbuild {:builds {:dev {:source-paths ["devtools"]}}}
+                        :dependencies [[binaryage/devtools "0.5.2"]]}})
