@@ -36,11 +36,7 @@
 
                  ;; Dirac DevTools
                  [environ "1.0.1"]
-                 [org.clojure/tools.logging "0.3.1"]
-                 [clj-logging-config "1.9.12"]
-                 [http-kit "2.1.21-alpha2"]
-                 [org.clojure/tools.nrepl "0.2.12"]
-                 [binaryage/dirac "0.1.0"]
+                 [binaryage/dirac "0.1.3"]
                  [binaryage/devtools "0.5.2"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
