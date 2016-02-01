@@ -5,6 +5,9 @@
             [frontend.models.project :as project-model]
             [frontend.state :as state]
             [om.core :as om :include-macros true]
+            [cljs-time.core :as time]
+            [cljs-time.format :as time-format]
+            cljs-time.extend
             cljsjs.c3)
   (:require-macros [frontend.utils :refer [html defrender]]))
 
@@ -53,10 +56,18 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (let [el (om/get-node owner)]
+      (let [el (om/get-node owner)
+            build-times (map (fn [[build-date builds]]
+                               [build-date (->> builds
+                                                (map :build_time_millis)
+                                                insights/median)])
+                             (group-by #(-> % :start_time time-format/parse time/at-midnight) builds))]
         (js/c3.generate (clj->js {:bindto el
-                                  :data  {:columns [["data1" 30 200 100 400 150 250]
-                                                    ["data2" 50 20 10 40 15 25]]}}))))
+                                  :data {:x "date"
+                                         :columns [(concat ["date"] (map first build-times))
+                                                   (concat ["Build Times"] (map last build-times))]}
+                                  :axis {:x {:type "timeseries"
+                                             :tick {:format "%Y-%m-%d"}}}}))))
     om/IRender
     (render [_]
       (html
