@@ -4,7 +4,6 @@
             [frontend.analytics :as analytics]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
-            [frontend.changelog :as changelog]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
             [frontend.models.feature :as feature]
@@ -223,7 +222,8 @@
              :navigation-data (assoc args :show-aside-menu? false))
       ;; force a reload of repos.
       (assoc-in state/repos-path [])
-      (assoc-in state/repos-loading-path true)
+      (assoc-in state/github-repos-loading-path true)
+      (assoc-in state/bitbucket-repos-loading-path true)
       (assoc-in state/crumbs-path [{:type :add-projects}])))
 
 (defmethod post-navigated-to! :add-projects
@@ -232,7 +232,9 @@
   (let [api-ch (get-in current-state [:comms :api])]
     ;; load orgs, collaborators, and repos.
     (api/get-orgs api-ch)
-    (api/get-repos api-ch))
+    (api/get-github-repos api-ch)
+    (when (feature/enabled? :bitbucket)
+      (api/get-bitbucket-repos api-ch)))
   (set-page-title! "Add projects")
   (analytics/track-signup))
 
@@ -244,13 +246,35 @@
              :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}
-                                   {:type :insights-repositories}])
-      (assoc-in state/projects-path nil)))
+                                   {:type :insights-repositories}])))
 
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-projects api-ch)
+    (api/get-projects api-ch :then (fn [new-state]
+                                     (let [build-ids (map api/project-build-id (get-in new-state state/projects-path))]
+                                       (api/get-projects-builds build-ids 60 api-ch))))
+    (api/get-user-plans api-ch))
+  (set-page-title! "Insights"))
+
+(defmethod navigated-to :project-insights
+  [history-imp navigation-point {:keys [org repo] :as args} state]
+  (-> state
+      (assoc :navigation-point navigation-point
+             :navigation-data (assoc args :show-aside-menu? false))
+      state-utils/clear-page-state
+      (assoc-in state/crumbs-path [{:type :build-insights}
+                                   {:type :insights-repositories}
+                                   {:type :org
+                                    :username org}
+                                   {:type :project
+                                    :username org
+                                    :project repo}])))
+
+(defmethod post-navigated-to! :project-insights
+  [history-imp navigation-point args previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (api/get-projects api-ch :then #(api/get-projects-builds [(select-keys args [:org :repo :branch])] 100 api-ch))
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
@@ -429,20 +453,6 @@
                      404 "Page not found"
                      500 "Internal server error"
                      "Something unexpected happened")))
-
-(defmethod post-navigated-to! :changelog
-  [history-imp navigation-point args previous-state current-state]
-  (set-page-title! "Track CircleCI Updates")
-  (set-page-description! "Track our platform changes and updates via the CircleCI Changelog. Stay up to date with the latest in Continuous Integration.")
-  (scroll! args)
-  (go (let [comms (get-in current-state [:comms])
-            api-result (<! (ajax/managed-ajax :get "/changelog.rss" :format :xml :response-format :xml))]
-        (if (= :success (:status api-result))
-          (do (put! (:api comms) [:changelog :success {:resp (changelog/parse-changelog-document (:resp api-result))
-                                                       :context {:show-id (:id args)}}])
-              ;; might need to scroll to the fragment
-              (utils/rAF #(scroll! args)))
-          (put! (:errors comms) [:api-error api-result])))))
 
 (defmethod navigated-to :account
   [history-imp navigation-point {:keys [subpage] :as args} state]

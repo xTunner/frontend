@@ -420,6 +420,7 @@
                  (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
                  :follow-repo
                  api-ch
+                 :params {:vcs-type (:vcs_type repo)}
                  :context repo))
   (analytics/track-follow-repo))
 
@@ -1277,3 +1278,7 @@
 (defmethod control-event :insights-filter-changed
   [_ _ {:keys [new-filter]} state]
   (assoc-in state state/insights-filter-path new-filter))
+
+(defmethod control-event :dismiss-statuspage
+  [_ _ {:keys [last-update]} state]
+  (assoc-in state state/statuspage-dismissed-update-path last-update))

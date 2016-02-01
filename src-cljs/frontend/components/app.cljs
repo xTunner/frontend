@@ -12,8 +12,8 @@
             [frontend.components.press :as press]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.insights :as insights]
+            [frontend.components.insights.project :as project-insights]
             [frontend.components.invites :as invites]
-            [frontend.components.changelog :as changelog]
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
             [frontend.components.footer :as footer]
@@ -57,6 +57,7 @@
     :dashboard dashboard/dashboard
     :add-projects add-projects/add-projects
     :build-insights insights/build-insights
+    :project-insights project-insights/project-insights
     :invite-teammates invites/teammates-invites
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
@@ -69,7 +70,6 @@
     :loading loading
 
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
-    :changelog changelog/changelog
     :documentation docs/documentation
     :pricing pricing/pricing
 

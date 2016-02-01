@@ -1,6 +1,7 @@
 (ns frontend.components.enterprise-landing
   (:require [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :refer [auth-url]]
             [om.core :as om])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -24,5 +25,7 @@
             [:div.text-center enterprise-logo]
             [:h1.text-center "Welcome to CircleCI"]]]]
          [:div.row.text-center
-          (om/build common/sign-up-cta {:source"enterprise-landing"})]]
+          [:a.btn.btn-cta.btn-success {:href (auth-url)
+                                       :role "button"}
+           "Get Started"]]]
         [:div.outer-section]]))))

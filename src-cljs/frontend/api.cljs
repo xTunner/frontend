@@ -1,5 +1,6 @@
 (ns frontend.api
-  (:require [frontend.models.user :as user-model]
+  (:require [clojure.set :as set]
+            [frontend.models.user :as user-model]
             [frontend.models.build :as build-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
@@ -8,13 +9,30 @@
             [goog.string.format]
             [secretary.core :as sec]))
 
+(def build-keys-mapping {:username :org
+                         :reponame :repo
+                         :default_branch :branch})
+
+(defn project-build-id [project]
+  "Takes project hash and filter down to keys that identify the build."
+  (-> project
+      (set/rename-keys build-keys-mapping)
+      (select-keys (vals build-keys-mapping))))
+
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
 
-(defn get-repos [api-ch & {:keys [page]
+(defn get-github-repos [api-ch & {:keys [page]
                            :or {page 1}}]
   (ajax/ajax :get (str "/api/v1/user/repos?page=" page)
-             :repos
+             :github-repos
+             api-ch
+             :context {:page page}))
+
+(defn get-bitbucket-repos [api-ch & {:keys [page]
+                                  :or {page 1}}]
+  (ajax/ajax :get (str "/api/dangerzone/user/repos/bitbucket?page=" page)
+             :bitbucket-repos
              api-ch
              :context {:page page}))
 
@@ -65,10 +83,9 @@
                     :order "asc"}}
     api-ch))
 
-(defn get-projects-builds [build-ids api-ch]
+(defn get-projects-builds [build-ids build-count api-ch]
   (doseq [build-id build-ids
-          :let [url (dashboard-builds-url (merge {:builds-per-page 60}
-                                                 build-id))]]
+          :let [url (dashboard-builds-url (assoc build-id :builds-per-page build-count))]]
     (ajax/ajax :get url :recent-project-builds api-ch :context build-id)))
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]

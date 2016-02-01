@@ -9,7 +9,6 @@
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
@@ -134,11 +133,7 @@
             (when (build-model/display-build-invite build)
               (om/build invites/build-invites
                         (:invite-data data)
-                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
-
-            (when (and (build-model/config-errors? build)
-                       (not (:dismiss-config-errors build-data)))
-              (om/build build-config/config-errors build))]]])))))
+                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))]]])))))
 
 (defn container-result-icon [{:keys [name]} owner]
   (reify
@@ -339,10 +334,13 @@
                                           :build-running? build-running?}))
           (om/build sticky {:content div :content-class "containers"})])))))
 
-(def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
+(def css-trans-group (-> js/React
+                         (aget "addons")
+                         (aget "CSSTransitionGroup")
+                         js/React.createFactory))
 
 (defn transition-group
-  [opts component]
+  [opts & components]
   (let [[group-name enter? leave? appear? class-name]
         (if (map? opts)
           [(:name opts)
@@ -359,7 +357,7 @@
            :transitionAppear appear?
            :component "div"
            :className class-name}
-      component)))
+      components)))
 
 (defn selected-container-index [data]
   (get-in data [:current-build-data :container-data :current-container-id]))
@@ -415,7 +413,7 @@
                                  :enter true
                                  :leave true
                                  :class "build-steps-animator"}
-                                [(om/build build-steps/container-build-steps
+                                (om/build build-steps/container-build-steps
                                            container-data
-                                           {:key :current-container-id})])]])])))))
+                                           {:key :current-container-id}))]])])))))
 

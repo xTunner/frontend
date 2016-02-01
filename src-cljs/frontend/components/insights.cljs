@@ -52,14 +52,12 @@
   (str (utils/uri-to-relative (unexterned-prop build "build_url"))
        "#build-timing"))
 
-(defn visualize-insights-bar! [el builds owner]
+(defn visualize-insights-bar! [plot-info el builds owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
                                               (map %)
                                               (apply max))))
-        y-zero (->> [:height :positive-y%]
-                    (map plot-info)
-                    (apply *))
+        y-zero (apply * ((juxt :height :positive-y%) plot-info))
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-pos-max])
                         (.range #js[y-zero 0]))
@@ -67,7 +65,7 @@
                         (.domain #js[0 y-neg-max])
                         (.range #js[y-zero (:height plot-info)]))
         y-pos-floored-max (datetime/nice-floor-duration y-pos-max)
-        y-pos-tick-values (list y-pos-floored-max 0)
+        y-pos-tick-values [y-pos-floored-max 0]
         y-neg-tick-values [(datetime/nice-floor-duration y-neg-max)]
         [y-pos-axis y-neg-axis] (for [[scale tick-values] [[y-pos-scale y-pos-tick-values]
                                                            [y-neg-scale y-neg-tick-values]]]
@@ -78,13 +76,12 @@
                                       (.tickFormat #(first (datetime/millis-to-float-duration % {:decimals 0})))
                                       (.tickSize 0 0)
                                       (.tickPadding 3)))
-        scale-filler (->> (list (:max-bars plot-info) (count builds))
-                          (apply -)
+        scale-filler (->> (- (:max-bars plot-info) (count builds))
                           range
                           (map (partial str "xx-")))
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
-                              (concat (map :build_num builds) scale-filler)))
+                              (concat scale-filler (map :build_num builds))))
                     (.rangeBands #js[0 (:width plot-info)] 0.4))
         plot (-> js/d3
                  (.select el)
@@ -183,7 +180,8 @@
                       (.append "svg")
                       (.attr #js {"xlink" "http://www.w3.org/1999/xlink"
                                   "width" (:width svg-info)
-                                  "height" (:height svg-info)})
+                                  "height" (:height svg-info)
+                                  "viewBox" (string/join " " [0 0 (:width svg-info) (:height svg-info)])})
                       (.append "g")
                       (.attr "class" "plot-area")
                       (.attr "transform" (gstring/format "translate(%s,%s)"
@@ -212,23 +210,22 @@
           (.attr "class" "y-axis negative axis")))))
 
 (defn filter-chartable-builds [builds]
-  (->> builds
-       (filter build-chartable?)
-       (take (:max-bars plot-info))
-       reverse
-       (map add-queued-time)))
+  (some->> builds
+           (filter build-chartable?)
+           (take (:max-bars plot-info))
+           reverse
+           (map add-queued-time)))
 
-(defn median-builds [builds f]
-  (let [nums (->> builds
-                  (map f)
-                  sort)
+(defn median [xs]
+  (let [nums (sort xs)
         c (count nums)
         mid-i (js/Math.floor (/ c 2))]
-    (if (odd? c)
-      (nth nums mid-i)
-      (/ (+ (nth nums mid-i)
-            (nth nums (dec mid-i)))
-         2))))
+    (cond
+      (zero? c) nil
+      (odd? c) (nth nums mid-i)
+      :else (/ (+ (nth nums mid-i)
+                  (nth nums (dec mid-i)))
+               2))))
 
 (defn project-insights-bar [builds owner]
   (reify
@@ -236,11 +233,11 @@
     (did-mount [_]
       (let [el (om/get-node owner)]
         (insert-skeleton el)
-        (visualize-insights-bar! el builds owner)))
+        (visualize-insights-bar! plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! el builds owner)))
+        (visualize-insights-bar! plot-info el builds owner)))
     om/IRender
     (render [_]
       (html
@@ -268,8 +265,9 @@
                            :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name
             (if (feature/enabled? :insights-dashboard)
-              [:a {:href (routes/v1-insights-dashboard {:org (:username project)
-                                                        :repo (:reponame project)})}
+              [:a {:href (routes/v1-insights-project {:org (:username project)
+                                                      :repo (:reponame project)
+                                                      :branch (:default_branch project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon
@@ -293,13 +291,13 @@
                 (list
                  [:div.above-info
                   [:dl
-                   [:dt "MEDIAN BUILD"]
-                   [:dd (datetime/as-duration (median-builds chartable-builds :build_time_millis))]]
+                   [:dt "median build"]
+                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds)))]]
                   [:dl
-                   [:dt "MEDIAN QUEUE"]
-                   [:dd (datetime/as-duration (median-builds chartable-builds :queued_time_millis))]]
+                   [:dt "median queue"]
+                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds)))]]
                   [:dl
-                   [:dt "LAST BUILD"]
+                   [:dt "last build"]
                    [:dd (om/build common/updating-duration
                                   {:start (->> chartable-builds
                                                reverse
@@ -311,10 +309,10 @@
                  (om/build project-insights-bar chartable-builds)
                  [:div.below-info
                   [:dl
-                   [:dt "BRANCHES"]
+                   [:dt "branches"]
                    [:dd (-> branches keys count)]]
                   [:dl
-                   [:dt "PARALLELISM"]
+                   [:dt "parallelism"]
                    [:dd parallel]]]))])))))
 
 (defrender no-projects [data owner]
@@ -396,11 +394,6 @@
       [:div.blocks-container
        (om/build-all project-insights sorted-projects)]])))
 
-(defrender single-project-insights [project owner]
-  (html
-   [:div
-    [:div.content (om/build project-insights project)]]))
-
 (defrender build-insights [state owner]
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
@@ -416,14 +409,6 @@
         ;; User has no projects
         (empty? projects)
         (om/build no-projects state)
-
-        ;; User is looking at a single project
-        (some? (:repo navigation-data))
-        (om/build single-project-insights (->> projects
-                                               (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                             (= (:username %) (:org navigation-data))))
-                                               first
-                                               decorate))
 
         ;; User is looking at all projects
         :else
