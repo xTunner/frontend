@@ -3,6 +3,7 @@
             [frontend.components.insights :as insights]
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html defrender]]))
@@ -92,7 +93,9 @@
           [:dl
            [:dt "parallelism"]
            [:dd parallel
-            [:button.btn.btn-xs.btn-default
+            [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-subpage {:org (:username project)
+                                                                                   :repo (:reponame project)
+                                                                                   :subpage "parallel-builds"})}
              [:i.material-icons "tune"]]]]]]
         [:div.card
          (om/build project-insights-bar chartable-builds)]]))))
