@@ -34,8 +34,8 @@
 
 (defn set-current-token!
   "Lets us keep track of the history state, so that we don't dispatch twice on the same URL"
-  [history-imp & [token]]
-  (set! (.-_current_token history-imp) (or token (.getToken history-imp))))
+  [history-imp]
+  (set! (.-_current_token history-imp) (.getToken history-imp)))
 
 (defn setup-dispatcher! [history-imp]
   (events/listen history-imp goog.history.EventType.NAVIGATE
@@ -62,7 +62,7 @@
                    #(if (= (.getToken history-imp)
                            (.-_current_token history-imp))
                       (utils/mlog "Ignoring duplicate dispatch event to" (.getToken history-imp))
-                      (.onHistoryEvent_ history-imp)))))
+                      (.onHistoryEvent_ history-imp %)))))
 
 (defn route-fragment
   "Returns the route fragment if this is a route that we've don't dispatch
