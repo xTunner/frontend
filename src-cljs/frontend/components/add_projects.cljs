@@ -283,13 +283,14 @@
         (html
           [:div.proj-wrapper
            [:div.tabbed-wrapper
-            [:ul.nav.nav-tabs
-             [:li {:class (when (= selected-tab :linux) "active")}
-              [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
-               [:i.fa.fa-linux.fa-lg] "Linux"]]
-             [:li {:class (when (= selected-tab :osx) "active")}
-              [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
-               [:i.fa.fa-apple.fa-lg] " iOS"]]]
+            (when osx-enabled?
+              [:ul.nav.nav-tabs
+               [:li {:class (when (= selected-tab :linux) "active")}
+                [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
+                 [:i.fa.fa-linux.fa-lg] "Linux"]]
+               [:li {:class (when (= selected-tab :osx) "active")}
+                [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
+                 [:i.fa.fa-apple.fa-lg] " iOS"]]])
             (if selected-org-login
               (let [;; we display a repo if it belongs to this org, matches the filter string,
                     ;; and matches the fork settings.
@@ -510,6 +511,7 @@
        (om/build repo-lists {:user user
                              :repos repos
                              :selected-org selected-org
+                             :osx-enabled? (get-in data state/org-osx-beta-path)
                              :settings settings})
        [:hr]
        ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
