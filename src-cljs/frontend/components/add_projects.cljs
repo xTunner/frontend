@@ -268,36 +268,39 @@
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
 
-(defrender main [{:keys [user repos selected-org settings] :as data} owner]
-  (let [selected-org-login (:login selected-org)
-        loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
-        repo-filter-string (get-in settings [:add-projects :repo-filter-string])
-        show-forks (true? (get-in settings [:add-projects :show-forks]))]
-    (html
-     [:div.proj-wrapper
-      (if selected-org-login
-        (let [;; we display a repo if it belongs to this org, matches the filter string,
-              ;; and matches the fork settings.
-              display? (fn [repo]
-                         (and
-                          (or show-forks (not (:fork repo)))
-                          (select-vcs-type (or (:vcs-type selected-org)
-                                               "github") repo)
-                          (= (:username repo) selected-org-login)
-                          (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-              filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
-          [:div (om/build repo-filter settings)
-           (if (empty? filtered-repos)
-             (if loading-repos?
-               [:div.loading-spinner common/spinner]
-               [:div.add-repos
-                (if repo-filter-string
-                  (str "No matching repos for organization " selected-org-login)
-                  (str "No repos found for organization " selected-org-login))])
-             [:ul.proj-list.list-unstyled
-              (for [repo filtered-repos]
-                (om/build repo-item {:repo repo :settings settings}))])])
-        repos-explanation)])))
+(defn repo-lists [{:keys [user repos selected-org settings] :as data} owner]
+  (reify
+    om/IRenderState
+    (render-state [_ _]
+      (let [selected-org-login (:login selected-org)
+            loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
+            repo-filter-string (get-in settings [:add-projects :repo-filter-string])
+            show-forks (true? (get-in settings [:add-projects :show-forks]))]
+        (html
+          [:div.proj-wrapper
+           (if selected-org-login
+             (let [;; we display a repo if it belongs to this org, matches the filter string,
+                   ;; and matches the fork settings.
+                   display? (fn [repo]
+                              (and
+                                (or show-forks (not (:fork repo)))
+                                (select-vcs-type (or (:vcs-type selected-org)
+                                                     "github") repo)
+                                (= (:username repo) selected-org-login)
+                                (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
+                   filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
+               [:div (om/build repo-filter settings)
+                (if (empty? filtered-repos)
+                  (if loading-repos?
+                    [:div.loading-spinner common/spinner]
+                    [:div.add-repos
+                     (if repo-filter-string
+                       (str "No matching repos for organization " selected-org-login)
+                       (str "No repos found for organization " selected-org-login))])
+                  [:ul.proj-list.list-unstyled
+                   (for [repo filtered-repos]
+                     (om/build repo-item {:repo repo :settings settings}))])])
+             repos-explanation)])))))
 
 (defn inaccessible-follows
   "Any repo we follow where the org isn't in our set of orgs is either: an org
@@ -492,7 +495,7 @@
        [:div.overview
         [:span.big-number "2"]
         [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
-       (om/build main {:user user
+       (om/build repo-lists {:user user
                        :repos repos
                        :selected-org selected-org
                        :settings settings})
