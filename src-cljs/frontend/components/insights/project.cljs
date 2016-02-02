@@ -68,6 +68,8 @@
                                          :columns [(concat ["date"] (map first build-times))
                                                    (concat ["Build Times"] (map last build-times))]}
                                   :legend {:hide true}
+                                  :grid {:y {:show true}}
+                                  :zoom {:enabled true}
                                   :axis {:x {:type "timeseries"
                                              :tick {:format "%m/%d"}}}}))))
     om/IRender
