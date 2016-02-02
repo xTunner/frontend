@@ -268,39 +268,51 @@
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
 
-(defn repo-lists [{:keys [user repos selected-org settings] :as data} owner]
+(defn repo-lists [{:keys [user repos selected-org settings osx-enabled?] :as data} owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:selected-tab :linux})
+
     om/IRenderState
-    (render-state [_ _]
+    (render-state [_ {:keys [selected-tab]}]
       (let [selected-org-login (:login selected-org)
             loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])
             show-forks (true? (get-in settings [:add-projects :show-forks]))]
         (html
           [:div.proj-wrapper
-           (if selected-org-login
-             (let [;; we display a repo if it belongs to this org, matches the filter string,
-                   ;; and matches the fork settings.
-                   display? (fn [repo]
-                              (and
-                                (or show-forks (not (:fork repo)))
-                                (select-vcs-type (or (:vcs-type selected-org)
-                                                     "github") repo)
-                                (= (:username repo) selected-org-login)
-                                (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-                   filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
-               [:div (om/build repo-filter settings)
-                (if (empty? filtered-repos)
-                  (if loading-repos?
-                    [:div.loading-spinner common/spinner]
-                    [:div.add-repos
-                     (if repo-filter-string
-                       (str "No matching repos for organization " selected-org-login)
-                       (str "No repos found for organization " selected-org-login))])
-                  [:ul.proj-list.list-unstyled
-                   (for [repo filtered-repos]
-                     (om/build repo-item {:repo repo :settings settings}))])])
-             repos-explanation)])))))
+           [:div.tabbed-wrapper
+            [:ul.nav.nav-tabs
+             [:li {:class (when (= selected-tab :linux) "active")}
+              [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
+               [:i.fa.fa-linux.fa-lg] "Linux"]]
+             [:li {:class (when (= selected-tab :osx) "active")}
+              [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
+               [:i.fa.fa-apple.fa-lg] " iOS"]]]
+            (if selected-org-login
+              (let [;; we display a repo if it belongs to this org, matches the filter string,
+                    ;; and matches the fork settings.
+                    display? (fn [repo]
+                               (and
+                                 (or show-forks (not (:fork repo)))
+                                 (select-vcs-type (or (:vcs-type selected-org)
+                                                      "github") repo)
+                                 (= (:username repo) selected-org-login)
+                                 (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
+                    filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
+                [:div (om/build repo-filter settings)
+                 (if (empty? filtered-repos)
+                   (if loading-repos?
+                     [:div.loading-spinner common/spinner]
+                     [:div.add-repos
+                      (if repo-filter-string
+                        (str "No matching repos for organization " selected-org-login)
+                        (str "No repos found for organization " selected-org-login))])
+                   [:ul.proj-list.list-unstyled
+                    (for [repo filtered-repos]
+                      (om/build repo-item {:repo repo :settings settings}))])])
+              repos-explanation)]])))))
 
 (defn inaccessible-follows
   "Any repo we follow where the org isn't in our set of orgs is either: an org
@@ -496,9 +508,9 @@
         [:span.big-number "2"]
         [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
        (om/build repo-lists {:user user
-                       :repos repos
-                       :selected-org selected-org
-                       :settings settings})
+                             :repos repos
+                             :selected-org selected-org
+                             :settings settings})
        [:hr]
        ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
        ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then
