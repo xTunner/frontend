@@ -5,4 +5,4 @@
   --no-first-run \
   https://prod.circlehost:4443 &
 
-lein with-profile devtools repl
+lein with-profile +devtools repl
