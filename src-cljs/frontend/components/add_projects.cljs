@@ -20,7 +20,8 @@
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [frontend.models.plan :as pm])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
@@ -268,7 +269,23 @@
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
 
-(defn repo-lists [{:keys [user repos selected-org settings osx-enabled?] :as data} owner]
+(defn repo-list [{:keys [repos loading-repos? repo-filter-string selected-org-login settings]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (if (empty? repos)
+          (if loading-repos?
+            [:div.loading-spinner common/spinner]
+            [:div.add-repos
+             (if repo-filter-string
+               (str "No matching repos for organization " selected-org-login)
+               (str "No repos found for organization " selected-org-login))])
+          [:ul.proj-list.list-unstyled
+           (for [repo repos]
+             (om/build repo-item {:repo repo :settings settings}))])))))
+
+(defn repo-lists [{:keys [user repos selected-org osx-enabled? selected-plan settings] :as data} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -301,18 +318,27 @@
                                                       "github") repo)
                                  (= (:username repo) selected-org-login)
                                  (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-                    filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
-                [:div (om/build repo-filter settings)
-                 (if (empty? filtered-repos)
-                   (if loading-repos?
-                     [:div.loading-spinner common/spinner]
-                     [:div.add-repos
-                      (if repo-filter-string
-                        (str "No matching repos for organization " selected-org-login)
-                        (str "No repos found for organization " selected-org-login))])
-                   [:ul.proj-list.list-unstyled
-                    (for [repo filtered-repos]
-                      (om/build repo-item {:repo repo :settings settings}))])])
+                    filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))
+                    osx-repos (->> filtered-repos (filter repo-model/likely-osx-repo?))
+                    linux-repos (->> filtered-repos (remove repo-model/likely-osx-repo?))]
+                [:div
+                 (om/build repo-filter settings)
+                 (condp = selected-tab
+                   :linux
+                   (om/build repo-list {:repos (if (and osx-enabled? (pm/osx? selected-plan)) ; Allows mistaken ios repos to still be built.
+                                                 linux-repos
+                                                 filtered-repos)
+                                        :loading-repos? loading-repos?
+                                        :repo-filter-string repo-filter-string
+                                        :selected-org-login selected-org-login
+                                        :settings settings})
+
+                   :osx
+                   (om/build repo-list {:repos osx-repos
+                                        :loading-repos? loading-repos?
+                                        :repo-filter-string repo-filter-string
+                                        :selected-org-login selected-org-login
+                                        :settings settings}))])
               repos-explanation)]])))))
 
 (defn inaccessible-follows
@@ -512,6 +538,7 @@
                              :repos repos
                              :selected-org selected-org
                              :osx-enabled? (get-in data state/org-osx-beta-path)
+                             :selected-plan (get-in data state/org-plan-path)
                              :settings settings})
        [:hr]
        ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
