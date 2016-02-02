@@ -210,7 +210,8 @@
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
-                                                                             :build-num build-num})
+                                                                             :build-num build-num
+                                                                             :vcs-type vcs_type})
                              :messages pusher/build-messages}]))
   (set-page-title! (str project-name " #" build-num)))
 
