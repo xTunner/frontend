@@ -119,7 +119,7 @@
                                        :init (do
                                                (require 'dirac.agent)
                                                (dirac.agent/boot!))}
-                        :env {:devtools true}
+                        :env {:devtools "true"}
                         :cljsbuild {:builds {:dev {:source-paths ["devtools"]}}}
                         :dependencies [[binaryage/devtools "0.5.2"]
                                        [binaryage/dirac "0.1.3"]]}})
