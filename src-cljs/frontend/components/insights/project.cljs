@@ -122,6 +122,12 @@
             [:button.btn.btn-xs.btn-default
              [:i.material-icons "tune"]]]]]]
         [:div.card
-         (om/build build-time-bar-chart chartable-builds)]
+         [:div.card-header
+          [:h3 "Build Timing"]]
+         [:div.card-body
+          (om/build build-time-bar-chart chartable-builds)]]
         [:div.card
-         (om/build build-time-line-chart chartable-builds)]]))))
+         [:div.card-header
+          [:h3 "Build Performance"]]
+         [:div.card-body
+          (om/build build-time-line-chart chartable-builds)]]]))))
