@@ -48,14 +48,23 @@
              api-ch))
 
 (defn get-usage-queue [build api-ch]
-  (ajax/ajax :get
-             (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
-                             (vcs-url/org-name (:vcs_url build))
-                             (vcs-url/repo-name (:vcs_url build))
-                             (:build_num build))
-             :usage-queue
-             api-ch
-             :context (build-model/id build)))
+  (let [vcs-type (:vcs_type build)
+        usage-queue-url (case vcs-type
+                          "github" (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
+                                                   (vcs-url/org-name (:vcs_url build))
+                                                   (vcs-url/repo-name (:vcs_url build))
+                                                   (:build_num build))
+                          "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/%s/usage-queue"
+                                                      vcs-type
+                                                      (vcs-url/org-name (:vcs_url build))
+                                                      (vcs-url/repo-name (:vcs_url build))
+                                                      (:build_num build))
+                          (print "got default handler"))]
+    (ajax/ajax :get
+               usage-queue-url
+               :usage-queue
+               api-ch
+               :context (build-model/id build))))
 
 ;; Note that dashboard-builds-url can take a :page (within :query-params)
 ;; and :builds-per-page, or :limit and :offset directly.
