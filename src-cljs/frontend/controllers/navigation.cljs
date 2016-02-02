@@ -173,10 +173,17 @@
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (go (let [build-url (gstring/format "/api/dangerzone/project/%s/%s/%s" (routes/->lengthen-vcs vcs_type) project-name build-num)
+    (go (let [full-vcs-type (routes/->lengthen-vcs vcs_type)
+              build-url (gstring/format "/api/dangerzone/project/%s/%s/%s" full-vcs-type project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
-              scopes (:scopes api-result)]
+              scopes (:scopes api-result)
+              settings-url (case full-vcs-type
+                             "github" (gstring/format "/api/v1/project/%s/settings" project-name)
+                             "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/settings" full-vcs-type project-name))
+              plan-url (case full-vcs-type
+                         "github" (gstring/format "/api/v1/project/%s/plan" project-name)
+                         "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/plan" full-vcs-type project-name))]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           ;; Start 404'ing on non-existent builds, as well as when you
           ;; try to go to a build page of a project which doesn't
@@ -196,17 +203,19 @@
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
-                       (gstring/format "/api/v1/project/%s/settings" project-name)
+                       settings-url
                        :project-settings
                        api-ch
-                       :context {:project-name project-name}))
+                       :context {:project-name project-name
+                                 :vcs-type full-vcs-type}))
           (when (and (not (get-in current-state state/project-plan-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
-                       (gstring/format "/api/v1/project/%s/plan" project-name)
+                       plan-url
                        :project-plan
                        api-ch
-                       :context {:project-name project-name}))
+                       :context {:project-name project-name
+                                 :vcs-type full-vcs-type}))
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name

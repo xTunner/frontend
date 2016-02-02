@@ -128,13 +128,20 @@
   (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))
 
 (defn get-build-tests [build api-ch]
-  (ajax/ajax :get
-             (gstring/format "/api/v1/project/%s/%s/tests"
-                             (vcs-url/project-name (:vcs_url build))
-                             (:build_num build))
-             :build-tests
-             api-ch
-             :context (build-model/id build)))
+  (let [vcs-type (:vcs_type build)
+        tests-url (case vcs-type
+                    "github" (gstring/format "/api/v1/project/%s/%s/tests"
+                                             (vcs-url/project-name (:vcs_url build))
+                                             (:build_num build))
+                    "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/tests"
+                                                vcs-type
+                                                (vcs-url/project-name (:vcs_url build))
+                                                (:build_num build)))]
+    (ajax/ajax :get
+               tests-url
+               :build-tests
+               api-ch
+               :context (build-model/id build))))
 
 (defn get-build-state [api-ch]
   (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
