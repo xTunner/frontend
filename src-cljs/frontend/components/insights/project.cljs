@@ -64,6 +64,7 @@
                              (group-by #(-> % :start_time time-format/parse time/at-midnight) builds))]
         (js/c3.generate (clj->js {:bindto el
                                   :data {:x "date"
+                                         :type "spline"
                                          :columns [(concat ["date"] (map first build-times))
                                                    (concat ["Build Times"] (map last build-times))]}
                                   :legend {:hide true}
