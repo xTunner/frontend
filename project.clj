@@ -34,9 +34,8 @@
                  [com.cemerick/clojurescript.test "0.3.0"]
                  [org.clojure/tools.reader "0.9.2"]
 
-                 ;; Dirac DevTools
-                 [environ "1.0.1"]
-                 [binaryage/dirac "0.1.3"]]
+                 ;; For Dirac DevTools
+                 [environ "1.0.1"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
@@ -122,4 +121,5 @@
                                                (dirac.agent/boot!))}
                         :env {:devtools true}
                         :cljsbuild {:builds {:dev {:source-paths ["devtools"]}}}
-                        :dependencies [[binaryage/devtools "0.5.2"]]}})
+                        :dependencies [[binaryage/devtools "0.5.2"]
+                                       [binaryage/dirac "0.1.3"]]}})
