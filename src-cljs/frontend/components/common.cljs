@@ -5,12 +5,10 @@
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.feature :as feature]
-            [frontend.models.user :as user]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]
             [frontend.timer :as timer]
-            [frontend.elevio :as elevio]
             [goog.dom.DomHelper]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -21,14 +19,10 @@
 
 (defn contact-support-a-info [owner & {:keys [tags]
                                        :or {tags [:support-dialog-raised]}}]
-  (if user/support-eligible?
-    (if (or (elevio/broken?)
-            (not (config/elevio-enabled?)))
-      {:href (str "mailto:" (config/support-email))
-       :target "_blank"}
-      {:on-click #(raise! owner tags)})
-    {:href "https://discuss.circleci.com/t/community-support/1470"
-     :target "_blank"}))
+  (if (config/intercom-enabled?)
+        {:on-click #(raise! owner tags)}
+        {:href (str "mailto:" (config/support-email))
+         :target "_blank"}))
 
 (defn contact-us-inner [owner]
   [:a (contact-support-a-info owner)
