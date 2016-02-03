@@ -141,11 +141,11 @@
              [:i.material-icons "tune"]]]]]]
         [:div.card
          [:div.card-header
-          [:h3 "Build Timing"]]
+          [:h2 "Build Timing"]]
          [:div.card-body
           (om/build build-time-bar-chart chartable-builds)]]
         [:div.card
          [:div.card-header
-          [:h3 "Build Performance"]]
+          [:h2 "Build Performance"]]
          [:div.card-body
           (om/build build-time-line-chart chartable-builds)]]]))))

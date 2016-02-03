@@ -70,7 +70,7 @@
                                   users)]
         (html
          [:div.users
-          [:h2
+          [:h1
            "CircleCI users in the " org-name " organization"]
           [:div
            (if-not (seq users)
@@ -86,7 +86,7 @@
 
                [:div.om-org-user-projects-container
                 [:div.om-org-user-projects
-                 [:h4.heading
+                 [:h3.heading
                   [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
                   (if (seq followed-projects)
                     (str login " is following:")
@@ -128,9 +128,9 @@
         (html
          [:div
           [:div.followed-projects.row-fluid
-           [:h2 "Followed projects"]
+           [:h1 "Followed projects"]
            (if-not (seq followed-projects)
-             [:h4 "No followed projects found."]
+             [:h3 "No followed projects found."]
 
              [:div.span8
               (for [project followed-projects
@@ -153,9 +153,9 @@
                       [:i.material-icons "settings"]]]]
                   (om/build followers-container (:followers project))]])])]
           [:div.row-fluid
-           [:h2 "Untested repos"]
+           [:h1 "Untested repos"]
            (if-not (seq unfollowed-projects)
-             [:h4 "No untested repos found."]
+             [:h3 "No untested repos found."]
 
              [:div.span8
               (for [project unfollowed-projects
@@ -642,10 +642,10 @@
       (html
         (let [card (get-in app state/stripe-card-path)]
           (if-not (and card checkout-loaded?)
-            [:div.card.row-fluid [:legend.span8 "Card on file"]
+            [:div.row-fluid [:legend.span8 "Card on file"]
              [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
             [:div
-              [:div.card.row-fluid [:legend.span8 "Card on file"]]
+              [:div.row-fluid [:legend.span8 "Card on file"]]
               [:div.row-fluid
                [:div.offset1.span6
                 [:table.table.table-condensed
@@ -907,7 +907,7 @@
            [:div.bottom-value
             [:p.value-prop "Your cancelation will be effective immediately"]]
           [:div.row-fluid
-           [:h3
+           [:h1
             {:data-bind "attr: {alt: cancelFormErrorText}"}
             "Please tell us why you're canceling. This helps us make Circle better!"]
            [:form
@@ -1012,7 +1012,7 @@
     (render [_]
       (html
         [:div
-         [:h4 "iOS"]
+         [:h2 "iOS"]
          [:p "You are in the iOS limited-release, you may also choose an iOS plan "
           [:a {:href "#containers"} "here"] "."]
          (when (pm/osx? plan)
@@ -1043,7 +1043,7 @@
           [:p "This organization's projects will build under "
            [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
             (:org_name plan) "'s plan."]])
-        [:h4 "Linux"]
+        [:h2 "Linux"]
         (cond (> containers 1)
               [:p (str "All Linux builds will be distributed across " containers " containers.")]
               (= containers 1)
