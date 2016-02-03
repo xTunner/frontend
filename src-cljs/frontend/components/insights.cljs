@@ -28,15 +28,12 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
-
-(def svg-info
+(def plot-info
   {:top 10
    :right 10
    :bottom 10
-   :left 30})
-
-(def plot-info
-  {:max-bars 55
+   :left 30
+   :max-bars 55
    :positive-y% 0.6})
 
 (defn add-queued-time [build]
@@ -63,10 +60,13 @@
                 ;; Set the SVG up to redraw itself when it resizes.
                 (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds owner))))
         svg-bounds (-> svg
-                      ffirst
-                      .getBoundingClientRect)
-        width (- (.-width svg-bounds) (:left svg-info) (:right svg-info))
-        height (- (.-height svg-bounds) (:top svg-info) (:bottom svg-info))
+                       ffirst
+                       .getBoundingClientRect)
+
+        ;; The width and height of the area we'll draw the bars in. (Excludes,
+        ;; for instance, the Y-axis labels on the left.)
+        width (- (.-width svg-bounds) (:left plot-info) (:right plot-info))
+        height (- (.-height svg-bounds) (:top plot-info) (:bottom plot-info))
 
         y-zero (* height (:positive-y% plot-info))
         y-pos-scale (-> (js/d3.scale.linear)
@@ -184,7 +184,7 @@
                     "x1" 0
                     "x2" width}))))
 
-(defn insert-skeleton [el]
+(defn insert-skeleton [plot-info el]
   (let [svg (-> js/d3
                 (.select el)
                 (.append "svg"))
@@ -193,8 +193,8 @@
                       (.append "g")
                       (.attr "class" "plot-area")
                       (.attr "transform" (gstring/format "translate(%s,%s)"
-                                                         (:left svg-info)
-                                                         (:top svg-info))))]
+                                                         (:left plot-info)
+                                                         (:top plot-info))))]
 
     ;; Call the svg's "redraw-fn" (if set) whenever the svg resizes.
     ;;
@@ -259,7 +259,7 @@
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)]
-        (insert-skeleton el)
+        (insert-skeleton plot-info el)
         (visualize-insights-bar! plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
