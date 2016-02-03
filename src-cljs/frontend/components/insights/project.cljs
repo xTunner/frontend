@@ -92,7 +92,7 @@
        [:div.loading-spinner-big common/spinner]
 
        ;; We have data to show.
-       [:div.project-insights
+       [:div.insights-project
         [:div.insights-metadata-header
          [:div.card.insights-metadata
           [:dl

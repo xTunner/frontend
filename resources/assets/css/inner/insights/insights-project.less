@@ -1,4 +1,4 @@
-.project-insights {
+.insights-project {
   margin-top: 15px;
 
   .insights-metadata-header {
@@ -48,6 +48,19 @@
     > svg {
       width: 100%;
       height: auto;
+    }
+
+    .axis line,
+    .grid-lines line.horizontal {
+      stroke-width: .6;
+    }
+
+    .y-axis {
+      .tick {
+        text {
+          font-size: 5px;
+        }
+      }
     }
   }
 }
