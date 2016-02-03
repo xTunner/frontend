@@ -30,9 +30,10 @@
 
 
 (def svg-info
-  {:width 425
-   :height 100
-   :top 10, :right 10, :bottom 10, :left 30})
+  {:top 10
+   :right 10
+   :bottom 10
+   :left 30})
 
 (def plot-info
   {:max-bars 55
@@ -188,9 +189,7 @@
                 (.select el)
                 (.append "svg"))
         plot-area (-> svg
-                      (.attr #js {"xlink" "http://www.w3.org/1999/xlink"
-                                  "width" (:width svg-info)
-                                  "height" (:height svg-info)})
+                      (.attr #js {"xlink" "http://www.w3.org/1999/xlink"})
                       (.append "g")
                       (.attr "class" "plot-area")
                       (.attr "transform" (gstring/format "translate(%s,%s)"
