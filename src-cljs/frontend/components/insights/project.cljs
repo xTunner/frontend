@@ -66,7 +66,7 @@
                                   :data {:x "date"
                                          :type "spline"
                                          :columns [(concat ["date"] (map first build-times))
-                                                   (concat ["Build Times"] (map last build-times))]}
+                                                   (concat ["Median Build Time"] (map last build-times))]}
                                   :legend {:hide true}
                                   :grid {:y {:show true}}
                                   :zoom {:enabled true}
