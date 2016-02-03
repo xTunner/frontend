@@ -109,12 +109,15 @@
     (apply str (v1-org-settings params)
          (when-let [subpage (:subpage params)]
            ["#" subpage])))
-  (defroute v1-org-dashboard-alternative "/:vcs_type/organizations/:org" {:as params}
-    (open-to-inner! nav-ch :dashboard (->short-vcs params)))
+  (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org]
+    (open-to-inner! nav-ch :dashboard (->short-vcs {:vcs_type short-vcs-type
+                                                    :org org})))
   (defroute v1-org-dashboard #"/(gh|bb)/([^/]+)" [short-vcs-type org]
     (open-to-inner! nav-ch :dashboard (->short-vcs {:vcs_type short-vcs-type :org org})))
-  (defroute v1-project-dashboard "/:vcs_type/:org/:repo" {:as params}
-    (open-to-inner! nav-ch :dashboard (->short-vcs params)))
+  (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo]
+    (open-to-inner! nav-ch :dashboard (->short-vcs {:vcs_type short-vcs-type
+                                                    :org org
+                                                    :repo repo})))
   (defroute v1-project-branch-dashboard #"/([^/]+)/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
     [vcs_type org repo branch args]
     (open-to-inner! nav-ch :dashboard (merge args {:vcs_type (->short-vcs vcs_type)
@@ -131,9 +134,8 @@
                                      :org org
                                      :repo repo
                                      :tab (keyword _fragment)})))
-  (defroute v1-project-settings "/:vcs_type/:org/:repo/edit"
-    [vcs_type org repo _fragment]
-    (open-to-inner! nav-ch :project-settings {:vcs_type (->short-vcs vcs_type)
+  (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _fragment]
+    (open-to-inner! nav-ch :project-settings {:vcs_type (->short-vcs short-vcs-type)
                                               :project-name (str org "/" repo)
                                               :subpage (keyword _fragment)
                                               :org org
