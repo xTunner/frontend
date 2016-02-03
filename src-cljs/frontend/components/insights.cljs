@@ -21,6 +21,7 @@
             [frontend.routes :as routes]
             [goog.string :as gstring]
             [goog.string.format]
+            [goog.events :as gevents]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.models.build :as build])
@@ -34,10 +35,8 @@
    :top 10, :right 10, :bottom 10, :left 30})
 
 (def plot-info
-  {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
-   :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
-   :max-bars 55
-   :positive-y% 0.60})
+  {:max-bars 55
+   :positive-y% 0.6})
 
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
@@ -57,13 +56,24 @@
                                    (map #(->> builds
                                               (map %)
                                               (apply max))))
-        y-zero (apply * ((juxt :height :positive-y%) plot-info))
+        svg (-> js/d3
+                (.select el)
+                (.select "svg")
+                ;; Set the SVG up to redraw itself when it resizes.
+                (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds owner))))
+        svg-bounds (-> svg
+                      ffirst
+                      .getBoundingClientRect)
+        width (- (.-width svg-bounds) (:left svg-info) (:right svg-info))
+        height (- (.-height svg-bounds) (:top svg-info) (:bottom svg-info))
+
+        y-zero (* height (:positive-y% plot-info))
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-pos-max])
                         (.range #js[y-zero 0]))
         y-neg-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-neg-max])
-                        (.range #js[y-zero (:height plot-info)]))
+                        (.range #js[y-zero height]))
         y-pos-floored-max (datetime/nice-floor-duration y-pos-max)
         y-pos-tick-values [y-pos-floored-max 0]
         y-neg-tick-values [(datetime/nice-floor-duration y-neg-max)]
@@ -82,10 +92,9 @@
         x-scale (-> (js/d3.scale.ordinal)
                     (.domain (clj->js
                               (concat scale-filler (map :build_num builds))))
-                    (.rangeBands #js[0 (:width plot-info)] 0.4))
-        plot (-> js/d3
-                 (.select el)
-                 (.select "svg g.plot-area"))
+                    (.rangeBands #js[0 width] 0.4))
+        plot (-> svg
+                 (.select "g.plot-area"))
         bars-join (-> plot
                       (.select "g > g.bars")
                       (.selectAll "g.bar-pair")
@@ -160,7 +169,7 @@
         (.attr #js {"y1" y-zero
                     "y2" y-zero
                     "x1" 0
-                    "x2" (:width plot-info)}))
+                    "x2" width}))
 
     ;; grid lines enter
     (-> grid-lines-join
@@ -172,21 +181,40 @@
                     "y1" (fn [y] y)
                     "y2" (fn [y] y)
                     "x1" 0
-                    "x2" (:width plot-info)}))))
+                    "x2" width}))))
 
 (defn insert-skeleton [el]
-  (let [plot-area (-> js/d3
-                      (.select el)
-                      (.append "svg")
+  (let [svg (-> js/d3
+                (.select el)
+                (.append "svg"))
+        plot-area (-> svg
                       (.attr #js {"xlink" "http://www.w3.org/1999/xlink"
                                   "width" (:width svg-info)
-                                  "height" (:height svg-info)
-                                  "viewBox" (string/join " " [0 0 (:width svg-info) (:height svg-info)])})
+                                  "height" (:height svg-info)})
                       (.append "g")
                       (.attr "class" "plot-area")
                       (.attr "transform" (gstring/format "translate(%s,%s)"
                                                          (:left svg-info)
                                                          (:top svg-info))))]
+
+    ;; Call the svg's "redraw-fn" (if set) whenever the svg resizes.
+    ;;
+    ;; There's no reliable way to get the svg to fire an event when it resizes.
+    ;; There's an SVGResize event that sometimes works, and a resize event that
+    ;; sometimes works, and an onresize attribute that sometimes works. The one
+    ;; thing that works consistently is adding an invisible iframe pinned to the
+    ;; size of the svg and listening to *its* resize event.
+    (-> svg
+        (.append "foreignObject")
+        (.style #js {:width "100%"
+                     :height "100%"})
+        (.append "xhtml:iframe")
+        (.style #js {:width "100%"
+                     :height "100%"
+                     :visibility "hidden"})
+        ffirst
+        .-contentWindow
+        (gevents/listen "resize" #(when-let [redraw-fn (.property svg "redraw-fn")] (redraw-fn))))
 
     (-> plot-area
         (.append "g")
