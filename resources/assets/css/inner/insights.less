@@ -3,14 +3,6 @@
 @tick-color: #999999;
 @spinner-height: 172px;
 
-&.ui-v2 #build-insights .no-projects-block {
-  background-color: @block-background-color-v2;
-
-  .content {
-    color: @gray-dark-v2;
-  }
-}
-
 #build-insights {
   @block-width: 425px;
   @chart-padding-left: 30px;
@@ -53,14 +45,14 @@
   .no-projects-block {
     margin: 15px;
     padding: 10px;
-    background-color: @white;
+    background-color: @block-background-color-v2;
 
     .content {
       background: url('@{imgPath}/empty-state-insights@2x.png') no-repeat center center;
       background-size: contain;
       height: @standardBlockSize + 40px;
       font-size: @fontSizeLarge;
-      color: @grayDark;
+      color: @gray-dark-v2;
 
       .header {
         font-weight: bolder;
@@ -84,7 +76,7 @@
   }
 
   .project-header {
-    @header-icon-color: @gray-lighter-v2;
+    @header-icon-color: @grayDark;
     .flexy(center, row);
     justify-content: center;
 
@@ -94,24 +86,12 @@
       padding-bottom: 2px;
     }
 
-    .fa-github {
+    .octicon,
+    .material-icons {
       font-size: 18px;
-      color: @header-icon-color;
-      margin-right: 7px;
-    }
-
-    .settings-icon {
-      svg {
-	width: 16px;
-	height: 16px;
-	margin-bottom: 1px;
-
-	stroke: @header-icon-color;
-
-	path:first-child {
-	  stroke-width: 8;
-	}
-      }
+      color: @grayLight;
+      margin-left: 1ex;
+      vertical-align: middle;
     }
   }
 
@@ -154,14 +134,15 @@
     h4 {
       font-size: 13px;
       color: #333;
-      margin: 15px 0 8px;
-      padding-left: @chart-padding-left;
+      margin: 0;
+      padding: 15px;
+      padding-bottom: 0;
+
     }
 
     .above-info, .below-info {
       .flexy(center, space-around, row);
-      padding-left: @chart-padding-left;
-      padding-bottom: 10px;
+      padding: 15px;
       width: 100%;
 
       &.below-info dl {
@@ -182,6 +163,7 @@
 
         dt {
           font-weight: inherit;
+          text-transform: uppercase;
         }
 
         dd {
@@ -215,60 +197,62 @@
       font-weight: normal;
     }
   }
+}
 
-  .build-time-visualization {
-    margin: 0 auto;
+.build-time-visualization {
+  margin: 0 auto;
 
-    .axis path,
-    .axis line {
-      fill: none;
-      stroke: #999;
-      shape-rendering: crispEdges;
-    }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #999;
+    shape-rendering: crispEdges;
+  }
 
-    .grid-lines line.horizontal {
-      stroke: #e5e5e5;
-      stroke-opacity: 0.7;
-      shape-rendering: crispEdges;
-    }
+  .grid-lines line.horizontal {
+    stroke: #e5e5e5;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+  }
 
-    .y-axis {
-      .tick {
-        line {
-          visibility: hidden;
-        }
-
-        text {
-          fill: @tick-color;
-          font-size: 10px;
-        }
-      }
-
-      > path.domain {
+  .y-axis {
+    .tick {
+      line {
         visibility: hidden;
       }
-    }
 
-    rect {
-      &.success {
-        fill: #42c88a;
-      }
-
-      &.failed {
-        fill: #ed5c5c;
-      }
-
-      &.canceled {
-        fill: #999999;
-      }
-
-      &.queue {
-        fill: #e6d9f2;
+      text {
+        fill: @tick-color;
+        font-size: 10px;
       }
     }
 
-    .legend text {
-      fill: @gray-light-v2;
+    > path.domain {
+      visibility: hidden;
     }
   }
+
+  rect {
+    &.success {
+      fill: #42c88a;
+    }
+
+    &.failed {
+      fill: #ed5c5c;
+    }
+
+    &.canceled {
+      fill: #999999;
+    }
+
+    &.queue {
+      fill: #e6d9f2;
+    }
+  }
+
+  .legend text {
+    fill: @gray-light-v2;
+  }
 }
+
+@import "insights/project.less";

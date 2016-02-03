@@ -1,12 +1,16 @@
 #settings-api {
-  #api-token {
-    width: @standardBlockSize * 2;
-  }
-  input.btn {
-    .circleButton(@grayLightest, @grayLighter);
-    margin-bottom: 1em;
-  }
   table {
     .skin-table();
+  }
+  .revoke-token {
+    i {
+      margin-right: 4px;
+      font-size: @fontSizeLarge;
+      vertical-align: text-bottom;
+      color: @brand-red-v2;
+    }
+    span {
+      cursor: pointer;
+    }
   }
 }

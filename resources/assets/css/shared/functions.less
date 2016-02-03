@@ -15,50 +15,6 @@
   @{property}: @value;
 }
 
-// old mixins
-// scheduled for demolition
-
-.buttonDark(@buttonColor: #004b64) {
-  text-align: center;
-  margin-left: -4px;
-  border-radius: 4px;
-  background-size: 100%;
-  background-repeat: repeat-x;
-  background-color: @buttonColor;
-  background-image: linear-gradient(to bottom,
-                      fadeout(@white, 95%) 0%,
-                      fadeout(@black, 92%) 100%);
-  border: 1px solid darken(@buttonColor,8%);
-  box-shadow: 0 1px 1px fadeout(@black, 79%);
-  transition: all .3s linear;
-  display: inline-block;
-  padding: 0 1em;
-  white-space: nowrap;
-  line-height: 3em;
-  text-decoration: none;
-  color: darken(@white, 13%);
-  text-shadow: 0 -1px 1px darken(saturate(@buttonColor,8%),13%);
-  .box-sizing(border-box);
-  &:hover {
-    background-size: 300%;
-    background-color: darken(saturate(@buttonColor,3%),3%);
-    border-color: darken(saturate(@buttonColor,3%),3%);
-    box-shadow: 0 0 fadeout(@black, 100%);
-    transition: all .1s ease-in-out;
-    color: @white;
-    text-shadow: 0 0 rgba(0,0,0,0);
-  }
-  &:active {
-    background-size: 300%;
-    background-color: darken(saturate(@buttonColor,5%),8%);
-    border-color: darken(saturate(@buttonColor,3%),3%);
-    box-shadow: 0 2px 3px rgba(0,0,0,.34) inset;
-    transition: all .2s ease-in-out;
-    color: darken(@white, 5%);
-    text-shadow: 0 0 rgba(0,0,0,0);
-  }
-}
-
 // Misc.
 // odds and ends
 
@@ -182,18 +138,6 @@
                1px  0   @color,
               -1px  0   @color,
                0    2px @topShadowColor inset;
-}
-.shadow-noboss () {
-  box-shadow: 0 1px transparent inset, 0 2px 1px transparent;
-}
-.shadow-emboss (@color) {
-  box-shadow: 0 1px lighten(@color, 5) inset, 0 2px 1px fade(@black, 21);
-}
-.shadow-deboss (@color) {
-  box-shadow: 0 -1px lighten(@color, 3) inset, 0 2px 1px fade(@black, 21) inset;
-}
-.underline-deboss () {
-  box-shadow: 0 1px fade(@white, 8), 0 -1px fade(@black, 55) inset;
 }
 
 // Gradients
@@ -334,7 +278,7 @@
 
     &:disabled + label {
       color: @brand-gray-v2;
-      cursor: not-allowed;
+      cursor: text;
     }
   }
 

@@ -1,5 +1,11 @@
 .outer {
   // Typography based on 16px as baseline rather than 14 like inner.
+  @outer-font-family-sans-serif:      'ProximaNova', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+  @outer-font-family-monospace:       RobotoMono-Light, Monaco, Consolas, "Courier New", monospace;
+  @outer-font-family-base:            @font-family-sans-serif;
+
+  font-family: @outer-font-family-sans-serif;
 
   @font-size-base:          16px;
   @font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
@@ -20,6 +26,13 @@
   font-size: @font-size-base;
   line-height: @line-height-base;
 
+  @green: #229922;
+
+  a:hover {
+    -webkit-transition: all 100ms ease-in-out;
+    transition: all 100ms ease-in-out;
+  }
+
   @btn-cta-width: 220px;
   .btn-cta {
     .btn-success;
@@ -39,6 +52,11 @@
     &:focus {
       outline: none;
     }
+  }
+
+  .btn-success {
+    background-color: @green;
+    border-color: @green;
   }
 
   .wide-cta-banner {
@@ -179,23 +197,11 @@
   @import "shared/contact_form.less";
   @import "shared/background.less";
   @import "shared/stories_procedure.less";
-  @import "about/about.less";
-  @import "blog/blog.less";
-  @import "changelog/changelog.less";
-  @import "contact/contact.less";
+  @import "footer.less";
   @import "docs/docs.less";
   @import "error/error.less";
-  @import "jobs/jobs.less";
-  @import "enterprise/enterprise.less";
   @import "privacy/privacy.less";
   @import "privacy/changelog.less";
-  @import "stories/stories.less";
-  @import "languages/languages.less";
-  @import "product_page.less";
-  @import "integrations/integrations.less";
-  @import "features/features.less";
-  @import "press/press.less";
-  @import "mobile.less";
   @import "signup.less";
 
   @import "enterprise_landing.less";

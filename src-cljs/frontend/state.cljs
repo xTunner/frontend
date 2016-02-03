@@ -17,7 +17,6 @@
                          :pay_now_button [true false]
                          :follow_notice [true false]
                          :new_usage_queued_upsell [true false]}
-   :changelog nil
    :environment "development"
    :settings {:projects {}            ; hash of project-id to settings
               :organizations  {:circleci  {:plan {}}}
@@ -135,7 +134,8 @@
 (def repos-path (conj user-path :repos))
 (defn repo-path [repo-index] (conj repos-path repo-index))
 
-(def repos-loading-path (conj user-path :repos-loading))
+(def github-repos-loading-path (conj user-path :repos-loading :github))
+(def bitbucket-repos-loading-path (conj user-path :repos-loading :bitbucket))
 
 (def user-email-prefs-key :basic_email_prefs)
 (def user-email-prefs-path (conj user-path :basic_email_prefs))
@@ -184,6 +184,7 @@
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
+(def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
 
 (def account-subpage-path [:account-settings-subpage])
 (def new-user-token-path (conj user-path :new-user-token))
@@ -197,8 +198,6 @@
 (def modal-video-id-path [:modal-video-id])
 
 (def language-testimonial-tab-path [:selected-language-testimonial-tab])
-
-(def changelog-path [:changelog])
 
 (def build-state-path [:build-state])
 

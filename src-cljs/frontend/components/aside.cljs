@@ -21,12 +21,9 @@
             [frontend.utils.seq :refer [select-in]]
             [goog.style]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [frontend.utils.html :refer [open-ext]])
   (:require-macros [frontend.utils :refer [html]]))
-
-(defn changelog-updated-since?
-  [date]
-  (< date (config/changelog-updated-at)))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -77,71 +74,22 @@
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 
-(defn project-aside [data owner opts]
-  (reify
-    om/IDisplayName (display-name [_] "Aside Project Activity")
-    om/IRender
-    (render [_]
-      (let [login (:login opts)
-            {:keys [project settings collapse-group-id show-activity-time?]} data
-            show-all-branches? (get-in data state/show-all-branches-path)
-            collapse-branches? (get-in data (state/project-branches-collapsed-path collapse-group-id))
-            vcs-url (:vcs_url project)
-            org (vcs-url/org-name vcs-url)
-            repo (vcs-url/repo-name vcs-url)
-            branches-filter (if show-all-branches? identity (partial project-model/personal-branch? {:login login} project))]
-        (html
-         [:ul {:class (when-not collapse-branches? "open")}
-          [:li
-           [:div.project {:role "button"}
-            [:a.toggle {:title "show/hide"
-                        :on-click #(raise! owner [:collapse-branches-toggled {:collapse-group-id collapse-group-id}])}
-             (common/ico :repo)]
-
-            [:a.title {:href (routes/v1-project-dashboard {:org org
-                                                           :repo repo})
-                       :title (project-model/project-name project)}
-             (project-model/project-name project)]
-            (when (and (project-model/can-read-settings? project) (not collapse-branches?))
-             [:a.project-settings-icon {:href (routes/v1-project-settings {:org org :repo repo})
-                                        :title (str "Settings for " org "/" repo)}
-              (common/ico :settings-light)])
-            (when-let [latest-master-build (last (project-model/master-builds project))]
-              (sidebar-build latest-master-build {:org org :repo repo :branch (name (:default_branch project)) :latest? true}))]]
-          (when-not collapse-branches?
-            (for [branch-data (->> project
-                                   :branches
-                                   (filter branches-filter)
-                                   ;; alphabetize
-                                   (sort-by first))]
-              (list
-               (om/build branch
-                         {:branch-data branch-data
-                          :org org
-                          :repo repo}
-                         {:react-key (first branch-data)})
-               (when show-activity-time?
-                 [:li.when
-                  (om/build common/updating-duration
-                            {:start (project-model/most-recent-activity-time (second branch-data))}
-                            {:opts {:formatter datetime/time-ago}})]))))])))))
-
 (defn project-settings-link [project]
   (when (and (project-model/can-read-settings? project))
     [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
                                                                   :repo (:reponame project)})
                                :title (project-model/project-name project)
                                :on-click #(analytics/track "branch-list-project-settings-clicked")}
-     (common/ico :settings-light)]))
+     [:i.material-icons "settings"]]))
 
-(defn branch-list-v2 [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
+(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
   (reify
       om/IDisplayName (display-name [_] "Aside Branch List")
       om/IRender
       (render [_]
         (let [branches-filter (if show-all-branches?
                                 (constantly true)
-                                (partial project-model/personal-branch-v2? login))]
+                                (partial project-model/personal-branch? login))]
           (html
            [:ul.branches
             (for [branch (filter branches-filter branches)]
@@ -162,7 +110,7 @@
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
-                                   :src (-> latest-build build-model/status-icon-v2 common/icon-path)})]
+                                   :src (-> latest-build build-model/status-icon common/icon-path)})]
                    [:.branch-info
                     (when show-project?
                       [:.project-name
@@ -185,12 +133,12 @@
                  (when show-project?
                    (project-settings-link project))]))])))))
 
-(defn project-aside-v2 [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
+(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
     (render [_]
-      (let [{repo-name :reponame} project]
+      (let [repo (project-model/project-name project)]
         (html [:li
                [:.project-heading
                 {:class (when (and (= (vcs-url/org-name (:vcs_url project))
@@ -200,17 +148,18 @@
                                    (not (contains? navigation-data :branch)))
                           "selected")
                  :title (project-model/project-name project)}
-                [:i.fa.rotating-chevron {:class (when (expanded-repos repo-name) "expanded")
+                [:i.fa.rotating-chevron {:class (when (expanded-repos repo) "expanded")
                                          :on-click #(do
-                                                      (raise! owner [:expand-repo-toggled {:repo-name repo-name}])
+                                                      (raise! owner [:expand-repo-toggled {:repo repo}])
                                                       nil)}]
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})
                                   :on-click #(analytics/track "branch-list-project-clicked")}
                  (project-model/project-name project)]
                 (project-settings-link project)]
-               (when (expanded-repos repo-name)
-                 (om/build branch-list-v2
+
+               (when (expanded-repos repo)
+                 (om/build branch-list
                            {:branches (->> project
                                            project-model/branches
                                            (sort-by (comp lower-case name :identifier)))
@@ -265,13 +214,8 @@
       (let [subpage (:project-settings-subpage app :overview)]
         (html
           [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
-           (if (feature/enabled? :ui-v2)
-             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-               (common/ico :fail-light)]
-             [:header
-              [:h5 "Project Settings"]
-              [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-               (common/ico :fail-light)]])
+           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+            (common/ico :fail-light)]
            [:div.aside-user-options
             (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
@@ -282,7 +226,7 @@
    (if-not (pm/can-edit-plan? plan org-name)
      [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
      (concat
-      [{:type :subpage :title "Adjust containers" :href "#containers" :subpage :containers}]
+      [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
       (when (pm/transferrable-or-piggiebackable-plan? plan)
         [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
       (when (pm/paid? plan)
@@ -364,10 +308,6 @@
         branch (:current-branch project)]
     (utils/md5 (str project-id branch))))
 
-(def aside-width 210)
-(def new-aside-width 285)
-
-
 (defn branch-activity-list [app owner opts]
   (reify
     om/IRender
@@ -382,7 +322,7 @@
                                      (partial project-model/personal-recent-project? (:login opts))
                                      identity)]
         (html
-         [:div.aside-activity.open {:class (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")}
+         [:div.aside-activity.open
           [:header
            [:select {:class "toggle-sorting"
                      :name "toggle-sorting"
@@ -412,40 +352,24 @@
             [:label {:for "all-branches"}
              "All"]]]
 
-
-          (if (feature/enabled? :ui-v2)
-            (if sort-branches-by-recency?
-              (om/build branch-list-v2
-                        {:branches (->> projects
-                                        project-model/sort-branches-by-recency-v2
-                                        ;; Arbitrary limit on visible branches.
-                                        (take 100))
-                         :show-all-branches? show-all-branches?
-                         :navigation-data (:navigation-data app)}
-                        {:opts {:login (:login opts)
-                                :show-project? true}})
-              [:ul.projects
-               (for [project (sort project-model/sidebar-sort projects)]
-                 (om/build project-aside-v2
-                           {:project project
-                            :show-all-branches? show-all-branches?
-                            :expanded-repos expanded-repos
-                            :navigation-data (:navigation-data app)}
-                           {:react-key (project-model/id project)
-                            :opts {:login (:login opts)}}))])
-            [:div.projects
-             (for [project (if sort-branches-by-recency?
-                             (->> projects
-                                  project-model/sort-branches-by-recency
-                                  (filter recent-projects-filter)
-                                  (take 100))
-                             (sort project-model/sidebar-sort projects))]
+          (if sort-branches-by-recency?
+            (om/build branch-list
+                      {:branches (->> projects
+                                      project-model/sort-branches-by-recency
+                                      ;; Arbitrary limit on visible branches.
+                                      (take 100))
+                       :show-all-branches? show-all-branches?
+                       :navigation-data (:navigation-data app)}
+                      {:opts {:login (:login opts)
+                              :show-project? true}})
+            [:ul.projects
+             (for [project (sort project-model/sidebar-sort projects)]
                (om/build project-aside
                          {:project project
-                          :settings settings
-                          :collapse-group-id (collapse-group-id project)
-                          :show-activity-time? sort-branches-by-recency?}
-                         {:react-key (collapse-group-id project)
+                          :show-all-branches? show-all-branches?
+                          :expanded-repos expanded-repos
+                          :navigation-data (:navigation-data app)}
+                         {:react-key (project-model/id project)
                           :opts {:login (:login opts)}}))])])))))
 
 (defn aside-menu [app owner opts]
@@ -457,18 +381,11 @@
     (render [_]
       (html
        [:nav.aside-left-menu
-
-        {:class (if (feature/enabled? :ui-v2) "ui-v2" "ui-v1")}
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
         (om/build branch-activity-list app {:opts {:login (:login opts)
                                                    :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
-
-(defn nav-icon
-  [v1 v2]
-  (if (feature/enabled? :ui-v2)
-    [:i {:class v1} v2]))
 
 (defn aside-nav [app owner]
   (reify
@@ -495,36 +412,35 @@
                             :data-trigger "hover"
                             :title "Builds"
                             :href "/"}
-             (nav-icon "material-icons" "storage")
+             [:i.material-icons "storage"]
              [:div.nav-label "Builds"]]
 
             [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
                             :title "Insights"
                             :href "/build-insights"}
-             (nav-icon "material-icons" "assessment")
+             [:i.material-icons "assessment"]
              [:div.nav-label "Insights"]]
 
             [:a.aside-item {:href "/add-projects",
                             :data-placement "right"
                             :data-trigger "hover"
                             :title "Add Projects"}
-             (nav-icon "material-icons" "library_add")
-
-             [:div.nav-label "Projects"]]
+             [:i.material-icons "library_add"]
+             [:div.nav-label "Add Projects"]]
 
             [:a.aside-item {:href "/invite-teammates",
                             :data-placement "right"
                             :data-trigger "hover"
                             :title "Add Teammates"}
-              (nav-icon "material-icons" "group_add")
+              [:i.material-icons "group_add"]
               [:div.nav-label "Team"]]
 
             [:a.aside-item {:data-placement "right"
                                    :data-trigger "hover"
                                    :title "Account Settings"
                                    :href "/account"}
-              (nav-icon "material-icons" "settings")
+              [:i.material-icons "settings"]
               [:div.nav-label "Account Settings"]]
 
             [:hr]
@@ -533,7 +449,7 @@
                             :data-placement "right"
                             :data-trigger "hover"
                             :href "/docs"}
-              (nav-icon "material-icons" "description")
+              [:i.material-icons "description"]
               [:div.nav-label "Docs"]]
 
             [:a.aside-item (merge (common/contact-support-a-info owner)
@@ -541,16 +457,14 @@
                                   :data-placement "right"
                                   :data-trigger "hover"
                                   :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
-              (nav-icon "material-icons" "chat")
+              [:i.material-icons "chat"]
               [:div.nav-label "Support"]]
 
-            [:a.aside-item {:data-placement "right"
-                            :data-trigger "hover"
-                            :title "Changelog"
-                            :href "/changelog"
-                            :class (when (changelog-updated-since? (:last_viewed_changelog user))
-                                    "unread")}
-              (nav-icon "material-icons" "receipt")
+           [:a.aside-item (open-ext {:data-placement "right"
+                                     :data-trigger "hover"
+                                     :title "Changelog"
+                                     :href "/changelog"})
+              [:i.material-icons "receipt"]
               [:div.nav-label "Changelog"]]
 
             [:hr]
@@ -560,14 +474,14 @@
                               :data-trigger "hover"
                               :title "Admin"
                               :href "/admin"}
-                (nav-icon "material-icons" "build")
+                [:i.material-icons "build"]
                 [:div.nav-label "Admin"]])
 
             [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
                                            :title "Logout"
                                            :href "/logout"}
-              (nav-icon "material-icons" "power_settings_new")
+              [:i.material-icons "power_settings_new"]
               [:div.nav-label "Logout"]]])))))
 
 (defn aside [app owner]

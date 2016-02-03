@@ -24,7 +24,7 @@
 (deftest status-badge-icons
   (testing "correct icons are mapped to build states"
     (are [state icon-name] (= icon-name
-                              (build-model/status-icon-v2 {:status state :outcome state}))
+                              (build-model/status-icon {:status state :outcome state}))
          "failed"               "Status-Failed"
          "timedout"             "Status-Failed"
          "no_tests"             "Status-Failed"

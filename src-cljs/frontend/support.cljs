@@ -8,8 +8,7 @@
 (defn raise-dialog [ch]
   (try
     (if (config/elevio-enabled?)
-      ((-> (aget js/window "_elev")
-           (aget "openModule")) "support")
+      (elevio/show-support!)
       (js/Intercom "show"))
     (catch :default e
       (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")

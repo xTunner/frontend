@@ -6,6 +6,25 @@
 
 (def account-id "5639122987b91")
 
+(defn open-module-fn []
+  (some-> (aget js/window "_elev")
+          (aget "openModule")))
+
+(defn broken?
+  "Returns true if elevio is broken, false otherwise"
+  []
+  (nil? (open-module-fn)))
+
+(defn open-module! [module-name]
+  (when-not (broken?)
+    ((open-module-fn) module-name)))
+
+(defn show-support! []
+  (open-module! "support"))
+
+(defn show-status! []
+  (open-module! "status"))
+
 (defn get-root []
   (gdom/getElement "elevio-widget"))
 

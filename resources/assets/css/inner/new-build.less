@@ -41,244 +41,7 @@
 }
 
 .containers {
-  z-index: 10;
-
-  &.fixed {
-    position: fixed;
-    top: 0px;
-    width: 100%;
-  }
-}
-
-.containers-v2 {
   z-index: 2;
-  background-color: @background-color-v2;
-}
-
-&.ui-v1 {
-
-/* This .class { ... }
- *      .class:not(.other_class) { position:absolute }
- *      .class.other_class { position:relative }
- * trick for setting the panel position attributes is inspired by
- * http://tympanus.net/codrops/2013/09/05/sliding-horizontal-layout/
- */
-.container-view {
-  width: 100%;
-  top: 0px;
-}
-
-  // TODO: remove the :not(.current_container) when om is fully deployed
-  .container-view:not(.current_container) {
-    position: absolute;
-  }
-
-  // TODO: remove om is fully deployed
-  .container-view.current_container {
-    position: relative;
-  }
-
-  // Creates the selectors that will keep the proper container in view
-  // Generates #container_parent.selected_2 { #container_2 { position: relative; }}
-  .selectedX (@index) when (@index > -1) {
-    .selectedX(@index - 1);
-
-    #container_parent.selected_@{index} {
-
-      #container_@{index} {
-        position: relative;
-      }
-    }
-  }
-
-  .selectedX (-1) {}
-
-  @max_containers: 100;
-
-  .selectedX (@max_containers);
-}
-
-/* Set up a :after pseudo-element to reflect the build status */
-.container-list {
-  .flexy();
-  margin: 0;
-  list-style: none;
-  margin: 0 8.5%;
-}
-
-.container-selector {
-  .flex(1, 1);
-  .flexy(column);
-  .align-items(center);
-  position: relative;
-  background: white;
-  color: @grayLight;
-  padding: 1ex 0;
-  border: 1px solid @grayBoxBorder;
-  border-left-width: 0;
-
-  &:hover {
-    &.waiting {
-      color: @blueLight;
-      border: 1px solid @blueLight;
-    }
-
-    &.running {
-      color: @blueLight;
-      border: 1px solid @blueLight;
-    }
-
-    &.success {
-      color: @green;
-      border: 1px solid @green;
-    }
-
-    &.failed,
-    &.canceled {
-      color: @redLight;
-      border: 1px solid @redLight;
-      background: white;
-      svg {
-        path {
-          stroke: @redLight;
-        }
-      }
-    }
-    color: @grayDark;
-    border: 1px solid @grayDark;
-  }
-
-  &.waiting {
-    svg {
-      path {
-        stroke: @blueLight;
-        stroke-linecap: round;
-        stroke-width: 20;
-      }
-    }
-  }
-
-  &.running {
-    svg {
-      path {
-        stroke: @blueLight;
-      }
-    }
-  }
-
-  &.success {
-    svg {
-      path {
-        stroke: @green;
-      }
-    }
-  }
-
-  &.failed,
-  &.canceled {
-    color: @white;
-    background: @redLight;
-    border-color: @redLight;
-    + .failed,
-    + .canceled {
-      box-shadow: -1px 0 @red;
-    }
-    svg {
-      path {
-        stroke: @white;
-      }
-    }
-  }
-
-  &.active {
-    &:before,
-    &:after {
-      content: " ";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      height: 0;
-      width: 0;
-      border: solid transparent;
-      pointer-events: none;
-    }
-
-    &:before {
-      border-top-color: @grayLighter;
-      border-width: (@baseFontSize / 2) + 1;
-      margin-left: (-@baseFontSize / 2) - 1;
-    }
-
-    &:after {
-      border-top-color: @appBackgroundColor;
-      border-width: (@baseFontSize / 2);
-      margin-left: (-@baseFontSize / 2);
-    }
-
-    &.waiting {
-      &:hover {
-        &:before {
-          border-top-color: @blueLight;
-        }
-      }
-    }
-
-    &.running {
-      &:hover {
-        &:before {
-          border-top-color: @blueLight;
-        }
-      }
-    }
-
-    &.success {
-      &:hover {
-        &:before {
-          border-top-color: @green;
-        }
-      }
-    }
-
-    &.failed,
-    &.canceled {
-      &:before,
-      &:after {
-        border-top-color: @redLight;
-      }
-      &:hover {
-        &:after {
-          border-top-color: @appBackgroundColor;
-        }
-      }
-    }
-  }
-
-  &:first-child {
-    border-left-width: 1px;
-    border-radius: 4px 0 0 4px;
-  }
-
-  &:not(:first-child) {
-    &:hover {
-      margin-left: -1px;
-    }
-  }
-
-  &:last-child {
-    border-radius: 0 4px 4px 0;
-  }
-
-  svg {
-    path {
-      stroke: @grayDark;
-      stroke-width: 8;
-
-      &:nth-child(2) {
-        stroke-linecap: round;
-        stroke-width: 20;
-      }
-    }
-  }
 }
 
 // V2 from here on !!!!
@@ -342,8 +105,11 @@
   color: @gray-dark-v2;
 
   .build-action {
+
     .flexy();
+
     margin-right: 20px;
+
     &:last-of-type {
       margin-right: 0;
     }
@@ -355,6 +121,10 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .cancel-build {
+    margin-right: 1em;
   }
 
   .rebuild-container {
@@ -432,6 +202,26 @@
   }
 }
 
+.build-settings {
+  .flexy(center);
+
+  a:hover {
+    text-decoration: none !important;
+  }
+
+  a:hover span {
+    text-decoration: underline;
+  }
+
+  a i.material-icons {
+    text-decoration: none;
+    margin-right: 1ex;
+  }
+
+  a:hover i.material-icons {
+    text-decoration:none;
+  }
+}
 // Build page V2 stuff
 
 @pills-breakpoint: @screen-xs-max;
@@ -451,7 +241,7 @@
     text-decoration: underline;
   }
 
-  .container-selector-v2:hover {
+  .container-selector:hover {
     text-decoration: none;
   }
 
@@ -495,7 +285,7 @@
   }
 }
 
-.container-list-v2 {
+.container-list {
   display: flex;
 
   @media (max-width: @pills-breakpoint) {
@@ -514,7 +304,7 @@
   }
 }
 
-.container-selector-v2 {
+.container-selector {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -530,7 +320,7 @@
     width: 14px;
   }
 
-  & + .container-selector-v2:not(.page-container-pills) {
+  & + .container-selector:not(.page-container-pills) {
     margin-left: 1px;
   }
 
@@ -667,21 +457,6 @@
   }
 }
 
-// Used by om frontend to hide scrollers it needs for find in firefox
-.container-scroll-parent-v2 {
-  // hides scrollbar on container_parent
-  overflow: hidden;
-  overflow-x: scroll;
-
-  .container-parent-v2 {
-    overflow-y: hidden;
-
-    // hides scrollbar
-    margin-bottom: -25px;
-    padding-bottom: 25px;
-  }
-}
-
 .summary-items {
   .flexy();
   margin-right: 20px;
@@ -692,25 +467,22 @@
   flex-grow: 2;
 }
 
-&.ui-v2 {
-  @media (max-width: @screen-sm-max) {
+@media (max-width: @screen-sm-max) {
+  .summary-header {
+    .flexy(stretch, space-around, column);
+  }
 
-    .summary-header {
-      .flexy(stretch, space-around, column);
-    }
+  .summary-items {
+    .flexy(stretch, flex-start, row);
+  }
 
-    .summary-items {
-      .flexy(stretch, flex-start, row);
-    }
+  .summary-build-contents {
+    .flexy(stretch, flex-start, row);
+  }
 
-    .summary-build-contents {
-      .flexy(stretch, flex-start, row);
-    }
-
-    .head-user {
-      .flexy(stretch, flex-start, column);
-      height: inherit;
-    }
+  .head-user {
+    .flexy(stretch, flex-start, column);
+    height: inherit;
   }
 }
 
@@ -759,123 +531,117 @@
   margin-bottom: 0;
 }
 
-&.ui-v2 {
-  #container_parent {
-    margin-left: 0;
-    margin-right: 0;
-  }
+#container_parent {
+  margin-left: 0;
+  margin-right: 0;
+}
 
-  .alert {
-    a {
-      color: @link-color-v2;
-      text-decoration: none;
+.alert {
+  a {
+    color: @link-color-v2;
+    text-decoration: none;
 
-      &:hover {
-        text-decoration: underline;
-      }
+    &:hover {
+      text-decoration: underline;
     }
   }
+}
 
-  // TODO, just remove build-head-wrapper once v2 ships
-  .build-head-wrapper {
+// TODO, just remove build-head-wrapper once v2 ships
+.build-head-wrapper {
+  margin: 0;
+  padding: 0;
+}
+
+.build-tests-summary {
+  margin-bottom: 8px;
+}
+
+.build-tests-list-container {
+  padding-top: 0;
+
+  .filename {
+    margin: 10px 0;
+  }
+}
+
+.build-tests-list {
+  margin: 0;
+  counter-reset: test-list;
+
+  li {
+    margin-top: 10px;
+  }
+}
+
+.build-test {
+  .properties {
+    .flexy(center, row);
+    flex-wrap: wrap;
+  }
+}
+
+.test-name {
+
+  &:before {
+    margin-left: 5px;
+    content: counter(test-list) ". ";
+    counter-increment: test-list;
+  }
+}
+
+.test-file {
+  text-align: right;
+  margin-left: auto;
+  padding-left: @padding-small-horizontal;
+  margin-right: 0;
+  .wrap-words;
+}
+
+.build-test-output {
+  margin: 10px 0;
+  .wrap-words;
+
+  .preview {
+    overflow: hidden;
+    height: 18px;
+    line-height: 18px;
+    display: block;
+  }
+
+  .expander {
+    float: right;
+    padding-left: @padding-small-horizontal;
+    padding-right: @padding-small-horizontal;
+    margin-left: @padding-small-horizontal;
+    color: #ccc;
+    background-color: rgba(255,255,255, 0.2);
+    .user-select(none);
+  }
+
+}
+
+
+.alert {
+  .build-tests-toggle {
     margin: 0;
     padding: 0;
-  }
-
-  .build-tests-summary {
-    margin-bottom: 8px;
-  }
-
-  .build-tests-list-container {
-    padding-top: 0;
-  }
-
-  .build-tests-list {
-    margin: 0;
-    counter-reset: test-list;
-
-    li {
-      margin-top: 10px;
+    color: @gray-chevron-label;
+    &:hover {
+      text-decoration: none;
     }
   }
-
-  .build-test {
-
-
-    &:last-child {
-      .build-test-output, .build-test-name {
-        margin-bottom: 0;
-      }
-    }
-
-    .properties {
-      .flexy(center, row);
-      flex-wrap: wrap;
-    }
+}
 
 
-    .test-name {
+.build-tests-toggle-icon {
+  .rotating-chevron;
+}
 
-      &:before {
-         margin-left: 5px;
-         content: counter(test-list) ". ";
-         counter-increment: test-list;
-      }
-    }
-
-    .test-file {
-      text-align: right;
-      margin-left: auto;
-      padding-left: @padding-small-horizontal;
-      margin-right: 0;
-      .wrap-words;
-    }
-
-    .build-test-output {
-      margin: 10px 0;
-      .wrap-words;
-
-      .preview {
-        overflow: hidden;
-        height: 18px;
-        line-height: 18px;
-        display: block;
-      }
-
-      .expander {
-        float: right;
-        padding-left: @padding-small-horizontal;
-        padding-right: @padding-small-horizontal;
-        margin-left: @padding-small-horizontal;
-        color: #ccc;
-        background-color: rgba(255,255,255, 0.2);
-        .user-select(none);
-      }
-
-    }
-
-  }
-
-  .alert {
-    .build-tests-toggle {
-      margin: 0;
-      padding: 0;
-      color: @gray-chevron-label;
-      &:hover {
-        text-decoration: none;
-      }
-    }
-  }
-
-  .build-tests-toggle-icon {
-    .rotating-chevron;
-  }
-
-  // TODO Generalized whitespace tweak. Should be moved to
-  // global bootstrap override file or something.
-  ul:last-child {
-    margin-bottom: 0;
-  }
+// TODO Generalized whitespace tweak. Should be moved to
+// global bootstrap override file or something.
+ul:last-child {
+  margin-bottom: 0;
 }
 
 .test-results {
@@ -888,79 +654,98 @@
   }
 }
 
-&.ui-v2 {
-  .sub-head-usage-queue {
-    padding-bottom: 0;
+.queued-builds {
+  .build {
+    margin-top: (@grid-gutter-width / 2);
+    margin-bottom: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
   }
 
-  .queue-message {
-    margin-bottom: (@grid-gutter-width / 2);
-  }
-
-  .queued-builds {
-    .build {
-      margin-bottom: 0;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      box-shadow: none;
-    }
-
-    .status-area {
-      padding-left: 0;
-      border-right-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .build-info {
-      padding-right: 0;
-    }
-  }
-
-  .sub-head-ssh-info {
-    p {
-      margin: 0px;
-      line-height: 20px;
-    }
-  }
-
-  .ssh-nodes-list {
-    list-style: none;
-    padding-left: 0px;
-    padding-top: 5px;
-  }
-
-  .ssh-node {
-    @ssh-node-padding: 10px;
-
-    .flexy(center, flex-start, row);
-    border-bottom: solid 1px @list-border-color;
-    padding-top:    @ssh-node-padding;
-    padding-bottom: @ssh-node-padding;
-  }
-
-  .ssh-node:last-child {
-    border-bottom: none;
-  }
-
-  .ssh-node-container {
-    min-width: 110px;
-    font-family: @monoFontFamilyV2
-  }
-
-  .ssh-node-command {
-    min-width: 310px;
-    font-family: @monoFontFamilyV2
-  }
-
-  .ssh-node-disabled {
-    color: @brand-gray-v2;
-  }
-
-  .ssh-node-running-icon {
-    @icon-size: 10px;
-
-    height: @icon-size;
-    width: @icon-size;
+  .build-info {
+    padding-right: 0;
   }
 }
+
+.sub-head-ssh-info {
+  p {
+    margin: 0px;
+    line-height: 20px;
+  }
+}
+
+.ssh-nodes-list {
+  list-style: none;
+  padding-left: 0px;
+  padding-top: 5px;
+}
+
+.ssh-node {
+  @ssh-node-padding: 10px;
+
+  .flexy(center, flex-start, row);
+  border-bottom: solid 1px @list-border-color;
+  padding-top:    @ssh-node-padding;
+  padding-bottom: @ssh-node-padding;
+}
+
+.ssh-node:last-child {
+  border-bottom: none;
+}
+
+.ssh-node-container {
+  min-width: 110px;
+  font-family: @monoFontFamilyV2
+}
+
+.ssh-node-command {
+  min-width: 310px;
+  font-family: @monoFontFamilyV2
+}
+
+.ssh-node-disabled {
+  color: @brand-gray-v2;
+}
+
+.ssh-node-running-icon {
+  @icon-size: 10px;
+
+  height: @icon-size;
+  width: @icon-size;
+}
+
+.circle-yml-highlight {
+  color: @brand-red-v2;
+}
+
+.config-errors {
+
+  .dang {
+    margin-bottom: 15px;
+  }
+
+  ol {
+    padding-left: 20px;
+    margin-bottom: 0;
+
+    li {
+
+      > pre {
+        margin: 10px 0 20px -20px;
+
+        code {
+          color: @brand-red-v2;
+        }
+      }
+
+      &:last-child > pre {
+        margin: 10px 0 0 -20px;
+      }
+    }
+  }
+}
+
 
 .build-timings {
   .container-step-pass {
@@ -1006,4 +791,17 @@
     font-size: @fontSizeMini;
     fill: @background-color-dark-v2;
   }
+}
+
+
+.build-config-string {
+  pre {
+
+    word-wrap: normal;
+
+    code {
+      white-space: pre;
+    }
+  }
+
 }

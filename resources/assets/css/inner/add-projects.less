@@ -1,6 +1,3 @@
-@dark-red: #7A0000;
-@dark-green: #006B24;
-
 #add-projects {
 
   .overview {
@@ -17,11 +14,6 @@
     display: inline-block;
     width: 100%;
   };
-
-  #follow-contents {
-    margin: 0 auto;
-    padding: 15px;
-  }
 
   @big-number-width: 40px;
   @big-number-margin-right: 8px;
@@ -40,7 +32,7 @@
     text-align: center;
     color: @white;
 
-    background: @blueLight;
+    background: @brand-blue-v2;
     border-radius: 50%;
   }
 
@@ -59,7 +51,7 @@
   }
 
   .repo-filter {
-    & > .fa {
+    & > .material-icons {
       font-size: 1.2em;
     }
 
@@ -142,10 +134,6 @@
     line-height: 13em;
   }
 
-  .tooltip {
-    white-space: normal;
-  }
-
   div.organizations {
     margin-bottom: 20px;
   }
@@ -173,10 +161,6 @@
         width: 100%;
       }
 
-      &:hover {
-        color: @blueLight;
-      }
-
       @avatar-size: 48px;
       @avatar-margin-right: 8px;
 
@@ -187,7 +171,7 @@
         height: @avatar-size;
         margin-right: @avatar-margin-right;
 
-        border-radius: 4px;
+        border-radius: 200px;
       }
 
       > .orgname {
@@ -214,17 +198,17 @@
         text-decoration: none;
 
         &:hover {
-          color: @blueLight;
+          color: @link-color-v2;
           text-decoration: none;
         }
       }
 
       &.active {
-        color: @blueLight;
-        border-color: @blueLight;
+        color: @link-color-v2;
+        border-color: @brand-blue-v2;
 
         > a.visit-org {
-          color: @blueLight;
+          color: @link-color-v2;
         }
       }
     }
@@ -262,7 +246,7 @@
         line-height: 24px;
       }
 
-      .fa {
+      .material-icons {
         padding: 0 8px 0 4px;
         display: inline-block;
         color: #fbfbfb;
@@ -316,6 +300,7 @@
     li {
       .flexy();
       .align-items(center);
+      .justify-content(space-between);
       border-top: solid 1px lighten(@grayLightest, .5);
       line-height: 1.5em;
       position: relative;
@@ -329,9 +314,8 @@
         background-color: darken(@whiten, 1);
         box-shadow: none;
       }
-      .fa-lock {
-        width: 1em;
-        height: 1em;
+      .material-icons.lock {
+        font-size: @fontSizeLarge;
         margin-right: .5ex;
         color: @grayLight;
       }
@@ -344,6 +328,8 @@
           display: none;
         }
       }
+
+      min-width: 180px;
 
       svg {
         height: 1em;
@@ -390,6 +376,7 @@
         .flexy();
         .align-items(center);
         color: @gray;
+        min-width: 180px;
       }
     }
 
@@ -415,29 +402,20 @@
       vertical-align: middle;
     }
 
-    .tooltip {
-      font-size: @baseFontSize;
-      .tooltip-inner {
-        border-radius: (@em * 2);
-        padding: (@em / 2) @em;   // BS RESET
-      }
-    }
-    .tooltip.right .tooltip-arrow {
-      left: 1px;
-    }
-
     .forked {
       color: @grayLighter;
     }
   }
 
   .tooltip {
-    font-size: inherit;
-    opacity: .89;
+    font-size: @baseFontSize;
     .tooltip-inner {
-      padding: 1em;
-      .box-sizing(border-box);
+      border-radius: (@em * 2);
+      padding: (@em / 2) @em;   // BS RESET
     }
+  }
+  .tooltip.right .tooltip-arrow {
+    display: none;
   }
 
   .head-user {
@@ -457,13 +435,10 @@
     margin: 10px 20px 0 0;
   }
 
-  .fa {
-    display: inline;
-    padding-top: 0;
-  }
-
-  .follow-wrapper {
-    margin: 0 10px;
+  i.fa {
+    vertical-align: text-bottom;
+    opacity: .6;
+    color: @grayLight;
   }
 
   .payment-plan {
@@ -518,11 +493,11 @@
           vertical-align: middle;
 
           &.check {
-            color: @dark-green;
+            color: @brand-success-v2;
           }
 
           &.ex {
-            color: @dark-red;
+            color: @brand-danger-v2;
           }
         }
       }

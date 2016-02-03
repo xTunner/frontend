@@ -119,9 +119,7 @@
          [:a {:on-click #(raise! owner [:refresh-admin-build-list {:tab tab}])} "Refresh"]
          (if (nil? builds)
            [:div.loading-spinner common/spinner]
-           ;; uses v1 build table because it was simpler to add containers to
-           ;; that.  it's expected that this will be iterated on.
-           (om/build builds-table/builds-table-v1 builds
+           (om/build builds-table/builds-table builds
                      {:opts {:show-actions? true
                              :show-parallelism? true
                              :show-branch? false
@@ -132,6 +130,7 @@
     om/IRender
     (render [_]
       (let [fleet-state (->> (get-in app state/fleet-state-path)
+                             (filter #(-> % :ec2_instance_type not-empty)) ;; remove corrupt entries
                              (remove #(-> % :builder_tags (= ["os:none"])))
                              (sort-by :instance_id))
             summary-counts (get-in app state/build-system-summary-path)

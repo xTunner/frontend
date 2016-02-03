@@ -3,36 +3,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.ui-v2 {
-  a {
-    color: @link-color-v2;
+a {
+  color: @link-color-v2;
+  .transition(all .2s ease-in);
+  i {
+    opacity: .6;
+    .transition(all .1s ease-in);
   }
-
-  pre, code, samp, kbd {
-    font-family: @monoFontFamilyV2;
-  }
-
-  .main-head {
-    .flex(0 0 auto);
-
-    .head-user {
-      height: @navbar-height;
-      padding: 15px;
-
-      .settings {
-        height: initial;
-        padding: 0;
-
-        color: @link-color-v2;
-
-        &:hover {
-          text-decoration: underline;
-        }
-
-        span {
-          padding: 0;
-        }
-      }
+  &:hover {
+    i {
+      opacity: 1;
     }
   }
 }
@@ -43,6 +23,7 @@ body {
 }
 
 .main-head {
+  .flex(0 0 auto);
   .flexy(column);
 
   .head-user {
@@ -50,20 +31,29 @@ body {
     height: @tile;
     box-sizing: border-box;
     border-bottom: solid 1px @border-gray-v2;
+    height: @navbar-height;
+    padding: 15px;
 
     .settings {
       .flexy(center, center);
-      height: @tile;
+      height: initial;
+      padding: @padding-large-vertical @padding-large-horizontal;
+
+      color: @link-color-v2;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      span {
+        padding: @padding-xs-vertical @padding-xs-horizontal;
+      }
+
       path {
         stroke: @grayLight;
         &:first-child {
           stroke-width: 5;
         }
-      }
-      padding: @padding-large-vertical @padding-large-horizontal;
-
-      span {
-        padding: @padding-xs-vertical @padding-xs-horizontal;
       }
 
       &:after {
@@ -86,10 +76,24 @@ body {
   overflow-x: auto;
   overflow-y: scroll;
 
+  input:not(.dumb) {
+     @height: 3em;
+     &[type="text"],
+     &[type="search"],
+     &[type="email"] {
+       .smart_label(@height, (@height / 2));
+     }
+   }
+
+   textarea:not(.dumb) {
+     .smart_label(13em, 3px);
+   }
+
   .loading-spinner-big {
-    @reserved_height: (@tile * 2);
+    @reserved-height: (@tile * 2);
+
     .flexy(center, center);
-    height: ~"calc(100vh - @{reserved_height})";
+    height: ~"calc(100vh - @{reserved-height})";
   }
 }
 
@@ -105,24 +109,6 @@ body {
     background-size: @footerItemSize;
     background-position: center left;
     background-repeat: no-repeat;
-  }
-}
-
-// .btn-primary {
-//  @btnPrimaryBackground: #1f4d80;
-//  @btnPrimaryBackgroundHighlight: darken(@btnPrimaryBackground, 5%);
-//  .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
-// }
-
-// Provide a way to force blue border without worrying about .smart_label
-.blue-focus-border:focus {
-  border-color: @blueLighter !important; // BS RESET = "!important"
-}
-
-a {
-  &:hover {
-    cursor: pointer;
-    text-decoration: none;
   }
 }
 
@@ -170,13 +156,16 @@ button [spinner], button [data-spinner]{
   animation: spin 1s infinite linear;
 }
 
-.github-icon-link {
-  color: #333;
-  .transition(all 0.1s ease-in);
-  &:hover {
-    text-decoration: none;
-    color: #4183c4;
-  }
+.octicon,
+.material-icons {
+  font-size: 18px;
+  color: @grayLight;
+  margin-left: 1ex;
+  vertical-align: middle;
+}
+
+.octicon {
+  color: @grayLight;
 }
 
 .center{
@@ -216,7 +205,6 @@ button [spinner], button [data-spinner]{
     margin-top: 0px;
   }
 }
-
 
 #sticky-help-link {
   bottom: 0;
@@ -282,6 +270,16 @@ button [spinner], button [data-spinner]{
     th, td { text-align: left; }
     tr:not(:last-child) { border-bottom: 1px dashed fade(white, 10%); }
     .number { text-align: right; }
+  }
+}
+
+.alert {
+  a.close {
+    color: @grayDarker !important;
+    &:hover {
+      color: @grayDarkest !important;
+      text-decoration: none !important;
+    }
   }
 }
 

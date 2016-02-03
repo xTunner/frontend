@@ -1,4 +1,4 @@
-(ns circle.karma
+(ns frontend.test-runner
   (:require [clojure.string :as string]
             [cemerick.cljs.test :as test])
   (:require-macros [cemerick.cljs.test :as test]))

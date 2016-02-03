@@ -60,11 +60,18 @@ to manage dependencies. If you are using CocoaPods, then we recommend that you
 check your [Pods directory into source control](http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control).
 This will ensure that you have a deterministic, reproducable build.
 
-If CircleCI finds a `Podfile` and no `Pods` directory, then we will run
-`pod install` to install the necessary dependencies in the `dependencies`
-step of your build.
+If CircleCI finds a `Podfile` and the `Pods` directory is not present (or empty)
+ then we will run `pod install` to install the necessary dependencies in the
+`dependencies` step of your build.
 
-##Supported build and test tools
+We cannot handle all setups automatically, so for some projects you might need
+to invoke CocoaPods manually with some custom configuration. To do this you will
+need to override the `dependencies` section of your `circle.yml` file.
+See our [documentation on overriding build phases for more information on this.](/docs/configuration#phases).
+If you need more help please reach out to our support team who are always happy
+to help out.
+
+## Supported build and test tools
 
 CircleCI's automatic commands cover a lot of common test patterns, and you can customize your build
 as needed to satisfy almost any iOS build and test strategy.
@@ -200,8 +207,23 @@ dependencies:
 You can build a signed app and deploy to various destinations using the customization options
 mentioned [above](#customizing-your-build). Note that [environment variables](/docs/environment-variables#custom) set in
 the UI are encrypted and secure and can be used to store credentials related to signing and deployment.
-Contact support at [sayhi@circleci.com](mailto:sayhi@circleci.com) if you need help with code signing
-or deployment.
+
+[FastLane](https://fastlane.tools/) and [Shenzhen](http://nomad-cli.com/#shenzhen)
+are pre-installed on the container image. These are the tools that we suggest that
+you use to build a signed iOS app and distribute to your beta-testers.
+
+### Provision Profiles and Developer Certificates
+CircleCI will automatically locate any provisioning profiles that are present in
+your repository and install them to `~/Library/MobileDevice/Provisioning Profiles`.
+
+During the build we automatically create a keychain named `circle.keychain` with
+password `circle`. The developer certificates contained in any provisioning
+profiles in your repository are automatically added to this keychain. The
+keychain is unlocked for the duration of the build, and added the default
+keychain search-path so that any applications can access the keys.
+
+Please see [this post](https://discuss.circleci.com/t/ios-code-signing/1231) for
+a detailed guide on how to configure code signing and deployment of your app.
 
 ##A note on code-generating tools
 Many iOS app developers use tools that generate substantial amounts of code. In such

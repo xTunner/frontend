@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
+            [frontend.config :as config]
             [frontend.datetime :as time-utils]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
@@ -130,10 +131,10 @@
         (html
           [:div
            [:h3 (project-model/project-name project)]
-           [:select {:value pref
-                     :on-change #(let [value (.. % -target -value)
-                                       args {vcs_url {:emails value}}]
-                                   (raise! owner [:project-preferences-updated args]))}
+           [:select.form-control {:value pref
+                                  :on-change #(let [value (.. % -target -value)
+                                                    args {vcs_url {:emails value}}]
+                                                (raise! owner [:project-preferences-updated args]))}
             (for [[pref label] email-prefs]
               [:option {:value pref} label])]])))))
 
@@ -152,3 +153,57 @@
                         " in order to restore paid containers.")
                   (list "Please ask an administrator to update its billing info."
                         " in order to restore paid containers.")))])))))
+
+(defn mini-parallelism-faq [project-data]
+  [:div.mini-faq
+   [:div.mini-faq-item
+    [:h3 "What are containers?"]
+    [:p
+     "Containers are what we call the virtual machines that your tests run in. "
+     (if (config/enterprise?)
+       (list
+        "You currently have "
+        (get-in project-data [:plan :containers])
+        " containers and can use up to "
+        (plan-model/max-parallelism (:plan project-data))
+        "x parallelism.")
+       (list
+        "Your current plan has "
+        (get-in project-data [:plan :containers])
+        " containers and supports up to "
+        (plan-model/max-parallelism (:plan project-data))
+        "x parallelism."))]
+
+    [:p "With 16 containers you could run:"]
+    [:ul
+     [:li "16 simultaneous builds at 1x parallelism"]
+     [:li "8 simultaneous builds at 2x parallelism"]
+     [:li "4 simultaneous builds at 4x parallelism"]
+     [:li "2 simultaneous builds at 8x parallelism"]
+     [:li "1 build at 16x parallelism"]]]
+   [:div.mini-faq-item
+    [:h3 "What is parallelism?"]
+    [:p
+     "We split your tests into groups, and run each group on different machines in parallel. This allows them run in a fraction of the time, for example:"]
+    [:p]
+    [:ul
+     [:li "a 45 minute build fell to 18 minutes with 3x build speed,"]
+     [:li
+      "a 20 minute build dropped to 11 minutes with 2x build speed."]]
+    [:p
+     "Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, and memory."]
+    [:p
+     "For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can "
+     [:a
+      {:href "/docs/parallel-manual-setup"}
+      "control the parallelism directly"]
+     "."]]
+   (when-not (config/enterprise?)
+     [:div.mini-faq-item
+      [:h3 "What do others think?"]
+      [:blockquote
+       [:i
+        "The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service."]]
+      [:ul
+       [:li [:a {:href "http://zencoder.com/company/"} "Brandon Arbini"]]
+       [:li [:a {:href "http://zencoder.com/"} "Zencoder.com"]]]])])

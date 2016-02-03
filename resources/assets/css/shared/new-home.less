@@ -121,7 +121,7 @@
 
 .scaled-page (@page-height: @home-section-height) {
   min-height: @page-height;
-  
+
   @media (min-width: @screen-md-min) {
     height: @page-height;
   }
@@ -300,6 +300,13 @@
 
   position: relative;
   overflow: hidden;
+
+  a.home-action {
+    &:hover {
+      color: #fff;
+      text-decoration: none;
+    }
+  }
 }
 .home-prolog {
   // adjustment for header
@@ -670,7 +677,7 @@
     position: relative;
     width: @width;
     height: (@width / 1.6);
-    background: @appBackgroundColor;
+    background: @white;
     border: 1px solid @grayBoxBorder;
     border-radius: 5px;
     overflow: hidden;
@@ -772,7 +779,7 @@
   @media (max-width: @screen-sm-max) {
     // magic number, no real rhyme or reason except that it
     // allows the text on the upper side of the tools to render on-screen.
-    min-height: 215px; 
+    min-height: 215px;
   }
 }
 

@@ -1,80 +1,70 @@
 #account-settings {
   line-height: 1.5em;
-  color: @grayLight;
-  a {
-    color: @blue;
-    &:hover {
-      color: @blueLight;
-    }
-  }
-  small {
-    color: @grayLight;
-  }
-  .btn {
-    outline: none;
-  }
+
   .account-top {
     box-shadow: 0 -1px @grayBoxBorder inset;
-    padding: 0 1em;
   }
+
   .nav {
     border: none; // BS RESET
     &.nav-tabs {
-      max-width: @minimumContentWidth;
-      margin: 0 auto;
       .active a {
         background: none; // BS RESET
-        color: @blue; // BS RESET
-        box-shadow: 0 -1px @blue inset,
-                    0  1px @blue;
+        color: @link-color; // BS RESET
+        box-shadow: 0 -1px @link-color inset,
+                    0  1px @link-color;
       }
     }
     li {
       margin: 0; // BS RESET
     }
+
     a {
       color: @grayLight;
       line-height: 1em;
       padding: 2em 1em 2em;
       border: none; // BS RESET
       margin: 0; // BS RESET
+
       &:hover {
         background: none; // BS RESET
-        color: @blue; // BS RESET
-        box-shadow: 0 -1px @blue inset,
-                    0  1px @blue;
+        color: @link-color; // BS RESET
+        box-shadow: 0 -1px @link-color inset,
+                    0  1px @link-color;
       }
     }
   }
-  legend,
-  h2 {
-    color: @gray;
-    font-size: 2em;
-    display: block;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    line-height: 2em;
-    border: none;
+
+  form {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    width: @standardBlockSize * 2;
   }
-  h4 {
-    color: @gray;
-    margin: 0;
-    font-size: 1em;
-    line-height: 2em;
+
+  input[type="submit"] {
+    .circleButton(@grayLighter);
+  }
+
+  .alert {
+    margin: 2em;
   }
 }
+
 .settings-item {
-  padding: 2em;
-  .settings-item-inner {
-    max-width: @minimumContentWidth;
-    margin: 0 auto;
+  padding: 2em 1.4em;
+
+  label {
+    padding-left: 6px;
+  }
+
+  .plans-accounts {
+    margin-top: 2em;
+    > div .account-plan-pricing-org-link {
+      padding-left: 4px;
+    }
   }
 }
 
 @import "settings/notification.less";
 @import "settings/api.less";
-@import "settings/ssh.less";
-@import "settings/heroku.less";
-@import "settings/plans.less";
 @import "settings/beta.less";

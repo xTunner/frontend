@@ -4,7 +4,10 @@
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.ajax :as ajax])
+            [frontend.utils.ajax :as ajax]
+            [frontend.components.common :as common]
+            [frontend.state :as state]
+            [frontend.elevio :as elevio])
   (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [frontend.utils :refer [html]]))
 
@@ -42,7 +45,10 @@
 (defn incident-markup [incident]
   (let [status (first (:incident_updates incident))]
     (html
-      [:a {:href (:shortlink incident)}
+     [:a (if (elevio/broken?)
+           {:href (:shortlink incident)
+            :target "_blank"}
+           {:on-click #(elevio/show-status!)})
        [:h4 (:name incident)]
        [:p (:body status)
         [:br]
@@ -80,15 +86,27 @@
 
     om/IRender
     (render [_]
-      (let [summary-response (:summary (om/get-state owner :statuspage))
+      (let [{:keys [incidents]
+             {:keys [updated_at]} :page
+             :as summary-response} (:summary (om/get-state owner :statuspage))
             desc (get-in summary-response [:status :description])
             components-affected (filter (comp not (partial = "operational") :status)
                                         (:components summary-response))
-            class (severity-class summary-response)]
+            dismissed-update (get-in app state/statuspage-dismissed-update-path)
+            dismissed? #(= updated_at dismissed-update)
+            class (if (dismissed?)
+                    "none"
+                    (severity-class summary-response))]
         (html [:div#statuspage-bar {:class class}
-               [:div (for [incident (:incidents summary-response)]
+               [:a.dismiss-banner {:on-click #(raise! owner [:dismiss-statuspage
+                                                             {:last-update updated_at}])}
+                (common/ico :fail-light)]
+               [:div (for [incident incidents]
                        (incident-markup incident))]
                (when (seq components-affected)
-                 [:a {:href (get-in summary-response [:page :url])}
+                 [:a (if (elevio/broken?)
+                       {:href (get-in summary-response [:page :url])
+                        :target "_blank"}
+                       {:on-click #(elevio/show-status!)})
                   [:h4 (str desc " - components affected: "
                             (clojure.string/join ", " (map (comp str :name) components-affected)))]])])))))

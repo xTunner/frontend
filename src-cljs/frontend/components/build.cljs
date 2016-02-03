@@ -1,6 +1,7 @@
 (ns frontend.components.build
   (:require [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.routes :as routes]
             [frontend.analytics :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -8,7 +9,6 @@
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.components.build-config :as build-config]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
@@ -51,42 +51,20 @@
         build-url (:build_url build)]
     (when (:failed build)
       [:div.alert.alert-danger.iconified
-       (when (feature/enabled? :ui-v2)
-         [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]])
+       [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
        (if (:infrastructure_fail build)
          (infrastructure-fail-message owner)
          [:div.alert-wrap
           "Error! Check out our "
           [:a {:href "/docs/troubleshooting"}
-           "help docs "]
-          "or our "
-          [:a {:href "http://discuss.circleci.com/"}
-           "community site "]
-          "for more information. If you are a paid customer, you may also consider "
+           "help docs"]
+          " or our "
+          [:a {:href "https://discuss.circleci.com/"}
+           "community site"]
+          " for more information. If you are a paid customer, you may also consider "
           [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
            "requesting for help"]
           " from a support engineer."])])))
-
-(defn container-pill [{:keys [container current-container-id build-running?]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       (let [container-id (container-model/id container)
-             status (container-model/status container build-running?)]
-        [:a.container-selector
-         {:on-click #(raise! owner [:container-selected {:container-id container-id}])
-          :role "button"
-          :class (concat (container-model/status->classes status)
-                         (when (= container-id current-container-id) ["active"]))}
-         (str (:index container))
-         (case status
-           :failed (common/ico :fail-light)
-           :success (common/ico :pass-light)
-           :canceled (common/ico :fail-light)
-           :running (common/ico :logo-light)
-           :waiting (common/ico :none-light)
-           nil)])))))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
@@ -98,7 +76,8 @@
                             {:position :fixed
                              :top (:top stick)
                              :left (:left stick)
-                             :width (:width stick)})]
+                             :width (:width stick)
+                             :background-color "#f5f5f5"})]
         (html [:div {:ref "wrapper" :class wrapper-class :style wrapper-style}
                [:div {:ref "content" :class content-class :style content-style}
                 content]])))
@@ -124,40 +103,6 @@
     om/IWillUnmount
     (will-unmount [_]
       (scroll/dispose owner))))
-
-(defn container-pills [{:keys [build-running? build container-data project-data user view]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (analytics/track-parallelism-button-impression  {:view view
-                                                       :project-data project-data
-                                                       :user user}))
-    om/IRender
-    (render [_]
-      (let [{:keys [containers current-container-id]} container-data
-            hide-pills? (or (>= 1 (count containers))
-                            (empty? (remove :filler-action (mapcat :actions containers))))
-            style {:position "fixed"}
-            show-upsell? (project-model/show-upsell? (:project project-data) (:plan project-data))
-            div (html
-                  [:div.container-list
-                   (for [container containers]
-                     (om/build container-pill
-                               {:container container
-                                :build-running? build-running?
-                                :current-container-id current-container-id}
-                               {:react-key (:index container)}))
-                   [:a.container-selector.parallelism-tab.upgrade
-                    {:role "button"
-                     :href (build-model/path-for-parallelism build)
-                     :on-click #(analytics/track-parallelism-button-click {:view view
-                                                                           :project-data project-data
-                                                                           :user user})
-                     :title "adjust parallelism"}
-                    (if show-upsell?
-                      [:span "Add Containers +"] 
-                      [:span "+"])]])]
-        (om/build sticky {:content div :content-class "containers"})))))
 
 (defn notices [data owner]
   (reify
@@ -188,47 +133,7 @@
             (when (build-model/display-build-invite build)
               (om/build invites/build-invites
                         (:invite-data data)
-                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))
-
-            (when (and (build-model/config-errors? build)
-                       (not (:dismiss-config-errors build-data)))
-              (om/build build-config/config-errors build))]]])))))
-
-(defn build-v1 [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [build (get-in data state/build-path)
-            build-data (get-in data state/build-data-path)
-            container-data (get-in data state/container-data-path)
-            invite-data (:invite-data data)
-            project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path)]
-        (html
-         [:div#build-log-container
-          (if-not build
-           [:div
-             (om/build common/flashes (get-in data state/error-message-path))
-             [:div.loading-spinner-big common/spinner]]
-
-            [:div
-             (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :project-data project-data
-                                              :user user
-                                              :scopes (get-in data state/project-scopes-path)})
-             (om/build notices {:build-data (dissoc build-data :container-data)
-                                :project-data project-data
-                                :invite-data invite-data})
-             (om/build container-pills {:build build
-                                        :build-running? (build-model/running? build)
-                                        :container-data container-data
-                                        :project-data project-data
-                                        :user user
-                                        :view view})
-             (om/build build-steps/container-build-steps container-data)
-
-             (when (< 1 (count (:steps build)))
-               [:div (common/messages (:messages build))])])])))))
+                        {:opts {:project-name (vcs-url/project-name (:vcs_url build))}}))]]])))))
 
 (defn container-result-icon [{:keys [name]} owner]
   (reify
@@ -296,7 +201,7 @@
     (:status override-status)
     real-status))
 
-(defn container-pill-v2 [{:keys [container status current-container-id build-running?]} owner]
+(defn container-pill [{:keys [container status current-container-id build-running?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -323,7 +228,7 @@
                          :running "Status-Running"
                          :waiting "Status-Queued"
                          nil)]
-         [:a.container-selector-v2
+         [:a.container-selector
           {:on-click #(raise! owner [:container-selected {:container-id container-id}])
            :class (concat (container-model/status->classes status)
                           (when (= container-id current-container-id) ["active"]))}
@@ -363,7 +268,7 @@
           [:label {:for id}
            (gstring/format "%s (%s)" label cnt)]))]])))
 
-(defn container-pills-v2 [data owner]
+(defn container-pills [data owner]
   (reify
     om/IDisplayName
     (display-name [_]
@@ -381,13 +286,14 @@
             container-count (count filtered-containers)
             previous-container-count (max 0 (- paging-offset 1))
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
-            show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) (get-in data [:project-data :plan]))
+            plan (get-in data [:project-data :plan])
+            show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) plan)
             div (html
-                 [:div.container-list-v2 {:class (when (and (> previous-container-count 0)
-                                                            (> subsequent-container-count 0))
-                                                   "prev-and-next")}
+                 [:div.container-list {:class (when (and (> previous-container-count 0)
+                                                         (> subsequent-container-count 0))
+                                                "prev-and-next")}
                   (if (> previous-container-count 0)
-                    [:a.container-selector-v2.page-container-pills
+                    [:a.container-selector.page-container-pills
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (- paging-offset paging-width)}])}
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-left]]
@@ -397,23 +303,24 @@
                   (for [container (subvec filtered-containers
                                           paging-offset
                                           (min container-count (+ paging-offset paging-width)))]
-                    (om/build container-pill-v2
+                    (om/build container-pill
                               {:container container
                                :build-running? build-running?
                                :current-container-id current-container-id
                                :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
                   (if (> subsequent-container-count 0)
-                    [:a.container-selector-v2.page-container-pills
+                    [:a.container-selector.page-container-pills
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (+ paging-offset paging-width )}])}
                      [:div.pill-details ;; just for flexbox container
                       [:div "Next " subsequent-container-count]
                       [:div container-count " total"]]
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-right]]]
-                    [:a.container-selector-v2.add-containers
-                     {:href (build-model/path-for-parallelism build)
-                      :title "Adjust parallelism"
+                    [:a.container-selector.add-containers
+                     {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                             :subpage "containers"})
+                      :title "Adjust containers"
                       :class (when show-upsell? "upsell")}
                      (if show-upsell?
                        [:span "Add Containers +"]
@@ -425,12 +332,15 @@
                                           :containers containers
                                           :categorized-containers categorized-containers
                                           :build-running? build-running?}))
-          (om/build sticky {:content div :content-class "containers-v2"})])))))
+          (om/build sticky {:content div :content-class "containers"})])))))
 
-(def css-trans-group (-> js/React (aget "addons") (aget "CSSTransitionGroup")))
+(def css-trans-group (-> js/React
+                         (aget "addons")
+                         (aget "CSSTransitionGroup")
+                         js/React.createFactory))
 
 (defn transition-group
-  [opts component]
+  [opts & components]
   (let [[group-name enter? leave? appear? class-name]
         (if (map? opts)
           [(:name opts)
@@ -447,12 +357,12 @@
            :transitionAppear appear?
            :component "div"
            :className class-name}
-      component)))
+      components)))
 
 (defn selected-container-index [data]
   (get-in data [:current-build-data :container-data :current-container-id]))
 
-(defn build-v2 [data owner]
+(defn build [data owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -482,10 +392,10 @@
              [:div.loading-spinner-big common/spinner]]
 
             [:div
-             (om/build build-head/build-head-v2 {:build-data (dissoc build-data :container-data)
-                                                 :project-data project-data
-                                                 :user user
-                                                 :scopes (get-in data state/project-scopes-path)})
+             (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
+                                              :project-data project-data
+                                              :user user
+                                              :scopes (get-in data state/project-scopes-path)})
              [:div.card.col-sm-12
 
               (om/build common/flashes (get-in data state/error-message-path))
@@ -494,20 +404,16 @@
                                  :project-data project-data
                                  :invite-data invite-data})
 
-              (om/build container-pills-v2 {:container-data container-data
-                                            :build-running? (build-model/running? build)
-                                            :build build
-                                            :project-data project-data})
+              (om/build container-pills {:container-data container-data
+                                         :build-running? (build-model/running? build)
+                                         :build build
+                                         :project-data project-data})
 
               (transition-group {:name (om/get-state owner :action-transition-direction)
                                  :enter true
                                  :leave true
                                  :class "build-steps-animator"}
-                                [(om/build build-steps/container-build-steps-v2
+                                (om/build build-steps/container-build-steps
                                            container-data
-                                           {:key :current-container-id})])]])])))))
+                                           {:key :current-container-id}))]])])))))
 
-(defn build []
-  (if (feature/enabled? :ui-v2)
-    build-v2
-    build-v1))

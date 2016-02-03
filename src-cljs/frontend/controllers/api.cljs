@@ -18,18 +18,7 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
             [om.core :as om :include-macros true]
-            [goog.string :as gstring]
-            [clojure.set :as set]))
-
-(def build-keys-mapping {:username :org
-                         :reponame :repo
-                         :default_branch :branch})
-
-(defn project-build-id [project]
-  "Takes project hash and filter down to keys that identify the build."
-  (-> project
-      (set/rename-keys build-keys-mapping)
-      (select-keys (vals build-keys-mapping))))
+            [goog.string :as gstring]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
 ;; result will be pushed into the api-channel
@@ -108,27 +97,19 @@
 
 (defmethod api-event [:projects :success]
   [target message status {:keys [resp]} {:keys [navigation-point] :as current-state}]
-  (cond->> resp
-    true (map (fn [project] (update project :scopes #(set (map keyword %)))))
-    ;; For the insights screen:
-    ;;   1. copy old recent_builds so page doesn't empty out.
-    ;;   2. we go on to update recent_builds default_branch of each project
-    (= navigation-point :build-insights)
-    ((fn [resp]
-       (let [old-projects (get-in current-state state/projects-path)
-             api-ch (get-in current-state [:comms :api])
-             project-build-ids (map project-build-id resp)
-             updated-projects (map (fn [{:keys [vcs_url] :as project}]
-                                     (let [target-build-id (project-build-id project)]
-                                       (if-let [{:keys [recent-builds]} (->> old-projects
-                                                                             (filter #(= target-build-id (project-build-id %)))
-                                                                             first)]
-                                         (assoc project :recent-builds recent-builds)
-                                         project)))
-                                   resp)]
-         (api/get-projects-builds project-build-ids api-ch)
-         updated-projects)))
-    true (assoc-in current-state state/projects-path)))
+  (let [new-projects (map (fn [project] (update project :scopes #(set (map keyword %)))) resp)
+        old-projects-by-build-id (group-by api/project-build-id (get-in current-state state/projects-path))
+        new-projects-with-existing-recent-builds
+        (map (fn [project]
+               (let [matching-old-project (first (get old-projects-by-build-id (api/project-build-id project)))]
+                 (assoc project :recent-builds (:recent-builds matching-old-project))))
+             new-projects)]
+    (assoc-in current-state state/projects-path new-projects-with-existing-recent-builds)))
+
+(defmethod post-api-event! [:projects :success]
+  [target message status {{:keys [then]} :context} previous-state current-state]
+  (when then
+    (then current-state)))
 
 (defmethod api-event [:me :success]
   [target message status args state]
@@ -155,7 +136,7 @@
   [target message status {recent-builds :resp, target-id :context} state]
   (letfn [(add-recent-builds [projects]
             (for [project projects
-                  :let [project-id (project-build-id project)]]
+                  :let [project-id (api/project-build-id project)]]
               (if (= project-id target-id)
                 (assoc project :recent-builds recent-builds)
                 project)))]
@@ -223,16 +204,22 @@
       state
       (update-in state state/build-path merge (:resp args)))))
 
-(defmethod api-event [:repos :success]
+(defmethod api-event [:github-repos :success]
   [target message status args state]
   (if (empty? (:resp args))
     ;; this is the last api request, update the loading flag.
-    (assoc-in state state/repos-loading-path false)
+    (assoc-in state state/github-repos-loading-path false)
     ;; otherwise trigger a fetch for the next page, and return the state
     ;; with the items we got here added.
     (let [page (-> args :context :page)]
-      (api/get-repos (get-in state [:comms :api]) :page (inc page))
+      (api/get-github-repos (get-in state [:comms :api]) :page (inc page))
       (update-in state state/repos-path #(into % (:resp args))))))
+
+(defmethod api-event [:bitbucket-repos :success]
+  [target message status args state]
+  (-> state
+      (assoc-in state/bitbucket-repos-loading-path false)
+      (update-in state/repos-path #(into % (:resp args)))))
 
 (defn filter-piggieback [orgs]
   "Return subset of orgs that aren't covered by piggyback plans."
@@ -528,7 +515,11 @@
       (put! nav-ch [:navigate! {:path build-path}]))
     (when (repo-model/should-do-first-follower-build? (:context args))
       (ajax/ajax :post
-                 (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
+                 (case (:vcs_type (:context args))
+                   "github"
+                   (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
+                   "bitbucket"
+                   (gstring/format "/api/dangerzone/project/bitbucket/%s" (vcs-url/project-name (:vcs_url (:context args)))))
                  :start-build
                  (get-in current-state [:comms :api])))))
 
@@ -629,10 +620,6 @@
   (if-not (= (:org-name context) (:org-settings-org-name state))
     state
     (assoc-in state state/org-invoices-path resp)))
-
-(defmethod api-event [:changelog :success]
-  [target message status {:keys [resp context]} state]
-  (assoc-in state state/changelog-path {:entries resp :show-id (:show-id context)}))
 
 (defmethod api-event [:build-state :success]
   [target message status {:keys [resp]} state]

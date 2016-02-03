@@ -1,14 +1,15 @@
+@build-padding: 12px;
+@build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
+
 .first-run-hint {
   padding-right: 1em;
 }
 
 .dashboard {
-  &.ui-v2 {
-    margin-top: 15px;
+  margin-top: 15px;
 
-    a {
-      color: @link-color-v2;
-    }
+  a {
+    color: @link-color-v2;
   }
 
   .alert {
@@ -89,7 +90,7 @@
 
 .recent-time {
   white-space: nowrap;
-  font-family: @codeFontFamily;
+  font-family: @font-family-monospace;
   font-size: @codeFontSize;
   min-width: 55px;
 
@@ -176,213 +177,120 @@
   }
 }
 
-&.ui-v2 {
-  @build-padding: 12px;
-  @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
+.build {
+  .flexy;
+  .row;
 
-  .recent-status-badge {
-    @badge-height: 25px;
+  margin-bottom: 4px;
+  background-color: @white;
+  box-shadow: 0 1px 0 0 rgba(0,0,0,0.1);
 
-    .flexy(center, flex-start);
-    .invert-status-icons;
+  a:hover {
+    text-decoration: underline;
+  }
 
-    height: @badge-height;
-    min-width: 118px;
-    padding: 0;
+  .tooltip {
+    // Turn off Bootstrap's fade-in.
+    opacity: 1;
 
-    border-radius: 2 * @badge-height;
-    background: lighten(@brand-canceled-v2, @brand-lighten-ratio-v2);
-
-    .badge-icon {
-      @badge-icon-margin: 4px;
-      @badge-icon-size: @badge-height - (2 * @badge-icon-margin);
-
-      height: @badge-icon-size;
-      width: @badge-icon-size;
-      margin: @badge-icon-margin (2 * @badge-icon-margin) @badge-icon-margin @badge-icon-margin;
+    .tooltip-arrow {
+      display: none;
     }
 
-    .badge-text {
-      .flex(1 0 auto);
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: @white;
-    }
-
-    &.pass {
-      background: @brand-success-v2;
-    }
-
-    &.fail {
-      background: @brand-danger-v2;
-    }
-
-    &.busy {
-      background: @brand-primary-v2;
-    }
-
-    &.stop {
-      background: @brand-canceled-v2;
-    }
-
-    &.queued {
-      background: @brand-pending-v2;
+    .tooltip-inner {
+      color: #fff;
+      line-height: 1em;
+      background: @grayDark;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 16px;
+      transform: scale(1.1);
     }
   }
 
-  .build {
-    .flexy;
-    .row;
+  @media (max-width: @screen-md-max) {
+    .flex-direction(column);
+    .flex-wrap(nowrap);
+    min-width: 285px;
+    margin-bottom: 8px;
+  }
+}
 
-    margin-bottom: 4px;
-    background-color: @white;
-    box-shadow: 0 1px 0 0 rgba(0,0,0,0.1);
+.status-area {
+  .flex(0 0 130px);
+  padding: 7px (@build-padding / 2);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
 
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .tooltip {
-      // Turn off Bootstrap's fade-in.
-      opacity: 1;
-
-      .tooltip-arrow {
-        display: none;
-      }
-
-      .tooltip-inner {
-        color: #fff;
-        line-height: 1em;
-        background: @grayDark;
-        border: none;
-        padding: 4px 8px;
-        border-radius: 16px;
-        transform: scale(1.1);
-      }
-    }
-
-    @media (max-width: @screen-md-max) {
-      .flex-direction(column);
-      .flex-wrap(nowrap);
-      min-width: 285px;
-      margin-bottom: 8px;
-    }
+  a:hover {
+    text-decoration: none !important;
   }
 
-  .status-area {
-    .flex(0 0 130px);
-    padding: 7px (@build-padding / 2);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
+  .build-actions {
+    .flexy(center);
+    margin-top: 5px;
+    vertical-align: middle;
 
-    a:hover {
-      text-decoration: none !important;
-    }
+    .cancel-build {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
 
-    .build-actions {
-      .flexy(center);
-      margin-top: 5px;
-      vertical-align: middle;
+      color: @gray-dark-v2;
 
-      .cancel-build {
-        background: none;
-        border: none;
-        padding: 0;
-        margin: 0;
+      .cancel-icon {
+        // Specific margins are a firefox hack:
+        // Since it doesn't support flexbox properly in buttons,
+        // we have to do a bit of manual positioning.
+        margin: 0 7px 1px 4px;
+        height: 17px;
+        width: 17px;
+      }
 
-        color: @gray-dark-v2;
+      .cancel-text {
+        .flex(1 0 auto);
+        text-align: left;
+        font-size: @fontSizeSmall;
 
-        .cancel-icon {
-          // Specific margins are a firefox hack:
-          // Since it doesn't support flexbox properly in buttons,
-          // we have to do a bit of manual positioning.
-          margin: 0 7px 1px 4px;
-          height: 17px;
-          width: 17px;
-        }
-
-        .cancel-text {
-          .flex(1 0 auto);
-          text-align: left;
-          font-size: @fontSizeSmall;
-
-          &:hover {
-            text-decoration: underline;
-          }
+        &:hover {
+          text-decoration: underline;
         }
       }
     }
-
-    @media (max-width: @screen-md-max) {
-      width: 100%;
-      .flex(0 0 auto);
-      border-right: 0;
-      border-bottom: @build-item-inner-border;
-    }
   }
 
-  .build-info {
-    .flex(1 0 auto);
-    padding: (@build-padding / 2) @build-padding;
-    border-right: @build-item-inner-border;
-    line-height: 1.8;
-
-    .recent-commit-msg {
-      // TODO: Make these fiddly margins unnecessary.
-      margin-top: 6px;
-      margin-bottom: 2px;
-
-      color: @gray;
-      font-size: @fontSizeSmall;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-
-      // TODO: Instead of this, use flexboxes to make the .recent-commit-msg
-      // take up the remaining space.
-      @media (max-width: @screen-lg-min) {
-        max-width: 440px;
-      }
-
-      @media (min-width: 1200px) {
-        max-width: 440px;
-      }
-
-      @media (min-width: 1400px) {
-        max-width: 640px;
-      }
-    }
-
-    @media (max-width: @screen-md-max) {
-      width: 100%;
-      border-right: 0;
-      border-bottom: @build-item-inner-border;
-    }
+  @media (max-width: @screen-md-max) {
+    width: 100%;
+    .flex(0 0 auto);
+    border-right: 0;
+    border-bottom: @build-item-inner-border;
   }
+}
 
-  .build-info-header {
-    .flexy;
-    .justify-content(space-between);
-    .flex-wrap(wrap);
-  }
+.build-info {
+  .flex(1 0 auto);
+  padding: (@build-padding / 2) @build-padding;
+  border-right: @build-item-inner-border;
+  line-height: 1.8;
 
-  .contextual-identifier {
-    font-size: @baseFontSize;
+  .recent-commit-msg {
+    // TODO: Make these fiddly margins unnecessary.
+    margin-top: 6px;
+    margin-bottom: 2px;
+
+    color: @gray;
+    font-size: @fontSizeSmall;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    a {
-      color: @grayDarker;
-    }
-
-    // TODO: Instead of this, use flexboxes to make the .contextual-identifier
+    // TODO: Instead of this, use flexboxes to make the .recent-commit-msg
     // take up the remaining space.
     @media (max-width: @screen-lg-min) {
       max-width: 440px;
     }
 
-    @media (min-width: @screen-lg-min) {
+    @media (min-width: 1200px) {
       max-width: 440px;
     }
 
@@ -391,218 +299,188 @@
     }
   }
 
-  .dashboard-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 10px;
-    opacity: 0.4;
-  }
-
-  @avatar-size: 20px;
-  .recent-user {
-    display: inline-block;
-
-    width: @avatar-size;
-    height: @avatar-size;
-
-    margin-right: 8px;
-
-    .dashboard-icon {
-      width: @avatar-size;
-      height: @avatar-size;
-      margin: 0;
-
-      vertical-align: bottom;
-
-      border-radius: 50%;
-      opacity: 1;
-    }
-  }
-
-  .recent-time {
-    font-family: @brand-sans-serif-v2;
-    color: @gray-dark-v2;
-  }
-
-  .recent-log {
-    font-size: @fontSizeMini;
-    font-family: @monoFontFamilyV2;
-    word-break: normal;
-  }
-
-  .metadata {
-    .flexy(column);
-    border-right: 2px solid transparent;
-    width: 214px;
-
-    @media (max-width: @screen-md-max) {
-      width: 100%;
-      border-right: none;
-    }
-
-    .metadata-row {
-      .flexy(row, flex-end);
-      padding-left: @build-padding;
-      padding-right: @build-padding;
-
-      &:first-of-type {
-        margin-top: 3px;
-      }
-
-      @media (max-width: @screen-md-max) {
-        border-bottom: @build-item-inner-border;
-        padding: 0;
-
-        &:first-of-type {
-          margin-top: 0;
-        }
-      }
-
-      .metadata-item {
-        .flex(1 0 auto);
-        padding-top: 3px;
-        padding-bottom: 3px;
-
-        font-size: @fontSizeSmall;
-
-        &:last-child {
-          .flex(0 0 40%);
-        }
-
-        span {
-          vertical-align: middle;
-        }
-
-        @media (max-width: @screen-md-max) {
-          padding: (@build-padding / 2) @build-padding;
-
-          &:last-child {
-            .flex(0 0 50%);
-            border-left: @build-item-inner-border;
-          }
-        }
-
-        &:before {
-          margin-right: 8px;
-          vertical-align: middle;
-          font-size: @fontSizeLarge;
-          color: @grayLighter;
-        }
-
-        &.start-time:before {
-          font-family: 'Material Icons';
-          content: '\e8df';
-        }
-
-        &.duration:before {
-          font-family: 'Material Icons';
-          content: '\e425';
-        }
-
-        &.pull-requests {
-          padding-top: 1px;
-
-          @media (max-width: @screen-md-max) {
-            padding-top: 6px;
-            padding-bottom: 6px;
-          }
-
-          &:before {
-            font-family: 'octicons';
-            content: '\f009';
-          }
-        }
-
-        &.revision {
-          padding-top: 1px;
-
-          @media (max-width: @screen-md-max) {
-            padding-top: 6px;
-            padding-bottom: 6px;
-          }
-
-          a {
-            vertical-align: middle;
-          }
-
-          &:before {
-            font-family: 'octicons';
-            content: '\f01f';
-          }
-        }
-      }
-    }
-  }
-
-  .build.pass .metadata {
-    border-color: @brand-success-v2;
-  }
-
-  .build.fail .metadata {
-    border-color: @brand-danger-v2;
-  }
-
-  .build.busy .metadata {
-    border-color: @brand-primary-v2;
-  }
-
-  .build.stop .metadata {
-    border-color: @brand-canceled-v2;
-  }
-
-  .build.queued .metadata {
-    border-color: @brand-pending-v2;
+  @media (max-width: @screen-md-max) {
+    width: 100%;
+    border-right: 0;
+    border-bottom: @build-item-inner-border;
   }
 }
 
-&.ui-v1 {
-  .recent-status-badge {
-    @half_height: (@baseLineHeight / 2);
-    padding: @half_height;
+.build-info-header {
+  .flexy;
+  .justify-content(space-between);
+  .flex-wrap(wrap);
+}
 
-    a {
-      vertical-align: middle;
-      text-align: center;
-      background: @grayLight;
-      border-radius: @half_height;
-      color: @white;
-      font-weight: bold;
+.contextual-identifier {
+  font-size: @baseFontSize;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  a {
+    color: @grayDarker;
+  }
+
+  // TODO: Instead of this, use flexboxes to make the .contextual-identifier
+  // take up the remaining space.
+  @media (max-width: @screen-lg-min) {
+    max-width: 440px;
+  }
+
+  @media (min-width: @screen-lg-min) {
+    max-width: 440px;
+  }
+
+  @media (min-width: 1400px) {
+    max-width: 640px;
+  }
+}
+
+.dashboard-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  opacity: 0.4;
+}
+
+@avatar-size: 20px;
+.recent-user {
+  display: inline-block;
+
+  width: @avatar-size;
+  height: @avatar-size;
+
+  margin-right: 8px;
+
+  .dashboard-icon {
+    width: @avatar-size;
+    height: @avatar-size;
+    margin: 0;
+
+    vertical-align: bottom;
+
+    border-radius: 50%;
+    opacity: 1;
+  }
+}
+
+.recent-time {
+  font-family: @brand-sans-serif-v2;
+  color: @gray-dark-v2;
+}
+
+.recent-log {
+  font-family: @monoFontFamilyV2;
+  word-break: normal;
+}
+
+.metadata {
+  .flexy(column);
+  border-right: 2px solid transparent;
+  width: 214px;
+
+  @media (max-width: @screen-md-max) {
+    width: 100%;
+    border-right: none;
+  }
+
+  .metadata-row {
+    .flexy(row, flex-end);
+    padding-left: @build-padding;
+    padding-right: @build-padding;
+
+    &:first-of-type {
+      margin-top: 3px;
+    }
+
+    @media (max-width: @screen-md-max) {
+      border-bottom: @build-item-inner-border;
+      padding: 0;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+    }
+
+    .metadata-item {
+      .flex(1 0 auto);
+      padding-top: 5px;
+      padding-bottom: 3px;
+
       font-size: @fontSizeSmall;
-      text-transform: capitalize;
-      white-space: nowrap;
-      padding: (@half_height / 5);
 
-      &.pass {background: @green}
-      &.fail {background: @redLight}
-      &.busy {background: @blueLight}
-      &.stop {background: @orange}
-    }
+      &:last-child {
+        .flex(0 0 40%);
+      }
 
-    span {
-      display: block;
-      color: @white;
-      font-weight: bold;
-      text-transform: capitalize;
-      text-shadow: none;
-      text-align: center;
-      white-space: nowrap;
-      border-radius: 25px;
-      box-sizing: border-box;
-      line-height: 1.75em;
-      width: 100%;
-    }
+      span {
+        vertical-align: middle;
+      }
 
-    + .build_actions {
-      vertical-align: middle;
-      a {
-        .subtleButton(@redLight);
-        margin: 0 1ex;
-        float: none;
-        text-align: center;
-        line-height: ~"calc(1.75em - 2px)";
-        min-height: ~"calc(1.75em - 2px)";
-        padding: 0 1ex;
+      @media (max-width: @screen-md-max) {
+        padding: 8px;
+
+        &:last-child {
+          .flex(0 0 50%);
+          border-left: @build-item-inner-border;
+        }
+      }
+
+      &.start-time,
+      &.duration,
+      &.pull-requests,
+      &.revision {
+        i{
+          font-size: @fontSizeLarge;
+          height: 19px; // magic number to make all the things the same height
+          margin-right: 8px;
+          margin-left: 0;
+          padding-top: 1px;
+          vertical-align: bottom;
+          color: @grayLighter;
+        }
+      }
+
+      &.pull-requests,
+      &.revision {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      &.pull-requests {
+        padding-left: 3px;
+        @media (max-width: @screen-md-max) {
+          padding-left: 11px;
+        }
+      }
+
+      &.revision {
+        padding-left: 1px;
+        @media (max-width: @screen-md-max) {
+          padding-left: 9px;
+        }
       }
     }
   }
+}
+
+.build.pass .metadata {
+  border-color: @brand-success-v2;
+}
+
+.build.fail .metadata {
+  border-color: @brand-danger-v2;
+}
+
+.build.busy .metadata {
+  border-color: @brand-primary-v2;
+}
+
+.build.stop .metadata {
+  border-color: @brand-canceled-v2;
+}
+
+.build.queued .metadata {
+  border-color: @brand-pending-v2;
 }

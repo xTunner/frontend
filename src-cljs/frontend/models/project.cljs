@@ -26,11 +26,7 @@
   (or (default-branch? branch project)
       (some #{login} pushers)))
 
-(defn personal-branch? [user project branch-data]
-  (let [[branch-name build-info] branch-data]
-    (personal-branch-helper project (:login user) branch-name (:pusher_logins build-info))))
-
-(defn personal-branch-v2? [login branch]
+(defn personal-branch? [login branch]
   (personal-branch-helper (:project branch) login (:identifier branch) (:pusher_logins branch)))
 
 (defn branch-builds [project branch-name-kw]
@@ -90,13 +86,6 @@
 (defn recent-project-was-built? [recent-project]
   (not= :not-built (:recent-activity-time recent-project)))
 
-(defn sort-branches-by-recency [projects]
-  (->> projects
-      (mapcat project->project-per-branch)
-      (filter recent-project-was-built?)
-      (sort-by :recent-activity-time (fn [a b]
-                                       (compare b a)))))
-
 (defn branches
   "Returns a collection of branches the project contains. Each branch will
   include its :identifier (the key it was listed under in the project) and
@@ -107,7 +96,7 @@
            {:identifier name-kw
             :project project})))
 
-(defn sort-branches-by-recency-v2 [projects]
+(defn sort-branches-by-recency [projects]
   (->> projects
        (mapcat branches)
        ;; Branches without activity do not appear in the Recent branch list.

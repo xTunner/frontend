@@ -4,11 +4,13 @@
             [frontend.analytics :as analytics]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
             [frontend.components.account :as account]
             [frontend.components.common :as common]
+            [frontend.components.project.common :as project-common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
             [frontend.config :as config]
@@ -83,16 +85,17 @@
                [:a {:href "/account"} "account settings"]
                "."]
               (forms/managed-button
-               [:button {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url
-                                                                        :project-id project-id}])
-                         :data-loading-text "Unfollowing..."}
-                "Unfollow"])
-              (forms/managed-button
-               [:button {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
-                                                                              :project-id project-id}])
-                         :data-loading-text "Stopping Builds..."
-                         :data-success-text "Builds Stopped"}
-                "Stop Building on Circle"]))
+                [:button.btn.btn-warning {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url
+                                                                                         :project-id project-id}])
+                                          :data-loading-text "Unfollowing..."}
+                 "Unfollow"])
+               " "
+               (forms/managed-button
+                 [:button.btn.btn-danger {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                                               :project-id project-id}])
+                                          :data-loading-text "Stopping Builds..."
+                                          :data-success-text "Builds Stopped"}
+                  "Stop Building on Circle"]))
              (list
               [:h2 "You're not following this repo"]
               [:p
@@ -125,60 +128,6 @@
           [:a {:href "/docs/configuration"} "circle.yml file"]
           " in your repo. Very powerful."]]
         (om/build follow-sidebar (:project project-data))]))))
-
-(defn mini-parallelism-faq [project-data]
-  [:div.mini-faq
-   [:div.mini-faq-item
-    [:h3 "What are containers?"]
-    [:p
-     "Containers are what we call the virtual machines that your tests run in. "
-     (if (config/enterprise?)
-       (list
-        "You currently have "
-        (get-in project-data [:plan :containers])
-        " containers and can use up to "
-        (plan-model/max-parallelism (:plan project-data))
-        "x parallelism.")
-       (list
-        "Your current plan has "
-        (get-in project-data [:plan :containers])
-        " containers and supports up to "
-        (plan-model/max-parallelism (:plan project-data))
-        "x parallelism."))]
-
-    [:p "With 16 containers you could run:"]
-    [:ul
-     [:li "16 simultaneous builds at 1x parallelism"]
-     [:li "8 simultaneous builds at 2x parallelism"]
-     [:li "4 simultaneous builds at 4x parallelism"]
-     [:li "2 simultaneous builds at 8x parallelism"]
-     [:li "1 build at 16x parallelism"]]]
-   [:div.mini-faq-item
-    [:h3 "What is parallelism?"]
-    [:p
-     "We split your tests into groups, and run each group on different machines in parallel. This allows them run in a fraction of the time, for example:"]
-    [:p]
-    [:ul
-     [:li "a 45 minute build fell to 18 minutes with 3x build speed,"]
-     [:li
-      "a 20 minute build dropped to 11 minutes with 2x build speed."]]
-    [:p
-     "Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, and memory."]
-    [:p
-     "For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can "
-     [:a
-      {:href "/docs/parallel-manual-setup"}
-      "control the parallelism directly"]
-     "."]]
-   (when-not (config/enterprise?)
-     [:div.mini-faq-item
-      [:h3 "What do others think?"]
-      [:blockquote
-       [:i
-        "The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service."]]
-      [:ul
-       [:li [:a {:href "http://zencoder.com/company/"} "Brandon Arbini"]]
-       [:li [:a {:href "http://zencoder.com/"} "Zencoder.com"]]]])])
 
 (defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
@@ -278,7 +227,7 @@
          (if-not (:plan project-data)
            [:div.loading-spinner common/spinner]
            (list (parallelism-picker project-data owner)
-                 (mini-parallelism-faq project-data)))]]))))
+                 (project-common/mini-parallelism-faq project-data)))]]))))
 
 
 (defn env-vars [project-data owner]
@@ -305,25 +254,29 @@
               " characters by prefixing them with " [:code "\\"] "."
               " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "." ]
              [:form
-              [:input#env-var-name
-               {:required true, :type "text", :value new-env-var-name
-                :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]
-              [:label {:placeholder "Name"}]
-              [:input#env-var-value
-               {:required true, :type "text", :value new-env-var-value
-                :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]
-              [:label {:placeholder "Value"}]
-              (forms/managed-button
-                [:input {:data-failed-text "Failed",
-                         :data-success-text "Added",
-                         :data-loading-text "Adding...",
-                         :value "Save variables",
-                         :type "submit"
-                         :on-click #(do
-                                      (raise! owner [:created-env-var {:project-id project-id}])
-                                      false)}])]
+              [:div.form-group
+               [:label "Name"]
+               [:input.form-control#env-var-name
+                {:required true, :type "text", :value new-env-var-name
+                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]]
+              [:div.form-group
+               [:label "Value"]
+               [:input.form-control#env-var-value
+                {:required true, :type "text", :value new-env-var-value
+                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]
+
+              [:div.form-group
+               (forms/managed-button
+                 [:input.btn.btn-primary {:data-failed-text "Failed",
+                                          :data-success-text "Added",
+                                          :data-loading-text "Adding...",
+                                          :value "Save variables",
+                                          :type "submit"
+                                          :on-click #(do
+                                                       (raise! owner [:created-env-var {:project-id project-id}])
+                                                       false)}])]]
              (when-let [env-vars (seq (:envvars project-data))]
-               [:table
+               [:table.table
                 [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
                 [:tbody
                  (for [{:keys [name value]} env-vars]
@@ -424,13 +377,14 @@
                                    "If this option is selected, then CircleCI will run builds for this project "
                                    "on Mac OSX rather than Linux. Select this if you have an iOS application "
                                    "that you want to build using CircleCI."]})
-            (describe-flag {:flag :smart-cocoapods-caching
-                           :title "Smart CocoaPods Caching"
-                           :blurb [:p
-                                   "Enable aggressive caching of CocoaPods to remove the need to call the `pod install`
-                                   command on every build. This feature is under active development and might cause
-                                   spurious build failures from time to time."]})
 
+           (when (feature/enabled? :enable-trusty-setting)
+             (describe-flag {:flag :trusty-beta
+                             :title "Ubuntu 14.04 Trusty container"
+                             :blurb [:p
+                                     "Select this option to run builds in our Ubuntu 14.04 (Trusty) container."
+                                     "This container is currently in beta."
+                                     "Our default container is Ubuntu 12.04 (Precise)."]}))
             ]]])))))
 
 (defn dependencies [project-data owner]
@@ -455,31 +409,34 @@
            [:div.dependencies-inner
             [:form.spec_form
              [:fieldset
-              [:textarea {:name "setup",
-                          :required true
-                          :value (str (:setup settings))
-                          :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
-              [:label {:placeholder "Pre-dependency commands"}]
-              [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]
-              [:textarea {:name "dependencies",
-                          :required true
-                          :value (str (:dependencies settings))
-                          :on-change #(utils/edit-input owner (conj state/inputs-path :dependencies) %)}]
-              [:label {:placeholder "Dependency overrides"}]
-              [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
-               [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
-               [:code "configure"] ", " [:code "make"] ", etc."]
-              [:textarea {:required true
-                          :value (str (:post_dependencies settings))
-                          :on-change #(utils/edit-input owner (conj state/inputs-path :post_dependencies) %)}]
-              [:label {:placeholder "Post-dependency commands"}]
-              [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]
+              [:div.form-group
+               [:label "Pre-dependency commands"]
+               [:textarea.dumb.form-control {:name "setup",
+                                             :required true
+                                             :value (str (:setup settings))
+                                             :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
+              [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]]
+              [:div.form-group
+               [:label "Dependency overrides"]
+               [:textarea.dumb.form-control {:name "dependencies",
+                                             :required true
+                                             :value (str (:dependencies settings))
+                                             :on-change #(utils/edit-input owner (conj state/inputs-path :dependencies) %)}]
+               [:p "Replace our inferred setup commands with your own bash commands. Dependency overrides run instead of our inferred commands for dependency installation. If our inferred commands are not to your liking, replace them here. Use this to override the specific pre-test commands we run, such as "
+                [:code "bundle install"] ", " [:code "rvm use"] ", " [:code "ant build"] ", "
+                [:code "configure"] ", " [:code "make"] ", etc."]]
+              [:div.form-group
+               [:label "Post-dependency commands"]
+               [:textarea.dumb.form-control {:required true
+                                             :value (str (:post_dependencies settings))
+                                             :on-change #(utils/edit-input owner (conj state/inputs-path :post_dependencies) %)}]
+               [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]]
               (forms/managed-button
-               [:input {:value "Next, set up your tests",
-                        :type "submit"
-                        :data-loading-text "Saving..."
-                        :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
-                                       false)}])]]]]])))))
+               [:input.btn.btn-primary {:value "Next, set up your tests",
+                                        :type "submit"
+                                        :data-loading-text "Saving..."
+                                        :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
+                                                       false)}])]]]]])))))
 
 (defn tests [project-data owner]
   (reify
@@ -502,25 +459,28 @@
             " instead."]
            [:div.tests-inner
             [:fieldset.spec_form
-             [:textarea {:name "test",
-                         :required true
-                         :value (str (:test settings))
-                         :on-change #(utils/edit-input owner (conj state/inputs-path :test) %)}]
-             [:label {:placeholder "Test commands"}]
-             [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]
-             [:textarea {:name "extra",
-                         :required true
-                         :value (str (:extra settings))
-                         :on-change #(utils/edit-input owner (conj state/inputs-path :extra) %)}]
-             [:label {:placeholder "Post-test commands"}]
-             [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]
+             [:div.form-group
+              [:label "Test commands"]
+              [:textarea.dumb.form-control {:name "test",
+                                            :required true
+                                            :value (str (:test settings))
+                                            :on-change #(utils/edit-input owner (conj state/inputs-path :test) %)}]
+              [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]]
+             [:div.form-group
+              [:label "Post-test commands"]
+              [:textarea.dumb.form-control {:name "extra",
+                                            :required true
+                                            :value (str (:extra settings))
+                                            :on-change #(utils/edit-input owner (conj state/inputs-path :extra) %)}]
+              [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]]
+
              (forms/managed-button
-              [:input {:name "save",
-                       :data-loading-text "Saving...",
-                       :value "Save commands",
-                       :type "submit"
-                       :on-click #(do (raise! owner [:saved-test-commands {:project-id project-id}])
-                                      false)}])
+              [:input.btn.btn-primary {:name "save",
+                                       :data-loading-text "Saving...",
+                                       :value "Save commands",
+                                       :type "submit"
+                                       :on-click #(do (raise! owner [:saved-test-commands {:project-id project-id}])
+                                                      false)}])
              [:div.try-out-build
               (om/build branch-picker
                         project-data
@@ -721,27 +681,23 @@
          [:form
           [:div.branch
            [:h4 "Branch"]
-           [:div.styled-select
-            [:select {:value branch
-                      :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :branch) %)}
-             [:option {:value ""} "Default"]
-             [:option {:disabled "disabled"} "-----"]
-             (for [branch branches]
-               [:option {:value branch} branch])]
-            [:i.fa.fa-chevron-down]]]
+           [:select.form-control {:value branch
+                                  :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :branch) %)}
+            [:option {:value ""} "Default"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [branch branches]
+              [:option {:value branch} branch])]]
 
           [:div.token
            [:h4 "API Token"]
            (when-not (or oss (seq token))
              [:p [:span.warning "Warning: "] "Private projects require an API token - " [:a {:href "#api"} "add one with status scope"] "."])
-           [:div.styled-select
-            [:select {:value token
-                      :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :token) %)}
-             [:option {:value ""} "None"]
-             [:option {:disabled "disabled"} "-----"]
-             (for [{:keys [token label]} tokens]
-               [:option {:value token} label])]
-            [:i.fa.fa-chevron-down]]]
+           [:select.form-control {:value token
+                                  :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :token) %)}
+            [:option {:value ""} "None"]
+            [:option {:disabled "disabled"} "-----"]
+            (for [{:keys [token label]} tokens]
+              [:option {:value token} label])]]
 
           ;; Hide style selector until "badge" style is improved. See PR #3140 discussion.
           #_[:div.style
@@ -759,15 +715,13 @@
 
           [:div.embed
            [:h4 "Embed Code"]
-           [:div.styled-select
-            [:select {:value format
-                      :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :format) %)}
-             (for [[id {:keys [label]}] status-formats]
-               [:option {:value id} label])]
-            [:i.fa.fa-chevron-down]]
-           [:textarea {:readonly true
-                       :value code
-                       :on-click #(.select (.-target %))}]]]]]]))))
+           [:select.form-control {:value format
+                                  :on-change #(utils/edit-input owner (conj state/project-data-path :status-badges :format) %)}
+            (for [[id {:keys [label]}] status-formats]
+              [:option {:value id} label])]
+           [:textarea.dumb.form-control {:readonly true
+                                         :value code
+                                         :on-click #(.select (.-target %))}]]]]]]))))
 
 (defn ssh-keys [project-data owner]
   (reify
@@ -802,7 +756,7 @@
                                                                         :private_key private-key}}])
                                false)}])]
             (when-let [ssh-keys (seq (:ssh_keys project))]
-              [:table
+              [:table.table
                [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
                [:tbody
                 (for [{:keys [hostname fingerprint]} ssh-keys]
@@ -857,7 +811,7 @@
                    "Here are the keys we can currently use to check out your project, submodules, "
                    "and private GitHub dependencies. The currently preferred key is highlighted, but "
                    "we will automatically fall back to the other keys if the preferred key is revoked."]
-                  [:table
+                  [:table.table
                    [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
                    [:tbody
                     (for [checkout-key checkout-keys
@@ -903,7 +857,7 @@
                   [:div.authorization
                    (if-not (user-model/public-key-scope? user)
                      (list
-                      [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account. (Feel free to drop this additional scope after we've added the key!)"]
+                      [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account."]
                       [:a.btn.ghu-authorize
                        {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
                         :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
@@ -992,13 +946,11 @@
              [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
              " and then create a label."]
             [:form
-             [:div.styled-select
-              [:select {:name "scope" :value scope
-                        :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)}
-               [:option {:value "status"} "Status"]
-               [:option {:value "view-builds"} "Build Artifacts"]
-               [:option {:value "all"} "All"]]
-              [:i.fa.fa-chevron-down]]
+             [:select.form-control {:name "scope" :value scope
+                                    :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)}
+              [:option {:value "status"} "Status"]
+              [:option {:value "view-builds"} "Build Artifacts"]
+              [:option {:value "all"} "All"]]
              [:input
               {:required true, :type "text" :value (str label)
                :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :label) %)}]
@@ -1015,7 +967,7 @@
                 :value "Create token",
                 :type "submit"}])]
             (when-let [tokens (seq (:tokens project-data))]
-              [:table
+              [:table.table
                [:thead
                 [:th "Scope"]
                 [:th "Label"]
@@ -1071,7 +1023,7 @@
             [:form.api
              (if (= (:heroku_deploy_user project) (:login user))
                (forms/managed-button
-                [:input.remove-user
+                [:input.btn.btn-danger.remove-user
                  {:data-success-text "Saved",
                   :data-loading-text "Saving...",
                   :on-click #(do (raise! owner [:removed-heroku-deploy-user {:project-id project-id}])
@@ -1080,7 +1032,7 @@
                   :type "submit"}])
 
                (forms/managed-button
-                [:input.set-user
+                [:input.btn.btn-primary.set-user
                  {:data-success-text "Saved",
                   :data-loading-text "Saving...",
                   :on-click #(do (raise! owner [:set-heroku-deploy-user {:project-id project-id
@@ -1244,16 +1196,14 @@
           [:legend (name app-name)]
 
           [:fieldset
-           [:div.styled-select
-            [:select {:class (when (not aws-region) "placeholder")
-                      :value (or aws-region "")
-                      ;; Updates the project cursor in order to trigger a re-render
-                      :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
-             [:option {:value ""} "Choose AWS Region..."]
-             [:option {:disabled "disabled"} "-----"]
-             [:option {:value "us-east-1"} "us-east-1"]
-             [:option {:value "us-west-2"} "us-west-2"]]
-            [:i.fa.fa-chevron-down]]
+           [:select.form-control {:class (when (not aws-region) "placeholder")
+                                  :value (or aws-region "")
+                                  ;; Updates the project cursor in order to trigger a re-render
+                                  :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
+            [:option {:value ""} "Choose AWS Region..."]
+            [:option {:disabled "disabled"} "-----"]
+            [:option {:value "us-east-1"} "us-east-1"]
+            [:option {:value "us-west-2"} "us-west-2"]]
 
            [:div.input-with-help
             [:input#application-root
@@ -1369,24 +1319,22 @@
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner-big common/spinner]
            [:div#project-settings
-            ;; Danny -- we might not need this overflow here, but keeping it for now
-            [:div.project-settings-inner {:style {:overflow (if (= :aws-codedeploy subpage) "visible" "auto")}}
-             (om/build common/flashes (get-in data state/error-message-path))
-             [:div#subpage
-              (condp = subpage
-                :parallel-builds (om/build parallel-builds project-data)
-                :env-vars (om/build env-vars project-data)
-                :experimental (om/build experiments project-data)
-                :setup (om/build dependencies project-data)
-                :tests (om/build tests project-data)
-                :hooks (om/build notifications project-data)
-                :webhooks (om/build webhooks project-data)
-                :badges (om/build status-badges project-data)
-                :ssh (om/build ssh-keys project-data)
-                :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
-                :api (om/build api-tokens project-data)
-                :heroku (om/build heroku {:project-data project-data :user user})
-                :deployment (om/build other-deployment project-data)
-                :aws (om/build aws project-data)
-                :aws-codedeploy (om/build aws-codedeploy project-data)
-                (om/build overview project-data))]]]))))))
+            (om/build common/flashes (get-in data state/error-message-path))
+            [:div#subpage
+             (condp = subpage
+               :parallel-builds (om/build parallel-builds project-data)
+               :env-vars (om/build env-vars project-data)
+               :experimental (om/build experiments project-data)
+               :setup (om/build dependencies project-data)
+               :tests (om/build tests project-data)
+               :hooks (om/build notifications project-data)
+               :webhooks (om/build webhooks project-data)
+               :badges (om/build status-badges project-data)
+               :ssh (om/build ssh-keys project-data)
+               :checkout (om/build checkout-ssh-keys {:project-data project-data :user user})
+               :api (om/build api-tokens project-data)
+               :heroku (om/build heroku {:project-data project-data :user user})
+               :deployment (om/build other-deployment project-data)
+               :aws (om/build aws project-data)
+               :aws-codedeploy (om/build aws-codedeploy project-data)
+               (om/build overview project-data))]]))))))

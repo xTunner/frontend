@@ -28,6 +28,10 @@
 (defn osx? [plan]
   (boolean (:osx plan)))
 
+(defn osx-trial? [plan]
+  (and (osx? plan)
+       (some-> plan :osx_trial_active)))
+
 (defn trial? [plan]
   (boolean (:trial plan)))
 
@@ -93,6 +97,7 @@
 
 (defn transferrable-or-piggiebackable-plan? [plan]
   (or (paid? plan)
+      (osx? plan)
       ;; Trial plans shouldn't really be transferrable
       ;; but they are piggiebackable and the UI mixes the two :(
       (trial? plan)))
@@ -158,6 +163,14 @@
   "Normalizes the Stripe amount on the plan to dollars."
   [plan]
   (/ (:amount plan) 100))
+
+(defn osx-cost
+  [plan]
+  (or (some-> plan :osx :template :price) 0))
+
+(defn linux-cost
+  [plan]
+  (- (stripe-cost plan) (osx-cost plan)))
 
 (defn grandfathered? [plan]
   (and (paid? plan)
