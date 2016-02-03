@@ -289,7 +289,7 @@
                              :result-path
                              (conj state/project-data-path :source-cache-clear))))
           [:p "CircleCI saves a copy of your source code on our system and pulls only changes since the last build on each branch."]
-          [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build."]
+          [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build.  Doing this too frequently or when you have a large number of high parallelism builds also carries some risk of becoming rate-limited by github, which will prevent your builds from being able to download source until the rate-limit expires."]
           (clear-cache-button "source" project-data owner)]]))))
 
 (defn env-vars [project-data owner]
