@@ -232,6 +232,65 @@
            (list (parallelism-picker project-data owner)
                  (project-common/mini-parallelism-faq project-data)))]]))))
 
+(defn result-box
+  [{:keys [success? message result-path]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.flash-error-wrapper.row-fluid
+         [:div.offset1.span10
+          [:div.alert.alert-block {:class (if success?
+                                            "alert-success"
+                                            "alert-danger")}
+           [:a.close {:on-click #(raise! owner [:dismiss-result result-path])}
+            "x"]
+           message]]]))))
+
+(defn clear-cache-button
+  [cache-type project-data owner]
+  (forms/managed-button
+    [:button.btn.btn-primary
+     {:data-loading-text "Clearing cache..."
+      :data-success-text "Cleared"
+      :data-failure-text "Clearing failed"
+      :on-click #(raise! owner
+                         [:clear-cache
+                          {:type cache-type
+                           :project-id (-> project-data
+                                           :project
+                                           project-model/id)}])}
+     (case cache-type
+       "build" "Clear Dependency Cache"
+       "source" "Clear Source Cache")]))
+
+(defn clear-caches
+  [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:section
+         [:article
+          [:h2 "Dependency Cache"]
+          (when-let [res (-> project-data :build-cache-clear)]
+            (om/build result-box
+                      (assoc res
+                             :result-path
+                             (conj state/project-data-path :build-cache-clear))))
+          [:p "CircleCI saves a copy of your dependencies to prevent downloading them all on each build."]
+          [:p [:b "NOTE: "] "Clearing your dependency cache will cause the next build to completely recreate dependencies. In some cases this can add considerable time to that build."]
+          (clear-cache-button "build" project-data owner)]
+         [:article
+          [:h2 "Source Cache"]
+          (when-let [res (-> project-data :source-cache-clear)]
+            (om/build result-box
+                      (assoc res
+                             :result-path
+                             (conj state/project-data-path :source-cache-clear))))
+          [:p "CircleCI saves a copy of your source code on our system and pulls only changes since the last build on each branch."]
+          [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build."]
+          (clear-cache-button "source" project-data owner)]]))))
 
 (defn env-vars [project-data owner]
   (reify
@@ -1422,6 +1481,7 @@
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
                :experimental (om/build experiments project-data)
+               :clear-caches (om/build clear-caches project-data)
                :setup (om/build dependencies project-data)
                :tests (om/build tests project-data)
                :hooks (om/build notifications project-data)
