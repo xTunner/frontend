@@ -12,7 +12,8 @@
 
 (def build-keys-mapping {:username :org
                          :reponame :repo
-                         :default_branch :branch})
+                         :default_branch :branch
+                         :vcs_type :vcs_type})
 
 (defn project-build-id [project]
   "Takes project hash and filter down to keys that identify the build."

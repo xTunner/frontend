@@ -23,7 +23,7 @@
 (defn adjust-vcs
   [vcs-map val]
   (let [kw (cond
-             (map? val) (-> val :vcs_type keyword vcs-map)
+             (map? val) (-> val :vcs_type vcs-map)
              (string? val) (-> val vcs-map)
              (keyword? val) (-> val name vcs-map)
              :default nil)]
