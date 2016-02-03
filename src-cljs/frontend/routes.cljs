@@ -100,11 +100,11 @@
 
 
 (defn define-user-routes! [nav-ch authenticated?]
-  (defroute v1-org-settings "/:vcs_type/organizations/:org/settings"
-    [vcs_type org _fragment]
-    (open-to-inner! nav-ch :org-settings {:vcs_type (->short-vcs vcs_type)
+  (defroute v1-org-settings #"/(gh|bb)/organizations/([^/]+)/settings"
+    [short-vcs-type org _ maybe-fragment]
+    (open-to-inner! nav-ch :org-settings {:vcs_type (->short-vcs short-vcs-type)
                                           :org org
-                                          :subpage (keyword _fragment)}))
+                                          :subpage (keyword (:_fragment maybe-fragment))}))
   (defn v1-org-settings-subpage [params]
     (apply str (v1-org-settings params)
          (when-let [subpage (:subpage params)]
@@ -134,10 +134,10 @@
                                      :org org
                                      :repo repo
                                      :tab (keyword _fragment)})))
-  (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _fragment]
+  (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! nav-ch :project-settings {:vcs_type (->short-vcs short-vcs-type)
                                               :project-name (str org "/" repo)
-                                              :subpage (keyword _fragment)
+                                              :subpage (keyword (:_fragment maybe-fragment))
                                               :org org
                                               :repo repo}))
   (defn v1-project-settings-subpage [params]
