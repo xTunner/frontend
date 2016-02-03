@@ -111,8 +111,8 @@
            ["#" subpage])))
   (defroute v1-org-dashboard-alternative "/:vcs_type/organizations/:org" {:as params}
     (open-to-inner! nav-ch :dashboard (->short-vcs params)))
-  (defroute v1-org-dashboard "/:vcs_type/:org" {:as params}
-    (open-to-inner! nav-ch :dashboard (->short-vcs params)))
+  (defroute v1-org-dashboard #"/(gh|bb)/([^/]+)" [short-vcs-type org]
+    (open-to-inner! nav-ch :dashboard (->short-vcs {:vcs_type short-vcs-type :org org})))
   (defroute v1-project-dashboard "/:vcs_type/:org/:repo" {:as params}
     (open-to-inner! nav-ch :dashboard (->short-vcs params)))
   (defroute v1-project-branch-dashboard #"/([^/]+)/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
