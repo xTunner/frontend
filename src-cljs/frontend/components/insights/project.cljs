@@ -63,6 +63,7 @@
                                                 insights/median)])
                              (group-by #(-> % :start_time time-format/parse time/at-midnight) builds))]
         (js/c3.generate (clj->js {:bindto el
+                                  :padding {:top 10}
                                   :data {:x "date"
                                          :type "spline"
                                          :columns [(concat ["date"] (map first build-times))
