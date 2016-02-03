@@ -27,3 +27,7 @@
                             (aget "ldUser")
                             (aget "custom")
                             (aget "free"))))
+
+(def support-eligible? (boolean (some-> js/window
+                                        (aget "elevSettings")
+                                        (aget "support_enabled"))))

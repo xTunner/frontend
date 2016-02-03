@@ -37,11 +37,13 @@
   (class-list/add js/document.body "circle-elevio")
   (aset js/window "_elev" (or (aget js/window "_elev") #js {}))
   (let [set-elev! (partial aset (aget js/window "_elev"))
-        user-info (aget js/window "elevSettings")
+        user-info (-> js/window
+                      (aget "elevSettings")
+                      (aget "user"))
         support-module-id "2968"
         discuss-link-module-id "3003"
         discuss-support-link-module-id "3762"]
-    (if user/free?
+    (if user/support-eligible?
       ;; disable support module, discuss link module
       (set-elev! "disabledModules" #js [support-module-id discuss-link-module-id])
       ;; else disable discuss support link module
