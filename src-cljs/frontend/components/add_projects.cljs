@@ -269,21 +269,46 @@
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show forks"]]])))
 
-(defn repo-list [{:keys [repos loading-repos? repo-filter-string selected-org-login settings]} owner]
+(defn empty-repo-list [loading-repos? repo-filter-string selected-org-login]
+  (if loading-repos?
+    [:div.loading-spinner common/spinner]
+    [:div.add-repos
+     (if repo-filter-string
+       (str "No matching repos for organization " selected-org-login)
+       (str "No repos found for organization " selected-org-login))]))
+
+(defmulti repo-list (fn [{:keys [type]}] type))
+(defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         (if (empty? repos)
-          (if loading-repos?
-            [:div.loading-spinner common/spinner]
-            [:div.add-repos
-             (if repo-filter-string
-               (str "No matching repos for organization " selected-org-login)
-               (str "No repos found for organization " selected-org-login))])
+          (empty-repo-list loading-repos? repo-filter-string selected-org-login)
           [:ul.proj-list.list-unstyled
            (for [repo repos]
              (om/build repo-item {:repo repo :settings settings}))])))))
+
+(defmethod repo-list :osx [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (if (empty? repos)
+          (empty-repo-list loading-repos? repo-filter-string selected-org-login)
+          [:ul.proj-list.list-unstyled
+           (if-not (pm/osx? selected-plan)
+             [:div.add-repos
+              "You don't have an iOS plan, start a "
+              (managed-button
+                [:a {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
+                     :data-spinner true}
+                 "two-week free trial"])
+              " or purchase one "
+              [:a {:href (routes/v1-org-settings-subpage {:org selected-org-login
+                                                          :subpage "containers"})} "here"]]
+             (for [repo repos]
+               (om/build repo-item {:repo repo :settings settings})))])))))
 
 (defn repo-lists [{:keys [user repos selected-org osx-enabled? selected-plan settings] :as data} owner]
   (reify
@@ -331,6 +356,8 @@
                                         :loading-repos? loading-repos?
                                         :repo-filter-string repo-filter-string
                                         :selected-org-login selected-org-login
+                                        :selected-plan selected-plan
+                                        :type selected-tab
                                         :settings settings})
 
                    :osx
@@ -338,6 +365,8 @@
                                         :loading-repos? loading-repos?
                                         :repo-filter-string repo-filter-string
                                         :selected-org-login selected-org-login
+                                        :selected-plan selected-plan
+                                        :type selected-tab
                                         :settings settings}))])
               repos-explanation)]])))))
 

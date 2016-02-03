@@ -906,6 +906,19 @@
         (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
 
+(defmethod post-control-event! :activate-plan-trial
+  [target message plan-template previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (go
+      (let [api-result (<! (ajax/managed-ajax
+                             :post
+                             (gstring/format "/api/v1/organization/%s/plan/trial" org-name)
+                             :params plan-template))]
+        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (release-button! uuid (:status api-result))))))
+
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
   (let [uuid frontend.async/*uuid*

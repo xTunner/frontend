@@ -612,7 +612,7 @@
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (org-selectable? state (:org-name context))
     state
     (update-in state state/org-plan-path merge resp)))
 
