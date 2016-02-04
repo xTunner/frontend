@@ -58,6 +58,7 @@
             project-id (project-model/id project)
             project-name (:reponame project)
             project-user (:username project)
+            vcs-type (:vcs_type project)
             vcs-url (:vcs_url project)]
         (html
           [:div.head-user
@@ -70,7 +71,7 @@
                 "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app owner)
            (when (= :project-settings (:navigation-point app))
-             [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
+             [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name :vcs_type vcs-type})}
               (str "View " project-name " »")])
            (when (= :build (:navigation-point app))
              (om/build build-head/build-head-actions app))])))))
