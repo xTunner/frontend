@@ -102,40 +102,46 @@
 (defn define-user-routes! [nav-ch authenticated?]
   (defroute v1-org-settings #"/(gh|bb)/organizations/([^/]+)/settings"
     [short-vcs-type org _ maybe-fragment]
-    (open-to-inner! nav-ch :org-settings {:vcs_type (->short-vcs short-vcs-type)
+    (open-to-inner! nav-ch :org-settings {:vcs_type (->lengthen-vcs short-vcs-type)
                                           :org org
                                           :subpage (keyword (:_fragment maybe-fragment))}))
   (defn v1-org-settings-subpage [params]
     (apply str (v1-org-settings params)
          (when-let [subpage (:subpage params)]
            ["#" subpage])))
+
   (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org]
-    (open-to-inner! nav-ch :dashboard (->short-vcs {:vcs_type short-vcs-type
+    (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type
                                                     :org org})))
+
   (defroute v1-org-dashboard #"/(gh|bb)/([^/]+)" [short-vcs-type org]
-    (open-to-inner! nav-ch :dashboard (->short-vcs {:vcs_type short-vcs-type :org org})))
+    (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type :org org})))
+
   (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo]
-    (open-to-inner! nav-ch :dashboard (->short-vcs {:vcs_type short-vcs-type
+    (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type
                                                     :org org
                                                     :repo repo})))
-  (defroute v1-project-branch-dashboard #"/([^/]+)/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
-    [vcs_type org repo branch args]
-    (open-to-inner! nav-ch :dashboard (merge args {:vcs_type (->short-vcs vcs_type)
+
+  (defroute v1-project-branch-dashboard #"/(gh|bb)/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
+    [short-vcs-type org repo branch args]
+    (open-to-inner! nav-ch :dashboard (merge args {:vcs_type (->lengthen-vcs short-vcs-type)
                                                    :org org
                                                    :repo repo
                                                    :branch branch})))
-  (defroute v1-build #"/([^/]+)/([^/]+)/([^/]+)/(\d+)"
-    [vcs_type org repo build-num _ maybe-fragment]
+
+  (defroute v1-build #"/(gh|bb)/([^/]+)/([^/]+)/(\d+)"
+    [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
     (let [_fragment (:_fragment maybe-fragment)]
-      (open-to-inner! nav-ch :build {:vcs_type (->short-vcs vcs_type)
+      (open-to-inner! nav-ch :build {:vcs_type (->lengthen-vcs short-vcs-type)
                                      :project-name (str org "/" repo)
                                      :build-num (js/parseInt build-num)
                                      :org org
                                      :repo repo
                                      :tab (keyword _fragment)})))
+
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
-    (open-to-inner! nav-ch :project-settings {:vcs_type (->short-vcs short-vcs-type)
+    (open-to-inner! nav-ch :project-settings {:vcs_type (->lengthen-vcs short-vcs-type)
                                               :project-name (str org "/" repo)
                                               :subpage (keyword (:_fragment maybe-fragment))
                                               :org org
@@ -261,7 +267,7 @@
 
   (defroute v1-root "/" {:as params}
     (if authenticated?
-      (open-to-inner! nav-ch :dashboard (->short-vcs params))
+      (open-to-inner! nav-ch :dashboard params)
       (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-home "/home" {:as params}
