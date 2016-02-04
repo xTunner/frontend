@@ -1,13 +1,20 @@
 #!/bin/bash
-set -ex
+set -e
 
-if [ -a "/opt/homebrew-cask/Caskroom/google-chrome-canary/latest" ]; then
-  CHROME_PATH="/opt/homebrew-cask/Caskroom/google-chrome-canary/latest"
-else
+CHROME_APP="Google Chrome Canary.app"
+
+if [ -a "$HOME/Applications/$CHROME_APP" ]; then
+  CHROME_PATH="$HOME/Applications"
+elif [ -a "/Applications/$CHROME_APP" ]; then
   CHROME_PATH="/Applications"
+else
+  echo "Error - $CHROME_APP was not found in /Applications or ~/Applications"
+  false
 fi
 
-$CHROME_PATH/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary \
+echo "Using '$CHROME_APP' from $CHROME_PATH"
+
+"$CHROME_PATH/$CHROME_APP/Contents/MacOS/Google Chrome Canary" \
   --remote-debugging-port=9222 \
   --no-first-run \
   https://prod.circlehost:4443 &
