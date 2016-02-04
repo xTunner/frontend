@@ -23,6 +23,6 @@
     "jquery-mockjax": "1.5.3"
   },
   "resolutions": {
-    "jquery": "e-tag:W/\"553fb28"
+    "jquery": "e-tag:553fb284-"
   }
 }
