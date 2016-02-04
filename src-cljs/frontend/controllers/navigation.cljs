@@ -399,7 +399,7 @@
       (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
       (assoc :org-settings-org-name org)
-      (assoc :org-settings-vcs-type vcs_type)
+      (assoc :org-settings-vcs_type vcs_type)
       (assoc-in state/crumbs-path [{:type :settings-base}
                                    {:type :org
                                     :username org}])
