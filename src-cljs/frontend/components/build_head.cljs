@@ -1030,6 +1030,6 @@
              (om/build rebuild-actions {:build build :project project}))
            [:div.build-settings
             [:a.build-action
-             {:href (routes/v1-project-settings (:navigation-data data))}
+             {:href (routes/v1-project-settings-path (:navigation-data data))}
              [:i.material-icons "settings"]
              "Project Settings"]]])))))

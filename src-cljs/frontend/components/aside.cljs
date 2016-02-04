@@ -79,9 +79,9 @@
 
 (defn project-settings-link [project]
   (when (and (project-model/can-read-settings? project))
-    [:a.project-settings-icon {:href (routes/v1-project-settings {:vcs_type (routes/->short-vcs (:vcs_type project))
-                                                                  :org (:username project)
-                                                                  :repo (:reponame project)})
+    [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type (:vcs_type project)
+                                                                       :org (:username project)
+                                                                       :repo (:reponame project)})
                                :title (project-model/project-name (:vcs_url project))
                                :on-click #(analytics/track "branch-list-project-settings-clicked")}
      [:i.material-icons "settings"]]))

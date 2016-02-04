@@ -32,7 +32,7 @@
 (defmethod render-crumb :project-settings
   [{:keys [vcs_type username project active]}]
   (crumb-node {:name "project settings"
-               :path (routes/v1-project-settings {:vcs_type (routes/->short-vcs vcs_type) :org username :repo project})
+               :path (routes/v1-project-settings-path {:vcs_type vcs_type :org username :repo project})
                :active active}))
 
 (defmethod render-crumb :project-branch

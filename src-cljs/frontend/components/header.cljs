@@ -39,7 +39,7 @@
   (when (show-settings-link? app)
     (let [navigation-data (:navigation-data app)]
       (cond (:repo navigation-data) [:a.settings.project-settings
-                                     {:href (routes/v1-project-settings navigation-data) }
+                                     {:href (routes/v1-project-settings-path navigation-data) }
                                      [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                                      "Project Settings"]
             (:org navigation-data) [:a.settings.org-settings

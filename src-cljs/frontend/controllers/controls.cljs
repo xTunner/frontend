@@ -547,6 +547,7 @@
                                            [:setup :dependencies :post_dependencies])
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         uuid frontend.async/*uuid*
         comms (get-in current-state [:comms])]
     (go
@@ -555,7 +556,7 @@
          (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
-           (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-subpage {:org org :repo repo :subpage "tests"})}]))
+           (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-path {:org org :repo repo :vcs_type vcs-type :_fragment "tests"})}]))
          (put! (:errors comms) [:api-error api-result]))
        (release-button! uuid (:status api-result))))))
 

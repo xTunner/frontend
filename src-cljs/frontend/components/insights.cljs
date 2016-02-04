@@ -273,7 +273,7 @@
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel] :as project} owner]
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel vcs_type] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -301,8 +301,9 @@
             [:a {:href (:vcs_url project)}
              [:i.octicon.octicon-mark-github]]]
            [:div.settings-icon
-            [:a {:href (routes/v1-project-settings {:org username
-                                                    :repo reponame})}
+            [:a {:href (routes/v1-project-settings-path {:org username
+                                                         :repo reponame
+                                                         :vcs_type vcs_type})}
              [:i.material-icons "settings"]]]]
           [:h4 (if show-insights?
                  (str "Branch: " branch)

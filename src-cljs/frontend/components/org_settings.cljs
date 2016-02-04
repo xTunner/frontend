@@ -150,8 +150,9 @@
                      [:a {:href vcs-url}
                       [:i.octicon.octicon-mark-github]]]
                     [:div.settings-icon
-                     [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
-                                                                       :repo (vcs-url/repo-name vcs-url)})}
+                     [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
+                                                                            :repo (vcs-url/repo-name vcs-url)
+                                                                            :vcs_type (vcs-url/vcs-type vcs-url)})}
                       [:i.material-icons "settings"]]]]
                   (om/build followers-container (:followers project))]])])]
           [:div.row-fluid
@@ -176,8 +177,9 @@
                      [:a {:href vcs-url}
                       [:i.octicon.octicon-mark-github]]]
                     [:div.settings-icon
-                     [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
-                                                                       :repo (vcs-url/repo-name vcs-url)})}
+                     [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
+                                                                            :repo (vcs-url/repo-name vcs-url)
+                                                                            :vcs_type (vcs-url/vcs-type vcs-url)})}
                       [:i.material-icons "settings"]]]]
                   (om/build followers-container (:followers project))]])])]])))))
 

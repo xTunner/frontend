@@ -572,10 +572,12 @@
              (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])
           org (vcs-url/org-name (:project-id context))
-          repo (vcs-url/repo-name (:project-id context))]
-      (put! nav-ch [:navigate! {:path (routes/v1-project-settings-subpage {:org org
-                                                                           :repo repo
-                                                                           :subpage "tests"})}]))))
+          repo (vcs-url/repo-name (:project-id context))
+          vcs-type (vcs-url/vcs-type (:project-id context))]
+      (put! nav-ch [:navigate! {:path (routes/v1-project-settings-path {:org org
+                                                                        :repo repo
+                                                                        :vcs_type vcs-type
+                                                                        :_fragment "tests"})}]))))
 
 
 (defmethod post-api-event! [:save-test-commands-and-build :success]

@@ -84,6 +84,11 @@
   [params]
   (generate-url-str "/:vcs_type/:org/:repo" params))
 
+(defn v1-project-settings-path
+  "Generate URL string from params."
+  [params]
+  (generate-url-str "/:vcs_type/:org/:repo/edit" params))
+
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-switch "/admin/switch" []
     (open-to-inner! nav-ch :switch {:admin true}))
@@ -164,10 +169,7 @@
                                               :subpage (keyword (:_fragment maybe-fragment))
                                               :org org
                                               :repo repo}))
-  (defn v1-project-settings-subpage [params]
-    (apply str (v1-project-settings params)
-           (when-let [subpage (:subpage params)]
-             ["#" subpage])))
+
   (defroute v1-add-projects "/add-projects" []
     (open-to-inner! nav-ch :add-projects {}))
   (defroute v1-insights "/build-insights" []
