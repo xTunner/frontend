@@ -7,7 +7,6 @@
             [om.core :as om :include-macros true]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            cljs-time.extend
             cljsjs.c3)
   (:require-macros [frontend.utils :refer [html defrender]]))
 
