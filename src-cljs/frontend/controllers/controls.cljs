@@ -916,7 +916,7 @@
     (analytics/track-save-orgs)))
 
 (defmethod post-control-event! :transfer-plan-clicked
-  [target message {:keys [to org-name]} previous-state current-state]
+  [target message {:keys [to org-name vcs_type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         errors-ch (get-in current-state [:comms :errors])
@@ -930,7 +930,8 @@
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
-           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name})}])))
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
+                                                                         :vcs_type vcs_type})}])))
        (release-button! uuid (:status api-result))))))
 
 (defn- maybe-add-message-for-beta
@@ -1080,7 +1081,7 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :cancel-plan-clicked
-  [target message {:keys [org-name cancel-reasons cancel-notes]} previous-state current-state]
+  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         nav-ch (get-in current-state [:comms :nav])
@@ -1094,7 +1095,8 @@
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
-           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name})
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
+                                                                         :vcs_type vcs_type})
                                      :replace-token? true}])))
        (release-button! uuid (:status api-result))))))
 

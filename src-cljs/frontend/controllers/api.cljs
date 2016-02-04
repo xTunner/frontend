@@ -604,8 +604,10 @@
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
   (when (= (:org-name context) (:org-settings-org-name current-state))
-    (let [nav-ch (get-in current-state [:comms :nav])]
+    (let [nav-ch (get-in current-state [:comms :nav])
+          vcs_type (:org-settings-vcs_type current-state)]
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
+                                                                    :vcs_type vcs_type
                                                                     :_fragment "containers"})
                                 :replace-token? true}])))
   (analytics/track-payer (get-in current-state [:current-user :login])))

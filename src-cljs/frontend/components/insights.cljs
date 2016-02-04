@@ -312,7 +312,8 @@
           (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
                 (not show-insights?) [:div.no-insights
                                       [:div.message "This release of Insights is only available for repos belonging to paid plans."]
-                                      [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))})
+                                      [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))
+                                                                                            :vcs_type (:vcs_type project)})
                                                         :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
                                                                                                                  :org-name username})} "Upgrade here"]]
                 (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
