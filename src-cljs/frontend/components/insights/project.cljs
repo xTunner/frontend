@@ -52,42 +52,39 @@
       (html
        [:div.build-time-visualization]))))
 
-(defn median-build-time [[build-date builds]]
-  [(time-format/parse build-date) (->> builds
-                                       (map :build_time_millis)
-                                       insights/median)])
 
-(defn daily-median-build-time [builds]
-    (js/console.log (clj->js (->> builds
-       (group-by #(-> % :start_time time-format/parse time/at-midnight str))
-       )))
+(defn daily-median-build-time
+  "Given a collection of builds, returns a list of vector pairs
+  [build-date median-build-time], where build-date is midnight of each day where
+  a build started (UTC), and median-build-time is the median of the build times
+  of all builds from that day. The list is sorted by build-date, ascending."
+  [builds]
   (->> builds
-       (group-by #(-> % :start_time time-format/parse time/at-midnight str))
-       (map median-build-time)))
+       (group-by #(-> % :start_time time-format/parse time/at-midnight))
+       (into (sorted-map))
+       (map (fn [[build-date bs]]
+              [build-date (->> bs
+                               (map :build_time_millis)
+                               insights/median)]))))
+
 
 (defn build-time-line-chart [builds owner]
   (reify
     om/IDidMount
     (did-mount [_]
-     (let [el (om/get-node owner)
-           build-times (daily-median-build-time builds)]
-       #_(->> build-times
-            (map first)
-            (map str)
-            sort
-            clj->js
-            js/console.log)
-       (js/c3.generate (clj->js {:bindto el
-                                 :padding {:top 10}
-                                 :data {:x "date"
-                                        :type "spline"
-                                        :columns [(concat ["date"] (map first build-times))
-                                                  (concat ["Median Build Time"] (map last build-times))]}
-                                   :legend {:hide true}
-                                    :grid {:y {:show true}}
-                                    :zoom {:enabled true}
-                                    :axis {:x {:type "timeseries"
-                                               :tick {:format "%m/%d"}}}}))))
+      (let [el (om/get-node owner)
+            build-times (daily-median-build-time builds)]
+        (js/c3.generate (clj->js {:bindto el
+                                  :padding {:top 10}
+                                  :data {:x "date"
+                                         :type "spline"
+                                         :columns [(concat ["date"] (map first build-times))
+                                                   (concat ["Median Build Time"] (map last build-times))]}
+                                  :legend {:hide true}
+                                  :grid {:y {:show true}}
+                                  :zoom {:enabled true}
+                                  :axis {:x {:type "timeseries"
+                                             :tick {:format "%m/%d"}}}}))))
     om/IRender
     (render [_]
       (html
