@@ -44,10 +44,10 @@
         discuss-link-module-id "3003"
         discuss-support-link-module-id "3762"]
     (if user/support-eligible?
-      ;; disable support module, discuss link module
-      (set-elev! "disabledModules" #js [support-module-id discuss-link-module-id])
-      ;; else disable discuss support link module
-      (set-elev! "disabledModules" #js [discuss-support-link-module-id]))
+      ;; enable zendesk support, disable discuss support
+      (set-elev! "disabledModules" #js [discuss-support-link-module-id])
+      ;; enable discuss support, disable zendesk support
+      (set-elev! "disabledModules" #js [support-module-id discuss-link-module-id]))
     (set-elev! "account_id" account-id)
     (set-elev! "user" user-info)
     (set-elev! "pushin" "false")
