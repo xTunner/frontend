@@ -18,7 +18,12 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
             [om.core :as om :include-macros true]
-            [goog.string :as gstring]))
+            [goog.string :as gstring]
+            [clojure.set :as set]
+            [cljs-time.core :as time]
+            [cljs-time.format :as timef]
+            [frontend.datetime :as datetime]
+            [frontend.components.forms :as forms]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
 ;; result will be pushed into the api-channel
@@ -669,3 +674,29 @@
 (defmethod api-event [:user-plans :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/user-plans-path resp))
+
+(defmethod api-event [:get-code-signing-keys :success]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state state/osx-keys-path (:data resp)))
+
+(defmethod post-api-event! [:set-code-signing-keys :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (api/get-code-signing-keys (:org-name context) (-> current-state :comms :api))
+  (forms/release-button! (:uuid context) status))
+
+(defmethod post-api-event! [:set-code-signing-keys :failed]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status))
+
+(defmethod api-event [:delete-code-signing-key :success]
+  [target message status {:keys [context]} state]
+  (update-in state state/osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
+                                                             (= (:id context) (:id %))))))
+
+(defmethod post-api-event! [:delete-code-signing-keys :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status))
+
+(defmethod post-api-event! [:delete-code-signing-keys :failed]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status))

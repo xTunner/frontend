@@ -368,6 +368,10 @@
                      :project-envvar
                      api-ch
                      :context {:project-name project-name})
+
+          (= subpage :code-signing)
+          (api/get-code-signing-keys (get-in current-state [:navigation-data :org]) api-ch)
+
           :else nil))
 
   (set-page-title! (str "Project settings - " project-name)))

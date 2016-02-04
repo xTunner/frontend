@@ -137,3 +137,31 @@
              :set-user-admin-state
              api-ch
              :params {:admin scope}))
+
+(defn get-code-signing-keys [org-name api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys" org-name)
+             :get-code-signing-keys
+             api-ch
+             :context {:org-name org-name}))
+
+(defn set-code-signing-keys [org-name file-content file-name password description api-ch uuid]
+  (ajax/ajax :post
+             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys" org-name)
+             :set-code-signing-keys
+             api-ch
+             :params {:file-content file-content
+                      :file-name file-name
+                      :password password
+                      :description description}
+             :context {:org-name org-name
+                       :uuid uuid}))
+
+(defn delete-code-signing-key [org-name id api-ch uuid]
+  (ajax/ajax :delete
+             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys/%s" org-name id)
+             :delete-code-signing-key
+             api-ch
+             :context {:id id
+                       :uuid uuid}))
+
