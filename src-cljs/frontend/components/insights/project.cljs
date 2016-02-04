@@ -83,7 +83,9 @@
                                   :grid {:y {:show true}}
                                   :zoom {:enabled true}
                                   :axis {:x {:type "timeseries"
-                                             :tick {:format "%m/%d"}}}}))))
+                                             :tick {:format "%m/%d"}}
+                                         :y {:min 0
+                                             :tick {:format #(str (quot % 60000) "m")}}}}))))
     om/IRender
     (render [_]
       (html
