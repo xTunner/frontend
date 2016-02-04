@@ -312,7 +312,7 @@
     (set-page-title! "Invite teammates")))
 
 (defmethod navigated-to :project-settings
-  [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
+  [history-imp navigation-point {:keys [project-name subpage org repo vcs_type] :as args} state]
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
@@ -322,10 +322,12 @@
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :settings-base}
                                    {:type :org
-                                    :username org}
+                                    :username org
+                                    :vcs_type vcs_type}
                                    {:type :project
                                     :username org
-                                    :project repo}])
+                                    :project repo
+                                    :vcs_type vcs_type}])
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
           %))))
