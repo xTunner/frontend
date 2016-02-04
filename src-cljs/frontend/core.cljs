@@ -31,7 +31,10 @@
             ;; Extends goog.date.* datatypes to IEquiv and IComparable.
             [cljs-time.extend])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing swallow-errors]]))
+                   [frontend.utils :refer [inspect timing swallow-errors]]
+                   [frontend.devtools :refer [require-devtools!]]))
+
+(require-devtools!)
 
 (enable-console-print!)
 

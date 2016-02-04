@@ -454,7 +454,11 @@
         [:td.cell.unpaid [:i.material-icons.ex "close"]]
         [:td.cell.paid [:i.material-icons.check "check"]]]
        [:tr.row
-        [:td.cell.metric "iOS Support"]
+        [:td.cell.metric "Build Insights"]
+        [:td.cell.unpaid [:i.material-icons.ex "close"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]
+       [:tr.row
+        [:td.cell.metric "Build Timings"]
         [:td.cell.unpaid [:i.material-icons.ex "close"]]
         [:td.cell.paid [:i.material-icons.check "check"]]]]]]))
 

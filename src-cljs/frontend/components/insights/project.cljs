@@ -10,16 +10,13 @@
             cljsjs.c3)
   (:require-macros [frontend.utils :refer [html defrender]]))
 
-(def svg-info
-  {:width 425
-   :height 100
-   :top 10, :right 10, :bottom 10, :left 30})
-
 (def plot-info
-  {:width (- (:width svg-info) (:left svg-info) (:right svg-info))
-   :height (- (:height svg-info) (:top svg-info) (:bottom svg-info))
+  {:top 10
+   :right 10
+   :bottom 10
+   :left 30
    :max-bars 100
-   :positive-y% 0.60})
+   :positive-y% 0.6})
 
 (defn filter-chartable-builds [builds]
   (some->> builds
@@ -40,7 +37,7 @@
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)]
-        (insights/insert-skeleton el)
+        (insights/insert-skeleton plot-info el)
         (insights/visualize-insights-bar! plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
