@@ -56,9 +56,6 @@
   .failure-source {
     color: @redLight;
   }
-  ol {
-    margin: 0 2em;
-  }
 }
 
 .build-artifacts-list {
@@ -701,15 +698,22 @@ table.code {
       background: @white;
     }
 
+    &.active a,
+    &.active a:hover,
+    &.active a:focus {
+      border: none; // BS RESET
+    }
+
     a {
       color: @gray-dark-v2; // BS RESET
       border: none; // BS RESET
       margin: 0; // BS RESET
+      font-size: @fontSizeSmallish;
 
       &:hover {
-	background: none; // BS RESET
-	color: @gray-light-v2; // BS RESET
-	border: none; // BS RESET
+        background: none; // BS RESET
+        color: @gray-light-v2; // BS RESET
+        border: none; // BS RESET
       }
     }
   }
@@ -724,13 +728,6 @@ table.code {
 // TODO: remove once the build-info block has been totally ported
 .build-info {
   display: block;
-}
-
-.sub-head-usage-queue {
-  .build:last-child {
-    margin-bottom: 0;
-    box-shadow: none;
-  }
 }
 
 .commit-message, .sha-one {

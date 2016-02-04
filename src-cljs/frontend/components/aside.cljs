@@ -182,30 +182,33 @@
 
 (defn project-settings-nav-items [data owner]
   (let [navigation-data (:navigation-data data)]
-    [{:type :heading :title "Project Settings"}
-     {:type :subpage :href "edit" :title "Overview" :subpage :overview}
-     {:type :subpage :href (routes/v1-org-settings navigation-data) :title "Org Settings"
-      :class "project-settings-to-org-settings"}
-     {:type :heading :title "Tweaks"}
-     {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}
-     {:type :subpage :href "#env-vars" :title "Environment variables" :subpage :env-vars}
-     {:type :subpage :href "#experimental" :title "Experimental Settings" :subpage :experimental}
-     {:type :heading :title "Test Commands"}
-     {:type :subpage :href "#setup" :title "Dependency Commands" :subpage :setup}
-     {:type :subpage :href "#tests" :title "Test Commands" :subpage :tests}
-     {:type :heading :title "Notifications"}
-     {:type :subpage :href "#hooks" :title "Chat Notifications" :subpage :hooks}
-     {:type :subpage :href "#webhooks" :title "Webhook Notifications" :subpage :webhooks}
-     {:type :subpage :href "#badges" :title "Status Badges" :subpage :badges}
-     {:type :heading :title "Permissions"}
-     {:type :subpage :href "#checkout" :title "Checkout SSH keys" :subpage :checkout}
-     {:type :subpage :href "#ssh" :title "SSH Permissions" :subpage :ssh}
-     {:type :subpage :href "#api" :title "API Permissions" :subpage :api}
-     {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
-     {:type :heading :title "Continuous Deployment"}
-     {:type :subpage :href "#heroku" :title "Heroku Deployment" :subpage :heroku}
-     {:type :subpage :href "#aws-codedeploy" :title "AWS CodeDeploy" :subpage :aws-codedeploy}
-     {:type :subpage :href "#deployment" :title "Other Deployments" :subpage :deployment}]))
+    (remove nil?
+      [{:type :heading :title "Project Settings"}
+       {:type :subpage :href "edit" :title "Overview" :subpage :overview}
+       {:type :subpage :href (routes/v1-org-settings navigation-data) :title "Org Settings"
+        :class "project-settings-to-org-settings"}
+       {:type :heading :title "Tweaks"}
+       {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}
+       {:type :subpage :href "#env-vars" :title "Environment variables" :subpage :env-vars}
+       {:type :subpage :href "#experimental" :title "Experimental Settings" :subpage :experimental}
+       {:type :heading :title "Test Commands"}
+       {:type :subpage :href "#setup" :title "Dependency Commands" :subpage :setup}
+       {:type :subpage :href "#tests" :title "Test Commands" :subpage :tests}
+       {:type :heading :title "Notifications"}
+       {:type :subpage :href "#hooks" :title "Chat Notifications" :subpage :hooks}
+       {:type :subpage :href "#webhooks" :title "Webhook Notifications" :subpage :webhooks}
+       {:type :subpage :href "#badges" :title "Status Badges" :subpage :badges}
+       {:type :heading :title "Permissions"}
+       {:type :subpage :href "#checkout" :title "Checkout SSH keys" :subpage :checkout}
+       {:type :subpage :href "#ssh" :title "SSH Permissions" :subpage :ssh}
+       {:type :subpage :href "#api" :title "API Permissions" :subpage :api}
+       {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
+       (when (feature/enabled? :show-ios-code-signing)
+         {:type :subpage :href "#code-signing" :title "iOS Code Signing" :subpage :code-signing})
+       {:type :heading :title "Continuous Deployment"}
+       {:type :subpage :href "#heroku" :title "Heroku Deployment" :subpage :heroku}
+       {:type :subpage :href "#aws-codedeploy" :title "AWS CodeDeploy" :subpage :aws-codedeploy}
+       {:type :subpage :href "#deployment" :title "Other Deployments" :subpage :deployment}])))
 
 (defn project-settings-menu [app owner]
   (reify

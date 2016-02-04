@@ -60,11 +60,18 @@ to manage dependencies. If you are using CocoaPods, then we recommend that you
 check your [Pods directory into source control](http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control).
 This will ensure that you have a deterministic, reproducable build.
 
-If CircleCI finds a `Podfile` and no `Pods` directory, then we will run
-`pod install` to install the necessary dependencies in the `dependencies`
-step of your build.
+If CircleCI finds a `Podfile` and the `Pods` directory is not present (or empty)
+ then we will run `pod install` to install the necessary dependencies in the
+`dependencies` step of your build.
 
-##Supported build and test tools
+We cannot handle all setups automatically, so for some projects you might need
+to invoke CocoaPods manually with some custom configuration. To do this you will
+need to override the `dependencies` section of your `circle.yml` file.
+See our [documentation on overriding build phases for more information on this.](/docs/configuration#phases).
+If you need more help please reach out to our support team who are always happy
+to help out.
+
+## Supported build and test tools
 
 CircleCI's automatic commands cover a lot of common test patterns, and you can customize your build
 as needed to satisfy almost any iOS build and test strategy.
