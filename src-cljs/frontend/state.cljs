@@ -23,7 +23,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}
-                             :show-forks false}
+                             :show-forks true}
               :browser-settings {:expanded-repos #{}}}
    :selected-home-technology-tab nil
    :modal-video-id nil
