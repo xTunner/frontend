@@ -267,7 +267,7 @@
                  :checked (-> settings :add-projects :show-forks)
                  :name "Show forks"
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
-        "Show forks"]]])))
+        "Show Forks"]]])))
 
 (defn empty-repo-list [loading-repos? repo-filter-string selected-org-login]
   (if loading-repos?
@@ -276,6 +276,25 @@
      (if repo-filter-string
        (str "No matching repos for organization " selected-org-login)
        (str "No repos found for organization " selected-org-login))]))
+
+(defn no-plan-empty-state [{:keys [selected-org-login]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.no-plan-empty-state
+         [:i.fa.fa-apple.apple-logo]
+         [:div.title
+          [:span.bold selected-org-login] " has no " [:span.bold "iOS plan"] " on CircleCI."]
+         [:div.info
+          "Select a plan to build your iOS projects now."]
+         [:div.buttons
+          [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-subpage {:org selected-org-login
+                                                                      :subpage "containers"})} "Select Plan"]
+          (managed-button
+            [:a.btn.trial {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
+                           :data-spinner true}
+             "Start 2 Week Trial"])]]))))
 
 (defmulti repo-list (fn [{:keys [type]}] type))
 (defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
@@ -298,15 +317,7 @@
           (empty-repo-list loading-repos? repo-filter-string selected-org-login)
           [:ul.proj-list.list-unstyled
            (if-not (pm/osx? selected-plan)
-             [:div.add-repos
-              "You don't have an iOS plan, start a "
-              (managed-button
-                [:a {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
-                     :data-spinner true}
-                 "two-week free trial"])
-              " or purchase one "
-              [:a {:href (routes/v1-org-settings-subpage {:org selected-org-login
-                                                          :subpage "containers"})} "here"]]
+             (om/build no-plan-empty-state {:selected-org-login selected-org-login})
              (for [repo repos]
                (om/build repo-item {:repo repo :settings settings})))])))))
 

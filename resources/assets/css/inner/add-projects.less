@@ -98,6 +98,51 @@
     }
   }
 
+  .no-plan-empty-state {
+    text-align: center;
+
+    .title {
+      font-size: @fontSizeJumbo;
+    }
+
+    .info {
+      font-size: @fontSizeMedium;
+
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    .apple-logo {
+     font-size: 60px;
+     margin-bottom: 20px;
+    }
+
+    .buttons {
+      margin-bottom: 30px;
+
+      .plan {
+        min-width: 180px;
+      }
+
+      .trial {
+        border-radius: 3px;
+        border: 1px solid @secondary-button-border;
+        background: @secondary-button-background;
+        color: @secondary-button-color;
+        min-width: 180px;
+        margin-left: 15px;
+
+        &:hover {
+         background: @secondary-button-hover-background;
+        }
+      }
+    }
+  }
+
   .overview {
     h3 {
       margin-top: 0;
