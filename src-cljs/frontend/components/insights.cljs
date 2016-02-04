@@ -292,9 +292,10 @@
                            :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name
             (if (feature/enabled? :insights-dashboard)
-              [:a {:href (routes/v1-insights-project {:org (:username project)
-                                                      :repo (:reponame project)
-                                                      :branch (:default_branch project)})}
+              [:a {:href (routes/v1-insights-project-path {:org (:username project)
+                                                           :repo (:reponame project)
+                                                           :branch (:default_branch project)
+                                                           :vcs_type (:vcs_type project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon

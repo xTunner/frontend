@@ -89,6 +89,11 @@
   [params]
   (generate-url-str "/:vcs_type/:org/:repo/edit" params))
 
+(defn v1-insights-project-path
+  "Generate URL string from params."
+  [params]
+  (generate-url-str "/build-insights/:vcs_type/:org/:repo/:branch" params))
+
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-switch "/admin/switch" []
     (open-to-inner! nav-ch :switch {:admin true}))
@@ -174,8 +179,8 @@
     (open-to-inner! nav-ch :add-projects {}))
   (defroute v1-insights "/build-insights" []
     (open-to-inner! nav-ch :build-insights {}))
-  (defroute v1-insights-project "/build-insights/:org/:repo/:branch" [org repo branch]
-    (open-to-inner! nav-ch :project-insights {:org org :repo repo :branch branch}))
+  (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
+    (open-to-inner! nav-ch :project-insights {:org org :repo repo :branch branch :vcs_type (->lengthen-vcs short-vcs-type)}))
   (defroute v1-invite-teammates "/invite-teammates" []
     (open-to-inner! nav-ch :invite-teammates {}))
   (defroute v1-invite-teammates-org "/invite-teammates/organization/:org" [org]

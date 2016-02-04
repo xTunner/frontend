@@ -149,11 +149,12 @@
                                        :show-settings-link? false)
                :project-settings-project-name project-name)
         (assoc-in state/crumbs-path [{:type :dashboard}
-                                     {:type :org :username org}
-                                     {:type :project :username org :project repo}
-                                     {:type :project-branch :username org :project repo}
+                                     {:type :org :username org :vcs_type vcs_type}
+                                     {:type :project :username org :project repo :vcs_type vcs_type}
+                                     {:type :project-branch :username org :project repo :vcs_type vcs_type}
                                      {:type :build :username org :project repo
-                                      :build-num build-num}])
+                                      :build-num build-num
+                                      :vcs_type vcs_type}])
         state-utils/reset-current-build
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
@@ -267,7 +268,7 @@
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :project-insights
-  [history-imp navigation-point {:keys [org repo] :as args} state]
+  [history-imp navigation-point {:keys [org repo vcs_type] :as args} state]
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data (assoc args :show-aside-menu? false))
@@ -275,10 +276,12 @@
       (assoc-in state/crumbs-path [{:type :build-insights}
                                    {:type :insights-repositories}
                                    {:type :org
-                                    :username org}
+                                    :username org
+                                    :vcs_type vcs_type}
                                    {:type :project
                                     :username org
-                                    :project repo}])))
+                                    :project repo
+                                    :vcs_type vcs_type}])))
 
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point args previous-state current-state]
