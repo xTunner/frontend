@@ -79,6 +79,11 @@
   [params]
   (generate-url-str "/:vcs_type/organizations/:org/settings" params))
 
+(defn v1-project-dashboard-path
+  "Generate URL string from params."
+  [params]
+  (generate-url-str "/:vcs_type/:org/:repo" params))
+
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-switch "/admin/switch" []
     (open-to-inner! nav-ch :switch {:admin true}))

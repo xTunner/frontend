@@ -94,8 +94,9 @@
                  (for [project (sort-by (fn [p] (- (count (:followers p)))) followed-projects)
                        :let [vcs-url (:vcs_url project)]]
                    [:div.om-org-user-project
-                    [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
-                                                             :repo (vcs-url/repo-name vcs-url)})}
+                    [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
+                                                                  :repo (vcs-url/repo-name vcs-url)
+                                                                  :vcs_type (vcs-url/vcs-type vcs-url)})}
                      (vcs-url/project-name vcs-url)]])]]])]]])))))
 
 (defn followers-container [followers owner]
@@ -140,8 +141,9 @@
 
                    [:div.project-header
                     [:span.project-name
-                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
-                                                              :repo (vcs-url/repo-name vcs-url)})}
+                     [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
+                                                                   :repo (vcs-url/repo-name vcs-url)
+                                                                   :vcs_type (vcs-url/vcs-type vcs-url)})}
                       (vcs-url/project-name vcs-url)]
                      " "]
                     [:div.github-icon
@@ -165,8 +167,9 @@
 
                    [:div.project-header
                     [:span.project-name
-                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
-                                                              :repo (vcs-url/repo-name vcs-url)})}
+                     [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
+                                                                   :repo (vcs-url/repo-name vcs-url)
+                                                                   :vcs_type (vcs-url/vcs-type vcs-url)})}
                       (vcs-url/project-name vcs-url)]
                      " "]
                     [:div.github-icon

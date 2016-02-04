@@ -157,9 +157,9 @@
                                          :on-click #(do
                                                       (raise! owner [:expand-repo-toggled {:repo repo}])
                                                       nil)}]
-                [:a.project-name {:href (routes/v1-project-dashboard {:vcs_type (routes/->short-vcs (:vcs_type project))
-                                                                      :org (:username project)
-                                                                      :repo (:reponame project)})
+                [:a.project-name {:href (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
+                                                                           :org (:username project)
+                                                                           :repo (:reponame project)})
                                   :on-click #(analytics/track "branch-list-project-clicked")}
                  (project-model/project-name project)]
                 (project-settings-link project)]
