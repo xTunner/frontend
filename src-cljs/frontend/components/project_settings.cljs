@@ -271,26 +271,30 @@
     (render [_]
       (html
         [:section
-         [:article
-          [:h2 "Dependency Cache"]
-          (when-let [res (-> project-data :build-cache-clear)]
+         [:div.card.detailed
+          [:h4 "Dependency Cache"]
+          [:div.details
+           (when-let [res (-> project-data :build-cache-clear)]
             (om/build result-box
                       (assoc res
                              :result-path
                              (conj state/project-data-path :build-cache-clear))))
           [:p "CircleCI saves a copy of your dependencies to prevent downloading them all on each build."]
           [:p [:b "NOTE: "] "Clearing your dependency cache will cause the next build to completely recreate dependencies. In some cases this can add considerable time to that build."]
-          (clear-cache-button "build" project-data owner)]
-         [:article
-          [:h2 "Source Cache"]
-          (when-let [res (-> project-data :source-cache-clear)]
-            (om/build result-box
-                      (assoc res
-                             :result-path
-                             (conj state/project-data-path :source-cache-clear))))
-          [:p "CircleCI saves a copy of your source code on our system and pulls only changes since the last build on each branch."]
-          [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build.  Doing this too frequently or when you have a large number of high parallelism builds also carries some risk of becoming rate-limited by github, which will prevent your builds from being able to download source until the rate-limit expires."]
-          (clear-cache-button "source" project-data owner)]]))))
+          [:hr]
+          (clear-cache-button "build" project-data owner)]]
+         [:div.card.detailed
+          [:h4 "Source Cache"]
+          [:div.details
+           (when-let [res (-> project-data :source-cache-clear)]
+             (om/build result-box
+                       (assoc res
+                              :result-path
+                              (conj state/project-data-path :source-cache-clear))))
+           [:p "CircleCI saves a copy of your source code on our system and pulls only changes since the last build on each branch."]
+           [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build.  Doing this too frequently or when you have a large number of high parallelism builds also carries some risk of becoming rate-limited by github, which will prevent your builds from being able to download source until the rate-limit expires."]
+           [:hr]
+           (clear-cache-button "source" project-data owner)]]]))))
 
 (defn env-vars [project-data owner]
   (reify
