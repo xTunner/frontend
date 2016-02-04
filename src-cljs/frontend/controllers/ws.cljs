@@ -167,6 +167,10 @@
     (utils/mlog "unsubscribing from " channel-name)
     (pusher/unsubscribe pusher-imp channel-name)))
 
+(defmethod post-ws-event! :subscription-error
+  [pusher-imp message {:keys [channel-name status]} _ _]
+  (utils/mlog "subscription-error " channel-name status))
+
 (defmethod post-ws-event! :refresh
   [pusher-imp message _ previous-state current-state]
   (let [navigation-point (:navigation-point current-state)
