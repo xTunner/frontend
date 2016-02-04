@@ -132,18 +132,17 @@
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
-;; ClojureScript doesn't have real promises like Clojure, but we fake it with atoms.
 (defmethod api-event [:recent-project-builds :success]
   [target message status {page-of-recent-builds :resp, {target-id :project-id
-                                                        all-page-promises :all-page-promises
-                                                        page-promise :page-promise} :context} state]
-  ;; "Deliver" the "promise".
-  (assert (nil? @page-promise))
-  (reset! page-promise page-of-recent-builds)
+                                                        page-result :page-result
+                                                        all-page-results :all-page-results} :context} state]
+  ;; Deliver the result to the result atom.
+  (assert (nil? @page-result))
+  (reset! page-result page-of-recent-builds)
 
-  ;; If all page-promises have been delivered, we're ready to update the state.
-  (if (every? deref all-page-promises)
-    (let [all-recent-builds (apply concat (map deref all-page-promises))
+  ;; If all page-results have been delivered, we're ready to update the state.
+  (if (every? deref all-page-results)
+    (let [all-recent-builds (apply concat (map deref all-page-results))
           add-recent-builds (fn [projects]
                               (for [project projects
                                     :let [project-id (api/project-build-id project)]]

@@ -89,25 +89,24 @@
 ;; This is defined in the API.
 (def max-allowed-page-size 100)
 
-;; ClojureScript doesn't have real promises like Clojure, but we fake it with atoms.
 (defn get-projects-builds [build-ids build-count api-ch]
   (doseq [build-id build-ids]
-    ;; Assemble a list of pages descriptions and "promises" to deliver them to.
+    ;; Assemble a list of pages descriptions and result atoms to deliver them to.
     (let [page-starts (range 0 build-count max-allowed-page-size)
           page-ends (concat (rest page-starts) [build-count])
           pages (for [[start end] (map vector page-starts page-ends)]
                   {:offset start
                    :limit (- end start)
-                   :page-promise (atom nil)})
-          page-promises (map :page-promise pages)]
-      (doseq [{:keys [offset limit page-promise]} pages]
+                   :page-result (atom nil)})
+          page-results (map :page-result pages)]
+      (doseq [{:keys [offset limit page-result]} pages]
         (let [url (dashboard-builds-url (assoc build-id :offset offset :limit limit))]
           ;; Fire off an ajax call for the page. The API controllers will
-          ;; deliver the response to page-promise, and put the full data in the
-          ;; state once all of the page-promises are delivered.
+          ;; deliver the response to page-result, and put the full data in the
+          ;; state once all of the page-results are delivered.
           (ajax/ajax :get url :recent-project-builds api-ch :context {:project-id build-id
-                                                                      :page-promise page-promise
-                                                                      :all-page-promises page-promises}))))))
+                                                                      :page-result page-result
+                                                                      :all-page-results page-results}))))))
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]
