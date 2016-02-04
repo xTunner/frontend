@@ -318,8 +318,8 @@
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-right]]]
                     [:a.container-selector.add-containers
-                     {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                             :subpage "containers"})
+                     {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                          :_fragment "containers"})
                       :title "Adjust containers"
                       :class (when show-upsell? "upsell")}
                      (if show-upsell?

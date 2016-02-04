@@ -45,15 +45,15 @@
               [:ol
                [:li
                 "Sign up for a plan from your "
-                [:a {:href (routes/v1-org-settings-subpage {:org login
-                                                            :subpage "containers"})}
+                [:a {:href (routes/v1-org-settings-path {:org login
+                                                         :_fragment "containers"})}
                  "\"personal organization\" page"]]
                [:li
                 "Add " org-name
                 " to the list of organizations you pay for or transfer the plan to "
                 org-name " from the "
-                [:a {:href (routes/v1-org-settings-subpage {:org login
-                                                            :subpage "organizations"})}
+                [:a {:href (routes/v1-org-settings-path {:org login
+                                                         :_fragment "organizations"})}
                  "plan's organization page"]
                 "."]]]]))))
 
@@ -216,7 +216,7 @@
      [:p
       "If you're an admin in the " (parent-plan-name plan)
       " organization, then you can change plan settings from the "
-      [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
+      [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)})}
        (:org_name plan) " plan page"] "."]
      [:p
       "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " (parent-plan-name plan) "."]]]])
@@ -1041,7 +1041,7 @@
        [:div.explanation
         (when piggiebacked?
           [:p "This organization's projects will build under "
-           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
+           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)})}
             (:org_name plan) "'s plan."]])
         [:h4 "Linux"]
         (cond (> containers 1)
@@ -1049,8 +1049,8 @@
               (= containers 1)
               [:div
                [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
-               [:p "By " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                               :subpage "containers"})}
+               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                                  :_fragment "containers"})}
                     "upgrading"]
                 (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
               :else nil)
@@ -1073,8 +1073,8 @@
               "You can "
               ;; make sure to link to the add-containers page of the plan's org,
               ;; in case of piggiebacking.
-              [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                          :subpage "containers"})}
+              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                       :_fragment "containers"})}
                "add more"]
               (when-not piggiebacked?
                 (list " at $" container-cost " per container"))

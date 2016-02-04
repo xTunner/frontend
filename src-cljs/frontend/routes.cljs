@@ -62,6 +62,23 @@
                   :else "/")]
     (str url (when page (str "?page=" page)))))
 
+(defn generate-url-str [format-str {:keys [vcs_type _fragment] :as params}]
+  (let [short-vcs-type (if vcs_type
+                         (->short-vcs vcs_type)
+                         "gh")
+        new-params (assoc params :vcs_type short-vcs-type)
+        url (sec/render-route format-str new-params)
+        new-fragment (when _fragment
+                       (name _fragment))]
+    (if new-fragment
+      (str url "#" new-fragment)
+      url)))
+
+(defn v1-org-settings-path
+  "Generate URL string from params."
+  [params]
+  (generate-url-str "/:vcs_type/organizations/:org/settings" params))
+
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-switch "/admin/switch" []
     (open-to-inner! nav-ch :switch {:admin true}))
@@ -105,14 +122,10 @@
     (open-to-inner! nav-ch :org-settings {:vcs_type (->lengthen-vcs short-vcs-type)
                                           :org org
                                           :subpage (keyword (:_fragment maybe-fragment))}))
-  (defn v1-org-settings-subpage [params]
-    (apply str (v1-org-settings params)
-         (when-let [subpage (:subpage params)]
-           ["#" subpage])))
 
   (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org]
     (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type
-                                                    :org org})))
+                                                       :org org})))
 
   (defroute v1-org-dashboard #"/(gh|bb)/([^/]+)" [short-vcs-type org]
     (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type :org org})))

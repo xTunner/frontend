@@ -384,40 +384,40 @@
         [:td.cell "Business"]
         [:td.cell "$500/month"]
         [:td.cell.container-amount "11"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
+        [:td.cell [:a {:href (routes/v1-org-settings-path {:org selected-org
+                                                           :_fragment "containers"})
                        :on-click #(analytics/track-payment-plan-click {:view view})}
                    "Select"]]]
        [:tr.row
         [:td.cell "Growth"]
         [:td.cell "$300/month"]
         [:td.cell.container-amount "7"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
+        [:td.cell [:a {:href (routes/v1-org-settings-path {:org selected-org
+                                                           :_fragment "containers"})
                        :on-click #(analytics/track-payment-plan-click {:view view})}
                    "Select"]]]
        [:tr.row
         [:td.cell "Startup"]
         [:td.cell "$100/month"]
         [:td.cell.container-amount "3"]
-        [:td.cell [:a{:href (routes/v1-org-settings-subpage {:org selected-org
-                                                             :subpage "containers"})
+        [:td.cell [:a{:href (routes/v1-org-settings-path {:org selected-org
+                                                          :_fragment "containers"})
                       :on-click #(analytics/track-payment-plan-click {:view view})}
                    "Select"]]]
        [:tr.row
         [:td.cell "Hobbyist"]
         [:td.cell "$50/month"]
         [:td.cell.container-amount "2"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
+        [:td.cell [:a {:href (routes/v1-org-settings-path {:org selected-org
+                                                           :_fragment "containers"})
                        :on-click #(analytics/track-payment-plan-click {:view view})}
                    "Select"]]]
        [:tr.row
         [:td.cell "Free"]
         [:td.cell "$0/month"]
         [:td.cell.container-amount "1"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
+        [:td.cell [:a {:href (routes/v1-org-settings-path {:org selected-org
+                                                           :_fragment "containers"})
                        :on-click #(analytics/track-payment-plan-click {:view view})}
                    "Selected"]]]]
       [:table.comparison.table

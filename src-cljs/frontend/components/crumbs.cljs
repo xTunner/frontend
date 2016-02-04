@@ -26,7 +26,7 @@
 (defmethod render-crumb :project
   [{:keys [vcs_type username project active]}]
   (crumb-node {:name project
-               :path (routes/v1-dashboard-path {:vcs_type (routes/->short-vcs vcs_type) :org username :repo project})
+               :path (routes/v1-dashboard-path {:vcs_type vcs_type :org username :repo project})
                :active active}))
 
 (defmethod render-crumb :project-settings
@@ -40,7 +40,7 @@
   (crumb-node {:name (if branch
                        (utils/trim-middle (utils/display-branch branch) 45)
                        "...")
-               :path (routes/v1-dashboard-path {:vcs_type (routes/->short-vcs vcs_type)
+               :path (routes/v1-dashboard-path {:vcs_type vcs_type
                                                 :org username
                                                 :repo project
                                                 :branch branch})
@@ -55,15 +55,15 @@
 (defmethod render-crumb :org
   [{:keys [vcs_type username active]}]
   (crumb-node {:name username
-               :path (routes/v1-dashboard-path {:vcs_type (routes/->short-vcs vcs_type)
+               :path (routes/v1-dashboard-path {:vcs_type vcs_type
                                                 :org username})
                :active active}))
 
 (defmethod render-crumb :org-settings
   [{:keys [vcs_type username active]}]
   (crumb-node {:name "organization settings"
-               :path (routes/v1-org-settings {:org username
-                                              :vcs_type (routes/->short-vcs vcs_type)})
+               :path (routes/v1-org-settings-path {:org username
+                                                   :vcs_type vcs_type})
                :active active}))
 
 (defmethod render-crumb :add-projects

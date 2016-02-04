@@ -191,7 +191,7 @@
     (remove nil?
       [{:type :heading :title "Project Settings"}
        {:type :subpage :href "edit" :title "Overview" :subpage :overview}
-       {:type :subpage :href (routes/v1-org-settings navigation-data) :title "Org Settings"
+       {:type :subpage :href (routes/v1-org-settings-path navigation-data) :title "Org Settings"
         :class "project-settings-to-org-settings"}
        {:type :heading :title "Tweaks"}
        {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}

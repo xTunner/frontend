@@ -57,8 +57,8 @@
       "'s plan which provides "
       (plan-model/usable-containers plan)
       " containers, plus 3 additional containers available for free and open source projects. "
-      [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                  :subpage "containers"})}
+      [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                               :_fragment "containers"})}
        "Add Containers"]
       " to run more builds concurrently."]]))
 

@@ -85,7 +85,7 @@
             project-name (gstring/format "%s/%s" (:username project) (:reponame project))
             days (plan-model/days-left-in-trial plan)
             org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "containers"})
+            plan-path (routes/v1-org-settings-path {:org org-name :_fragment "containers"})
             trial-notice-fn (if (plan-model/freemium? plan)
                                 freemium-trial-html
                               non-freemium-trial-html)]
@@ -143,7 +143,7 @@
     om/IRender
     (render [_]
       (let [org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "billing"})]
+            plan-path (routes/v1-org-settings-path {:org org-name :_fragment "billing"})]
         (html
          [:div.alert.alert-danger.suspended-notice
           (list org-name

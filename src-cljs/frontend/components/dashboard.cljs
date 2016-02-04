@@ -54,8 +54,8 @@
                               Math/floor) " minutes"]
                  "."]
                 [:div
-                 [:a {:href (routes/v1-org-settings-subpage {:org (:plan_org_name diagnostic)
-                                                             :subpage "containers"})
+                 [:a {:href (routes/v1-org-settings-path {:org (:plan_org_name diagnostic)
+                                                          :_fragment "containers"})
                       :on-click #(analytics/track "build-diagnostics-add-more-containers-clicked")}
                   "Add More Containers"]]])]]))))))
 
