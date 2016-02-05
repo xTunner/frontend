@@ -358,27 +358,29 @@
                     osx-repos (->> filtered-repos (filter repo-model/likely-osx-repo?))
                     linux-repos (->> filtered-repos (remove repo-model/likely-osx-repo?))]
                 [:div
-                 (om/build repo-filter settings)
-                 (condp = selected-tab
-                   :linux
-                   (om/build repo-list {:repos (if (and osx-enabled? (pm/osx? selected-plan)) ; Allows mistaken ios repos to still be built.
-                                                 linux-repos
-                                                 filtered-repos)
-                                        :loading-repos? loading-repos?
-                                        :repo-filter-string repo-filter-string
-                                        :selected-org-login selected-org-login
-                                        :selected-plan selected-plan
-                                        :type selected-tab
-                                        :settings settings})
+                 [:div
+                  (om/build repo-filter settings)]
+                 [:div
+                  (condp = selected-tab
+                    :linux
+                    (om/build repo-list {:repos (if (and osx-enabled? (pm/osx? selected-plan)) ; Allows mistaken ios repos to still be built.
+                                                  linux-repos
+                                                  filtered-repos)
+                                         :loading-repos? loading-repos?
+                                         :repo-filter-string repo-filter-string
+                                         :selected-org-login selected-org-login
+                                         :selected-plan selected-plan
+                                         :type selected-tab
+                                         :settings settings})
 
-                   :osx
-                   (om/build repo-list {:repos osx-repos
-                                        :loading-repos? loading-repos?
-                                        :repo-filter-string repo-filter-string
-                                        :selected-org-login selected-org-login
-                                        :selected-plan selected-plan
-                                        :type selected-tab
-                                        :settings settings}))])
+                    :osx
+                    (om/build repo-list {:repos osx-repos
+                                         :loading-repos? loading-repos?
+                                         :repo-filter-string repo-filter-string
+                                         :selected-org-login selected-org-login
+                                         :selected-plan selected-plan
+                                         :type selected-tab
+                                         :settings settings}))]])
               repos-explanation)]])))))
 
 (defn inaccessible-follows
