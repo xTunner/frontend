@@ -10,7 +10,7 @@
             cljsjs.c3)
   (:require-macros [frontend.utils :refer [html defrender]]))
 
-(def plot-info
+(def build-time-bar-chart-plot-info
   {:top 10
    :right 10
    :bottom 10
@@ -18,31 +18,17 @@
    :max-bars 100
    :positive-y% 0.6})
 
-(defn filter-chartable-builds [builds]
-  (some->> builds
-           (filter insights/build-chartable?)
-           (take (:max-bars plot-info))
-           reverse
-           (map insights/add-queued-time)))
-
-(defn decorate-project
-  "Add keys to project related to insights - :show-insights? :sort-category :chartable-builds ."
-  [plans {:keys [recent-builds] :as project}]
-  (let [chartable-builds (filter-chartable-builds recent-builds)]
-    (-> project
-        (assoc :chartable-builds chartable-builds))))
-
 (defn build-time-bar-chart [builds owner]
   (reify
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)]
-        (insights/insert-skeleton plot-info el)
-        (insights/visualize-insights-bar! plot-info el builds owner)))
+        (insights/insert-skeleton build-time-bar-chart-plot-info el)
+        (insights/visualize-insights-bar! build-time-bar-chart-plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (insights/visualize-insights-bar! plot-info el builds owner)))
+        (insights/visualize-insights-bar! build-time-bar-chart-plot-info el builds owner)))
     om/IRender
     (render [_]
       (html
@@ -95,7 +81,11 @@
                                                          (filter #(and (= (:reponame %) (:repo navigation-data))
                                                                        (= (:username %) (:org navigation-data))))
                                                          first)
-        chartable-builds (filter-chartable-builds (:recent-builds project))]
+        chartable-builds (some->> (:recent-builds project)
+                                  (filter insights/build-chartable?))
+        bar-chart-builds (->> chartable-builds
+                              (take (:max-bars build-time-bar-chart-plot-info))
+                              (map insights/add-queued-time))]
     (html
      (if (nil? chartable-builds)
        ;; Loading...
@@ -109,7 +99,6 @@
            [:dt "last build"]
            [:dd (om/build common/updating-duration
                           {:start (->> chartable-builds
-                                       reverse
                                        (filter :start_time)
                                        first
                                        :start_time)}
@@ -122,11 +111,11 @@
          [:div.card.insights-metadata
           [:dl
            [:dt "median queue"]
-           [:dd (datetime/as-duration (insights/median (map :queued_time_millis chartable-builds)))]]]
+           [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds)))]]]
          [:div.card.insights-metadata
           [:dl
            [:dt "median build"]
-           [:dd (datetime/as-duration (insights/median (map :build_time_millis chartable-builds)))]]]
+           [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds)))]]]
          [:div.card.insights-metadata
           [:dl
            [:dt "parallelism"]
@@ -137,7 +126,7 @@
          [:div.card-header
           [:h3 "Build Timing"]]
          [:div.card-body
-          (om/build build-time-bar-chart chartable-builds)]]
+          (om/build build-time-bar-chart (reverse bar-chart-builds))]]
         [:div.card
          [:div.card-header
           [:h3 "Build Performance"]]
