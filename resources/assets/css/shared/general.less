@@ -115,6 +115,7 @@ a {
 input:not(.dumb) {
   @height: 3em;
   &[type="text"],
+  &[type="password"],
   &[type="search"],
   &[type="email"] {
     .smart_label(@height, (@height / 2));

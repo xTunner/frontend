@@ -274,7 +274,7 @@
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-projects api-ch :then #(api/get-projects-builds [(select-keys args [:org :repo :branch])] 100 api-ch))
+    (api/get-projects api-ch :then #(api/get-projects-builds [(select-keys args [:org :repo :branch])] 1000 api-ch))
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
@@ -368,6 +368,10 @@
                      :project-envvar
                      api-ch
                      :context {:project-name project-name})
+
+          (= subpage :code-signing)
+          (api/get-code-signing-keys (get-in current-state [:navigation-data :org]) api-ch)
+
           :else nil))
 
   (set-page-title! (str "Project settings - " project-name)))
