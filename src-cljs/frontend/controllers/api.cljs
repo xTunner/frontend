@@ -138,14 +138,24 @@
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
 (defmethod api-event [:recent-project-builds :success]
-  [target message status {recent-builds :resp, target-id :context} state]
-  (letfn [(add-recent-builds [projects]
-            (for [project projects
-                  :let [project-id (api/project-build-id project)]]
-              (if (= project-id target-id)
-                (assoc project :recent-builds recent-builds)
-                project)))]
-    (update-in state state/projects-path add-recent-builds)))
+  [target message status {page-of-recent-builds :resp, {target-id :project-id
+                                                        page-result :page-result
+                                                        all-page-results :all-page-results} :context} state]
+  ;; Deliver the result to the result atom.
+  (assert (nil? @page-result))
+  (reset! page-result page-of-recent-builds)
+
+  ;; If all page-results have been delivered, we're ready to update the state.
+  (if (every? deref all-page-results)
+    (let [all-recent-builds (apply concat (map deref all-page-results))
+          add-recent-builds (fn [projects]
+                              (for [project projects
+                                    :let [project-id (api/project-build-id project)]]
+                                (if (= project-id target-id)
+                                  (assoc project :recent-builds all-recent-builds)
+                                  project)))]
+      (update-in state state/projects-path add-recent-builds))
+    state))
 
 
 (defmethod api-event [:build :success]
