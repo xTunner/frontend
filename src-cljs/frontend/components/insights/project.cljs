@@ -73,7 +73,6 @@
         (js/c3.generate (clj->js {:bindto el
                                   :padding {:top 10}
                                   :data {:x "date"
-                                         :type "spline"
                                          :columns [(concat ["date"] (map first build-times))
                                                    (concat ["Median Build Time"] (map last build-times))]}
                                   :legend {:hide true}
