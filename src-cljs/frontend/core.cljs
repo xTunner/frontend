@@ -27,7 +27,9 @@
             [frontend.datetime :as datetime]
             [frontend.timer :as timer]
             [frontend.support :as support]
-            [secretary.core :as sec])
+            [secretary.core :as sec]
+            ;; Extends goog.date.* datatypes to IEquiv and IComparable.
+            [cljs-time.extend])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]]
                    [frontend.devtools :refer [require-devtools!]]))

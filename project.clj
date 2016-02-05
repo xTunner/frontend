@@ -24,6 +24,7 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [cljs-ajax "0.3.13"]
                  [cljsjs/react-with-addons "0.13.3-0"]
+                 [cljsjs/c3 "0.4.10-0"]
                  [org.omcljs/om "0.9.0"]
                  [hiccups "0.3.0"]
                  [sablono "0.3.6"]
