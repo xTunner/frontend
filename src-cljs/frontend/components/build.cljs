@@ -46,7 +46,7 @@
      ", so CircleCI can investigate."]))
 
 
-(defn report-error [build owner]
+(defn report-error [{:keys [build show-premium-content?]} owner]
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
     (when (:failed build)
@@ -55,16 +55,19 @@
        (if (:infrastructure_fail build)
          (infrastructure-fail-message owner)
          [:div.alert-wrap
-          "Error! Check out our "
+          "To err == human. To be a little less human, check out our "
           [:a {:href "/docs/troubleshooting"}
-           "help docs"]
-          " or our "
+           "docs"]
+          " or "
           [:a {:href "https://discuss.circleci.com/"}
            "community site"]
-          " for more information. If you are a paid customer, you may also consider "
-          [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
-           "requesting for help"]
-          " from a support engineer."])])))
+          "."
+          (when show-premium-content?
+            [:span
+             " Still stuck? We're "
+             [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
+              "happy to help"]
+             "."])])])))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
@@ -119,7 +122,9 @@
           [:div.row
            [:div.col-xs-12
             (when (empty? (:messages build))
-              [:div (report-error build owner)])
+              [:div (report-error {:build build
+                                   :show-premium-content? (project-model/show-premium-content? project plan)}
+                                  owner)])
 
             (when (and plan (project-common/show-trial-notice? project plan))
               (om/build project-common/trial-notice project-data))
