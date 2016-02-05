@@ -4,6 +4,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
             [frontend.state :as state]
+            [frontend.routes :as routes]
             [om.core :as om :include-macros true]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
@@ -91,7 +92,7 @@
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
-        {:keys [branches parallel] :as project} (some->> projects
+        {:keys [branches parallel username reponame] :as project} (some->> projects
                                                          (filter #(and (= (:reponame %) (:repo navigation-data))
                                                                        (= (:username %) (:org navigation-data))))
                                                          first)
@@ -132,7 +133,9 @@
            [:dt "parallelism"]
            [:dd parallel
             [:button.btn.btn-xs.btn-default
-             [:i.material-icons "tune"]]]]]]
+             [:a {:href (str (routes/v1-project-settings {:org username :repo reponame}) "#parallel-builds")}
+              [:i.material-icons "tune"]]
+             ]]]]]
         [:div.card
          [:div.card-header
           [:h3 "Build Timing"]]
