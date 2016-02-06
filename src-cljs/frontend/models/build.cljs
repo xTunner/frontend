@@ -1,15 +1,17 @@
 (ns frontend.models.build
   (:require [frontend.datetime :as datetime]
             [frontend.models.project :as proj]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as github]
             [goog.string :as gstring]
-            goog.string.format))
+            goog.string.format)
+  (:require-macros [frontend.utils :refer [inspect]]))
 
 ;; TODO paths should use secretary
 (defn path-for [project build]
-  (str "/gh/" (proj/project-name project) "/" (:build_num build)))
+  (str "/" (-> project proj/vcs-type routes/->short-vcs) "/" (proj/project-name project) "/" (:build_num build)))
 
 (defn path-for-parallelism [build]
   (str "/gh/" (:username build) "/" (:reponame build) "/edit#parallel-builds"))

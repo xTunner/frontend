@@ -57,8 +57,9 @@
       "'s plan which provides "
       (plan-model/usable-containers plan)
       " containers, plus 3 additional containers available for free and open source projects. "
-      [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                  :subpage "containers"})}
+      [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                               :vcs_type (:vcs_type build)
+                                               :_fragment "containers"})}
        "Add Containers"]
       " to run more builds concurrently."]]))
 
@@ -850,10 +851,10 @@
 (defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
   (when-let [build-number (:build_num previous)]
     (html
-      [:div.summary-item
-       [:span.summary-label "Previous: "]
-       [:a {:href (routes/v1-build-path (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
-          build-number]])))
+     [:div.summary-item
+      [:span.summary-label "Previous: "]
+      [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
+       build-number]])))
 
 (defn expected-duration
   [build owner opts]
@@ -1030,6 +1031,6 @@
              (om/build rebuild-actions {:build build :project project}))
            [:div.build-settings
             [:a.build-action
-             {:href (routes/v1-project-settings (:navigation-data data))}
+             {:href (routes/v1-project-settings-path (:navigation-data data))}
              [:i.material-icons "settings"]
              "Project Settings"]]])))))
