@@ -69,20 +69,22 @@
 
 ;; Note that dashboard-builds-url can take a :page (within :query-params)
 ;; and :builds-per-page, or :limit and :offset directly.
-(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page vcs_type offset limit]
+(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page offset limit]
                              :or {offset (* (get query-params :page 0) builds-per-page)
-                                  limit builds-per-page}}]
-  (let [url (cond admin "/api/v1/admin/recent-builds"
+                                  limit builds-per-page}
+                             :as args}]
+  (let [vcs-type (:vcs_type args)
+        url (cond admin "/api/v1/admin/recent-builds"
                   deployments "/api/v1/admin/deployments"
-                  branch (case vcs_type
+                  branch (case vcs-type
                            "github" (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
-                           "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/tree/%s" vcs_type org repo branch))
-                  repo (case vcs_type
+                           "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/tree/%s" vcs-type org repo branch))
+                  repo (case vcs-type
                          "github" (gstring/format "/api/v1/project/%s/%s" org repo)
-                         "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s" vcs_type org repo))
-                  org (case vcs_type
+                         "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s" vcs-type org repo))
+                  org (case vcs-type
                         "github" (gstring/format "/api/v1/organization/%s" org)
-                        "bitbucket" (gstring/format "/api/dangerzone/organization/%s/%s" vcs_type org))
+                        "bitbucket" (gstring/format "/api/dangerzone/organization/%s/%s" vcs-type org))
                   :else "/api/v1/recent-builds")]
     (str url "?" (sec/encode-query-params (merge {:shallow true
                                                   :offset offset
