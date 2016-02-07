@@ -85,9 +85,7 @@
             project-name (gstring/format "%s/%s" (:username project) (:reponame project))
             days (plan-model/days-left-in-trial plan)
             org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-path {:org org-name
-                                                    :vcs_type (:vcs_type project)
-                                                    :_fragment "containers"})
+            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "containers"})
             trial-notice-fn (if (plan-model/freemium? plan)
                                 freemium-trial-html
                               non-freemium-trial-html)]
@@ -140,14 +138,12 @@
             (for [[pref label] email-prefs]
               [:option {:value pref} label])]])))))
 
-(defn suspended-notice [plan vcs_type owner]
+(defn suspended-notice [plan owner]
   (reify
     om/IRender
     (render [_]
       (let [org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-path {:org org-name
-                                                    :vcs_type vcs_type
-                                                    :_fragment "billing"})]
+            plan-path (routes/v1-org-settings-subpage {:org org-name :subpage "billing"})]
         (html
          [:div.alert.alert-danger.suspended-notice
           (list org-name

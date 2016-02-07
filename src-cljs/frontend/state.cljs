@@ -41,7 +41,6 @@
    :project-settings-project-name nil
    :org-settings-subpage nil
    :org-settings-org-name nil
-   :org-settings-vcs_type nil
    :admin-settings-subpage nil
    :dashboard-data {:branch nil
                     :repo nil
@@ -150,7 +149,6 @@
 
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
-(def org-vcs_type-path (conj org-data-path :vcs_type))
 (def org-plan-path (conj org-data-path :plan))
 (def org-osx-beta-path (conj org-data-path :osx_builds_enabled?))
 (def org-plan-balance-path (conj org-plan-path :account_balance))

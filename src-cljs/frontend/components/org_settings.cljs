@@ -34,7 +34,7 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html]]))
 
-(defn non-admin-plan [{:keys [org-name login vcs_type]} owner]
+(defn non-admin-plan [{:keys [org-name login]} owner]
   (reify
     om/IRender
     (render [_]
@@ -45,17 +45,15 @@
               [:ol
                [:li
                 "Sign up for a plan from your "
-                [:a {:href (routes/v1-org-settings-path {:org login
-                                                         :vcs_type vcs_type
-                                                         :_fragment "containers"})}
+                [:a {:href (routes/v1-org-settings-subpage {:org login
+                                                            :subpage "containers"})}
                  "\"personal organization\" page"]]
                [:li
                 "Add " org-name
                 " to the list of organizations you pay for or transfer the plan to "
                 org-name " from the "
-                [:a {:href (routes/v1-org-settings-path {:org login
-                                                         :vcs_type vcs_type
-                                                         :_fragment "organizations"})}
+                [:a {:href (routes/v1-org-settings-subpage {:org login
+                                                            :subpage "organizations"})}
                  "plan's organization page"]
                 "."]]]]))))
 
@@ -96,9 +94,8 @@
                  (for [project (sort-by (fn [p] (- (count (:followers p)))) followed-projects)
                        :let [vcs-url (:vcs_url project)]]
                    [:div.om-org-user-project
-                    [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
-                                                                  :repo (vcs-url/repo-name vcs-url)
-                                                                  :vcs_type (vcs-url/vcs-type vcs-url)})}
+                    [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
+                                                             :repo (vcs-url/repo-name vcs-url)})}
                      (vcs-url/project-name vcs-url)]])]]])]]])))))
 
 (defn followers-container [followers owner]
@@ -143,18 +140,16 @@
 
                    [:div.project-header
                     [:span.project-name
-                     [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
-                                                                   :repo (vcs-url/repo-name vcs-url)
-                                                                   :vcs_type (vcs-url/vcs-type vcs-url)})}
+                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
+                                                              :repo (vcs-url/repo-name vcs-url)})}
                       (vcs-url/project-name vcs-url)]
                      " "]
                     [:div.github-icon
                      [:a {:href vcs-url}
                       [:i.octicon.octicon-mark-github]]]
                     [:div.settings-icon
-                     [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
-                                                                            :repo (vcs-url/repo-name vcs-url)
-                                                                            :vcs_type (vcs-url/vcs-type vcs-url)})}
+                     [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
+                                                                       :repo (vcs-url/repo-name vcs-url)})}
                       [:i.material-icons "settings"]]]]
                   (om/build followers-container (:followers project))]])])]
           [:div.row-fluid
@@ -170,18 +165,16 @@
 
                    [:div.project-header
                     [:span.project-name
-                     [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
-                                                                   :repo (vcs-url/repo-name vcs-url)
-                                                                   :vcs_type (vcs-url/vcs-type vcs-url)})}
+                     [:a {:href (routes/v1-project-dashboard {:org (vcs-url/org-name vcs-url)
+                                                              :repo (vcs-url/repo-name vcs-url)})}
                       (vcs-url/project-name vcs-url)]
                      " "]
                     [:div.github-icon
                      [:a {:href vcs-url}
                       [:i.octicon.octicon-mark-github]]]
                     [:div.settings-icon
-                     [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
-                                                                            :repo (vcs-url/repo-name vcs-url)
-                                                                            :vcs_type (vcs-url/vcs-type vcs-url)})}
+                     [:a.edit-icon {:href (routes/v1-project-settings {:org (vcs-url/org-name vcs-url)
+                                                                       :repo (vcs-url/repo-name vcs-url)})}
                       [:i.material-icons "settings"]]]]
                   (om/build followers-container (:followers project))]])])]])))))
 
@@ -214,7 +207,7 @@
 (defn parent-plan-name [plan]
   [:em (:org_name plan)])
 
-(defn plans-piggieback-plan-notification [plan current-org-name current-org-vcs-type]
+(defn plans-piggieback-plan-notification [plan current-org-name]
   [:div.row-fluid
    [:div.offset1.span10
     [:div.alert.alert-success
@@ -223,8 +216,7 @@
      [:p
       "If you're an admin in the " (parent-plan-name plan)
       " organization, then you can change plan settings from the "
-      [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                               :vcs_type current-org-vcs-type})}
+      [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
        (:org_name plan) " plan page"] "."]
      [:p
       "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " (parent-plan-name plan) "."]]]])
@@ -477,8 +469,7 @@
     om/IRenderState
     (render-state [_ {:keys [checkout-loaded?]}]
       (let [plan (get-in app state/org-plan-path)
-            org-name (get-in app state/org-name-path)
-            org-vcs-type (get-in app state/org-vcs_type-path)]
+            org-name (get-in app state/org-name-path)]
         (html
           (if-not plan
             (cond ;; TODO: fix; add plan
@@ -490,7 +481,7 @@
                 [:h3 "Something is wrong! Please submit a bug report."])
 
             (if (pm/piggieback? plan org-name)
-              (plans-piggieback-plan-notification plan org-name org-vcs-type)
+              (plans-piggieback-plan-notification plan org-name)
               [:div
                (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
                (if (and (feature/enabled? :osx-plans)
@@ -564,7 +555,6 @@
   (om/component
    (html
     (let [org-name (get-in app state/org-name-path)
-          vcs_type (get-in app state/org-vcs_type-path)
           user-login (:login (get-in app state/user-path))
           user-orgs (get-in app state/user-organizations-path)
           elligible-transfer-orgs (-> (map :login user-orgs)
@@ -615,7 +605,6 @@
                    :type "submit",
                    :class (when (empty? selected-transfer-org) "disabled")
                    :on-click #(do (raise! owner [:transfer-plan-clicked {:org-name org-name
-                                                                         :vcs_type vcs_type
                                                                          :to selected-transfer-org}])
                                   false)
                    :data-bind
@@ -908,7 +897,6 @@
     om/IRender
     (render [_]
       (let [org-name (get-in app state/org-name-path)
-            vcs_type (get-in app state/org-vcs_type-path)
             plan (get-in app state/org-plan-path)]
         (html
           [:div.org-cancel
@@ -965,7 +953,6 @@
                 (forms/managed-button
                  [:button {:data-spinner "true"
                            :on-click #(do (raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                               :vcs_type vcs_type
                                                                                :cancel-reasons reasons
                                                                                :cancel-notes notes}])
                                           false)}
@@ -1043,7 +1030,6 @@
   (om/component
    (html
     (let [org-name (get-in app state/org-name-path)
-          vcs_type (get-in app state/org-vcs_type-path)
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
           container-cost (pm/per-container-cost plan)
@@ -1055,8 +1041,7 @@
        [:div.explanation
         (when piggiebacked?
           [:p "This organization's projects will build under "
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :vcs_type vcs_type})}
+           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
             (:org_name plan) "'s plan."]])
         [:h4 "Linux"]
         (cond (> containers 1)
@@ -1064,9 +1049,8 @@
               (= containers 1)
               [:div
                [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
-               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                                  :vcs_type vcs_type
-                                                                  :_fragment "containers"})}
+               [:p "By " [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                               :subpage "containers"})}
                     "upgrading"]
                 (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
               :else nil)
@@ -1089,9 +1073,8 @@
               "You can "
               ;; make sure to link to the add-containers page of the plan's org,
               ;; in case of piggiebacking.
-              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                       :vcs_type vcs_type
-                                                       :_fragment "containers"})}
+              [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                          :subpage "containers"})}
                "add more"]
               (when-not piggiebacked?
                 (list " at $" container-cost " per container"))
@@ -1122,7 +1105,6 @@
     om/IRender
     (render [_]
       (let [org-data (get-in app state/org-data-path)
-            vcs_type (:vcs_type org-data)
             subpage (or (get app :org-settings-subpage) :overview)
             plan (get-in app state/org-plan-path)]
         (html [:div.org-page
@@ -1130,7 +1112,7 @@
                  [:div.loading-spinner common/spinner]
                  [:div
                   (when (pm/suspended? plan)
-                    (om/build project-common/suspended-notice plan vcs_type))
+                    (om/build project-common/suspended-notice plan))
                   (om/build common/flashes (get-in app state/error-message-path))
                   [:div#subpage
                    [:div
@@ -1139,5 +1121,4 @@
                       [:div (om/build non-admin-plan
                                       {:login (get-in app [:current-user :login])
                                        :org-name (:org-settings-org-name app)
-                                       :vcs_type (:org-settings-vcs_type app)
                                        :subpage subpage})])]]])])))))

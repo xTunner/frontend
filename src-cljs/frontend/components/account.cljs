@@ -44,8 +44,7 @@
              (fn [org]
                (let [;; TODO: this link is sometimes dead. We should not link, or make
                      ;; the org settings page do something sane if there's not a plan.
-                     org-url (routes/v1-org-settings-path {:org (:login org)
-                                                           :vcs_type (:vcs-type org)})
+                     org-url (routes/v1-org-settings {:org (:login org)})
                      avatar-url (gh-utils/make-avatar-url org :size 25)]
                  [:div
                   [:a

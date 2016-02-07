@@ -125,7 +125,7 @@
               (om/build project-common/trial-notice project-data))
 
             (when (plan-model/suspended? plan)
-              (om/build project-common/suspended-notice plan (:vcs_type project)))
+              (om/build project-common/suspended-notice plan))
 
             (when (and project (project-common/show-enable-notice project))
               (om/build project-common/enable-notice project))
@@ -318,9 +318,8 @@
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-right]]]
                     [:a.container-selector.add-containers
-                     {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                          :_fragment "containers"
-                                                          :vcs_type (:vcs_type build)})
+                     {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                             :subpage "containers"})
                       :title "Adjust containers"
                       :class (when show-upsell? "upsell")}
                      (if show-upsell?
