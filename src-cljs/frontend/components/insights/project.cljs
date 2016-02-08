@@ -106,10 +106,6 @@
                                   :formatter-use-start? true}})]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "active branches"]
-           [:dd (-> branches keys count)]]]
-         [:div.card.insights-metadata
-          [:dl
            [:dt "median queue"]
            [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds)))]]]
          [:div.card.insights-metadata
