@@ -106,12 +106,12 @@
                                   :formatter-use-start? true}})]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "median queue"]
-           [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds)))]]]
+           [:dt "median queue time"]
+           [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds))) " min"]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "median build"]
-           [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds)))]]]
+           [:dt "median build time"]
+           [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds))) " min"]]]
          [:div.card.insights-metadata
           [:dl
            [:dt "parallelism"]
