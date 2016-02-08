@@ -259,7 +259,7 @@
         (html
           [:div.aside-user {:class (when (= :admin-settings (:navigation-point app)) "open")}
            [:header
-            [:h5 "Admin Settings"]
+            [:h4 "Admin Settings"]
             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
              (common/ico :fail-light)]]
            [:div.aside-user-options
@@ -297,7 +297,7 @@
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
           [:header
-           [:h5 "Organization Settings"]
+           [:h4 "Organization Settings"]
            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
             (common/ico :fail-light)]]
           [:div.aside-user-options
