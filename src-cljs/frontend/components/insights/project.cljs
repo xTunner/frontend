@@ -114,7 +114,7 @@
            [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds))) " min"]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "parallelism"]
+           [:dt "current parallelism"]
            [:dd parallel
             [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-subpage {:org (:username project)
                                                                                    :repo (:reponame project)
