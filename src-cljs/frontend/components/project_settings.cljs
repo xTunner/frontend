@@ -1312,7 +1312,7 @@
                       "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
                       "        deployment_group: my-deployment-group\n"))]]]]]])))))
 
-(defn p12-upload-form [_ owner]
+(defn p12-upload-form [{:keys [project-name]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -1356,7 +1356,8 @@
                             :value "Upload key",
                             :type "submit"
                             :disabled (not (and file-content description))
-                            :on-click #(do (raise! owner [:upload-p12 {:description description
+                            :on-click #(do (raise! owner [:upload-p12 {:project-name project-name
+                                                                       :description description
                                                                        :password (or password "")
                                                                        :file-content (base64/encodeString file-content)
                                                                        :file-name file-name}])
@@ -1366,7 +1367,7 @@
                                            (om/set-state! owner :file-content nil))}])]])))))
 
 
-(defn p12-key [{:keys [id filename description uploaded_at]} owner]
+(defn p12-key [{:keys [project-name id filename description uploaded_at]} owner]
   (reify
     om/IRender
     (render [_]
@@ -1377,17 +1378,17 @@
            [:td filename]
            [:td description]
            [:td (datetime/as-time-since uploaded_at)]
-           [:td {:on-click #(raise! owner [:delete-p12 {:id id}])} [:i.fa.fa-times-circle "Remove"]]])))))
+           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.fa.fa-times-circle "Remove"]]])))))
 
-(defn code-signing [{:keys [project org]} owner]
+(defn code-signing [{:keys [project osx-keys]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [osx-keys (:osx-keys org)]
+      (let [project-name (vcs-url/project-name (:vcs_url project))]
         (html
           [:section.code-signing-page
            [:article
-            [:h2 "Apple Code Signing Keys for " (vcs-url/org-name (:vcs_url project))]
+            [:h2 "Apple Code Signing Keys for " project-name ]
             [:div.key-list
              [:h3 "Existing keys"]
              [:table.table
@@ -1399,10 +1400,12 @@
                 [:th "Uploaded"]
                 [:th]]]
               [:tbody
-               (om/build-all p12-key osx-keys)]]]
+               (->> osx-keys
+                    (map (partial merge {:project-name project-name}))
+                    (om/build-all p12-key))]]]
             [:div.upload
              [:h3 "Upload a new key"]
-             (om/build p12-upload-form {})]]])))))
+             (om/build p12-upload-form {:project-name project-name})]]])))))
 
 (defn project-settings [data owner]
   (reify
@@ -1435,6 +1438,6 @@
                :aws (om/build aws project-data)
                :aws-codedeploy (om/build aws-codedeploy project-data)
                :code-signing (if (feature/enabled? :show-ios-code-signing)
-                               (om/build code-signing {:project (:project project-data) :org org-data})
+                               (om/build code-signing project-data)
                                (om/build overview project-data))
                (om/build overview project-data))]]))))))

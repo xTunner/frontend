@@ -372,7 +372,7 @@
                      :context {:project-name project-name})
 
           (= subpage :code-signing)
-          (api/get-code-signing-keys (get-in current-state [:navigation-data :org]) api-ch)
+          (api/get-project-code-signing-keys project-name api-ch)
 
           :else nil))
 
