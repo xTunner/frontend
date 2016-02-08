@@ -205,12 +205,12 @@
     ;; size of the svg and listening to *its* resize event.
     (-> svg
         (.append "foreignObject")
-        (.style #js {:width "100%"
-                     :height "100%"})
+        (.attr #js {:width "100%"
+                    :height "100%"})
         (.append "xhtml:iframe")
-        (.style #js {:width "100%"
-                     :height "100%"
-                     :visibility "hidden"})
+        (.attr #js {:width "100%"
+                    :height "100%"})
+        (.style #js {:visibility "hidden"})
         ffirst
         .-contentWindow
         (gevents/listen "resize" #(when-let [redraw-fn (.property svg "redraw-fn")] (redraw-fn))))
