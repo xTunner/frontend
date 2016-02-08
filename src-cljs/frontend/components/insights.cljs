@@ -319,10 +319,10 @@
                  [:div.above-info
                   [:dl
                    [:dt "median build"]
-                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds)))]]
+                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds))) " min"]]
                   [:dl
                    [:dt "median queue"]
-                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds)))]]
+                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds))) " min"]]
                   [:dl
                    [:dt "last build"]
                    [:dd (om/build common/updating-duration

@@ -64,7 +64,6 @@
                                                    (concat ["Median Build Time"] (map last build-times))]}
                                   :legend {:hide true}
                                   :grid {:y {:show true}}
-                                  :zoom {:enabled true}
                                   :axis {:x {:type "timeseries"
                                              :tick {:format "%m/%d"}}
                                          :y {:min 0
@@ -107,19 +106,15 @@
                                   :formatter-use-start? true}})]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "active branches"]
-           [:dd (-> branches keys count)]]]
+           [:dt "median queue time"]
+           [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds))) " min"]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "median queue"]
-           [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds)))]]]
+           [:dt "median build time"]
+           [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds))) " min"]]]
          [:div.card.insights-metadata
           [:dl
-           [:dt "median build"]
-           [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds)))]]]
-         [:div.card.insights-metadata
-          [:dl
-           [:dt "parallelism"]
+           [:dt "current parallelism"]
            [:dd parallel
             [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-subpage {:org (:username project)
                                                                                    :repo (:reponame project)
