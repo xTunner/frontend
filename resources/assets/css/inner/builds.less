@@ -705,10 +705,18 @@ table.code {
     }
 
     a {
+      padding: 10px 15px; // BS RESET
       color: @gray-dark-v2; // BS RESET
       border: none; // BS RESET
       margin: 0; // BS RESET
       font-size: @fontSizeSmallish;
+      border-radius: 0;
+
+      i.octicon, i.material-icons, i.fa {
+        vertical-align: initial;
+        margin-right: 1ex;
+        margin-left: 0;
+      }
 
       &:hover {
         background: none; // BS RESET
