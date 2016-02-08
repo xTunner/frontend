@@ -51,12 +51,11 @@
   }
 
   .repo-filter {
+    padding: 10px;
+
     & > .material-icons {
       font-size: 1.2em;
     }
-
-    background-color: lighten(@grayLightest, .5);
-    border-bottom: solid 1px @grayLighter;
   }
 
   .unobtrusive-search {
@@ -68,6 +67,7 @@
     height: 1.4em;
     margin: 5px;
     padding: 5px 15px;
+    border: 1px solid @input-border-blue;
   }
 
   .org-listing {
@@ -95,6 +95,58 @@
 
     &:empty {
       display: none;
+    }
+  }
+
+  .no-plan-empty-state {
+    text-align: center;
+
+    .title {
+      font-size: @fontSizeJumbo;
+    }
+
+    .info {
+      margin-top: 10px;
+      margin-bottom: 15px;
+
+      font-size: @fontSizeMedium;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    .apple-logo {
+      margin-bottom: 20px;
+
+      font-size: 60px;
+    }
+
+    .buttons {
+      margin-bottom: 30px;
+
+      .plan {
+        min-width: 180px;
+        background: @primary-button-background;
+        border: 1px solid @button-border;
+
+        &:hover {
+          background: @primary-button-hover-background;
+        }
+      }
+
+      .trial {
+        min-width: 180px;
+        margin-left: 15px;
+        border-radius: 3px;
+        border: 1px solid @button-border;
+        background: @secondary-button-background;
+        color: @secondary-button-color;
+
+        &:hover {
+          background: @secondary-button-hover-background;
+        }
+      }
     }
   }
 

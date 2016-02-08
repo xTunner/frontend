@@ -24,7 +24,8 @@
             [goog.dom]
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
-            goog.style)
+            goog.style
+            [frontend.models.user :as user-model])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.fx.dom.Scroll]))
 
@@ -170,15 +171,19 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (api/get-usage-queue (get-in current-state state/build-path) api-ch)))
 
-
 (defmethod control-event :selected-add-projects-org
   [target message args state]
   (-> state
       (assoc-in [:settings :add-projects :selected-org] args)
-      (assoc-in [:settings :add-projects :repo-filter-string] "")))
+      (assoc-in [:settings :add-projects :repo-filter-string] "")
+      (state-utils/reset-current-org)))
 
 (defmethod post-control-event! :selected-add-projects-org
-  [target message args previous-state current-state]
+  [target message {:keys [login]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when (user-model/has-org? (get-in current-state state/user-path) login)
+      (api/get-org-settings login api-ch)
+      (api/get-org-plan login api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]
@@ -898,6 +903,19 @@
                              :put
                              (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                              :params {:osx plan-type}))]
+        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (release-button! uuid (:status api-result))))))
+
+(defmethod post-control-event! :activate-plan-trial
+  [target message plan-template previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (go
+      (let [api-result (<! (ajax/managed-ajax
+                             :post
+                             (gstring/format "/api/v1/organization/%s/plan/trial" org-name)
+                             :params plan-template))]
         (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
 
