@@ -64,7 +64,6 @@
                                                    (concat ["Median Build Time"] (map last build-times))]}
                                   :legend {:hide true}
                                   :grid {:y {:show true}}
-                                  :zoom {:enabled true}
                                   :axis {:x {:type "timeseries"
                                              :tick {:format "%m/%d"}}
                                          :y {:min 0
