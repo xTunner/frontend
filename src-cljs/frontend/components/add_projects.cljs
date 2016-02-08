@@ -290,13 +290,15 @@
           "Select a plan to build your iOS projects now."]
          [:div.buttons
           [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-subpage {:org selected-org-login
-                                                                      :subpage "containers"})} "Select Plan"]
+                                                                           :subpage "containers"})}
+           "Select Plan"]
           (managed-button
             [:a.btn.trial {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
                            :data-spinner true}
              "Start 2 Week Trial"])]]))))
 
 (defmulti repo-list (fn [{:keys [type]}] type))
+
 (defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
   (reify
     om/IRender
@@ -354,7 +356,10 @@
                                                       "github") repo)
                                  (= (:username repo) selected-org-login)
                                  (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-                    filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))
+                    filtered-repos (->> repos
+                                        (filter display?)
+                                        (sort-by :pushed_at)
+                                        (reverse))
                     osx-repos (->> filtered-repos (filter repo-model/likely-osx-repo?))
                     linux-repos (->> filtered-repos (remove repo-model/likely-osx-repo?))]
                 [:div

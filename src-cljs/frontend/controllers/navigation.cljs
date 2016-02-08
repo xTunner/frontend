@@ -225,7 +225,7 @@
       (assoc-in state/github-repos-loading-path true)
       (assoc-in state/bitbucket-repos-loading-path true)
       (assoc-in state/crumbs-path [{:type :add-projects}])
-      (assoc-in [:settings :add-projects :selected-org] nil)
+      (assoc-in state/add-projects-selected-org-path nil)
       (state-utils/reset-current-org)))
 
 (defmethod post-navigated-to! :add-projects

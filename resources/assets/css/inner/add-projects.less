@@ -106,10 +106,10 @@
     }
 
     .info {
-      font-size: @fontSizeMedium;
-
       margin-top: 10px;
       margin-bottom: 15px;
+
+      font-size: @fontSizeMedium;
     }
 
     .bold {
@@ -117,17 +117,18 @@
     }
 
     .apple-logo {
-      font-size: 60px;
       margin-bottom: 20px;
+
+      font-size: 60px;
     }
 
     .buttons {
       margin-bottom: 30px;
 
       .plan {
+        min-width: 180px;
         background: @primary-button-background;
         border: 1px solid @button-border;
-        min-width: 180px;
 
         &:hover {
           background: @primary-button-hover-background;
@@ -135,12 +136,12 @@
       }
 
       .trial {
+        min-width: 180px;
+        margin-left: 15px;
         border-radius: 3px;
         border: 1px solid @button-border;
         background: @secondary-button-background;
         color: @secondary-button-color;
-        min-width: 180px;
-        margin-left: 15px;
 
         &:hover {
           background: @secondary-button-hover-background;
