@@ -44,16 +44,21 @@
   (str "private-" (:login user)))
 
 (defn build-channel-from-parts
-  [{:keys [project-name build-num vcs-type]}]
+  [{:keys [project-name build-num vcs-type container-index]}]
   (let [project-prefix (-> (str "private-" project-name)
                            (string/replace "/" "@"))
-        vcs-suffix (str "vcs-" vcs-type)]
-    (str project-prefix "@" build-num "@" vcs-suffix)))
+        vcs-part (str "vcs-" vcs-type)
+        suffix (or container-index "all")]
+    (str project-prefix "@" build-num "@" vcs-suffix "@" suffix)))
 
-(defn build-channel [build]
-  (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
-                             :build-num (:build_num build)
-                             :vcs-type (name (:vcs_type build))}))
+(defn build-channel
+  ([build]
+   (build-channel build nil))
+  ([build container-index]
+   (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
+                              :build-num (:build_num build)
+                              :vcs-type (name (:vcs_type build))
+                              :container-index container-index})))
 
 (def build-messages [:build/new-action
                      :build/update-action
