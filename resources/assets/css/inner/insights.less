@@ -83,10 +83,6 @@
 
     padding: 15px 10px 15px 10px;
 
-    .project-name {
-      padding-bottom: 2px;
-    }
-
     .octicon,
     .material-icons {
       font-size: 18px;
@@ -121,8 +117,9 @@
 
       &.badge-icon {
         display: inline;
-        vertical-align: text-bottom;
-        margin-right: 5px;
+        vertical-align: middle;
+        margin-bottom: 1px;
+        margin-right: 10px;
         width: 15px;
       }
     }
@@ -143,9 +140,10 @@
     }
 
     .above-info, .below-info {
-      .flexy(center, space-around, row);
+      .flexy(center, flex-start, row);
       padding: 15px;
       width: 100%;
+      color: @gray;
 
       &.below-info dl {
         .flex(0 0 50%);
@@ -169,8 +167,8 @@
         }
 
         dd {
-          font-weight: bold;
-          line-height: 0.9;
+          font-weight: 500;
+          line-height: 1.6;
         }
       }
     }
