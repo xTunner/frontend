@@ -7,6 +7,7 @@
             [frontend.analytics.rollbar :as rollbar]
             [frontend.analytics.twitter :as twitter]
             [frontend.analytics.facebook :as facebook]
+            [frontend.analytics.segment :as segment]
             [frontend.models.build :as build-model]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -137,8 +138,8 @@
   ;; Include whether the toggle collapsed the build diagnostics (true) or to expanded them (false).
   {:collapsed (get-in @state (state/project-build-diagnostics-collapsed-path project-id-hash))})
 
-(deftrack track-view-page [zone]
-  (mixpanel/track "View Page" {:zone zone :title js/document.title :url js/location.href}))
+(deftrack track-pageview [navigation-point]
+  (segment/track-pageview navigation-point))
 
 (deftrack utm? [[key val]]
   (gstr/startsWith (name key) "utm"))
