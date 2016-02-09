@@ -1378,7 +1378,7 @@
            [:td filename]
            [:td description]
            [:td (datetime/as-time-since uploaded_at)]
-           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.fa.fa-times-circle "Remove"]]])))))
+           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.fa.fa-times-circle]]])))))
 
 (defn code-signing [{:keys [project osx-keys]} owner]
   (reify
@@ -1388,9 +1388,12 @@
         (html
           [:section.code-signing-page
            [:article
-            [:h2 "Apple Code Signing Keys for " project-name ]
+            [:div.header
+             [:div.title "Apple Code Signing Keys"]
+             [:a.btn.upload-button "Upload Key"]]
+            [:hr]
+            [:div "Something about apple code signing keys could go here..."]
             [:div.key-list
-             [:h3 "Existing keys"]
              [:table.table
               [:thead
                [:tr
@@ -1411,8 +1414,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [org-data (get-in data state/org-data-path)
-            project-data (get-in data state/project-data-path)
+      (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
             subpage (:project-settings-subpage data)]
         (html

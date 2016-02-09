@@ -737,6 +737,26 @@
   }
 
   .code-signing-page {
+    .header {
+      .flexy(row, space-between);
+    }
+
+    .title {
+      font-size: @fontSizeLarge;
+    }
+
+    .upload-button {
+      min-width: 160px;
+      color: @white;
+      background: @primary-button-background;
+      border: 1px solid @button-border;
+      border-radius: 3px;
+
+      &:hover {
+        background: @primary-button-hover-background;
+      }
+    }
+
     .drag-and-drop-zone {
       border: 2px dashed @gray;
       border-radius: 1.5em;
