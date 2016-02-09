@@ -337,9 +337,6 @@
                  (om/build project-insights-bar chartable-builds)
                  [:div.below-info
                   [:dl
-                   [:dt "branches"]
-                   [:dd (-> branches keys count)]]
-                  [:dl
                    [:dt "parallelism"]
                    [:dd parallel]]]))])))))
 
