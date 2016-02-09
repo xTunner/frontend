@@ -751,6 +751,14 @@
   }
 
   .code-signing-page {
+    .modal-header {
+      background: @grayLightest;
+    }
+
+    .modal-content {
+      border-radius: 0;
+    }
+
     .header {
       .flexy(row, space-between);
     }
@@ -772,21 +780,53 @@
     }
 
     .drag-and-drop-zone {
-      border: 2px dashed @gray;
-      border-radius: 1.5em;
+      border: 1px dashed @input-border-blue;
+      width: 100%;
+      height: 90px;
+    }
+
+    .label {
+     font-size: @fontSizeSmall;
+     color: @build-card-title;
+     padding: 0px;
+     margin-bottom: 5px;
+
+    }
+
+    .text {
+      width: 100%;
+      height: 30px;
+      border: 1px solid @input-border-blue;
+      font-size: @fontSizeSmall;
+      color: @secondary-button-color;
+      margin-bottom: 25px;
+
+      &:focus {
+        border: 1px solid @input-border-focus-blue;
+        box-shadow: 0 0 4px @input-border-focus-blue;
+        outline: none;
+      }
     }
 
     .p12-file-input {
-      padding: 25px 95px 25px 170px;
+      //padding: 25px 95px 25px 170px;
     }
 
     .buttons {
       margin-top: 10px;
+      text-align: right;
     }
 
-    input {
-      &[type="submit"] {
-        .circleButton();
+    .save {
+      min-width: 160px;
+      min-height: 30px;
+      color: @white;
+      background: @primary-button-background;
+      border: 1px solid @button-border;
+      border-radius: 3px;
+
+      &:hover {
+        background: @primary-button-hover-background;
       }
     }
 

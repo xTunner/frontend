@@ -1332,28 +1332,31 @@
         (html
           [:div
            [:div
-            [:label "Description"]
-            [:input.p12-key-description
+            [:label.label "Description"]
+            [:input.dumb.text.p12-key-description
              {:type "text" :value description
               :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
 
            [:div
-            [:label "Password (Optional)"]
-            [:input.p12-key-password
+            [:label.label "Password (Optional)"]
+            [:input.dumb.text.p12-key-password
              {:type "password" :value password
               :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
 
-           [:div.drag-and-drop-zone
-            (when file-name
-              [:div file-name])
-            [:input.p12-file-input {:type "file" :on-change file-selected-fn}]]
+           [:div
+            [:label.label "File"]
+            [:div.drag-and-drop-zone
+             (when file-name
+               [:div file-name])
+             [:input.p12-file-input {:type "file" :on-change file-selected-fn}]]]
 
+           [:hr]
            [:div.buttons
             (forms/managed-button
               [:input.save {:data-failed-text "Failed",
                             :data-success-text "Uploaded",
                             :data-loading-text "Uploading...",
-                            :value "Upload key",
+                            :value "Upload",
                             :type "submit"
                             :disabled (not (and file-content description))
                             :on-click #(do (raise! owner [:upload-p12 {:project-name project-name
