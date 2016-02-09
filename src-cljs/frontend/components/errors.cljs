@@ -43,7 +43,7 @@
                (if (not logged-in?)
                   [:span ", " [:a {:href (auth-url)
                               :on-click #(raise! owner  [:track-external-link-clicked  {:path  (auth-url)
-                                                                                        :event "login_click"
+                                                                                        :event "login-click"
                                                                                         :properties
                                                                                         {:source "header log-in"
                                                                                          :url js/window.location.pathname}}])}

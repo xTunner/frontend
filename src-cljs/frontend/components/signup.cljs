@@ -23,7 +23,7 @@
             [:a.btn.btn-cta.authorize-button
              {:href (gh-util/auth-url :destination "/")
               :on-click #(raise! owner [:track-external-link-clicked
-                                        {:event "oauth_authorize_click"
+                                        {:event "oauth-authorize-click"
                                          :properties {"oauth_provider" "github"}
                                          :path (gh-util/auth-url :destination "/")}])}
              (common/ico :github) "Authorize with GitHub"]]

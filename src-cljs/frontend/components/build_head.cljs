@@ -347,22 +347,22 @@
               [:div.loading-spinner common/spinner]))])))))
 
 (defn tests-ad [owner language]
-      [:div
-       "Help us provide better insight around your tests and failures. "
-       [:a {:href (case language
-           "Clojure" "/docs/test-metadata#test2junit-for-clojure-tests"
-           "Ruby" "/docs/test-metadata#rspec"
-           "JavaScript" "/docs/test-metadata#js"
-           "Python" "/docs/test-metadata#python"
-           "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-           "/docs/test-metadata#metadata-collection-in-custom-test-steps")
-            :on-mouse-up #(analytics/track-build-tests-ad-click language)}
-        "Set up your test runner to output in JUnit-style XML"] ", so we can:"
-       [:ul
-        [:li "Show a summary of all test failures across all containers"]
-        [:li "Identify your slowest tests"]
-        [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]
-       ])
+  [:div
+   "Help us provide better insight around your tests and failures. "
+   [:a {:href (case language
+                "Clojure" "/docs/test-metadata#test2junit-for-clojure-tests"
+                "Ruby" "/docs/test-metadata#rspec"
+                "JavaScript" "/docs/test-metadata#js"
+                "Python" "/docs/test-metadata#python"
+                "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
+                "/docs/test-metadata#metadata-collection-in-custom-test-steps")
+        :on-mouse-up #(analytics/track-build-tests-ad-click language)}
+    "Set up your test runner to output in JUnit-style XML"] ", so we can:"
+   [:ul
+    [:li "Show a summary of all test failures across all containers"]
+    [:li "Identify your slowest tests"]
+    [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]
+   ])
 
 (defmulti format-test-name test-model/source)
 

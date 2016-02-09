@@ -2,9 +2,9 @@
   (:require-macros [frontend.analytics :refer [deftrack]])
   (:require [frontend.analytics.adroll :as adroll]
             [frontend.analytics.google :as google]
-            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.analytics.perfect-audience :as pa]
             [frontend.analytics.rollbar :as rollbar]
+            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.analytics.twitter :as twitter]
             [frontend.analytics.facebook :as facebook]
             [frontend.analytics.segment :as segment]
@@ -18,23 +18,17 @@
 
 (deftrack init-user [login]
   (utils/swallow-errors
-   (mixpanel/init-user login)
    (rollbar/init-user login)))
 
 (deftrack set-existing-user []
   (mixpanel/set-existing-user))
 
 (deftrack track-dashboard []
-  (mixpanel/track "Dashboard")
   (google/track-pageview "/dashboard"))
 
 (deftrack track-homepage []
   (utils/swallow-errors
-   (mixpanel/track "Outer Home Page" {"window height" (.-innerHeight js/window)})
    (google/track-pageview "/homepage")))
-
-(deftrack track-org-settings [org-name]
-  (mixpanel/track "View Org" {:username org-name}))
 
 (defn build-properties [build]
   (merge {:running (build-model/running? build)
@@ -118,11 +112,6 @@
 
 (def ignored-control-messages #{:edited-input :toggled-input :clear-inputs})
 
-(deftrack track-message [message args state]
-  (when-not (contains? ignored-control-messages message)
-    (mixpanel/track (name message)
-                    (tracking-properties message args state))))
-
 (defn page-properties []
   {:url  js/location.href
    :title js/document.title})
@@ -150,27 +139,14 @@
                           (map (fn [[key val]] [(str "last_" (name key)) val]))
                           (into {}))))
 
-(deftrack track-invitations [invitees context]
-  (mixpanel/track "Sent invitations" (merge {:users (map :login invitees)}
-                                            context))
-  (doseq [u invitees]
-    (mixpanel/track "Sent invitation" (merge {:login (:login u)
-                                              :id (:id u)
-                                              :email (:email u)}
-                                             context))))
-
-(deftrack track-invitation-prompt [context]
-  (mixpanel/track "Saw invitations prompt" {:first_green_build true
-                                            :project (:project-name context)}))
-
 (deftrack managed-track [event properties]
-  (mixpanel/managed-track event properties))
+  (segment/managed-track event properties))
 
 (deftrack track* [event properties]
-  (mixpanel/track event properties))
+  (segment/track event properties))
 
 (defn track
-  "Simple passthrough to mixpanel/track. Defined in terms of track* because
+  "Simple passthrough to segment/track. Defined in terms of track* because
   deftrack doesn't handle multiple arities, and can't without a whole lot of
   effort."
   ([event] (track* event {}))
@@ -187,49 +163,37 @@
     (mixpanel/register-once mixpanel-choices)))
 
 (deftrack track-signup-click [data]
-  (mixpanel/track "signup_click" data))
+  (segment/track-event "signup-click" data))
 
 (deftrack track-signup-impression [data]
-  (mixpanel/track "signup_impression" data))
-
-(deftrack track-parallelism-button-click [data]
-  (mixpanel/track "parallelism_button_click" data))
-
-(deftrack track-parallelism-button-impression [data]
-  (mixpanel/track "parallelism_button_impression" data))
-
-(deftrack track-payment-plan-impression [data]
-  (mixpanel/track "payment-plan-impression" data))
-
-(deftrack track-payment-plan-click [data]
-  (mixpanel/track "payment-plan-click" data))
+  (segment/track-event "signup-impression" data))
 
 (deftrack track-build-insights-upsell-impression [data]
-  (mixpanel/track "build-insights-upsell-impression" data))
+  (segment/track-event "build-insights-upsell-impression" data))
 
 (deftrack track-build-insights-upsell-click [data]
-  (mixpanel/track "build-insights-upsell-click" data))
+  (segment/track-event "build-insights-upsell-click" data))
 
 (deftrack track-build-timing-upsell-impression [data]
-  (mixpanel/track "build-timing-upsell-impression" data))
+  (segment/track-event "build-timing-upsell-impression" data))
 
 (deftrack track-build-timing-upsell-click [data]
-  (mixpanel/track "build-timing-upsell-click" data))
+  (segment/track-event "build-timing-upsell-click" data))
 
 (deftrack track-build-tests-ad-click [data]
-  (mixpanel/track "build-tests-ad-click" data))
+  (segment/track-event "build-tests-ad-click" data))
 
 (deftrack track-beta-join-click [data]
-  (mixpanel/track "beta-join-click" data))
+  (segment/track-event "beta-join-click" data))
 
 (deftrack track-beta-terms-accept [data]
-  (mixpanel/track "beta-terms-accept" data))
+  (segment/track-event "beta-terms-accept" data))
 
 (deftrack track-beta-leave-click [data]
-  (mixpanel/track "beta-leave-click" data))
+  (segment/track-event "beta-leave-click" data))
 
 (deftrack track-parallelism-build-header-click [data]
-  (mixpanel/track "parallelism-build-header-click" data))
+  (segment/track-event "parallelism-build-header-click" data))
 
 (deftrack track-cancel-button-clicked [data]
-  (mixpanel/track "cancel-button-clicked" data))
+  (segment/track-event "cancel-button-clicked" data))
