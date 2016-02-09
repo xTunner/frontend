@@ -291,11 +291,12 @@
             (om/build svg {:class "badge-icon"
                            :src (-> latest-build build/status-icon common/icon-path)})]
            [:span.project-name
-            (if (feature/enabled? :insights-dashboard)
-              (if show-insights? [:a {:href (routes/v1-insights-project {:org (:username project)
+            (if (and (feature/enabled? :insights-dashboard)
+                     show-insights?)
+              [:a {:href (routes/v1-insights-project {:org (:username project)
                                                       :repo (:reponame project)
                                                       :branch (:default_branch project)})}
-               (formatted-project-name project)] (formatted-project-name project))
+               (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
