@@ -54,24 +54,32 @@
 
 (defn build-time-line-chart [builds owner]
   (reify
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (let [chart (om/get-state owner :chart)
+            build-times (daily-median-build-time builds)]
+        (.load chart (clj->js {:x "date"
+                               :columns [(concat ["date"] (map first build-times))
+                                         (concat ["Median Build Time"] (map last build-times))]}))))
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)
             build-times (daily-median-build-time builds)]
-        (js/c3.generate (clj->js {:bindto el
-                                  :padding {:top 10
-                                            :right 20}
-                                  :data {:x "date"
-                                         :columns [(concat ["date"] (map first build-times))
-                                                   (concat ["Median Build Time"] (map last build-times))]}
-                                  :legend {:hide true}
-                                  :grid {:y {:show true}}
-                                  :axis {:x {:padding {:left "0"}
-                                             :type "timeseries"
-                                             :tick {:format "%m/%d"}
-                                                    :fit "true"}
-                                         :y {:min 0
-                                             :tick {:format #(str (quot % 60000) "m")}}}}))))
+        (om/set-state! owner :chart
+                       (js/c3.generate (clj->js {:bindto el
+                                                 :padding {:top 10
+                                                           :right 20}
+                                                 :data {:x "date"
+                                                        :columns [(concat ["date"] (map first build-times))
+                                                                  (concat ["Median Build Time"] (map last build-times))]}
+                                                 :legend {:hide true}
+                                                 :grid {:y {:show true}}
+                                                 :axis {:x {:padding {:left "0"}
+                                                            :type "timeseries"
+                                                            :tick {:format "%m/%d"}
+                                                            :fit "true"}
+                                                        :y {:min 0
+                                                            :tick {:format #(str (quot % 60000) "m")}}}})))))
     om/IRender
     (render [_]
       (html
