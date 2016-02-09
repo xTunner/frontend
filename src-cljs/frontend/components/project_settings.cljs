@@ -115,7 +115,7 @@
     om/IRender
     (render [_]
       (html
-       [:section
+       [:section.overview
         [:article
          [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
          [:h4 "Option 1"]
