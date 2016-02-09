@@ -1390,7 +1390,9 @@
            [:article
             [:div.header
              [:div.title "Apple Code Signing Keys"]
-             [:a.btn.upload-button "Upload Key"]]
+             [:a.btn.upload-button {:data-target "#upload-modal"
+                                    :data-toggle "modal"}
+              "Upload Key"]]
             [:hr]
             [:div "Something about apple code signing keys could go here..."]
             [:div.key-list
@@ -1406,9 +1408,15 @@
                (->> osx-keys
                     (map (partial merge {:project-name project-name}))
                     (om/build-all p12-key))]]]
-            [:div.upload
-             [:h3 "Upload a new key"]
-             (om/build p12-upload-form {:project-name project-name})]]])))))
+            [:div.modal.fade#upload-modal
+             [:div.modal-dialog
+              [:div.modal-content
+               [:div.modal-header
+                [:a.close {:data-dismiss "modal"}
+                 [:i.material-icons "clear"]]
+                [:h4.modal-title "Upload a New Apple Code Signing Key"]]
+               [:div.modal-body.upload
+                (om/build p12-upload-form {:project-name project-name})]]]]]])))))
 
 (defn project-settings [data owner]
   (reify
