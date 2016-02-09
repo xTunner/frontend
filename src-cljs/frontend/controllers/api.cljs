@@ -483,27 +483,29 @@
     (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-root)}])
     updated-state))
 
+(defn org-selectable? [state org-name]
+  (or (= org-name (:org-settings-org-name state))
+      (= org-name (get-in state state/add-projects-selected-org-login-path))))
+
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
   (let [org-name (:org-name context)]
-    (if-not (= org-name (:org-settings-org-name state))
+    (if-not (org-selectable? state org-name)
       state
       (assoc-in state state/org-plan-path resp))))
 
-
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (org-selectable? state (:org-name context))
     state
     (-> state
         (update-in state/org-data-path merge resp)
         (assoc-in state/org-loaded-path true)
         (assoc-in state/org-authorized?-path true))))
 
-
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (org-selectable? state (:org-name context))
     state
     (-> state
         (assoc-in state/org-loaded-path true)
@@ -610,7 +612,7 @@
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (org-selectable? state (:org-name context))
     state
     (update-in state state/org-plan-path merge resp)))
 

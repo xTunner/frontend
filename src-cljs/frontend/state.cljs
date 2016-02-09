@@ -23,7 +23,7 @@
               :add-projects {:repo-filter-string ""
                              :selected-org {:login nil
                                             :type :org}
-                             :show-forks false}
+                             :show-forks true}
               :browser-settings {:expanded-repos #{}}}
    :selected-home-technology-tab nil
    :modal-video-id nil
@@ -186,6 +186,10 @@
 (defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 (def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
+
+(def add-projects-settings-path (conj settings-path :add-projects))
+(def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
+(def add-projects-selected-org-login-path (conj add-projects-selected-org-path :login))
 
 (def account-subpage-path [:account-settings-subpage])
 (def new-user-token-path (conj user-path :new-user-token))

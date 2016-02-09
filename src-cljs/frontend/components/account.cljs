@@ -35,9 +35,9 @@
                                 (get-in app state/user-path))]
         (html/html
          [:div#settings-plans
-          [:div.plans-item [:h2 "Org Settings"]]
+          [:div.plans-item [:h1 "Org Settings"]]
           [:div.plans-item
-           [:h4 "Set up a plan for one of your Organizations:"]
+           [:h3 "Set up a plan for one of your Organizations:"]
            [:p "You can set up plans for any organization that you admin."]
            [:div.plans-accounts
             (map
@@ -72,7 +72,7 @@
         (html/html
          [:div#settings-heroku.settings
           [:div.heroku-item
-           [:h2 "Heroku API key"]
+           [:h1 "Heroku API key"]
            [:p
             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
             " to set up deployment with Heroku."
@@ -113,7 +113,7 @@
         (html/html
          [:div#settings-api.settings
           [:div.api-item
-           [:h2 "API Tokens"]
+           [:h1 "API Tokens"]
            [:p
             "Create and revoke API tokens to access this account's details using our API."
             [:br]
@@ -185,7 +185,7 @@
             (fn [program]
               (let [participating? (contains? (set betas) (:id program))]
                 [:div
-                 [:h3 (:name program)
+                 [:h1 (:name program)
                   (when participating?
                     (om/build svg {:class "badge-enrolled"
                                    :src (common/icon-path "Status-Passed")}))]
@@ -223,7 +223,7 @@
              :value "Join Beta Program"}]
            [:div
             [:div.card
-             [:h3 "Beta Terms"]
+             [:h1 "Beta Terms"]
              [:p
               "Our beta program is a way to engage with our most
                thoughtful and dedicated users. We want to build the
@@ -278,7 +278,7 @@
            (let [message (get-in app state/general-message-path)
                  enrolled? (get-in app state/user-in-beta-path)]
              (list
-              [:h2 "Beta Program"
+              [:h1 "Beta Program"
                (when (and enrolled? (not message))
                  (om/build svg {:class "badge-enrolled"
                                 :src (common/icon-path "Status-Passed")}))]
@@ -296,7 +296,7 @@
 (defn preferred-email-address [owner user]
   [:div.notification-item
    [:form#email_address.form-horizontal
-    [:h3#email-address-tooltip-parent
+    [:h1#email-address-tooltip-parent
      "Email Addresses"
      [:i.material-icons#email-addresses-tooltip-hack
       {:title "These are the email addresses associated with your GitHub account."} "info_outline"]]
@@ -315,7 +315,7 @@
 (defn default-email-pref [owner email-pref]
   [:div.notification-item
    [:form
-    [:h3 "Default Email Notifications"]
+    [:h1 "Default Email Notifications"]
     [:div.radio
      [:label
       [:input
@@ -344,7 +344,7 @@
 (defn project-email-prefs [{:keys [projects user]}]
   [:div.notification-item
    [:form
-    [:h3 "Project Email Preferences"]
+    [:h1 "Project Email Preferences"]
     [:p "You can override your default email preferences for individual projects here."]
     [:p "Other project settings can be configured via the project's 'Settings' page."]
     [:div.row

@@ -24,6 +24,7 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [cljs-ajax "0.3.13"]
                  [cljsjs/react-with-addons "0.13.3-0"]
+                 [cljsjs/c3 "0.4.10-0"]
                  [org.omcljs/om "0.9.0"]
                  [hiccups "0.3.0"]
                  [sablono "0.3.6"]
@@ -39,7 +40,7 @@
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
-            [cider/cider-nrepl "0.9.1"]
+            [cider/cider-nrepl "0.10.2"]
             [lein-environ "1.0.1"]]
 
   ;; Don't include these dependencies transitively. These are foundational
@@ -64,7 +65,8 @@
              "-XX:+CMSClassUnloadingEnabled"
              "-Djava.library.path=target/native/macosx/x86_64:target/native/linux/x86_64:target/native/linux/x86"
              "-Djna.library.path=target/native/macosx/x86_64:target/native/linux/x86_64:target/native/linux/x86"
-             "-Dfile.encoding=UTF-8"]
+             "-Dfile.encoding=UTF-8"
+             "-Djava.awt.headless=true"]
 
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs/"]
 
@@ -122,4 +124,9 @@
                         :env {:devtools "true"}
                         :cljsbuild {:builds {:dev {:source-paths ["devtools"]}}}
                         :dependencies [[binaryage/devtools "0.5.2"]
-                                       [binaryage/dirac "0.1.3"]]}})
+                                       [binaryage/dirac "0.1.3"]]}
+             :dev {:source-paths ["src-cljs"]
+                   :repl-options {:port 8230
+                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+                   :dependencies [[figwheel-sidecar "0.5.0-2"]
+                                  [com.cemerick/piggieback "0.2.1"]]}})

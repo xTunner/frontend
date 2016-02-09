@@ -35,10 +35,10 @@
                                       :envvars nil}))
 
 (defn reset-current-org [state]
-  (assoc state :current-org-data {:current-org-data {:plan nil
-                                                     :projects nil
-                                                     :users nil
-                                                     :name nil}}))
+  (assoc state :current-org-data {:plan nil
+                                  :projects nil
+                                  :users nil
+                                  :name nil}))
 
 (defn stale-current-project? [state project-name]
   (and (get-in state state/project-path)

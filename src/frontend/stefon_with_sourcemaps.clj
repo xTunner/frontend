@@ -28,27 +28,36 @@
           (.append compiled-stefon (->> compiled-content-lines (butlast) (str/join "\n")))
           (.append compiled-stefon "\n")
 
-          (if-let [[_ source-map] (re-matches #"//#\s*sourceMappingURL=(.*)"
-                                              (last compiled-content-lines))]
-            (do
-              ;; if the last line is a sourcemapping, don't append it, but do compile it and
-              ;; build up an internal sourcemap...
-              (let [asset-compile-result (asset/compile
-                                          (fs/join root (fs/dirname sf))
-                                          source-map)
-                    compiled-source-map (->> asset-compile-result second (String.))]
-                (try
-                  (swap! current-sourcemap-sections conj {:offset {:line @current-offset-row
-                                                                   :column 0}
-                                                          :map (json/read-str compiled-source-map)})
-                  (catch java.lang.ClassCastException e
-                    (println "(asset/compile " (fs/join root (fs/dirname sf)) " " source-map ") gave " asset-compile-result)
-                    (throw e)))))
-            (do
-              ;; if the last line isn't a sourcemapping, append it
-              (.append compiled-stefon (last compiled-content-lines))
-              (.append compiled-stefon "\n")
-              (swap! current-offset-row inc)))
+          (let [[_ source-map] (re-matches #"//#\s*sourceMappingURL=(.*)"
+                                           (last compiled-content-lines))]
+            (if (and source-map
+                     ;; WORKAROUND: When a JS file with a source map is included
+                     ;; in a .stefon manifest which is included in a .stefon
+                     ;; manifest, the inner manifest's source map is a compiled
+                     ;; asset (represented as an asset-uri), not a
+                     ;; to-be-compiled asset. Our source map compilation
+                     ;; therefore doesn't compose well. In that situation,
+                     ;; abandon the source map.
+                     (not (path/asset-uri? source-map)))
+              (do
+                ;; if the last line is a sourcemapping, don't append it, but do compile it and
+                ;; build up an internal sourcemap...
+                (let [asset-compile-result (asset/compile
+                                            (fs/join root (fs/dirname sf))
+                                            source-map)
+                      compiled-source-map (->> asset-compile-result second (String.))]
+                  (try
+                    (swap! current-sourcemap-sections conj {:offset {:line @current-offset-row
+                                                                     :column 0}
+                                                            :map (json/read-str compiled-source-map)})
+                    (catch java.lang.ClassCastException e
+                      (println "(asset/compile " (fs/join root (fs/dirname sf)) " " source-map ") gave " asset-compile-result)
+                      (throw e)))))
+              (do
+                ;; if the last line isn't a sourcemapping, append it
+                (.append compiled-stefon (last compiled-content-lines))
+                (.append compiled-stefon "\n")
+                (swap! current-offset-row inc))))
           (swap! current-offset-row + (dec (count compiled-content-lines))))))
     (when (seq @current-sourcemap-sections)
       ;; this implementation works around rollbar's lack of :sections support, but only if
