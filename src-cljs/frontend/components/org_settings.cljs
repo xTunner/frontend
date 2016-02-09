@@ -1012,7 +1012,7 @@
     (render [_]
       (html
         [:div
-         [:h4 "iOS"]
+         [:h2 "iOS"]
          (if-not osx-enabled?
            [:p "You are not currently in the iOS limited-release. If you would like access to iOS builds, please send an email to sayhi@circleci.com."]
            [:div
@@ -1042,7 +1042,7 @@
           piggiebacked? (pm/piggieback? plan org-name)]
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
-       [:div.explanation
+       [:div
         (when piggiebacked?
           [:p "This organization's projects will build under "
            [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
