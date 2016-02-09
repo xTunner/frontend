@@ -58,14 +58,16 @@
       (let [el (om/get-node owner)
             build-times (daily-median-build-time builds)]
         (js/c3.generate (clj->js {:bindto el
-                                  :padding {:top 10}
+                                  :padding {:top 10
+                                            :right 20}
                                   :data {:x "date"
                                          :columns [(concat ["date"] (map first build-times))
                                                    (concat ["Median Build Time"] (map last build-times))]}
                                   :legend {:hide true}
                                   :grid {:y {:show true}}
                                   :axis {:x {:type "timeseries"
-                                             :tick {:format "%m/%d"}}
+                                             :tick {:format "%m/%d"}
+                                                    :fit "true"}
                                          :y {:min 0
                                              :tick {:format #(str (quot % 60000) "m")}}}}))))
     om/IRender
