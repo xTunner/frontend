@@ -1042,7 +1042,7 @@
           piggiebacked? (pm/piggieback? plan org-name)]
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
-       [:div
+       [:div.explanation
         (when piggiebacked?
           [:p "This organization's projects will build under "
            [:a {:href (routes/v1-org-settings {:org (:org_name plan)})}
