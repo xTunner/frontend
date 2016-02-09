@@ -584,7 +584,7 @@
        (om/build repo-lists {:user user
                              :repos repos
                              :selected-org selected-org
-                             :osx-enabled? (get-in data state/org-osx-beta-path)
+                             :osx-enabled? (get-in data state/org-osx-enabled-path)
                              :selected-plan (get-in data state/org-plan-path)
                              :settings settings})
        [:hr]

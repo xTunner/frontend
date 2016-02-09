@@ -5,7 +5,9 @@
                      {:path "js/hosted/pusher.min.js"
                       :url "https://js.pusher.com/2.2/pusher.min.js"}
                      {:path "js/hosted/elevio.js"
-                      :url "https://static.elev.io/js/v3.js"}])
+                      :url "https://static.elev.io/js/v3.js"}
+                     {:path "js/hosted/segment.js"
+                      :url "http://cdn.segment.com/analytics.js/v1/AbgkrgN4cbRhAVEwlzMkHbwvrXnxHh35/analytics.min.js"}])
 
 (def asset-roots ["resources/assets"])
 
