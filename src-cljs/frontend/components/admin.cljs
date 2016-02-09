@@ -73,8 +73,8 @@
     om/IRender
     (render [_]
       (html
-        [:section {:style {:padding-left "10px"}}
-         [:header
+        [:section {:style {:padding-left "0"}}
+         [:header {:style {:padding-top "10px"}}
           [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
           " / "
           [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
@@ -110,20 +110,21 @@
     (render [_]
       (html
         [:div
-         [:a
-          {:href (case tab
-                   :running-builds "/admin/running-builds"
-                   :queued-builds "/admin/queued-builds")}
-          "See more"]
-         " / "
-         [:a {:on-click #(raise! owner [:refresh-admin-build-list {:tab tab}])} "Refresh"]
-         (if (nil? builds)
-           [:div.loading-spinner common/spinner]
-           (om/build builds-table/builds-table builds
-                     {:opts {:show-actions? true
-                             :show-parallelism? true
-                             :show-branch? false
-                             :show-log? false}}))]))))
+         [:header {:style {:padding-top "10px" :padding-bottom "10px"}}
+          [:a
+           {:href (case tab
+                    :running-builds "/admin/running-builds"
+                    :queued-builds "/admin/queued-builds")}
+           "See more"]
+          " / "
+          [:a {:on-click #(raise! owner [:refresh-admin-build-list {:tab tab}])} "Refresh"]
+          (if (nil? builds)
+            [:div.loading-spinner common/spinner])]
+         (om/build builds-table/builds-table builds
+                   {:opts {:show-actions? true
+                           :show-parallelism? true
+                           :show-branch? false
+                           :show-log? false}})]))))
 
 (defn fleet-state [app owner]
   (reify

@@ -41,6 +41,13 @@
              :organizations
              api-ch))
 
+(defn get-org-plan [org-name api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1/organization/%s/plan" org-name)
+             :org-plan
+             api-ch
+             :context {:org-name org-name}))
+
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
              :user-plans
@@ -58,10 +65,10 @@
 
 ;; Note that dashboard-builds-url can take a :page (within :query-params)
 ;; and :builds-per-page, or :limit and :offset directly.
-(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page offset limit]
-                             :or {offset (* (get query-params :page 0) builds-per-page)
-                                  limit builds-per-page}}]
-  (let [url (cond admin "/api/v1/admin/recent-builds"
+(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page offset limit]}]
+  (let [offset (or offset (* (get query-params :page 0) builds-per-page))
+        limit (or limit builds-per-page)
+        url (cond admin "/api/v1/admin/recent-builds"
                   deployments "/api/v1/admin/deployments"
                   branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
                   repo (gstring/format "/api/v1/project/%s/%s" org repo)
@@ -121,6 +128,13 @@
                :action-log
                api-ch
                :context args)))
+
+(defn get-org-settings [org-name api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1/organization/%s/settings" org-name)
+             :org-settings
+             api-ch
+             :context {:org-name org-name}))
 
 (defn get-project-settings [project-name api-ch]
   (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))

@@ -205,12 +205,12 @@
     ;; size of the svg and listening to *its* resize event.
     (-> svg
         (.append "foreignObject")
-        (.style #js {:width "100%"
-                     :height "100%"})
+        (.attr #js {:width "100%"
+                    :height "100%"})
         (.append "xhtml:iframe")
-        (.style #js {:width "100%"
-                     :height "100%"
-                     :visibility "hidden"})
+        (.attr #js {:width "100%"
+                    :height "100%"})
+        (.style #js {:visibility "hidden"})
         ffirst
         .-contentWindow
         (gevents/listen "resize" #(when-let [redraw-fn (.property svg "redraw-fn")] (redraw-fn))))
@@ -319,10 +319,10 @@
                  [:div.above-info
                   [:dl
                    [:dt "median build"]
-                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds)))]]
+                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds))) " min"]]
                   [:dl
                    [:dt "median queue"]
-                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds)))]]
+                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds))) " min"]]
                   [:dl
                    [:dt "last build"]
                    [:dd (om/build common/updating-duration

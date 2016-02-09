@@ -79,6 +79,17 @@
 @beta-text-color: #666;
 @alert-success-color: #d0f1e2;
 
+@input-border-blue: #9ec5d4;
+
+@primary-button-background: #3dc1d9;
+@primary-button-hover-background: #51c7dd;
+
+@secondary-button-color: #505050;
+@secondary-button-background: #f0f0f0;
+@secondary-button-hover-background: #f8f8f8;
+
+@button-border: lighten(@black, 90);
+
 // Misc.
 
 @imgPath: "../../img";
@@ -145,11 +156,19 @@
 @altFontFamily:            @serifFontFamily;
 
 @fontSizeJumbo:            round((@baseFontSize * 2), 0); // 28px
+@fontSizeLarger:           round((@baseFontSize * 1.45), 0); // 20px
 @fontSizeLarge:            round((@baseFontSize * 1.25), 0); // 18px
 @fontSizeMedium:           round((@baseFontSize * 1.15), 0); // 16px
 @fontSizeSmallish:         round((@baseFontSize * 0.95), 0); // 13px
 @fontSizeSmall:            round((@baseFontSize * 0.85), 0); // 12px
 @fontSizeMini:             round((@baseFontSize * 0.75), 0); // 11px
+
+h1, .h1 { font-size: @fontSizeLarger !important; } // 20px
+h2, .h2 { font-size: @fontSizeLarge !important; }  // 18px
+h3, .h3 { font-size: @fontSizeMedium !important; } // 16px
+h4, .h4 { font-size: @baseFontSize !important; }   // 14px
+h5, .h5 { font-size: @fontSizeSmall !important; }  // 12px
+h6, .h6 { font-size: @fontSizeMini !important; }   // 11px
 
 @codeFontSize:             @fontSizeSmall;
 @codeCharacterWidth:       round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)

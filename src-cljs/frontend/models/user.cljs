@@ -31,3 +31,6 @@
 (def support-eligible? (boolean (some-> js/window
                                         (aget "elevSettings")
                                         (aget "support_enabled"))))
+(defn has-org? [user org-name]
+  (let [users-orgs (concat [user] (:organizations user))]
+    (boolean (some #(= org-name (:login %)) users-orgs))))
