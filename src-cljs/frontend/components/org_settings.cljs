@@ -485,7 +485,7 @@
               [:div
                (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
                (if (and (feature/enabled? :osx-plans)
-                        (get-in app state/org-osx-beta-path))
+                        (get-in app state/org-osx-enabled-path))
                  (list
                    (om/build osx-plans plan)
                    (om/build osx-faq osx-faq-items))
@@ -1006,30 +1006,34 @@
             [:div.explanation
              [:p "Looks like you haven't run any builds yet."]])])))))
 
-(defn osx-overview [plan owner]
+(defn osx-overview [{:keys [plan osx-enabled?]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         [:div
          [:h2 "iOS"]
-         [:p "You are in the iOS limited-release, you may also choose an iOS plan "
-          [:a {:href "#containers"} "here"] "."]
-         (when (pm/osx? plan)
-           (let [plan-name (some-> plan :osx :template :name)
-                 plan-start (some-> plan :osx_plan_started_on)
-                 trial-end (some-> plan :osx_trial_end_date)]
-             [:p
-              (if (pm/osx-trial? plan)
-                (gstring/format "You're currently on the iOS trial for %d more days. "
-                                (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
-                (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
-              [:span "We will support general release in the near future!"]]))]))))
+         (if-not osx-enabled?
+           [:p "You are not currently in the iOS limited-release. If you would like access to iOS builds, please send an email to sayhi@circleci.com."]
+           [:div
+            [:p "You are in the iOS limited-release, you may also choose an iOS plan "
+             [:a {:href "#containers"} "here"] "."]
+            (when (pm/osx? plan)
+              (let [plan-name (some-> plan :osx :template :name)
+                    plan-start (some-> plan :osx_plan_started_on)
+                    trial-end (some-> plan :osx_trial_end_date)]
+                [:p
+                 (if (pm/osx-trial? plan)
+                   (gstring/format "You're currently on the iOS trial for %d more days. "
+                                   (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
+                   (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
+                 [:span "We will support general release in the near future!"]]))])]))))
 
 (defn overview [app owner]
   (om/component
    (html
     (let [org-name (get-in app state/org-name-path)
+          osx-enabled? (get-in app state/org-osx-enabled-path)
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
           container-cost (pm/per-container-cost plan)
@@ -1082,11 +1086,10 @@
         (when (and (pm/freemium? plan) (> containers 1))
           [:p (str (pm/freemium-containers plan) " container is free.")])
         (when-not (config/enterprise?)
-          [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
-          [:p "If enabled, you may also choose a seperate iOS plan "
-           [:a {:href "#containers"} "here"]
-           ". If you would like to join the limited relase, please contact sayhi@circleci.com. We will support general release soon!"]
-          (om/build osx-overview plan))
+          [:div
+           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
+           (om/build osx-overview {:plan plan
+                                   :osx-enabled? osx-enabled?})])
         (when (and (feature/enabled? :ios-build-usage)
                    (pm/osx? plan))
           (om/build osx-usage-table {:plan plan}))]]))))
