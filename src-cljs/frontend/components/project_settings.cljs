@@ -1369,6 +1369,7 @@
               [:input.save {:data-failed-text "Failed",
                             :data-success-text "Uploaded",
                             :data-loading-text "Uploading...",
+                            :data-dismiss "modal"
                             :value "Upload",
                             :type "submit"
                             :disabled (not (and file-content description))
