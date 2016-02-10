@@ -1,7 +1,6 @@
 (ns frontend.components.enterprise
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.analytics.mixpanel :as mixpanel]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.contact-form :as contact-form]
@@ -38,20 +37,10 @@
                                      ["Developer count" developer-count]
                                      []
                                      ["Form URL" js/location.href]
-                                     ["Initial referrer" (mixpanel/get-property "$initial_referrer")]
-                                     []
-                                     ["UTM medium" (mixpanel/get-property "utm_medium")]
-                                     ["UTM source" (mixpanel/get-property "utm_source")]
-                                     ["UTM campaign" (mixpanel/get-property "utm_campaign")]
-                                     ["UTM content" (mixpanel/get-property "utm_content")]
-                                     ["UTM term" (mixpanel/get-property "utm_term")]]
+                                     []]
                                     (map (fn [[k v]] (if k (gstr/format "%s: %s" k (or v "not set")) "")))
                                     (str/join "\n"))
-                      :enterprise true})
-    :success-hook (fn [{:keys [email]}]
-                    (mixpanel/track "enterprise_form_submitted"
-                                    {:url js/location.href
-                                     :email email}))}
+                      :enterprise true})}
    (fn [control notice form-state]
      (list
       [:div.row.contact-form

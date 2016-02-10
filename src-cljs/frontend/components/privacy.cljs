@@ -67,15 +67,6 @@
               "Intercom's privacy policy"]
              " for more detail. We also use Intercom for our support system, including the friendly \"Help\" button used throughout Circle, and all support via the site goes through Intercom. To avoid this, you may contact us directly through any medium on the " [:a {:href "/contact"} "contact page"] "."]
             [:li
-             [:a {:href "https://mixpanel.com/"
-                  :target "_blank"} "Mixpanel"]
-             " is used for SaaS marketing, including A/B testing, funnel tracking, and other conversion-rate optimization techniques. See "
-             [:a
-              {:href "https://mixpanel.com/privacy/"
-               :target "_blank"}
-              "mixpanel's privacy policy"]
-             " for more detail."]
-            [:li
              "Circle uses "
              [:a
               {:href "http://www.google.com/analytics/"
