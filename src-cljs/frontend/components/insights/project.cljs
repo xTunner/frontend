@@ -5,6 +5,7 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
@@ -133,3 +134,18 @@
           [:h2 "Build Performance"]]
          [:div.card-body
           (om/build build-time-line-chart chartable-builds)]]]))))
+
+(defrender header [state owner]
+  (let [projects (get-in state state/projects-path)
+        navigation-data (:navigation-data state)
+        {:keys [branches insights-selected-branch] :as project} (some->> projects
+                                                                                  (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                                                                (= (:username %) (:org navigation-data))))
+                                                                                  first)]
+    (html
+     [:.insights-branch-picker
+      [:select {:name "insights-branch-picker"
+                :on-change #(raise! owner [:project-insights-branch-changed {:new-branch %}])
+                :value insights-selected-branch}
+       (for [branch-name (keys branches)]
+         [:option {:value branch-name} branch-name])]])))

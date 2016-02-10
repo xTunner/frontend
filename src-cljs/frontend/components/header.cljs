@@ -18,6 +18,7 @@
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.html :refer [open-ext]]
+            [frontend.components.insights.project :as insights-project]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -73,7 +74,9 @@
              [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
               (str "View " project-name " »")])
            (when (= :build (:navigation-point app))
-             (om/build build-head/build-head-actions app))])))))
+             (om/build build-head/build-head-actions app))
+           (when (= :project-insights (:navigation-point app))
+             (om/build insights-project/header app))])))))
 
 (defn head-admin [app owner]
   (reify
