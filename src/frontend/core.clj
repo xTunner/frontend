@@ -19,7 +19,9 @@
 
 (defroutes routes
   (GET "/js/om-dev.js" []
-       (response/redirect (stefon/link-to-asset "js/om-dev.js.stefon" stefon-options)))
+    (response/redirect (stefon/link-to-asset "js/om-dev.js.stefon" stefon-options)))
+  (GET "/devcards" []
+    (response/resource-response "devcards.html"))
   (compojure.route/resources "/" {:root "public"
                                   :mime-types {:svg "image/svg"}})
   (compojure.route/resources "/vendor/font-awesome" {:root "components/font-awesome"
