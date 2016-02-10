@@ -61,7 +61,7 @@
 (defn wrap-hosted-scripts
   "Redirects to the canonical url for a hosted script if we're using stefon in development mode."
   [handler stefon-options hosted-scripts]
-  (if (not= (:mode stefon-options) :development)
+  (if (not= (:mode stefon-options) :REMEBER-TO-REVERT-THIS-TO-development)
     handler
     (stefon.settings/with-options stefon-options
       (let [paths (set (map :path hosted-scripts))]

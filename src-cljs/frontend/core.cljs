@@ -137,6 +137,7 @@
        (swap! state (partial nav-con/navigated-to history navigation-point args))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state)
        (set-canonical! (:_canonical args))
+       (analytics/track {:event-type :foobar})
        (analytics/track {:event-type :pageview
                          :navigation-point navigation-point})
        (when-let [app-dominant (goog.dom.getElementByClass "app-dominant")]
@@ -333,4 +334,5 @@
       (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user @state)]
       (subscribe-to-user-channel user (get-in @state [:comms :ws]))
-      (analytics/init-user (:login user)))))
+      (analytics/track {:event-type :init-user
+                        :login (:login user)}))))

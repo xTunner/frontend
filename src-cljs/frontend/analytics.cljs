@@ -13,17 +13,12 @@
             [goog.style]
             [goog.string :as gstr]))
 
-(deftrack init-user [login]
-  (utils/swallow-errors
-   (rollbar/init-user login)))
-
 (def supported-events
   ;; This is a list of supported event types. This is to prevent the creation
   ;; of multiple events of the same type with slightly different names throughout
   ;; the code base.
   ;; Please keep this alphabetically sorted for ease of readability.
-  #{
-    :add-containers-more-clicked
+  #{:add-containers-more-clicked
     :beta-join-click
     :beta-leave-click
     :beta-terms-accept
@@ -45,10 +40,10 @@
     :signup-click
     :signup-impression
     :stop-building-project
-    :unfollow-project
-    })
+    :unfollow-project})
 
 (defmulti track (fn [data]
+                  (println "inside track")
                   (when (frontend.config/analytics-enabled?)
                     (if (supported-events (:event-type data))
                       :event
@@ -89,8 +84,13 @@
                               1000 60 60)})))
 
 (defmethod track :build [{:keys [user build]}]
-  (segment/track "view-build" (build-properties build))
+  (segment/track-event "view-build" (build-properties build))
   (when (and (:oss build) (build-model/owner? build user))
     (intercom/track :viewed-self-triggered-oss-build
                     {:vcs-url (vcs-url/project-name (:vcs_url build))
                      :outcome (:outcome build)})))
+
+(defmethod track :init-user [{:keys [login]}]
+  (utils/swallow-errors
+   (rollbar/init-user login)))
+
