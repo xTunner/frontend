@@ -157,8 +157,7 @@
                                           project-id (api/project-build-id project overrides)]]
                                 (if (= project-id target-id)
                                   (-> project
-                                      (assoc-in [:recent-builds (:branch target-id)] all-recent-builds)
-                                      (assoc :insights-selected-branch (:branch overrides)))
+                                      (assoc-in [:recent-builds (:branch target-id)] all-recent-builds))
                                   project)))]
       (update-in state state/projects-path add-recent-builds))
     state))
