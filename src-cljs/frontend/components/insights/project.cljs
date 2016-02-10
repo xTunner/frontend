@@ -80,11 +80,11 @@
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
-        {:keys [branches parallel] :as project} (some->> projects
-                                                         (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                                       (= (:username %) (:org navigation-data))))
-                                                         first)
-        chartable-builds (some->> (:recent-builds project)
+        {:keys [branches parallel insights-selected-branch] :as project} (some->> projects
+                                                                                  (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                                                                (= (:username %) (:org navigation-data))))
+                                                                                  first)
+        chartable-builds (some->> (get (:recent-builds project) insights-selected-branch)
                                   (filter insights/build-chartable?))
         bar-chart-builds (->> chartable-builds
                               (take (:max-bars build-time-bar-chart-plot-info))

@@ -104,12 +104,15 @@
   [target message status {:keys [resp]} {:keys [navigation-point] :as current-state}]
   (let [new-projects (map (fn [project] (update project :scopes #(set (map keyword %)))) resp)
         old-projects-by-build-id (group-by api/project-build-id (get-in current-state state/projects-path))
-        new-projects-with-existing-recent-builds
-        (map (fn [project]
+        processed-new-projects
+        (map (fn [{:keys [default_branch] :as project}]
                (let [matching-old-project (first (get old-projects-by-build-id (api/project-build-id project)))]
-                 (assoc project :recent-builds (:recent-builds matching-old-project))))
+                 (assoc project
+                        ;; reset insights branch
+                        :insights-selected-branch default_branch
+                        :recent-builds (:recent-builds matching-old-project))))
              new-projects)]
-    (assoc-in current-state state/projects-path new-projects-with-existing-recent-builds)))
+    (assoc-in current-state state/projects-path processed-new-projects)))
 
 (defmethod post-api-event! [:projects :success]
   [target message status {{:keys [then]} :context} previous-state current-state]
@@ -152,7 +155,7 @@
                               (for [project projects
                                     :let [project-id (api/project-build-id project)]]
                                 (if (= project-id target-id)
-                                  (assoc project :recent-builds all-recent-builds)
+                                  (assoc-in project [:recent-builds (:branch target-id)] all-recent-builds)
                                   project)))]
       (update-in state state/projects-path add-recent-builds))
     state))
