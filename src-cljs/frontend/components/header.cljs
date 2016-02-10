@@ -230,8 +230,7 @@
                      [:i.fa.fa-caret-down]]
                     [:ul.dropdown-menu
                      [:li {:role "presentation"}
-                      [:a.sub.menu-item (
-                                         merge
+                      [:a.sub.menu-item (merge
                                           (maybe-active nav-point :documentation)
                                           (open-ext {:role "menuitem"
                                                      :tabIndex "-1"
