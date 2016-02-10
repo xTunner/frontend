@@ -78,6 +78,17 @@
           }
         }
       }
+
+      @media (max-width: @screen-xs-max) {
+        .flex(0);
+
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: @screen-xs-max) {
+      .flex-direction(column);
+      .flex-wrap(nowrap);
     }
   }
 
