@@ -601,7 +601,10 @@
     (let [nav-ch (get-in current-state [:comms :nav])]
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org (:org-name context)
                                                                        :subpage "containers"})
-                                :replace-token? true}]))))
+                                :replace-token? true}])
+      (analytics/track {:event-type :new-plan-created
+                        :properties {:org (:org-name context)
+                                     :user (get-in current-state state/user-login-path)}}))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]

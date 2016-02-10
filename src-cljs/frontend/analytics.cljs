@@ -24,11 +24,6 @@
   ;; Please keep this alphabetically sorted for ease of readability.
   #{
     :add-containers-more-clicked
-    :trigger-build
-    :follow-project
-    :unfollow-project
-    :stop-building-project
-    :change-container-amount
     :beta-join-click
     :beta-leave-click
     :beta-terms-accept
@@ -44,9 +39,13 @@
     :build-timing-upsell-click
     :build-timing-upsell-impression
     :cancel-plan-clicked
+    :change-container-amount
+    :follow-project
     :parallelism-build-header-click
     :signup-click
     :signup-impression
+    :stop-building-project
+    :unfollow-project
     })
 
 (defmulti track (fn [data]
@@ -64,13 +63,24 @@
 (defmethod track :external [{:keys [event properties]}]
   (segment/track-external-click event properties))
 
-(defmethod track :pageview [{:keys [_ navigation-point]}]
+(defmethod track :pageview [{:keys [navigation-point]}]
   (segment/track-pageview navigation-point))
+
+(defmethod track :trigger-build [{:keys [build properties]}]
+  (segment/track-event "trigger-build"  (merge {:project (vcs-url/project-name (:vcs_url build))
+                                                :build-num (:build_num build)
+                                                :retry? true}
+                                               properties)))
+
+(defmethod track :new-plan-created [{:keys [properties]}]
+  (segment/track-event "new-plan-created" properties)
+  (intercom/track :paid-for-plan))
 
 (defn build-properties [build]
   (merge {:running (build-model/running? build)
           :build-num (:build_num build)
-          :vcs-url (vcs-url/project-name (:vcs_url build))
+          :repo (vcs-url/repo-name (:vcs_url build))
+          :org (vcs-url/org-name (:vcs_url build))
           :oss (boolean (:oss build))
           :outcome (:outcome build)}
          (when (:stop_time build)
@@ -78,42 +88,9 @@
                                  (.getTime (js/Date. (:stop_time build))))
                               1000 60 60)})))
 
-(defmethod track :build [user build]
-  (mixpanel/track "View Build" (build-properties build))
+(defmethod track :build [{:keys [user build]}]
+  (segment/track "view-build" (build-properties build))
   (when (and (:oss build) (build-model/owner? build user))
     (intercom/track :viewed-self-triggered-oss-build
                     {:vcs-url (vcs-url/project-name (:vcs_url build))
                      :outcome (:outcome build)})))
-
-
-(deftrack track-path [path]
-  (mixpanel/track-pageview path)
-  (google/push path))
-
-(deftrack track-pricing []
-  (mixpanel/register-once {:view-pricing true}))
-
-(deftrack track-join-code [join-code]
-  (when join-code (mixpanel/register-once {"join_code" join-code})))
-
-(deftrack track-save-containers [upgraded?]
-  (mixpanel/track "Save Containers")
-  (if upgraded?
-    (intercom/track :upgraded-containers)
-    (intercom/track :downgraded-containers)))
-
-(deftrack track-save-orgs []
-  (mixpanel/track "Save Organizations"))
-
-(deftrack track-payer [login]
-  (mixpanel/track "Paid")
-  (intercom/track :paid-for-plan)
-  (pa/track "payer" {:orderId login})
-  (twitter/track-payer)
-  (adroll/record-payer))
-
-(deftrack track-trigger-build [build & {:as extra}]
-  (mixpanel/track "Trigger Build" (merge {:vcs-url (vcs-url/project-name (:vcs_url build))
-                                          :build-num (:build_num build)
-                                          :retry? true}
-                                         extra)))

@@ -393,8 +393,8 @@
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track {:event-type :trigger-build
-                           :properties {:api-result (:resp api-result)
-                                        :no-cache? no-cache?}}))))))
+                           :build (:resp api-result)
+                           :properties {:no-cache? no-cache?}}))))))
 
 
 (defmethod post-control-event! :ssh-build-clicked
@@ -409,8 +409,8 @@
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track {:event-type :trigger-build
-                           :properties {:api-result (:resp api-result)
-                                        :ssh? true}}))))))
+                           :build (:resp api-result)
+                           :properties {:ssh? true}}))))))
 
 (defmethod post-control-event! :ssh-current-build-clicked
   [target message {:keys [build-num vcs-url]} previous-state current-state]
@@ -490,9 +490,8 @@
 (defmethod post-control-event! :stopped-building-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        login  (get-in current-state state/user-login-path)
-                project  (vcs-url/project-name vcs-url)
-        ]
+        login (get-in current-state state/user-login-path)
+        project (vcs-url/project-name vcs-url)]
     (button-ajax :delete
                  (gstring/format "/api/v1/project/%s/enable" project)
                  :stop-building-project
