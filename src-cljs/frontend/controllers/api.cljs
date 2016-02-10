@@ -106,10 +106,10 @@
         old-projects-by-build-id (group-by api/project-build-id (get-in current-state state/projects-path))
         processed-new-projects
         (map (fn [{:keys [default_branch] :as project}]
-               (let [matching-old-project (first (get old-projects-by-build-id (api/project-build-id project)))]
+               (let [{old-selected-branch :insights-selected-branch :as matching-old-project} (first (get old-projects-by-build-id (api/project-build-id project)))]
                  (assoc project
                         ;; reset insights branch
-                        :insights-selected-branch default_branch
+                        :insights-selected-branch (or old-selected-branch default_branch)
                         :recent-builds (:recent-builds matching-old-project))))
              new-projects)]
     (assoc-in current-state state/projects-path processed-new-projects)))
@@ -153,9 +153,12 @@
     (let [all-recent-builds (apply concat (map deref all-page-results))
           add-recent-builds (fn [projects]
                               (for [project projects
-                                    :let [project-id (api/project-build-id project)]]
+                                    :let [overrides {:branch (:branch target-id)}
+                                          project-id (api/project-build-id project overrides)]]
                                 (if (= project-id target-id)
-                                  (assoc-in project [:recent-builds (:branch target-id)] all-recent-builds)
+                                  (-> project
+                                      (assoc-in [:recent-builds (:branch target-id)] all-recent-builds)
+                                      (assoc :insights-selected-branch (:branch overrides)))
                                   project)))]
       (update-in state state/projects-path add-recent-builds))
     state))

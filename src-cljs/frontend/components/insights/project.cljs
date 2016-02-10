@@ -145,7 +145,7 @@
     (html
      [:.insights-branch-picker
       [:select {:name "insights-branch-picker"
-                :on-change #(raise! owner [:project-insights-branch-changed {:new-branch %}])
+                :on-change #(raise! owner [:project-insights-branch-changed {:new-branch (.. % -target -value)}])
                 :value insights-selected-branch}
-       (for [branch-name (keys branches)]
+       (for [branch-name (sort (keys branches))]
          [:option {:value branch-name} branch-name])]])))
