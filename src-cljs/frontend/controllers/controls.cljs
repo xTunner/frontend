@@ -24,7 +24,8 @@
             [goog.dom]
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
-            goog.style)
+            goog.style
+            [frontend.models.user :as user-model])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.fx.dom.Scroll]))
 
@@ -170,15 +171,19 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (api/get-usage-queue (get-in current-state state/build-path) api-ch)))
 
-
 (defmethod control-event :selected-add-projects-org
   [target message args state]
   (-> state
       (assoc-in [:settings :add-projects :selected-org] args)
-      (assoc-in [:settings :add-projects :repo-filter-string] "")))
+      (assoc-in [:settings :add-projects :repo-filter-string] "")
+      (state-utils/reset-current-org)))
 
 (defmethod post-control-event! :selected-add-projects-org
-  [target message args previous-state current-state]
+  [target message {:keys [login]} previous-state current-state]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (when (user-model/has-org? (get-in current-state state/user-path) login)
+      (api/get-org-settings login api-ch)
+      (api/get-org-plan login api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]
@@ -901,6 +906,19 @@
         (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
 
+(defmethod post-control-event! :activate-plan-trial
+  [target message plan-template previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        api-ch (get-in current-state [:comms :api])
+        org-name (get-in current-state state/org-name-path)]
+    (go
+      (let [api-result (<! (ajax/managed-ajax
+                             :post
+                             (gstring/format "/api/v1/organization/%s/plan/trial" org-name)
+                             :params plan-template))]
+        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (release-button! uuid (:status api-result))))))
+
 (defmethod post-control-event! :save-piggyback-orgs-clicked
   [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
@@ -1282,3 +1300,17 @@
 (defmethod control-event :dismiss-statuspage
   [_ _ {:keys [last-update]} state]
   (assoc-in state state/statuspage-dismissed-update-path last-update))
+
+(defmethod post-control-event! :upload-p12
+  [_ _ {:keys [file-content file-name password description]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        org-name (get-in current-state [:navigation-data :org])
+        api-ch (get-in current-state [:comms :api])]
+    (api/set-code-signing-keys org-name file-content file-name password description api-ch uuid)))
+
+(defmethod post-control-event! :delete-p12
+  [_ _ {:keys [id]} previous-state current-state]
+  (let [uuid frontend.async/*uuid*
+        org-name (get-in current-state [:navigation-data :org])
+        api-ch (get-in current-state [:comms :api])]
+    (api/delete-code-signing-key org-name id api-ch uuid)))

@@ -1,0 +1,2 @@
+web: lein run
+nginx: nginx -c `pwd`/etc/nginx.conf

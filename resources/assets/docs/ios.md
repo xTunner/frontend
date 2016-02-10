@@ -31,7 +31,7 @@ customization options.
 
 ## Xcode Version
 
-By default, CircleCI will build your project with Xcode 6.4. You can select 7.0, 7.1 or 7.2
+By default, CircleCI will build your project with Xcode 7.0. You can select 7.1, 7.2 or 7.3.
 by specifying the version in a [circle.yml file](/docs/configuration) in the root of your
 repo. For example, for 7.2, add the following:
 
@@ -60,11 +60,18 @@ to manage dependencies. If you are using CocoaPods, then we recommend that you
 check your [Pods directory into source control](http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control).
 This will ensure that you have a deterministic, reproducable build.
 
-If CircleCI finds a `Podfile` and no `Pods` directory, then we will run
-`pod install` to install the necessary dependencies in the `dependencies`
-step of your build.
+If CircleCI finds a `Podfile` and the `Pods` directory is not present (or empty)
+ then we will run `pod install` to install the necessary dependencies in the
+`dependencies` step of your build.
 
-##Supported build and test tools
+We cannot handle all setups automatically, so for some projects you might need
+to invoke CocoaPods manually with some custom configuration. To do this you will
+need to override the `dependencies` section of your `circle.yml` file.
+See our [documentation on overriding build phases for more information on this.](/docs/configuration#phases).
+If you need more help please reach out to our support team who are always happy
+to help out.
+
+## Supported build and test tools
 
 CircleCI's automatic commands cover a lot of common test patterns, and you can customize your build
 as needed to satisfy almost any iOS build and test strategy.
@@ -289,15 +296,15 @@ We will be happy to help you work around the issue.
 The OSX container that CircleCI uses to build has the following software
 versions installed:
 
-- OS X 10.10.5 (14F27) Darwin 14.5.0
+- OS X 10.11.3 (15D21) Darwin 15.3.0
 - Xcode:
-  - 6.4 Build version 6E35b
   - 7.0 Build version 7A218
   - 7.1.1 Build version 7B1005
   - 7.2 Build version 7C68
+  - 7.3 Build version 7D129n
 - Facebook xctool 0.2.7
 - CocoaPods 0.39.0
-- xcpretty 0.2.1
-- fastlane 1.48.0
-- carthage 0.11.0
-- shenzhen 0.13.1
+- xcpretty 0.2.2
+- fastlane 1.57.0
+- carthage 0.12.0
+- shenzhen 0.14.2

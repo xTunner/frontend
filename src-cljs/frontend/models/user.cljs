@@ -22,3 +22,15 @@
 (defn project-preferences [user]
   (into {} (for [[vcs-url prefs] (:projects user)]
              [(unkeyword vcs-url) prefs])))
+
+(def free? (boolean (some-> js/window
+                            (aget "ldUser")
+                            (aget "custom")
+                            (aget "free"))))
+
+(def support-eligible? (boolean (some-> js/window
+                                        (aget "elevSettings")
+                                        (aget "support_enabled"))))
+(defn has-org? [user org-name]
+  (let [users-orgs (concat [user] (:organizations user))]
+    (boolean (some #(= org-name (:login %)) users-orgs))))

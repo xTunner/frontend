@@ -24,7 +24,10 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [goog.crypt.base64 :as base64]
+            [frontend.datetime :as datetime]
+            [frontend.models.feature :as feature])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
@@ -384,7 +387,8 @@
                              :blurb [:p
                                      "Select this option to run builds in our Ubuntu 14.04 (Trusty) container."
                                      "This container is currently in beta."
-                                     "Our default container is Ubuntu 12.04 (Precise)."]}))
+                                     "Our default container is Ubuntu 12.04 (Precise)."
+                                       [:p [:strong "Please note that you need to trigger a build by pushing commits to Github (instead of rebuilding) to apply the new setting."]]]}))
             ]]])))))
 
 (defn dependencies [project-data owner]
@@ -1308,11 +1312,104 @@
                       "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
                       "        deployment_group: my-deployment-group\n"))]]]]]])))))
 
+(defn p12-upload-form [_ owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:description nil
+       :password nil
+       :file-name nil
+       :file-content nil})
+
+    om/IRenderState
+    (render-state [_ {:keys [description password file-name file-content]}]
+      (let [file-selected-fn (fn [e]
+                               (let [file (aget e "target" "files" 0)]
+                                 (om/set-state! owner :file-name (aget file "name"))
+                                 (doto (js/FileReader.)
+                                   (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
+                                   (.readAsBinaryString file))))]
+        (html
+          [:div
+           [:div
+            [:label "Description"]
+            [:input.p12-key-description
+             {:type "text" :value description
+              :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
+
+           [:div
+            [:label "Password (Optional)"]
+            [:input.p12-key-password
+             {:type "password" :value password
+              :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
+
+           [:div.drag-and-drop-zone
+            (when file-name
+              [:div file-name])
+            [:input.p12-file-input {:type "file" :on-change file-selected-fn}]]
+
+           [:div.buttons
+            (forms/managed-button
+              [:input.save {:data-failed-text "Failed",
+                            :data-success-text "Uploaded",
+                            :data-loading-text "Uploading...",
+                            :value "Upload key",
+                            :type "submit"
+                            :disabled (not (and file-content description))
+                            :on-click #(do (raise! owner [:upload-p12 {:description description
+                                                                       :password (or password "")
+                                                                       :file-content (base64/encodeString file-content)
+                                                                       :file-name file-name}])
+                                           (om/set-state! owner :description nil)
+                                           (om/set-state! owner :password nil)
+                                           (om/set-state! owner :file-name nil)
+                                           (om/set-state! owner :file-content nil))}])]])))))
+
+
+(defn p12-key [{:keys [id filename description uploaded_at]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (when-not (empty? id)
+          [:tr
+           [:td id]
+           [:td filename]
+           [:td description]
+           [:td (datetime/as-time-since uploaded_at)]
+           [:td {:on-click #(raise! owner [:delete-p12 {:id id}])} [:i.fa.fa-times-circle "Remove"]]])))))
+
+(defn code-signing [{:keys [project org]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [osx-keys (:osx-keys org)]
+        (html
+          [:section.code-signing-page
+           [:article
+            [:h2 "Apple Code Signing Keys for " (vcs-url/org-name (:vcs_url project))]
+            [:div.key-list
+             [:h3 "Existing keys"]
+             [:table.table
+              [:thead
+               [:tr
+                [:th "ID"]
+                [:th "Filename"]
+                [:th "Description"]
+                [:th "Uploaded"]
+                [:th]]]
+              [:tbody
+               (om/build-all p12-key osx-keys)]]]
+            [:div.upload
+             [:h3 "Upload a new key"]
+             (om/build p12-upload-form {})]]])))))
+
 (defn project-settings [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [project-data (get-in data state/project-data-path)
+      (let [org-data (get-in data state/org-data-path)
+            project-data (get-in data state/project-data-path)
             user (:current-user data)
             subpage (:project-settings-subpage data)]
         (html
@@ -1337,4 +1434,7 @@
                :deployment (om/build other-deployment project-data)
                :aws (om/build aws project-data)
                :aws-codedeploy (om/build aws-codedeploy project-data)
+               :code-signing (if (feature/enabled? :show-ios-code-signing)
+                               (om/build code-signing {:project (:project project-data) :org org-data})
+                               (om/build overview project-data))
                (om/build overview project-data))]]))))))

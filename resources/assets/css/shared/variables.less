@@ -29,7 +29,7 @@
 @brand-purple-v2: #ab7fd1;
 @brand-gray-v2:   #999999;
 
-@brand-sans-serif-v2:      Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+@brand-sans-serif-v2:      "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 @brand-primary-v2:         @brand-blue-v2;
 @brand-success-v2:         @brand-green-v2;
 @brand-info-v2:            @brand-blue-v2;
@@ -79,6 +79,17 @@
 @beta-text-color: #666;
 @alert-success-color: #d0f1e2;
 
+@input-border-blue: #9ec5d4;
+
+@primary-button-background: #3dc1d9;
+@primary-button-hover-background: #51c7dd;
+
+@secondary-button-color: #505050;
+@secondary-button-background: #f0f0f0;
+@secondary-button-hover-background: #f8f8f8;
+
+@button-border: lighten(@black, 90);
+
 // Misc.
 
 @imgPath: "../../img";
@@ -105,7 +116,7 @@
 @blueLighter:          lighten(           spin(@blue,   0.60), 19.7)       ; // #00bafa
 @blueLightest:         lighten(desaturate(spin(@blue, -15.00), 17.0), 58.9); // #c8fafa
 
-@green:                @brand-green-v2;                                 
+@green:                @brand-green-v2;
 @greenDarkest:          darken(  saturate(@green, 15.5),  27.3); // #052b05
 @greenDarker:           darken(  saturate(@green,  9.2),  17.3); // #0d550d
 @greenDark:             darken(  saturate(@green,  5.0),   9.8); // #157415
@@ -144,10 +155,20 @@
 @baseLineHeight:           20px;
 @altFontFamily:            @serifFontFamily;
 
+@fontSizeJumbo:            round((@baseFontSize * 2), 0); // 28px
+@fontSizeLarger:           round((@baseFontSize * 1.45), 0); // 20px
 @fontSizeLarge:            round((@baseFontSize * 1.25), 0); // 18px
 @fontSizeMedium:           round((@baseFontSize * 1.15), 0); // 16px
+@fontSizeSmallish:         round((@baseFontSize * 0.95), 0); // 13px
 @fontSizeSmall:            round((@baseFontSize * 0.85), 0); // 12px
 @fontSizeMini:             round((@baseFontSize * 0.75), 0); // 11px
+
+h1, .h1 { font-size: @fontSizeLarger !important; } // 20px
+h2, .h2 { font-size: @fontSizeLarge !important; }  // 18px
+h3, .h3 { font-size: @fontSizeMedium !important; } // 16px
+h4, .h4 { font-size: @baseFontSize !important; }   // 14px
+h5, .h5 { font-size: @fontSizeSmall !important; }  // 12px
+h6, .h6 { font-size: @fontSizeMini !important; }   // 11px
 
 @codeFontSize:             @fontSizeSmall;
 @codeCharacterWidth:       round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)

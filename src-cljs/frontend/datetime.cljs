@@ -203,8 +203,8 @@
         now (server-now)
         ago (js/Math.floor (/ (- now time-stamp) 1000))]
     (cond (< ago minute) "just now"
-          (< ago hour) (str (int (/ ago minute)) "m ago")
-          (< ago day) (time-format/unparse (time-format/formatter "h:mma") zone-time)
+          (< ago hour) (str (int (/ ago minute)) " min ago")
+          (< ago day) (time-format/unparse (time-format/formatter "h:mm a") zone-time)
           (< ago (* 2 day)) "yesterday"
           (< ago year) (time-format/unparse (time-format/formatter "MMM d") zone-time)
           :else (time-format/unparse (time-format/formatter "MMM yyyy") zone-time))))

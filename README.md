@@ -156,3 +156,76 @@ Figwheel runs its own bREPL, which you'll see on the terminal at your `lein figw
 ```
 
 Unfortunately for vim-fireplace, Figwheel doesn't expose the repl-env to pass to `:Piggieback` in any nice way. (If you'd like to work on making it possible, have a look at `figwheel-sidecar.repl/repl-env`. Unfortunately, it takes an entire build map as an argument, rather than just a build ID, as `figwheel-sidecar.repl/cljs-repl` does.) However, you can still run an out-of-browser Rhino REPL using `:Piggieback` (which vim-fireplace will probably run for you automatically.)
+
+### Better Cider Support
+
+I couldn't get the browser repl to work at all using `cider-connect`, and `cider` requires `cemerick.com/piggieback` in order to support a lot of its features, including jumping to definitions.
+
+Here's an alternative method for `cider` users and possibly others who are dependent on `piggieback`.
+
+First, start the `nginx` and `web` processes using foreman.
+
+```
+foreman start -f Procfile.alt
+```
+
+Then either start a new repl with
+
+```
+lein repl
+```
+
+or use the `cider-jack-in` command in emacs. Note this is *not* the `cider-jack-in-clojurescript` command. Once the repl is established, execute the following code:
+
+```clojure
+frontend.core> (use 'figwheel-sidecar.repl-api)
+=> nil
+frontend.core> (start-figwheel!)
+Figwheel: Starting server at http://localhost:3449
+Figwheel: Watching build - dev
+Compiling "resources/public/cljs/out/frontend-dev.js" from ["src-cljs" "test-cljs"]...
+Successfully compiled "resources/public/cljs/out/frontend-dev.js" in 5.547 seconds.
+Figwheel: Starting CSS Watcher for paths  ["resources/assets/css"]
+Figwheel: Starting nREPL server on port: 7888
+=> #<SystemMap>
+frontend.core> (cljs-repl)
+Launching ClojureScript REPL for build: dev
+Figwheel Controls:
+          (stop-autobuild)                ;; stops Figwheel autobuilder
+          (start-autobuild [id ...])      ;; starts autobuilder focused on optional ids
+          (switch-to-build id ...)        ;; switches autobuilder to different build
+          (reset-autobuild)               ;; stops, cleans, and starts autobuilder
+          (reload-config)                 ;; reloads build config and resets autobuild
+          (build-once [id ...])           ;; builds source one time
+          (clean-builds [id ..])          ;; deletes compiled cljs target files
+          (print-config [id ...])         ;; prints out build configurations
+          (fig-status)                    ;; displays current state of system
+  Switch REPL build focus:
+          :cljs/quit                      ;; allows you to switch REPL to another build
+    Docs: (doc function-name-here)
+    Exit: Control+C or :cljs/quit
+ Results: Stored in vars *1, *2, *3, *e holds last exception object
+Prompt will show when Figwheel connects to your application
+To quit, type: :cljs/quit
+=> nil
+cljs.user>
+```
+
+Now the middleware should be loaded and emacs `cider` navigation should work.
+
+### CLJS Dev Tools
+
+[Dirac](https://github.com/binaryage/dirac) is a fork of Chrome DevTools that works for ClojureScript.
+
+Requirements:
+
+1. Mac OSX
+2. [Google Chrome Canary](https://www.google.com/chrome/browser/canary.html) installed in /Applications
+3. [Dirac Chrome Extension](https://chrome.google.com/webstore/detail/dirac-devtools/kbkdngfljkchidcjpnfcgcokkbhlkogi) installed in Chrome Canary
+
+Running devtools:
+
+1. Run the frontend as usual with `foreman`
+2. In another terminal, `cd` to the project directory and run `./script/devtools.sh`. This will open a Chrome Canary window capable of running dev tools.
+3. After the script opens Chrome Canary, click on the Dirac extension icon to the right of the address bar to open the dev tools.
+4. Toggle CLJS on/off by pressing pgUp/pgDn (fn + up/down arrow on Mac) with focus on the prompt field.

@@ -93,7 +93,7 @@
 
 .small-emphasis {
   font-size: 11px;
-  font-weight: 300;
+  font-weight: 400;
   text-transform: uppercase;
   padding-bottom: 8px;
 }
@@ -654,24 +654,13 @@ ul:last-child {
   }
 }
 
-.sub-head-usage-queue {
-  padding-bottom: 0;
-}
-
-.queue-message {
-  margin-bottom: (@grid-gutter-width / 2);
-}
-
 .queued-builds {
   .build {
+    margin-top: (@grid-gutter-width / 2);
     margin-bottom: 0;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: none;
-  }
-
-  .status-area {
-    padding-left: 0;
-    border-right-color: rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
   }
 
   .build-info {

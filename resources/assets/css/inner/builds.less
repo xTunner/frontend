@@ -56,9 +56,6 @@
   .failure-source {
     color: @redLight;
   }
-  ol {
-    margin: 0 2em;
-  }
 }
 
 .build-artifacts-list {
@@ -97,7 +94,7 @@
     color: @grayLightest;
     font-size: @fontSizeSmall;
     font-family: @monoFontFamily;
-    font-weight: bold;
+    font-weight: 600;
     margin: 1em 1em 0 1em;
   }
   .click-to-scroll {
@@ -184,7 +181,7 @@
       padding-left: 2em;
       padding: 1em 1em 0 2em;
       color: @white;
-      font-weight: bold;
+      font-weight: 600;
       &:before {
         content: "$";
         margin-right: 1ex;
@@ -195,14 +192,14 @@
       display: block;
       text-align: center;
       color: @white;
-      font-weight: bold;
+      font-weight: 600;
     }
   }
 
   .command {
     padding-left: @side-line-width;
     .command-text {
-      font-weight: bolder;
+      font-weight: 600;
     }
     .status {
       float: left;
@@ -574,7 +571,7 @@
         font-size: 10px;
         text-align: center;
         margin: 0 0.5em;
-        font-weight: bold;
+        font-weight: 600;
         position: relative;
       }
       .error-flag.selected:before {
@@ -602,7 +599,7 @@
             }
           }
           span.path {
-            font-weight: bold;
+            font-weight: 600;
             &:before, &:after {
               content: "'";
             }
@@ -701,15 +698,35 @@ table.code {
       background: @white;
     }
 
+    &.active a,
+    &.active a:hover,
+    &.active a:focus {
+      border: none; // BS RESET
+      font-weight: 500;
+    }
+
     a {
+      padding: 10px 15px; // BS RESET
       color: @gray-dark-v2; // BS RESET
       border: none; // BS RESET
       margin: 0; // BS RESET
+      font-size: @fontSizeSmallish;
+      border-radius: 0;
+
+      i.octicon, i.material-icons, i.fa {
+        vertical-align: initial;
+        margin-right: 1ex;
+        margin-left: 0;
+      }
+
+      i.fa.fa-bitbucket {
+        font-size: @fontSizeLarge;
+      }
 
       &:hover {
-	background: none; // BS RESET
-	color: @gray-light-v2; // BS RESET
-	border: none; // BS RESET
+        background: none; // BS RESET
+        color: @gray-light-v2; // BS RESET
+        border: none; // BS RESET
       }
     }
   }
@@ -724,13 +741,6 @@ table.code {
 // TODO: remove once the build-info block has been totally ported
 .build-info {
   display: block;
-}
-
-.sub-head-usage-queue {
-  .build:last-child {
-    margin-bottom: 0;
-    box-shadow: none;
-  }
 }
 
 .commit-message, .sha-one {

@@ -20,7 +20,8 @@
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [frontend.models.plan :as pm])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
@@ -266,38 +267,126 @@
                  :checked (-> settings :add-projects :show-forks)
                  :name "Show forks"
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
-        "Show forks"]]])))
+        "Show Forks"]]])))
 
-(defrender main [{:keys [user repos selected-org settings] :as data} owner]
-  (let [selected-org-login (:login selected-org)
-        loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
-        repo-filter-string (get-in settings [:add-projects :repo-filter-string])
-        show-forks (true? (get-in settings [:add-projects :show-forks]))]
-    (html
-     [:div.proj-wrapper
-      (if selected-org-login
-        (let [;; we display a repo if it belongs to this org, matches the filter string,
-              ;; and matches the fork settings.
-              display? (fn [repo]
-                         (and
-                          (or show-forks (not (:fork repo)))
-                          (select-vcs-type (or (:vcs-type selected-org)
-                                               "github") repo)
-                          (= (:username repo) selected-org-login)
-                          (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-              filtered-repos (->> repos (filter display?) (sort-by :pushed_at) (reverse))]
-          [:div (om/build repo-filter settings)
-           (if (empty? filtered-repos)
-             (if loading-repos?
-               [:div.loading-spinner common/spinner]
-               [:div.add-repos
-                (if repo-filter-string
-                  (str "No matching repos for organization " selected-org-login)
-                  (str "No repos found for organization " selected-org-login))])
-             [:ul.proj-list.list-unstyled
-              (for [repo filtered-repos]
-                (om/build repo-item {:repo repo :settings settings}))])])
-        repos-explanation)])))
+(defn empty-repo-list [loading-repos? repo-filter-string selected-org-login]
+  (if loading-repos?
+    [:div.loading-spinner common/spinner]
+    [:div.add-repos
+     (if repo-filter-string
+       (str "No matching repos for organization " selected-org-login)
+       (str "No repos found for organization " selected-org-login))]))
+
+(defn no-plan-empty-state [{:keys [selected-org-login]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.no-plan-empty-state
+         [:i.fa.fa-apple.apple-logo]
+         [:div.title
+          [:span.bold selected-org-login] " has no " [:span.bold "iOS plan"] " on CircleCI."]
+         [:div.info
+          "Select a plan to build your iOS projects now."]
+         [:div.buttons
+          [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-subpage {:org selected-org-login
+                                                                           :subpage "containers"})}
+           "Select Plan"]
+          (managed-button
+            [:a.btn.trial {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
+                           :data-spinner true}
+             "Start 2 Week Trial"])]]))))
+
+(defmulti repo-list (fn [{:keys [type]}] type))
+
+(defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (if (empty? repos)
+          (empty-repo-list loading-repos? repo-filter-string selected-org-login)
+          [:ul.proj-list.list-unstyled
+           (for [repo repos]
+             (om/build repo-item {:repo repo :settings settings}))])))))
+
+(defmethod repo-list :osx [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (if (empty? repos)
+          (empty-repo-list loading-repos? repo-filter-string selected-org-login)
+          [:ul.proj-list.list-unstyled
+           (if-not (pm/osx? selected-plan)
+             (om/build no-plan-empty-state {:selected-org-login selected-org-login})
+             (for [repo repos]
+               (om/build repo-item {:repo repo :settings settings})))])))))
+
+(defn repo-lists [{:keys [user repos selected-org osx-enabled? selected-plan settings] :as data} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:selected-tab :linux})
+
+    om/IRenderState
+    (render-state [_ {:keys [selected-tab]}]
+      (let [selected-org-login (:login selected-org)
+            loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
+            repo-filter-string (get-in settings [:add-projects :repo-filter-string])
+            show-forks (true? (get-in settings [:add-projects :show-forks]))]
+        (html
+          [:div.proj-wrapper
+           [:div.tabbed-wrapper
+            (when osx-enabled?
+              [:ul.nav.nav-tabs
+               [:li {:class (when (= selected-tab :linux) "active")}
+                [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
+                 [:i.fa.fa-linux.fa-lg] "Linux"]]
+               [:li {:class (when (= selected-tab :osx) "active")}
+                [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
+                 [:i.fa.fa-apple.fa-lg] " iOS"]]])
+            (if selected-org-login
+              (let [;; we display a repo if it belongs to this org, matches the filter string,
+                    ;; and matches the fork settings.
+                    display? (fn [repo]
+                               (and
+                                 (or show-forks (not (:fork repo)))
+                                 (select-vcs-type (or (:vcs-type selected-org)
+                                                      "github") repo)
+                                 (= (:username repo) selected-org-login)
+                                 (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
+                    filtered-repos (->> repos
+                                        (filter display?)
+                                        (sort-by :pushed_at)
+                                        (reverse))
+                    osx-repos (->> filtered-repos (filter repo-model/likely-osx-repo?))
+                    linux-repos (->> filtered-repos (remove repo-model/likely-osx-repo?))]
+                [:div
+                 [:div
+                  (om/build repo-filter settings)]
+                 [:div
+                  (condp = selected-tab
+                    :linux
+                    (om/build repo-list {:repos (if (and osx-enabled? (pm/osx? selected-plan)) ; Allows mistaken ios repos to still be built.
+                                                  linux-repos
+                                                  filtered-repos)
+                                         :loading-repos? loading-repos?
+                                         :repo-filter-string repo-filter-string
+                                         :selected-org-login selected-org-login
+                                         :selected-plan selected-plan
+                                         :type selected-tab
+                                         :settings settings})
+
+                    :osx
+                    (om/build repo-list {:repos osx-repos
+                                         :loading-repos? loading-repos?
+                                         :repo-filter-string repo-filter-string
+                                         :selected-org-login selected-org-login
+                                         :selected-plan selected-plan
+                                         :type selected-tab
+                                         :settings settings}))]])
+              repos-explanation)]])))))
 
 (defn inaccessible-follows
   "Any repo we follow where the org isn't in our set of orgs is either: an org
@@ -454,7 +543,11 @@
         [:td.cell.unpaid [:i.material-icons.ex "close"]]
         [:td.cell.paid [:i.material-icons.check "check"]]]
        [:tr.row
-        [:td.cell.metric "iOS Support"]
+        [:td.cell.metric "Build Insights"]
+        [:td.cell.unpaid [:i.material-icons.ex "close"]]
+        [:td.cell.paid [:i.material-icons.check "check"]]]
+       [:tr.row
+        [:td.cell.metric "Build Timings"]
         [:td.cell.unpaid [:i.material-icons.ex "close"]]
         [:td.cell.paid [:i.material-icons.check "check"]]]]]]))
 
@@ -488,10 +581,12 @@
        [:div.overview
         [:span.big-number "2"]
         [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
-       (om/build main {:user user
-                       :repos repos
-                       :selected-org selected-org
-                       :settings settings})
+       (om/build repo-lists {:user user
+                             :repos repos
+                             :selected-org selected-org
+                             :osx-enabled? (get-in data state/org-osx-enabled-path)
+                             :selected-plan (get-in data state/org-plan-path)
+                             :settings settings})
        [:hr]
        ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
        ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then

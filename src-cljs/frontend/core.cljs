@@ -27,9 +27,14 @@
             [frontend.datetime :as datetime]
             [frontend.timer :as timer]
             [frontend.support :as support]
-            [secretary.core :as sec])
+            [secretary.core :as sec]
+            ;; Extends goog.date.* datatypes to IEquiv and IComparable.
+            [cljs-time.extend])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing swallow-errors]]))
+                   [frontend.utils :refer [inspect timing swallow-errors]]
+                   [frontend.devtools :refer [require-devtools!]]))
+
+(require-devtools!)
 
 (enable-console-print!)
 
@@ -189,11 +194,11 @@
              :ab-tests ab-tests
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state}
-    :instrument (let [methods (cond-> om/no-local-state-methods
-                                instrument? instrumentation/instrument-methods)
-                      descriptor (om/no-local-descriptor methods)]
-                  (fn [f cursor m]
-                    (om/build* f cursor (assoc m :descriptor descriptor))))
+    ;; :instrument (let [methods (cond-> om/pure-methods
+    ;;                             instrument? instrumentation/instrument-methods)
+    ;;                   descriptor (om/specify-state-methods! (clj->js methods))]
+    ;;               (fn [f cursor m]
+    ;;                 (om/build* f cursor (assoc m :descriptor descriptor))))
     :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []

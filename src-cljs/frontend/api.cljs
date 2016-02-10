@@ -41,6 +41,13 @@
              :organizations
              api-ch))
 
+(defn get-org-plan [org-name api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1/organization/%s/plan" org-name)
+             :org-plan
+             api-ch
+             :context {:org-name org-name}))
+
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
              :user-plans
@@ -56,17 +63,20 @@
              api-ch
              :context (build-model/id build)))
 
-(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page]}]
-  (let [url (cond admin "/api/v1/admin/recent-builds"
+;; Note that dashboard-builds-url can take a :page (within :query-params)
+;; and :builds-per-page, or :limit and :offset directly.
+(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page offset limit]}]
+  (let [offset (or offset (* (get query-params :page 0) builds-per-page))
+        limit (or limit builds-per-page)
+        url (cond admin "/api/v1/admin/recent-builds"
                   deployments "/api/v1/admin/deployments"
                   branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
                   repo (gstring/format "/api/v1/project/%s/%s" org repo)
                   org (gstring/format "/api/v1/organization/%s" org)
-                  :else "/api/v1/recent-builds")
-        page (get query-params :page 0)]
+                  :else "/api/v1/recent-builds")]
     (str url "?" (sec/encode-query-params (merge {:shallow true
-                                                  :offset (* page builds-per-page)
-                                                  :limit builds-per-page}
+                                                  :offset offset
+                                                  :limit limit}
                                                  query-params)))))
 
 (defn get-dashboard-builds [{:keys [branch repo org admin query-params builds-per-page] :as args} api-ch]
@@ -83,10 +93,27 @@
                     :order "asc"}}
     api-ch))
 
+;; This is defined in the API.
+(def max-allowed-page-size 100)
+
 (defn get-projects-builds [build-ids build-count api-ch]
-  (doseq [build-id build-ids
-          :let [url (dashboard-builds-url (assoc build-id :builds-per-page build-count))]]
-    (ajax/ajax :get url :recent-project-builds api-ch :context build-id)))
+  (doseq [build-id build-ids]
+    ;; Assemble a list of pages descriptions and result atoms to deliver them to.
+    (let [page-starts (range 0 build-count max-allowed-page-size)
+          page-ends (concat (rest page-starts) [build-count])
+          pages (for [[start end] (map vector page-starts page-ends)]
+                  {:offset start
+                   :limit (- end start)
+                   :page-result (atom nil)})
+          page-results (map :page-result pages)]
+      (doseq [{:keys [offset limit page-result]} pages]
+        (let [url (dashboard-builds-url (assoc build-id :offset offset :limit limit))]
+          ;; Fire off an ajax call for the page. The API controllers will
+          ;; deliver the response to page-result, and put the full data in the
+          ;; state once all of the page-results are delivered.
+          (ajax/ajax :get url :recent-project-builds api-ch :context {:project-id build-id
+                                                                      :page-result page-result
+                                                                      :all-page-results page-results}))))))
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]
@@ -101,6 +128,13 @@
                :action-log
                api-ch
                :context args)))
+
+(defn get-org-settings [org-name api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1/organization/%s/settings" org-name)
+             :org-settings
+             api-ch
+             :context {:org-name org-name}))
 
 (defn get-project-settings [project-name api-ch]
   (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))
@@ -137,3 +171,31 @@
              :set-user-admin-state
              api-ch
              :params {:admin scope}))
+
+(defn get-code-signing-keys [org-name api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys" org-name)
+             :get-code-signing-keys
+             api-ch
+             :context {:org-name org-name}))
+
+(defn set-code-signing-keys [org-name file-content file-name password description api-ch uuid]
+  (ajax/ajax :post
+             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys" org-name)
+             :set-code-signing-keys
+             api-ch
+             :params {:file-content file-content
+                      :file-name file-name
+                      :password password
+                      :description description}
+             :context {:org-name org-name
+                       :uuid uuid}))
+
+(defn delete-code-signing-key [org-name id api-ch uuid]
+  (ajax/ajax :delete
+             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys/%s" org-name id)
+             :delete-code-signing-key
+             api-ch
+             :context {:id id
+                       :uuid uuid}))
+

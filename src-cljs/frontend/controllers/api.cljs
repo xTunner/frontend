@@ -18,7 +18,12 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
             [om.core :as om :include-macros true]
-            [goog.string :as gstring]))
+            [goog.string :as gstring]
+            [clojure.set :as set]
+            [cljs-time.core :as time]
+            [cljs-time.format :as timef]
+            [frontend.datetime :as datetime]
+            [frontend.components.forms :as forms]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
 ;; result will be pushed into the api-channel
@@ -133,14 +138,24 @@
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
 (defmethod api-event [:recent-project-builds :success]
-  [target message status {recent-builds :resp, target-id :context} state]
-  (letfn [(add-recent-builds [projects]
-            (for [project projects
-                  :let [project-id (api/project-build-id project)]]
-              (if (= project-id target-id)
-                (assoc project :recent-builds recent-builds)
-                project)))]
-    (update-in state state/projects-path add-recent-builds)))
+  [target message status {page-of-recent-builds :resp, {target-id :project-id
+                                                        page-result :page-result
+                                                        all-page-results :all-page-results} :context} state]
+  ;; Deliver the result to the result atom.
+  (assert (nil? @page-result))
+  (reset! page-result page-of-recent-builds)
+
+  ;; If all page-results have been delivered, we're ready to update the state.
+  (if (every? deref all-page-results)
+    (let [all-recent-builds (apply concat (map deref all-page-results))
+          add-recent-builds (fn [projects]
+                              (for [project projects
+                                    :let [project-id (api/project-build-id project)]]
+                                (if (= project-id target-id)
+                                  (assoc project :recent-builds all-recent-builds)
+                                  project)))]
+      (update-in state state/projects-path add-recent-builds))
+    state))
 
 
 (defmethod api-event [:build :success]
@@ -468,27 +483,29 @@
     (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-root)}])
     updated-state))
 
+(defn org-selectable? [state org-name]
+  (or (= org-name (:org-settings-org-name state))
+      (= org-name (get-in state state/add-projects-selected-org-login-path))))
+
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
   (let [org-name (:org-name context)]
-    (if-not (= org-name (:org-settings-org-name state))
+    (if-not (org-selectable? state org-name)
       state
       (assoc-in state state/org-plan-path resp))))
 
-
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (org-selectable? state (:org-name context))
     state
     (-> state
         (update-in state/org-data-path merge resp)
         (assoc-in state/org-loaded-path true)
         (assoc-in state/org-authorized?-path true))))
 
-
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (org-selectable? state (:org-name context))
     state
     (-> state
         (assoc-in state/org-loaded-path true)
@@ -595,7 +612,7 @@
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (org-selectable? state (:org-name context))
     state
     (update-in state state/org-plan-path merge resp)))
 
@@ -669,3 +686,29 @@
 (defmethod api-event [:user-plans :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/user-plans-path resp))
+
+(defmethod api-event [:get-code-signing-keys :success]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state state/osx-keys-path (:data resp)))
+
+(defmethod post-api-event! [:set-code-signing-keys :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (api/get-code-signing-keys (:org-name context) (-> current-state :comms :api))
+  (forms/release-button! (:uuid context) status))
+
+(defmethod post-api-event! [:set-code-signing-keys :failed]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status))
+
+(defmethod api-event [:delete-code-signing-key :success]
+  [target message status {:keys [context]} state]
+  (update-in state state/osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
+                                                             (= (:id context) (:id %))))))
+
+(defmethod post-api-event! [:delete-code-signing-keys :success]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status))
+
+(defmethod post-api-event! [:delete-code-signing-keys :failed]
+  [target message status {:keys [resp context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status))

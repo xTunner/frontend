@@ -40,6 +40,7 @@
   a {
     outline: none;
     text-decoration: none;
+    cursor: pointer;
 
     &:not(:hover) {
       color: @grayLightest;
@@ -197,7 +198,8 @@
     > .project-name {
       .flex(1 1 auto);
       font-size: 12px;
-      font-weight: bold;
+      line-height: 20px;
+      font-weight: 600;
       color: @gray-dark-v2;
       &:hover {
         text-decoration: underline;
@@ -213,8 +215,8 @@
       font-size: 14px;
 
       &:before {
-        vertical-align: bottom;
-        line-height: 18px;
+        vertical-align: middle;
+        line-height: 20px;
         width:18px;
         text-align: center
       }
@@ -260,7 +262,7 @@
 
       .project-name {
         color: @gray-dark-v2;
-        font-weight: bold;
+        font-weight: 600;
       }
 
       .branch-name {
@@ -354,7 +356,7 @@
     left: 0;
     color: @gray;
 
-    h5 {
+    h4 {
       color: @black;
     }
 
@@ -367,7 +369,7 @@
     .justify-content(center);
     padding: 0;
   }
-  h5 {
+  h4 {
     font-weight: normal;
     color: @white;
     white-space: nowrap;
@@ -434,7 +436,7 @@
       align-items: flex-start;
       padding-top: 2em;
       padding-bottom: 1em;
-      font-weight: bold;
+      font-weight: 600;
       color: @gray;
       background: @white;
     }
@@ -523,7 +525,7 @@
 
   &.unread > i {
     position: relative;
-    
+
     &::after {
       position: absolute;
       top: -3px;

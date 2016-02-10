@@ -224,7 +224,9 @@
       (assoc-in state/repos-path [])
       (assoc-in state/github-repos-loading-path true)
       (assoc-in state/bitbucket-repos-loading-path true)
-      (assoc-in state/crumbs-path [{:type :add-projects}])))
+      (assoc-in state/crumbs-path [{:type :add-projects}])
+      (assoc-in state/add-projects-selected-org-path nil)
+      (state-utils/reset-current-org)))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
@@ -274,7 +276,7 @@
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-projects api-ch :then #(api/get-projects-builds [(select-keys args [:org :repo :branch])] 100 api-ch))
+    (api/get-projects api-ch :then #(api/get-projects-builds [(select-keys args [:org :repo :branch])] 1000 api-ch))
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
@@ -368,6 +370,10 @@
                      :project-envvar
                      api-ch
                      :context {:project-name project-name})
+
+          (= subpage :code-signing)
+          (api/get-code-signing-keys (get-in current-state [:navigation-data :org]) api-ch)
+
           :else nil))
 
   (set-page-title! (str "Project settings - " project-name)))
@@ -397,18 +403,10 @@
       (api/get-projects api-ch))
     (if (get-in current-state state/org-plan-path)
       (mlog "plan details already loaded for" org)
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/organization/%s/plan" org)
-                 :org-plan
-                 api-ch
-                 :context {:org-name org}))
+      (api/get-org-plan org api-ch))
     (if (= org (get-in current-state state/org-name-path))
       (mlog "organization details already loaded for" org)
-      (ajax/ajax :get
-                 (gstring/format "/api/v1/organization/%s/settings" org)
-                 :org-settings
-                 api-ch
-                 :context {:org-name org}))
+      (api/get-org-settings org api-ch))
     (condp = subpage
       :organizations (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
       :billing (do
