@@ -1319,16 +1319,16 @@
       {:description nil
        :password nil
        :file-name nil
-       :file-content nil})
+       :file-content nil
+       :drag-over? false})
 
     om/IRenderState
-    (render-state [_ {:keys [description password file-name file-content]}]
-      (let [file-selected-fn (fn [e]
-                               (let [file (aget e "target" "files" 0)]
-                                 (om/set-state! owner :file-name (aget file "name"))
-                                 (doto (js/FileReader.)
-                                   (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
-                                   (.readAsBinaryString file))))]
+    (render-state [_ {:keys [description password file-name file-content drag-over?]}]
+      (let [file-selected-fn (fn [file]
+                               (om/set-state! owner :file-name (aget file "name"))
+                               (doto (js/FileReader.)
+                                 (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
+                                 (.readAsBinaryString file)))]
         (html
           [:div
            [:div
@@ -1345,9 +1345,18 @@
 
            [:div
             [:label.label "File"]
-            [:div.drag-and-drop-zone
+            [:div.drag-and-drop-zone {:class (when drag-over? "drag-over")
+                                      :on-drag-over #(do (.stopPropagation %)
+                                                         (.preventDefault %)
+                                                         (om/set-state! owner :drag-over? true))
+                                      :on-drag-leave #(om/set-state! owner :drag-over? false)
+                                      :on-drop #(do (.stopPropagation %)
+                                                    (.preventDefault %)
+                                                    (om/set-state! owner :drag-over? false)
+                                                    (file-selected-fn (aget % "dataTransfer" "files" 0)))}
              [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"]
-             [:input#hidden-p12-file-input {:type "file" :on-change file-selected-fn}]
+             [:input#hidden-p12-file-input {:type "file"
+                                            :on-change #(file-selected-fn (aget % "target" "files" 0))}]
              [:label.p12-file-input {:for "hidden-p12-file-input"}
               [:i.material-icons "file_upload"]
               (if file-name
