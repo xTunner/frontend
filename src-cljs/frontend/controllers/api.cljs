@@ -697,12 +697,13 @@
     (assoc-in state state/project-osx-keys-path (:data resp))))
 
 (defmethod post-api-event! [:set-code-signing-keys :success]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [context]} previous-state current-state]
   (api/get-project-code-signing-keys (:project-name context) (-> current-state :comms :api))
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:set-code-signing-keys :failed]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [context] :as args} previous-state current-state]
+  (put! (get-in current-state [:comms :errors]) [:api-error args])
   (forms/release-button! (:uuid context) status))
 
 (defmethod api-event [:delete-code-signing-key :success]
@@ -713,9 +714,10 @@
                                                                        (= (:id context) (:id %)))))))
 
 (defmethod post-api-event! [:delete-code-signing-keys :success]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [context]} previous-state current-state]
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:delete-code-signing-keys :failed]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [context] :as args} previous-state current-state]
+  (put! (get-in current-state [:comms :errors]) [:api-error args])
   (forms/release-button! (:uuid context) status))
