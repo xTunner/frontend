@@ -241,12 +241,12 @@
 }
 
 .fancy-select(@arrow-margin: 4px; // Margin between the selector text and the arrow.
-              @color: @grayDark ) {
+              @color: @grayDarker ) {
   // Width of the arrow itself.
-  @arrow-width: 11px;
+  @arrow-width: 12px;
 
   // Space to the right of the arrow that's still clickable.
-  @extra-click-target: 5px;
+  @extra-click-target: 10px;
 
   margin: 0;
   padding-right: @arrow-margin + @arrow-width + @extra-click-target;
@@ -262,6 +262,10 @@
   background-color: transparent;
 
   cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .fancy-radio() {

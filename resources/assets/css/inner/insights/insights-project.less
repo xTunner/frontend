@@ -1,10 +1,31 @@
 .head-user {
   .insights-branch-picker {
     select {
-      .fancy-select();
+      .fancy-select(@arrow-margin: 34px; @color: inherit);
 
-      padding-right: 25px;
+      max-width: 320px;
+      padding-right: 32px;
       direction: rtl;
+
+      border: 1px solid @grayLighter;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      padding-left: 10px;
+
+      option {
+        .text-overflow();
+      }
+
+      @media (max-width: @screen-sm-max) {
+        margin-top: 12px;
+        direction: ltr;
+      }
+
+      @media (max-width: @screen-xs-max) {
+        min-width: 100%;
+        margin-top: 12px;
+        direction: ltr;
+      }
     }
   }
 }
