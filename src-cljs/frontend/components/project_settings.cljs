@@ -1346,9 +1346,13 @@
            [:div
             [:label.label "File"]
             [:div.drag-and-drop-zone
-             (when file-name
-               [:div file-name])
-             [:input.p12-file-input {:type "file" :on-change file-selected-fn}]]]
+             [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"]
+             [:input#hidden-p12-file-input {:type "file" :on-change file-selected-fn}]
+             [:label.p12-file-input {:for "hidden-p12-file-input"}
+              [:i.material-icons "file_upload"]
+              (if file-name
+                file-name
+                "Choose file")]]]
 
            [:hr]
            [:div.buttons
@@ -1415,9 +1419,8 @@
              [:div.modal-dialog
               [:div.modal-content
                [:div.modal-header
-                [:a.close {:data-dismiss "modal"}
-                 [:i.material-icons "clear"]]
-                [:h4.modal-title "Upload a New Apple Code Signing Key"]]
+                [:div.modal-title "Upload a New Apple Code Signing Key"]
+                [:i.material-icons.modal-close {:data-dismiss "modal"} "clear"]]
                [:div.modal-body.upload
                 (om/build p12-upload-form {:project-name project-name})]]]]]])))))
 

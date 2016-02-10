@@ -752,7 +752,19 @@
 
   .code-signing-page {
     .modal-header {
+      .flexy(row, space-between);
       background: @grayLightest;
+      margin-bottom: 15px;
+    }
+
+    .modal-title {
+      font-size: @fontSizeLarger;
+    }
+
+    .modal-close {
+      padding-top: 5px;
+      font-size: @fontSizeLarger;
+      cursor: pointer;
     }
 
     .modal-content {
@@ -783,6 +795,9 @@
       border: 1px dashed @input-border-blue;
       width: 100%;
       height: 90px;
+      text-align: center;
+      padding-top: 15px;
+      margin-bottom: 100px;
     }
 
     .label {
@@ -800,6 +815,7 @@
       font-size: @fontSizeSmall;
       color: @secondary-button-color;
       margin-bottom: 25px;
+      padding-left: 10px;
 
       &:focus {
         border: 1px solid @input-border-focus-blue;
@@ -808,8 +824,28 @@
       }
     }
 
+    #hidden-p12-file-input {
+      display: none;
+    }
+
     .p12-file-input {
-      //padding: 25px 95px 25px 170px;
+      min-width: 160px;
+      min-height: 30px;
+      color: @secondary-button-color;
+      background: @secondary-button-background;
+      border: 1px solid @button-border;
+      border-radius: 3px;
+      font-weight: 300;
+      cursor: pointer;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      padding-right: 15px;
+      text-align: center;
+      margin-top: 12px;
+
+      &:hover {
+        background: @secondary-button-hover-background;
+      }
     }
 
     .buttons {
