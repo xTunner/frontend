@@ -1369,7 +1369,6 @@
               [:input.save {:data-failed-text "Failed",
                             :data-success-text "Uploaded",
                             :data-loading-text "Uploading...",
-                            :data-dismiss "modal"
                             :value "Upload",
                             :type "submit"
                             :disabled (not (and file-content description))
@@ -1397,11 +1396,12 @@
            [:td (datetime/as-time-since uploaded_at)]
            [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.material-icons "cancel"]]])))))
 
-(defn code-signing [{:keys [project osx-keys]} owner]
+(defn code-signing [{:keys [project-data error-message]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [project-name (vcs-url/project-name (:vcs_url project))]
+      (let [{:keys [project osx-keys]} project-data
+            project-name (vcs-url/project-name (:vcs_url project))]
         (html
           [:section.code-signing-page
            [:article
@@ -1432,6 +1432,7 @@
                 [:div.modal-title "Upload a New Apple Code Signing Key"]
                 [:i.material-icons.modal-close {:data-dismiss "modal"} "clear"]]
                [:div.modal-body.upload
+                (om/build common/flashes error-message)
                 (om/build p12-upload-form {:project-name project-name})]]]]]])))))
 
 (defn project-settings [data owner]
@@ -1440,12 +1441,16 @@
     (render [_]
       (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
-            subpage (:project-settings-subpage data)]
+            subpage (:project-settings-subpage data)
+            error-message (get-in data state/error-message-path)]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner-big common/spinner]
            [:div#project-settings
-            (om/build common/flashes (get-in data state/error-message-path))
+            ; Temporarly disable top level error messsage for the set of subpages while we
+            ; transition them. Each subpage will eventually handle their own error messages.
+            (when-not (contains? #{:code-signing} subpage)
+              (om/build common/flashes error-message))
             [:div#subpage
              (condp = subpage
                :parallel-builds (om/build parallel-builds project-data)
@@ -1464,6 +1469,6 @@
                :aws (om/build aws project-data)
                :aws-codedeploy (om/build aws-codedeploy project-data)
                :code-signing (if (feature/enabled? :show-ios-code-signing)
-                               (om/build code-signing project-data)
+                               (om/build code-signing {:project-data project-data :error-message error-message})
                                (om/build overview project-data))
                (om/build overview project-data))]]))))))
