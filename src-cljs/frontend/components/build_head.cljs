@@ -356,14 +356,13 @@
                 "Python" "/docs/test-metadata#python"
                 "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
                 "/docs/test-metadata#metadata-collection-in-custom-test-steps")
-        :on-mouse-up #(analytics/track {:event-type :build-tests-ad-click
+        :on-mouse-up #(analytics/track {:event-type :build-tests-ad-clicked
                                         :properties {:language language}})}
     "Set up your test runner to output in JUnit-style XML"] ", so we can:"
    [:ul
     [:li "Show a summary of all test failures across all containers"]
     [:li "Identify your slowest tests"]
-    [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]
-   ])
+    [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]])
 
 (defmulti format-test-name test-model/source)
 
@@ -594,7 +593,7 @@
         (:job_name build)
         "unknown"))))
 
-(defn commit-line [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
+(defn commit-line [{:keys [author_name build subject body commit_url commit view] :as commit-details} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -624,7 +623,8 @@
         [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
                                    :title commit
-                                   :on-click #(analytics/track {:event-type :build-page-revision-link-clicked})}
+                                   :on-click #(analytics/track {:event-type :revision-link-clicked
+                                                                :proprties {:view view}})}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -636,7 +636,7 @@
 
 (def initial-build-commits-count 3)
 
-(defn build-commits [{:keys [build show-all-commits?]} owner]
+(defn build-commits [{:keys [build show-all-commits? view]} owner]
   (reify
     om/IRender
     (render [_]
@@ -654,7 +654,8 @@
                                       :subject (:subject build)
                                       :body (:body build)
                                       :commit_url (build-model/github-commit-url build)
-                                      :commit (:vcs_revision build)})
+                                      :commit (:vcs_revision build)
+                                      :view view})
                (list
                  (om/build-all commit-line top-commits)
                  (when (< initial-build-commits-count (count commits))
@@ -792,7 +793,7 @@
             (:name canceler)
             (:login canceler))])])
 
-(defn pull-requests [urls]
+(defn pull-requests [urls view]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
   [:div.summary-item
    [:span.summary-label
@@ -804,7 +805,8 @@
      ", "
      (for [url urls]
        [:a {:href url
-            :on-click #(analytics/track {:event-type :build-page-pr-link-clicked})}
+            :on-click #(analytics/track {:event-type :pr-link-clicked
+                                         :properties {:view view}})}
         "#"
         (let [[_ number] (re-find #"/(\d+)$" url)]
           (or number "?"))]))]])
@@ -891,7 +893,8 @@
             config-data (:config-data build-data)
             build-info {:build-id (build-model/id build)
                         :vcs-url (:vcs_url build)
-                        :build-num (:build_num build)}]
+                        :build-num (:build_num build)}
+            view (:view data)]
         (html
          [:div
           [:div.summary-header
@@ -909,7 +912,8 @@
             [:div.summary-item
              [:span.summary-label "Parallelism: "]
              [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                        :on-click #(analytics/track {:event-type :parallelism-build-header-click})
+                                        :on-click #(analytics/track {:event-type :parallelism-clicked
+                                                                     :properties {:view view}})
                                         :href (build-model/path-for-parallelism build)}
               (let [parallelism (str (:parallel build) "x")]
                 (if (enterprise?)
@@ -934,7 +938,7 @@
              [:span (trigger-html build)]]
 
             (when-let [urls (seq (:pull_request_urls build))]
-              (pull-requests urls))]]
+              (pull-requests urls view))]]
 
           (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]
@@ -944,7 +948,7 @@
                (build-canceler canceler github-endpoint)]]])
           [:div.card
            [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
-           (om/build build-commits build-data)]
+           (om/build build-commits build-data view)]
           [:div.build-head-wrapper
            [:div.build-head
             (om/build build-sub-head data)]]])))))

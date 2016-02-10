@@ -74,15 +74,16 @@
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 
-(defn project-settings-link [project]
+(defn project-settings-link [project view]
   (when (and (project-model/can-read-settings? project))
     [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
                                                                   :repo (:reponame project)})
                                :title (project-model/project-name project)
-                               :on-click #(analytics/track {:event-type :branch-list-project-settings-clicked})}
+                               :on-click #(analytics/track {:event-type :project-settings-clicked
+                                                            :properties {:view view}})}
      [:i.material-icons "settings"]]))
 
-(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
+(defn branch-list [{:keys [branches show-all-branches? navigation-data view]} owner {:keys [login show-project?]}]
   (reify
       om/IDisplayName (display-name [_] "Aside Branch List")
       om/IRender
@@ -106,7 +107,8 @@
                  [:a {:href (routes/v1-dashboard-path {:org (:username project)
                                                        :repo (:reponame project)
                                                        :branch (name (:identifier branch))})
-                      :on-click #(analytics/track {:event-type :branch-list-branch-clicked})}
+                      :on-click #(analytics/track {:event-type :branch-clicked
+                                                   :properties {:view view}})}
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
@@ -131,14 +133,16 @@
                           " ago")
                          "never")])]]]
                  (when show-project?
-                   (project-settings-link project))]))])))))
+                   (project-settings-link project view))]))])))))
 
-(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
+(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos view]} owner {:keys [login]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
     (render [_]
-      (let [repo (project-model/project-name project)]
+      (let [repo (project-model/project-name project)
+            view "project-aside"
+            ]
         (html [:li
                [:.project-heading
                 {:class (when (and (= (vcs-url/org-name (:vcs_url project))
@@ -154,9 +158,10 @@
                                                       nil)}]
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})
-                                  :on-click #(analytics/track {:event-type :branch-list-project-clicked})}
+                                  :on-click #(analytics/track {:event-type :project-clicked
+                                                               :properties {:view view}})}
                  (project-model/project-name project)]
-                (project-settings-link project)]
+                (project-settings-link project view)]
 
                (when (expanded-repos repo)
                  (om/build branch-list
@@ -164,7 +169,8 @@
                                            project-model/branches
                                            (sort-by (comp lower-case name :identifier)))
                             :show-all-branches? show-all-branches?
-                            :navigation-data navigation-data}
+                            :navigation-data navigation-data
+                            :view view}
                            {:opts {:login login}}))])))))
 
 (defn expand-menu-items [items subpage]
@@ -323,7 +329,8 @@
             recent-projects-filter (if (and sort-branches-by-recency?
                                             (not show-all-branches?))
                                      (partial project-model/personal-recent-project? (:login opts))
-                                     identity)]
+                                     identity)
+            view "branch-list"]
         (html
          [:div.aside-activity.open
           [:header
@@ -371,7 +378,8 @@
                          {:project project
                           :show-all-branches? show-all-branches?
                           :expanded-repos expanded-repos
-                          :navigation-data (:navigation-data app)}
+                          :navigation-data (:navigation-data app)
+                          :view view}
                          {:react-key (project-model/id project)
                           :opts {:login (:login opts)}}))])])))))
 
@@ -388,7 +396,8 @@
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
         (om/build branch-activity-list app {:opts {:login (:login opts)
-                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
+                                                   :scrollbar-width (om/get-state owner :scrollbar-width)
+                                                   :view "build-list"}})]))))
 
 (defn aside-nav [app owner]
   (reify

@@ -43,7 +43,8 @@
       (dashboard-icon "Default-Avatar"))))
 
 (defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
-  (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
+  (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
+        view "build-card"]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
@@ -125,7 +126,8 @@
             ", "
             (for [url urls]
               [:a {:href url
-                   :on-click #(analytics/track {:event-type :build-card-pr-link-clicked})}
+                   :on-click #(analytics/track {:event-type :pr-link-clicked
+                                                :properties {:view view}})}
                "#"
                (let [[_ number] (re-find #"/(\d+)$" url)]
                  (or number "?"))]))])
@@ -135,7 +137,8 @@
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
                 :href (build-model/github-commit-url build)
-                :on-click #(analytics/track {:event-type :build-card-revision-link-clicked})}
+                :on-click #(analytics/track {:event-type :revision-link-clicked
+                                             :properties {:view view}})}
             (build-model/github-revision build)])]]]]))
 
 (defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]

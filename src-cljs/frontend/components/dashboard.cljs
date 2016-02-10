@@ -57,7 +57,7 @@
                 [:div
                  [:a {:href (routes/v1-org-settings-subpage {:org (:plan_org_name diagnostic)
                                                              :subpage "containers"})
-                      :on-click #(analytics/track {:event-type :add-containers-more-clicked
+                      :on-click #(analytics/track {:event-type :add-more-containers-clicked
                                                    :properties {:view view}})}
                   "Add More Containers"]]])]]))))))
 

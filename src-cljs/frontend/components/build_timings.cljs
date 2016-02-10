@@ -226,7 +226,7 @@
           (draw-chart! build)
           (om/set-state! owner [:loading?] false)
           (om/set-state! owner [:drawn?] true))
-        (analytics/track {:event-type :build-timing-upsell-impression
+        (analytics/track {:event-type :build-timing-upsell-impressioned
                           :properties {:org-name (:org_name plan)
                                        :reponame (:reponame project)}})))
     om/IRenderState

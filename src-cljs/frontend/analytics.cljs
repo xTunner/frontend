@@ -13,56 +13,69 @@
             [goog.style]
             [goog.string :as gstr]))
 
-(def supported-events
-  ;; This is a list of supported event types. This is to prevent the creation
-  ;; of multiple events of the same type with slightly different names throughout
-  ;; the code base.
-  ;; Please keep this alphabetically sorted for ease of readability.
-  #{:add-containers-more-clicked
-    :beta-join-click
-    :beta-leave-click
-    :beta-terms-accept
-    :branch-list-branch-clicked
-    :branch-list-project-settings-clicked
-    :build-card-pr-link-clicked
-    :build-card-revision-link-clicked
-    :build-insights-upsell-click
+(def supported-click-and-impression-events
+  ;; This is a list of our supported click and impression events.
+  ;; They are in the fomat <item>-<clicked or impression>
+  ;; Please add any new click and impression events here and keep the 
+  ;; list alphabetically sorted, which will hep prevent duplicate events.
+  ;; Events should NOT be view specific. They should be view agnostic and
+  ;; include a view in the properties.
+  #{:add-more-containers-clicked
+    :beta-accept-terms-clicked
+    :beta-join-clicked
+    :beta-leave-clicked
+    :branch-clicked
+    :build-insights-upsell-clicked
     :build-insights-upsell-impression
-    :build-page-pr-link-clicked
-    :build-page-revision-link-clicked
-    :build-tests-ad-click
-    :build-timing-upsell-click
+    :build-tests-ad-clicked ;; need to investigate what this is
+    :build-timing-upsell-clicked
     :build-timing-upsell-impression
     :cancel-plan-clicked
-    :change-container-amount
-    :follow-project
-    :parallelism-build-header-click
-    :signup-click
-    :signup-impression
-    :stop-building-project
-    :unfollow-project})
+    :parallelism-clicked
+    :pr-link-clicked
+    :project-clicked
+    :project-settings-clicked
+    :revision-link-clicked
+    :signup-clicked
+    :signup-impression})
+
+(def supported-api-response-events
+  ;; This is a list of our supported api-response events.
+  ;; They are in the format of <object>-<action take in the past tense>
+  ;; Please add any new api-response events here and keep the list alphabetically
+  ;; sorted, which will hep prevent duplicate events.
+  #{:project-builds-stopped
+    :container-amount-changed
+    :plan-cancelled
+    :project-followed
+    :project-unfollowed})
 
 (defmulti track (fn [data]
-                  (println "inside track")
                   (when (frontend.config/analytics-enabled?)
-                    (if (supported-events (:event-type data))
-                      :event
-                      (:event-type data)))))
+                    (cond
+                      (supported-click-and-impression-events (:event-type data)) :click-or-impression-event
+                      (supported-api-response-events (:event-type data)) :api-response-event
+                      :else (:event-type data)))))
 
 (defmethod track :default [data]
-  (mwarn "Cannot log an unsupported event type, please add it to the list of supportd events"))
+  (if (frontend.config/analytics-enabled?)
+    (mwarn "Cannot log an unsupported event type, please add it to the list of supported events")
+    (mwarn "Analytics are currently not enabled")))
 
-(defmethod track :event [{:keys [event-type properties]}] 
+(defmethod track :click-or-impression-event [{:keys [event-type properties]}] 
   (segment/track-event (name event-type) properties))
 
-(defmethod track :external [{:keys [event properties]}]
+(defmethod track :api-response-event [{:keys [event-type properties]}] 
+  (segment/track-event (name event-type) properties))
+
+(defmethod track :external-click [{:keys [event properties]}]
   (segment/track-external-click event properties))
 
 (defmethod track :pageview [{:keys [navigation-point]}]
   (segment/track-pageview navigation-point))
 
-(defmethod track :trigger-build [{:keys [build properties]}]
-  (segment/track-event "trigger-build"  (merge {:project (vcs-url/project-name (:vcs_url build))
+(defmethod track :build-triggered [{:keys [build properties]}]
+  (segment/track-event "build-triggered"  (merge {:project (vcs-url/project-name (:vcs_url build))
                                                 :build-num (:build_num build)
                                                 :retry? true}
                                                properties)))

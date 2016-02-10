@@ -209,7 +209,7 @@
       (html
         [:a.btn.btn-cta {:href "/signup"
                          :role "button"
-                         :on-mouse-up #(analytics/track {:event-type :signup-click
+                         :on-mouse-up #(analytics/track {:event-type :signup-clicked
                                                          :properties {:view source}})}
          (str (sign-up-text))]))))
 

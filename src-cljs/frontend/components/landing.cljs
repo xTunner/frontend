@@ -154,7 +154,7 @@
                            {:class cta-class
                             :href "/signup"
                             :role "button"
-                            :on-mouse-up #(analytics/track {:event-type :signup-click
+                            :on-mouse-up #(analytics/track {:event-type :signup-clicked
                                                             :properties {:view source}})})
            (str (common/sign-up-text))]
           [:a.home-action

@@ -392,7 +392,7 @@
        (put! api-ch [:retry-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
-         (analytics/track {:event-type :trigger-build
+         (analytics/track {:event-type :build-triggered
                            :build (:resp api-result)
                            :properties {:no-cache? no-cache?}}))))))
 
@@ -408,7 +408,7 @@
        (put! api-ch [:retry-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
-         (analytics/track {:event-type :trigger-build
+         (analytics/track {:event-type :build-triggered
                            :build (:resp api-result)
                            :properties {:ssh? true}}))))))
 
@@ -433,7 +433,7 @@
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}
                  :context repo)
-    (analytics/track {:event-type :follow-project
+    (analytics/track {:event-type :project-followed
                       :properties {:user login
                                    :project project}})))
 
@@ -453,7 +453,7 @@
                  :follow-project
                  api-ch
                  :context {:project-id project-id})
-    (analytics/track {:event-type :follow-project
+    (analytics/track {:event-type :project-followed
                       :properties {:user login
                                    :project project}})))
 
@@ -468,7 +468,7 @@
                  :unfollow-repo
                  api-ch
                  :context repo)
-    (analytics/track {:event-type :unfollow-project
+    (analytics/track {:event-type :project-unfollowed
                       :properties {:user login
                                    :project project}})))
 
@@ -483,7 +483,7 @@
                  :unfollow-project
                  api-ch
                  :context {:project-id project-id})
-    (analytics/track {:event-type :unfollow-project
+    (analytics/track {:event-type :project-unfollowed
                       :properties {:user login
                                    :project project}})))
 
@@ -497,7 +497,7 @@
                  :stop-building-project
                  api-ch
                  :context {:project-id project-id}))
-  (analytics/track {:event-type :stop-building-project
+  (analytics/track {:event-type :project-builds-stopped
                     :properties {:user login
                                  :project project}}))
 
@@ -917,7 +917,7 @@
     (let [previous-num-containers (get-in previous-state (conj state/org-plan-path :containers)) 
           new-num-containers containers
           is-upgrade (> new-num-containers previous-num-containers)]
-      (analytics/track {:event-type :change-container-amount
+      (analytics/track {:event-type :container-amount-changed
                         :properties {:user login
                                      :org org-name 
                                      :previous-num-containers previous-num-containers
@@ -1142,7 +1142,8 @@
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name})
-                                     :replace-token? true}])))
+                                     :replace-token? true}])
+           (analytics/track {:event-type :plan-cancelled})))
        (release-button! uuid (:status api-result))))))
 
 (defn track-and-redirect [event properties path]
