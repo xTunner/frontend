@@ -392,7 +392,9 @@
        (put! api-ch [:retry-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
-         (analytics/track-trigger-build (:resp api-result) :no-cache? no-cache?))))))
+         (analytics/track {:event-type :trigger-build
+                           :properties {:api-result (:resp api-result)
+                                        :no-cache? no-cache?}}))))))
 
 
 (defmethod post-control-event! :ssh-build-clicked
@@ -406,7 +408,9 @@
        (put! api-ch [:retry-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
-         (analytics/track-trigger-build (:resp api-result) :ssh? true))))))
+         (analytics/track {:event-type :trigger-build
+                           :properties {:api-result (:resp api-result)
+                                        :ssh? true}}))))))
 
 (defmethod post-control-event! :ssh-current-build-clicked
   [target message {:keys [build-num vcs-url]} previous-state current-state]
@@ -420,14 +424,18 @@
 
 (defmethod post-control-event! :followed-repo
   [target message repo previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        login (get-in current-state state/user-login-path)
+        project (vcs-url/project-name (:vcs_url repo))]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name (:vcs_url repo)))
+                 (gstring/format "/api/v1/project/%s/follow" project)
                  :follow-repo
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}
-                 :context repo))
-  (analytics/track-follow-repo))
+                 :context repo)
+    (analytics/track {:event-type :follow-project
+                      :properties {:user login
+                                   :project project}})))
 
 
 (defmethod control-event :inaccessible-org-toggled
@@ -437,45 +445,62 @@
 
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        login (get-in current-state state/user-login-path)
+        project (vcs-url/project-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/follow" (vcs-url/project-name vcs-url))
+                 (gstring/format "/api/v1/project/%s/follow" project)
                  :follow-project
                  api-ch
-                 :context {:project-id project-id}))
-  (analytics/track-follow-project))
+                 :context {:project-id project-id})
+    (analytics/track {:event-type :follow-project
+                      :properties {:user login
+                                   :project project}})))
 
 
 (defmethod post-control-event! :unfollowed-repo
   [target message repo previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        login (get-in current-state state/user-login-path)
+        project (vcs-url/project-name (:vcs_url repo))]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name (:vcs_url repo)))
+                 (gstring/format "/api/v1/project/%s/unfollow" project)
                  :unfollow-repo
                  api-ch
-                 :context repo))
-  (analytics/track-unfollow-repo))
+                 :context repo)
+    (analytics/track {:event-type :unfollow-project
+                      :properties {:user login
+                                   :project project}})))
 
 
 (defmethod post-control-event! :unfollowed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        login (get-in current-state state/user-login-path)
+        project (vcs-url/project-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/unfollow" (vcs-url/project-name vcs-url))
+                 (gstring/format "/api/v1/project/%s/unfollow" project)
                  :unfollow-project
                  api-ch
-                 :context {:project-id project-id}))
-  (analytics/track-unfollow-project))
+                 :context {:project-id project-id})
+    (analytics/track {:event-type :unfollow-project
+                      :properties {:user login
+                                   :project project}})))
 
 (defmethod post-control-event! :stopped-building-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        login  (get-in current-state state/user-login-path)
+                project  (vcs-url/project-name vcs-url)
+        ]
     (button-ajax :delete
-                 (gstring/format "/api/v1/project/%s/enable" (vcs-url/project-name vcs-url))
+                 (gstring/format "/api/v1/project/%s/enable" project)
                  :stop-building-project
                  api-ch
                  :context {:project-id project-id}))
-  (analytics/track-stop-building-project))
+  (analytics/track {:event-type :stop-building-project
+                    :properties {:user login
+                                 :project project}}))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
@@ -766,8 +791,7 @@
                  :invite-github-users
                  (get-in current-state [:comms :api])
                  :context context
-                 :params invitees)
-    (analytics/track-invitations invitees context)))
+                 :params invitees)))
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
@@ -882,7 +906,8 @@
   [target message {:keys [containers]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        org-name (get-in current-state state/org-name-path)
+        login (get-in current-state state/user-login-path)]
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
@@ -890,8 +915,15 @@
                            :params {:containers containers}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))
-    (let [upgrade? (> containers (get-in previous-state (conj state/org-plan-path :containers)))]
-      (analytics/track-save-containers upgrade?))))
+    (let [previous-num-containers (get-in previous-state (conj state/org-plan-path :containers)) 
+          new-num-containers containers
+          is-upgrade (> new-num-containers previous-num-containers)]
+      (analytics/track {:event-type :change-container-amount
+                        :properties {:user login
+                                     :org org-name 
+                                     :previous-num-containers previous-num-containers
+                                     :new-num-containers new-num-containers
+                                     :is-upgrade is-upgrade}}))))
 
 (defmethod post-control-event! :update-osx-plan-clicked
   [target message {:keys [plan-type]} previous-state current-state]
@@ -929,8 +961,7 @@
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                            :params {:piggieback-orgs selected-piggyback-orgs}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
-       (release-button! uuid (:status api-result))))
-    (analytics/track-save-orgs)))
+       (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :transfer-plan-clicked
   [target message {:keys [to org-name]} previous-state current-state]
@@ -1115,19 +1146,11 @@
                                      :replace-token? true}])))
        (release-button! uuid (:status api-result))))))
 
-
-
-(defmethod control-event :home-technology-tab-selected
-  [target message {:keys [tab]} state]
-  (assoc-in state state/selected-home-technology-tab-path tab))
-
-(defmethod post-control-event! :home-technology-tab-selected
-  [target message {:keys [tab]} previous-state current-state]
-  (analytics/track-test-stack tab))
-
 (defn track-and-redirect [event properties path]
   (let [redirect #(js/window.location.replace path)
-        track-ch (analytics/managed-track event properties)]
+        track-ch (analytics/track {:event-type :external-click
+                                   :event event
+                                   :properties properties})]
     (if track-ch
       (go (alt!
             track-ch ([v] (do (utils/mlog "tracked" v "... redirecting")

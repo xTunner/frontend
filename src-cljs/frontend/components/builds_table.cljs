@@ -125,7 +125,7 @@
             ", "
             (for [url urls]
               [:a {:href url
-                   :on-click #(analytics/track "build-card-pr-link-clicked")}
+                   :on-click #(analytics/track {:event-type :build-card-pr-link-clicked})}
                "#"
                (let [[_ number] (re-find #"/(\d+)$" url)]
                  (or number "?"))]))])
@@ -135,7 +135,7 @@
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
                 :href (build-model/github-commit-url build)
-                :on-click #(analytics/track "build-card-revision-link-clicked")}
+                :on-click #(analytics/track {:event-type :build-card-revision-link-clicked})}
             (build-model/github-revision build)])]]]]))
 
 (defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]

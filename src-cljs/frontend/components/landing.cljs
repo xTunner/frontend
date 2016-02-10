@@ -144,7 +144,8 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (analytics/track-signup-impression {:view source}))
+      (analytics/track {:event-type :signup-impression
+                        :properties {:view source}}))
     om/IRender
     (render [_]
       (html
@@ -153,14 +154,15 @@
                            {:class cta-class
                             :href "/signup"
                             :role "button"
-                            :on-mouse-up #(analytics/track-signup-click {:view source})})
+                            :on-mouse-up #(analytics/track {:event-type :signup-click
+                                                            :properties {:view source}})})
            (str (common/sign-up-text))]
           [:a.home-action
            {:href  (auth-url :destination "/")
-            :on-click #(raise! owner  [:track-external-link-clicked
-                                       {:event "oauth-authorize-click"
-                                        :properties  {"oauth_provider" "github"}
-                                        :path  (auth-url :destination "/")}])}
+            :on-click #(raise! owner [:track-external-link-clicked
+                                      {:event "oauth-authorize-click"
+                                       :properties  {"oauth_provider" "github"}
+                                       :path  (auth-url :destination "/")}])}
            (str (common/sign-up-text))])))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback

@@ -79,7 +79,7 @@
     [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
                                                                   :repo (:reponame project)})
                                :title (project-model/project-name project)
-                               :on-click #(analytics/track "branch-list-project-settings-clicked")}
+                               :on-click #(analytics/track {:event-type :branch-list-project-settings-clicked})}
      [:i.material-icons "settings"]]))
 
 (defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
@@ -106,7 +106,7 @@
                  [:a {:href (routes/v1-dashboard-path {:org (:username project)
                                                        :repo (:reponame project)
                                                        :branch (name (:identifier branch))})
-                      :on-click #(analytics/track "branch-list-branch-clicked")}
+                      :on-click #(analytics/track {:event-type :branch-list-branch-clicked})}
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
@@ -154,7 +154,7 @@
                                                       nil)}]
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})
-                                  :on-click #(analytics/track "branch-list-project-clicked")}
+                                  :on-click #(analytics/track {:event-type :branch-list-project-clicked})}
                  (project-model/project-name project)]
                 (project-settings-link project)]
 

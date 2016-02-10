@@ -438,12 +438,6 @@
     (-> state
         (assoc-in state/invite-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
 
-(defmethod post-api-event! [:first-green-build-github-users :success]
-  [target message status {:keys [resp context]} previous-state current-state]
-  ;; This is not ideal, but don't see a better place to put this
-  (when (first (remove :following resp))
-    (analytics/track-invitation-prompt context)))
-
 (defmethod api-event [:invite-github-users :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
@@ -607,8 +601,7 @@
     (let [nav-ch (get-in current-state [:comms :nav])]
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org (:org-name context)
                                                                        :subpage "containers"})
-                                :replace-token? true}])))
-  (analytics/track-payer (get-in current-state [:current-user :login])))
+                                :replace-token? true}]))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]

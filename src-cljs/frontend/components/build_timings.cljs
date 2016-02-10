@@ -226,8 +226,9 @@
           (draw-chart! build)
           (om/set-state! owner [:loading?] false)
           (om/set-state! owner [:drawn?] true))
-        (analytics/track-build-timing-upsell-impression {:org-name (:org_name plan)
-                                                         :reponame (:reponame project)})))
+        (analytics/track {:event-type :build-timing-upsell-impression
+                          :properties {:org-name (:org_name plan)
+                                       :reponame (:reponame project)}})))
     om/IRenderState
     (render-state [_ {:keys [loading?]}]
       (html
@@ -239,5 +240,6 @@
            [:svg#build-timings]]
           [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
-                             :on-click #(analytics/track-build-timing-upsell-click {:org-name (:org_name plan)
-                                                                                    :reponame  (:reponame project)})} "upgrade here."]])]))))
+                             :on-click #(analytics/track {:event-type :build-timing-upsell-click
+                                                          :properties {:org-name (:org_name plan)
+                                                                       :reponame  (:reponame project)}})} "upgrade here."]])]))))

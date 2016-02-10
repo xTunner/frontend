@@ -143,7 +143,8 @@
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
   [project-data owner parallelism]
-  (let [plan (:plan project-data)
+  (let [view "parallelism-tile"
+        plan (:plan project-data)
         project (:project project-data)
         project-id (project-model/id project)]
     (list
@@ -170,7 +171,8 @@
                "Not enough containers for " parallelism "x."
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})
-                    :on-click #(analytics/track "add-more-containers-clicked")}
+                    :on-click #(analytics/track {:event-type :add-more-containers-clicked
+                                                 :properties {:view view}})}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial

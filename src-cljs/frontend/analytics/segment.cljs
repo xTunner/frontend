@@ -9,11 +9,10 @@
     (js/analytics.page (name navigation-point))))
 
 (defn track-event [event & [properties]]
-  (println event)
   (utils/swallow-errors
     (js/analytics.track event (clj->js properties))))
 
-(defn managed-track [event & [props]]
+(defn track-external-click [event & [props]]
   (let [ch (chan)]
     (js/analytics.track event props
                         #(do (put! ch %) (close! ch)))

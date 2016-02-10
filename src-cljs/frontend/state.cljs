@@ -127,6 +127,7 @@
     (conj crumbs-path project-branch-crumb-index)))
 
 ;; TODO we probably shouldn't be storing repos in the user...
+(def user-login-path (conj user-path :login))
 (def user-organizations-path (conj user-path :organizations))
 (def user-plans-path (conj user-path :plans))
 (def user-tokens-path (conj user-path :tokens))

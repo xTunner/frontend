@@ -36,7 +36,8 @@
                  [org.clojure/tools.reader "0.9.2"]
 
                  ;; For Dirac DevTools
-                 [environ "1.0.1"]]
+                 [environ "1.0.1"]
+                 [prismatic/schema "0.4.4"] ]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]

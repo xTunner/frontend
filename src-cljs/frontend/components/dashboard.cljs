@@ -19,7 +19,8 @@
     om/IDisplayName (display-name [_] "Build Diagnostics")
     om/IRender
     (render [_]
-      (let [diagnostics (get-in data state/project-build-diagnostics-path)
+      (let [view "build-diagnostics"
+            diagnostics (get-in data state/project-build-diagnostics-path)
             project-id-hash (utils/md5 (project-model/id project))
             collapsed? (get-in data (state/project-build-diagnostics-collapsed-path project-id-hash))]
         (if (empty? diagnostics)
@@ -56,7 +57,8 @@
                 [:div
                  [:a {:href (routes/v1-org-settings-subpage {:org (:plan_org_name diagnostic)
                                                              :subpage "containers"})
-                      :on-click #(analytics/track "build-diagnostics-add-more-containers-clicked")}
+                      :on-click #(analytics/track {:event-type :add-containers-more-clicked
+                                                   :properties {:view view}})}
                   "Add More Containers"]]])]]))))))
 
 (defn dashboard [data owner]
