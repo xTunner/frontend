@@ -1391,11 +1391,11 @@
       (html
         (when-not (empty? id)
           [:tr
-           [:td id]
-           [:td filename]
            [:td description]
+           [:td filename]
+           [:td id]
            [:td (datetime/as-time-since uploaded_at)]
-           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.fa.fa-times-circle]]])))))
+           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.material-icons "cancel"]]])))))
 
 (defn code-signing [{:keys [project osx-keys]} owner]
   (reify
@@ -1416,9 +1416,9 @@
              [:table.table
               [:thead
                [:tr
-                [:th "ID"]
-                [:th "Filename"]
                 [:th "Description"]
+                [:th "Filename"]
+                [:th "ID"]
                 [:th "Uploaded"]
                 [:th]]]
               [:tbody
