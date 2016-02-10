@@ -1354,14 +1354,14 @@
                                                     (.preventDefault %)
                                                     (om/set-state! owner :drag-over? false)
                                                     (file-selected-fn (aget % "dataTransfer" "files" 0)))}
-             [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"]
+             (if file-name
+               [:div file-name]
+               [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
              [:input#hidden-p12-file-input {:type "file"
                                             :on-change #(file-selected-fn (aget % "target" "files" 0))}]
              [:label.p12-file-input {:for "hidden-p12-file-input"}
               [:i.material-icons "file_upload"]
-              (if file-name
-                file-name
-                "Choose file")]]]
+                "Choose file"]]]
 
            [:hr]
            [:div.buttons
