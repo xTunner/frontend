@@ -126,7 +126,7 @@
              [:i.material-icons "tune"]]]]]]
         [:div.card
          [:div.card-header
-          [:h2 "Build Timing"]]
+          [:h2 "Build Status"]]
          [:div.card-body
           (om/build build-time-bar-chart (reverse bar-chart-builds))]]
         [:div.card
