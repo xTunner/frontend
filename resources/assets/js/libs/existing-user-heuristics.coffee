@@ -12,7 +12,6 @@ CI.ExistingUserHeuristics = class ExistingUserHeuristics
             @set_from_mixpanel_cookie()
       catch e
         console.error e.message
-        _rollbar.push e
 
   register_existing_user: (value) =>
     mixpanel.register
