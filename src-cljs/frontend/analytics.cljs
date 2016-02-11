@@ -121,24 +121,24 @@
     (mwarn "Cannot log an unsupported event type, please add it to the list of supported events")
     (mwarn "Analytics are currently not enabled")))
 
-(defmethod track :track-event [event-data]
+(s/defmethod ^:always-validate track :track-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
     (segment/track-event (name event-type) (add-current-state-to-props properties owner))))
 
-(defmethod track :new-plan-created [event-data]
+(s/defmethod ^:always-validate track :new-plan-created [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data] 
     (segment/track-event "new-plan-created" properties)
     (intercom/track :paid-for-plan)))
 
-(defmethod track :external-click [event-data]
+(s/defmethod ^:always-validate track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner]} event-data]
     (segment/track-external-click event (add-current-state-to-props properties owner))))
 
-(defmethod track :pageview [event-data]
+(s/defmethod ^:always-validate track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point owner]} event-data]
     (segment/track-pageview (name navigation-point) (get-current-state-properties owner))))
 
-(defmethod track :build-triggered [event-data]
+(s/defmethod ^:always-validate track :build-triggered [event-data :- BuildEvent]
   (let [{:keys [build properties owner]} event-data
         props (merge {:project (vcs-url/project-name (:vcs_url build))
                       :build-num (:build_num build)
@@ -146,7 +146,7 @@
                      properties)]
     (segment/track-event "build-triggered" (add-current-state-to-props props owner)))) 
 
-(defmethod track :view-build [event-data]
+(s/defmethod ^:always-validate track :view-build [event-data :- ViewBuildEvent]
   (let [{:keys [build user properties owner]} event-data
         props (merge (build-properties build) properties)]
     (segment/track-event "view-build" (add-current-state-to-props props owner))
