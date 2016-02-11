@@ -85,6 +85,7 @@
 
     om/IRender
     (render [_]
+      (println data)
       (let [{:keys [build builds]} data
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
@@ -636,7 +637,7 @@
 
 (def initial-build-commits-count 3)
 
-(defn build-commits [{:keys [build show-all-commits? view]} owner]
+(defn build-commits [{:keys [build show-all-commits?]} owner]
   (reify
     om/IRender
     (render [_]
@@ -654,9 +655,7 @@
                                       :subject (:subject build)
                                       :body (:body build)
                                       :commit_url (build-model/github-commit-url build)
-                                      :commit (:vcs_revision build)
-                                      :user user
-                                      :view view})
+                                      :commit (:vcs_revision build)})
                (list
                  (om/build-all commit-line top-commits)
                  (when (< initial-build-commits-count (count commits))
@@ -797,7 +796,7 @@
             (:name canceler)
             (:login canceler))])])
 
-(defn pull-requests [urls view]
+(defn pull-requests [{:keys [urls view]}]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
   [:div.summary-item
    [:span.summary-label
@@ -917,7 +916,11 @@
              [:span.summary-label "Parallelism: "]
              [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
                                         :on-click #(analytics/track {:event-type :parallelism-clicked
-                                                                     :properties {:view view}})
+                                                                     :properties {:view view
+                                                                                  :user (:login user)
+                                                                                  :repo (project-model/repo-name project)
+                                                                                  :org (project-model/org-name project)
+                                                                                  }})
                                         :href (build-model/path-for-parallelism build)}
               (let [parallelism (str (:parallel build) "x")]
                 (if (enterprise?)
@@ -942,7 +945,8 @@
              [:span (trigger-html build)]]
 
             (when-let [urls (seq (:pull_request_urls build))]
-              (pull-requests urls view))]]
+              (pull-requests {:urls urls
+                              :view view}))]]
 
           (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]

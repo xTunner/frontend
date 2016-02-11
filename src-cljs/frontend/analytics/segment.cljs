@@ -4,7 +4,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.datetime :refer  [unix-timestamp]]))
 
-(defn track-pageview [navigation-point]
+(defn track-pageview [navigation-point & [properties]]
   (utils/swallow-errors
     (js/analytics.page (name navigation-point))))
 
@@ -12,8 +12,8 @@
   (utils/swallow-errors
     (js/analytics.track event (clj->js properties))))
 
-(defn track-external-click [event & [props]]
+(defn track-external-click [event & [properties]]
   (let [ch (chan)]
-    (js/analytics.track event props
+    (js/analytics.track event properties
                         #(do (put! ch %) (close! ch)))
     ch))

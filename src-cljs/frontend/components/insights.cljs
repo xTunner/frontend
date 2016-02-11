@@ -279,12 +279,17 @@
     (did-mount [_]
       (when (not show-insights?)
         (analytics/track {:event-type :build-insights-upsell-impression
-                          :properties {:repo reponame}})))
+                          :owner owner
+                          :properties {:repo (project-model/repo-name project)
+                                       :org (project-model/org-name project)}})))
     om/IRender
     (render [_]
       (html
        (let [branch (-> recent-builds (first) (:branch))
-             latest-build (last chartable-builds)]
+             latest-build (last chartable-builds)
+             org-name (project-model/org-name project)
+             repo-name (project-model/repo-name project)]
+         (println project)
          [:div.project-block {:class (str "build-" (name sort-category))}
           [:h1.project-header
            [:div.last-build-status
@@ -293,8 +298,8 @@
            [:span.project-name
             (if (and (feature/enabled? :insights-dashboard)
                      show-insights?)
-              [:a {:href (routes/v1-insights-project {:org (:username project)
-                                                      :repo (:reponame project)
+              [:a {:href (routes/v1-insights-project {:org org-name
+                                                      :repo repo-name
                                                       :branch (:default_branch project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
@@ -313,7 +318,10 @@
                                       [:div.message "This release of Insights is only available for repos belonging to paid plans."]
                                       [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
                                                         :on-click #(analytics/track {:event-type :build-insights-upsell-clicked
-                                                                                     :properties {:repo reponame}})}]]
+                                                                                     :owner owner
+                                                                                     :properties {:repo repo-name
+                                                                                                  :org org-name
+                                                                                                  }})}"Upgrade here"]]
                 (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
                 :else
                 (list

@@ -185,7 +185,7 @@
             :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
-            (analytics/track {:event-type :build
+            (analytics/track {:event-type :view-build
                               :user current-user
                               :build build}))
           ;; Preemptively make the usage-queued API call if the build is in the
