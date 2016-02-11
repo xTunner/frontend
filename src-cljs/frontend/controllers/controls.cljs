@@ -1315,18 +1315,6 @@
         api-ch (get-in current-state [:comms :api])]
     (api/delete-code-signing-key org-name id api-ch uuid)))
 
-(defmethod control-event :project-insights-branch-changed
-  [_ _ {:keys [new-branch]} state]
-  (let [projects (get-in state state/projects-path)
-        navigation-data (:navigation-data state)
-        new-projects (map (fn [project]
-                            (if (and (= (:reponame project) (:repo navigation-data))
-                                     (= (:username project) (:org navigation-data)))
-                              (assoc project :insights-selected-branch new-branch)
-                              project))
-                          projects)]
-    (assoc-in state state/projects-path new-projects)))
-
 (defmethod post-control-event! :project-insights-branch-changed
   [target message {:keys [new-branch]} _ current-state]
   (let [nav-data (get-in current-state [:navigation-data])

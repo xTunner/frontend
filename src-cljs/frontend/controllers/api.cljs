@@ -106,10 +106,8 @@
         old-projects-by-build-id (group-by api/project-build-id (get-in current-state state/projects-path))
         processed-new-projects
         (map (fn [{:keys [default_branch] :as project}]
-               (let [{old-selected-branch :insights-selected-branch :as matching-old-project} (first (get old-projects-by-build-id (api/project-build-id project)))]
+               (let [matching-old-project (first (get old-projects-by-build-id (api/project-build-id project)))]
                  (assoc project
-                        ;; reset insights branch
-                        :insights-selected-branch (or old-selected-branch default_branch)
                         :recent-builds (:recent-builds matching-old-project))))
              new-projects)]
     (assoc-in current-state state/projects-path processed-new-projects)))

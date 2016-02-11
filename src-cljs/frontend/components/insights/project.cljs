@@ -89,11 +89,11 @@
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
-        {:keys [branches parallel insights-selected-branch] :as project} (some->> projects
+        {:keys [branches parallel] :as project} (some->> projects
                                                                                   (filter #(and (= (:reponame %) (:repo navigation-data))
                                                                                                 (= (:username %) (:org navigation-data))))
                                                                                   first)
-        chartable-builds (some->> (get (:recent-builds project) insights-selected-branch)
+        chartable-builds (some->> (get (:recent-builds project) (:branch navigation-data))
                                   (filter insights/build-chartable?))
         bar-chart-builds (->> chartable-builds
                               (take (:max-bars build-time-bar-chart-plot-info))
@@ -145,15 +145,15 @@
 
 (defrender header [state owner]
   (let [projects (get-in state state/projects-path)
-        navigation-data (:navigation-data state)
-        {:keys [branches insights-selected-branch] :as project} (some->> projects
-                                                                                  (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                                                                (= (:username %) (:org navigation-data))))
-                                                                                  first)]
+        {selected-branch :branch :as navigation-data} (:navigation-data state)
+        {:keys [branches] :as project} (some->> projects
+                                                (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                              (= (:username %) (:org navigation-data))))
+                                                first)]
     (html
      [:.insights-branch-picker
       [:select {:name "insights-branch-picker"
                 :on-change #(raise! owner [:project-insights-branch-changed {:new-branch (.. % -target -value)}])
-                :value insights-selected-branch}
+                :value selected-branch}
        (for [branch-name (sort (keys branches))]
          [:option {:value branch-name} branch-name])]])))
