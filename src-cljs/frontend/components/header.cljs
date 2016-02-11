@@ -176,25 +176,30 @@
                (when (config/show-marketing-pages?)
                  (list
                    [:li.dropdown {:class (when (contains? #{:features
-                                                            :mobile
-                                                            :ios
-                                                            :android
                                                             :integrations
-                                                            :enterprise}
+                                                            :mobile
+                                                            :docker}
                                                           nav-point)
                                            "active")}
                     [:a.menu-item (open-ext {:href "/features/"})
-                     "Product "
+                     "Features "
                      [:i.fa.fa-caret-down]]
                     [:ul.dropdown-menu
                      [:li {:role "presentation"}
                       [:a.sub.menu-item (
                                          merge
                                           (maybe-active nav-point :features)
-                                         (open-ext {:role "menuitem"
-                                                    :tabIndex "-1"
-                                                    :href "/features/"}))
+                                          (open-ext {:role "menuitem"
+                                                     :tabIndex "-1"
+                                                     :href "/features/"}))
                        "Features"]]
+                     [:li {:role "presentation"}
+                      [:a.sub.menu-item (merge
+                                          (maybe-active nav-point :integrations)
+                                          (open-ext {:role "menuitem"
+                                                     :tabIndex "-1"
+                                                     :href "/integrations/"}))
+                       "Integrations"]]
                      [:li {:role "presentation"}
                       [:a.sub.menu-item (merge
                                           (maybe-active nav-point :mobile)
@@ -208,30 +213,56 @@
                                           (open-ext {:role "menuitem"
                                                      :tabIndex "-1"
                                                      :href "/integrations/docker/"}))
-                       "Docker"]]
+                       "Docker"]]]]
+                   [:li (maybe-active nav-point :enterprise)
+                    [:a.menu-item (open-ext {:href "/enterprise/"}) "Enterprise"]]
+                   [:li (maybe-active nav-point :pricing)
+                    [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]
+                   [:li (maybe-active nav-point :customers)
+                    [:a.menu-item (open-ext {:href "/customers/"}) "Customers"]]
+
+                   [:li.dropdown {:class (when (contains? #{:support
+                                                            :blog}
+                                                          nav-point)
+                                           "active")}
+                    [:a.menu-item (open-ext {:href "/support/"})
+                     "Support "
+                     [:i.fa.fa-caret-down]]
+                    [:ul.dropdown-menu
                      [:li {:role "presentation"}
                       [:a.sub.menu-item (merge
-                                          (maybe-active nav-point :enterprise)
+                                          (maybe-active nav-point :documentation)
                                           (open-ext {:role "menuitem"
                                                      :tabIndex "-1"
-                                                     :href "/enterprise/"}))
-                       "Enterprise"]]]]
-                   [:li (maybe-active nav-point :pricing)
-                    [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]))
-               [:li (maybe-active nav-point :documentation)
-                [:a.menu-item {:href "/docs"} "Documentation"]]
-               [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
-               (when (config/show-marketing-pages?)
-                 (list
-                   [:li {:class (when (contains? #{:about
-                                                   :contact
-                                                   :team
-                                                   :jobs
-                                                   :press}
-                                                 nav-point)
-                                  "active")}
-                    [:a.menu-item (open-ext {:href "/about/"}) "About Us"]]
-                   [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))]
+                                                     :href "/docs/"}))
+                       "Documentation"]]
+                     [:li {:role "presentation"}
+                      [:a.sub.menu-item {:href "https://discuss.circleci.com" :target "_blank"}
+                       "Community"]]]]
+
+                   [:li.dropdown {:class (when (contains? #{:about
+                                                            :contact
+                                                            :team
+                                                            :jobs
+                                                            :press}
+                                                          nav-point)
+                                           "active")}
+                    [:a.menu-item (open-ext {:href "/more/"})
+                     "More "
+                     [:i.fa.fa-caret-down]]
+                    [:ul.dropdown-menu
+                     [:li {:role "presentation"}
+                      [:a.sub.menu-item (
+                                         merge
+                                          (maybe-active nav-point :about)
+                                          (open-ext {:role "menuitem"
+                                                     :tabIndex "-1"
+                                                     :href "/about/"}))
+                       "About Us"]]
+                     [:li {:role "presentation"}
+                      [:a.sub.menu-item {:href "https://blog.circleci.com" :target "_blank"}
+                       "Blog"]]]]))]
+
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right.back-to-app
                  [:li [:a.menu-item {:href "/"} "Back to app"]]]
