@@ -280,7 +280,7 @@
     om/IRender
     (render [_]
       (html
-       [:div {:data-component "frontend.components.insights/build-status-bar-chart"}]))))
+       [:div {:data-component (str `build-status-bar-chart)}]))))
 
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
