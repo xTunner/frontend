@@ -65,14 +65,7 @@ EOF
     # Generate HAProxy
     haproxy -f /etc/haproxy/haproxy.cfg
 
-    REPL_COMMAND="lein figwheel dev"
-
-    if [[ "${USE_PIGGIEBACK:-false}" = "true" ]]
-    then
-        REPL_COMMAND="lein repl :headless"
-    fi
-
-    $REPL_COMMAND &
+    lein repl :headless &
     lein run
 fi
 

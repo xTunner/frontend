@@ -13,5 +13,3 @@ services:
       - .:/frontend
       - ~/.m2:/root/.m2
       - ~/.ssl:/etc/ssl/private
-    environment:
-      - USE_PIGGIEBACK
