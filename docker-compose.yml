@@ -5,6 +5,7 @@ services:
     ports:
       - "3000:13000"
       - "7888:17888"
+      - "8230:18230"
       - "3449:13449"
       - "4443:14443"
       - "4444:14444"
@@ -12,3 +13,5 @@ services:
       - .:/frontend
       - ~/.m2:/root/.m2
       - ~/.ssl:/etc/ssl/private
+    environment:
+      - USE_PIGGIEBACK
