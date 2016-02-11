@@ -232,3 +232,12 @@
 
 (deftrack track-cancel-button-clicked [data]
   (mixpanel/track "cancel-button-clicked" data))
+
+(deftrack track-insights-bar-click [data]
+  (track "insights-bar-click" data))
+
+(deftrack track-insights-project-branch-change [data]
+  (track "insights-project-branch-change" data))
+
+(deftrack track-insights-project-parallelism-click [data]
+  (track "insights-project-parallelism-click" data))
