@@ -217,7 +217,8 @@
            [:input.btn
             {:on-click #(do
                           (om/set-state! owner :clicked-join? true)
-                          (analytics/track {:event-type :beta-join-clicked})
+                          (analytics/track {:event-type :beta-join-clicked
+                                            :owner owner})
                           false)
              :type "submit"
              :value "Join Beta Program"}]
@@ -240,7 +241,8 @@
             [:input.btn
             {:on-click #(do
                           (set-beta-program-preference! owner true)
-                          (analytics/track {:event-type :beta-accept-terms-clicked})
+                          (analytics/track {:event-type :beta-accept-terms-clicked
+                                            :owner owner})
                           false)
              :type "submit"
              :value "Accept"}]])]]))))
@@ -258,7 +260,8 @@
           [:input.btn.btn-danger
            {:on-click #(do
                          (set-beta-program-preference! owner false)
-                         (analytics/track {:event-type :beta-leave-clicked})
+                         (analytics/track {:event-type :beta-leave-clicked
+                                           :owner owner})
                          false)
             :type "submit"
             :value "Leave Beta Program"}]]]

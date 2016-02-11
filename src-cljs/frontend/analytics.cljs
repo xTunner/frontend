@@ -5,7 +5,7 @@
             [frontend.analytics.segment :as segment]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
-            [frontend.utils :refer [mwarn]]
+            [frontend.utils :refer [log-in-dev]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
@@ -98,12 +98,6 @@
       (get-current-state-properties)
       (merge props)))
 
-(defmulti track (fn [data]
-                  (when (frontend.config/analytics-enabled?)
-                    (if (supported-events (:event-type data))
-                      :track-event
-                      (:event-type data)))))
-
 (defn build-properties [build]
   (merge {:running (build-model/running? build)
           :build-num (:build_num build)
@@ -115,30 +109,35 @@
            {:elapsed_hours (/ (- (.getTime (js/Date.))
                                  (.getTime (js/Date. (:stop_time build))))
                               1000 60 60)})))
+(defmulti track (fn [data]
+                  (when (frontend.config/analytics-enabled?)
+                    (if (supported-events (:event-type data))
+                      :track-event
+                      (:event-type data)))))
 
 (defmethod track :default [data]
   (if (frontend.config/analytics-enabled?)
-    (mwarn "Cannot log an unsupported event type, please add it to the list of supported events")
-    (mwarn "Analytics are currently not enabled")))
+    (log-in-dev "Cannot log an unsupported event type, please add it to the list of supported events")
+    (log-in-dev "Analytics are currently not enabled")))
 
-(s/defmethod ^:always-validate track :track-event [event-data :- AnalyticsEvent]
+(s/defmethod track :track-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
     (segment/track-event (name event-type) (add-current-state-to-props properties owner))))
 
-(s/defmethod ^:always-validate track :new-plan-created [event-data :- AnalyticsEvent]
+(s/defmethod track :new-plan-created [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data] 
     (segment/track-event "new-plan-created" properties)
     (intercom/track :paid-for-plan)))
 
-(s/defmethod ^:always-validate track :external-click [event-data :- ExternalClickEvent]
+(s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner]} event-data]
     (segment/track-external-click event (add-current-state-to-props properties owner))))
 
-(s/defmethod ^:always-validate track :pageview [event-data :- PageviewEvent]
+(s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point owner]} event-data]
     (segment/track-pageview (name navigation-point) (get-current-state-properties owner))))
 
-(s/defmethod ^:always-validate track :build-triggered [event-data :- BuildEvent]
+(s/defmethod track :build-triggered [event-data :- BuildEvent]
   (let [{:keys [build properties owner]} event-data
         props (merge {:project (vcs-url/project-name (:vcs_url build))
                       :build-num (:build_num build)
@@ -146,7 +145,7 @@
                      properties)]
     (segment/track-event "build-triggered" (add-current-state-to-props props owner)))) 
 
-(s/defmethod ^:always-validate track :view-build [event-data :- ViewBuildEvent]
+(s/defmethod track :view-build [event-data :- ViewBuildEvent]
   (let [{:keys [build user properties owner]} event-data
         props (merge (build-properties build) properties)]
     (segment/track-event "view-build" (add-current-state-to-props props owner))

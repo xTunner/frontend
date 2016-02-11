@@ -289,7 +289,6 @@
              latest-build (last chartable-builds)
              org-name (project-model/org-name project)
              repo-name (project-model/repo-name project)]
-         (println project)
          [:div.project-block {:class (str "build-" (name sort-category))}
           [:h1.project-header
            [:div.last-build-status
