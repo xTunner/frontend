@@ -696,9 +696,16 @@
     state
     (assoc-in state state/project-osx-keys-path (:data resp))))
 
+(defmethod api-event [:set-code-signing-keys :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (assoc-in state state/error-message-path nil)))
+
 (defmethod post-api-event! [:set-code-signing-keys :success]
   [target message status {:keys [context]} previous-state current-state]
   (api/get-project-code-signing-keys (:project-name context) (-> current-state :comms :api))
+  ((:on-success context))
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:set-code-signing-keys :failed]

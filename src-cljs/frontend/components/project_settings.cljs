@@ -1339,7 +1339,12 @@
 
     om/IRenderState
     (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
-      (let [file-selected-fn (fn [file]
+      (let [close-modal-fn #(.modal ((aget js/window "$") "#p12-upload-modal") "hide")
+            clear-form-fn #(om/set-state! owner {:description nil
+                                                 :password nil
+                                                 :file-name nil
+                                                 :file-content nil})
+            file-selected-fn (fn [file]
                                (om/set-state! owner :file-name (aget file "name"))
                                (doto (js/FileReader.)
                                  (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
@@ -1391,11 +1396,8 @@
                                                                        :description description
                                                                        :password (or password "")
                                                                        :file-content (base64/encodeString file-content)
-                                                                       :file-name file-name}])
-                                           (om/set-state! owner :description nil)
-                                           (om/set-state! owner :password nil)
-                                           (om/set-state! owner :file-name nil)
-                                           (om/set-state! owner :file-content nil))}])]])))))
+                                                                       :file-name file-name
+                                                                       :on-success (comp clear-form-fn close-modal-fn)}]))}])]])))))
 
 
 (defn p12-key [{:keys [project-name id filename description uploaded_at]} owner]
