@@ -275,14 +275,14 @@
           [:h4 "Dependency Cache"]
           [:div.details
            (when-let [res (-> project-data :build-cache-clear)]
-            (om/build result-box
-                      (assoc res
-                             :result-path
-                             (conj state/project-data-path :build-cache-clear))))
-          [:p "CircleCI saves a copy of your dependencies to prevent downloading them all on each build."]
-          [:p [:b "NOTE: "] "Clearing your dependency cache will cause the next build to completely recreate dependencies. In some cases this can add considerable time to that build."]
-          [:hr]
-          (clear-cache-button "build" project-data owner)]]
+             (om/build result-box
+                       (assoc res
+                              :result-path
+                              (conj state/project-data-path :build-cache-clear))))
+           [:p "CircleCI saves a copy of your dependencies to prevent downloading them all on each build."]
+           [:p [:b "NOTE: "] "Clearing your dependency cache will cause the next build to completely recreate dependencies. In some cases this can add considerable time to that build."]
+           [:hr]
+           (clear-cache-button "build" project-data owner)]]
          [:div.card.detailed
           [:h4 "Source Cache"]
           [:div.details
@@ -1485,7 +1485,9 @@
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
                :experimental (om/build experiments project-data)
-               :clear-caches (om/build clear-caches project-data)
+               :clear-caches (if (feature/enabled? :project-cache-clear-buttons)
+                               (om/build clear-caches project-data)
+                               (om/build overview project-data))
                :setup (om/build dependencies project-data)
                :tests (om/build tests project-data)
                :hooks (om/build notifications project-data)
