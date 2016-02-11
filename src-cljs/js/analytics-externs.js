@@ -24,9 +24,6 @@ mixpanel.get_property;
 var _pq;
 _pq.push;
 
-var Rollbar;
-Rollbar.log;
-
 var twttr;
 twttr.conversion;
 twttr.conversion.trackPid;
