@@ -1,3 +1,35 @@
+.head-user {
+  .insights-branch-picker {
+    select {
+      .fancy-select(@arrow-margin: 34px; @color: inherit);
+
+      max-width: 320px;
+      padding-right: 32px;
+      direction: rtl;
+
+      border: 1px solid @grayLighter;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      padding-left: 10px;
+
+      option {
+        .text-overflow();
+      }
+
+      @media (max-width: @screen-sm-max) {
+        margin-top: 12px;
+        direction: ltr;
+      }
+
+      @media (max-width: @screen-xs-max) {
+        min-width: 100%;
+        margin-top: 12px;
+        direction: ltr;
+      }
+    }
+  }
+}
+
 .insights-project {
   margin-top: 15px;
 
@@ -46,6 +78,17 @@
           }
         }
       }
+
+      @media (max-width: @screen-xs-max) {
+        .flex(0);
+
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: @screen-xs-max) {
+      .flex-direction(column);
+      .flex-wrap(nowrap);
     }
   }
 

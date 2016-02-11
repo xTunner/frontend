@@ -273,7 +273,7 @@
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel] :as project} owner]
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel default_branch] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -283,7 +283,7 @@
     om/IRender
     (render [_]
       (html
-       (let [branch (-> recent-builds (first) (:branch))
+       (let [branch default_branch
              latest-build (last chartable-builds)]
          [:div.project-block {:class (str "build-" (name sort-category))}
           [:h1.project-header
@@ -308,7 +308,7 @@
           [:h4 (if show-insights?
                  (str "Branch: " branch)
                  (gstring/unescapeEntities "&nbsp;"))]
-          (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
+          (cond (nil? (get recent-builds default_branch)) [:div.loading-spinner common/spinner]
                 (not show-insights?) [:div.no-insights
                                       [:div.message "This release of Insights is only available for repos belonging to paid plans."]
                                       [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
@@ -374,7 +374,7 @@
 (defn decorate-project
   "Add keys to project related to insights - :show-insights? :sort-category :chartable-builds ."
   [plans {:keys [recent-builds] :as project}]
-  (let [chartable-builds (filter-chartable-builds recent-builds)]
+  (let [chartable-builds (filter-chartable-builds (get recent-builds (:default_branch project)))]
     (-> project
         (assoc :chartable-builds chartable-builds)
         (#(assoc % :show-insights? (project-model/show-insights? plans %)))

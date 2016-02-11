@@ -5,6 +5,7 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
@@ -53,24 +54,32 @@
 
 (defn build-time-line-chart [builds owner]
   (reify
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (let [chart (om/get-state owner :chart)
+            build-times (daily-median-build-time builds)]
+        (.load chart (clj->js {:x "date"
+                               :columns [(concat ["date"] (map first build-times))
+                                         (concat ["Median Build Time"] (map last build-times))]}))))
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)
             build-times (daily-median-build-time builds)]
-        (js/c3.generate (clj->js {:bindto el
-                                  :padding {:top 10
-                                            :right 20}
-                                  :data {:x "date"
-                                         :columns [(concat ["date"] (map first build-times))
-                                                   (concat ["Median Build Time"] (map last build-times))]}
-                                  :legend {:hide true}
-                                  :grid {:y {:show true}}
-                                  :axis {:x {:padding {:left "0"}
-                                             :type "timeseries"
-                                             :tick {:format "%m/%d"}
-                                                    :fit "true"}
-                                         :y {:min 0
-                                             :tick {:format #(str (quot % 60000) "m")}}}}))))
+        (om/set-state! owner :chart
+                       (js/c3.generate (clj->js {:bindto el
+                                                 :padding {:top 10
+                                                           :right 20}
+                                                 :data {:x "date"
+                                                        :columns [(concat ["date"] (map first build-times))
+                                                                  (concat ["Median Build Time"] (map last build-times))]}
+                                                 :legend {:hide true}
+                                                 :grid {:y {:show true}}
+                                                 :axis {:x {:padding {:left "0"}
+                                                            :type "timeseries"
+                                                            :tick {:format "%m/%d"}
+                                                            :fit "true"}
+                                                        :y {:min 0
+                                                            :tick {:format #(str (quot % 60000) "m")}}}})))))
     om/IRender
     (render [_]
       (html
@@ -81,10 +90,10 @@
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
         {:keys [branches parallel] :as project} (some->> projects
-                                                         (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                                       (= (:username %) (:org navigation-data))))
-                                                         first)
-        chartable-builds (some->> (:recent-builds project)
+                                                                                  (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                                                                (= (:username %) (:org navigation-data))))
+                                                                                  first)
+        chartable-builds (some->> (get (:recent-builds project) (:branch navigation-data))
                                   (filter insights/build-chartable?))
         bar-chart-builds (->> chartable-builds
                               (take (:max-bars build-time-bar-chart-plot-info))
@@ -125,7 +134,7 @@
              [:i.material-icons "tune"]]]]]]
         [:div.card
          [:div.card-header
-          [:h2 "Build Timing"]]
+          [:h2 "Build Status"]]
          [:div.card-body
           (om/build build-time-bar-chart (reverse bar-chart-builds))]]
         [:div.card
@@ -133,3 +142,18 @@
           [:h2 "Build Performance"]]
          [:div.card-body
           (om/build build-time-line-chart chartable-builds)]]]))))
+
+(defrender header [state owner]
+  (let [projects (get-in state state/projects-path)
+        {selected-branch :branch :as navigation-data} (:navigation-data state)
+        {:keys [branches] :as project} (some->> projects
+                                                (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                              (= (:username %) (:org navigation-data))))
+                                                first)]
+    (html
+     [:.insights-branch-picker
+      [:select {:name "insights-branch-picker"
+                :on-change #(raise! owner [:project-insights-branch-changed {:new-branch (.. % -target -value)}])
+                :value selected-branch}
+       (for [branch-name (sort (keys branches))]
+         [:option {:value branch-name} branch-name])]])))
