@@ -1312,6 +1312,21 @@
                       "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
                       "        deployment_group: my-deployment-group\n"))]]]]]])))))
 
+(defn modal [{:keys [id title body-component body-params error-message]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.modal.fade {:id id :data-component `modal}
+         [:div.modal-dialog
+          [:div.modal-content
+           [:div.modal-header
+            [:div.modal-title title]
+            [:i.material-icons.modal-close {:data-dismiss "modal"} "clear"]]
+           [:div.modal-body.upload
+            (om/build common/flashes error-message)
+            (om/build body-component body-params)]]]]))))
+
 (defn p12-upload-form [{:keys [project-name]} owner]
   (reify
     om/IInitState
@@ -1407,7 +1422,7 @@
            [:article
             [:div.header
              [:div.title "Apple Code Signing Keys"]
-             [:a.btn.upload-button {:data-target "#upload-modal"
+             [:a.btn.upload-button {:data-target "#p12-upload-modal"
                                     :data-toggle "modal"}
               "Upload Key"]]
             [:hr]
@@ -1425,15 +1440,11 @@
                (->> osx-keys
                     (map (partial merge {:project-name project-name}))
                     (om/build-all p12-key))]]]
-            [:div.modal.fade#upload-modal
-             [:div.modal-dialog
-              [:div.modal-content
-               [:div.modal-header
-                [:div.modal-title "Upload a New Apple Code Signing Key"]
-                [:i.material-icons.modal-close {:data-dismiss "modal"} "clear"]]
-               [:div.modal-body.upload
-                (om/build common/flashes error-message)
-                (om/build p12-upload-form {:project-name project-name})]]]]]])))))
+            (om/build modal {:id "p12-upload-modal"
+                             :title "Upload a New Apple Code Signing Key"
+                             :body-component p12-upload-form
+                             :body-params {:project-name project-name}
+                             :error-message error-message})]])))))
 
 (defn project-settings [data owner]
   (reify
