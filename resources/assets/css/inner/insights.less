@@ -1,7 +1,6 @@
 @import "../c3/c3.less";
 @import "../shared/variables.less";
 
-@tick-color: #999999;
 @spinner-height: 172px;
 
 #build-insights {
@@ -201,65 +200,6 @@
   }
 }
 
-.build-time-visualization {
-  margin: 0 auto;
 
-  svg {
-    width: 425px;
-    height: 100px;
-  }
-
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #999;
-    shape-rendering: crispEdges;
-  }
-
-  .grid-lines line.horizontal {
-    stroke: #e5e5e5;
-    stroke-opacity: 0.7;
-    shape-rendering: crispEdges;
-  }
-
-  .y-axis {
-    .tick {
-      line {
-        visibility: hidden;
-      }
-
-      text {
-        fill: @tick-color;
-        font-size: 10px;
-      }
-    }
-
-    > path.domain {
-      visibility: hidden;
-    }
-  }
-
-  rect {
-    &.success {
-      fill: #42c88a;
-    }
-
-    &.failed {
-      fill: #ed5c5c;
-    }
-
-    &.canceled {
-      fill: #999999;
-    }
-
-    &.queue {
-      fill: #e6d9f2;
-    }
-  }
-
-  .legend text {
-    fill: @gray-light-v2;
-  }
-}
 
 @import "insights/insights-project.less";

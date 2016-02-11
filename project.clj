@@ -30,6 +30,7 @@
                  [sablono "0.3.6"]
                  [secretary "1.2.2"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
+                 [prismatic/schema "1.0.4"]
                  [devcards "0.2.1-6"]
 
                  ;; Frontend tests
@@ -109,6 +110,7 @@
                                                :output-to "resources/public/cljs/production/frontend.js"
                                                :output-dir "resources/public/cljs/production"
                                                :optimizations :advanced
+                                               :closure-defines {frontend.core/DEV false}
                                                :externs ["src-cljs/js/pusher-externs.js"
                                                          "src-cljs/js/ci-externs.js"
                                                          "src-cljs/js/analytics-externs.js"

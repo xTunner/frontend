@@ -27,23 +27,21 @@
             [frontend.datetime :as datetime]
             [frontend.timer :as timer]
             [frontend.support :as support]
+            [schema.core :as s :include-macros true]
             [secretary.core :as sec]
             ;; Extends goog.date.* datatypes to IEquiv and IComparable.
             [cljs-time.extend]
-            [cljsjs.react]
-            [sablono.core :as sab :include-macros true])
+            [cljsjs.react])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]]
-                   [frontend.devtools :refer [require-devtools!]]
-                   [devcards.core :as dc :refer [defcard deftest]]))
+                   [frontend.devtools :refer [require-devtools!]]))
 
-(require-devtools!)
+(goog-define DEV true)
 
-(enable-console-print!)
-
-(defcard first-card
-  (sab/html [:div
-             [:h1 "This is your first devcard!"]]))
+(when DEV
+  (enable-console-print!)
+  (require-devtools!)
+  (s/set-fn-validation! true))
 
 ;; Overcome some of the browser limitations around DnD
 (def mouse-move-ch
