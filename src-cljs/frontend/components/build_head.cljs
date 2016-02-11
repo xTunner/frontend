@@ -593,7 +593,7 @@
         (:job_name build)
         "unknown"))))
 
-(defn commit-line [{:keys [author_name build subject body commit_url commit view] :as commit-details} owner]
+(defn commit-line [{:keys [author_name build subject body commit_url commit user view] :as commit-details} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -655,6 +655,7 @@
                                       :body (:body build)
                                       :commit_url (build-model/github-commit-url build)
                                       :commit (:vcs_revision build)
+                                      :user user
                                       :view view})
                (list
                  (om/build-all commit-line top-commits)
@@ -704,7 +705,8 @@
             project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)
-            build-params (:build_parameters build)]
+            build-params (:build_parameters build)
+            view (:view data)]
         (html
          [:div.sub-head
           [:div.sub-head-top
@@ -765,7 +767,9 @@
 
              :build-timing (om/build build-timings/build-timings {:build build
                                                                   :project project
-                                                                  :plan plan})
+                                                                  :plan plan
+                                                                  :user user
+                                                                  :view view})
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user

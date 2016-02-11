@@ -204,9 +204,8 @@
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
-(defn build-timings [{:keys [build project plan]} owner]
+(defn build-timings [{:keys [build project plan user view]} owner]
   (reify
-
     om/IInitState
     (init-state [_]
       {:loading? true
@@ -222,18 +221,24 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (if (project-model/show-build-timing? project plan)
-        (when-not (om/get-state owner [:drawn?])
-          (draw-chart! build)
-          (om/set-state! owner [:loading?] false)
-          (om/set-state! owner [:drawn?] true))
-        (analytics/track {:event-type :build-timing-upsell-impressioned
-                          :properties {:org-name (:org_name plan)
-                                       :reponame (:reponame project)}})))
-    om/IRenderState
-    (render-state [_ {:keys [loading?]}]
+        (let [org-name (project-model/org-name project)
+              repo-name (project-model/repo-name project)]
+          (when-not (om/get-state owner [:drawn?])
+            (draw-chart! build)
+            (om/set-state! owner [:loading?] false)
+            (om/set-state! owner [:drawn?] true))
+          (analytics/track {:event-type :build-timing-upsell-impression
+                            :properties {:org org-name
+                                         :user (:login user)
+                                         :repo repo-name
+                                         :view view}}))))
+ om/IRenderState
+ (render-state [_ {:keys [loading?]}]
       (html
-       [:div.build-timings
+        [:div.build-timings
         (if (project-model/show-build-timing? project plan)
+          (let [org-name (project-model/org-name project)
+              repo-name (project-model/repo-name project)]
           [:div
            (when loading?
              [:div.loading-spinner common/spinner])
@@ -241,5 +246,7 @@
           [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
                              :on-click #(analytics/track {:event-type :build-timing-upsell-click
-                                                          :properties {:org-name (:org_name plan)
-                                                                       :reponame  (:reponame project)}})} "upgrade here."]])]))))
+                                                          :properties {:org org-name
+                                                                       :user (:login user)
+                                                                       :repo repo
+                                                                       :view view}})} "upgrade here."]]))]))))

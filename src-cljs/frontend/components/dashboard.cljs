@@ -22,7 +22,10 @@
       (let [view "build-diagnostics"
             diagnostics (get-in data state/project-build-diagnostics-path)
             project-id-hash (utils/md5 (project-model/id project))
-            collapsed? (get-in data (state/project-build-diagnostics-collapsed-path project-id-hash))]
+            collapsed? (get-in data (state/project-build-diagnostics-collapsed-path project-id-hash))
+            login (get-in current-state state/user-login-path)
+            repo-name (project/model repo-name)
+            org-name (project-model org-name)]
         (if (empty? diagnostics)
           nil
           (html
@@ -58,7 +61,10 @@
                  [:a {:href (routes/v1-org-settings-subpage {:org (:plan_org_name diagnostic)
                                                              :subpage "containers"})
                       :on-click #(analytics/track {:event-type :add-more-containers-clicked
-                                                   :properties {:view view}})}
+                                                   :properties {:org org-name
+                                                                :repo repo-name
+                                                                :user login
+                                                                :view view}})}
                   "Add More Containers"]]])]]))))))
 
 (defn dashboard [data owner]

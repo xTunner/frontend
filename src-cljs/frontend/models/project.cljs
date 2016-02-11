@@ -19,6 +19,12 @@
 (defn settings-path [project]
   (str "/gh/" (project-name project) "/edit"))
 
+(defn repo-name [project]
+  (vcs-url/repo-name (:vcs_url project)))
+
+(defn org-name [project]
+  (vcs-url/org-name (:vcs_url project)))
+
 (defn default-branch? [branch-name project]
   (= (name branch-name) (:default_branch project)))
 

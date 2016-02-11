@@ -234,6 +234,7 @@
 (def top-nav-selected-org-path [:top-nav :selected-org])
 (def hamburger-menu-path [:hamburger-menu])
 
-
 (def insights-filter-path [:insights :selected-filter])
 (def insights-sorting-path [:insights :selected-sorting])
+
+(def current-view-path [:navigation-point])
