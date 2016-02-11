@@ -1335,53 +1335,53 @@
        :password nil
        :file-name nil
        :file-content nil
-       :drag-over? false})
+       :dragged-over? false})
 
     om/IRenderState
-    (render-state [_ {:keys [description password file-name file-content drag-over?]}]
+    (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
       (let [file-selected-fn (fn [file]
                                (om/set-state! owner :file-name (aget file "name"))
                                (doto (js/FileReader.)
                                  (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
                                  (.readAsBinaryString file)))]
         (html
-          [:div
+          [:div {:data-component `p12-upload-form}
            [:div
             [:label.label "Description"]
-            [:input.dumb.text.p12-key-description
+            [:input.dumb.text-input
              {:type "text" :value description
               :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
 
            [:div
             [:label.label "Password (Optional)"]
-            [:input.dumb.text.p12-key-password
+            [:input.dumb.text-input
              {:type "password" :value password
               :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
 
            [:div
             [:label.label "File"]
-            [:div.drag-and-drop-zone {:class (when drag-over? "drag-over")
+            [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
                                       :on-drag-over #(do (.stopPropagation %)
                                                          (.preventDefault %)
-                                                         (om/set-state! owner :drag-over? true))
-                                      :on-drag-leave #(om/set-state! owner :drag-over? false)
+                                                         (om/set-state! owner :dragged-over? true))
+                                      :on-drag-leave #(om/set-state! owner :dragged-over? false)
                                       :on-drop #(do (.stopPropagation %)
                                                     (.preventDefault %)
-                                                    (om/set-state! owner :drag-over? false)
+                                                    (om/set-state! owner :dragged-over? false)
                                                     (file-selected-fn (aget % "dataTransfer" "files" 0)))}
              (if file-name
                [:div file-name]
                [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
-             [:input#hidden-p12-file-input {:type "file"
-                                            :on-change #(file-selected-fn (aget % "target" "files" 0))}]
-             [:label.p12-file-input {:for "hidden-p12-file-input"}
+             [:label.p12-file-input
+              [:input.hidden-p12-file-input {:type "file"
+                                             :on-change #(file-selected-fn (aget % "target" "files" 0))}]
               [:i.material-icons "file_upload"]
                 "Choose file"]]]
 
            [:hr]
            [:div.buttons
             (forms/managed-button
-              [:input.save {:data-failed-text "Failed",
+              [:input.upload {:data-failed-text "Failed",
                             :data-success-text "Uploaded",
                             :data-loading-text "Uploading...",
                             :value "Upload",
@@ -1404,7 +1404,7 @@
     (render [_]
       (html
         (when-not (empty? id)
-          [:tr
+          [:tr {:data-component `p12-key}
            [:td description]
            [:td filename]
            [:td id]
@@ -1418,12 +1418,12 @@
       (let [{:keys [project osx-keys]} project-data
             project-name (vcs-url/project-name (:vcs_url project))]
         (html
-          [:section.code-signing-page
+          [:section.code-signing-page {:data-component `code-signing}
            [:article
             [:div.header
              [:div.title "Apple Code Signing Keys"]
-             [:a.btn.upload-button {:data-target "#p12-upload-modal"
-                                    :data-toggle "modal"}
+             [:a.btn.upload-key-button {:data-target "#p12-upload-modal"
+                                        :data-toggle "modal"}
               "Upload Key"]]
             [:hr]
             [:div "Something about apple code signing keys could go here..."]
