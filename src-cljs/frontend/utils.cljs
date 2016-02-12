@@ -57,7 +57,8 @@
 
 (defn logging-enabled? []
   (let [from-query-map (:logging-enabled? initial-query-map)
-        from-browser-settings (get-in @state/debug-state state/logging-enabled-path)
+        from-browser-settings (and state/debug-state
+                                   (get-in @state/debug-state state/logging-enabled-path))
         from-config (config/logging-enabled?)]
     (cond
       (= (type from-query-map) js/Boolean) from-query-map
