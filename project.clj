@@ -110,7 +110,7 @@
                                                :output-to "resources/public/cljs/production/frontend.js"
                                                :output-dir "resources/public/cljs/production"
                                                :optimizations :advanced
-                                               :closure-defines {frontend.core/DEV false}
+                                               :closure-defines {frontend.config/DEV false}
                                                :externs ["src-cljs/js/pusher-externs.js"
                                                          "src-cljs/js/ci-externs.js"
                                                          "src-cljs/js/analytics-externs.js"

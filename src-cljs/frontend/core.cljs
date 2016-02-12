@@ -36,9 +36,7 @@
                    [frontend.utils :refer [inspect timing swallow-errors]]
                    [frontend.devtools :refer [require-devtools!]]))
 
-(goog-define DEV true)
-
-(when DEV
+(when config/client-dev?
   (enable-console-print!)
   (require-devtools!)
   (s/set-fn-validation! true))
