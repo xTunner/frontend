@@ -87,7 +87,8 @@
             expanded? (get-in app state/show-instrumentation-line-items-path)
             inspector? (get-in app state/show-inspector-path)
             user-session-settings (get-in app [:render-context :user_session_settings])
-            env (config/env)]
+            env (config/env)
+            local-storage-logging-enabled? (get-in app state/logging-enabled-path)]
         (html
           [:div
            [:div.environment {:class (str "env-" env)
@@ -116,7 +117,13 @@
                    [:span (str "om " build-id " ")]]))
               [:a {:on-click #(raise! owner [:show-inspector-toggled])}
                (if inspector? "inspector off " "inspector on ")]
-              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]]
+              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]
+              [:a {:on-click #(do (raise! owner [:logging-enabled-clicked])
+                                  nil)}
+               (str (if local-storage-logging-enabled?
+                      "turn OFF "
+                      "turn ON ")
+                    "logging-enabled?")]]
              (om/build instrumentation/summary (:instrumentation app))]
             (when (and open? expanded?)
               (om/build instrumentation/line-items (:instrumentation app)))]])))))

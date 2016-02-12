@@ -188,6 +188,7 @@
 (defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 (def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
+(def logging-enabled-path (conj browser-settings-path :logging-enabled))
 
 (def add-projects-settings-path (conj settings-path :add-projects))
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
