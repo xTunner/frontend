@@ -26,8 +26,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [goog.crypt.base64 :as base64]
-            [frontend.datetime :as datetime]
-            [frontend.models.feature :as feature])
+            [frontend.datetime :as datetime])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
@@ -1485,7 +1484,8 @@
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
                :experimental (om/build experiments project-data)
-               :clear-caches (if (feature/enabled? :project-cache-clear-buttons)
+               :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
+                                     (config/enterprise?))
                                (om/build clear-caches project-data)
                                (om/build overview project-data))
                :setup (om/build dependencies project-data)
