@@ -9,6 +9,7 @@
             [frontend.state :as state]
             [frontend.async :refer [raise!]]
             [om.core :as om :include-macros true]
+            [schema.core :as s :include-macros true]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [devcards.core :as dc :refer-macros [defcard]]
@@ -85,14 +86,53 @@
        [:div]))))
 
 
+(s/defn build-status-bar-chart-hovercard [build :- insights/BarChartableBuild]
+  (html
+   [:div {:data-component `build-status-bar-chart-hovercard}
+    [:dl
+     [:dt "Build #"]
+     [:dd (:build_num build)]
+     [:dt "Start Time"]
+     [:dd
+      (om/build common/updating-duration
+                {:start (:start_time build)}
+                {:opts {:formatter datetime/time-ago-abbreviated}})
+      " ago"]
+     [:dt "Duration"]
+     [:dd (first (datetime/millis-to-float-duration (:build_time_millis build)))]
+     [:dt "Queue Time"]
+     [:dd (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
+     [:dt "Outcome"]
+     [:dd (:outcome build)]]]))
+
+(s/defn build-status-bar-chart [{:keys [plot-info builds :- [insights/BarChartableBuild]]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:focused-build nil
+       :mouse-location nil})
+    om/IRenderState
+    (render-state [_ {focused-build :focused-build
+                      [x y] :mouse-location}]
+      (html
+       [:div {:data-component (str `build-status-bar-chart)
+              :style {:position "relative"}}
+        (om/build insights/build-status-bar-chart {:plot-info plot-info
+                                                   :builds builds
+                                                   :on-focus-build #(om/set-state! owner :focused-build %)
+                                                   :on-mouse-move #(om/set-state! owner :mouse-location %)})
+        [:div.hovercard {:style {:position "absolute" :left x :top y}}
+         (when focused-build
+           (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]]))))
+
 (defrender project-insights [state owner]
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
         {:keys [branches parallel] :as project} (some->> projects
-                                                                                  (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                                                                (= (:username %) (:org navigation-data))))
-                                                                                  first)
+                                                         (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                                       (= (:username %) (:org navigation-data))))
+                                                         first)
         chartable-builds (some->> (get (:recent-builds project) (:branch navigation-data))
                                   (filter insights/build-chartable?))
         bar-chart-builds (->> chartable-builds
@@ -137,8 +177,8 @@
          [:div.card-header
           [:h2 "Build Status"]]
          [:div.card-body
-          (om/build insights/build-status-bar-chart {:plot-info build-time-bar-chart-plot-info
-                                                     :builds (reverse bar-chart-builds)})]]
+          (om/build build-status-bar-chart {:plot-info build-time-bar-chart-plot-info
+                                            :builds (reverse bar-chart-builds)})]]
         [:div.card
          [:div.card-header
           [:h2 "Build Performance"]]
@@ -178,4 +218,7 @@
 
   (defcard build-status-bar-chart-with-project-insights-plot-info
     (om/build insights/build-status-bar-chart {:plot-info build-time-bar-chart-plot-info
-                                               :builds some-builds})))
+                                               :builds some-builds}))
+
+  (defcard build-status-bar-chart-hovercard-with-build
+    (build-status-bar-chart-hovercard (first some-builds))))

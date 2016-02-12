@@ -1,0 +1,15 @@
+[data-component="frontend.components.insights.project/build-status-bar-chart-hovercard"] {
+  float: left;
+  background: #ccc;
+}
+
+[data-component="frontend.components.insights.project/build-status-bar-chart"] {
+  > .hovercard {
+    display: none;
+  }
+
+  &:hover > .hovercard {
+    display: block;
+    margin-left: 20px; // Offsets the hovercard from the pointer.
+  }
+}

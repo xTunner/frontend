@@ -30,6 +30,14 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
+(def BarChartableBuild
+  {:build_num s/Int
+   :start_time (s/pred #(re-matches #"\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ" %))
+   :build_time_millis s/Int
+   :queued_time_millis s/Int
+   :outcome s/Str
+   s/Any s/Any})
+
 (def default-plot-info
   {:top 10
    :right 10
@@ -342,63 +350,22 @@
                   (nth nums (dec mid-i)))
                2))))
 
-(def BarChartableBuild
-  {:build_num s/Int
-    :start_time (s/pred #(re-matches #"\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ" %))
-    :build_time_millis s/Int
-    :queued_time_millis s/Int
-    :outcome s/Str
-   s/Any s/Any})
 
-(s/defn build-status-bar-chart-hovercard [build :- BarChartableBuild]
-  (html
-   [:div {:data-component `build-status-bar-chart-hovercard}
-    ;; Triggered By
-    ;; Commit message?
-    [:dl
-     [:dt "Build #"]
-     [:dd (:build_num build)]
-     [:dt "Start Time"]
-     [:dd
-      (om/build common/updating-duration
-                {:start (:start_time build)}
-                {:opts {:formatter datetime/time-ago-abbreviated}})
-      " ago"]
-     [:dt "Duration"]
-     [:dd (first (datetime/millis-to-float-duration (:build_time_millis build)))]
-     [:dt "Queue Time"]
-     [:dd (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
-     [:dt "Outcome"]
-     [:dd (:outcome build)]]]))
-
-(defn build-status-bar-chart [{:keys [plot-info
-                                      builds :- [BarChartableBuild]]}
-                              owner]
+(s/defn build-status-bar-chart [{:keys [plot-info builds :- [BarChartableBuild]] :as params} owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:focused-build nil
-       :mouse-location nil})
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)]
         (insert-skeleton plot-info el)
-        (visualize-insights-bar! plot-info el builds {:on-focus-build #(om/set-state! owner :focused-build %)
-                                                      :on-mouse-move #(om/set-state! owner :mouse-location %)})))
+        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]))))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! plot-info el builds {:on-focus-build #(om/set-state! owner :focused-build %)
-                                                      :on-mouse-move #(om/set-state! owner :mouse-location %)})))
-    om/IRenderState
-    (render-state [_ {focused-build :focused-build
-                      [x y] :mouse-location}]
+        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]))))
+    om/IRender
+    (render [_]
       (html
-       [:div {:data-component (str `build-status-bar-chart)
-              :style {:position "relative"}}
-        [:div.hovercard {:style {:position "absolute" :left x :top y}}
-         (when focused-build
-           (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]]))))
+       [:div {:data-component (str `build-status-bar-chart)}]))))
 
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
@@ -581,7 +548,4 @@
 
   (defcard build-status-bar-chart-with-overview-plot-info
     (om/build build-status-bar-chart {:plot-info default-plot-info
-                                      :builds some-builds}))
-
-  (defcard build-status-bar-chart-hovercard-with-build
-    (build-status-bar-chart-hovercard (first some-builds))))
+                                      :builds some-builds})))
