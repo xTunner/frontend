@@ -140,8 +140,7 @@
                     "y" #(y-pos-scale (unexterned-prop % "build_time_millis"))
                     "x" #(x-scale (unexterned-prop % "build_num"))
                     "width" (.rangeBand x-scale)
-                    "height" #(- y-zero (y-pos-scale (unexterned-prop % "build_time_millis")))})
-        (.on #js {"click" #(print "clicked" %1 %2)}))
+                    "height" #(- y-zero (y-pos-scale (unexterned-prop % "build_time_millis")))}))
 
     ;; bottom bar enter and update
     (-> bars-join
