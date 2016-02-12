@@ -1319,7 +1319,9 @@
   [target message {:keys [new-branch]} _ current-state]
   (let [nav-data (get-in current-state [:navigation-data])
         comms (get-in current-state [:comms])]
-    (put! (:nav comms) [:navigate! {:path (routes/v1-insights-project (assoc nav-data :branch new-branch))}])))
+    (put! (:nav comms) [:navigate! {:path (routes/v1-insights-project (assoc nav-data :branch new-branch))}])
+    (analytics/track-insights-project-branch-change {:navigation-data nav-data
+                                                     :new-branch new-branch})))
 
 (defmethod control-event :logging-enabled-clicked
   [_ _ _ state]

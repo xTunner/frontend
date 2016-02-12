@@ -205,6 +205,8 @@
                                      (gstring/format "%s in %s"
                                                      (gstring/toTitleCase (unexterned-prop % "outcome"))
                                                      duration-str))})
+        (.on #js {"click" #(analytics/track-insights-bar-click {:current-url js/window.location.href
+                                                                       :build-url (unexterned-prop % "build_url")})})
         (.select "rect.bar")
         (.attr #js {"class" #(str "bar " (unexterned-prop % "outcome"))
                     "y" #(y-pos-scale (unexterned-prop % "build_time_millis"))

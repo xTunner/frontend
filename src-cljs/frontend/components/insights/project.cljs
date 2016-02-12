@@ -1,5 +1,6 @@
 (ns frontend.components.insights.project
   (:require [frontend.components.common :as common]
+            [frontend.analytics :as analytics]
             [frontend.components.insights :as insights]
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
@@ -143,7 +144,8 @@
            [:dd parallel
             [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-subpage {:org (:username project)
                                                                                    :repo (:reponame project)
-                                                                                   :subpage "parallel-builds"})}
+                                                                                   :subpage "parallel-builds"})
+                                        :on-click #(analytics/track-insights-project-parallelism-click {:navigation-data navigation-data})}
              [:i.material-icons "tune"]]]]]]
         [:div.card
          [:div.card-header
