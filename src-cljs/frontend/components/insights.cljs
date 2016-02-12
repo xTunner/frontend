@@ -28,13 +28,85 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
-(def plot-info
+(def default-plot-info
   {:top 10
    :right 10
    :bottom 10
    :left 30
    :max-bars 55
    :positive-y% 0.6})
+
+(defn add-legend [plot-info svg]
+  (let [{:keys [square-size item-width item-height spacing]} (:legend-info plot-info)
+        left-legend-enter (-> svg
+                              (.select ".legend-container")
+                              (.append "svg")
+                              (.attr #js {"x" 0
+                                          "y" 0
+                                          "class" "left-legend-container"})
+                              (.style #js {"overflow" "visible"})
+                              (.selectAll ".legend")
+                              (.data (clj->js (:left-legend-items plot-info)))
+                              (.enter)
+                              (.append "g")
+                              (.attr #js {"class" "legend left"
+                                          "transform"
+                                          (fn [item i]
+                                            (let [tr-x (* i item-width)
+                                                  tr-y (- (- item-height
+                                                             (/ (- item-height square-size)
+                                                                2)))]
+                                              (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))
+        right-legend-enter (-> svg
+                               (.select ".legend-container")
+                               (.append "svg")
+                               (.attr #js {"x" "90%"
+                                           "y" 0
+                                           "class" "right-legend-container"})
+                               (.style #js {"overflow" "visible"})
+                               (.selectAll ".legend")
+                               (.data (clj->js (:right-legend-items plot-info)))
+                               (.enter)
+                               (.append "g")
+                               (.attr #js {"class" "legend right"
+                                           "transform"
+                                           (fn [item i]
+                                             (let [tr-x (- (:width plot-info) (* (inc i) item-width))
+                                                   tr-y (- (- item-height
+                                                              (/ (- item-height square-size)
+                                                                 2)))]
+                                               (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))]
+    ;; left legend
+    (-> left-legend-enter
+        (.append "rect")
+        (.attr #js {"width" square-size
+                    "height" square-size
+                    ;; `aget` must be used here instead of direct field access.  See note in preamble.
+                    "class" #(aget % "classname")
+                    "transform"
+                    (fn [item i]
+                      (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
+    (-> left-legend-enter
+        (.append "text")
+        (.attr #js {"x" (+ square-size spacing)})
+        (.text #(aget % "text")))
+
+    ;; right legend
+    (-> right-legend-enter
+        (.append "rect")
+        (.attr #js {"width" square-size
+                    "height" square-size
+                    "class" #(aget % "classname")
+                    "transform"
+                    (fn [item i]
+                      (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
+    (-> right-legend-enter
+        (.append "text")
+        (.attr #js {"x" (+ square-size
+                           spacing)})
+        (.text #(aget % "text")))))
+
+
 
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
@@ -215,6 +287,15 @@
         .-contentWindow
         (gevents/listen "resize" #(when-let [redraw-fn (.property svg "redraw-fn")] (redraw-fn))))
 
+    (when-let [legend-info (:legend-info plot-info)]
+      (-> svg
+          (.append "g")
+          (.attr #js {"class" "legend-container"
+                      "transform" (gstring/format "translate(%s,%s)"
+                                                  (:left plot-info)
+                                                  (:top legend-info))}))
+      (add-legend plot-info svg))
+
     (-> plot-area
         (.append "g")
         (.attr "class" "grid-lines"))
@@ -236,10 +317,10 @@
           (.append "g")
           (.attr "class" "y-axis negative axis")))))
 
-(defn filter-chartable-builds [builds]
+(defn filter-chartable-builds [builds max-count]
   (some->> builds
            (filter build-chartable?)
-           (take (:max-bars plot-info))
+           (take max-count)
            reverse
            (map add-queued-time)))
 
@@ -259,12 +340,12 @@
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)]
-        (insert-skeleton plot-info el)
-        (visualize-insights-bar! plot-info el builds owner)))
+        (insert-skeleton default-plot-info el)
+        (visualize-insights-bar! default-plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! plot-info el builds owner)))
+        (visualize-insights-bar! default-plot-info el builds owner)))
     om/IRender
     (render [_]
       (html
@@ -373,8 +454,9 @@
 
 (defn decorate-project
   "Add keys to project related to insights - :show-insights? :sort-category :chartable-builds ."
-  [plans {:keys [recent-builds] :as project}]
-  (let [chartable-builds (filter-chartable-builds (get recent-builds (:default_branch project)))]
+  [{:keys [max-bars] :as plot-info} plans {:keys [recent-builds default_branch] :as project}]
+  (let [chartable-builds (filter-chartable-builds (get recent-builds default_branch)
+                                                  max-bars)]
     (-> project
         (assoc :chartable-builds chartable-builds)
         (#(assoc % :show-insights? (project-model/show-insights? plans %)))
@@ -423,7 +505,7 @@
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
-        decorate (partial decorate-project plans)]
+        decorate (partial decorate-project default-plot-info plans)]
     (html
      [:div#build-insights
       (cond

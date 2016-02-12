@@ -11,6 +11,27 @@
             [om.core :as om :include-macros true])
   (:require-macros [cemerick.cljs.test :refer (is are deftest with-test run-tests testing test-var)]))
 
+(def insights-plot-info
+  {:top 30
+   :right 10
+   :bottom 10
+   :left 30
+   :max-bars 100
+   :positive-y% 0.6
+   :left-legend-items [{:classname "success"
+                        :text "Passed"}
+                       {:classname "failed"
+                        :text "Failed"}
+                       {:classname "canceled"
+                        :text "Canceled"}]
+   :right-legend-items [{:classname "queue"
+                         :text "Queue time"}]
+   :legend-info {:top 22
+                 :square-size 10
+                 :item-width 80
+                 :item-height 14   ; assume font is 14px
+                 :spacing 4}})
+
 (def test-projects-data
   [{:reponame "test repo"
     :username "foo user"
@@ -75,7 +96,7 @@
   (testing "Simple render of cards."
     (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
       (om/root insights/cards
-               {:projects [(insights/decorate-project test-utils/example-user-plans-paid test-project/private-project)]
+               {:projects [(insights/decorate-project insights-plot-info test-utils/example-user-plans-paid test-project/private-project)]
                 :selected-filter :all
                 :selected-sorting :alphabetical}
                {:target test-node
