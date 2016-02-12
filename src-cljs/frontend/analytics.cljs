@@ -4,7 +4,6 @@
             [frontend.analytics.google :as google]
             [frontend.analytics.mixpanel :as mixpanel]
             [frontend.analytics.perfect-audience :as pa]
-            [frontend.analytics.rollbar :as rollbar]
             [frontend.analytics.twitter :as twitter]
             [frontend.analytics.facebook :as facebook]
             [frontend.models.build :as build-model]
@@ -17,8 +16,7 @@
 
 (deftrack init-user [login]
   (utils/swallow-errors
-   (mixpanel/init-user login)
-   (rollbar/init-user login)))
+   (mixpanel/init-user login)))
 
 (deftrack set-existing-user []
   (mixpanel/set-existing-user))
