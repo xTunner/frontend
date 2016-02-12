@@ -94,10 +94,5 @@
   (crumb-node {:name "Repositories"
                :active false}))
 
-(defmethod render-crumb :insights-branch
-  [{:keys [branch]}]
-  (crumb-node {:name branch
-               :active false}))
-
 (defn crumbs [crumbs-data]
   (map render-crumb crumbs-data))

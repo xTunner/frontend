@@ -271,8 +271,10 @@
                                    {:type :project
                                     :username org
                                     :project repo}
-                                   {:type :insights-branch
-                                    :branch branch}])))
+                                   {:type :project-branch
+                                    :username org
+                                    :branch branch
+                                    :project repo}])))
 
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point args previous-state current-state]
