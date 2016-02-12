@@ -434,8 +434,7 @@
                  :params {:vcs-type (:vcs_type repo)}
                  :context repo)
     (analytics/track {:event-type :project-followed
-                      :properties {:user login
-                                   :project project}})))
+                      :current-state current-state})))
 
 
 (defmethod control-event :inaccessible-org-toggled
@@ -454,8 +453,7 @@
                  api-ch
                  :context {:project-id project-id})
     (analytics/track {:event-type :project-followed
-                      :properties {:user login
-                                   :project project}})))
+                      :current-state current-state})))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -469,8 +467,7 @@
                  api-ch
                  :context repo)
     (analytics/track {:event-type :project-unfollowed
-                      :properties {:user login
-                                   :project project}})))
+                      :current-state current-state})))
 
 
 (defmethod post-control-event! :unfollowed-project
@@ -484,8 +481,7 @@
                  api-ch
                  :context {:project-id project-id})
     (analytics/track {:event-type :project-unfollowed
-                      :properties {:user login
-                                   :project project}})))
+                      :current-state current-state})))
 
 (defmethod post-control-event! :stopped-building-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
@@ -498,8 +494,7 @@
                  api-ch
                  :context {:project-id project-id}))
   (analytics/track {:event-type :project-builds-stopped
-                    :properties {:user login
-                                 :project project}}))
+                    :current-state current-state}))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
@@ -918,9 +913,8 @@
           new-num-containers containers
           is-upgrade (> new-num-containers previous-num-containers)]
       (analytics/track {:event-type :container-amount-changed
-                        :properties {:user login
-                                     :org org-name 
-                                     :previous-num-containers previous-num-containers
+                        :current-state current-state
+                        :properties {:previous-num-containers previous-num-containers
                                      :new-num-containers new-num-containers
                                      :is-upgrade is-upgrade}}))))
 
@@ -1143,7 +1137,8 @@
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name})
                                      :replace-token? true}])
-           (analytics/track {:event-type :plan-cancelled})))
+           (analytics/track {:event-type :plan-cancelled
+                             :current-state current-state})))
        (release-button! uuid (:status api-result))))))
 
 (defn track-and-redirect [event properties path]

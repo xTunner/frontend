@@ -145,7 +145,7 @@
     om/IDidMount
     (did-mount [_]
       (analytics/track {:event-type :signup-impression
-                        :properties {:view source}}))
+                        :owner owner}))
     om/IRender
     (render [_]
       (html
@@ -155,7 +155,7 @@
                             :href "/signup"
                             :role "button"
                             :on-mouse-up #(analytics/track {:event-type :signup-clicked
-                                                            :properties {:view source}})})
+                                                            :owner owner})})
            (str (common/sign-up-text))]
           [:a.home-action
            {:href  (auth-url :destination "/")

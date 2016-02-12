@@ -47,7 +47,8 @@
             "Start Now"])
 
           [:a {:href "/signup"
-               :on-mouse-up #(analytics/track {:event-type :signup-clicked})}
+               :on-mouse-up #(analytics/track {:event-type :signup-clicked
+                                               :owner owner})}
            [:span "Start 14-day Free Trial"]])]]))))
 
 (def pricing-enterprise

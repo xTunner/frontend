@@ -203,14 +203,14 @@
     om/IDidMount
     (did-mount [_]
       (analytics/track {:event-type :signup-impression
-                        :properties {:view source}}))
+                        :owner owner}))
     om/IRender
     (render [_]
       (html
         [:a.btn.btn-cta {:href "/signup"
                          :role "button"
                          :on-mouse-up #(analytics/track {:event-type :signup-clicked
-                                                         :properties {:view source}})}
+                                                         :owner owner})}
          (str (sign-up-text))]))))
 
 (defn feature-icon [name]

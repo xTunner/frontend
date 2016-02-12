@@ -395,10 +395,8 @@
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
                        :on-click #(analytics/track {:event-type :cancel-plan-clicked
-                                                    :properties {:view view
-                                                                 :org org-name
-                                                                 :login login 
-                                                                 :repo nil}})}
+                                                    :owner owner
+                                                    :properties {:repo nil}})}
                       "Cancel plan"]
                      [:button.btn.btn-large.btn-primary.upgrade
                       {:data-success-text "Saved",

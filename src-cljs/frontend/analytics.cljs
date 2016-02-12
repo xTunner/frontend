@@ -27,7 +27,7 @@
 
 (def PageviewEvent
   (merge
-    AnalyticsEvent
+    AnalyticsEventForControllers
     {:navigation-point s/Keyword}))
 
 (def ExternalClickEvent
@@ -53,15 +53,15 @@
   ;; These are the click and impression events.
   ;; They are in the fomat <item>-<clicked or impression>.
   #{:add-more-containers-clicked
-    :beta-accept-terms-clicked ;; do beta events
-    :beta-join-clicked ;; do beta events
-    :beta-leave-clicked ;; do beta events
+    :beta-accept-terms-clicked
+    :beta-join-clicked
+    :beta-leave-clicked
     :branch-clicked
-    :build-insights-upsell-clicked ;; incomplete
-    :build-insights-upsell-impression ;; incomplete
+    :build-insights-upsell-clicked
+    :build-insights-upsell-impression
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
-    :cancel-plan-clicked ;; maybe a new event without repo instead of the maybe on repo?
+    :cancel-plan-clicked
     :parallelism-clicked
     :pr-link-clicked
     :project-clicked
@@ -80,14 +80,13 @@
     :project-followed
     :project-unfollowed})
 
-(defn- get-current-state-properties [owner]
-  "Get a dict of the mutable states we want to track with our events
-  out of the current app state."
-  (let [app-state @(om/get-shared owner [:_app-state-do-not-use])
-        view (get-in app-state state/current-view-path)
-        user (get-in app-state state/user-login-path) 
-        project (get-in app-state state/project-path)
-        org (get-in app-state state/org-name-path)]
+(defn- get-properties-from-state [state]
+  "Get a dict of the mutable properties we want to track out of the
+  state."
+  (let [view (get-in state state/current-view-path)
+        user (get-in state state/user-login-path) 
+        project (get-in state state/project-path)
+        org (get-in state state/org-name-path)]
     (-> {:user user
          :view view}
         (merge (if project
@@ -96,11 +95,24 @@
                  {:org org
                   :repo nil})))))
 
-(defn- add-current-state-to-props [props owner]
-  "Fill in any unsupplied app state values with those in the
-  current app state. Supplied data takes precedence over app data."
+(defn- get-properties-from-owner [owner]
+  "Get a dict of the mutable properties we want to track out of the
+  owner."
+  (let [app-state @(om/get-shared owner [:_app-state-do-not-use])]
+    (get-properties-from-state app-state)))
+
+(defn- add-owner-properties-to-props [props owner]
+  "Fill in any unsuppplied property values with those supplied
+  in the app state via the owner."
   (-> owner
-      (get-current-state-properties)
+      (get-properties-from-owner)
+      (merge props)))
+
+(defn- add-state-properties-to-props [props state]
+  "Fill in any unsuppplied property values with those supplied
+  in the app state."
+  (-> state
+      (get-properties-from-state)
       (merge props)))
 
 (defn build-properties [build]
@@ -128,25 +140,27 @@
 
 (s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
-    (segment/track-event (name event-type) (add-current-state-to-props properties owner))))
+    (segment/track-event (name event-type) (add-owner-properties-to-props properties owner))))
 
 ;; Gotta finish this + add schema event
 (s/defmethod track :track-api-response-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
-    (segment/track-event (name event-type) properties)))
+    (segment/track-event (name event-type) (add-state-properties-to-props properties current-state))))
 
 (s/defmethod track :new-plan-created [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data] 
-    (segment/track-event "new-plan-created" properties)
+    (segment/track-event "new-plan-created" (add-owner-properties-to-props properties owner))
     (intercom/track :paid-for-plan)))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner]} event-data]
-    (segment/track-external-click event (add-current-state-to-props properties owner))))
+    (segment/track-external-click event (add-owner-properties-to-props properties owner))))
 
+;; Do we clear state before/after navigation? Can I trust including state?
+;; What does it mean to include state?
 (s/defmethod track :pageview [event-data :- PageviewEvent]
-  (let [{:keys [navigation-point owner]} event-data]
-    (segment/track-pageview (name navigation-point) (get-current-state-properties owner))))
+  (let [{:keys [navigation-point properties current-state]} event-data]
+    (segment/track-pageview (name navigation-point) (add-state-properties-to-props properties current-state))))
 
 (s/defmethod track :build-triggered [event-data :- BuildEvent]
   (let [{:keys [build properties owner]} event-data
@@ -154,12 +168,12 @@
                       :build-num (:build_num build)
                       :retry? true}
                      properties)]
-    (segment/track-event "build-triggered" (add-current-state-to-props props owner)))) 
+    (segment/track-event "build-triggered" (add-owner-properties-to-props props owner))))
 
 (s/defmethod track :view-build [event-data :- ViewBuildEvent]
   (let [{:keys [build user properties owner]} event-data
         props (merge (build-properties build) properties)]
-    (segment/track-event "view-build" (add-current-state-to-props props owner))
+    (segment/track-event "view-build" (add-owner-properties-to-props props owner))
     (when (and (:oss build) (build-model/owner? build user))
       (intercom/track :viewed-self-triggered-oss-build
                       {:vcs-url (vcs-url/project-name (:vcs_url build))
@@ -168,4 +182,3 @@
 (defmethod track :init-user [{:keys [login]}]
   (utils/swallow-errors
    (rollbar/init-user login)))
-
