@@ -40,9 +40,9 @@
         user-info (-> js/window
                       (aget "elevSettings")
                       (aget "user"))
-        support-module-id "2968"
-        discuss-link-module-id "3003"
-        discuss-support-link-module-id "3762"]
+        support-module-id 2968
+        discuss-link-module-id 3003
+        discuss-support-link-module-id 3762]
     (if user/support-eligible?
       ;; enable zendesk support, disable discuss support
       (set-elev! "disabledModules" #js [discuss-support-link-module-id])
