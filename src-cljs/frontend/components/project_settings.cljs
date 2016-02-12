@@ -146,10 +146,7 @@
   (let [view "parallelism-tile"
         plan (:plan project-data)
         project (:project project-data)
-        project-id (project-model/id project)
-        login (get-in current-state state/user-login-path)
-        repo-name (project/model repo-name)
-        org-name (project-model org-name)]
+        project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades
       (if-not (plan-model/in-trial? plan)
@@ -175,10 +172,7 @@
                [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
                                                            :subpage "containers"})
                     :on-click #(analytics/track {:event-type :add-more-containers-clicked
-                                                 :properties {:org org-name
-                                                              :repo repo-name
-                                                              :user login
-                                                              :view view}})}
+                                                 :owner owner})}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial

@@ -74,7 +74,7 @@
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 
-(defn project-settings-link [{:keys [project view login]}]
+(defn project-settings-link [{:keys [project view login]} owner]
   (when (and (project-model/can-read-settings? project))
     (let [org-name (project-model/org-name project)
           repo-name (project-model/repo-name project)]
@@ -82,9 +82,8 @@
                                                                     :repo (:reponame project)})
                                  :title (project-model/project-name project)
                                  :on-click #(analytics/track {:event-type :project-settings-clicked
-                                                              :properties {:view view
-                                                                           :user login
-                                                                           :org org-name
+                                                              :owner owner
+                                                              :properties {:org org-name
                                                                            :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
@@ -144,7 +143,7 @@
                  (when show-project?
                    (project-settings-link {:project project
                                            :view view
-                                           :login login}))]))])))))
+                                           :login login} owner))]))])))))
 
 (defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos view]} owner {:keys [login]}]
   (reify
@@ -170,14 +169,13 @@
                 [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
                                                                       :repo (:reponame project)})
                                   :on-click #(analytics/track {:event-type :project-clicked
-                                                               :properties {:view view
-                                                                            :org org-name
-                                                                            :repo repo-name
-                                                                            :user login}})}
+                                                               :owner owner
+                                                               :properties {:org org-name
+                                                                            :repo repo-name}})}
                  (project-model/project-name project)]
                 (project-settings-link {:project project
                                         :view view
-                                        :login login})]
+                                        :login login} owner)]
 
                (when (expanded-repos repo)
                  (om/build branch-list

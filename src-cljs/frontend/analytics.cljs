@@ -20,15 +20,20 @@
    :owner s/Any
    (s/optional-key :properties) {s/Keyword s/Any}})
 
+(def AnalyticsEventForControllers
+  {:event-type s/Keyword
+   :current-state s/Any
+   (s/optional-key :properties) {s/Keyword s/Any}} )
+
 (def PageviewEvent
   (merge
     AnalyticsEvent
-    :navigation-point s/Keyword))
+    {:navigation-point s/Keyword}))
 
 (def ExternalClickEvent
   (merge 
     AnalyticsEvent
-    :event s/Str))
+    {:event s/Str}))
 
 (def BuildEvent
   (merge
@@ -40,22 +45,20 @@
     BuildEvent
     {:user {s/Keyword s/Any}}))
 
-(def supported-events
-  ;; This is a list of our supported events.
-  ;; Events should NOT be view specific. They should be view agnostic and
-  ;; include a view in the properties.
-  ;; Add new events here and keep each list of event types sorted alphabetically
-
-  #{;; These are the click and impression events.
-    ;; They are in the fomat <item>-<clicked or impression>.
-    :add-more-containers-clicked
+;; Below are the lists of our supported events.
+;; Events should NOT be view specific. They should be view agnostic and
+;; include a view in the properties.
+;; Add new events here and keep each list of event types sorted alphabetically
+(def supported-click-and-impression-events
+  ;; These are the click and impression events.
+  ;; They are in the fomat <item>-<clicked or impression>.
+  #{:add-more-containers-clicked
     :beta-accept-terms-clicked ;; do beta events
     :beta-join-clicked ;; do beta events
     :beta-leave-clicked ;; do beta events
     :branch-clicked
     :build-insights-upsell-clicked ;; incomplete
     :build-insights-upsell-impression ;; incomplete
-    :build-tests-ad-clicked ;; need to investigate what this is
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
     :cancel-plan-clicked ;; maybe a new event without repo instead of the maybe on repo?
@@ -64,14 +67,16 @@
     :project-clicked
     :project-settings-clicked
     :revision-link-clicked
+    :set-up-junit-clicked
     :signup-clicked
-    :signup-impression
+    :signup-impression})
 
-    ;; These are the api response events.
-    ;; They are in the format of <object>-<action take in the past tense>
-    :project-builds-stopped
-    :container-amount-changed
+(def supported-api-response-events
+  ;; These are the api response events.
+  ;; They are in the format of <object>-<action take in the past tense>
+  #{:container-amount-changed
     :plan-cancelled
+    :project-builds-stopped
     :project-followed
     :project-unfollowed})
 
@@ -111,18 +116,24 @@
                               1000 60 60)})))
 (defmulti track (fn [data]
                   (when (frontend.config/analytics-enabled?)
-                    (if (supported-events (:event-type data))
-                      :track-event
-                      (:event-type data)))))
+                    (cond
+                      (supported-click-and-impression-events (:event-type data)) :track-click-and-impression-event
+                      (supported-api-response-events (:event-type data)) :track-api-response-events
+                      :else (:event-type data)))))
 
 (defmethod track :default [data]
   (if (frontend.config/analytics-enabled?)
     (log-in-dev "Cannot log an unsupported event type, please add it to the list of supported events")
     (log-in-dev "Analytics are currently not enabled")))
 
-(s/defmethod track :track-event [event-data :- AnalyticsEvent]
+(s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
     (segment/track-event (name event-type) (add-current-state-to-props properties owner))))
+
+;; Gotta finish this + add schema event
+(s/defmethod track :track-api-response-events [event-data :- AnalyticsEventForControllers]
+  (let [{:keys [event-type properties current-state]} event-data]
+    (segment/track-event (name event-type) properties)))
 
 (s/defmethod track :new-plan-created [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data] 
