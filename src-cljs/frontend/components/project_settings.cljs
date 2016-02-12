@@ -1428,6 +1428,23 @@
            [:th.delete-col]]]
          [:tbody.body (om/build-all p12-key-row rows)]]))))
 
+(defn no-keys-empty-state [{:keys [project-name]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div {:data-component `no-keys-empty-state}
+         [:i.octicon.octicon-key]
+         [:div.info
+          [:span.highlight project-name]
+          [:span " has no "]
+          [:span.highlight "Apple Code Signing Identities"]
+          [:span "  yet"]]
+         [:a.btn.upload-key-button {:data-target "#p12-upload-modal"
+                                    :data-toggle "modal"}
+          "Upload Key"]
+         [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
+
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
     om/IRender
@@ -1447,9 +1464,10 @@
                         begins, and will be available to sign iOS and OSX apps. For more information about code-signing
                         on CircleCI see the "
              [:a "code-signing section of the docs."]]
-            [:div
-             (om/build p12-key-table {:rows (->> osx-keys
-                                                 (map (partial merge {:project-name project-name})))})]
+            (if-not (empty? osx-keys)
+              (om/build p12-key-table {:rows (->> osx-keys
+                                                  (map (partial merge {:project-name project-name})))})
+              (om/build no-keys-empty-state {:project-name project-name}))
             (om/build modal {:id "p12-upload-modal"
                              :title "Upload a New Apple Code Signing Key"
                              :body-component p12-upload-form

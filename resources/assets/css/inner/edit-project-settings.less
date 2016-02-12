@@ -795,11 +795,11 @@
       }
 
       .id-col {
-        width: 300px;
+        width: 350px;
       }
 
       .filename-col {
-        width: 150px;
+        width: 250px;
       }
 
       .uploaded-col {
@@ -809,10 +809,6 @@
       .delete-col {
         width: 50px;
       }
-    }
-
-    .body {
-
     }
   }
 
@@ -875,6 +871,32 @@
       &:hover {
         background: @primary-button-hover-background;
       }
+    }
+  }
+
+  [data-component="frontend.components.project-settings/no-keys-empty-state"] {
+    .flexy(center, center, column);
+    margin-top: 30px;
+
+    .octicon-key {
+      font-size: 60px;
+      color: @grayLighter;
+    }
+
+    .info {
+      margin-top: 15px;
+      margin-bottom: 15px;
+
+      font-size: @fontSizeMedium;
+
+      .highlight {
+        font-weight: bold;
+      }
+    }
+
+    .sub-info {
+      margin-top: 15px;
+      font-size: @fontSizeSmallish;
     }
   }
 
