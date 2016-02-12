@@ -72,4 +72,18 @@
       }
     }
   }
+
+  > .hovercard {
+    display: none;
+  }
+
+  &:hover > .hovercard {
+    display: block;
+    margin-left: 20px; // Offsets the hovercard from the pointer.
+  }
+}
+
+[data-component="frontend.components.insights/build-status-bar-chart-hovercard"] {
+  float: left;
+  background: #ccc;
 }

@@ -123,7 +123,7 @@
   (str (utils/uri-to-relative (unexterned-prop build "build_url"))
        "#build-timing"))
 
-(defn visualize-insights-bar! [plot-info el builds owner]
+(defn visualize-insights-bar! [plot-info el builds {:keys [on-focus-build on-mouse-move] :as events}]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
                                               (map %)
@@ -132,7 +132,8 @@
                 (.select el)
                 (.select "svg")
                 ;; Set the SVG up to redraw itself when it resizes.
-                (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds owner))))
+                (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds events)))
+                (.on "mousemove" #(on-mouse-move (d3.mouse el))))
         svg-bounds (-> svg
                        ffirst
                        .getBoundingClientRect)
@@ -173,7 +174,9 @@
         bars-join (-> plot
                       (.select "g > g.bars")
                       (.selectAll "g.bar-pair")
-                      (.data (clj->js builds)))
+                      (.data (clj->js builds))
+                      (.on "mouseover" #(on-focus-build %))
+                      (.on "mousemove" #(on-focus-build %)))
         bars-enter-g (-> bars-join
                          (.enter)
                          (.append "g")
@@ -347,23 +350,55 @@
     :outcome s/Str
    s/Any s/Any})
 
+(s/defn build-status-bar-chart-hovercard [build :- BarChartableBuild]
+  (html
+   [:div {:data-component `build-status-bar-chart-hovercard}
+    ;; Triggered By
+    ;; Commit message?
+    [:dl
+     [:dt "Build #"]
+     [:dd (:build_num build)]
+     [:dt "Start Time"]
+     [:dd
+      (om/build common/updating-duration
+                {:start (:start_time build)}
+                {:opts {:formatter datetime/time-ago-abbreviated}})
+      " ago"]
+     [:dt "Duration"]
+     [:dd (first (datetime/millis-to-float-duration (:build_time_millis build)))]
+     [:dt "Queue Time"]
+     [:dd (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
+     [:dt "Outcome"]
+     [:dd (:outcome build)]]]))
+
 (defn build-status-bar-chart [{:keys [plot-info
                                       builds :- [BarChartableBuild]]}
                               owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:focused-build nil
+       :mouse-location nil})
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)]
-        (insert-skeleton default-plot-info el)
-        (visualize-insights-bar! default-plot-info el builds owner)))
+        (insert-skeleton plot-info el)
+        (visualize-insights-bar! plot-info el builds {:on-focus-build #(om/set-state! owner :focused-build %)
+                                                      :on-mouse-move #(om/set-state! owner :mouse-location %)})))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! default-plot-info el builds owner)))
-    om/IRender
-    (render [_]
+        (visualize-insights-bar! plot-info el builds {:on-focus-build #(om/set-state! owner :focused-build %)
+                                                      :on-mouse-move #(om/set-state! owner :mouse-location %)})))
+    om/IRenderState
+    (render-state [_ {focused-build :focused-build
+                      [x y] :mouse-location}]
       (html
-       [:div {:data-component (str `build-status-bar-chart)}]))))
+       [:div {:data-component (str `build-status-bar-chart)
+              :style {:position "relative"}}
+        [:div.hovercard {:style {:position "absolute" :left x :top y}}
+         (when focused-build
+           (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]]))))
 
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
@@ -546,4 +581,7 @@
 
   (defcard build-status-bar-chart-with-overview-plot-info
     (om/build build-status-bar-chart {:plot-info default-plot-info
-                                      :builds some-builds})))
+                                      :builds some-builds}))
+
+  (defcard build-status-bar-chart-hovercard-with-build
+    (build-status-bar-chart-hovercard (first some-builds))))
