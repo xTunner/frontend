@@ -86,11 +86,17 @@
 (defmethod render-crumb :build-insights
   [attrs]
   (crumb-node {:name "Insights"
+               :path (routes/v1-insights)
                :active false}))
 
 (defmethod render-crumb :insights-repositories
   [attrs]
   (crumb-node {:name "Repositories"
+               :active false}))
+
+(defmethod render-crumb :insights-branch
+  [{:keys [branch]}]
+  (crumb-node {:name branch
                :active false}))
 
 (defn crumbs [crumbs-data]
