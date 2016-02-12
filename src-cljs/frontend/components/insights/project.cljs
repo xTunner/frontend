@@ -13,12 +13,25 @@
   (:require-macros [frontend.utils :refer [html defrender]]))
 
 (def build-time-bar-chart-plot-info
-  {:top 10
+  {:top 30
    :right 10
    :bottom 10
    :left 30
    :max-bars 100
-   :positive-y% 0.6})
+   :positive-y% 0.6
+   :left-legend-items [{:classname "success"
+                        :text "Passed"}
+                       {:classname "failed"
+                        :text "Failed"}
+                       {:classname "canceled"
+                        :text "Canceled"}]
+   :right-legend-items [{:classname "queue"
+                         :text "Queue time"}]
+   :legend-info {:top 22
+                 :square-size 10
+                 :item-width 80
+                 :item-height 14   ; assume font is 14px
+                 :spacing 4}})
 
 (defn build-time-bar-chart [builds owner]
   (reify
