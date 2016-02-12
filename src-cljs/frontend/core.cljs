@@ -110,8 +110,6 @@
                       :mouse-up {:ch mouse-up-ch
                                  :mult (async/mult mouse-up-ch)}}))))
 
-(def debug-state)
-
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
   []
@@ -248,10 +246,10 @@
   (goog.dom.setProperties (goog.dom/getElement "app") #js {:id "om-app"}))
 
 (defn ^:export toggle-admin []
-  (swap! debug-state update-in [:current-user :admin] not))
+  (swap! state/debug-state update-in [:current-user :admin] not))
 
 (defn ^:export toggle-dev-admin []
-  (swap! debug-state update-in [:current-user :dev-admin] not))
+  (swap! state/debug-state update-in [:current-user :dev-admin] not))
 
 (defn ^:export explode []
   (swallow-errors
@@ -261,13 +259,13 @@
   "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
   [test-name value]
   (let [test-key (keyword (name test-name))]
-    (println "starting value for" test-name "was" (-> @debug-state
+    (println "starting value for" test-name "was" (-> @state/debug-state
                                                       :ab-test-definitions
                                                       get-ab-tests
                                                       test-key))
     (set-ab-override (name test-name) value)
     (reinstall-om!)
-    (println "value for" test-name "is now" (-> @debug-state
+    (println "value for" test-name "is now" (-> @state/debug-state
                                                 :ab-test-definitions
                                                 get-ab-tests
                                                 test-key))))
@@ -277,13 +275,13 @@
 (defn ^:export app-state-to-js
   "Used for inspecting app state in the console."
   []
-  (clj->js @debug-state))
+  (clj->js @state/debug-state))
 
 (aset js/window "app_state_to_js" set-ab-test)
 
 
 (defn ^:export reinstall-om! []
-  (install-om debug-state (get-ab-tests (:ab-test-definitions @debug-state)) (find-app-container) (:comms @debug-state) true))
+  (install-om state/debug-state (get-ab-tests (:ab-test-definitions @state/debug-state)) (find-app-container) (:comms @state/debug-state) true))
 
 (defn add-css-link [path]
   (let [link (goog.dom/createDom "link"
@@ -337,7 +335,7 @@
         instrument? (get-in @state [:render-context :instrument])
         ab-tests (get-ab-tests (:ab-test-definitions @state))]
     ;; globally define the state so that we can get to it for debugging
-    (set! debug-state state)
+    (set! state/debug-state state)
     (when instrument?
       (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
