@@ -1,8 +1,9 @@
 #add-projects {
 
   .overview {
-    vertical-align: top;
+    vertical-align: middle;
     text-align: justify;
+    margin-right: 1ex;
     padding: 10px 0;
 
     @media only screen and (max-width: 960px) {
@@ -52,6 +53,7 @@
 
   .repo-filter {
     padding: 10px;
+    border-bottom: 1px solid @grayLightest;
 
     & > .material-icons {
       font-size: 1.2em;
@@ -99,6 +101,7 @@
   }
 
   .no-plan-empty-state {
+    margin-top: 2em;
     text-align: center;
 
     .title {
@@ -113,7 +116,7 @@
     }
 
     .bold {
-      font-weight: bold;
+      font-weight: 600;
     }
 
     .apple-logo {
@@ -169,6 +172,7 @@
     border-radius: 4px;
     border: 1px solid darken(@grayLightest, 5.7);
     margin-top: 10px;
+    background-color: #fff;
     .loading-spinner {
       margin: 1.5em auto;
     }
@@ -235,7 +239,7 @@
 
         font-size: @baseLineHeight;
         line-height: 24px;
-        font-weight: bold;
+        font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -274,7 +278,7 @@
     font-style: italic;
 
     > a {
-      font-weight: bold;
+      font-weight: 500;
     }
   }
 
@@ -290,7 +294,7 @@
       }
 
       .orgname {
-        font-weight: bold;
+        font-weight: 500;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -314,7 +318,7 @@
   .add-collabs,
   .add-you {
     color: @gray;
-    font-weight: bold;
+    font-weight: 600;
   }
 
   .wordy-hr {
@@ -359,13 +363,15 @@
       height: 3em;
       padding: 1em 0.5em 1em 1em;
 
-      &:first-child {
-        border-top: none;
-      }
       &:hover {
         background-color: darken(@whiten, 1);
         box-shadow: none;
       }
+
+      &:first-child {
+        border-top: none;
+      }
+
       .material-icons.lock {
         font-size: @fontSizeLarge;
         margin-right: .5ex;
@@ -487,9 +493,9 @@
     margin: 10px 20px 0 0;
   }
 
-  i.fa {
+  i {
     vertical-align: text-bottom;
-    opacity: .6;
+    opacity: 1;
     color: @grayLight;
   }
 
@@ -560,7 +566,7 @@
 
       .row.top {
         background-color: lighten(@grayLightest, 0.5);
-        font-weight: bold;
+        font-weight: 600;
 
         .cell {
           border-bottom: solid 1px @grayLighter;

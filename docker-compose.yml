@@ -1,12 +1,15 @@
-frontend:
-  build: .
-  ports:
-    - "3000:13000"
-    - "7888:17888"
-    - "3449:13449"
-    - "4443:14443"
-    - "4444:14444"
-  volumes:
-    - .:/frontend
-    - ~/.m2:/root/.m2
-    - ~/.ssl:/etc/ssl/private
+version: '2'
+services:
+  frontend:
+    build: .
+    ports:
+      - "3000:13000"
+      - "7888:17888"
+      - "8230:18230"
+      - "3449:13449"
+      - "4443:14443"
+      - "4444:14444"
+    volumes:
+      - .:/frontend
+      - ~/.m2:/root/.m2
+      - ~/.ssl:/etc/ssl/private

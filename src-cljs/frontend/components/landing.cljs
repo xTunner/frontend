@@ -157,6 +157,7 @@
            (str (common/sign-up-text))]
           [:a.home-action
            {:href  (auth-url :destination "/")
+            :role "button"
             :on-click #(raise! owner  [:track-external-link-clicked
                                        {:event "oauth_authorize_click"
                                         :properties  {"oauth_provider" "github"}

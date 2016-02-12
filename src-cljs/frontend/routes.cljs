@@ -225,6 +225,9 @@
       (open-to-inner! nav-ch :dashboard params)
       (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
+  (defroute v1-dashboard "/dashboard" {:as params}
+    (open-to-inner! nav-ch :dashboard params))
+
   (defroute v1-home "/home" {:as params}
     (open-to-outer! nav-ch :landing (assoc params :_canonical "/")))
 

@@ -153,16 +153,16 @@
   background-image: radial-gradient(ellipse at center, @joined);
 }
 
-.font-face(@font, @weight, @style: normal){
-  @font-face{
-    font-family: @font;
-    src:url('../../webfonts/@{font}@{weight}.eot');
-    src:url('../../webfonts/@{font}@{weight}.eot?#iefix') format('embedded-opentype'),
-        url('../../webfonts/@{font}@{weight}.woff') format('woff'),
-        url('../../webfonts/@{font}@{weight}.ttf') format('truetype'),
-        url('../../webfonts/@{font}@{weight}.svg#icon') format('svg');
-    font-weight: @weight;
-    font-style: @style;
+.font-face(@font-filename, @font-family, @font-weight, @font-style: normal){
+  @font-face {
+    font-family: @font-family;
+    src:url('../../webfonts/@{font-filename}.eot');
+    src:url('../../webfonts/@{font-filename}.eot?#iefix') format('embedded-opentype'),
+        url('../../webfonts/@{font-filename}.woff') format('woff'),
+        url('../../webfonts/@{font-filename}.ttf') format('truetype'),
+        url('../../webfonts/@{font-filename}.svg#icon') format('svg');
+    font-weight: @font-weight;
+    font-style: @font-style;
   }
 }
 
@@ -241,12 +241,12 @@
 }
 
 .fancy-select(@arrow-margin: 4px; // Margin between the selector text and the arrow.
-              @color: @grayDark ) {
+              @color: @grayDarker ) {
   // Width of the arrow itself.
-  @arrow-width: 11px;
+  @arrow-width: 12px;
 
   // Space to the right of the arrow that's still clickable.
-  @extra-click-target: 5px;
+  @extra-click-target: 10px;
 
   margin: 0;
   padding-right: @arrow-margin + @arrow-width + @extra-click-target;
@@ -262,6 +262,10 @@
   background-color: transparent;
 
   cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .fancy-radio() {

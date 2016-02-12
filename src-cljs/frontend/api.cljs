@@ -13,11 +13,17 @@
                          :reponame :repo
                          :default_branch :branch})
 
-(defn project-build-id [project]
-  "Takes project hash and filter down to keys that identify the build."
-  (-> project
-      (set/rename-keys build-keys-mapping)
-      (select-keys (vals build-keys-mapping))))
+(defn project-build-id
+  "Takes project hash and filter down to keys that identify the build.
+
+Use OVERRIDES hash if specified."
+  ([project overrides]
+   (-> project
+       (set/rename-keys build-keys-mapping)
+       (merge overrides)
+       (select-keys (vals build-keys-mapping))))
+  ([project]
+   (project-build-id project {})))
 
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))

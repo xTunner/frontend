@@ -247,8 +247,7 @@
       (assoc :navigation-point navigation-point
              :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
-      (assoc-in state/crumbs-path [{:type :build-insights}
-                                   {:type :insights-repositories}])))
+      (assoc-in state/crumbs-path [{:type :build-insights}])))
 
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
@@ -260,17 +259,20 @@
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :project-insights
-  [history-imp navigation-point {:keys [org repo] :as args} state]
+  [history-imp navigation-point {:keys [org repo branch] :as args} state]
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}
-                                   {:type :insights-repositories}
                                    {:type :org
                                     :username org}
                                    {:type :project
                                     :username org
+                                    :project repo}
+                                   {:type :project-branch
+                                    :username org
+                                    :branch branch
                                     :project repo}])))
 
 (defmethod post-navigated-to! :project-insights

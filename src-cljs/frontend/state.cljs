@@ -1,5 +1,7 @@
 (ns frontend.state)
 
+(def debug-state)
+
 (defn initial-state []
   {:error-message nil
    :general-message nil
@@ -150,7 +152,7 @@
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
 (def org-plan-path (conj org-data-path :plan))
-(def org-osx-beta-path (conj org-data-path :osx_builds_enabled?))
+(def org-osx-enabled-path (conj org-data-path :osx_builds_enabled?))
 (def org-plan-balance-path (conj org-plan-path :account_balance))
 (def stripe-card-path (conj org-data-path :card))
 (def org-users-path (conj org-data-path :users))
@@ -186,6 +188,7 @@
 (defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 (def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
+(def logging-enabled-path (conj browser-settings-path :logging-enabled))
 
 (def add-projects-settings-path (conj settings-path :add-projects))
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
