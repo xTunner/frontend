@@ -156,12 +156,12 @@
                             :on-mouse-up #(analytics/track-signup-click {:view source})})
            (str (common/sign-up-text))]
           [:a.home-action
-           {:href  (auth-url :destination "/")
+           {:href  (auth-url :destination "/dashboard")
             :role "button"
             :on-click #(raise! owner  [:track-external-link-clicked
                                        {:event "oauth_authorize_click"
                                         :properties  {"oauth_provider" "github"}
-                                        :path  (auth-url :destination "/")}])}
+                                        :path  (auth-url :destination "/dashboard")}])}
            (str (common/sign-up-text))])))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback
