@@ -3,7 +3,8 @@
     select {
       .fancy-select(@arrow-margin: 34px; @color: inherit);
 
-      max-width: 320px;
+      // We should probably set the width another way but for now it works
+      max-width: 140px;
       padding-right: 32px;
       direction: rtl;
 
@@ -11,6 +12,10 @@
       padding-top: 6px;
       padding-bottom: 6px;
       padding-left: 10px;
+
+      &:invalid {
+        color: @grayLight;
+      }
 
       option {
         .text-overflow();

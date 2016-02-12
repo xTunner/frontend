@@ -162,11 +162,22 @@
         {:keys [branches] :as project} (some->> projects
                                                 (filter #(and (= (:reponame %) (:repo navigation-data))
                                                               (= (:username %) (:org navigation-data))))
-                                                first)]
+                                                first)
+        other-branches (->> branches
+                            keys
+                            (map name)
+                            (remove (partial = selected-branch))
+                            sort)]
     (html
      [:.insights-branch-picker
       [:select {:name "insights-branch-picker"
+                :required true
                 :on-change #(raise! owner [:project-insights-branch-changed {:new-branch (.. % -target -value)}])
-                :value selected-branch}
-       (for [branch-name (sort (keys branches))]
-         [:option {:value branch-name} branch-name])]])))
+                :value ""}
+       (cons
+        [:option {:value ""
+                  :disabled true
+                  :hidden true}
+         "Change branch"]
+        (for [branch-name other-branches]
+          [:option {:value branch-name} branch-name]))]])))
