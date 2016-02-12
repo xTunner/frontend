@@ -777,13 +777,92 @@
     }
   }
 
+  [data-component="frontend.components.project-settings/p12-key-table"] {
+    margin-top: 10px;
+    width: 100%;
+
+    .head {
+      font-size: @fontSizeSmallish;
+      color: @secondary-button-color;
+      border-bottom: 1px solid @grayLighter;
+
+      tr {
+        height: 30px;
+      }
+
+      th {
+        padding-left: 10px;
+      }
+
+      .id-col {
+        width: 300px;
+      }
+
+      .filename-col {
+        width: 150px;
+      }
+
+      .uploaded-col {
+        width: 100px;
+      }
+
+      .delete-col {
+        width: 50px;
+      }
+    }
+
+    .body {
+
+    }
+  }
+
+  [data-component="frontend.components.project-settings/p12-key-row"] {
+    height: 30px;
+    font-size: @fontSizeSmallish;
+    color: @secondary-button-color;
+    border-top: 1px solid @grayLighter;
+    border-bottom: 1px solid @grayLighter;
+
+    td {
+      padding-left: 10px;
+    }
+
+    &:hover {
+      background: @table-alt-row-background;
+    }
+
+    .delete {
+      cursor: pointer;
+      color: @grayLighter;
+
+      &:hover {
+        color: @gray;
+      }
+    }
+  }
+
   [data-component="frontend.components.project-settings/code-signing"] {
+    background: @white;
+    padding: 15px;
+    margin-top: 15px;
+    margin-right: 15px;
+    margin-left: 15px;
+
     .header {
       .flexy(row, space-between);
     }
 
+    .divider {
+      margin-left: -15px;
+      margin-right: -15px;
+    }
+
     .title {
       font-size: @fontSizeLarge;
+    }
+
+    .info {
+      font-size: @fontSizeSmallish;
     }
 
     .upload-key-button {
@@ -797,10 +876,6 @@
         background: @primary-button-hover-background;
       }
     }
-
-  }
-
-  [data-component="frontend.components.project-settings/p12-key"] {
   }
 
   [data-component="frontend.components.project-settings/p12-upload-form"] {

@@ -1400,18 +1400,33 @@
                                                                        :on-success (comp clear-form-fn close-modal-fn)}]))}])]])))))
 
 
-(defn p12-key [{:keys [project-name id filename description uploaded_at]} owner]
+(defn p12-key-row [{:keys [project-name id filename description uploaded_at]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         (when-not (empty? id)
-          [:tr {:data-component `p12-key}
+          [:tr {:data-component `p12-key-row}
            [:td description]
            [:td filename]
            [:td id]
            [:td (datetime/as-time-since uploaded_at)]
-           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.material-icons "cancel"]]])))))
+           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.delete.material-icons "cancel"]]])))))
+
+(defn p12-key-table [{:keys [rows]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:table {:data-component `p12-key-table}
+         [:thead.head
+          [:tr
+           [:th "Description"]
+           [:th.filename-col "Filename"]
+           [:th.id-col "ID"]
+           [:th.uploaded-col "Uploaded"]
+           [:th.delete-col]]]
+         [:tbody.body (om/build-all p12-key-row rows)]]))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
@@ -1427,21 +1442,14 @@
              [:a.btn.upload-key-button {:data-target "#p12-upload-modal"
                                         :data-toggle "modal"}
               "Upload Key"]]
-            [:hr]
-            [:div "Something about apple code signing keys could go here..."]
-            [:div.key-list
-             [:table.table
-              [:thead
-               [:tr
-                [:th "Description"]
-                [:th "Filename"]
-                [:th "ID"]
-                [:th "Uploaded"]
-                [:th]]]
-              [:tbody
-               (->> osx-keys
-                    (map (partial merge {:project-name project-name}))
-                    (om/build-all p12-key))]]]
+            [:hr.divider]
+            [:div.info "The following code-signing identities will be added to the system keychain when your build
+                        begins, and will be available to sign iOS and OSX apps. For more information about code-signing
+                        on CircleCI see the "
+             [:a "code-signing section of the docs."]]
+            [:div
+             (om/build p12-key-table {:rows (->> osx-keys
+                                                 (map (partial merge {:project-name project-name})))})]
             (om/build modal {:id "p12-upload-modal"
                              :title "Upload a New Apple Code Signing Key"
                              :body-component p12-upload-form
