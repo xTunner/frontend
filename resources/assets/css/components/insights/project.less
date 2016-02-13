@@ -1,6 +1,59 @@
 [data-component="frontend.components.insights.project/build-status-bar-chart-hovercard"] {
-  float: left;
-  background: #ccc;
+  .flexy(column);
+
+  min-width: 120px;
+  max-width: 180px;
+  padding: 10px;
+  empty-cells: show;
+  border-spacing: 0;
+  border-collapse: initial;
+  opacity: .9;
+  background-color: @grayDark;
+  box-shadow: none;
+
+  @build-padding: 6px;
+  @build-item-inner-border: 1px solid rgba(255, 255, 255, 0.1);
+  .metadata-row {
+    .flexy(column, flex-end);
+
+    padding-left: @build-padding;
+    padding-right: @build-padding;
+
+    .metadata-item {
+      .flex(1 0 auto);
+
+      padding-top: 5px;
+      padding-bottom: 5px;
+
+      .text-overflow();
+
+      font-size: @fontSizeSmall;
+      color: @grayLightest;
+
+      &:first-of-type {
+        padding-top: 0;
+      }
+
+      &:last-of-type {
+        padding-bottom: 0;
+      }
+
+      span {
+        vertical-align: middle;
+        // font-family: @monoFontFamilyV2;
+      }
+
+      i {
+        font-size: @fontSizeLarge;
+        height: 19px; // magic number to make all the things the same height
+        margin-right: 6px;
+        margin-left: 0;
+        padding-top: 1px;
+        vertical-align: bottom;
+        color: @grayLight;
+      }
+    }
+  }
 }
 
 [data-component="frontend.components.insights.project/build-status-bar-chart"] {

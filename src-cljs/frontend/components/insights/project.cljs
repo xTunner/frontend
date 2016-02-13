@@ -89,21 +89,29 @@
 (s/defn build-status-bar-chart-hovercard [build :- insights/BarChartableBuild]
   (html
    [:div {:data-component `build-status-bar-chart-hovercard}
-    [:dl
-     [:dt "Build #"]
-     [:dd (:build_num build)]
-     [:dt "Start Time"]
-     [:dd
+
+   [:div.metadata
+    [:div.metadata-row
+     [:div.metadata-item.outcome
+      [:i.material-icons "radio_button_checked"]
+      (:outcome build)]
+     [:div.metadata-item.recent-time.start-time
+      [:i.material-icons "today"]
       (om/build common/updating-duration
-                {:start (:start_time build)}
-                {:opts {:formatter datetime/time-ago-abbreviated}})
-      " ago"]
-     [:dt "Duration"]
-     [:dd (first (datetime/millis-to-float-duration (:build_time_millis build)))]
-     [:dt "Queue Time"]
-     [:dd (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
-     [:dt "Outcome"]
-     [:dd (:outcome build)]]]))
+               {:start (:start_time build)}
+               {:opts {:formatter datetime/time-ago-abbreviated}}) " ago"]
+     [:div.metadata-item.recent-time.duration
+      [:i.material-icons "timer"]
+      (first (datetime/millis-to-float-duration (:build_time_millis build)))]
+     [:div.metadata-item.recent-time.queue-time
+      [:i.material-icons "av_timer"]
+      (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
+     [:div.metadata-item.build-number
+      [:i.material-icons "storage"]
+      (:build_num build)]
+     [:div.metadata-item.triggered-by
+      [:i.material-icons "person"]
+      [:span "Peter Jaros"]]]]]))
 
 (defn build-status-bar-chart [{:keys [plot-info builds]} owner]
   (reify
