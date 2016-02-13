@@ -213,11 +213,7 @@
     ;; top bars enter and update
     (-> bars-join
         (.select ".top")
-        (.attr #js {"xlink:href" build-timing-url
-                    "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "build_time_millis"))]
-                                     (gstring/format "%s in %s"
-                                                     (gstring/toTitleCase (unexterned-prop % "outcome"))
-                                                     duration-str))})
+        (.attr #js {"xlink:href" build-timing-url})
         (.on #js {"click" #(analytics/track-insights-bar-click {:current-url js/window.location.href
                                                                        :build-url (unexterned-prop % "build_url")})})
         (.select "rect.bar")
@@ -230,9 +226,7 @@
     ;; bottom bar enter and update
     (-> bars-join
         (.select ".bottom")
-        (.attr #js {"xlink:href" build-timing-url
-                    "xlink:title" #(let [duration-str (datetime/as-duration (unexterned-prop % "queued_time_millis"))]
-                                     (gstring/format "Queue time %s" duration-str))})
+        (.attr #js {"xlink:href" build-timing-url})
         (.select "rect.bar")
         (.attr #js {"y" y-zero
                     "x" #(x-scale (unexterned-prop % "build_num"))
