@@ -178,30 +178,32 @@ Use OVERRIDES hash if specified."
              api-ch
              :params {:admin scope}))
 
-(defn get-code-signing-keys [org-name api-ch]
+(defn get-project-code-signing-keys [project-name api-ch]
   (ajax/ajax :get
-             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys" org-name)
+             (gstring/format "/api/v1/project/%s/code-signing/osx-keys" project-name)
              :get-code-signing-keys
              api-ch
-             :context {:org-name org-name}))
+             :context {:project-name project-name}))
 
-(defn set-code-signing-keys [org-name file-content file-name password description api-ch uuid]
+(defn set-project-code-signing-keys [project-name file-content file-name password description api-ch uuid on-success]
   (ajax/ajax :post
-             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys" org-name)
+             (gstring/format "/api/v1/project/%s/code-signing/osx-keys" project-name)
              :set-code-signing-keys
              api-ch
              :params {:file-content file-content
                       :file-name file-name
                       :password password
                       :description description}
-             :context {:org-name org-name
-                       :uuid uuid}))
+             :context {:project-name project-name
+                       :uuid uuid
+                       :on-success on-success}))
 
-(defn delete-code-signing-key [org-name id api-ch uuid]
+(defn delete-project-code-signing-key [project-name id api-ch uuid]
   (ajax/ajax :delete
-             (gstring/format "/api/v1/organization/%s/code-signing/osx-keys/%s" org-name id)
+             (gstring/format "/api/v1/project/%s/code-signing/osx-keys/%s" project-name id)
              :delete-code-signing-key
              api-ch
-             :context {:id id
+             :context {:project-name project-name
+                       :id id
                        :uuid uuid}))
 

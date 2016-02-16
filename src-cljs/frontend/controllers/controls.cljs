@@ -1319,18 +1319,16 @@
   (assoc-in state state/statuspage-dismissed-update-path last-update))
 
 (defmethod post-control-event! :upload-p12
-  [_ _ {:keys [file-content file-name password description]} previous-state current-state]
+  [_ _ {:keys [project-name file-content file-name password description on-success]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
-        org-name (get-in current-state [:navigation-data :org])
         api-ch (get-in current-state [:comms :api])]
-    (api/set-code-signing-keys org-name file-content file-name password description api-ch uuid)))
+    (api/set-project-code-signing-keys project-name file-content file-name password description api-ch uuid on-success)))
 
 (defmethod post-control-event! :delete-p12
-  [_ _ {:keys [id]} previous-state current-state]
+  [_ _ {:keys [project-name id]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
-        org-name (get-in current-state [:navigation-data :org])
         api-ch (get-in current-state [:comms :api])]
-    (api/delete-code-signing-key org-name id api-ch uuid)))
+    (api/delete-project-code-signing-key project-name id api-ch uuid)))
 
 (defmethod post-control-event! :project-insights-branch-changed
   [target message {:keys [new-branch]} _ current-state]

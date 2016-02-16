@@ -114,6 +114,7 @@
 (def project-path (conj project-data-path :project))
 (def project-scopes-path (conj project-data-path :project-scopes))
 (def page-scopes-path [:page-scopes])
+(def project-osx-keys-path (conj project-data-path :osx-keys))
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
@@ -168,7 +169,6 @@
 ;; Map of reason to boolean (selected or not selected)
 (defn selected-cancel-reason-path [reason] (conj selected-cancel-reasons-path reason))
 (def cancel-notes-path (conj org-data-path :cancel-notes))
-(def osx-keys-path (conj org-data-path :osx-keys))
 
 (def settings-path [:settings])
 

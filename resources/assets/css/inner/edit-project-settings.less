@@ -92,6 +92,8 @@
   }
 
   #subpage {
+    width: 100%;
+
     label:not([placeholder]) {
       display: inline-block;
       [type="checkbox"] {
@@ -104,6 +106,10 @@
         padding: 1em 0;
       }
     }
+  }
+
+  .overview {
+    width: 70%;
   }
 
   // Overview Page
@@ -611,6 +617,10 @@
     }
   }
 
+  .status-page {
+    width: 45%;
+  }
+
   .circle-api-page-inner, .status-page-inner {
     margin: 2em 0;
     .popover {
@@ -643,6 +653,10 @@
   }
 
   // Heroku Page
+  .heroku-api {
+    width: 40%;
+  }
+
   .heroku-step {
     margin-bottom: 3em;
     h4 {
@@ -712,30 +726,243 @@
     }
   }
 
-  .code-signing-page {
-    .drag-and-drop-zone {
-      border: 2px dashed @gray;
-      border-radius: 1.5em;
+  [data-component="frontend.components.project-settings/modal"] {
+    .modal-header {
+      .flexy(row, space-between);
+      margin-bottom: 15px;
+      background: @grayLightest;
+    }
+
+    .modal-title {
+      font-size: @fontSizeLarger;
+    }
+
+    .modal-close {
+      padding-top: 5px;
+      font-size: @fontSizeLarger;
+      cursor: pointer;
+    }
+
+    .modal-content {
+      border-radius: 0;
+      min-height: 500px;
+    }
+
+    .modal-dialog {
+      margin-top: 0;
+      width: 695px;
+    }
+  }
+
+  [data-component="frontend.components.project-settings/p12-key-table"] {
+    margin-top: 10px;
+    width: 100%;
+
+    .head {
+      font-size: @fontSizeSmallish;
+      color: @secondary-button-color;
+      border-bottom: 1px solid @grayLighter;
+
+      tr {
+        height: 30px;
+      }
+
+      th {
+        padding-left: 10px;
+      }
+
+      .id-col {
+        width: 350px;
+      }
+
+      .filename-col {
+        width: 250px;
+      }
+
+      .uploaded-col {
+        width: 100px;
+      }
+
+      .delete-col {
+        width: 50px;
+      }
+    }
+  }
+
+  [data-component="frontend.components.project-settings/p12-key-row"] {
+    height: 30px;
+    font-size: @fontSizeSmallish;
+    color: @secondary-button-color;
+    border-top: 1px solid @grayLighter;
+    border-bottom: 1px solid @grayLighter;
+
+    td {
+      padding-left: 10px;
+    }
+
+    &:hover {
+      background: @table-alt-row-background;
+    }
+
+    .delete {
+      cursor: pointer;
+      color: @grayLighter;
+
+      &:hover {
+        color: @gray;
+      }
+    }
+  }
+
+  [data-component="frontend.components.project-settings/code-signing"] {
+    background: @white;
+    padding: 15px;
+    margin-top: 15px;
+    margin-right: 15px;
+    margin-left: 15px;
+
+    .header {
+      .flexy(row, space-between);
+    }
+
+    .divider {
+      margin-left: -15px;
+      margin-right: -15px;
+    }
+
+    .title {
+      font-size: @fontSizeLarge;
+    }
+
+    .info {
+      font-size: @fontSizeSmallish;
+    }
+
+    .upload-key-button {
+      min-width: 160px;
+      color: @white;
+      background: @primary-button-background;
+      border: 1px solid @button-border;
+      border-radius: 3px;
+
+      &:hover {
+        background: @primary-button-hover-background;
+      }
+    }
+  }
+
+  [data-component="frontend.components.project-settings/no-keys-empty-state"] {
+    .flexy(center, center, column);
+    margin-top: 30px;
+
+    .octicon-key {
+      font-size: 60px;
+      color: @grayLighter;
+    }
+
+    .info {
+      margin-top: 15px;
+      margin-bottom: 15px;
+
+      font-size: @fontSizeMedium;
+
+      .highlight {
+        font-weight: bold;
+      }
+    }
+
+    .sub-info {
+      margin-top: 15px;
+      font-size: @fontSizeSmallish;
+    }
+  }
+
+  [data-component="frontend.components.project-settings/p12-upload-form"] {
+    .label {
+      padding: 0px;
+      margin-bottom: 5px;
+      font-size: @fontSizeSmall;
+      color: @build-card-title;
+    }
+
+    .text-input {
+      width: 100%;
+      height: 30px;
+      border: 1px solid @input-border-blue;
+      font-size: @fontSizeSmall;
+      color: @secondary-button-color;
+      margin-bottom: 25px;
+      padding-left: 10px;
+
+      &:focus {
+        border: 1px solid @input-border-focus-blue;
+        box-shadow: 0 0 4px @input-border-focus-blue;
+        outline: none;
+      }
+    }
+
+    .drag-and-drop-area {
+      width: 100%;
+      height: 90px;
+      padding-top: 15px;
+      margin-bottom: 100px;
+      border: 1px dashed @input-border-blue;
+      text-align: center;
+    }
+
+    .dragged-over {
+      border: 1px dashed @input-border-focus-blue;
+      box-shadow: 0 0 4px @input-border-focus-blue;
+      outline: none;
+    }
+
+    .hidden-p12-file-input {
+      display: none;
     }
 
     .p12-file-input {
-      padding: 25px 95px 25px 170px;
+      min-width: 160px;
+      min-height: 30px;
+      margin-top: 12px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      padding-right: 15px;
+      color: @secondary-button-color;
+      background: @secondary-button-background;
+      border: 1px solid @button-border;
+      border-radius: 3px;
+      font-weight: 300;
+      cursor: pointer;
+      text-align: center;
+
+      &:hover {
+        background: @secondary-button-hover-background;
+      }
     }
 
     .buttons {
       margin-top: 10px;
-    }
-
-    input {
-      &[type="submit"] {
-        .circleButton();
-      }
+      text-align: right;
     }
 
     .upload {
-      background: @white;
-      border-radius: 1.5em;
-      padding: 2px 10px 10px 10px;
+      min-width: 160px;
+      min-height: 35px;
+      color: @white;
+      background: @primary-button-background;
+      border: 1px solid @button-border;
+      border-radius: 3px;
+
+      &:hover {
+        background: @primary-button-hover-background;
+      }
+
+      &:disabled {
+        background: @primary-button-disabled-background;
+        color: @brand-gray-v2;
+        text-shadow: 0 1px 0 @white;
+        border: 1px solid @grayLighter;
+      }
     }
   }
 }
