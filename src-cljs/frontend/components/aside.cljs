@@ -82,7 +82,9 @@
     [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type (:vcs_type project)
                                                                        :org (:username project)
                                                                        :repo (:reponame project)})
-                               :title (project-model/project-name (:vcs_url project))
+                               :title  (str
+                                         (project-model/project-name project)
+                                         " settings")
                                :on-click #(analytics/track "branch-list-project-settings-clicked")}
      [:i.material-icons "settings"]]))
 
