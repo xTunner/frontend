@@ -21,11 +21,6 @@
     vcs-type
     (vcs-url/vcs-type (:vcs_url project))))
 
-(defn path-for [project & [branch]]
-  (str "/" (-> project vcs-type routes/->short-vcs) "/" project-name project)
-       (when branch
-         (str "/tree/" (gstring/urlEncode branch))))
-
 (defn settings-path [project]
   (str "/" (-> project vcs-type routes/->short-vcs) "/" (vcs-url/project-name project) "/edit"))
 
