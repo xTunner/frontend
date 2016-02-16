@@ -104,18 +104,18 @@
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
         {:keys [branches parallel] :as project} (some->> projects
-                                                                                  (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                                                                (= (:username %) (:org navigation-data))))
-                                                                                  first)
+                                                         (filter #(and (= (:reponame %) (:repo navigation-data))
+                                                                       (= (:username %) (:org navigation-data))))
+                                                         first)
         chartable-builds (some->> (get (:recent-builds project) (:branch navigation-data))
                                   (filter insights/build-chartable?))
         bar-chart-builds (->> chartable-builds
                               (take (:max-bars build-time-bar-chart-plot-info))
                               (map insights/add-queued-time))]
     (html
-     (if (nil? chartable-builds)
-       ;; Loading...
-       [:div.loading-spinner-big common/spinner]
+      (if (nil? chartable-builds)
+        ;; Loading...
+        [:div.loading-spinner-big common/spinner]
 
        ;; We have data to show.
        [:div.insights-project
@@ -145,7 +145,8 @@
             [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-subpage {:org (:username project)
                                                                                    :repo (:reponame project)
                                                                                    :subpage "parallel-builds"})
-                                        :on-click #(analytics/track-insights-project-parallelism-click {:navigation-data navigation-data})}
+                                        :on-click #(analytics/track {:event-type :parallelism-clicked
+                                                                     :owner owner})}
              [:i.material-icons "tune"]]]]]]
         [:div.card
          [:div.card-header

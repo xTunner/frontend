@@ -176,6 +176,8 @@
 (def projects-path [:projects])
 
 (def inner?-path [:navigation-data :inner?])
+(def navigation-repo-path [:navigation-data :repo])
+(def navigation-org-path [:navigation-data :org])
 
 (def instrumentation-path [:instrumentation])
 

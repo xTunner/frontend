@@ -6,7 +6,7 @@
 
 (defn track-pageview [navigation-point & [properties]]
   (utils/swallow-errors
-    (js/analytics.page (name navigation-point))))
+    (js/analytics.page (name navigation-point) (clj->js properties))))
 
 (defn track-event [event & [properties]]
   (utils/swallow-errors

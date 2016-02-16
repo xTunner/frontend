@@ -186,7 +186,7 @@
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
             (analytics/track {:event-type :view-build
-                              :user current-user
+                              :current-state current-state
                               :build build}))
           ;; Preemptively make the usage-queued API call if the build is in the
           ;; usage queue and the user has access to the info

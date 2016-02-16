@@ -331,6 +331,4 @@
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
       (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user @state)]
-      (subscribe-to-user-channel user (get-in @state [:comms :ws]))
-      (analytics/track {:event-type :init-user
-                        :login (:login user)}))))
+      (subscribe-to-user-channel user (get-in @state [:comms :ws])))))
