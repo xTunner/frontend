@@ -4,7 +4,7 @@
             [frontend.analytics.segment :as segment]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
-            [frontend.utils :refer [log-in-dev]]
+            [frontend.utils :refer [mwarn]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
@@ -133,8 +133,8 @@
 
 (defmethod track :default [data]
   (if (frontend.config/analytics-enabled?)
-    (log-in-dev "Cannot log unsupported event type " (name (:event-type data))", please add it to the list of supported events")
-    (log-in-dev "Analytics are currently not enabled")))
+    (mwarn "Cannot log unsupported event type" (:event-type data) ", please add it to the list of supported events")
+    (mwarn "Analytics are currently not enabled")))
 
 (s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
