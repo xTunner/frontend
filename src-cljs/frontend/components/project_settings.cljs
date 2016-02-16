@@ -639,6 +639,8 @@
          [:section
           [:article
            [:h2 "Chatroom Integrations"]
+           [:p "If you want to control chat notifications on a per branch basis, "
+                                          [:a {:href "https://circleci.com/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
            [:div.chat-rooms
             (for [chat-spec [{:service "Slack"
                               :doc [:p "To get your Webhook URL, visit Slack's "
