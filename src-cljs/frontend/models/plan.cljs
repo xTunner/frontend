@@ -28,7 +28,10 @@
 (defn osx? [plan]
   (boolean (:osx plan)))
 
-(defn osx-trial? [plan]
+(defn osx-trial-plan? [plan]
+  (= "osx-trial" (-> plan :osx :template :id)))
+
+(defn osx-trial-active? [plan]
   (and (osx? plan)
        (some-> plan :osx_trial_active)))
 
