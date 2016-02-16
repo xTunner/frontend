@@ -245,7 +245,7 @@
             plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
             loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
         (html
-          (if (pm/osx? plan)
+          (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
             (if plan-selected?
               [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
               (forms/managed-button
@@ -1023,7 +1023,7 @@
                     plan-start (some-> plan :osx_plan_started_on)
                     trial-end (some-> plan :osx_trial_end_date)]
                 [:p
-                 (if (pm/osx-trial? plan)
+                 (if (pm/osx-trial-active? plan)
                    (gstring/format "You're currently on the iOS trial for %d more days. "
                                    (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
                    (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
