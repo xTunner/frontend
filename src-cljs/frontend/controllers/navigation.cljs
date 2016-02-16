@@ -285,7 +285,8 @@
                                    {:type :project-branch
                                     :username org
                                     :branch branch
-                                    :project repo}])))
+                                    :project repo
+                                    :vcs_type vcs_type}])))
 
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point args previous-state current-state]
