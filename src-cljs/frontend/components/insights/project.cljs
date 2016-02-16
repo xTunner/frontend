@@ -104,7 +104,7 @@
       [:i.material-icons "timer"]
       (first (datetime/millis-to-float-duration (:build_time_millis build)))]
      [:div.metadata-item.recent-time.queue-time
-      [:i.material-icons "av_timer"]
+      [:i.material-icons "hourglass_empty"]
       (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
      [:div.metadata-item.build-number
       [:i.material-icons "storage"]
