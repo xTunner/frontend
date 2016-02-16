@@ -289,8 +289,8 @@
          [:div.info
           "Select a plan to build your iOS projects now."]
          [:div.buttons
-          [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-subpage {:org selected-org-login
-                                                                           :subpage "containers"})}
+          [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org selected-org-login
+                                                                        :_fragment "containers"})}
            "Select Plan"]
           (managed-button
             [:a.btn.trial {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
