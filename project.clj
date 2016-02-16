@@ -30,6 +30,8 @@
                  [sablono "0.3.6"]
                  [secretary "1.2.2"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
+                 [prismatic/schema "1.0.4"]
+                 [devcards "0.2.1-6"]
 
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
@@ -88,7 +90,6 @@
                                                :output-dir "resources/public/cljs/whitespace"
                                                :optimizations :whitespace
                                                :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
-
                        :test {:source-paths ["src-cljs" "test-cljs"]
                               :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                          :output-dir "resources/public/cljs/test"
@@ -110,6 +111,7 @@
                                                :output-to "resources/public/cljs/production/frontend.js"
                                                :output-dir "resources/public/cljs/production"
                                                :optimizations :advanced
+                                               :closure-defines {frontend.config/DEV false}
                                                :externs ["src-cljs/js/pusher-externs.js"
                                                          "src-cljs/js/ci-externs.js"
                                                          "src-cljs/js/analytics-externs.js"
@@ -131,4 +133,22 @@
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
                    :dependencies [[figwheel-sidecar "0.5.0-2"]
                                   [com.cemerick/piggieback "0.2.1"]
-                                  [org.clojure/tools.nrepl "0.2.12"]]}})
+                                  [org.clojure/tools.nrepl "0.2.12"]]}
+
+             ;; Devcards require React 0.14, and therefore Om 1.0. Until that's
+             ;; production-ready and released, we can use the alpha in a
+             ;; separate profile.
+             :devcards {:dependencies [[org.omcljs/om "1.0.0-alpha30"]
+                                       [cljsjs/react-with-addons "0.14.3-0"]
+                                       [cljsjs/react-dom "0.14.3-1"]]
+                        :figwheel ^:replace {:server-port 3450
+                                             :css-dirs ["resources/assets/css"]}
+                        :cljsbuild {:builds {:devcards {:source-paths ["src-cljs" "test-cljs"]
+                                                        :figwheel {:devcards true
+                                                                   :websocket-host "prod.circlehost"
+                                                                   :websocket-url "wss://prod.circlehost:4445/figwheel-ws"}
+                                                        :compiler {:main "frontend.core"
+                                                                   :asset-path "cljs/devcards-out"
+                                                                   :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
+                                                                   :output-dir "resources/public/cljs/devcards-out"
+                                                                   :optimizations :none}}}}}})

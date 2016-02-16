@@ -7,6 +7,13 @@
   []
   (aget js/window "renderContext" "env"))
 
+(goog-define DEV true)
+;; Type-hinting this as a boolean means that code inside (when client-dev? ...)
+;; is elided in production builds.
+(def ^boolean client-dev?
+  "Was the client compiled in dev-mode?"
+  DEV)
+
 (defn enterprise?
   "True if this is an enterprise (as opposed to main public web) deployment."
   []

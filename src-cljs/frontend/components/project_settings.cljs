@@ -26,8 +26,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [goog.crypt.base64 :as base64]
-            [frontend.datetime :as datetime]
-            [frontend.models.feature :as feature])
+            [frontend.datetime :as datetime])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
@@ -234,6 +233,69 @@
            (list (parallelism-picker project-data owner)
                  (project-common/mini-parallelism-faq project-data)))]]))))
 
+(defn result-box
+  [{:keys [success? message result-path]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.flash-error-wrapper.row-fluid
+         [:div.offset1.span10
+          [:div.alert.alert-block {:class (if success?
+                                            "alert-success"
+                                            "alert-danger")}
+           [:a.close {:on-click #(raise! owner [:dismiss-result result-path])}
+            "x"]
+           message]]]))))
+
+(defn clear-cache-button
+  [cache-type project-data owner]
+  (forms/managed-button
+    [:button.btn.btn-primary
+     {:data-loading-text "Clearing cache..."
+      :data-success-text "Cleared"
+      :data-failure-text "Clearing failed"
+      :on-click #(raise! owner
+                         [:clear-cache
+                          {:type cache-type
+                           :project-id (-> project-data
+                                           :project
+                                           project-model/id)}])}
+     (case cache-type
+       "build" "Clear Dependency Cache"
+       "source" "Clear Source Cache")]))
+
+(defn clear-caches
+  [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:section
+         [:div.card.detailed
+          [:h4 "Dependency Cache"]
+          [:div.details
+           (when-let [res (-> project-data :build-cache-clear)]
+             (om/build result-box
+                       (assoc res
+                              :result-path
+                              (conj state/project-data-path :build-cache-clear))))
+           [:p "CircleCI saves a copy of your dependencies to prevent downloading them all on each build."]
+           [:p [:b "NOTE: "] "Clearing your dependency cache will cause the next build to completely recreate dependencies. In some cases this can add considerable time to that build.  Also, you may need to ensure that you have no running builds when using this to prevent the old cache from being resaved."]
+           [:hr]
+           (clear-cache-button "build" project-data owner)]]
+         [:div.card.detailed
+          [:h4 "Source Cache"]
+          [:div.details
+           (when-let [res (-> project-data :source-cache-clear)]
+             (om/build result-box
+                       (assoc res
+                              :result-path
+                              (conj state/project-data-path :source-cache-clear))))
+           [:p "CircleCI saves a copy of your source code on our system and pulls only changes since the last build on each branch."]
+           [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build.  Doing this too frequently or when you have a large number of high parallelism builds also carries some risk of becoming rate-limited by GitHub, which will prevent your builds from being able to download source until the rate-limit expires.  Also, you may need to ensure that you have no running builds when using this to prevent the old cache from being resaved."]
+           [:hr]
+           (clear-cache-button "source" project-data owner)]]]))))
 
 (defn env-vars [project-data owner]
   (reify
@@ -1424,6 +1486,10 @@
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
                :experimental (om/build experiments project-data)
+               :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
+                                     (config/enterprise?))
+                               (om/build clear-caches project-data)
+                               (om/build overview project-data))
                :setup (om/build dependencies project-data)
                :tests (om/build tests project-data)
                :hooks (om/build notifications project-data)
