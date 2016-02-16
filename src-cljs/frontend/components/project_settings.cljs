@@ -380,6 +380,11 @@
                                    "If this option is selected, then CircleCI will run builds for this project "
                                    "on Mac OSX rather than Linux. Select this if you have an iOS application "
                                    "that you want to build using CircleCI."]})
+            (describe-flag {:flag :osx-code-signing-enabled
+                            :title "Code Signing Support"
+                            :blurb [:p
+                                    "Enable automatic importing of code-signing identities and provisioning "
+                                    "profiles into the system keychain to simplify the code-signing process."]})
 
            (when (feature/enabled? :enable-trusty-setting)
              (describe-flag {:flag :trusty-beta
