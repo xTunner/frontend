@@ -54,8 +54,9 @@
                               Math/floor) " minutes"]
                  "."]
                 [:div
-                 [:a {:href (routes/v1-org-settings-subpage {:org (:plan_org_name diagnostic)
-                                                             :subpage "containers"})
+                 [:a {:href (routes/v1-org-settings-path {:org (:plan_org_name diagnostic)
+                                                          :vcs_type (:vcs_type project)
+                                                          :_fragment "containers"})
                       :on-click #(analytics/track "build-diagnostics-add-more-containers-clicked")}
                   "Add More Containers"]]])]]))))))
 
@@ -96,7 +97,7 @@
                      (om/build project-common/trial-notice current-project)]]])
 
                 (when (plan-model/suspended? plan)
-                  (om/build project-common/suspended-notice plan))
+                  (om/build project-common/suspended-notice plan (:vcs_type project)))
 
                 (om/build builds-table/builds-table builds {:opts {:show-actions? true
                                                                    :show-branch? (not (:branch nav-data))

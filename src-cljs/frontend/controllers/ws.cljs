@@ -33,7 +33,8 @@
                  ;; Don't unsubscribe if the build takes a second to load
                  (when (= navigation-point :build)
                    [(pusher/build-channel-from-parts {:project-name (:project navigation-data)
-                                                      :build-num (:build-num navigation-data)})])))))
+                                                      :build-num (:build-num navigation-data)
+                                                      :vcs-type (:vcs_type build)})])))))
 
 (defn ignore-build-channel?
   "Returns true if we should ignore pusher updates for the given channel-name. This will be
@@ -165,6 +166,10 @@
                                                (fresh-channels current-state))]
     (utils/mlog "unsubscribing from " channel-name)
     (pusher/unsubscribe pusher-imp channel-name)))
+
+(defmethod post-ws-event! :subscription-error
+  [pusher-imp message {:keys [channel-name status]} _ _]
+  (utils/mlog "subscription-error " channel-name status))
 
 (defmethod post-ws-event! :refresh
   [pusher-imp message _ previous-state current-state]

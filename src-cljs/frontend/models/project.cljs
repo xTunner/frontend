@@ -4,20 +4,30 @@
             [goog.string :as gstring]
             [frontend.models.plan :as plan-model]
             [frontend.config :as config]
+            [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]))
 
 (defn project-name [project]
-  (->> (split (:vcs_url project) #"/")
-       (take-last 2)
-       (join "/")))
+  (let [username (:username project)
+        reponame (:reponame project)]
+    (if (and username reponame)
+      (str username "/" reponame)
+      (->> (split (:vcs_url project) #"/")
+           (take-last 2)
+           (join "/")))))
+
+(defn vcs-type [project]
+  (if-let [vcs-type (:vcs_type project)]
+    vcs-type
+    (vcs-url/vcs-type (:vcs_url project))))
 
 (defn path-for [project & [branch]]
-  (str "/gh/" (project-name project)
+  (str "/" (-> project vcs-type routes/->short-vcs) "/" project-name project)
        (when branch
-         (str "/tree/" (gstring/urlEncode branch)))))
+         (str "/tree/" (gstring/urlEncode branch))))
 
 (defn settings-path [project]
-  (str "/gh/" (project-name project) "/edit"))
+  (str "/" (-> project vcs-type routes/->short-vcs) "/" (vcs-url/project-name project) "/edit"))
 
 (defn default-branch? [branch-name project]
   (= (name branch-name) (:default_branch project)))
@@ -153,7 +163,7 @@
   (show-premium-content? project plan))
 
 (defn show-insights? [plans project]
-  (let [org-name (-> project 
+  (let [org-name (-> project
                      (:vcs_url)
                      (vcs-url/org-name))
         org-best-plan (->> plans

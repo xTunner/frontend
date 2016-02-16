@@ -134,7 +134,7 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [project-name build-num org repo tab] :as args} state]
+  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab] :as args} state]
   (mlog "navigated-to :build with args " args)
   (if (and (= :build (:navigation-point state))
            (not (state-utils/stale-current-build? state project-name build-num)))
@@ -149,11 +149,12 @@
                                        :show-settings-link? false)
                :project-settings-project-name project-name)
         (assoc-in state/crumbs-path [{:type :dashboard}
-                                     {:type :org :username org}
-                                     {:type :project :username org :project repo}
-                                     {:type :project-branch :username org :project repo}
+                                     {:type :org :username org :vcs_type vcs_type}
+                                     {:type :project :username org :project repo :vcs_type vcs_type}
+                                     {:type :project-branch :username org :project repo :vcs_type vcs_type}
                                      {:type :build :username org :project repo
-                                      :build-num build-num}])
+                                      :build-num build-num
+                                      :vcs_type vcs_type}])
         state-utils/reset-current-build
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
@@ -161,7 +162,7 @@
         (assoc-in state/build-header-tab-path tab))))
 
 (defmethod post-navigated-to! :build
-  [history-imp navigation-point {:keys [project-name build-num] :as args} previous-state current-state]
+  [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         ws-ch (get-in current-state [:comms :ws])
         nav-ch (get-in current-state [:comms :nav])
@@ -173,10 +174,16 @@
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (go (let [build-url (gstring/format "/api/v1/project/%s/%s" project-name build-num)
+    (go (let [build-url (gstring/format "/api/dangerzone/project/%s/%s/%s" vcs_type project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
-              scopes (:scopes api-result)]
+              scopes (:scopes api-result)
+              settings-url (case vcs_type
+                             "github" (gstring/format "/api/v1/project/%s/settings" project-name)
+                             "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/settings" vcs_type project-name))
+              plan-url (case vcs_type
+                         "github" (gstring/format "/api/v1/project/%s/plan" project-name)
+                         "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/plan" vcs_type project-name))]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           ;; Start 404'ing on non-existent builds, as well as when you
           ;; try to go to a build page of a project which doesn't
@@ -196,21 +203,24 @@
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
-                       (gstring/format "/api/v1/project/%s/settings" project-name)
+                       settings-url
                        :project-settings
                        api-ch
-                       :context {:project-name project-name}))
+                       :context {:project-name project-name
+                                 :vcs-type vcs_type}))
           (when (and (not (get-in current-state state/project-plan-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
-                       (gstring/format "/api/v1/project/%s/plan" project-name)
+                       plan-url
                        :project-plan
                        api-ch
-                       :context {:project-name project-name}))
+                       :context {:project-name project-name
+                                 :vcs-type vcs_type}))
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
     (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
-                                                                             :build-num build-num})
+                                                                             :build-num build-num
+                                                                             :vcs-type vcs_type})
                              :messages pusher/build-messages}]))
   (set-page-title! (str project-name " #" build-num)))
 
@@ -259,17 +269,19 @@
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :project-insights
-  [history-imp navigation-point {:keys [org repo branch] :as args} state]
+  [history-imp navigation-point {:keys [org repo branch vcs_type] :as args} state]
   (-> state
       (assoc :navigation-point navigation-point
              :navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}
                                    {:type :org
-                                    :username org}
+                                    :username org
+                                    :vcs_type vcs_type}
                                    {:type :project
                                     :username org
-                                    :project repo}
+                                    :project repo
+                                    :vcs_type vcs_type}
                                    {:type :project-branch
                                     :username org
                                     :branch branch
@@ -304,7 +316,7 @@
     (set-page-title! "Invite teammates")))
 
 (defmethod navigated-to :project-settings
-  [history-imp navigation-point {:keys [project-name subpage org repo] :as args} state]
+  [history-imp navigation-point {:keys [project-name subpage org repo vcs_type] :as args} state]
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point
@@ -314,10 +326,12 @@
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :settings-base}
                                    {:type :org
-                                    :username org}
+                                    :username org
+                                    :vcs_type vcs_type}
                                    {:type :project
                                     :username org
-                                    :project repo}])
+                                    :project repo
+                                    :vcs_type vcs_type}])
       (#(if (state-utils/stale-current-project? % project-name)
           (state-utils/reset-current-project %)
           %))))
@@ -382,7 +396,7 @@
 
 
 (defmethod navigated-to :org-settings
-  [history-imp navigation-point {:keys [subpage org] :as args} state]
+  [history-imp navigation-point {:keys [subpage org vcs_type] :as args} state]
   (mlog "Navigated to subpage:" subpage)
 
   (-> state
@@ -391,6 +405,7 @@
       (assoc :navigation-data args)
       (assoc :org-settings-subpage subpage)
       (assoc :org-settings-org-name org)
+      (assoc :org-settings-vcs_type vcs_type)
       (assoc-in state/crumbs-path [{:type :settings-base}
                                    {:type :org
                                     :username org}])

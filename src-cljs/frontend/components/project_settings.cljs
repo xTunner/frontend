@@ -167,15 +167,17 @@
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers for " parallelism "x."
-               [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                           :subpage "containers"})
+               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                        :vcs_type (:vcs_type project)
+                                                        :_fragment "containers"})
                     :on-click #(analytics/track "add-more-containers-clicked")}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
-           [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                       :subpage "containers"})}
+           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                    :vcs_type (:vcs_type project)
+                                                    :_fragment "containers"})}
             "Add a plan"]]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
@@ -187,8 +189,9 @@
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
                                                parallelism "x parallelism.")}]
-        [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                    :subpage "containers"})}
+        [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                 :vcs_type (:vcs_type project)
+                                                 :_fragment "containers"})}
          "Upgrade"]]))))
 
 (defn parallelism-picker [project-data owner]

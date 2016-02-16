@@ -2,6 +2,7 @@
   (:require [clojure.set :as set]
             [frontend.models.user :as user-model]
             [frontend.models.build :as build-model]
+            [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
@@ -11,7 +12,8 @@
 
 (def build-keys-mapping {:username :org
                          :reponame :repo
-                         :default_branch :branch})
+                         :default_branch :branch
+                         :vcs_type :vcs_type})
 
 (defn project-build-id
   "Takes project hash and filter down to keys that identify the build.
@@ -60,25 +62,42 @@ Use OVERRIDES hash if specified."
              api-ch))
 
 (defn get-usage-queue [build api-ch]
-  (ajax/ajax :get
-             (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
-                             (vcs-url/org-name (:vcs_url build))
-                             (vcs-url/repo-name (:vcs_url build))
-                             (:build_num build))
-             :usage-queue
-             api-ch
-             :context (build-model/id build)))
+  (let [vcs-type (:vcs_type build)
+        usage-queue-url (case vcs-type
+                          "github" (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
+                                                   (vcs-url/org-name (:vcs_url build))
+                                                   (vcs-url/repo-name (:vcs_url build))
+                                                   (:build_num build))
+                          "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/%s/usage-queue"
+                                                      vcs-type
+                                                      (vcs-url/org-name (:vcs_url build))
+                                                      (vcs-url/repo-name (:vcs_url build))
+                                                      (:build_num build))
+                          (print "got default handler"))]
+    (ajax/ajax :get
+               usage-queue-url
+               :usage-queue
+               api-ch
+               :context (build-model/id build))))
 
 ;; Note that dashboard-builds-url can take a :page (within :query-params)
 ;; and :builds-per-page, or :limit and :offset directly.
-(defn dashboard-builds-url [{:keys [branch repo org admin deployments query-params builds-per-page offset limit]}]
+(defn dashboard-builds-url [{vcs-type :vcs_type
+                             :keys [branch repo org admin deployments query-params builds-per-page offset limit]
+                             :as args}]
   (let [offset (or offset (* (get query-params :page 0) builds-per-page))
         limit (or limit builds-per-page)
         url (cond admin "/api/v1/admin/recent-builds"
                   deployments "/api/v1/admin/deployments"
-                  branch (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
-                  repo (gstring/format "/api/v1/project/%s/%s" org repo)
-                  org (gstring/format "/api/v1/organization/%s" org)
+                  branch (case vcs-type
+                           "github" (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
+                           "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/tree/%s" vcs-type org repo branch))
+                  repo (case vcs-type
+                         "github" (gstring/format "/api/v1/project/%s/%s" org repo)
+                         "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s" vcs-type org repo))
+                  org (case vcs-type
+                        "github" (gstring/format "/api/v1/organization/%s" org)
+                        "bitbucket" (gstring/format "/api/dangerzone/organization/%s/%s" vcs-type org))
                   :else "/api/v1/recent-builds")]
     (str url "?" (sec/encode-query-params (merge {:shallow true
                                                   :offset offset
@@ -124,7 +143,8 @@ Use OVERRIDES hash if specified."
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]
   (let [url (or output-url
-                (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
+                (gstring/format "/api/dangerzone/project/%s/%s/%s/output/%s/%s"
+                                (vcs-url/vcs-type vcs-url)
                                 (vcs-url/project-name vcs-url)
                                 build-num
                                 step
@@ -146,13 +166,20 @@ Use OVERRIDES hash if specified."
   (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))
 
 (defn get-build-tests [build api-ch]
-  (ajax/ajax :get
-             (gstring/format "/api/v1/project/%s/%s/tests"
-                             (vcs-url/project-name (:vcs_url build))
-                             (:build_num build))
-             :build-tests
-             api-ch
-             :context (build-model/id build)))
+  (let [vcs-type (:vcs_type build)
+        tests-url (case vcs-type
+                    "github" (gstring/format "/api/v1/project/%s/%s/tests"
+                                             (vcs-url/project-name (:vcs_url build))
+                                             (:build_num build))
+                    "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/tests"
+                                                vcs-type
+                                                (vcs-url/project-name (:vcs_url build))
+                                                (:build_num build)))]
+    (ajax/ajax :get
+               tests-url
+               :build-tests
+               api-ch
+               :context (build-model/id build))))
 
 (defn get-build-state [api-ch]
   (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))
@@ -204,4 +231,3 @@ Use OVERRIDES hash if specified."
              api-ch
              :context {:id id
                        :uuid uuid}))
-

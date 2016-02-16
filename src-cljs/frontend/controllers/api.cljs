@@ -624,10 +624,12 @@
              (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])
           org (vcs-url/org-name (:project-id context))
-          repo (vcs-url/repo-name (:project-id context))]
-      (put! nav-ch [:navigate! {:path (routes/v1-project-settings-subpage {:org org
-                                                                           :repo repo
-                                                                           :subpage "tests"})}]))))
+          repo (vcs-url/repo-name (:project-id context))
+          vcs-type (vcs-url/vcs-type (:project-id context))]
+      (put! nav-ch [:navigate! {:path (routes/v1-project-settings-path {:org org
+                                                                        :repo repo
+                                                                        :vcs_type vcs-type
+                                                                        :_fragment "tests"})}]))))
 
 
 (defmethod post-api-event! [:save-test-commands-and-build :success]
@@ -654,9 +656,11 @@
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
   (when (= (:org-name context) (:org-settings-org-name current-state))
-    (let [nav-ch (get-in current-state [:comms :nav])]
-      (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org (:org-name context)
-                                                                       :subpage "containers"})
+    (let [nav-ch (get-in current-state [:comms :nav])
+          vcs_type (:org-settings-vcs_type current-state)]
+      (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
+                                                                    :vcs_type vcs_type
+                                                                    :_fragment "containers"})
                                 :replace-token? true}])))
   (analytics/track-payer (get-in current-state [:current-user :login])))
 

@@ -368,7 +368,7 @@
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel default_branch] :as project} owner]
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel default_branch vcs_type] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -388,17 +388,19 @@
            [:span.project-name
             (if (and (feature/enabled? :insights-dashboard)
                      show-insights?)
-              [:a {:href (routes/v1-insights-project {:org (:username project)
-                                                      :repo (:reponame project)
-                                                      :branch (:default_branch project)})}
+              [:a {:href (routes/v1-insights-project-path {:org (:username project)
+                                                           :repo (:reponame project)
+                                                           :branch (:default_branch project)
+                                                           :vcs_type (:vcs_type project)})}
                (formatted-project-name project)]
               (formatted-project-name project))]
            [:div.github-icon
             [:a {:href (:vcs_url project)}
              [:i.octicon.octicon-mark-github]]]
            [:div.settings-icon
-            [:a {:href (routes/v1-project-settings {:org username
-                                                    :repo reponame})}
+            [:a {:href (routes/v1-project-settings-path {:org username
+                                                         :repo reponame
+                                                         :vcs_type vcs_type})}
              [:i.material-icons "settings"]]]]
           [:h4 (if show-insights?
                  (str "Branch: " branch)
@@ -406,7 +408,8 @@
           (cond (nil? (get recent-builds default_branch)) [:div.loading-spinner common/spinner]
                 (not show-insights?) [:div.no-insights
                                       [:div.message "This release of Insights is only available for repos belonging to paid plans."]
-                                      [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
+                                      [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))
+                                                                                            :vcs_type (:vcs_type project)})
                                                         :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
                                                                                                                  :org-name username})} "Upgrade here"]]
                 (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
