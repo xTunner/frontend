@@ -1,3 +1,40 @@
+.head-user {
+  .insights-branch-picker {
+    select {
+      .fancy-select(@arrow-margin: 34px; @color: inherit);
+
+      // We should probably set the width another way but for now it works
+      max-width: 140px;
+      padding-right: 32px;
+      direction: rtl;
+
+      border: 1px solid @grayLighter;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      padding-left: 10px;
+
+      &:invalid {
+        color: @grayLight;
+      }
+
+      option {
+        .text-overflow();
+      }
+
+      @media (max-width: @screen-sm-max) {
+        margin-top: 12px;
+        direction: ltr;
+      }
+
+      @media (max-width: @screen-xs-max) {
+        min-width: 100%;
+        margin-top: 12px;
+        direction: ltr;
+      }
+    }
+  }
+}
+
 .insights-project {
   margin-top: 15px;
 
@@ -46,6 +83,17 @@
           }
         }
       }
+
+      @media (max-width: @screen-xs-max) {
+        .flex(0);
+
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: @screen-xs-max) {
+      .flex-direction(column);
+      .flex-wrap(nowrap);
     }
   }
 
@@ -82,7 +130,7 @@
     }
 
     .card-body {
-      padding: 30px 15px 15px;
+      padding: 20px 15px 15px;
     }
   }
 

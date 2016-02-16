@@ -28,13 +28,85 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html defrender]]))
 
-(def plot-info
+(def default-plot-info
   {:top 10
    :right 10
    :bottom 10
    :left 30
    :max-bars 55
    :positive-y% 0.6})
+
+(defn add-legend [plot-info svg]
+  (let [{:keys [square-size item-width item-height spacing]} (:legend-info plot-info)
+        left-legend-enter (-> svg
+                              (.select ".legend-container")
+                              (.append "svg")
+                              (.attr #js {"x" 0
+                                          "y" 0
+                                          "class" "left-legend-container"})
+                              (.style #js {"overflow" "visible"})
+                              (.selectAll ".legend")
+                              (.data (clj->js (:left-legend-items plot-info)))
+                              (.enter)
+                              (.append "g")
+                              (.attr #js {"class" "legend left"
+                                          "transform"
+                                          (fn [item i]
+                                            (let [tr-x (* i item-width)
+                                                  tr-y (- (- item-height
+                                                             (/ (- item-height square-size)
+                                                                2)))]
+                                              (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))
+        right-legend-enter (-> svg
+                               (.select ".legend-container")
+                               (.append "svg")
+                               (.attr #js {"x" "90%"
+                                           "y" 0
+                                           "class" "right-legend-container"})
+                               (.style #js {"overflow" "visible"})
+                               (.selectAll ".legend")
+                               (.data (clj->js (:right-legend-items plot-info)))
+                               (.enter)
+                               (.append "g")
+                               (.attr #js {"class" "legend right"
+                                           "transform"
+                                           (fn [item i]
+                                             (let [tr-x (- (:width plot-info) (* (inc i) item-width))
+                                                   tr-y (- (- item-height
+                                                              (/ (- item-height square-size)
+                                                                 2)))]
+                                               (gstring/format "translate(%s,%s)" tr-x  tr-y)))}))]
+    ;; left legend
+    (-> left-legend-enter
+        (.append "rect")
+        (.attr #js {"width" square-size
+                    "height" square-size
+                    ;; `aget` must be used here instead of direct field access.  See note in preamble.
+                    "class" #(aget % "classname")
+                    "transform"
+                    (fn [item i]
+                      (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
+    (-> left-legend-enter
+        (.append "text")
+        (.attr #js {"x" (+ square-size spacing)})
+        (.text #(aget % "text")))
+
+    ;; right legend
+    (-> right-legend-enter
+        (.append "rect")
+        (.attr #js {"width" square-size
+                    "height" square-size
+                    "class" #(aget % "classname")
+                    "transform"
+                    (fn [item i]
+                      (gstring/format "translate(%s,%s)" 0  (- (+ square-size))))}))
+    (-> right-legend-enter
+        (.append "text")
+        (.attr #js {"x" (+ square-size
+                           spacing)})
+        (.text #(aget % "text")))))
+
+
 
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
@@ -133,6 +205,8 @@
                                      (gstring/format "%s in %s"
                                                      (gstring/toTitleCase (unexterned-prop % "outcome"))
                                                      duration-str))})
+        (.on #js {"click" #(analytics/track-insights-bar-click {:current-url js/window.location.href
+                                                                       :build-url (unexterned-prop % "build_url")})})
         (.select "rect.bar")
         (.attr #js {"class" #(str "bar " (unexterned-prop % "outcome"))
                     "y" #(y-pos-scale (unexterned-prop % "build_time_millis"))
@@ -215,6 +289,15 @@
         .-contentWindow
         (gevents/listen "resize" #(when-let [redraw-fn (.property svg "redraw-fn")] (redraw-fn))))
 
+    (when-let [legend-info (:legend-info plot-info)]
+      (-> svg
+          (.append "g")
+          (.attr #js {"class" "legend-container"
+                      "transform" (gstring/format "translate(%s,%s)"
+                                                  (:left plot-info)
+                                                  (:top legend-info))}))
+      (add-legend plot-info svg))
+
     (-> plot-area
         (.append "g")
         (.attr "class" "grid-lines"))
@@ -236,10 +319,10 @@
           (.append "g")
           (.attr "class" "y-axis negative axis")))))
 
-(defn filter-chartable-builds [builds]
+(defn filter-chartable-builds [builds max-count]
   (some->> builds
            (filter build-chartable?)
-           (take (:max-bars plot-info))
+           (take max-count)
            reverse
            (map add-queued-time)))
 
@@ -259,21 +342,21 @@
     om/IDidMount
     (did-mount [_]
       (let [el (om/get-node owner)]
-        (insert-skeleton plot-info el)
-        (visualize-insights-bar! plot-info el builds owner)))
+        (insert-skeleton default-plot-info el)
+        (visualize-insights-bar! default-plot-info el builds owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! plot-info el builds owner)))
+        (visualize-insights-bar! default-plot-info el builds owner)))
     om/IRender
     (render [_]
       (html
-       [:div.build-time-visualization]))))
+        [:div.build-time-visualization]))))
 
 (defn formatted-project-name [{:keys [username reponame]}]
   (gstring/format "%s/%s" username reponame))
 
-(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel] :as project} owner]
+(defn project-insights [{:keys [show-insights? reponame username branches recent-builds chartable-builds sort-category parallel default_branch] :as project} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -285,67 +368,67 @@
     om/IRender
     (render [_]
       (html
-       (let [branch (-> recent-builds (first) (:branch))
-             latest-build (last chartable-builds)
-             org-name (project-model/org-name project)
-             repo-name (project-model/repo-name project)]
-         [:div.project-block {:class (str "build-" (name sort-category))}
-          [:h1.project-header
-           [:div.last-build-status
-            (om/build svg {:class "badge-icon"
-                           :src (-> latest-build build/status-icon common/icon-path)})]
-           [:span.project-name
-            (if (and (feature/enabled? :insights-dashboard)
-                     show-insights?)
-              [:a {:href (routes/v1-insights-project {:org org-name
-                                                      :repo repo-name
-                                                      :branch (:default_branch project)})}
-               (formatted-project-name project)]
-              (formatted-project-name project))]
-           [:div.github-icon
-            [:a {:href (:vcs_url project)}
-             [:i.octicon.octicon-mark-github]]]
-           [:div.settings-icon
-            [:a {:href (routes/v1-project-settings {:org username
-                                                    :repo reponame})}
-             [:i.material-icons "settings"]]]]
-          [:h4 (if show-insights?
-                 (str "Branch: " branch)
-                 (gstring/unescapeEntities "&nbsp;"))]
-          (cond (nil? recent-builds) [:div.loading-spinner common/spinner]
-                (not show-insights?) [:div.no-insights
-                                      [:div.message "This release of Insights is only available for repos belonging to paid plans."]
-                                      [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
-                                                        :on-click #(analytics/track {:event-type :build-insights-upsell-clicked
-                                                                                     :owner owner
-                                                                                     :properties {:repo repo-name
-                                                                                                  :org org-name
-                                                                                                  }})}"Upgrade here"]]
-                (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
-                :else
-                (list
-                 [:div.above-info
-                  [:dl
-                   [:dt "median build"]
-                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds))) " min"]]
-                  [:dl
-                   [:dt "median queue"]
-                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds))) " min"]]
-                  [:dl
-                   [:dt "last build"]
-                   [:dd (om/build common/updating-duration
-                                  {:start (->> chartable-builds
-                                               reverse
-                                               (filter :start_time)
-                                               first
-                                               :start_time)}
-                                  {:opts {:formatter datetime/as-time-since
-                                          :formatter-use-start? true}})]]]
-                 (om/build project-insights-bar chartable-builds)
-                 [:div.below-info
-                  [:dl
-                   [:dt "parallelism"]
-                   [:dd parallel]]]))])))))
+        (let [branch (-> recent-builds (first) (:branch))
+              latest-build (last chartable-builds)
+              org-name (project-model/org-name project)
+              repo-name (project-model/repo-name project)]
+          [:div.project-block {:class (str "build-" (name sort-category))}
+           [:h1.project-header
+            [:div.last-build-status
+             (om/build svg {:class "badge-icon"
+                            :src (-> latest-build build/status-icon common/icon-path)})]
+            [:span.project-name
+             (if (and (feature/enabled? :insights-dashboard)
+                      show-insights?)
+               [:a {:href (routes/v1-insights-project {:org org-name
+                                                       :repo repo-name
+                                                       :branch (:default_branch project)})}
+                (formatted-project-name project)]
+               (formatted-project-name project))]
+            [:div.github-icon
+             [:a {:href (:vcs_url project)}
+              [:i.octicon.octicon-mark-github]]]
+            [:div.settings-icon
+             [:a {:href (routes/v1-project-settings {:org username
+                                                     :repo reponame})}
+              [:i.material-icons "settings"]]]]
+           [:h4 (if show-insights?
+                  (str "Branch: " branch)
+                  (gstring/unescapeEntities "&nbsp;"))]
+           (cond (nil? (get recent-builds default_branch)) [:div.loading-spinner common/spinner]
+                 (not show-insights?) [:div.no-insights
+                                       [:div.message "This release of Insights is only available for repos belonging to paid plans."]
+                                       [:a.upgrade-link {:href (routes/v1-org-settings {:org (vcs-url/org-name (:vcs_url project))})
+                                                         :on-click #(analytics/track {:event-type :build-insights-upsell-clicked
+                                                                                      :owner owner
+                                                                                      :properties {:repo repo-name
+                                                                                                   :org org-name
+                                                                                                   }})}"Upgrade here"]]
+                 (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
+                 :else
+                 (list
+                   [:div.above-info
+                    [:dl
+                     [:dt "median build"]
+                     [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds))) " min"]]
+                    [:dl
+                     [:dt "median queue"]
+                     [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds))) " min"]]
+                    [:dl
+                     [:dt "last build"]
+                     [:dd (om/build common/updating-duration
+                                    {:start (->> chartable-builds
+                                                 reverse
+                                                 (filter :start_time)
+                                                 first
+                                                 :start_time)}
+                                    {:opts {:formatter datetime/as-time-since
+                                            :formatter-use-start? true}})]]]
+                   (om/build project-insights-bar chartable-builds)
+                   [:div.below-info
+                    [:dl
+                     [:dt "parallelism"]
+                     [:dd parallel]]]))])))
 
 (defrender no-projects [data owner]
   (html
@@ -380,8 +463,9 @@
 
 (defn decorate-project
   "Add keys to project related to insights - :show-insights? :sort-category :chartable-builds ."
-  [plans {:keys [recent-builds] :as project}]
-  (let [chartable-builds (filter-chartable-builds recent-builds)]
+  [{:keys [max-bars] :as plot-info} plans {:keys [recent-builds default_branch] :as project}]
+  (let [chartable-builds (filter-chartable-builds (get recent-builds default_branch)
+                                                  max-bars)]
     (-> project
         (assoc :chartable-builds chartable-builds)
         (#(assoc % :show-insights? (project-model/show-insights? plans %)))
@@ -430,7 +514,7 @@
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
-        decorate (partial decorate-project plans)]
+        decorate (partial decorate-project default-plot-info plans)]
     (html
      [:div#build-insights
       (cond

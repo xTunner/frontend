@@ -36,9 +36,16 @@ listen http
   timeout connect 3600s
   timeout server 3600s
 
-listen repl 0.0.0.0:17888
+listen fig-repl 0.0.0.0:17888
   mode tcp
   server master 127.0.0.1:7888
+  timeout client 3600s
+  timeout connect 3600s
+  timeout server 3600s
+
+listen dev-repl 0.0.0.0:18230
+  mode tcp
+  server master 127.0.0.1:8230
   timeout client 3600s
   timeout connect 3600s
   timeout server 3600s
@@ -58,7 +65,7 @@ EOF
     # Generate HAProxy
     haproxy -f /etc/haproxy/haproxy.cfg
 
-    lein figwheel dev &
+    lein repl :headless &
     lein run
 fi
 

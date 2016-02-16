@@ -18,6 +18,7 @@
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.html :refer [open-ext]]
+            [frontend.components.insights.project :as insights-project]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -73,7 +74,9 @@
              [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name})}
               (str "View " project-name " »")])
            (when (= :build (:navigation-point app))
-             (om/build build-head/build-head-actions app))])))))
+             (om/build build-head/build-head-actions app))
+           (when (= :project-insights (:navigation-point app))
+             (om/build insights-project/header app))])))))
 
 (defn head-admin [app owner]
   (reify
@@ -84,7 +87,8 @@
             expanded? (get-in app state/show-instrumentation-line-items-path)
             inspector? (get-in app state/show-inspector-path)
             user-session-settings (get-in app [:render-context :user_session_settings])
-            env (config/env)]
+            env (config/env)
+            local-storage-logging-enabled? (get-in app state/logging-enabled-path)]
         (html
           [:div
            [:div.environment {:class (str "env-" env)
@@ -113,7 +117,13 @@
                    [:span (str "om " build-id " ")]]))
               [:a {:on-click #(raise! owner [:show-inspector-toggled])}
                (if inspector? "inspector off " "inspector on ")]
-              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]]
+              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]
+              [:a {:on-click #(do (raise! owner [:logging-enabled-clicked])
+                                  nil)}
+               (str (if local-storage-logging-enabled?
+                      "turn OFF "
+                      "turn ON ")
+                    "logging-enabled?")]]
              (om/build instrumentation/summary (:instrumentation app))]
             (when (and open? expanded?)
               (om/build instrumentation/line-items (:instrumentation app)))]])))))

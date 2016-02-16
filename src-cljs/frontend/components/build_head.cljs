@@ -64,9 +64,9 @@
 
 (defn queued-explanation-text []
   (if (not (enterprise?))
-    "We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."
+    " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."
     [:span
-     "Typically, this means you have more builds scheduled to be run than available capacity in the fleet. "
+     " Typically, this means you have more builds scheduled to be run than available capacity in the fleet. "
      (if (:admin (utils/current-user))
        [:span "Check " [:a {:href "/admin/fleet-state"} "Fleet State"] " for details and potentially start new builders"]
        "Ask a CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
@@ -105,7 +105,7 @@
 
              (when (< 10000 (build-model/run-queued-time build))
                [:span#circle_queued_explanation
-                (str " " (queued-explanation-text))])
+                (queued-explanation-text)])
              (when (seq builds)
                [:span
                 " This build " (if usage-queued? "has been" "was")
