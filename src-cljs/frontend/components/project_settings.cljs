@@ -1405,13 +1405,12 @@
     om/IRender
     (render [_]
       (html
-        (when-not (empty? id)
-          [:tr {:data-component `p12-key-row}
-           [:td description]
-           [:td filename]
-           [:td id]
-           [:td (datetime/as-time-since uploaded_at)]
-           [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.delete.material-icons "cancel"]]])))))
+        [:tr {:data-component `p12-key-row}
+         [:td description]
+         [:td filename]
+         [:td id]
+         [:td (datetime/as-time-since uploaded_at)]
+         [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.delete.material-icons "cancel"]]]))))
 
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
