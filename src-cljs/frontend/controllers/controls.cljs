@@ -322,6 +322,23 @@
                  :params {:parallel parallelism}
                  :context {:project-id project-id}))))
 
+(defmethod post-control-event! :clear-cache
+  [target message {:keys [type project-id]} previous-state current-state]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])
+        uuid frontend.async/*uuid*]
+    (ajax/ajax :delete
+               (gstring/format "/api/v1/project/%s/%s-cache" project-name type)
+               (case type
+                 "build" :clear-build-cache
+                 "source" :clear-source-cache)
+               api-ch
+               :context {:project-id project-id
+                         :uuid uuid})))
+
+(defmethod control-event :dismiss-result
+  [target message result-path state]
+  (update-in state (butlast result-path) dissoc (last result-path)))
 
 (defmethod control-event :dismiss-invite-form
   [target message _ state]

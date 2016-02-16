@@ -2,6 +2,7 @@
   (:require [cljs.core.async :refer [close!]]
             [frontend.api :as api]
             [frontend.async :refer [put! raise!]]
+            [frontend.components.forms :refer [release-button!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
@@ -350,6 +351,52 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (assoc-in state (conj state/project-data-path :parallelism-edited) true)))
+
+
+(defn update-cache-clear-state
+  [state {:keys [resp context]} k success?]
+  (if-not (= (:project-id context)
+             (project-model/id (get-in state state/project-path)))
+    state
+    (assoc-in state
+              (conj state/project-data-path k)
+              {:success? success?
+               :message (:status resp
+                                 (if success?
+                                   "cache cleared"
+                                   "cache not cleared"))})))
+
+(defmethod api-event [:clear-build-cache :success]
+  [target message status args state]
+  (update-cache-clear-state state args :build-cache-clear true))
+
+(defmethod api-event [:clear-build-cache :failed]
+  [target message status args state]
+  (update-cache-clear-state state args :build-cache-clear false))
+
+(defmethod api-event [:clear-source-cache :success]
+  [target message status args state]
+  (update-cache-clear-state state args :source-cache-clear true))
+
+(defmethod api-event [:clear-source-cache :failed]
+  [target message status args state]
+  (update-cache-clear-state state args :source-cache-clear false))
+
+(defmethod post-api-event! [:clear-build-cache :success]
+  [_ _ _ {:keys [context]} _ _]
+  (release-button! (:uuid context) :success))
+
+(defmethod post-api-event! [:clear-build-cache :failed]
+  [_ _ _ {:keys [context]} _ _]
+  (release-button! (:uuid context) :failed))
+
+(defmethod post-api-event! [:clear-source-cache :success]
+  [_ _ _ {:keys [context]} _ _]
+  (release-button! (:uuid context) :success))
+
+(defmethod post-api-event! [:clear-source-cache :failed]
+  [_ _ _ {:keys [context]} _ _]
+  (release-button! (:uuid context) :failed))
 
 
 (defmethod api-event [:create-env-var :success]
