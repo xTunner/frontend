@@ -105,7 +105,7 @@
      [:dt "Outcome"]
      [:dd (:outcome build)]]]))
 
-(s/defn build-status-bar-chart [{:keys [plot-info builds :- [insights/BarChartableBuild]]} owner]
+(defn build-status-bar-chart [{:keys [plot-info builds]} owner]
   (reify
     om/IInitState
     (init-state [_]
