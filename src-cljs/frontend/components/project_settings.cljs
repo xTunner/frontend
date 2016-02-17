@@ -1530,8 +1530,10 @@
             [:hr.divider]
             [:div.info "The following code-signing identities will be added to the system keychain when your build
                         begins, and will be available to sign iOS and OSX apps. For more information about code-signing
-                        on CircleCI see the "
-             [:a "code-signing section of the docs."]]
+                        on CircleCI see our "
+             [:a
+              {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
+              "code-signing documentation."]]
             (if-not (empty? osx-keys)
               (om/build p12-key-table {:rows (->> osx-keys
                                                   (map (partial merge {:project-name project-name})))})
