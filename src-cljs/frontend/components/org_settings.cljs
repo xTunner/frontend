@@ -1133,7 +1133,7 @@
                  [:div.loading-spinner common/spinner]
                  [:div
                   (when (pm/suspended? plan)
-                    (om/build project-common/suspended-notice plan vcs_type))
+                    (om/build project-common/suspended-notice {:plan plan :vcs_type vcs_type}))
                   (om/build common/flashes (get-in app state/error-message-path))
                   [:div#subpage
                    [:div

@@ -140,7 +140,7 @@
             (for [[pref label] email-prefs]
               [:option {:value pref} label])]])))))
 
-(defn suspended-notice [plan vcs_type owner]
+(defn suspended-notice [{:keys [plan vcs_type]} owner]
   (reify
     om/IRender
     (render [_]
