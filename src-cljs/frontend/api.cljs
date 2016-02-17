@@ -142,13 +142,20 @@ Use OVERRIDES hash if specified."
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]
-  (let [url (or output-url
-                (gstring/format "/api/dangerzone/project/%s/%s/%s/output/%s/%s"
-                                (vcs-url/vcs-type vcs-url)
-                                (vcs-url/project-name vcs-url)
-                                build-num
-                                step
-                                index))]
+  (let [vcs-type (vcs-url/vcs-type vcs-url)
+        url (or output-url
+                (case vcs-type
+                  "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/output/%s/%s"
+                                              vcs-type
+                                              (vcs-url/project-name vcs-url)
+                                              build-num
+                                              step
+                                              index)
+                  "github" (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
+                                           (vcs-url/project-name vcs-url)
+                                           build-num
+                                           step
+                                           index)))]
     (ajax/ajax :get
                url
                :action-log
