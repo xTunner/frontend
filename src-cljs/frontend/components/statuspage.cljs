@@ -45,14 +45,9 @@
 (defn incident-markup [incident]
   (let [status (first (:incident_updates incident))]
     (html
-     [:a (if (elevio/broken?)
-           {:href (:shortlink incident)
-            :target "_blank"}
-           {:on-click #(elevio/show-status!)})
-       [:h4 (:name incident)]
-       [:p (:body status)
-        [:br]
-        "Updated " (datetime/as-time-since (:updated_at status))]])))
+     [:p
+      "Updated " (datetime/as-time-since (:updated_at status)) " - "
+      (:name incident) ": " (:body status)])))
 
 (defn severity-class
   "Given the statuspage data, return one of none, minor, major or critical.
@@ -101,12 +96,12 @@
                [:a.dismiss-banner {:on-click #(raise! owner [:dismiss-statuspage
                                                              {:last-update updated_at}])}
                 (common/ico :fail-light)]
-               [:div (for [incident incidents]
-                       (incident-markup incident))]
-               (when (seq components-affected)
-                 [:a (if (elevio/broken?)
-                       {:href (get-in summary-response [:page :url])
-                        :target "_blank"}
-                       {:on-click #(elevio/show-status!)})
-                  [:h4 (str desc " - components affected: "
-                            (clojure.string/join ", " (map (comp str :name) components-affected)))]])])))))
+               [:a (if (elevio/broken?)
+                     {:href (get-in summary-response [:page :url])
+                      :target "_blank"}
+                     {:on-click #(elevio/show-status!)})
+                (when (seq components-affected)
+                   [:h4 (str desc " - components affected: "
+                             (clojure.string/join ", " (map (comp str :name) components-affected)))])
+                [:div (for [incident incidents]
+                        (incident-markup incident))]]])))))
