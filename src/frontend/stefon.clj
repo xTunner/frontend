@@ -7,7 +7,7 @@
                      {:path "js/hosted/elevio.js"
                       :url "https://static.elev.io/js/v3.js"}
                      {:path "js/hosted/segment.js"
-                      :url "http://cdn.segment.com/analytics.js/v1/AbgkrgN4cbRhAVEwlzMkHbwvrXnxHh35/analytics.min.js"}])
+                      :url "https://cdn.segment.com/analytics.js/v1/AbgkrgN4cbRhAVEwlzMkHbwvrXnxHh35/analytics.min.js"}])
 
 (def asset-roots ["resources/assets"])
 
