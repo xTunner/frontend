@@ -104,7 +104,7 @@
 (defn- add-state-properties-to-props [props state]
   "Fill in any unsuppplied property values with those supplied
   in the app state."
-  (-> @state
+  (-> state
       (add-properties-from-state)
       (merge props)))
 
