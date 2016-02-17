@@ -1,6 +1,6 @@
 (ns frontend.datetime
   (:require [frontend.utils :as utils :include-macros true]
-            [cljs-time.coerce :refer [from-long]]
+            [cljs-time.coerce :as time-coerce :refer [from-long]]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [goog.string :as g-string]
@@ -247,8 +247,19 @@
              unit-info))))
 
 
-(defn nice-floor-duration [millis]
+(defn nice-floor-duration
   "Returns millis floored to a nice value for printing."
+  [millis]
   (let [[_ {:keys [divisor]}] (millis-to-float-duration millis)]
     (* (js/Math.floor (/ millis divisor))
        divisor)))
+
+(defn iso-to-unix
+  "Takes an ISO 8601 timestamp and returns the equivalent as seconds after the Unix epoch."
+  [iso]
+  (time-coerce/to-epoch (time-format/parse (time-format/formatters :date-time) iso)))
+
+(defn iso-comparator
+  "Compares two ISO 8601 timestamps"
+  [t1 t2]
+  (> (iso-to-unix t1) (iso-to-unix t2)))

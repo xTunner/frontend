@@ -84,6 +84,7 @@
       (let [{:keys [incidents]
              {:keys [updated_at]} :page
              :as summary-response} (:summary (om/get-state owner :statuspage))
+            updated-incident (first (sort-by :updated_at datetime/iso-comparator incidents))
             desc (get-in summary-response [:status :description])
             components-affected (filter (comp not (partial = "operational") :status)
                                         (:components summary-response))
@@ -96,12 +97,13 @@
                [:a.dismiss-banner {:on-click #(raise! owner [:dismiss-statuspage
                                                              {:last-update updated_at}])}
                 (common/ico :fail-light)]
-               [:a (if (elevio/broken?)
-                     {:href (get-in summary-response [:page :url])
-                      :target "_blank"}
-                     {:on-click #(elevio/show-status!)})
+               [:a.statuspage-content
+                (if (elevio/broken?)
+                  {:href (get-in summary-response [:page :url])
+                   :target "_blank"}
+                  {:on-click #(elevio/show-status!)})
                 (when (seq components-affected)
-                   [:h4 (str desc " - components affected: "
-                             (clojure.string/join ", " (map (comp str :name) components-affected)))])
-                [:div (for [incident incidents]
-                        (incident-markup incident))]]])))))
+                  [:h4 (str desc " - components affected: "
+                            (clojure.string/join ", " (map (comp str :name) components-affected)))])
+                (when updated-incident
+                  (incident-markup updated-incident))]])))))
