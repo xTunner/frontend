@@ -184,3 +184,20 @@
   "Whether the logged-in user is an admin for this plan."
   [plan]
   (boolean (:admin plan)))
+
+(defn current-months-osx-usage-ms [plan]
+  (-> plan :usage :os:osx :2016_02))
+
+(defn current-months-osx-usage-% [plan]
+  (let [usage-ms (current-months-osx-usage-ms plan)
+        usage-min (/ usage-ms 1000 60)
+        max-min (-> plan :osx :template :max_minutes)]
+    (.round js/Math (* (/ usage-min max-min) 100))))
+
+(def first-warning-threshold 75)
+(def second-warning-threshold 95)
+(def third-warning-threshold 100)
+
+(defn over-usage-threshold? [plan threshold-percent]
+  (> (current-months-osx-usage-% plan)
+     threshold-percent))
