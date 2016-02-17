@@ -410,6 +410,7 @@
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track {:event-type :build-triggered
+                           :current-state current-state
                            :build (:resp api-result)
                            :properties {:no-cache? no-cache?}}))))))
 
@@ -426,6 +427,7 @@
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
          (analytics/track {:event-type :build-triggered
+                           :current-state current-state
                            :build (:resp api-result)
                            :properties {:ssh? true}}))))))
 

@@ -36,13 +36,8 @@
 
 (def BuildEvent
   (merge
-    AnalyticsEvent
+    AnalyticsEventForControllers
     {:build {s/Keyword s/Any}}))
-
-(def ViewBuildEvent
-  (merge
-    BuildEvent
-    {:user {s/Keyword s/Any}}))
 
 ;; Below are the lists of our supported events.
 ;; Events should NOT be view specific. They should be view agnostic and
@@ -169,7 +164,7 @@
                      properties)]
     (segment/track-event "build-triggered" (add-owner-properties-to-props props owner))))
 
-(s/defmethod track :view-build [event-data :- ViewBuildEvent]
+(s/defmethod track :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
         props (merge (build-properties build) properties)
         user (get-in current-state state/user-path)]
