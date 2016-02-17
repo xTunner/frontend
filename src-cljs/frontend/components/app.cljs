@@ -142,10 +142,7 @@
 
                  (when (and (not inner?) show-footer? (config/footer-enabled?))
                    [:footer.main-foot
-                    (footer/footer)])]]
-
-                (when (and (config/help-tab-enabled?) (not logged-in?))
-                  (om/build shared/sticky-help-link app))]])))))))
+                    (footer/footer)])]]]])))))))
 
 
 (defn app [app owner opts]
