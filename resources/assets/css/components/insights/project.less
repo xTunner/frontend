@@ -1,8 +1,7 @@
 [data-component="frontend.components.insights.project/build-status-bar-chart-hovercard"] {
   .flexy(column);
 
-  min-width: 120px;
-  max-width: 180px;
+  width: 180px;
   padding: 10px;
   empty-cells: show;
   border-spacing: 0;
@@ -13,6 +12,7 @@
 
   @build-padding: 6px;
   @build-item-inner-border: 1px solid rgba(255, 255, 255, 0.1);
+
   .metadata-row {
     .flexy(column, flex-end);
 
@@ -35,7 +35,7 @@
       }
 
       &:last-of-type {
-        padding-bottom: 0;
+        padding-bottom: 2px;
       }
 
       span {

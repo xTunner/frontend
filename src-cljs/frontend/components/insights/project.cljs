@@ -90,28 +90,25 @@
   (html
    [:div {:data-component `build-status-bar-chart-hovercard}
 
-   [:div.metadata
+   [:div.insights-metadata
     [:div.metadata-row
-     [:div.metadata-item.outcome
+     [:div.metadata-item
       [:i.material-icons "radio_button_checked"]
       (:outcome build)]
-     [:div.metadata-item.recent-time.start-time
+     [:div.metadata-item.recent-time
       [:i.material-icons "today"]
       (om/build common/updating-duration
                {:start (:start_time build)}
                {:opts {:formatter datetime/time-ago-abbreviated}}) " ago"]
-     [:div.metadata-item.recent-time.duration
+     [:div.metadata-item.recent-time
       [:i.material-icons "timer"]
       (first (datetime/millis-to-float-duration (:build_time_millis build)))]
-     [:div.metadata-item.recent-time.queue-time
+     [:div.metadata-item.recent-time
       [:i.material-icons "hourglass_empty"]
       (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
-     [:div.metadata-item.build-number
+     [:div.metadata-item
       [:i.material-icons "storage"]
-      (:build_num build)]
-     [:div.metadata-item.triggered-by
-      [:i.material-icons "person"]
-      [:span "Peter Jaros"]]]]]))
+      (:build_num build)]]]]))
 
 (defn build-status-bar-chart [{:keys [plot-info builds]} owner]
   (reify
