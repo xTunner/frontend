@@ -26,7 +26,6 @@
             [frontend.components.shared :as shared]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
-            [frontend.components.opt-in :as opt-in]
             [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
             [frontend.components.signup :as signup]
@@ -125,10 +124,6 @@
                  ;; TODO inspector still needs lots of work. It's slow and it defaults to
                  ;;     expanding all datastructures.
                  (om/build inspector/inspector app))
-
-               (when (and (= :build (:navigation-point app))
-                          (project/feature-enabled? project :osx))
-                 (om/build opt-in/ios-reminder-banner app))
 
                (om/build header/header app-without-container-data)
 
