@@ -10,47 +10,49 @@
   background-color: @grayDark;
   box-shadow: none;
 
-  @build-padding: 6px;
-  @build-item-inner-border: 1px solid rgba(255, 255, 255, 0.1);
+  > .insights-metadata {
+    @build-padding: 6px;
+    @build-item-inner-border: 1px solid rgba(255, 255, 255, 0.1);
 
-  .metadata-row {
-    .flexy(column, flex-end);
+    .metadata-row {
+      .flexy(column, flex-end);
 
-    padding-left: @build-padding;
-    padding-right: @build-padding;
+      padding-left: @build-padding;
+      padding-right: @build-padding;
 
-    .metadata-item {
-      .flex(1 0 auto);
+      .metadata-item {
+        .flex(1 0 auto);
 
-      padding-top: 5px;
-      padding-bottom: 5px;
+        padding-top: 5px;
+        padding-bottom: 5px;
 
-      .text-overflow();
+        .text-overflow();
 
-      font-size: @fontSizeSmall;
-      color: @grayLightest;
+        font-size: @fontSizeSmall;
+        color: @grayLightest;
 
-      &:first-of-type {
-        padding-top: 0;
-      }
+        &:first-of-type {
+          padding-top: 0;
+        }
 
-      &:last-of-type {
-        padding-bottom: 2px;
-      }
+        &:last-of-type {
+          padding-bottom: 2px;
+        }
 
-      span {
-        vertical-align: middle;
-        // font-family: @monoFontFamilyV2;
-      }
+        span {
+          vertical-align: middle;
+          // font-family: @monoFontFamilyV2;
+        }
 
-      i {
-        font-size: @fontSizeLarge;
-        height: 19px; // magic number to make all the things the same height
-        margin-right: 6px;
-        margin-left: 0;
-        padding-top: 1px;
-        vertical-align: bottom;
-        color: @grayLight;
+        i {
+          font-size: @fontSizeLarge;
+          height: 19px; // magic number to make all the things the same height
+          margin-right: 6px;
+          margin-left: 0;
+          padding-top: 1px;
+          vertical-align: bottom;
+          color: @grayLight;
+        }
       }
     }
   }
