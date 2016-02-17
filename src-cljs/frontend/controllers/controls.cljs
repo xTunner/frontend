@@ -445,7 +445,10 @@
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         login (get-in current-state state/user-login-path)
-        project (vcs-url/project-name (:vcs_url repo))]
+        vcs-url (:vcs_url repo)
+        project (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
                  (gstring/format "/api/v1/project/%s/follow" project)
                  :follow-repo
@@ -453,7 +456,9 @@
                  :params {:vcs-type (:vcs_type repo)}
                  :context repo)
     (analytics/track {:event-type :project-followed
-                      :current-state current-state})))
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :repo repo-name}})))
 
 
 (defmethod control-event :inaccessible-org-toggled
@@ -465,55 +470,72 @@
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         login (get-in current-state state/user-login-path)
-        project (vcs-url/project-name vcs-url)]
+        project (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
                  (gstring/format "/api/v1/project/%s/follow" project)
                  :follow-project
                  api-ch
                  :context {:project-id project-id})
     (analytics/track {:event-type :project-followed
-                      :current-state current-state})))
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :repo repo-name}})))
 
 
 (defmethod post-control-event! :unfollowed-repo
   [target message repo previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         login (get-in current-state state/user-login-path)
-        project (vcs-url/project-name (:vcs_url repo))]
+        vcs-url (:vcs_url repo)
+        project (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
                  (gstring/format "/api/v1/project/%s/unfollow" project)
                  :unfollow-repo
                  api-ch
                  :context repo)
     (analytics/track {:event-type :project-unfollowed
-                      :current-state current-state})))
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :repo repo-name}})))
 
 
 (defmethod post-control-event! :unfollowed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         login (get-in current-state state/user-login-path)
-        project (vcs-url/project-name vcs-url)]
+        project (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
                  (gstring/format "/api/v1/project/%s/unfollow" project)
                  :unfollow-project
                  api-ch
                  :context {:project-id project-id})
     (analytics/track {:event-type :project-unfollowed
-                      :current-state current-state})))
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :repo repo-name}})))
 
 (defmethod post-control-event! :stopped-building-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         login (get-in current-state state/user-login-path)
-        project (vcs-url/project-name vcs-url)]
+        project (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :delete
                  (gstring/format "/api/v1/project/%s/enable" project)
                  :stop-building-project
                  api-ch
-                 :context {:project-id project-id}))
-  (analytics/track {:event-type :project-builds-stopped
-                    :current-state current-state}))
+                 :context {:project-id project-id})
+    (analytics/track {:event-type :project-builds-stopped
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :repo repo-name}})))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
@@ -1358,8 +1380,8 @@
         comms (get-in current-state [:comms])]
     (put! (:nav comms) [:navigate! {:path (routes/v1-insights-project (assoc nav-data :branch new-branch))}])
     (analytics/track {:event-type :project-branch-changed
-                      :new-branch new-branch
-                      :current-state current-state})))
+                      :current-state current-state
+                      :properties {:new-branch new-branch}})))
 
 (defmethod control-event :logging-enabled-clicked
   [_ _ _ state]

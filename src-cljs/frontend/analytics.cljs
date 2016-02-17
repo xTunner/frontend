@@ -133,12 +133,12 @@
 
 (s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
-    (segment/track-event (name event-type) (add-owner-properties-to-props properties owner))))
+    (segment/track-event event-type (add-owner-properties-to-props properties owner))))
 
 ;; Gotta finish this + add schema event
 (s/defmethod track :track-api-response-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
-    (segment/track-event (name event-type) (add-state-properties-to-props properties current-state))))
+    (segment/track-event event-type (add-state-properties-to-props properties current-state))))
 
 (s/defmethod track :new-plan-created [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data] 
@@ -151,7 +151,7 @@
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties current-state]} event-data]
-    (segment/track-pageview (name navigation-point) (add-state-properties-to-props properties current-state))))
+    (segment/track-pageview navigation-point (add-state-properties-to-props properties current-state))))
 
 (s/defmethod track :build-triggered [event-data :- BuildEvent]
   (let [{:keys [build properties owner]} event-data
