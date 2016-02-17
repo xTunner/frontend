@@ -425,8 +425,9 @@
                                                :start_time)}
                                   {:opts {:formatter datetime/as-time-since
                                           :formatter-use-start? true}})]]]
-                 (om/build build-status-bar-chart {:plot-info default-plot-info
-                                                   :builds chartable-builds})
+                 [:div.body-info
+                  (om/build build-status-bar-chart {:plot-info default-plot-info
+                                                    :builds chartable-builds})]
                  [:div.below-info
                   [:dl
                    [:dt "parallelism"]
