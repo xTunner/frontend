@@ -43,8 +43,8 @@
 (defn user-channel [user]
   (str "private-" (:login user)))
 
-(defn build-channel-from-parts [{:keys [project-name build-num vcs-type]}]
-  (string/replace (str "private-" project-name "@" build-num "@vcs-" vcs-type) "/" "@"))
+(defn build-channel-from-parts [{:keys [project-name build-num]}]
+  (string/replace (str "private-" project-name "@" build-num) "/" "@"))
 
 (defn build-channel [build]
   (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
