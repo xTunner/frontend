@@ -140,7 +140,7 @@
        (set-canonical! (:_canonical args))
        (analytics/track {:event-type :pageview
                          :navigation-point navigation-point
-                         :current-state state})
+                         :current-state @state})
        (when-let [app-dominant (goog.dom.getElementByClass "app-dominant")]
          (set! (.-scrollTop app-dominant) 0))
        (when-let [main-body (goog.dom.getElementByClass "main-body")]

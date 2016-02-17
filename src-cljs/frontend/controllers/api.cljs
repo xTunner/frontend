@@ -653,8 +653,7 @@
                                                                        :subpage "containers"})
                                 :replace-token? true}])
       (analytics/track {:event-type :new-plan-created
-                        :properties {:org (:org-name context)
-                                     :user (get-in current-state state/user-login-path)}}))))
+                        :current-state current-state}))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]

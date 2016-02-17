@@ -104,7 +104,7 @@
 (defn- add-state-properties-to-props [props state]
   "Fill in any unsuppplied property values with those supplied
   in the app state."
-  (-> @state
+  (-> state
       (add-properties-from-state)
       (merge props)))
 
@@ -133,7 +133,6 @@
 
 (s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
-    (println (name event-type))
     (segment/track-event (name event-type) (add-owner-properties-to-props properties owner))))
 
 ;; Gotta finish this + add schema event
@@ -150,8 +149,6 @@
   (let [{:keys [event properties owner]} event-data]
     (segment/track-external-click event (add-owner-properties-to-props properties owner))))
 
-;; Do we clear state before/after navigation? Can I trust including state?
-;; What does it mean to include state?
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties current-state]} event-data]
     (segment/track-pageview (name navigation-point) (add-state-properties-to-props properties current-state))))
