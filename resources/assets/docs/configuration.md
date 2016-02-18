@@ -696,7 +696,8 @@ Circle will run its inference as well as all build commands from that directory.
 
 <h2 id="artifacts">Specifying custom artifacts directories and files</h2>
 
-You can specify extra directories and files to be
+You can specify directories and files (in addition to the default
+`$CIRCLE_ARTIFACTS` directory) to be
 [saved as artifacts](/docs/build-artifacts):
 
 ```
@@ -705,6 +706,17 @@ general:
     - "selenium/screenshots" # relative to the build directory
     - "~/simplecov" # relative to the user's home directory
     - "test.txt" # a single file, relative to the build directory
+```
+
+If you require more complex artifact handling such as **wildcards**,
+it's recommended to move your artifacts into the `$CIRCLE_ARTIFACTS`
+directory.
+
+```
+test:
+  post:
+    - mkdir $CIRCLE_ARTIFACTS/json_output
+    - mv solo/target/*.json $CIRCLE_ARTIFACTS/json_output
 ```
 
 <h2 id="experimental">Experimental configuration</h2>
