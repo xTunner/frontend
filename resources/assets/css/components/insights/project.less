@@ -14,13 +14,13 @@
     @build-padding: 6px;
     @build-item-inner-border: 1px solid rgba(255, 255, 255, 0.1);
 
-    .metadata-row {
+    > .metadata-row {
       .flexy(column, flex-end);
 
       padding-left: @build-padding;
       padding-right: @build-padding;
 
-      .metadata-item {
+      > .metadata-item {
         .flex(1 0 auto);
 
         padding-top: 5px;
@@ -39,12 +39,7 @@
           padding-bottom: 2px;
         }
 
-        span {
-          vertical-align: middle;
-          // font-family: @monoFontFamilyV2;
-        }
-
-        i {
+        > i {
           font-size: @fontSizeLarge;
           height: 19px; // magic number to make all the things the same height
           margin-right: 6px;
@@ -52,6 +47,10 @@
           padding-top: 1px;
           vertical-align: bottom;
           color: @grayLight;
+        }
+
+        > span {
+          vertical-align: middle;
         }
       }
     }
@@ -72,11 +71,12 @@
     margin-left: 20px; // Offsets the hovercard from the pointer.
   }
 
-  .y-axis {
-    .tick {
-      text {
-        font-size: @baseFontSize;
-      }
+  // Reaching into another component to restyle a piece of it is a smell, but we
+  // do want this component to look different in this context. This should not
+  // be considered exemplary code.
+  [data-component="frontend.components.insights/build-status-bar-chart"] {
+    > svg .y-axis .tick text {
+      font-size: @baseFontSize;
     }
   }
 }

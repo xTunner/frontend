@@ -48,6 +48,11 @@
         line {
           visibility: hidden;
         }
+
+        text {
+          fill: @tick-color;
+          font-size: 10px;
+        }
       }
 
       > path.domain {
@@ -58,15 +63,6 @@
     .axis line,
     .grid-lines line.horizontal {
       stroke-width: .6;
-    }
-  }
-
-  .y-axis {
-    .tick {
-      text {
-        fill: @tick-color;
-        font-size: 10px;
-      }
     }
   }
 }
