@@ -287,22 +287,24 @@
                      :title "AWS"}}]
              nav-point)])))))
 
-(defn osx-usage-wording [plan]
-  (html
-    [:span
-     (str "Your current usage represents "  (plan/current-months-osx-usage-% plan) "% of ")
-     [:a {:href (routes/v1-org-settings {:org (:org_name plan)})} "your current OSX plan's"]
-     " amount. Please upgrade or reach out to your account manager if you have questions about billing.
-      Any other questions can be directed to "
-     [:a {:href "mailto:support@circleci.com"} "support@circleci.com"]
-     "."]))
-
 (defn osx-usage-warning-banner [plan owner]
   (reify
     om/IRender
     (render [_]
       (html
-          [:div.alert.alert-warning (osx-usage-wording plan)]))))
+        [:div.alert.alert-warning.alert-dismissible {:data-component `osx-usage-warning-banner}
+         [:div.usage-message
+          [:div
+           [:span (str "Your current usage represents "  (plan/current-months-osx-usage-% plan) "% of ")]
+           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})} "your current OSX plan's"]
+           [:span " amount."]]
+          [:div
+           [:span " amount. Please upgrade or reach out to your account manager
+                   if you have questions about billing. Any other questions can
+                   be directed to "]
+           [:a {:href "mailto:support@circleci.com"} "support@circleci.com"]
+           [:span "."]]]
+        [:a.dismiss [:i.material-icons "clear"]]]))))
 
 (defn inner-header [app owner]
   (reify
