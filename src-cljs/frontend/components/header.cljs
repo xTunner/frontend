@@ -294,16 +294,13 @@
       (html
         [:div.alert.alert-warning {:data-component `osx-usage-warning-banner}
          [:div.usage-message
-          [:div
-           [:span (str "Your current usage represents "  (plan/current-months-osx-usage-% plan) "% of ")]
-           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})} "your current OSX plan's"]
-           [:span " amount."]]
-          [:div
-           [:span " amount. Please upgrade or reach out to your account manager
-                   if you have questions about billing. Any other questions can
-                   be directed to "]
-           [:a {:href "mailto:support@circleci.com"} "support@circleci.com"]
-           [:span "."]]]
+           [:span (str "Your current usage represents your "  (plan/current-months-osx-usage-% plan) "% of ")]
+           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})} "current OSX plan"]
+           [:span ". Please "]
+           [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                       :subpage "containers"})}
+            "upgrade"]
+           [:span " or reach out to your account manager if you have questions about billing."]]
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
           [:i.material-icons "clear"]]]))))
 

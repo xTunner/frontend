@@ -206,9 +206,10 @@
 (def future-warning-threshold-increment 10)
 
 (defn over-usage-threshold? [plan threshold-percent]
-  (> (current-months-osx-usage-% plan)
-     threshold-percent))
+  (>= (current-months-osx-usage-% plan)
+      threshold-percent))
 
 (defn over-dismissed-level? [plan dismissed-osx-usage-level]
-  (>= (current-months-osx-usage-% plan) dismissed-osx-usage-level))
+  (>= (current-months-osx-usage-% plan)
+      dismissed-osx-usage-level))
 
