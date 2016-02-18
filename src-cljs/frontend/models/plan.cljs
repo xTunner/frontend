@@ -210,5 +210,5 @@
      threshold-percent))
 
 (defn over-dismissed-level? [plan dismissed-osx-usage-level]
-  (> (current-months-osx-usage-% plan) dismissed-osx-usage-level))
+  (>= (current-months-osx-usage-% plan) dismissed-osx-usage-level))
 
