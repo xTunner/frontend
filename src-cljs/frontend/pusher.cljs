@@ -48,7 +48,8 @@
 
 (defn build-channel [build]
   (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
-                             :build-num (:build_num build)}))
+                             :build-num (:build_num build)
+                             :vcs-type (:vcs_type build)}))
 
 (def build-messages [:build/new-action
                      :build/update-action

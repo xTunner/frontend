@@ -289,8 +289,8 @@
          [:div.info
           "Select a plan to build your iOS projects now."]
          [:div.buttons
-          [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-subpage {:org selected-org-login
-                                                                           :subpage "containers"})}
+          [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org selected-org-login
+                                                                        :_fragment "containers"})}
            "Select Plan"]
           (managed-button
             [:a.btn.trial {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
@@ -458,105 +458,99 @@
 
 (defrender payment-plan [{:keys [selected-org view]} owner]
   (analytics/track-payment-plan-impression {:view view})
-  (html
-    [:div.payment-plan
-     [:span.big-number "3"]
-     [:div.instruction "Choose how fast you'd like to build."]
-     [:div.table-container
-      [:table.payment-plan.table
-       [:tr.top.row
-        [:td.cell.first "Plan"]
-        [:td.cell "Cost"]
-        [:td.cell.container-amount "Containers"]
-        [:td.cell.last]]
-       [:tr.row
-        [:td.cell "Business"]
-        [:td.cell "$500/month"]
-        [:td.cell.container-amount "11"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
+  (let [{:keys [login vcs_type]} selected-org
+        org-settings-path (routes/v1-org-settings-path {:org login
+                                                        :_fragment "containers"
+                                                        :vcs_type vcs_type})]
+    (html
+     [:div.payment-plan
+      [:span.big-number "3"]
+      [:div.instruction "Choose how fast you'd like to build."]
+      [:div.table-container
+       [:table.payment-plan.table
+        [:tr.top.row
+         [:td.cell.first "Plan"]
+         [:td.cell "Cost"]
+         [:td.cell.container-amount "Containers"]
+         [:td.cell.last]]
+        [:tr.row
+         [:td.cell "Business"]
+         [:td.cell "$500/month"]
+         [:td.cell.container-amount "11"]
+         [:td.cell [:a {:href org-settings-path
+                        :on-click #(analytics/track-payment-plan-click {:view view})}
+                    "Select"]]]
+        [:tr.row
+         [:td.cell "Growth"]
+         [:td.cell "$300/month"]
+         [:td.cell.container-amount "7"]
+         [:td.cell [:a {:href org-settings-path
+                        :on-click #(analytics/track-payment-plan-click {:view view})}
+                    "Select"]]]
+        [:tr.row
+         [:td.cell "Startup"]
+         [:td.cell "$100/month"]
+         [:td.cell.container-amount "3"]
+         [:td.cell [:a{:href org-settings-path
                        :on-click #(analytics/track-payment-plan-click {:view view})}
-                   "Select"]]]
-       [:tr.row
-        [:td.cell "Growth"]
-        [:td.cell "$300/month"]
-        [:td.cell.container-amount "7"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
-                       :on-click #(analytics/track-payment-plan-click {:view view})}
-                   "Select"]]]
-       [:tr.row
-        [:td.cell "Startup"]
-        [:td.cell "$100/month"]
-        [:td.cell.container-amount "3"]
-        [:td.cell [:a{:href (routes/v1-org-settings-subpage {:org selected-org
-                                                             :subpage "containers"})
-                      :on-click #(analytics/track-payment-plan-click {:view view})}
-                   "Select"]]]
-       [:tr.row
-        [:td.cell "Hobbyist"]
-        [:td.cell "$50/month"]
-        [:td.cell.container-amount "2"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
-                       :on-click #(analytics/track-payment-plan-click {:view view})}
-                   "Select"]]]
-       [:tr.row
-        [:td.cell "Free"]
-        [:td.cell "$0/month"]
-        [:td.cell.container-amount "1"]
-        [:td.cell [:a {:href (routes/v1-org-settings-subpage {:org selected-org
-                                                              :subpage "containers"})
-                       :on-click #(analytics/track-payment-plan-click {:view view})}
-                   "Selected"]]]]
-      [:table.comparison.table
-       [:tr.top.row
-        [:td.cell.first.metric "Plan Features"]
-        [:td.cell.unpaid "Free"]
-        [:td.cell.last.unpaid "Paid"]]
-       [:tr.row
-        [:td.cell.metric "Build Users"]
-        [:td.cell.unpaid "Unlimited"]
-        [:td.cell.paid "Unlimited"]]
-       [:tr.row
-        [:td.cell.metric "Build Minutes"]
-        [:td.cell.unpaid "1,500 minutes"]
-        [:td.cell.paid "Unlimited"]]
-       [:tr.row
-        [:td.cell.metric "Testing Inference"]
-        [:td.cell.unpaid [:i.material-icons.check "check"]]
-        [:td.cell.paid [:i.material-icons.check "check"]]]
-       [:tr.row
-        [:td.cell.metric "3rd Party Integrations"]
-        [:td.cell.unpaid [:i.material-icons.check "check"]]
-        [:td.cell.paid [:i.material-icons.check "check"]]]
-       [:tr.row
-        [:td.cell.metric "Community Forum"]
-        [:td.cell.unpaid [:i.material-icons.check "check"]]
-        [:td.cell.paid [:i.material-icons.check "check"]]]
-       [:tr.row
-        [:td.cell.metric "Engineer Ticket Support"]
-        [:td.cell.unpaid [:i.material-icons.ex "close"]]
-        [:td.cell.paid [:i.material-icons.check "check"]]]
-       [:tr.row
-        [:td.cell.metric "Parallelization"]
-        [:td.cell.unpaid [:i.material-icons.ex "close"]]
-        [:td.cell.paid [:i.material-icons.check "check"]]]
-       [:tr.row
-        [:td.cell.metric "Build Insights"]
-        [:td.cell.unpaid [:i.material-icons.ex "close"]]
-        [:td.cell.paid [:i.material-icons.check "check"]]]
-       [:tr.row
-        [:td.cell.metric "Build Timings"]
-        [:td.cell.unpaid [:i.material-icons.ex "close"]]
-        [:td.cell.paid [:i.material-icons.check "check"]]]]]]))
+                    "Select"]]]
+        [:tr.row
+         [:td.cell "Hobbyist"]
+         [:td.cell "$50/month"]
+         [:td.cell.container-amount "2"]
+         [:td.cell [:a {:href org-settings-path
+                        :on-click #(analytics/track-payment-plan-click {:view view})}
+                    "Select"]]]
+        [:tr.row
+         [:td.cell "Free"]
+         [:td.cell "$0/month"]
+         [:td.cell.container-amount "1"]
+         [:td.cell [:a {:href org-settings-path
+                        :on-click #(analytics/track-payment-plan-click {:view view})}
+                    "Selected"]]]]
+       [:table.comparison.table
+        [:tr.top.row
+         [:td.cell.first.metric "Plan Features"]
+         [:td.cell.unpaid "Free"]
+         [:td.cell.last.unpaid "Paid"]]
+        [:tr.row
+         [:td.cell.metric "Build Users"]
+         [:td.cell.unpaid "Unlimited"]
+         [:td.cell.paid "Unlimited"]]
+        [:tr.row
+         [:td.cell.metric "Build Minutes"]
+         [:td.cell.unpaid "1,500 minutes"]
+         [:td.cell.paid "Unlimited"]]
+        [:tr.row
+         [:td.cell.metric "Testing Inference"]
+         [:td.cell.unpaid [:i.material-icons.check "check"]]
+         [:td.cell.paid [:i.material-icons.check "check"]]]
+        [:tr.row
+         [:td.cell.metric "3rd Party Integrations"]
+         [:td.cell.unpaid [:i.material-icons.check "check"]]
+         [:td.cell.paid [:i.material-icons.check "check"]]]
+        [:tr.row
+         [:td.cell.metric "Community Forum"]
+         [:td.cell.unpaid [:i.material-icons.check "check"]]
+         [:td.cell.paid [:i.material-icons.check "check"]]]
+        [:tr.row
+         [:td.cell.metric "Engineer Ticket Support"]
+         [:td.cell.unpaid [:i.material-icons.ex "close"]]
+         [:td.cell.paid [:i.material-icons.check "check"]]]
+        [:tr.row
+         [:td.cell.metric "Parallelization"]
+         [:td.cell.unpaid [:i.material-icons.ex "close"]]
+         [:td.cell.paid [:i.material-icons.check "check"]]]
+        [:tr.row
+         [:td.cell.metric "iOS Support"]
+         [:td.cell.unpaid [:i.material-icons.ex "close"]]
+         [:td.cell.paid [:i.material-icons.check "check"]]]]]])))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
         repos (:repos user)
         settings (:settings data)
         selected-org (get-in settings [:add-projects :selected-org])
-        selected-org-login (:login selected-org)
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
     (html
@@ -596,6 +590,6 @@
                       (filter some?)
                       (first))]
          (when (and (not (config/enterprise?))
-                    (or (= selected-org-login (:login user)) (organization/show-upsell? org)))
-           (om/build payment-plan {:selected-org selected-org-login
+                    (or (= (:login selected-org) (:login user)) (organization/show-upsell? org)))
+           (om/build payment-plan {:selected-org selected-org
                                    :view view})))]])))

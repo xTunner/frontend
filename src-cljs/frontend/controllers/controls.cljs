@@ -569,6 +569,7 @@
                                            [:setup :dependencies :post_dependencies])
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         uuid frontend.async/*uuid*
         comms (get-in current-state [:comms])]
     (go
@@ -577,7 +578,7 @@
          (let [settings-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)))]
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
-           (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-subpage {:org org :repo repo :subpage "tests"})}]))
+           (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-path {:org org :repo repo :vcs_type vcs-type :_fragment "tests"})}]))
          (put! (:errors comms) [:api-error api-result]))
        (release-button! uuid (:status api-result))))))
 
@@ -950,7 +951,7 @@
     (analytics/track-save-orgs)))
 
 (defmethod post-control-event! :transfer-plan-clicked
-  [target message {:keys [to org-name]} previous-state current-state]
+  [target message {:keys [to org-name vcs_type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         errors-ch (get-in current-state [:comms :errors])
@@ -964,7 +965,8 @@
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
-           (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name})}])))
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
+                                                                         :vcs_type vcs_type})}])))
        (release-button! uuid (:status api-result))))))
 
 (defn- maybe-add-message-for-beta
@@ -1114,7 +1116,7 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :cancel-plan-clicked
-  [target message {:keys [org-name cancel-reasons cancel-notes]} previous-state current-state]
+  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         nav-ch (get-in current-state [:comms :nav])
@@ -1128,7 +1130,8 @@
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
-           (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name})
+           (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
+                                                                         :vcs_type vcs_type})
                                      :replace-token? true}])))
        (release-button! uuid (:status api-result))))))
 
