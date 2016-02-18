@@ -78,8 +78,7 @@
          (select-keys inputs keys)))
 
 (defn reset-dismissed-osx-usage-level [state]
-  (let [plan (get-in state state/project-plan-path)
-        dismissed-osx-usage-level (get-in state state/dismissed-osx-usage-level)]
-    (if (< (plan/current-months-osx-usage-% plan) dismissed-osx-usage-level)
+  (let [plan (get-in state state/project-plan-path)]
+    (if (< (plan/current-months-osx-usage-% plan) plan/first-warning-threshold)
       (assoc-in state state/dismissed-osx-usage-level plan/first-warning-threshold)
       state)))
