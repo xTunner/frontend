@@ -26,44 +26,6 @@
                  utils/text))
           "Top level simply renders appropriate text with given data, without verification of behavior"))))
 
-(deftest test-admin-links
-  (let [artifacts           (:artifacts test-build-data)
-        non-admin-tree      {:artifacts (bh/artifacts-tree "Container 0" artifacts)
-                             :show-artifact-links?    true}
-        non-admin-test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
-        admin-tree          {:artifacts (bh/artifacts-tree "Container 0" artifacts)
-                             :show-artifact-links?    false}
-        admin-test-node     (goog.dom/htmlToDocumentFragment "<div class='content'></div>")
-        art-link-count      (fn [node]
-                              (-> node
-                                  (sel ".artifact-link")
-                                  array-seq ;; Native NodeList isn't seqable
-                                  count))
-        art-dir-count      (fn [node]
-                             (-> node
-                                 (sel ".artifact-directory-text")
-                                 array-seq
-                                 count))]
-    (om/root bh/artifacts-node non-admin-tree {:target non-admin-test-node})
-    (om/root bh/artifacts-node admin-tree {:target admin-test-node})
-    (testing "Non-admin XSS links"
-      (is (pos? (art-link-count non-admin-test-node))
-          "Should be actual artifact links for non-admins")
-      (is (pos? (art-dir-count non-admin-test-node))
-          "Should be artifact directory spans for non-admins"))
-    (testing "Non-admin XSS links"
-      (is (zero? (art-link-count admin-test-node))
-          "Should be no artifact links for admins")
-      (is (pos? (art-dir-count admin-test-node))
-          "Should be artifact spans for admins"))))
-
-(deftest should-show-artifact-links-honors-production?
-  (is (bh/should-show-artifact-links? "production" false))
-  (is (not (bh/should-show-artifact-links? "production" true)))
-
-  (is (bh/should-show-artifact-links? "development" false))
-  (is (bh/should-show-artifact-links? "development" true)))
-
 (deftest previous-build-label
   (testing "should hide previous label if no previous build"
     (let [n (goog.dom/htmlToDocumentFragment "<div></div>")]
