@@ -58,10 +58,22 @@ We publish the details of the currently running build in these variables:
     The SHA1 of the commit being tested.
   </dd>
   <dt>
+    `CIRCLE_REPOSITORY_URL`
+  </dt>
+  <dd>
+    A link to the homepage for the current repository, for example, `https://github.com/circleci/frontend`.
+  </dd>
+  <dt>
     `CIRCLE_COMPARE_URL`
   </dt>
   <dd>
     A link to GitHub's comparison view for this push. Not present for builds that are triggered by GitHub pushes.
+  </dd>
+  <dt>
+    `CIRCLE_BUILD_URL`
+  </dt>
+  <dd>
+    A permanent link to the current build, for example, `https://circleci.com/gh/circleci/frontend/933`.
   </dd>
   <dt>
     `CIRCLE_BUILD_NUM`
