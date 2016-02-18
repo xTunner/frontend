@@ -119,8 +119,11 @@
 }
 
 #statuspage-bar {
+  @dismiss-icon-size: 14px;
+  
   position: relative;
-  min-height: 70px;
+  .flexy(center, flex-start);
+  height: 70px;
 
   &.none {
     display:none;
@@ -136,6 +139,8 @@
     position: absolute;
     top: @alert-padding;
     right: @alert-padding;
+    width: @dismiss-icon-size;
+    height: @dismiss-icon-size;
 
     svg {
       stroke: @grayDark;
@@ -145,7 +150,6 @@
 
   .status-page-color(@color, @background-color) {
     visibility: visible;
-    height: auto;
     padding: @alert-padding;
     background-color: @background-color;
     color: @color;
@@ -154,12 +158,33 @@
   }
 
   &.minor {
-    .status-page-color(@alert-warning-text, @alert-warning-bg);
+    .status-page-color(@statuspage-text-color, @statuspage-minor-bg);
   }
 
   &.major,
   &.critical {
-    .status-page-color(@alert-danger-text, @alert-danger-bg);
+    .status-page-color(@statuspage-text-color, @statuspage-major-bg);
+  }
+
+  h4 {
+    font-weight: bold;
+  }
+
+  h4, p {
+    overflow: hidden;
+    margin: 0;
+    line-height: 1.5;
+    text-overflow: ellipsis;
+  }
+
+  p {
+    text-overflow: ellipsis;
+  }
+
+  .statuspage-content {
+    .flex(0 0 ~"calc(100% - @{dismiss-icon-size})");
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
 

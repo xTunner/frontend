@@ -43,6 +43,7 @@
    :project-settings-project-name nil
    :org-settings-subpage nil
    :org-settings-org-name nil
+   :org-settings-vcs_type nil
    :admin-settings-subpage nil
    :dashboard-data {:branch nil
                     :repo nil
@@ -114,6 +115,7 @@
 (def project-path (conj project-data-path :project))
 (def project-scopes-path (conj project-data-path :project-scopes))
 (def page-scopes-path [:page-scopes])
+(def project-osx-keys-path (conj project-data-path :osx-keys))
 
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
@@ -152,6 +154,7 @@
 
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
+(def org-vcs_type-path (conj org-data-path :vcs_type))
 (def org-plan-path (conj org-data-path :plan))
 (def org-osx-enabled-path (conj org-data-path :osx_builds_enabled?))
 (def org-plan-balance-path (conj org-plan-path :account_balance))
@@ -169,7 +172,6 @@
 ;; Map of reason to boolean (selected or not selected)
 (defn selected-cancel-reason-path [reason] (conj selected-cancel-reasons-path reason))
 (def cancel-notes-path (conj org-data-path :cancel-notes))
-(def osx-keys-path (conj org-data-path :osx-keys))
 
 (def settings-path [:settings])
 

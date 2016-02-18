@@ -23,7 +23,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.utils.html :refer [open-ext]])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html inspect]]))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -48,9 +48,9 @@
 
     :none-light))
 
-(defn sidebar-build [build {:keys [org repo branch latest?]}]
+(defn sidebar-build [build {:keys [vcs_type org repo branch latest?]}]
   [:a.status {:class (when latest? "latest")
-       :href (routes/v1-build-path org repo (:build_num build))
+       :href (routes/v1-build-path vcs_type org repo (:build_num build))
        :title (str (build-model/status-words build) ": " (:build_num build))}
    (common/ico (status-ico-name build))])
 
@@ -59,7 +59,7 @@
     om/IDisplayName (display-name [_] "Aside Branch Activity")
     om/IRender
     (render [_]
-      (let [{:keys [org repo branch-data]} data
+      (let [{:keys [org repo branch-data vcs_type]} data
             [name-kw branch-builds] branch-data
             display-builds (take-last 5 (sort-by :build_num (concat (:running_builds branch-builds)
                                                                     (:recent_builds branch-builds))))]
@@ -67,20 +67,27 @@
          [:li
           [:div.branch
            {:role "button"}
-           [:a {:href (routes/v1-dashboard-path {:org org :repo repo :branch (name name-kw)})
+           [:a {:href (routes/v1-dashboard-path {:org org
+                                                 :repo repo
+                                                 :branch (name name-kw)
+                                                 :vcs_type vcs_type})
                 :title (utils/display-branch name-kw)}
             (-> name-kw utils/display-branch (utils/trim-middle 23))]]
           [:div.statuses {:role "button"}
            (for [build display-builds]
-             (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
+             (sidebar-build build {:vcs_type vcs_type :org org :repo repo :branch (name name-kw)}))]])))))
 
 (defn project-settings-link [{:keys [project]} owner]
   (when (and (project-model/can-read-settings? project))
-    (let [org-name (project-model/org-name project)
-          repo-name (project-model/repo-name project)]
-      [:a.project-settings-icon {:href (routes/v1-project-settings {:org (:username project)
-                                                                    :repo (:reponame project)})
-                                 :title (project-model/project-name project)
+    (let [org-name (:username project)
+          repo-name (:reponame project)
+          vcs-type (:vcs_type project)]
+      [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type vcs-type
+                                                                         :org org-name
+                                                                         :repo repo-name})
+                                 :title  (str
+                                           (project-model/project-name project)
+                                           " settings")
                                  :on-click #(analytics/track {:event-type :project-settings-clicked
                                                               :owner owner
                                                               :properties {:org org-name
@@ -109,7 +116,8 @@
                                         (= (name (:identifier branch))
                                            (:branch navigation-data)))
                                "selected")}
-                 [:a {:href (routes/v1-dashboard-path {:org (:username project)
+                 [:a {:href (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
+                                                       :org (:username project)
                                                        :repo (:reponame project)
                                                        :branch (name (:identifier branch))})
                       :on-click #(analytics/track {:event-type :branch-clicked
@@ -163,8 +171,9 @@
                                          :on-click #(do
                                                       (raise! owner [:expand-repo-toggled {:repo repo}])
                                                       nil)}]
-                [:a.project-name {:href (routes/v1-project-dashboard {:org (:username project)
-                                                                      :repo (:reponame project)})
+                [:a.project-name {:href (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
+                                                                           :org (:username project)
+                                                                           :repo (:reponame project)})
                                   :on-click #(analytics/track {:event-type :project-clicked
                                                                :owner owner
                                                                :properties {:org org-name
@@ -199,7 +208,7 @@
     (remove nil?
       [{:type :heading :title "Project Settings"}
        {:type :subpage :href "edit" :title "Overview" :subpage :overview}
-       {:type :subpage :href (routes/v1-org-settings navigation-data) :title "Org Settings"
+       {:type :subpage :href (routes/v1-org-settings-path navigation-data) :title "Org Settings"
         :class "project-settings-to-org-settings"}
        {:type :heading :title "Tweaks"}
        {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}

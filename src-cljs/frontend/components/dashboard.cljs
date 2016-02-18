@@ -27,42 +27,43 @@
         (if (empty? diagnostics)
           nil
           (html
-           [:.build-diagnostics
-            {:class (when collapsed? "collapsed")}
-            [:.diagnostics-header
-             {:on-click #(raise! owner [:collapse-build-diagnostics-toggled {:project-id-hash project-id-hash}])}
-             [:.icon
-              [:i.fa.fa-tachometer]]
-             [:.body
-              [:span.title "Build Diagnostics"]
-              "Tired of waiting for your builds to start?"]
-             [:div
-              [:i.fa.fa-chevron-down]]]
-            [:ul.diagnostics
-             (for [diagnostic diagnostics
-                   ;; When we have more than one type of diagnostic, we should
-                   ;; switch on :type, perhaps with a multimethod. For now, we
-                   ;; filter for the only :type we know of.
-                   :when (= "long-usage-queue" (:type diagnostic))]
-               [:li
-                [:.icon
-                 [:i.fa.fa-clock-o]]
-                [:.body
-                 [:b.repo-name (project-model/project-name project)]
-                 " could be faster because its average queue time is "
-                 [:b.time (-> diagnostic
-                              :avg_usage_queue_wait_ms
-                              (/ 60000)
-                              Math/floor) " minutes"]
-                 "."]
-                [:div
-                 [:a {:href (routes/v1-org-settings-subpage {:org (:plan_org_name diagnostic)
-                                                             :subpage "containers"})
-                      :on-click #(analytics/track {:event-type :add-more-containers-clicked
-                                                   :owner owner
-                                                   :properties {:org org-name
-                                                                :repo repo-name}})}
-                  "Add More Containers"]]])]]))))))
+            [:.build-diagnostics
+             {:class (when collapsed? "collapsed")}
+             [:.diagnostics-header
+              {:on-click #(raise! owner [:collapse-build-diagnostics-toggled {:project-id-hash project-id-hash}])}
+              [:.icon
+               [:i.fa.fa-tachometer]]
+              [:.body
+               [:span.title "Build Diagnostics"]
+               "Tired of waiting for your builds to start?"]
+              [:div
+               [:i.fa.fa-chevron-down]]]
+             [:ul.diagnostics
+              (for [diagnostic diagnostics
+                    ;; When we have more than one type of diagnostic, we should
+                    ;; switch on :type, perhaps with a multimethod. For now, we
+                    ;; filter for the only :type we know of.
+                    :when (= "long-usage-queue" (:type diagnostic))]
+                [:li
+                 [:.icon
+                  [:i.fa.fa-clock-o]]
+                 [:.body
+                  [:b.repo-name (project-model/project-name project)]
+                  " could be faster because its average queue time is "
+                  [:b.time (-> diagnostic
+                               :avg_usage_queue_wait_ms
+                               (/ 60000)
+                               Math/floor) " minutes"]
+                  "."]
+                 [:div
+                  [:a {:href (routes/v1-org-settings-path {:org (:plan_org_name diagnostic)
+                                                           :vcs_type (:vcs_type project)
+                                                           :_fragment "containers"})
+                       :on-click #(analytics/track {:event-type :add-more-containers-clicked
+                                                    :owner owner
+                                                    :properties {:org org-name
+                                                                 :repo repo-name}})}
+                   "Add More Containers"]]])]]))))))
 
 (defn dashboard [data owner]
   (reify
@@ -101,7 +102,7 @@
                      (om/build project-common/trial-notice current-project)]]])
 
                 (when (plan-model/suspended? plan)
-                  (om/build project-common/suspended-notice plan))
+                  (om/build project-common/suspended-notice plan (:vcs_type project)))
 
                 (om/build builds-table/builds-table builds {:opts {:show-actions? true
                                                                    :show-branch? (not (:branch nav-data))

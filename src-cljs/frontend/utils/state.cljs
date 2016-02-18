@@ -4,16 +4,19 @@
             [frontend.utils.seq :refer [find-index]])
   (:require-macros [frontend.utils :refer [inspect]]))
 
-(defn set-dashboard-crumbs [state {:keys [org repo branch]}]
+(defn set-dashboard-crumbs [state {:keys [org repo branch vcs_type]}]
   (assoc-in state state/crumbs-path
             (vec (concat
                    [{:type :dashboard}]
                    (when org [{:type :org
-                               :username org}])
+                               :username org
+                               :vcs_type vcs_type}])
                    (when repo [{:type :project
-                                :username org :project repo}])
+                                :username org :project repo
+                                :vcs_type vcs_type}])
                    (when branch [{:type :project-branch
-                                  :username org :project repo :branch branch}])))))
+                                  :username org :project repo :branch branch
+                                  :vcs_type vcs_type}])))))
 
 (defn reset-current-build [state]
   (assoc state :current-build-data {:build nil

@@ -126,7 +126,6 @@
   (mwarn "Cannot log unsupported event type "event", please add it to the list of supported events"))
 
 (defmulti track (fn [data]
-                  (println data)
                   (when (frontend.config/analytics-enabled?)
                     (cond
                       (supported-click-and-impression-events (:event-type data)) :track-click-and-impression-event

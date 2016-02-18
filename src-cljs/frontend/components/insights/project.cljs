@@ -128,9 +128,9 @@
           [:dl
            [:dt "current parallelism"]
            [:dd parallel
-            [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-subpage {:org (:username project)
-                                                                                   :repo (:reponame project)
-                                                                                   :subpage "parallel-builds"})
+            [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
+                                                                                :repo (:reponame project)
+                                                                                :_fragment "parallel-builds"})
                                         :on-click #(analytics/track {:event-type :parallelism-clicked
                                                                      :owner owner})}
              [:i.material-icons "tune"]]]]]]

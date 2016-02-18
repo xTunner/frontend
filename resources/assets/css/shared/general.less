@@ -232,43 +232,6 @@ button [spinner], button [data-spinner]{
   }
 }
 
-#sticky-help-link {
-  bottom: 0;
-  border: 1px solid @black;
-  border-bottom: 0;
-  border-radius: 6px 6px 0 0;
-  max-height: 41px;
-  overflow: hidden;
-  position: fixed;
-  right: 20px;
-  transition: max-height .7s ease;
-  z-index: @zindexStickyFooter;
-
-  .dark-background {
-    background: @grayDark;
-    color: @white;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 20px;
-    padding: 10px 19px 11px;
-    text-shadow: 0 1px 0 fade(@black, 50%);
-  }
-
-  .light-background {
-    background: @white;
-    padding: 10px 19px 11px;
-
-    .contact-us {
-      margin: 0px 0px 15px;
-    }
-  }
-
-  &.isOpen {
-    max-height: 1000px;
-  }
-}
-
 .om-instrumentation {
   figure {
     margin: 0;

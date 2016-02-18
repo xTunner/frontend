@@ -618,10 +618,12 @@
              (= :setup (:project-settings-subpage current-state)))
     (let [nav-ch (get-in current-state [:comms :nav])
           org (vcs-url/org-name (:project-id context))
-          repo (vcs-url/repo-name (:project-id context))]
-      (put! nav-ch [:navigate! {:path (routes/v1-project-settings-subpage {:org org
-                                                                           :repo repo
-                                                                           :subpage "tests"})}]))))
+          repo (vcs-url/repo-name (:project-id context))
+          vcs-type (vcs-url/vcs-type (:project-id context))]
+      (put! nav-ch [:navigate! {:path (routes/v1-project-settings-path {:org org
+                                                                        :repo repo
+                                                                        :vcs_type vcs-type
+                                                                        :_fragment "tests"})}]))))
 
 
 (defmethod post-api-event! [:save-test-commands-and-build :success]
@@ -644,16 +646,17 @@
     state
     (assoc-in state state/org-plan-path resp)))
 
-
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
   (when (= (:org-name context) (:org-settings-org-name current-state))
-    (let [nav-ch (get-in current-state [:comms :nav])]
-      (put! nav-ch [:navigate! {:path (routes/v1-org-settings-subpage {:org (:org-name context)
-                                                                       :subpage "containers"})
-                                :replace-token? true}])
-      (analytics/track {:event-type :new-plan-created
-                        :current-state current-state}))))
+    (let [nav-ch (get-in current-state [:comms :nav])
+          vcs_type (:org-settings-vcs_type current-state)]
+      (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
+                                                                    :vcs_type vcs_type
+                                                                    :_fragment "containers"})
+                                :replace-token? true}])))
+  (analytics/track {:event-type :new-plan-created
+                    :current-state current-state}))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
@@ -734,26 +737,39 @@
 
 (defmethod api-event [:get-code-signing-keys :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state state/osx-keys-path (:data resp)))
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (assoc-in state state/project-osx-keys-path (:data resp))))
+
+(defmethod api-event [:set-code-signing-keys :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (assoc-in state state/error-message-path nil)))
 
 (defmethod post-api-event! [:set-code-signing-keys :success]
-  [target message status {:keys [resp context]} previous-state current-state]
-  (api/get-code-signing-keys (:org-name context) (-> current-state :comms :api))
+  [target message status {:keys [context]} previous-state current-state]
+  (api/get-project-code-signing-keys (:project-name context) (-> current-state :comms :api))
+  ((:on-success context))
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:set-code-signing-keys :failed]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [context] :as args} previous-state current-state]
+  (put! (get-in current-state [:comms :errors]) [:api-error args])
   (forms/release-button! (:uuid context) status))
 
 (defmethod api-event [:delete-code-signing-key :success]
   [target message status {:keys [context]} state]
-  (update-in state state/osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
-                                                             (= (:id context) (:id %))))))
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (update-in state state/project-osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
+                                                                       (= (:id context) (:id %)))))))
 
 (defmethod post-api-event! [:delete-code-signing-keys :success]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [context]} previous-state current-state]
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:delete-code-signing-keys :failed]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [context] :as args} previous-state current-state]
+  (put! (get-in current-state [:comms :errors]) [:api-error args])
   (forms/release-button! (:uuid context) status))

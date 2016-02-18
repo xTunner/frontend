@@ -237,6 +237,7 @@
               [:div.loading-spinner common/spinner])
             [:svg#build-timings]]
            [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
-            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
+            [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (:org_name plan) :vcs_type (:vcs_type project)})
                               :on-click #(analytics/track {:event-type :build-timing-upsell-click
-                                                           :owner owner})} "upgrade here."]])]))))
+                                                           :owner owner})}
+             "upgrade here."]])]))))

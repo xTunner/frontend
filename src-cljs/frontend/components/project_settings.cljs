@@ -114,7 +114,7 @@
     om/IRender
     (render [_]
       (html
-       [:section
+       [:section.overview
         [:article
          [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
          [:h4 "Option 1"]
@@ -143,6 +143,7 @@
   "Determines what we show when they hover over the parallelism option"
   [project-data owner parallelism]
   (let [project (:project project-data)
+        plan (:plan project-data)
         project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades
@@ -166,16 +167,18 @@
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers for " parallelism "x."
-               [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                           :subpage "containers"})
+               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                        :vcs_type (:vcs_type project)
+                                                        :_fragment "containers"})
                     :on-click #(analytics/track {:event-type :add-more-containers-clicked
                                                  :owner owner})}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
-           [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                       :subpage "containers"})}
+           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                    :vcs_type (:vcs_type project)
+                                                    :_fragment "containers"})}
             "Add a plan"]]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
@@ -187,8 +190,9 @@
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
                                                parallelism "x parallelism.")}]
-        [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                    :subpage "containers"})}
+        [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                 :vcs_type (:vcs_type project)
+                                                 :_fragment "containers"})}
          "Upgrade"]]))))
 
 (defn parallelism-picker [project-data owner]
@@ -442,6 +446,11 @@
                                    "If this option is selected, then CircleCI will run builds for this project "
                                    "on Mac OSX rather than Linux. Select this if you have an iOS application "
                                    "that you want to build using CircleCI."]})
+            (describe-flag {:flag :osx-code-signing-enabled
+                            :title "Code Signing Support"
+                            :blurb [:p
+                                    "Enable automatic importing of code-signing identities and provisioning "
+                                    "profiles into the system keychain to simplify the code-signing process."]})
 
            (when (feature/enabled? :enable-trusty-setting)
              (describe-flag {:flag :trusty-beta
@@ -639,6 +648,8 @@
          [:section
           [:article
            [:h2 "Chatroom Integrations"]
+           [:p "If you want to control chat notifications on a per branch basis, "
+                                          [:a {:href "https://circleci.com/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
            [:div.chat-rooms
             (for [chat-spec [{:service "Slack"
                               :doc [:p "To get your Webhook URL, visit Slack's "
@@ -1374,111 +1385,185 @@
                       "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
                       "        deployment_group: my-deployment-group\n"))]]]]]])))))
 
-(defn p12-upload-form [_ owner]
+(defn modal [{:keys [id title body-component body-params error-message]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.modal.fade {:id id :data-component `modal}
+         [:div.modal-dialog
+          [:div.modal-content
+           [:div.modal-header
+            [:div.modal-title title]
+            [:i.material-icons.modal-close {:data-dismiss "modal"} "clear"]]
+           [:div.modal-body.upload
+            (om/build common/flashes error-message)
+            (om/build body-component body-params)]]]]))))
+
+(defn p12-upload-form [{:keys [project-name]} owner]
   (reify
     om/IInitState
     (init-state [_]
       {:description nil
        :password nil
        :file-name nil
-       :file-content nil})
+       :file-content nil
+       :dragged-over? false})
 
     om/IRenderState
-    (render-state [_ {:keys [description password file-name file-content]}]
-      (let [file-selected-fn (fn [e]
-                               (let [file (aget e "target" "files" 0)]
-                                 (om/set-state! owner :file-name (aget file "name"))
-                                 (doto (js/FileReader.)
-                                   (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
-                                   (.readAsBinaryString file))))]
+    (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
+      (let [close-modal-fn #(.modal ((aget js/window "$") "#p12-upload-modal") "hide")
+            clear-form-fn #(om/set-state! owner {:description nil
+                                                 :password nil
+                                                 :file-name nil
+                                                 :file-content nil})
+            file-selected-fn (fn [file]
+                               (om/set-state! owner :file-name (aget file "name"))
+                               (doto (js/FileReader.)
+                                 (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
+                                 (.readAsBinaryString file)))]
         (html
-          [:div
+          [:div {:data-component `p12-upload-form}
            [:div
-            [:label "Description"]
-            [:input.p12-key-description
+            [:label.label "Description"]
+            [:input.dumb.text-input
              {:type "text" :value description
               :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
 
            [:div
-            [:label "Password (Optional)"]
-            [:input.p12-key-password
+            [:label.label "Password (Optional)"]
+            [:input.dumb.text-input
              {:type "password" :value password
               :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
 
-           [:div.drag-and-drop-zone
-            (when file-name
-              [:div file-name])
-            [:input.p12-file-input {:type "file" :on-change file-selected-fn}]]
+           [:div
+            [:label.label "File"]
+            [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
+                                      :on-drag-over #(do (.stopPropagation %)
+                                                         (.preventDefault %)
+                                                         (om/set-state! owner :dragged-over? true))
+                                      :on-drag-leave #(om/set-state! owner :dragged-over? false)
+                                      :on-drop #(do (.stopPropagation %)
+                                                    (.preventDefault %)
+                                                    (om/set-state! owner :dragged-over? false)
+                                                    (file-selected-fn (aget % "dataTransfer" "files" 0)))}
+             (if file-name
+               [:div file-name]
+               [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
+             [:label.p12-file-input
+              [:input.hidden-p12-file-input {:type "file"
+                                             :on-change #(file-selected-fn (aget % "target" "files" 0))}]
+              [:i.material-icons "file_upload"]
+                "Choose file"]]]
 
+           [:hr]
            [:div.buttons
             (forms/managed-button
-              [:input.save {:data-failed-text "Failed",
+              [:input.upload {:data-failed-text "Failed",
                             :data-success-text "Uploaded",
                             :data-loading-text "Uploading...",
-                            :value "Upload key",
+                            :value "Upload",
                             :type "submit"
                             :disabled (not (and file-content description))
-                            :on-click #(do (raise! owner [:upload-p12 {:description description
+                            :on-click #(do (raise! owner [:upload-p12 {:project-name project-name
+                                                                       :description description
                                                                        :password (or password "")
                                                                        :file-content (base64/encodeString file-content)
-                                                                       :file-name file-name}])
-                                           (om/set-state! owner :description nil)
-                                           (om/set-state! owner :password nil)
-                                           (om/set-state! owner :file-name nil)
-                                           (om/set-state! owner :file-content nil))}])]])))))
+                                                                       :file-name file-name
+                                                                       :on-success (comp clear-form-fn close-modal-fn)}]))}])]])))))
 
 
-(defn p12-key [{:keys [id filename description uploaded_at]} owner]
+(defn p12-key-row [{:keys [project-name id filename description uploaded_at]} owner]
   (reify
     om/IRender
     (render [_]
       (html
-        (when-not (empty? id)
-          [:tr
-           [:td id]
-           [:td filename]
-           [:td description]
-           [:td (datetime/as-time-since uploaded_at)]
-           [:td {:on-click #(raise! owner [:delete-p12 {:id id}])} [:i.fa.fa-times-circle "Remove"]]])))))
+        [:tr {:data-component `p12-key-row}
+         [:td description]
+         [:td filename]
+         [:td id]
+         [:td (datetime/as-time-since uploaded_at)]
+         [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.delete.material-icons "cancel"]]]))))
 
-(defn code-signing [{:keys [project org]} owner]
+(defn p12-key-table [{:keys [rows]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [osx-keys (:osx-keys org)]
+      (html
+        [:table {:data-component `p12-key-table}
+         [:thead.head
+          [:tr
+           [:th "Description"]
+           [:th.filename-col "Filename"]
+           [:th.id-col "ID"]
+           [:th.uploaded-col "Uploaded"]
+           [:th.delete-col]]]
+         [:tbody.body (om/build-all p12-key-row rows)]]))))
+
+(defn no-keys-empty-state [{:keys [project-name]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div {:data-component `no-keys-empty-state}
+         [:i.octicon.octicon-key]
+         [:div.info
+          [:span.highlight project-name]
+          [:span " has no "]
+          [:span.highlight "Apple Code Signing Identities"]
+          [:span "  yet"]]
+         [:a.btn.upload-key-button {:data-target "#p12-upload-modal"
+                                    :data-toggle "modal"}
+          "Upload Key"]
+         [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
+
+(defn code-signing [{:keys [project-data error-message]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [project osx-keys]} project-data
+            project-name (vcs-url/project-name (:vcs_url project))]
         (html
-          [:section.code-signing-page
+          [:section.code-signing-page {:data-component `code-signing}
            [:article
-            [:h2 "Apple Code Signing Keys for " (vcs-url/org-name (:vcs_url project))]
-            [:div.key-list
-             [:h3 "Existing keys"]
-             [:table.table
-              [:thead
-               [:tr
-                [:th "ID"]
-                [:th "Filename"]
-                [:th "Description"]
-                [:th "Uploaded"]
-                [:th]]]
-              [:tbody
-               (om/build-all p12-key osx-keys)]]]
-            [:div.upload
-             [:h3 "Upload a new key"]
-             (om/build p12-upload-form {})]]])))))
+            [:div.header
+             [:div.title "Apple Code Signing Keys"]
+             [:a.btn.upload-key-button {:data-target "#p12-upload-modal"
+                                        :data-toggle "modal"}
+              "Upload Key"]]
+            [:hr.divider]
+            [:div.info "The following code-signing identities will be added to the system keychain when your build
+                        begins, and will be available to sign iOS and OSX apps. For more information about code-signing
+                        on CircleCI see our "
+             [:a
+              {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
+              "code-signing documentation."]]
+            (if-not (empty? osx-keys)
+              (om/build p12-key-table {:rows (->> osx-keys
+                                                  (map (partial merge {:project-name project-name})))})
+              (om/build no-keys-empty-state {:project-name project-name}))
+            (om/build modal {:id "p12-upload-modal"
+                             :title "Upload a New Apple Code Signing Key"
+                             :body-component p12-upload-form
+                             :body-params {:project-name project-name}
+                             :error-message error-message})]])))))
 
 (defn project-settings [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [org-data (get-in data state/org-data-path)
-            project-data (get-in data state/project-data-path)
+      (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
-            subpage (:project-settings-subpage data)]
+            subpage (:project-settings-subpage data)
+            error-message (get-in data state/error-message-path)]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
            [:div.loading-spinner-big common/spinner]
            [:div#project-settings
-            (om/build common/flashes (get-in data state/error-message-path))
+            ; Temporarly disable top level error messsage for the set of subpages while we
+            ; transition them. Each subpage will eventually handle their own error messages.
+            (when-not (contains? #{:code-signing} subpage)
+              (om/build common/flashes error-message))
             [:div#subpage
              (condp = subpage
                :parallel-builds (om/build parallel-builds project-data)
@@ -1501,6 +1586,6 @@
                :aws (om/build aws project-data)
                :aws-codedeploy (om/build aws-codedeploy project-data)
                :code-signing (if (feature/enabled? :show-ios-code-signing)
-                               (om/build code-signing {:project (:project project-data) :org org-data})
+                               (om/build code-signing {:project-data project-data :error-message error-message})
                                (om/build overview project-data))
                (om/build overview project-data))]]))))))

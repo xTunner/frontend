@@ -92,11 +92,6 @@
   []
   (not (enterprise?)))
 
-(defn help-tab-enabled?
-  "Whether we should show the 'Need Help?' tab at the bottom of the screen."
-  []
-  (not (enterprise?)))
-
 (defn show-marketing-pages?
   "Whether we should show links to marketing pages in the site header."
   []
