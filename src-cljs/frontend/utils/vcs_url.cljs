@@ -1,6 +1,7 @@
 (ns frontend.utils.vcs-url
   (:require [clojure.string :as string]
-            [frontend.utils :as utils :include-macros true]))
+            [frontend.utils :as utils :include-macros true]
+            [frontend.routes :as routes]))
 
 (def url-project-re #"^https?://([^/]+)/(.*)")
 
@@ -23,4 +24,4 @@
   (.replace (project-name vcs-url) "/" \u200b))
 
 (defn project-path [vcs-url]
-  (str "/" (vcs-type vcs-url) "/" (project-name vcs-url)))
+  (str "/" (routes/->short-vcs (vcs-type vcs-url)) "/" (project-name vcs-url)))
