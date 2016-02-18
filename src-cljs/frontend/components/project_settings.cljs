@@ -142,9 +142,7 @@
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
   [project-data owner parallelism]
-  (let [view "parallelism-tile"
-        plan (:plan project-data)
-        project (:project project-data)
+  (let [project (:project project-data)
         project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades

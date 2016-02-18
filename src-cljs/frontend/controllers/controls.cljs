@@ -952,12 +952,12 @@
        (release-button! uuid (:status api-result))))
     (let [previous-num-containers (get-in previous-state (conj state/org-plan-path :containers)) 
           new-num-containers containers
-          is-upgrade (> new-num-containers previous-num-containers)]
+          upgrade? (> new-num-containers previous-num-containers)]
       (analytics/track {:event-type :container-amount-changed
                         :current-state current-state
                         :properties {:previous-num-containers previous-num-containers
                                      :new-num-containers new-num-containers
-                                     :is-upgrade is-upgrade}}))))
+                                     :is-upgrade upgrade?}}))))
 
 (defmethod post-control-event! :update-osx-plan-clicked
   [target message {:keys [plan-type]} previous-state current-state]

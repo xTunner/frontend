@@ -143,7 +143,7 @@
                  (when show-project?
                    (project-settings-link {:project project} owner))]))])))))
 
-(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos view]} owner {:keys [login]}]
+(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
@@ -340,8 +340,7 @@
             recent-projects-filter (if (and sort-branches-by-recency?
                                             (not show-all-branches?))
                                      (partial project-model/personal-recent-project? (:login opts))
-                                     identity)
-            view "branch-list"]
+                                     identity)]
         (html
          [:div.aside-activity.open
           [:header
@@ -389,8 +388,7 @@
                          {:project project
                           :show-all-branches? show-all-branches?
                           :expanded-repos expanded-repos
-                          :navigation-data (:navigation-data app)
-                          :view view}
+                          :navigation-data (:navigation-data app)}
                          {:react-key (project-model/id project)
                           :opts {:login (:login opts)}}))])])))))
 

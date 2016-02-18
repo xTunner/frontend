@@ -292,27 +292,6 @@
                     :href (str path "?t=" (.getTime (js/Date.)))})]
     (.appendChild (.-head js/document) link)))
 
-(defn track-intercom-widget! [state]
-  (when (config/intercom-enabled?)
-    ;; wait a little bit for the intercom widget to load and install itself
-    (js/setTimeout
-     (fn []
-       (when-let [launcher (goog.dom/getElement "intercom-launcher")]
-         (goog.events/listen
-          launcher
-          goog.events.EventType.CLICK)))
-     5000)))
-
-(defn track-elevio-widget! [state]
-  (when (config/elevio-enabled?)
-    (js/setTimeout
-     (fn []
-       (when-let [launcher (goog.dom/getElement "elevio-base-menu")]
-         (goog.events/listen
-          launcher
-          goog.events.EventType.CLICK)))
-     5000)))
-
 (defn ^:export setup! []
   (apply-app-id-hack)
   (support/enable-one!)
@@ -326,9 +305,6 @@
     (when instrument?
       (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (if (config/elevio-enabled?)
-      (track-elevio-widget! state)
-      (track-intercom-widget! state))
     (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
