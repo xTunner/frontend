@@ -42,11 +42,8 @@
                 [:a {:href "/"} "homepage"]
                (if (not logged-in?)
                   [:span ", " [:a {:href (auth-url)
-                              :on-click #(raise! owner  [:track-external-link-clicked  {:path  (auth-url)
-                                                                                        :event "login-click"
-                                                                                        :properties
-                                                                                        {:source "header log-in"
-                                                                                         :url js/window.location.pathname}}])}
+                              :on-click #(raise! owner [:track-external-link-clicked {:event :login-clicked
+                                                                                      :owner owner}])}
                           "logging in"]
                    ", or "
                    [:a {:href "/signup"} "signing up"]]

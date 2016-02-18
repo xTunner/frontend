@@ -1182,10 +1182,11 @@
                              :current-state current-state})))
        (release-button! uuid (:status api-result))))))
 
-(defn track-and-redirect [event properties path]
+(defn track-and-redirect [event properties owner path]
   (let [redirect #(js/window.location.replace path)
         track-ch (analytics/track {:event-type :external-click
                                    :event event
+                                   :owner owner
                                    :properties properties})]
     (if track-ch
       (go (alt!
@@ -1196,8 +1197,8 @@
       (redirect))))
 
 (defmethod post-control-event! :track-external-link-clicked
-  [_ _ {:keys [event properties path]} _ _]
-  (track-and-redirect event properties path))
+  [_ _ {:keys [event properties owner path]} _ _]
+  (track-and-redirect event properties owner path))
 
 (defmethod control-event :language-testimonial-tab-selected
   [target message {:keys [index]} state]

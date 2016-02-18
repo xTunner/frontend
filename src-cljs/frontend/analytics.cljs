@@ -17,12 +17,12 @@
 (def AnalyticsEvent
   {:event-type s/Keyword
    :owner s/Any
-   (s/optional-key :properties) {s/Keyword s/Any}})
+   (s/optional-key :properties) (s/maybe {s/Keyword s/Any})})
 
 (def AnalyticsEventForControllers
-  {:event-type s/Keyword
-   :current-state s/Any
-   (s/optional-key :properties) {s/Keyword s/Any}} )
+  (-> AnalyticsEvent
+      (dissoc :owner)
+      (merge {:current-state {s/Any s/Any}})))
 
 (def PageviewEvent
   (merge
@@ -32,7 +32,7 @@
 (def ExternalClickEvent
   (merge 
     AnalyticsEvent
-    {:event s/Str}))
+    {:event s/Keyword}))
 
 (def BuildEvent
   (merge
@@ -57,6 +57,8 @@
     :build-timing-upsell-impression
     :cancel-plan-clicked
     :insights-bar-clicked
+    :login-clicked
+    :oauth-authorize-clicked
     :parallelism-clicked
     :pr-link-clicked
     :project-clicked
@@ -76,7 +78,7 @@
     :project-followed
     :project-unfollowed})
 
-(defn- add-properties-from-state [current-state]
+(defn- add-properties-to-track-from-state [current-state]
   "Get a dict of the mutable properties we want to track out of the
   state. Also add a timestamp."
   (let [view (get-in current-state state/current-view-path)
@@ -88,24 +90,24 @@
      :org org
      :repo repo}))
 
-(defn- add-properties-from-owner [owner]
+(defn- add-properties-to-track-from-owner [owner]
   "Get a dict of the mutable properties we want to track out of the
   owner."
   (let [app-state @(om/get-shared owner [:_app-state-do-not-use])]
-    (add-properties-from-state app-state)))
+    (add-properties-to-track-from-state app-state)))
 
-(defn- add-owner-properties-to-props [props owner]
+(defn- supplement-tracking-properties-from-owner [props owner]
   "Fill in any unsuppplied property values with those supplied
   in the app state via the owner."
   (-> owner
-      (add-properties-from-owner)
+      (add-properties-to-track-from-owner)
       (merge props)))
 
-(defn- add-state-properties-to-props [props state]
+(defn- supplement-tracking-properties-from-state [props state]
   "Fill in any unsuppplied property values with those supplied
   in the app state."
   (-> state
-      (add-properties-from-state)
+      (add-properties-to-track-from-state)
       (merge props)))
 
 (defn build-properties [build]
@@ -119,7 +121,12 @@
            {:elapsed_hours (/ (- (.getTime (js/Date.))
                                  (.getTime (js/Date. (:stop_time build))))
                               1000 60 60)})))
+
+(defn mlog-unsupported-event [event]
+  (mwarn "Cannot log unsupported event type "event", please add it to the list of supported events"))
+
 (defmulti track (fn [data]
+                  (println data)
                   (when (frontend.config/analytics-enabled?)
                     (cond
                       (supported-click-and-impression-events (:event-type data)) :track-click-and-impression-event
@@ -128,30 +135,32 @@
 
 (defmethod track :default [data]
   (if (frontend.config/analytics-enabled?)
-    (mwarn "Cannot log unsupported event type" (:event-type data) ", please add it to the list of supported events")
+    (mlog-unsupported-event (:event-type data))
     (mwarn "Analytics are currently not enabled")))
 
 (s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
-    (segment/track-event event-type (add-owner-properties-to-props properties owner))))
+    (segment/track-event event-type (supplement-tracking-properties-from-owner properties owner))))
 
 ;; Gotta finish this + add schema event
 (s/defmethod track :track-api-response-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
-    (segment/track-event event-type (add-state-properties-to-props properties current-state))))
+    (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))
 
 (s/defmethod track :new-plan-created [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data] 
-    (segment/track-event "new-plan-created" (add-owner-properties-to-props properties owner))
+    (segment/track-event "new-plan-created" (supplement-tracking-properties-from-owner properties owner))
     (intercom/track :paid-for-plan)))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner]} event-data]
-    (segment/track-external-click event (add-owner-properties-to-props properties owner))))
+    (if (supported-click-and-impression-events (:event event-data))
+      (segment/track-external-click event (supplement-tracking-properties-from-owner properties owner))
+      (mlog-unsupported-event (:event event-data)))))
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties current-state]} event-data]
-    (segment/track-pageview navigation-point (add-state-properties-to-props properties current-state))))
+    (segment/track-pageview navigation-point (supplement-tracking-properties-from-state properties current-state))))
 
 (s/defmethod track :build-triggered [event-data :- BuildEvent]
   (let [{:keys [build properties owner]} event-data
@@ -159,13 +168,13 @@
                       :build-num (:build_num build)
                       :retry? true}
                      properties)]
-    (segment/track-event "build-triggered" (add-owner-properties-to-props props owner))))
+    (segment/track-event "build-triggered" (supplement-tracking-properties-from-owner props owner))))
 
 (s/defmethod track :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
         props (merge (build-properties build) properties)
         user (get-in current-state state/user-path)]
-    (segment/track-event "view-build" (add-state-properties-to-props props current-state))
+    (segment/track-event "view-build" (supplement-tracking-properties-from-state props current-state))
     (when (and (:oss build) (build-model/owner? build user))
       (intercom/track :viewed-self-triggered-oss-build
                       {:vcs-url (vcs-url/project-name (:vcs_url build))

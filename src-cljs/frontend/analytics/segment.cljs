@@ -15,6 +15,11 @@
    :repo (s/maybe s/Str)
    s/Keyword s/Any})
 
+(def LoggedOutEvent
+  (merge
+    SegmentProperties
+    {:user (s/maybe s/Str)}))
+
 (s/defn track-pageview [navigation-point :- KeywordOrString & [properties :- SegmentProperties]]
   (utils/swallow-errors
     (js/analytics.page (name navigation-point) (clj->js properties))))
@@ -23,7 +28,7 @@
   (utils/swallow-errors
     (js/analytics.track (name event) (clj->js properties))))
 
-(s/defn track-external-click [event :- s/Str & [properties :- SegmentProperties]]
+(s/defn track-external-click [event :- KeywordOrString & [properties :- LoggedOutEvent]]
   (let [ch (chan)]
     (js/analytics.track (name event) (clj->js properties)
                         #(do (put! ch %) (close! ch)))

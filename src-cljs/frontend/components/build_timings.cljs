@@ -204,7 +204,7 @@
     (draw-steps! x-scale chart steps)))
 
 ;;;; Main component
-(defn build-timings [{:keys [build project plan user view]} owner]
+(defn build-timings [{:keys [build project plan]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -221,26 +221,22 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (if (project-model/show-build-timing? project plan)
-        (let [org-name (project-model/org-name project)
-              repo-name (project-model/repo-name project)]
-          (when-not (om/get-state owner [:drawn?])
-            (draw-chart! build)
-            (om/set-state! owner [:loading?] false)
-            (om/set-state! owner [:drawn?] true))
-          (analytics/track {:event-type :build-timing-upsell-impression
-                            :owner owner}))))
- om/IRenderState
- (render-state [_ {:keys [loading?]}]
+        (when-not (om/get-state owner [:drawn?])
+          (draw-chart! build)
+          (om/set-state! owner [:loading?] false)
+          (om/set-state! owner [:drawn?] true))
+        (analytics/track {:event-type :build-timing-upsell-impression
+                          :owner owner})))
+    om/IRenderState
+    (render-state [_ {:keys [loading?]}]
       (html
         [:div.build-timings
-        (if (project-model/show-build-timing? project plan)
-          (let [org-name (project-model/org-name project)
-              repo-name (project-model/repo-name project)]
-          [:div
-           (when loading?
-             [:div.loading-spinner common/spinner])
-           [:svg#build-timings]]
-          [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
-           [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
-                             :on-click #(analytics/track {:event-type :build-timing-upsell-click
-                                                          :owner owner})} "upgrade here."]]))]))))
+         (if (project-model/show-build-timing? project plan)
+           [:div
+            (when loading?
+              [:div.loading-spinner common/spinner])
+            [:svg#build-timings]]
+           [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
+            [:a.upgrade-link {:href (routes/v1-org-settings {:org (:org_name plan)})
+                              :on-click #(analytics/track {:event-type :build-timing-upsell-click
+                                                           :owner owner})} "upgrade here."]])]))))

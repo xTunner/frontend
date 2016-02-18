@@ -160,9 +160,8 @@
           [:a.home-action
            {:href  (auth-url :destination "/")
             :on-click #(raise! owner [:track-external-link-clicked
-                                      {:event "oauth-authorize-click"
-                                       :properties  {"oauth_provider" "github"}
-                                       :path  (auth-url :destination "/")}])}
+                                      {:event :oauth-authorize-clicked
+                                       :properties {:oauth-provider "github"}}])}
            (str (common/sign-up-text))])))))
 
 (defn prolog [data owner {:keys [logo-visibility-callback

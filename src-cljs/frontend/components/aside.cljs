@@ -74,7 +74,7 @@
            (for [build display-builds]
              (sidebar-build build {:org org :repo repo :branch (name name-kw)}))]])))))
 
-(defn project-settings-link [{:keys [project view login]} owner]
+(defn project-settings-link [{:keys [project]} owner]
   (when (and (project-model/can-read-settings? project))
     (let [org-name (project-model/org-name project)
           repo-name (project-model/repo-name project)]
@@ -87,7 +87,7 @@
                                                                            :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
-(defn branch-list [{:keys [branches show-all-branches? navigation-data view]} owner {:keys [login show-project?]}]
+(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Branch List")
     om/IRender
@@ -113,10 +113,10 @@
                                                        :repo (:reponame project)
                                                        :branch (name (:identifier branch))})
                       :on-click #(analytics/track {:event-type :branch-clicked
-                                                   :properties {:user login
-                                                                :repo repo-name
+                                                   :owner owner
+                                                   :properties {:repo repo-name
                                                                 :org org-name
-                                                                :view view}})}
+                                                                :branch (name (:identifier branch))}})}
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
@@ -141,9 +141,7 @@
                           " ago")
                          "never")])]]]
                  (when show-project?
-                   (project-settings-link {:project project
-                                           :view view
-                                           :login login} owner))]))])))))
+                   (project-settings-link {:project project} owner))]))])))))
 
 (defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos view]} owner {:keys [login]}]
   (reify
@@ -151,7 +149,6 @@
     om/IRender
     (render [_]
       (let [repo (project-model/project-name project)
-            view "branch-list"
             vcs-url (:vcs_url project)
             org-name (project-model/org-name project)
             repo-name (project-model/repo-name project)]
@@ -173,9 +170,7 @@
                                                                :properties {:org org-name
                                                                             :repo repo-name}})}
                  (project-model/project-name project)]
-                (project-settings-link {:project project
-                                        :view view
-                                        :login login} owner)]
+                (project-settings-link {:project project} owner)]
 
                (when (expanded-repos repo)
                  (om/build branch-list
@@ -183,8 +178,7 @@
                                            project-model/branches
                                            (sort-by (comp lower-case name :identifier)))
                             :show-all-branches? show-all-branches?
-                            :navigation-data navigation-data
-                            :view view}
+                            :navigation-data navigation-data}
                            {:opts {:login login}}))])))))
 
 (defn expand-menu-items [items subpage]
@@ -413,8 +407,7 @@
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
         (om/build branch-activity-list app {:opts {:login (:login opts)
-                                                   :scrollbar-width (om/get-state owner :scrollbar-width)
-                                                   :view "build-list"}})]))))
+                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
 
 (defn aside-nav [app owner]
   (reify

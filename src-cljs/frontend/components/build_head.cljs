@@ -85,7 +85,6 @@
 
     om/IRender
     (render [_]
-      (println data)
       (let [{:keys [build builds]} data
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
@@ -595,7 +594,7 @@
         (:job_name build)
         "unknown"))))
 
-(defn commit-line [{:keys [author_name build subject body commit_url commit user view] :as commit-details} owner]
+(defn commit-line [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -705,8 +704,7 @@
             project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)
-            build-params (:build_parameters build)
-            view (:view data)]
+            build-params (:build_parameters build)]
         (html
          [:div.sub-head
           [:div.sub-head-top
@@ -767,9 +765,7 @@
 
              :build-timing (om/build build-timings/build-timings {:build build
                                                                   :project project
-                                                                  :plan plan
-                                                                  :user user
-                                                                  :view view})
+                                                                  :plan plan})
 
              :artifacts (om/build build-artifacts-list
                                   {:artifacts-data (get build-data :artifacts-data) :user user
@@ -797,7 +793,7 @@
             (:name canceler)
             (:login canceler))])])
 
-(defn pull-requests [{:keys [urls view]} owner]
+(defn pull-requests [{:keys [urls]} owner]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
   [:div.summary-item
    [:span.summary-label
@@ -897,8 +893,7 @@
             config-data (:config-data build-data)
             build-info {:build-id (build-model/id build)
                         :vcs-url (:vcs_url build)
-                        :build-num (:build_num build)}
-            view (:view data)]
+                        :build-num (:build_num build)}]
         (html
          [:div
           [:div.summary-header
@@ -944,8 +939,7 @@
              [:span (trigger-html build)]]
 
             (when-let [urls (seq (:pull_request_urls build))]
-              (pull-requests {:urls urls
-                              :view view} owner))]]
+              (pull-requests {:urls urls} owner))]]
 
           (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]
@@ -955,7 +949,7 @@
                (build-canceler canceler github-endpoint)]]])
           [:div.card
            [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
-           (om/build build-commits build-data view)]
+           (om/build build-commits build-data)]
           [:div.build-head-wrapper
            [:div.build-head
             (om/build build-sub-head data)]]])))))

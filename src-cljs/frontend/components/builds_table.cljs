@@ -43,8 +43,7 @@
       (dashboard-icon "Default-Avatar"))))
 
 (defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
-  (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
-        view "build-card"]
+  (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
