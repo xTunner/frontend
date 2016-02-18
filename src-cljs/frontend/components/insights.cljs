@@ -131,7 +131,10 @@
   (str (utils/uri-to-relative (unexterned-prop build "build_url"))
        "#build-timing"))
 
-(defn visualize-insights-bar! [plot-info el builds {:keys [on-focus-build on-mouse-move] :as events}]
+(defn visualize-insights-bar! [plot-info el builds {:keys [on-focus-build on-mouse-move]
+                                                    :or {on-focus-build (constantly nil)
+                                                         on-mouse-move (constantly nil)}
+                                                    :as events}]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
                                               (map %)
