@@ -179,7 +179,7 @@
                (common/circle-logo {:width nil
                                     :height 25})]
               (if logged-in?
-                [:a.mobile-nav {:href "/"} "Back to app"]
+                [:a.mobile-nav {:href "/dashboard"} "Back to app"]
                 [:a.mobile-nav.signup (open-ext {:href "/signup/"}) "Sign up"])
               ]
              [:div.navbar-container {:class hamburger-state}
@@ -245,7 +245,7 @@
                    [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))]
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right.back-to-app
-                 [:li [:a.menu-item {:href "/"} "Back to app"]]]
+                 [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
                   [:a.login.login-link.menu-item {:href (auth-url)
@@ -256,11 +256,11 @@
                   (if (= :page (om/get-shared owner [:ab-tests :auth-button-vs-page]))
                     [:a.signup-link.btn.btn-success.navbar-btn.menu-item (open-ext {:href "/signup/"}) "Sign Up"]
                     [:a.signup-link.btn.btn-success.navbar-btn.menu-item
-                     {:href (auth-url :destination "/")
+                     {:href (auth-url :destination "/dashboard")
                       :on-click #(raise! owner [:track-external-link-clicked
                                                 {:event "oauth_authorize_click"
                                                  :properties {"oauth_provider" "github"}
-                                                 :path (auth-url :destination "/")}])}
+                                                 :path (auth-url :destination "/dashboard")}])}
                      "Sign Up"])]])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"

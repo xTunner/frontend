@@ -530,7 +530,7 @@
   [target message status {:keys [resp context]} state]
   (let [updated-state
         (update-in state state/projects-path (fn [projects] (remove #(= (:project-id context) (project-model/id %)) projects)))]
-    (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-root)}])
+    (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-dashboard)}])
     updated-state))
 
 (defn org-selectable? [state org-name]
