@@ -1,7 +1,8 @@
 (ns frontend.utils.state
   (:require [frontend.state :as state]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.seq :refer [find-index]])
+            [frontend.utils.seq :refer [find-index]]
+            [frontend.models.plan :as plan])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch]}]
@@ -75,3 +76,10 @@
 (defn merge-inputs [defaults inputs keys]
   (merge (select-keys defaults keys)
          (select-keys inputs keys)))
+
+(defn reset-dismissed-osx-usage-level [state]
+  (let [plan (get-in state state/project-plan-path)
+        dismissed-osx-usage-level (get-in state state/dismissed-osx-usage-level)]
+    (if (< (plan/current-months-osx-usage-% plan) dismissed-osx-usage-level)
+      (assoc-in state state/dismissed-osx-usage-level plan/first-warning-threshold)
+      state)))

@@ -10,6 +10,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
+            [frontend.models.plan :as plan]
             [frontend.intercom :as intercom]
             [frontend.support :as support]
             [frontend.routes :as routes]
@@ -1341,3 +1342,15 @@
 (defmethod control-event :logging-enabled-clicked
   [_ _ _ state]
   (update-in state state/logging-enabled-path not))
+
+(defmethod control-event :dismiss-osx-usage-banner
+  [_ _ {:keys [current-usage]} current-state]
+  (cond
+    (>= current-usage plan/second-warning-threshold)
+    (assoc-in current-state state/dismissed-osx-usage-level plan/third-warning-threshold)
+
+    (>= current-usage plan/first-warning-threshold)
+    (assoc-in current-state state/dismissed-osx-usage-level plan/second-warning-threshold)
+
+    :else
+    current-state))

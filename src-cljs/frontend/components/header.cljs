@@ -292,7 +292,7 @@
     om/IRender
     (render [_]
       (html
-        [:div.alert.alert-warning.alert-dismissible {:data-component `osx-usage-warning-banner}
+        [:div.alert.alert-warning {:data-component `osx-usage-warning-banner}
          [:div.usage-message
           [:div
            [:span (str "Your current usage represents "  (plan/current-months-osx-usage-% plan) "% of ")]
@@ -304,7 +304,8 @@
                    be directed to "]
            [:a {:href "mailto:support@circleci.com"} "support@circleci.com"]
            [:span "."]]]
-        [:a.dismiss [:i.material-icons "clear"]]]))))
+         [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
+          [:i.material-icons "clear"]]]))))
 
 (defn inner-header [app owner]
   (reify
@@ -331,7 +332,8 @@
            (when (and (feature/enabled? :ios-build-usage)
                       (= :build (:navigation-point app))
                       (project-model/feature-enabled? project :osx)
-                      (plan/over-usage-threshold? plan plan/first-warning-threshold))
+                      (plan/over-usage-threshold? plan plan/first-warning-threshold)
+                      (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
              (om/build osx-usage-warning-banner plan))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user app))])))))
