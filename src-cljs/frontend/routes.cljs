@@ -131,21 +131,6 @@
       (.replace js/location (str "https://circleci.com/docs/" subpage))
       (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage)))))
 
-  (defroute v1-about "/about" {:as params}
-    (open-to-outer! nav-ch :about (assoc params
-                                    :_title "About Us"
-                                    :_description "Learn more about the CircleCI story and why we're building the leading Continuous Integration and Deployment platform.")))
-
-  (defroute v1-team "/about/team" {:as params}
-    (open-to-outer! nav-ch :team (assoc params
-                                    :_title "About the Team"
-                                    :_description "Meet the team behind CircleCI, the state-of-the-art automated testing, continuous integration, and continuous deployment tool made for developers.")))
-
-  (defroute v1-contact "/contact" {:as params}
-    (open-to-outer! nav-ch :contact (assoc params
-                                      :_title "Contact Us"
-                                      :_description "Get in touch with CircleCI.")))
-
   (defroute v1-mobile "/mobile" {:as params}
     (open-to-outer! nav-ch :mobile (assoc params
                                      :_title "Mobile Continuous Integration and Mobile App Testing"
