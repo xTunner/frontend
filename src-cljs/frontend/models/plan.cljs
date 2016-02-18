@@ -197,6 +197,7 @@
 (def first-warning-threshold 75)
 (def second-warning-threshold 95)
 (def third-warning-threshold 100)
+(def future-warning-threshold-increment 10)
 
 (defn over-usage-threshold? [plan threshold-percent]
   (> (current-months-osx-usage-% plan)

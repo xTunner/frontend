@@ -1346,6 +1346,9 @@
 (defmethod control-event :dismiss-osx-usage-banner
   [_ _ {:keys [current-usage]} current-state]
   (cond
+    (>= current-usage plan/third-warning-threshold)
+    (assoc-in current-state state/dismissed-osx-usage-level (+ current-usage plan/future-warning-threshold-increment))
+
     (>= current-usage plan/second-warning-threshold)
     (assoc-in current-state state/dismissed-osx-usage-level plan/third-warning-threshold)
 
