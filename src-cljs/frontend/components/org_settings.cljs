@@ -979,9 +979,6 @@
            [:div.amounts-label
             (str (.toLocaleString usage) "/" (.toLocaleString max) " minutes")]]])))))
 
-(defn usage-key->date [usage-key]
-  (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))
-
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
     om/IRender
@@ -1000,7 +997,7 @@
                                  (map (fn [[month amount]]
                                         {:usage (.round js/Math (/ amount 1000 60))
                                          :max osx-max-minutes
-                                         :month ((comp datetime/date->month-name usage-key->date) month)})))]
+                                         :month ((comp datetime/date->month-name pm/usage-key->date) month)})))]
               [:div.monthly-usage
                (om/build-all usage-bar osx-usage)])
             [:div.explanation
