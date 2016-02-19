@@ -74,7 +74,7 @@
     :signup-clicked
     :signup-impression})
 
-(def supported-api-response-events
+(def supported-controller-events
   ;; These are the api response events.
   ;; They are in the format of <object>-<action take in the past tense>
   #{:container-amount-changed
@@ -131,7 +131,7 @@
                   (when (frontend.config/analytics-enabled?)
                     (cond
                       (supported-click-and-impression-events (:event-type data)) :track-click-and-impression-event
-                      (supported-api-response-events (:event-type data)) :track-api-response-events
+                      (supported-controller-events (:event-type data)) :track-controller-events
                       :else (:event-type data)))))
 
 (defmethod track :default [data]
@@ -143,13 +143,13 @@
     (segment/track-event event-type (supplement-tracking-properties-from-owner properties owner))))
 
 ;; Gotta finish this + add schema event
-(s/defmethod track :track-api-response-events [event-data :- AnalyticsEventForControllers]
+(s/defmethod track :track-controller-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
     (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))
 
-(s/defmethod track :new-plan-created [event-data :- AnalyticsEvent]
+(s/defmethod track :new-plan-created [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties owner]} event-data] 
-    (segment/track-event "new-plan-created" (supplement-tracking-properties-from-owner properties owner))
+    (segment/track-event :new-plan-created (supplement-tracking-properties-from-owner properties owner))
     (intercom/track :paid-for-plan)))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
@@ -168,13 +168,13 @@
                       :build-num (:build_num build)
                       :retry? true}
                      properties)]
-    (segment/track-event "build-triggered" (supplement-tracking-properties-from-owner props owner))))
+    (segment/track-event :build-triggered (supplement-tracking-properties-from-owner props owner))))
 
 (s/defmethod track :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
         props (merge (build-properties build) properties)
         user (get-in current-state state/user-path)]
-    (segment/track-event "view-build" (supplement-tracking-properties-from-state props current-state))
+    (segment/track-event :view-build (supplement-tracking-properties-from-state props current-state))
     (when (and (:oss build) (build-model/owner? build user))
       (intercom/track :viewed-self-triggered-oss-build
                       {:vcs-url (vcs-url/project-name (:vcs_url build))

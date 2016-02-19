@@ -4,13 +4,11 @@
             [frontend.utils :as utils :include-macros true]
             [schema.core :as s]))
 
-(def KeywordOrString (s/conditional keyword? s/Keyword :else s/Str))
-
 (def SegmentProperties
   ;; user and view should never be null, since they will always have values for
   ;; a logged in user.
   {:user s/Str
-   :view KeywordOrString
+   :view s/Keyword
    :org  (s/maybe s/Str)
    :repo (s/maybe s/Str)
    s/Keyword s/Any})
@@ -20,15 +18,15 @@
     SegmentProperties
     {:user (s/maybe s/Str)}))
 
-(s/defn track-pageview [navigation-point :- KeywordOrString & [properties :- SegmentProperties]]
+(s/defn track-pageview [navigation-point :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors
     (js/analytics.page (name navigation-point) (clj->js properties))))
 
-(s/defn track-event [event :- KeywordOrString & [properties :- SegmentProperties]]
+(s/defn track-event [event :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors
     (js/analytics.track (name event) (clj->js properties))))
 
-(s/defn track-external-click [event :- KeywordOrString & [properties :- LoggedOutEvent]]
+(s/defn track-external-click [event :- s/Keyword & [properties :- LoggedOutEvent]]
   (let [ch (chan)]
     (js/analytics.track (name event) (clj->js properties)
                         #(do (put! ch %) (close! ch)))
