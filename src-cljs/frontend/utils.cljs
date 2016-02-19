@@ -39,6 +39,23 @@
     "false" false
     nil))
 
+(defn clj-key->js-key [kw]
+  "Converts a clj key (:foo-bar) to a js key (foo_bar)."
+  (-> kw
+      name
+      (string/replace #"-" "_")))
+
+(defn clj-keys-with-dashes->js-keys-with-underscores [clj-map]
+  "Same as clj->js but also converts dashes to underscores in key only.
+  This leaves the key as a string so its only to be used immediately prior
+  to sending data to third party services."
+  (->> (for [[kw value] clj-map]
+         [(clj-key->js-key kw)
+          (if (map? value)
+            (clj-keys-with-dashes->js-keys-with-underscores value)
+            value)])
+       (into {})
+       (clj->js)))
 
 (defn uri-to-relative
   "Returns relative uri e.g. \"/a/b/c\" for \"http://yahoo.com/a/b/c\""

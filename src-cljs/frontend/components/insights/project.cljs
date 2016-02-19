@@ -144,9 +144,9 @@
                               (take (:max-bars build-time-bar-chart-plot-info))
                               (map insights/add-queued-time))]
     (html
-     (if (nil? chartable-builds)
-       ;; Loading...
-       [:div.loading-spinner-big common/spinner]
+      (if (nil? chartable-builds)
+        ;; Loading...
+        [:div.loading-spinner-big common/spinner]
 
        ;; We have data to show.
        [:div.insights-project
@@ -176,7 +176,8 @@
             [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
                                                                                 :repo (:reponame project)
                                                                                 :_fragment "parallel-builds"})
-                                        :on-click #(analytics/track-insights-project-parallelism-click {:navigation-data navigation-data})}
+                                        :on-click #(analytics/track {:event-type :parallelism-clicked
+                                                                     :owner owner})}
              [:i.material-icons "tune"]]]]]]
         [:div.card
          [:div.card-header

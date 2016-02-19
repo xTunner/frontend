@@ -24,6 +24,12 @@
 (defn settings-path [project]
   (str "/" (-> project vcs-type routes/->short-vcs) "/" (vcs-url/project-name project) "/edit"))
 
+(defn repo-name [project]
+  (:reponame project))
+
+(defn org-name [project]
+  (:username project))
+
 (defn default-branch? [branch-name project]
   (= (name branch-name) (:default_branch project)))
 

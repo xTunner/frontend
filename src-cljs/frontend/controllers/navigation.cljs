@@ -52,9 +52,7 @@
                        (str/capitalize (name navigation-point))))
   (when :_description args
         (set-page-description! (:_description args)))
-  (scroll! args)
-  (when (:_analytics-page args)
-    (analytics/track-page (:_analytics-page args))))
+  (scroll! args))
 
 (defmethod post-navigated-to! :default
   [history-imp navigation-point args previous-state current-state]
@@ -122,7 +120,6 @@
                          :project-plan
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))}))))))
-  (analytics/track-dashboard)
   (set-page-title!))
 
 (defmethod post-navigated-to! :build-state
@@ -195,7 +192,9 @@
             :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
             (put! err-ch [:api-error api-result]))
           (when (= :success (:status api-result))
-            (analytics/track-build current-user build))
+            (analytics/track {:event-type :view-build
+                              :current-state current-state
+                              :build build}))
           ;; Preemptively make the usage-queued API call if the build is in the
           ;; usage queue and the user has access to the info
           (when (and (:read-settings scopes) (build-model/in-usage-queue? build))
@@ -247,9 +246,7 @@
     (api/get-github-repos api-ch)
     (when (feature/enabled? :bitbucket)
       (api/get-bitbucket-repos api-ch)))
-  (set-page-title! "Add projects")
-  (analytics/track-signup))
-
+  (set-page-title! "Add projects"))
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
@@ -340,8 +337,7 @@
 (defmethod post-navigated-to! :landing
   [history-imp navigation-point _ previous-state current-state]
   (set-page-title! "Continuous Integration and Deployment")
-  (set-page-description! "Free Hosted Continuous Integration and Deployment for web and mobile applications. Build better apps and ship code faster with CircleCI.")
-  (analytics/track-homepage))
+  (set-page-description! "Free Hosted Continuous Integration and Deployment for web and mobile applications. Build better apps and ship code faster with CircleCI."))
 
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
@@ -439,7 +435,6 @@
                             api-ch
                             :context {:org-name org}))
       nil))
-  (analytics/track-org-settings org)
   (set-page-title! (str "Org settings - " org)))
 
 (defmethod navigated-to :logout
@@ -508,9 +503,7 @@
                        (doc-utils/format-doc-manifest (:resp api-result)))))
           doc (get docs subpage)]
       (cond
-       (not subpage)
-       (do (set-page-title! "What can we help you with?")
-           (analytics/track-page "View Docs"))
+       (not subpage) (set-page-title! "What can we help you with?")
        doc
        (do
          (set-page-title! (:title doc))

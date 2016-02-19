@@ -47,5 +47,4 @@
                    (set-user-seed!)
                    (get-user-seed)))
         choices (choose seed test-definitions :overrides overrides)]
-    (analytics/track-ab-choices choices)
     choices))
