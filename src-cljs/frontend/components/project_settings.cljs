@@ -459,7 +459,7 @@
                                      "Select this option to run builds in our Ubuntu 14.04 (Trusty) container."
                                      "This container is currently in beta."
                                      "Our default container is Ubuntu 12.04 (Precise)."
-                                       [:p [:strong "Please note that you need to trigger a build by pushing commits to Github (instead of rebuilding) to apply the new setting."]]]}))
+                                       [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]}))
             ]]])))))
 
 (defn dependencies [project-data owner]
