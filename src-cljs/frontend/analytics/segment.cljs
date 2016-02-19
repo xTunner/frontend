@@ -1,7 +1,9 @@
 (ns frontend.analytics.segment
   (:require [cljs.core.async :as async :refer  [chan close!]]
             [frontend.async :refer  [put!]]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils
+             :include-macros true
+             :refer [clj-keys-with-dashes->js-keys-with-underscores]]
             [schema.core :as s]))
 
 (def SegmentProperties
@@ -20,14 +22,17 @@
 
 (s/defn track-pageview [navigation-point :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors
-    (js/analytics.page (name navigation-point) (clj->js properties))))
+    (js/analytics.page (name navigation-point)
+                       (clj-keys-with-dashes->js-keys-with-underscores properties))))
 
 (s/defn track-event [event :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors
-    (js/analytics.track (name event) (clj->js properties))))
+    (js/analytics.track (name event)
+                        (clj-keys-with-dashes->js-keys-with-underscores properties))))
 
 (s/defn track-external-click [event :- s/Keyword & [properties :- LoggedOutEvent]]
   (let [ch (chan)]
-    (js/analytics.track (name event) (clj->js properties)
+    (js/analytics.track (name event)
+                        (clj-keys-with-dashes->js-keys-with-underscores properties)
                         #(do (put! ch %) (close! ch)))
     ch))
