@@ -134,7 +134,7 @@
 (defn visualize-insights-bar! [plot-info el builds {:keys [on-focus-build on-mouse-move]
                                                     :or {on-focus-build (constantly nil)
                                                          on-mouse-move (constantly nil)}
-                                                    :as events}]
+                                                    :as events} owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
                                               (map %)
@@ -143,7 +143,7 @@
                 (.select el)
                 (.select "svg")
                 ;; Set the SVG up to redraw itself when it resizes.
-                (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds events)))
+                (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds events owner)))
                 (.on "mousemove" #(on-mouse-move (d3.mouse el))))
         svg-bounds (-> svg
                        ffirst
@@ -355,11 +355,11 @@
     (did-mount [_]
       (let [el (om/get-node owner)]
         (insert-skeleton plot-info el)
-        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]))))
+        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]) owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]))))
+        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]) owner)))
     om/IRender
     (render [_]
       (html
