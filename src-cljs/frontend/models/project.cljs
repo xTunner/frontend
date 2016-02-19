@@ -172,3 +172,8 @@
 
 (defn show-upsell? [project plan]
   (not (show-premium-content? project plan)))
+
+(defn parallel-available?
+  "Are parallel builds available for this project type?"
+  [project]
+  (not (osx? project)))
