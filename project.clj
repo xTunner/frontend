@@ -60,7 +60,6 @@
 
   :jvm-opts ["-Djava.net.preferIPv4Stack=true"
              "-server"
-             "-XX:MaxPermSize=256m"
              "-XX:+UseConcMarkSweepGC"
              "-Xss1m"
              "-Xmx1024m"
@@ -127,7 +126,7 @@
                         :cljsbuild {:builds {:dev {:source-paths ["devtools"]}}}
                         :dependencies [[binaryage/devtools "0.5.2"]
                                        [binaryage/dirac "0.1.3"]]}
-             :dev {:source-paths ["src-cljs"]
+             :dev {:source-paths ["src-cljs" "test-cljs"]
                    :repl-options {:port 8230
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
                    :dependencies [[figwheel-sidecar "0.5.0-2"]

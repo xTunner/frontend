@@ -286,13 +286,14 @@
             container-count (count filtered-containers)
             previous-container-count (max 0 (- paging-offset 1))
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
+            project (get-in data [:project-data :project])
             plan (get-in data [:project-data :plan])
-            show-upsell? (project-model/show-upsell? (get-in data [:project-data :project]) plan)
+            show-upsell? (project-model/show-upsell? project plan)
             div (html
                  [:div.container-list {:class (when (and (> previous-container-count 0)
                                                          (> subsequent-container-count 0))
                                                 "prev-and-next")}
-                  (if (> previous-container-count 0)
+                  (if (pos? previous-container-count)
                     [:a.container-selector.page-container-pills
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (- paging-offset paging-width)}])}
                      [:div.nav-caret
@@ -309,7 +310,9 @@
                                :current-container-id current-container-id
                                :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
-                  (if (> subsequent-container-count 0)
+                  (cond
+
+                    (pos? subsequent-container-count)
                     [:a.container-selector.page-container-pills
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (+ paging-offset paging-width )}])}
                      [:div.pill-details ;; just for flexbox container
@@ -317,6 +320,8 @@
                       [:div container-count " total"]]
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-right]]]
+
+                    (project-model/parallel-available? project)
                     [:a.container-selector.add-containers
                      {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                           :_fragment "containers"
@@ -328,7 +333,8 @@
                        [:span "+"])])])]
         (html
          [:div.container-pills-container
-          (when (build-model/finished? build)
+          (when (and (project-model/parallel-available? project)
+                     (build-model/finished? build))
             (om/build container-controls {:current-filter current-filter
                                           :containers containers
                                           :categorized-containers categorized-containers

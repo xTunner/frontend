@@ -1,2 +1,23 @@
+// A helper for defining component styles. Use .ns() to set the namespace of the
+// components you're styling, then a .ui() block within it for each component.
+// This is analagous to the ns and def/defrender/defui forms in ClojureScript.
+//
+// Usage:
+//
+// .ns("frontend.components.insights.project", {
+//   .ui("build-status-bar-chart-hovercard", {
+//     // Styles for the frontend.components.insights.project/build-status-bar-chart-hovercard component.
+//   });
+// });
+.ns(@ns, @ns-rules) {
+  .ui(@component, @component-rules) {
+    [data-component="@{ns}/@{component}"] {
+      @component-rules();
+    }
+  };
+
+  @ns-rules();
+};
+
 @import "components/insights.less";
 @import "components/insights/project.less";

@@ -862,9 +862,9 @@
             previous-build (:previous_successful_build build)
             past-ms (:build_time_millis previous-build)]
         (html
-         [:div.summary-item
-          [:span.summary-label "Estimated: "]
-          [:span (formatter past-ms)]])))))
+          [:div.summary-item
+           [:span.summary-label "Estimated: "]
+           [:span (formatter past-ms)]])))))
 
 (defn build-head [data owner]
   (reify
@@ -887,38 +887,39 @@
                         :vcs-url (:vcs_url build)
                         :build-num (:build_num build)}]
         (html
-         [:div
-          [:div.summary-header
-           [:div.summary-items
-            [:div.summary-item
-             (builds-table/build-status-badge build)]
-            (if-not (:stop_time build)
-              (when (:start_time build)
-                (build-running-status build))
-              (build-finished-status build))]
-           [:div.summary-items
-            (when (build-model/running? build)
-              (om/build expected-duration build))
-            (om/build previous-build-label build)
-            [:div.summary-item
-             [:span.summary-label "Parallelism: "]
-             [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                        :on-click #(analytics/track {:event-type :parallelism-clicked
-                                                                     :owner owner
-                                                                     :properties {:repo (project-model/repo-name project)
-                                                                                  :org (project-model/org-name project)}})
-                                        :href (build-model/path-for-parallelism build)}
-              (let [parallelism (str (:parallel build) "x")]
-                (if (enterprise?)
-                  parallelism
-                  (str parallelism
-                       " out of "
-                       (min (+ (plan-model/usable-containers plan)
-                               (if (project-model/oss? project)
-                                 plan-model/oss-containers
-                                 0))
-                            (plan-model/max-parallelism plan))
-                       "x")))]]]
+          [:div
+           [:div.summary-header
+            [:div.summary-items
+             [:div.summary-item
+              (builds-table/build-status-badge build)]
+             (if-not (:stop_time build)
+               (when (:start_time build)
+                 (build-running-status build))
+               (build-finished-status build))]
+            [:div.summary-items
+             (when (build-model/running? build)
+               (om/build expected-duration build))
+             (om/build previous-build-label build)
+             (when (project-model/parallel-available? project)
+               [:div.summary-item
+                [:span.summary-label "Parallelism: "]
+                [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                           :on-click #(analytics/track {:event-type :parallelism-clicked
+                                                                        :owner owner
+                                                                        :properties {:repo (project-model/repo-name project)
+                                                                                     :org (project-model/org-name project)}})
+                                           :href (build-model/path-for-parallelism build)}
+                 (let [parallelism (str (:parallel build) "x")]
+                   (if (enterprise?)
+                     parallelism
+                     (str parallelism
+                          " out of "
+                          (min (+ (plan-model/usable-containers plan)
+                                  (if (project-model/oss? project)
+                                    plan-model/oss-containers
+                                    0))
+                               (plan-model/max-parallelism plan))
+                          "x")))]])]
            (when (:usage_queued_at build)
              [:div.summary-items
               [:div.summary-item
