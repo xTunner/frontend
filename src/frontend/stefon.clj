@@ -6,8 +6,10 @@
                       :url "https://js.pusher.com/2.2/pusher.min.js"}
                      {:path "js/hosted/elevio.js"
                       :url "https://static.elev.io/js/v3.js"}
-                     {:path "js/hosted/segment.js"
-                      :url "http://cdn.segment.com/analytics.js/v1/AbgkrgN4cbRhAVEwlzMkHbwvrXnxHh35/analytics.min.js"}])
+                     {:path "js/hosted/segment-mAJ9W2SwLHgmJtFkpaXWCbwEeNk9D8CZ.js"
+                      :url "https://cdn.segment.com/analytics.js/v1/mAJ9W2SwLHgmJtFkpaXWCbwEeNk9D8CZ/analytics.min.js"}
+                     {:path "js/hosted/segment-AbgkrgN4cbRhAVEwlzMkHbwvrXnxHh35.js"
+                      :url "https://cdn.segment.com/analytics.js/v1/AbgkrgN4cbRhAVEwlzMkHbwvrXnxHh35/analytics.min.js"}])
 
 (def asset-roots ["resources/assets"])
 
