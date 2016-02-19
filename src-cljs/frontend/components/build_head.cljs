@@ -897,22 +897,23 @@
             (when (build-model/running? build)
               (om/build expected-duration build))
             (om/build previous-build-label build)
-            [:div.summary-item
-             [:span.summary-label "Parallelism: "]
-             [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                        :on-click #(analytics/track-parallelism-build-header-click {})
-                                        :href (build-model/path-for-parallelism build)}
-              (let [parallelism (str (:parallel build) "x")]
-                (if (enterprise?)
-                  parallelism
-                  (str parallelism
-                       " out of "
-                       (min (+ (plan-model/usable-containers plan)
-                               (if (project-model/oss? project)
-                                 plan-model/oss-containers
-                                 0))
-                            (plan-model/max-parallelism plan))
-                       "x")))]]]
+            (when (project-model/parallel-available? project)
+              [:div.summary-item
+               [:span.summary-label "Parallelism: "]
+               [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                          :on-click #(analytics/track-parallelism-build-header-click {})
+                                          :href (build-model/path-for-parallelism build)}
+                (let [parallelism (str (:parallel build) "x")]
+                  (if (enterprise?)
+                    parallelism
+                    (str parallelism
+                         " out of "
+                         (min (+ (plan-model/usable-containers plan)
+                                 (if (project-model/oss? project)
+                                   plan-model/oss-containers
+                                   0))
+                              (plan-model/max-parallelism plan))
+                         "x")))]])]
            (when (:usage_queued_at build)
              [:div.summary-items
               [:div.summary-item
