@@ -59,7 +59,7 @@
             project-id (project-model/id project)
             project-name (:reponame project)
             project-user (:username project)
-            vcs-type (:vcs_type project)
+            vcs-type (:vcs-type project)
             vcs-url (:vcs_url project)]
         (html
           [:div.head-user

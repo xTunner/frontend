@@ -496,6 +496,7 @@
                  (gstring/format "/api/v1/project/%s/unfollow" project)
                  :unfollow-repo
                  api-ch
+                 :params {:vcs-type (:vcs_type repo)}
                  :context repo)
     (analytics/track {:event-type :project-unfollowed
                       :current-state current-state
@@ -504,7 +505,7 @@
 
 
 (defmethod post-control-event! :unfollowed-project
-  [target message {:keys [vcs-url project-id]} previous-state current-state]
+  [target message {:keys [vcs-url project-id] :as repo} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         login (get-in current-state state/user-login-path)
         project (vcs-url/project-name vcs-url)
@@ -514,6 +515,7 @@
                  (gstring/format "/api/v1/project/%s/unfollow" project)
                  :unfollow-project
                  api-ch
+                 :params {:vcs-type (:vcs_type repo)}
                  :context {:project-id project-id})
     (analytics/track {:event-type :project-unfollowed
                       :current-state current-state
