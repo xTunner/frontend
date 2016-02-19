@@ -430,17 +430,17 @@
         (html
           [:nav.aside-left-nav
 
-           [:a.aside-item.logo {:title "Home"
+           [:a.aside-item.logo {:title "Dashboard"
                                 :data-placement "right"
                                 :data-trigger "hover"
-                                :href "/"}
+                                :href "/dashboard"}
              [:div.logomark
               (common/ico :logo)]]
 
             [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
                             :title "Builds"
-                            :href "/"}
+                            :href "/dashboard"}
              [:i.material-icons "storage"]
              [:div.nav-label "Builds"]]
 

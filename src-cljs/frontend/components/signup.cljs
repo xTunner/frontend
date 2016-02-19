@@ -21,10 +21,11 @@
             [:h1 "Authorize with GitHub first."]
             [:p.github-signup-exp "Signing up using your GitHub login helps you start quickly."]
             [:a.btn.btn-cta.authorize-button
-             {:href (gh-util/auth-url :destination "/")
+             {:href (gh-util/auth-url :destination "/dashboard")
               :on-click #(raise! owner [:track-external-link-clicked
                                         {:event :oauth-authorize-clicked
-                                         :properties {:oauth-provider "github"}}])}
+                                         :properties {:oauth-provider "github"}
+                                         :path (gh-util/auth-url :destination "/dashboard")}])}
              (common/ico :github) "Authorize with GitHub"]]
            [:div.github-example.col-md-5
             [:img {:src (stefon/asset-path "/img/outer/signup/github-example.png")}]

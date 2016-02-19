@@ -122,7 +122,7 @@
                                  (.getTime (js/Date. (:stop_time build))))
                               1000 60 60)})))
 
-(defn mlog-unsupported-event [event]
+(defn mwarn-unsupported-event [event]
   (mwarn "Cannot log unsupported event type "event", please add it to the list of supported events"))
 
 (defmulti track (fn [data]
@@ -133,9 +133,8 @@
                       :else (:event-type data)))))
 
 (defmethod track :default [data]
-  (if (frontend.config/analytics-enabled?)
-    (mlog-unsupported-event (:event-type data))
-    (mwarn "Analytics are currently not enabled")))
+  (when (frontend.config/analytics-enabled?)
+    (mwarn-unsupported-event (:event-type data))))
 
 (s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
@@ -155,7 +154,7 @@
   (let [{:keys [event properties owner]} event-data]
     (if (supported-click-and-impression-events (:event event-data))
       (segment/track-external-click event (supplement-tracking-properties-from-owner properties owner))
-      (mlog-unsupported-event (:event event-data)))))
+      (mwarn-unsupported-event (:event event-data)))))
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties current-state]} event-data]

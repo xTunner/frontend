@@ -265,7 +265,7 @@
                {})
        :children))
 
-(defn artifacts-node [{:keys [depth artifacts show-artifact-links?] :as data} owner opts]
+(defn artifacts-node [{:keys [depth artifacts] :as data} owner opts]
   (reify
     om/IRender
     (render [_]
@@ -279,7 +279,7 @@
                                 (str part "/")
                                 part)
                    url        (:url artifact)
-                   tag        (if (and url show-artifact-links?)
+                   tag        (if url
                                 [:a.artifact-link {:href (:url artifact) :target "_blank"} text]
                                 [:span.artifact-directory-text text])
                    key        (keyword (str "index-" idx))
@@ -308,17 +308,10 @@
                 [:div {:style (when closed? {:display "none"})}
                  (om/build artifacts-node
                            {:depth (+ depth 1)
-                            :artifacts children
-                            :show-artifact-links? show-artifact-links?}
+                            :artifacts children}
                            {:opts (assoc opts
                                     :ancestors-closed? (or (:ancestors-closed? opts) closed?))})]]))
            (sort-by first artifacts))])))))
-
-(defn should-show-artifact-links?
-  ;; Be extra careful about XSS in production environment
-  [env admin?]
-  (or (not= env "production")
-      (not admin?)))
 
 (defn build-artifacts-list [data owner]
   (reify
@@ -339,9 +332,7 @@
               (interpose [:hr]
                          (map (fn artifact-node-builder [[node-index node-artifacts]]
                                 (om/build artifacts-node {:artifacts (artifacts-tree (str "Container " node-index) node-artifacts)
-                                                          :depth 0
-                                                          :show-artifact-links? (should-show-artifact-links? (env) (:admin (:user data)))}
-                                          ))
+                                                          :depth 0}))
                               (->> artifacts
                                    (group-by :node_index)
                                    (sort-by first))))
