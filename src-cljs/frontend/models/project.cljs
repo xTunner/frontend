@@ -25,10 +25,10 @@
   (str "/" (-> project vcs-type routes/->short-vcs) "/" (vcs-url/project-name project) "/edit"))
 
 (defn repo-name [project]
-  (vcs-url/repo-name (:vcs_url project)))
+  (:reponame project))
 
 (defn org-name [project]
-  (vcs-url/org-name (:vcs_url project)))
+  (:username project))
 
 (defn default-branch? [branch-name project]
   (= (name branch-name) (:default_branch project)))
