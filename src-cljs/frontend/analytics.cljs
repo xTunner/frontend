@@ -60,6 +60,8 @@
     :login-clicked
     :oauth-authorize-clicked
     :parallelism-clicked
+    :payment-plan-clicked
+    :payment-plan-impression
     :pr-link-clicked
     :project-clicked
     :project-settings-clicked

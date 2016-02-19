@@ -457,56 +457,68 @@
            (vals follows-by-orgs))]]))
 
 (defrender payment-plan [{:keys [selected-org view]} owner]
-  (analytics/track-payment-plan-impression {:view view})
   (let [{:keys [login vcs_type]} selected-org
         org-settings-path (routes/v1-org-settings-path {:org login
                                                         :_fragment "containers"
                                                         :vcs_type vcs_type})]
+    (analytics/track {:event-type :payment-plan-impression
+                      :owner owner
+                      :properties {:org login}})
     (html
-     [:div.payment-plan
-      [:span.big-number "3"]
-      [:div.instruction "Choose how fast you'd like to build."]
-      [:div.table-container
-       [:table.payment-plan.table
-        [:tr.top.row
-         [:td.cell.first "Plan"]
-         [:td.cell "Cost"]
-         [:td.cell.container-amount "Containers"]
-         [:td.cell.last]]
-        [:tr.row
-         [:td.cell "Business"]
-         [:td.cell "$500/month"]
-         [:td.cell.container-amount "11"]
-         [:td.cell [:a {:href org-settings-path
-                        :on-click #(analytics/track-payment-plan-click {:view view})}
-                    "Select"]]]
-        [:tr.row
-         [:td.cell "Growth"]
-         [:td.cell "$300/month"]
-         [:td.cell.container-amount "7"]
-         [:td.cell [:a {:href org-settings-path
-                        :on-click #(analytics/track-payment-plan-click {:view view})}
-                    "Select"]]]
-        [:tr.row
-         [:td.cell "Startup"]
-         [:td.cell "$100/month"]
-         [:td.cell.container-amount "3"]
-         [:td.cell [:a{:href org-settings-path
-                       :on-click #(analytics/track-payment-plan-click {:view view})}
-                    "Select"]]]
-        [:tr.row
-         [:td.cell "Hobbyist"]
-         [:td.cell "$50/month"]
-         [:td.cell.container-amount "2"]
-         [:td.cell [:a {:href org-settings-path
-                        :on-click #(analytics/track-payment-plan-click {:view view})}
-                    "Select"]]]
-        [:tr.row
-         [:td.cell "Free"]
-         [:td.cell "$0/month"]
-         [:td.cell.container-amount "1"]
-         [:td.cell [:a {:href org-settings-path
-                        :on-click #(analytics/track-payment-plan-click {:view view})}
+      [:div.payment-plan
+       [:span.big-number "3"]
+       [:div.instruction "Choose how fast you'd like to build."]
+       [:div.table-container
+        [:table.payment-plan.table
+         [:tr.top.row
+          [:td.cell.first "Plan"]
+          [:td.cell "Cost"]
+          [:td.cell.container-amount "Containers"]
+          [:td.cell.last]]
+         [:tr.row
+          [:td.cell "Business"]
+          [:td.cell "$500/month"]
+          [:td.cell.container-amount "11"]
+          [:td.cell [:a {:href org-settings-path
+                         :on-click #(analytics/track {:event-type :payment-plan-clicked
+                                                      :owner owner
+                                                      :properties {:org login}})}
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Growth"]
+          [:td.cell "$300/month"]
+          [:td.cell.container-amount "7"]
+          [:td.cell [:a {:href org-settings-path
+                         :on-click #(analytics/track {:event-type :payment-plan-clicked
+                                                      :owner owner
+                                                      :properties {:org login}})}
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Startup"]
+          [:td.cell "$100/month"]
+          [:td.cell.container-amount "3"]
+          [:td.cell [:a{:href org-settings-path
+                        :on-click #(analytics/track {:event-type :payment-plan-clicked
+                                                     :owner owner
+                                                     :properties {:org login}})} 
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Hobbyist"]
+          [:td.cell "$50/month"]
+          [:td.cell.container-amount "2"]
+          [:td.cell [:a {:href org-settings-path
+                         :on-click #(analytics/track {:event-type :payment-plan-clicked
+                                                      :owner owner
+                                                      :properties {:org login}})}
+                     "Select"]]]
+         [:tr.row
+          [:td.cell "Free"]
+          [:td.cell "$0/month"]
+          [:td.cell.container-amount "1"]
+          [:td.cell [:a {:href org-settings-path
+                         :on-click #(analytics/track {:event-type :payment-plan-clicked
+                                                      :owner owner
+                                                      :properties {:org login}})}
                     "Selected"]]]]
        [:table.comparison.table
         [:tr.top.row
