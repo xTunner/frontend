@@ -138,24 +138,29 @@
                                           :org org
                                           :subpage (keyword (:_fragment maybe-fragment))}))
 
-  (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org]
-    (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type
-                                                       :org org})))
+  (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org params]
+    (open-to-inner! nav-ch :dashboard (merge params
+                                             {:vcs_type (->lengthen-vcs short-vcs-type)
+                                              :org org})))
 
-  (defroute v1-org-dashboard #"/(gh|bb)/([^/]+)" [short-vcs-type org]
-    (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type :org org})))
+  (defroute v1-org-dashboard #"/(gh|bb)/([^/]+)" [short-vcs-type org params]
+    (open-to-inner! nav-ch :dashboard (merge params
+                                             {:vcs_type (->lengthen-vcs short-vcs-type)
+                                              :org org})))
 
-  (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo]
-    (open-to-inner! nav-ch :dashboard (->lengthen-vcs {:vcs_type short-vcs-type
-                                                    :org org
-                                                    :repo repo})))
+  (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo params]
+    (open-to-inner! nav-ch :dashboard (merge params
+                                             {:vcs_type (->lengthen-vcs short-vcs-type)
+                                              :org org
+                                              :repo repo})))
 
   (defroute v1-project-branch-dashboard #"/(gh|bb)/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
-    [short-vcs-type org repo branch args]
-    (open-to-inner! nav-ch :dashboard (merge args {:vcs_type (->lengthen-vcs short-vcs-type)
-                                                   :org org
-                                                   :repo repo
-                                                   :branch branch})))
+    [short-vcs-type org repo branch params]
+    (open-to-inner! nav-ch :dashboard (merge params
+                                             {:vcs_type (->lengthen-vcs short-vcs-type)
+                                              :org org
+                                              :repo repo
+                                              :branch branch})))
 
   (defroute v1-build #"/(gh|bb)/([^/]+)/([^/]+)/(\d+)"
     [short-vcs-type org repo build-num _ maybe-fragment]
