@@ -14,15 +14,19 @@
             [goog.style]
             [goog.string :as gstr]))
 
-(def AnalyticsEvent
+(def CoreAnalyticsEvent
   {:event-type s/Keyword
-   :owner s/Any
    (s/optional-key :properties) (s/maybe {s/Keyword s/Any})})
 
+(def AnalyticsEvent
+  (merge
+    CoreAnalyticsEvent
+    {:owner s/Any}))
+
 (def AnalyticsEventForControllers
-  (-> AnalyticsEvent
-      (dissoc :owner)
-      (merge {:current-state {s/Any s/Any}})))
+  (merge
+    CoreAnalyticsEvent
+    {:current-state {s/Any s/Any}}))
 
 (def PageviewEvent
   (merge
@@ -81,19 +85,15 @@
     :project-unfollowed})
 
 (defn- add-properties-to-track-from-state [current-state]
-  "Get a dict of the mutable properties we want to track out of the
+  "Get a map of the mutable properties we want to track out of the
   state. Also add a timestamp."
-  (let [view (get-in current-state state/current-view-path)
-        user (get-in current-state state/user-login-path) 
-        repo (get-in current-state state/navigation-repo-path)
-        org (get-in current-state state/navigation-org-path)]
-    {:user user
-     :view view
-     :org org
-     :repo repo}))
+  {:user (get-in current-state state/user-login-path) 
+   :view (get-in current-state state/current-view-path)
+   :repo (get-in current-state state/navigation-repo-path)
+   :org (get-in current-state state/navigation-org-path)})
 
 (defn- add-properties-to-track-from-owner [owner]
-  "Get a dict of the mutable properties we want to track out of the
+  "Get a map of the mutable properties we want to track out of the
   owner."
   (let [app-state @(om/get-shared owner [:_app-state-do-not-use])]
     (add-properties-to-track-from-state app-state)))
