@@ -1,30 +1,12 @@
 
-@buildErrorBackground: @redLight;
-@buildErrorBorder:     darken(spin(@buildErrorBackground, -10), 3%);
-
 @circleBlue:           #084963;
-@circleBlueDark:       #04394e;
 @circleBlueLight:      #9ec5d4;
-@circleFont:           #646464;
-@circleAccent:         #d34913;
-@circleAccentText:     #fed8c9;
-
-@zindex-top-nav: 902;
-@zindex-aside: 901;
-@zindex-app-main: 900;
-
-@top-nav-height: 50px;
-
-// Terminal
-@terminal-background-color: #002b36;
-@terminal-color:            #839496;
 
 @brand-red-v2:    #ed5c5c;
 @brand-orange-v2: #ff8c31;
 @brand-green-v2:  #42c88a;
 @brand-blue-v2:   #66d3e4;
 @brand-purple-v2: #ab7fd1;
-@brand-gray-v2:   #999999;
 
 @brand-sans-serif-v2:      "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 @brand-primary-v2:         @brand-blue-v2;
@@ -32,41 +14,28 @@
 @brand-info-v2:            @brand-blue-v2;
 @brand-warning-v2:         @brand-orange-v2;
 @brand-danger-v2:          @brand-red-v2;
-@brand-canceled-v2:        @brand-gray-v2;
+@brand-canceled-v2:        @grayLight;
 @brand-pending-v2:         #ab7fd1;
 
 @brand-lighten-ratio-v2:   29%;
 
 @background-color-v2: #f5f5f5;
 @background-color-dark-v2: #666;
-@gray-light-v2: #2c2f33;
-@gray-lighter-v2: @brand-gray-v2;
 @gray-chevron: #9b9b9b;
 @gray-chevron-label: #505050;
-@gray-background-v2: #e5e5e5;
-@gray-dark-v2: #212121;
 @link-color-v2: #27a0b6;
-@block-background-color-v2: #fbfeff;
-@component-header-text-v2: #5c5c5c;
-@component-body-text-v2: #4a4a4a;
 
-@aside-nav-bg-color-v2:      #666;
-@aside-nav-logo-bg-color-v2: #333;
-
-@terminal-background-color-v2: @gray-dark-v2;
-@terminal-foreground-color-v2: #edede3;
+// Terminal colors
+@terminalBackground: @grayDarker;
+@terminalText: #edede3;
 
 @build-card-title: #666;
 @build-card-color: #555;
 
-@list-border-color: #ececec;
+@list-border-color: @grayLightest;
 
 @build-failure-chevron-size: 0.8em;
 @border-gray-v2: #ddd;
-
-@dropdown-lighter-gray: #f8f8f8;
-@dropdown-light-gray: #f0f0f0;
-@dropdown-gray: @border-gray-v2;
 
 @build-timings-axis: #d8d8d8;
 
@@ -105,13 +74,15 @@
 @blacken:              #080808;
 @grayDarkest:          #131313;
 @grayDarker:           #212121;
-@grayDark:             #343434;
+@grayDark:             #333333;
 @gray:                 #555555;
 @grayLight:            #898989;
 @grayLighter:          #cccccc;
 @grayLightest:         #eeeeee;
 @whiten:               #fbfbfb;
 @white:                #ffffff;
+
+@circleGray:           #343434;
 
 @blue:                                                              #007196; // #007196
 @blueDarkest:           darken(           spin(@blue,  -1.00), 19.7)       ; // #002632
@@ -138,14 +109,6 @@
 @redLightest:          lighten(  saturate(@red,     19), 51.50); // #fac8c8
 
 @orange:                       #e95900;
-
-@lightYellow:                  #fff3cf;
-
-//language landing colors
-@rubyColor:   #7C0B02;
-@pythonColor: #3773a3;
-@nodeColor:   #58594e;
-
 
 // Text
 

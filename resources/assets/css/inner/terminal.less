@@ -8,8 +8,8 @@
 @standard-color-lighten-factor: 13%;
 
 pre {
-  background: @terminal-background-color-v2;
-  color: @terminal-foreground-color-v2;
+  background: @terminalBackground;
+  color: @terminalText;
 
   // temporary? bootstrap override
   border: none;
@@ -17,7 +17,7 @@ pre {
 
   // TODO We have to lie about the color scheme for precedence reasons.
   .white {
-    color: @terminal-foreground-color-v2;
+    color: @terminalText;
   }
 
   .blue {
@@ -69,7 +69,7 @@ pre {
   }
 
   .bg-white {
-    background: @terminal-foreground-color-v2;
+    background: @terminalText;
   }
 
   .bg-red {
@@ -97,7 +97,7 @@ pre {
   }
 
   .bg-brblack {
-    background: @terminal-background-color-v2;
+    background: @terminalBackground;
   }
 
   .key {
@@ -113,6 +113,6 @@ pre {
   }
 
   .comment {
-    color: @gray-lighter-v2;
+    color: @grayLight;
   }
 }

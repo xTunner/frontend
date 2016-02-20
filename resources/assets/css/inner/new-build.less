@@ -102,7 +102,7 @@
 .build-actions-v2 {
   .flexy(center);
   font-size: 13px;
-  color: @gray-dark-v2;
+  color: @grayDark;
 
   .build-action {
 
@@ -137,12 +137,12 @@
 
     .button-look() {
       border: solid 1px rgba(0, 0, 0, 0.1);
-      background-color: @dropdown-gray;
+      background-color: @grayLighter;
 
       cursor: pointer;
 
       &:hover {
-        background: @dropdown-lighter-gray;
+        background: @whiten;
       }
     }
 
@@ -185,7 +185,7 @@
         margin-top: 3px;
         width: @container-width;
 
-        background-color: @dropdown-lighter-gray;
+        background-color: @whiten;
 
         li:hover {
           background: rgba(0, 0, 0, 0.05);
@@ -310,8 +310,8 @@
   flex-grow: 1;
   height: 40px;
 
-  background: @gray-background-v2;
-  color: @gray-light-v2;
+  background: @grayLightest;
+  color: @grayDarker;
   font-size: 11px;
   padding: 5px;
 
@@ -356,7 +356,7 @@
     }
 
     &.canceled {
-      background-color: @brand-canceled-v2;
+      background-color: @grayLight;
     }
   }
 
@@ -491,7 +491,7 @@
   margin-bottom: 15px;
 
   font-size: 13px;
-  color: @gray-light-v2;
+  color: @grayDarker;
   line-height: @status-badge-height;
 }
 
@@ -696,16 +696,16 @@ ul:last-child {
 
 .ssh-node-container {
   min-width: 110px;
-  font-family: @monoFontFamilyV2
+  font-family: @monoFontFamily;
 }
 
 .ssh-node-command {
   min-width: 310px;
-  font-family: @monoFontFamilyV2
+  font-family: @monoFontFamily;
 }
 
 .ssh-node-disabled {
-  color: @brand-gray-v2;
+  color: @grayLight;
 }
 
 .ssh-node-running-icon {
@@ -757,7 +757,7 @@ ul:last-child {
   }
 
   .container-step-stop {
-    fill: @brand-gray-v2;
+    fill: @grayLight;
   }
 
   .container-step-start-line {
@@ -796,7 +796,6 @@ ul:last-child {
 
 .build-config-string {
   pre {
-
     word-wrap: normal;
 
     code {
