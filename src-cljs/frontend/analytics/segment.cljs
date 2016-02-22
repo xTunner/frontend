@@ -4,6 +4,7 @@
             [frontend.utils :as utils
              :include-macros true
              :refer [clj-keys-with-dashes->js-keys-with-underscores]]
+            [frontend.analytics.common :as common-analytics]
             [schema.core :as s]))
 
 (def SegmentProperties
@@ -20,6 +21,10 @@
     SegmentProperties
     {:user (s/maybe s/Str)}))
 
+(def UserEvent
+  {:id s/Str
+   :user-properties common-analytics/UserProperties})
+
 (s/defn track-pageview [navigation-point :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors
     (js/analytics.page (name navigation-point)
@@ -29,6 +34,12 @@
   (utils/swallow-errors
     (js/analytics.track (name event)
                         (clj-keys-with-dashes->js-keys-with-underscores properties))))
+
+(s/defn identify [event-data :- UserEvent]
+  (utils/swallow-errors
+    (js/analytics.identify (:id event-data) (-> event-data
+                                                :user-properties
+                                                clj-keys-with-dashes->js-keys-with-underscores))))
 
 (s/defn track-external-click [event :- s/Keyword & [properties :- LoggedOutEvent]]
   (let [ch (chan)]
