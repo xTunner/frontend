@@ -8,9 +8,7 @@
             [schema.core :as s]))
 
 (def SegmentProperties
-  ;; user and view should never be null, since they will always have values for
-  ;; a logged in user.
-  {:user s/Str
+  {:user (s/maybe s/Str)
    :view s/Keyword
    :org  (s/maybe s/Str)
    :repo (s/maybe s/Str)
