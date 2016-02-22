@@ -142,8 +142,8 @@
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
   [project-data owner parallelism]
-  (let [plan (:plan project-data)
-        project (:project project-data)
+  (let [project (:project project-data)
+        plan (:plan project-data)
         project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades
@@ -170,7 +170,8 @@
                [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                         :vcs_type (:vcs_type project)
                                                         :_fragment "containers"})
-                    :on-click #(analytics/track "add-more-containers-clicked")}
+                    :on-click #(analytics/track {:event-type :add-more-containers-clicked
+                                                 :owner owner})}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
@@ -458,7 +459,7 @@
                                      "Select this option to run builds in our Ubuntu 14.04 (Trusty) container."
                                      "This container is currently in beta."
                                      "Our default container is Ubuntu 12.04 (Precise)."
-                                       [:p [:strong "Please note that you need to trigger a build by pushing commits to Github (instead of rebuilding) to apply the new setting."]]]}))
+                                       [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]}))
             ]]])))))
 
 (defn dependencies [project-data owner]

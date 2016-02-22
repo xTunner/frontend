@@ -339,22 +339,23 @@
               [:div.loading-spinner common/spinner]))])))))
 
 (defn tests-ad [owner language]
-      [:div
-       "Help us provide better insight around your tests and failures. "
-       [:a {:href (case language
-           "Clojure" "/docs/test-metadata#test2junit-for-clojure-tests"
-           "Ruby" "/docs/test-metadata#rspec"
-           "JavaScript" "/docs/test-metadata#js"
-           "Python" "/docs/test-metadata#python"
-           "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-           "/docs/test-metadata#metadata-collection-in-custom-test-steps")
-            :on-mouse-up #(analytics/track-build-tests-ad-click language)}
-        "Set up your test runner to output in JUnit-style XML"] ", so we can:"
-       [:ul
-        [:li "Show a summary of all test failures across all containers"]
-        [:li "Identify your slowest tests"]
-        [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]
-       ])
+  [:div
+   "Help us provide better insight around your tests and failures. "
+   [:a {:href (case language
+                "Clojure" "/docs/test-metadata#test2junit-for-clojure-tests"
+                "Ruby" "/docs/test-metadata#rspec"
+                "JavaScript" "/docs/test-metadata#js"
+                "Python" "/docs/test-metadata#python"
+                "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
+                "/docs/test-metadata#metadata-collection-in-custom-test-steps")
+        :on-mouse-up #(analytics/track {:event-type :set-up-junit-clicked
+                                        :owner owner
+                                        :properties {:language language}})}
+    "Set up your test runner to output in JUnit-style XML"] ", so we can:"
+   [:ul
+    [:li "Show a summary of all test failures across all containers"]
+    [:li "Identify your slowest tests"]
+    [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]])
 
 (defmulti format-test-name test-model/source)
 
@@ -615,7 +616,8 @@
         [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
                                    :title commit
-                                   :on-click #(analytics/track "build-page-revision-link-clicked")}
+                                   :on-click #(analytics/track {:event-type :revision-link-clicked
+                                                                :owner owner})}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -783,7 +785,7 @@
             (:name canceler)
             (:login canceler))])])
 
-(defn pull-requests [urls]
+(defn pull-requests [{:keys [urls]} owner]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
   [:div.summary-item
    [:span.summary-label
@@ -795,7 +797,8 @@
      ", "
      (for [url urls]
        [:a {:href url
-            :on-click #(analytics/track "build-page-pr-link-clicked")}
+            :on-click #(analytics/track {:event-type :pr-link-clicked
+                                         :owner owner})}
         "#"
         (let [[_ number] (re-find #"/(\d+)$" url)]
           (or number "?"))]))]])
@@ -859,9 +862,9 @@
             previous-build (:previous_successful_build build)
             past-ms (:build_time_millis previous-build)]
         (html
-         [:div.summary-item
-          [:span.summary-label "Estimated: "]
-          [:span (formatter past-ms)]])))))
+          [:div.summary-item
+           [:span.summary-label "Estimated: "]
+           [:span (formatter past-ms)]])))))
 
 (defn build-head [data owner]
   (reify
@@ -884,36 +887,39 @@
                         :vcs-url (:vcs_url build)
                         :build-num (:build_num build)}]
         (html
-         [:div
-          [:div.summary-header
-           [:div.summary-items
-            [:div.summary-item
-             (builds-table/build-status-badge build)]
-            (if-not (:stop_time build)
-              (when (:start_time build)
-                (build-running-status build))
-              (build-finished-status build))]
-           [:div.summary-items
-            (when (build-model/running? build)
-              (om/build expected-duration build))
-            (om/build previous-build-label build)
-            (when (project-model/parallel-available? project)
-              [:div.summary-item
-               [:span.summary-label "Parallelism: "]
-               [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                          :on-click #(analytics/track-parallelism-build-header-click {})
-                                          :href (build-model/path-for-parallelism build)}
-                (let [parallelism (str (:parallel build) "x")]
-                  (if (enterprise?)
-                    parallelism
-                    (str parallelism
-                         " out of "
-                         (min (+ (plan-model/usable-containers plan)
-                                 (if (project-model/oss? project)
-                                   plan-model/oss-containers
-                                   0))
-                              (plan-model/max-parallelism plan))
-                         "x")))]])]
+          [:div
+           [:div.summary-header
+            [:div.summary-items
+             [:div.summary-item
+              (builds-table/build-status-badge build)]
+             (if-not (:stop_time build)
+               (when (:start_time build)
+                 (build-running-status build))
+               (build-finished-status build))]
+            [:div.summary-items
+             (when (build-model/running? build)
+               (om/build expected-duration build))
+             (om/build previous-build-label build)
+             (when (project-model/parallel-available? project)
+               [:div.summary-item
+                [:span.summary-label "Parallelism: "]
+                [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                                           :on-click #(analytics/track {:event-type :parallelism-clicked
+                                                                        :owner owner
+                                                                        :properties {:repo (project-model/repo-name project)
+                                                                                     :org (project-model/org-name project)}})
+                                           :href (build-model/path-for-parallelism build)}
+                 (let [parallelism (str (:parallel build) "x")]
+                   (if (enterprise?)
+                     parallelism
+                     (str parallelism
+                          " out of "
+                          (min (+ (plan-model/usable-containers plan)
+                                  (if (project-model/oss? project)
+                                    plan-model/oss-containers
+                                    0))
+                               (plan-model/max-parallelism plan))
+                          "x")))]])]
            (when (:usage_queued_at build)
              [:div.summary-items
               [:div.summary-item
@@ -926,7 +932,7 @@
              [:span (trigger-html build)]]
 
             (when-let [urls (seq (:pull_request_urls build))]
-              (pull-requests urls))]]
+              (pull-requests {:urls urls} owner))]]
 
           (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]

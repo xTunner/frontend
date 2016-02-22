@@ -126,8 +126,7 @@
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial controls-con/control-event container (first value) (second value)))
-       (controls-con/post-control-event! container (first value) (second value) previous-state @state)))
-   (analytics/track-message (first value) (second value) state)))
+       (controls-con/post-control-event! container (first value) (second value) previous-state @state)))))
 
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
@@ -139,9 +138,10 @@
        (swap! state (partial nav-con/navigated-to history navigation-point args))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state)
        (set-canonical! (:_canonical args))
-       (analytics/register-last-touch-utm query-params)
-       (when-let [join (:join query-params)] (analytics/track-join-code join))
-       (analytics/track-view-page (if inner? :inner :outer))
+       (when-not (= navigation-point :navigate!)
+         (analytics/track {:event-type :pageview
+                           :navigation-point navigation-point
+                           :current-state @state}))
        (when-let [app-dominant (goog.dom.getElementByClass "app-dominant")]
          (set! (.-scrollTop app-dominant) 0))
        (when-let [main-body (goog.dom.getElementByClass "main-body")]
@@ -292,45 +292,8 @@
                     :href (str path "?t=" (.getTime (js/Date.)))})]
     (.appendChild (.-head js/document) link)))
 
-(defn track-intercom-widget! [state]
-  (when (config/intercom-enabled?)
-    ;; wait a little bit for the intercom widget to load and install itself
-    (js/setTimeout
-     (fn []
-       (when-let [launcher (goog.dom/getElement "intercom-launcher")]
-         (goog.events/listen
-          launcher
-          goog.events.EventType.CLICK
-          (fn []
-            ;; this matches the :support-dialog-raised control event
-            ;; raised by the Support aside
-            (analytics/track-message "support-dialog-raised" {} state)))))
-     5000)))
-
-(defn track-elevio-widget! [state]
-  (when (config/elevio-enabled?)
-    (js/setTimeout
-     (fn []
-       (when-let [launcher (goog.dom/getElement "elevio-base-menu")]
-         (goog.events/listen
-          launcher
-          goog.events.EventType.CLICK
-          (fn [e]
-            (let [target (.-target e)
-                  module-name (-> (or (-> target
-                                          (goog.dom/getAncestorByTagNameAndClass "div")
-                                          (.getAttribute "data-elevio-tooltip"))
-                                      "widget")
-                                  (string/lower-case)
-                                  (string/replace #"\s+" "-"))
-                  message (str "elevio-" module-name "-clicked")]
-             ;; This triggers when the elevio widget is clicked
-             (analytics/track message))))))
-     5000)))
-
 (defn ^:export setup! []
   (apply-app-id-hack)
-  (analytics/set-existing-user)
   (support/enable-one!)
   (let [state (app-state)
         top-level-node (find-top-level-node)
@@ -342,16 +305,10 @@
     (when instrument?
       (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (if (config/elevio-enabled?)
-      (track-elevio-widget! state)
-      (track-intercom-widget! state))
     (main state ab-tests top-level-node history-imp instrument?)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
-      (do (analytics/track-path (str "/" (.getToken history-imp)))
-          (routes/dispatch! (str "/" (.getToken history-imp)))))
+      (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user @state)]
-      (subscribe-to-user-channel user (get-in @state [:comms :ws]))
-      (analytics/init-user (:login user)))
-    (analytics/track-invited-by (:invited-by utils/initial-query-map))))
+      (subscribe-to-user-channel user (get-in @state [:comms :ws])))))

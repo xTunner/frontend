@@ -134,7 +134,7 @@
 (defn visualize-insights-bar! [plot-info el builds {:keys [on-focus-build on-mouse-move]
                                                     :or {on-focus-build (constantly nil)
                                                          on-mouse-move (constantly nil)}
-                                                    :as events}]
+                                                    :as events} owner]
   (let [[y-pos-max y-neg-max] (->> [:build_time_millis :queued_time_millis]
                                    (map #(->> builds
                                               (map %)
@@ -143,7 +143,7 @@
                 (.select el)
                 (.select "svg")
                 ;; Set the SVG up to redraw itself when it resizes.
-                (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds events)))
+                (.property "redraw-fn" (constantly #(visualize-insights-bar! plot-info el builds events owner)))
                 (.on "mousemove" #(on-mouse-move (d3.mouse el))))
         svg-bounds (-> svg
                        ffirst
@@ -217,8 +217,9 @@
     (-> bars-join
         (.select ".top")
         (.attr #js {"xlink:href" build-timing-url})
-        (.on #js {"click" #(analytics/track-insights-bar-click {:current-url js/window.location.href
-                                                                       :build-url (unexterned-prop % "build_url")})})
+        (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked 
+                                             :owner owner
+                                             :properties {:build-url (unexterned-prop % "build_url")}})})
         (.select "rect.bar")
         (.attr #js {"class" #(str "bar " (unexterned-prop % "outcome"))
                     "y" #(y-pos-scale (unexterned-prop % "build_time_millis"))
@@ -354,11 +355,11 @@
     (did-mount [_]
       (let [el (om/get-node owner)]
         (insert-skeleton plot-info el)
-        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]))))
+        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]) owner)))
     om/IDidUpdate
     (did-update [_ prev-props prev-state]
       (let [el (om/get-node owner)]
-        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]))))
+        (visualize-insights-bar! plot-info el builds (select-keys params [:on-focus-build :on-mouse-move]) owner)))
     om/IRender
     (render [_]
       (html
@@ -372,45 +373,51 @@
     om/IDidMount
     (did-mount [_]
       (when (not show-insights?)
-        (analytics/track-build-insights-upsell-impression {:reponame reponame
-                                                           :org-name username})))
+        (analytics/track {:event-type :build-insights-upsell-impression
+                          :owner owner
+                          :properties {:repo (project-model/repo-name project)
+                                       :org (project-model/org-name project)}})))
     om/IRender
     (render [_]
       (html
-       (let [branch default_branch
-             latest-build (last chartable-builds)]
-         [:div.project-block {:class (str "build-" (name sort-category))}
-          [:h1.project-header
-           [:div.last-build-status
-            (om/build svg {:class "badge-icon"
-                           :src (-> latest-build build/status-icon common/icon-path)})]
-           [:span.project-name
-            (if (and (feature/enabled? :insights-dashboard)
-                     show-insights?)
-              [:a {:href (routes/v1-insights-project-path {:org (:username project)
-                                                           :repo (:reponame project)
-                                                           :branch (:default_branch project)
-                                                           :vcs_type (:vcs_type project)})}
-               (formatted-project-name project)]
-              (formatted-project-name project))]
-           [:div.github-icon
-            [:a {:href (:vcs_url project)}
-             [:i.octicon.octicon-mark-github]]]
-           [:div.settings-icon
-            [:a {:href (routes/v1-project-settings-path {:org username
-                                                         :repo reponame
-                                                         :vcs_type vcs_type})}
-             [:i.material-icons "settings"]]]]
-          [:h4 (if show-insights?
-                 (str "Branch: " branch)
-                 (gstring/unescapeEntities "&nbsp;"))]
-          (cond (nil? (get recent-builds default_branch)) [:div.loading-spinner common/spinner]
-                (not show-insights?) [:div.no-insights
-                                      [:div.message "This release of Insights is only available for repos belonging to paid plans."]
-                                      [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))
-                                                                                            :vcs_type (:vcs_type project)})
-                                                        :on-click #(analytics/track-build-insights-upsell-click {:reponame reponame
-                                                                                                                 :org-name username})} "Upgrade here"]]
+        (let [branch default_branch
+              latest-build (last chartable-builds)
+              org-name (project-model/org-name project)
+              repo-name (project-model/repo-name project)]
+          [:div.project-block {:class (str "build-" (name sort-category))}
+           [:h1.project-header
+            [:div.last-build-status
+             (om/build svg {:class "badge-icon"
+                            :src (-> latest-build build/status-icon common/icon-path)})]
+            [:span.project-name
+             (if (and (feature/enabled? :insights-dashboard)
+                      show-insights?)
+               [:a {:href (routes/v1-insights-project-path {:org org-name
+                                                            :repo repo-name
+                                                            :branch (:default_branch project)
+                                                            :vcs_type (:vcs_type project)})}
+                (formatted-project-name project)]
+               (formatted-project-name project))]
+            [:div.github-icon
+             [:a {:href (:vcs_url project)}
+              [:i.octicon.octicon-mark-github]]]
+            [:div.settings-icon
+             [:a {:href (routes/v1-project-settings-path {:org username
+                                                          :repo reponame
+                                                          :vcs_type vcs_type})}
+              [:i.material-icons "settings"]]]]
+           [:h4 (if show-insights?
+                  (str "Branch: " branch)
+                  (gstring/unescapeEntities "&nbsp;"))]
+           (cond (nil? (get recent-builds default_branch)) [:div.loading-spinner common/spinner]
+                 (not show-insights?) [:div.no-insights
+                                       [:div.message "This release of Insights is only available for repos belonging to paid plans."]
+                                       [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))
+                                                                                             :vcs_type (:vcs_type project)})
+                                                         :on-click #(analytics/track {:event-type :build-insights-upsell-click
+                                                                                      :owner owner
+                                                                                      :properties  {:repo repo-name
+                                                                                                    :org org-name}})} "Upgrade here"]]
                 (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
                 :else
                 (list

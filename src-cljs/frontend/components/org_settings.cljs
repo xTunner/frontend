@@ -360,6 +360,8 @@
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
                                      (pm/paid-containers plan))
+            login (get-in app state/user-login-path)
+            view (get-in app state/current-view-path)
             min-slider-val 0
             max-slider-val (max 80 (* 2 (pm/paid-containers plan)))
             selected-paid-containers (max 0 selected-containers)
@@ -400,7 +402,9 @@
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
-                       :on-click #(analytics/track-cancel-button-clicked {:view "org-settings"})}
+                       :on-click #(analytics/track {:event-type :cancel-plan-clicked
+                                                    :owner owner
+                                                    :properties {:repo nil}})}
                       "Cancel plan"]
                      [:button.btn.btn-large.btn-primary.upgrade
                       {:data-success-text "Saved",

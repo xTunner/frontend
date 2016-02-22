@@ -77,21 +77,27 @@
            (for [build display-builds]
              (sidebar-build build {:vcs_type vcs_type :org org :repo repo :branch (name name-kw)}))]])))))
 
-(defn project-settings-link [project]
+(defn project-settings-link [{:keys [project]} owner]
   (when (and (project-model/can-read-settings? project))
-    [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type (:vcs_type project)
-                                                                       :org (:username project)
-                                                                       :repo (:reponame project)})
-                               :title  (str
-                                         (project-model/project-name project)
-                                         " settings")
-                               :on-click #(analytics/track "branch-list-project-settings-clicked")}
-     [:i.material-icons "settings"]]))
+    (let [org-name (:username project)
+          repo-name (:reponame project)
+          vcs-type (:vcs_type project)]
+      [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type vcs-type
+                                                                         :org org-name
+                                                                         :repo repo-name})
+                                 :title  (str
+                                           (project-model/project-name project)
+                                           " settings")
+                                 :on-click #(analytics/track {:event-type :project-settings-clicked
+                                                              :owner owner
+                                                              :properties {:org org-name
+                                                                           :repo repo-name}})}
+       [:i.material-icons "settings"]])))
 
 (defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
   (reify
-      om/IDisplayName (display-name [_] "Aside Branch List")
-      om/IRender
+    om/IDisplayName (display-name [_] "Aside Branch List")
+    om/IRender
       (render [_]
         (let [branches-filter (if show-all-branches?
                                 (constantly true)
@@ -101,11 +107,12 @@
             (for [branch (filter branches-filter branches)]
               (let [project (:project branch)
                     latest-build (last (sort-by :build_num (concat (:running_builds branch)
-                                                                   (:recent_builds branch))))]
-                [:li {:class (when (and (= (vcs-url/org-name (:vcs_url project))
-                                           (:org navigation-data))
-                                        (= (vcs-url/repo-name (:vcs_url project))
-                                           (:repo navigation-data))
+                                                                   (:recent_builds branch))))
+                    vcs-url (:vcs_url project)
+                    org-name (project-model/org-name project) 
+                    repo-name (project-model/repo-name project)]
+                [:li {:class (when (and (= org-name (:org navigation-data))
+                                        (= repo-name (:repo navigation-data))
                                         (= (name (:identifier branch))
                                            (:branch navigation-data)))
                                "selected")}
@@ -113,7 +120,11 @@
                                                        :org (:username project)
                                                        :repo (:reponame project)
                                                        :branch (name (:identifier branch))})
-                      :on-click #(analytics/track "branch-list-branch-clicked")}
+                      :on-click #(analytics/track {:event-type :branch-clicked
+                                                   :owner owner
+                                                   :properties {:repo repo-name
+                                                                :org org-name
+                                                                :branch (name (:identifier branch))}})}
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
@@ -138,20 +149,21 @@
                           " ago")
                          "never")])]]]
                  (when show-project?
-                   (project-settings-link project))]))])))))
+                   (project-settings-link {:project project} owner))]))])))))
 
 (defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
     (render [_]
-      (let [repo (project-model/project-name project)]
+      (let [repo (project-model/project-name project)
+            vcs-url (:vcs_url project)
+            org-name (project-model/org-name project)
+            repo-name (project-model/repo-name project)]
         (html [:li
                [:.project-heading
-                {:class (when (and (= (vcs-url/org-name (:vcs_url project))
-                                      (:org navigation-data))
-                                   (= (vcs-url/repo-name (:vcs_url project))
-                                      (:repo navigation-data))
+                {:class (when (and (= org-name (:org navigation-data))
+                                   (= repo-name (:repo navigation-data))
                                    (not (contains? navigation-data :branch)))
                           "selected")
                  :title (project-model/project-name project)}
@@ -162,9 +174,12 @@
                 [:a.project-name {:href (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
                                                                            :org (:username project)
                                                                            :repo (:reponame project)})
-                                  :on-click #(analytics/track "branch-list-project-clicked")}
+                                  :on-click #(analytics/track {:event-type :project-clicked
+                                                               :owner owner
+                                                               :properties {:org org-name
+                                                                            :repo repo-name}})}
                  (project-model/project-name project)]
-                (project-settings-link project)]
+                (project-settings-link {:project project} owner)]
 
                (when (expanded-repos repo)
                  (om/build branch-list

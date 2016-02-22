@@ -131,6 +131,7 @@
     (conj crumbs-path project-branch-crumb-index)))
 
 ;; TODO we probably shouldn't be storing repos in the user...
+(def user-login-path (conj user-path :login))
 (def user-organizations-path (conj user-path :organizations))
 (def user-plans-path (conj user-path :plans))
 (def user-tokens-path (conj user-path :tokens))
@@ -177,6 +178,8 @@
 (def projects-path [:projects])
 
 (def inner?-path [:navigation-data :inner?])
+(def navigation-repo-path [:navigation-data :repo])
+(def navigation-org-path [:navigation-data :org])
 
 (def instrumentation-path [:instrumentation])
 
@@ -238,6 +241,7 @@
 (def top-nav-selected-org-path [:top-nav :selected-org])
 (def hamburger-menu-path [:hamburger-menu])
 
-
 (def insights-filter-path [:insights :selected-filter])
 (def insights-sorting-path [:insights :selected-sorting])
+
+(def current-view-path [:navigation-point])

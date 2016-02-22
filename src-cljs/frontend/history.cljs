@@ -40,8 +40,7 @@
 (defn setup-dispatcher! [history-imp]
   (events/listen history-imp goog.history.EventType.NAVIGATE
                  #(do (set-current-token! history-imp)
-                      (routes/dispatch! (str "/" (.-token %)))
-                      (analytics/track-path (str "/" (.-token %))))))
+                      (routes/dispatch! (str "/" (.-token %))))))
 
 (defn bootstrap-dispatcher!
   "We need lots of control over when we start listening to navigation events because
