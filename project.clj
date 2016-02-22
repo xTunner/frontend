@@ -115,7 +115,8 @@
                                                          "src-cljs/js/analytics-externs.js"
                                                          "src-cljs/js/intercom-jquery-externs.js"
                                                          "src-cljs/js/d3-externs.js"
-                                                         "src-cljs/js/prismjs-externs.js"]
+                                                         "src-cljs/js/prismjs-externs.js"
+                                                         "src-cljs/js/bootstrap-externs.js"]
                                                :source-map "resources/public/cljs/production/frontend.js.map"}}}}
   :profiles {:devtools {:repl-options {:port 8230
                                        :nrepl-middleware [dirac.nrepl.middleware/dirac-repl]
