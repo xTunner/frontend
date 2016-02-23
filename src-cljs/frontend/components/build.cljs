@@ -18,6 +18,7 @@
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
+            [frontend.config :as config]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
@@ -55,19 +56,24 @@
        (if (:infrastructure_fail build)
          (infrastructure-fail-message owner)
          [:div.alert-wrap
-          "To err == human. To be a little less human, check out our "
+          "If you continue to get stuck, we suggest checking out our "
           [:a {:href "/docs/troubleshooting"}
            "docs"]
-          " or "
+          " and/or our "
           [:a {:href "https://discuss.circleci.com/"}
            "community site"]
           "."
-          (when show-premium-content?
-            [:span
-             " Still stuck? We're "
-             [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
-              "happy to help"]
-             "."])])])))
+          (let [support-link [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
+                              "contact engineering support"]]
+            (cond
+              (config/enterprise?) [:span "As an enterprise customer, you may also "
+                                    support-link
+                                    " to ask for help. Thanks!"]
+              show-premium-content? [:span
+                                     " As this project builds under a paid plan, you may also "
+                                     support-link
+                                     " to ask for help. Thanks!"]
+              :else [:span " Upgrading to a paid plan unlocks access to CircleCI engineering support, faster builds, and advanced features. Thanks!"]))])])))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
