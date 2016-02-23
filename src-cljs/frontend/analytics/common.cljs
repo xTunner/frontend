@@ -6,7 +6,6 @@
    :basic_email_prefs s/Str
    :bitbucket_authorized s/Bool
    :created_at s/Str
-   :enrolled_betas  [s/Str]
    :in_beta_program s/Bool
    :login s/Str
    :name s/Str
