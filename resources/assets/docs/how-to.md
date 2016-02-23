@@ -9,6 +9,7 @@ children:
   - external-resources
   - dont-run
   - skip-a-build
+  - migrating-from-jenkins
   - nightly-builds
   - test-with-solr
   - test-with-sphinx
