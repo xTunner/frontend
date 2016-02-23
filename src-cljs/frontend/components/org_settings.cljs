@@ -1122,20 +1122,25 @@
     (render [_]
       (html [:progress {:class class :value value :max max} (str value "%")]))))
 
-(defn usage-bar [{:keys [usage max month]} owner]
+(defn usage-bar [{:keys [usage max]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [percent (.round js/Math (* 100 (/ usage max)))]
+      (let [{:keys [amount from to]} usage
+            amount (.round js/Math (/ amount 1000 60))
+            percent (.round js/Math (* 100 (/ amount max)))]
         (html
          [:div.usage-group
-          [:div.month-label month]
-          (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
+          [:div.month-label 
+           [:span (datetime/year-month-day-date from)]
+           [:span " to "]
+           [:span (datetime/year-month-day-date to)]]
+          (om/build progress-bar {:class "monthly-usage-bar" :max max :value amount})
           [:div.usage-label
            (when (>= percent 100) {:class "over-usage"})
            [:div.percent-label (str percent "%")]
            [:div.amounts-label
-            (str (.toLocaleString usage) "/" (.toLocaleString max) " minutes")]]])))))
+            (str (.toLocaleString amount) "/" (.toLocaleString max) " minutes")]]])))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1152,10 +1157,9 @@
                                  (sort)
                                  (reverse)
                                  (take 12)
-                                 (map (fn [[month amount]]
-                                        {:usage (.round js/Math (/ amount 1000 60))
-                                         :max osx-max-minutes
-                                         :month ((comp datetime/date->month-name pm/usage-key->date) month)})))]
+                                 (map (fn [[_ usage-map]]
+                                        {:usage usage-map
+                                         :max osx-max-minutes})))]
               [:div.monthly-usage
                (om/build-all usage-bar osx-usage)])
             [:div.explanation
