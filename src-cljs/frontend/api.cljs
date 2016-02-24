@@ -15,7 +15,7 @@
                          :default_branch :branch
                          :vcs_type :vcs_type})
 
-(defn project-build-id
+(defn project-build-key
   "Takes project hash and filter down to keys that identify the build.
 
 Use OVERRIDES hash if specified."
@@ -25,7 +25,7 @@ Use OVERRIDES hash if specified."
        (merge overrides)
        (select-keys (vals build-keys-mapping))))
   ([project]
-   (project-build-id project {})))
+   (project-build-key project {})))
 
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
@@ -121,8 +121,8 @@ Use OVERRIDES hash if specified."
 ;; This is defined in the API.
 (def max-allowed-page-size 100)
 
-(defn get-projects-builds [build-ids build-count api-ch]
-  (doseq [build-id build-ids]
+(defn get-projects-builds [build-keys build-count api-ch]
+  (doseq [build-key build-keys]
     ;; Assemble a list of pages descriptions and result atoms to deliver them to.
     (let [page-starts (range 0 build-count max-allowed-page-size)
           page-ends (concat (rest page-starts) [build-count])
@@ -132,11 +132,11 @@ Use OVERRIDES hash if specified."
                    :page-result (atom nil)})
           page-results (map :page-result pages)]
       (doseq [{:keys [offset limit page-result]} pages]
-        (let [url (dashboard-builds-url (assoc build-id :offset offset :limit limit))]
+        (let [url (dashboard-builds-url (assoc build-key :offset offset :limit limit))]
           ;; Fire off an ajax call for the page. The API controllers will
           ;; deliver the response to page-result, and put the full data in the
           ;; state once all of the page-results are delivered.
-          (ajax/ajax :get url :recent-project-builds api-ch :context {:project-id build-id
+          (ajax/ajax :get url :recent-project-builds api-ch :context {:project-id build-key
                                                                       :page-result page-result
                                                                       :all-page-results page-results}))))))
 

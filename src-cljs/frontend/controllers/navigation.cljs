@@ -261,8 +261,8 @@
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (api/get-projects api-ch :then (fn [new-state]
-                                     (let [build-ids (map api/project-build-id (get-in new-state state/projects-path))]
-                                       (api/get-projects-builds build-ids 60 api-ch))))
+                                     (let [build-keys (map api/project-build-key (get-in new-state state/projects-path))]
+                                       (api/get-projects-builds build-keys 60 api-ch))))
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
