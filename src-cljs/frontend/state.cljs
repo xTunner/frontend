@@ -135,6 +135,7 @@
 (def user-organizations-path (conj user-path :organizations))
 (def user-plans-path (conj user-path :plans))
 (def user-tokens-path (conj user-path :tokens))
+(def user-analytics-id-path (conj user-path :analytics_id))
 
 (def repos-path (conj user-path :repos))
 (defn repo-path [repo-index] (conj repos-path repo-index))

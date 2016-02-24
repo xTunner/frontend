@@ -107,8 +107,9 @@
       (merge props)))
 
 (defn- get-user-properties-from-state [current-state]
-  (let [user-data (get-in current-state state/user-path)]
-    {:id (:id user-data)
+  (let [analytics-id (get-in current-state state/user-analytics-id-path)
+        user-data (get-in current-state state/user-path)]
+    {:id analytics-id
      :user-properties (select-keys user-data (keys common-analytics/UserProperties))}))
 
 (defn- supplement-tracking-properties-from-state [props current-state]
