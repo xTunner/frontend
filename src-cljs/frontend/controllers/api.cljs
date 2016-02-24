@@ -104,10 +104,10 @@
 (defmethod api-event [:projects :success]
   [target message status {:keys [resp]} {:keys [navigation-point] :as current-state}]
   (let [new-projects (map (fn [project] (update project :scopes #(set (map keyword %)))) resp)
-        old-projects-by-build-id (group-by api/project-build-id (get-in current-state state/projects-path))
+        old-projects-by-build-key (group-by api/project-build-key (get-in current-state state/projects-path))
         processed-new-projects
         (map (fn [{:keys [default_branch] :as project}]
-               (let [matching-old-project (first (get old-projects-by-build-id (api/project-build-id project)))]
+               (let [matching-old-project (first (get old-projects-by-build-key (api/project-build-key project)))]
                  (assoc project
                         :recent-builds (:recent-builds matching-old-project))))
              new-projects)]
@@ -153,8 +153,8 @@
           add-recent-builds (fn [projects]
                               (for [project projects
                                     :let [overrides {:branch (:branch target-id)}
-                                          project-id (api/project-build-id project overrides)]]
-                                (if (= project-id target-id)
+                                          project-key (api/project-build-key project overrides)]]
+                                (if (= project-key target-id)
                                   (-> project
                                       (assoc-in [:recent-builds (:branch target-id)] all-recent-builds))
                                   project)))]
