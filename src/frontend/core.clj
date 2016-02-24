@@ -92,19 +92,25 @@
   (let [server-name (:server-name req)
         env (System/getenv "CIRCLE_FRONTEND_ENV")]
     (cond
-      (or
-        (= env "dev")
-        (= server-name "dev.circlehost")) {:proto "http" :host "dev.circlehost:8080"}
-      (or
-        (= env "prod")
-        (= server-name "prod.circlehost")) {:proto "https" :host "circleci.com"}
-      (or
-        (= env "enterprise")
-        (= server-name "enterprise.circlehost")) {:proto "https" :host "enterprise-staging.sphereci.com"}
+      (or (= env "dev")
+          (= server-name "dev.circlehost"))
+      {:proto "http" :host "dev.circlehost:8080"}
+
+      (or (= env "prod")
+          (= server-name "prod.circlehost"))
+      {:proto "https" :host "circleci.com"}
+
+      (or (= env "enterprise")
+          (= server-name "enterprise.circlehost"))
+      {:proto "https" :host "enterprise-staging.sphereci.com"}
+
       (= env "docker")
       {:proto "http" :host (System/getenv "CIRCLE_BACKEND_HOST")}
-      (re-matches #"(.*).circlehost" server-name) (when-let [env (some->> req :server-name (re-matches #"(.*).circlehost") second)]
-                                                    {:proto "https" :host (format "%s.circleci.com" env)})
+
+      (re-matches #"(.*).circlehost" server-name)
+      (when-let [env (some->> req :server-name (re-matches #"(.*).circlehost") second)]
+        {:proto "https" :host (format "%s.circleci.com" env)})
+
       :else {:proto "http" :host "dev.circlehost:8080"})))
 
 (def proxy-config
