@@ -1130,17 +1130,18 @@
             amount (.round js/Math (/ amount 1000 60))
             percent (.round js/Math (* 100 (/ amount max)))]
         (html
-         [:div {:data-component `usage-bar}
-          [:div.month-label
-           [:em (datetime/month-name-day-date from)]
-           [:span " - "]
-           [:em (datetime/month-name-day-date to)]]
-          (om/build progress-bar {:class "monthly-usage-bar" :max max :value amount})
-          [:div.usage-label
-           (when (>= percent 100) {:class "over-usage"})
-           [:div.percent-label (str percent "%")]
-           [:div.amounts-label
-            (str (.toLocaleString amount) "/" (.toLocaleString max) " minutes")]]])))))
+         [:tr {:data-component `usage-bar}
+          [:td.billing-period
+           [:div
+            [:em (datetime/month-name-day-date from)]
+            [:span " - "]
+            [:em (datetime/month-name-day-date to)]]]
+          [:td.usage-bar
+           (om/build progress-bar {:class "monthly-usage-bar" :max max :value amount})]
+          [:td.usage-percent (when (>= percent 100) {:class "over-usage"})
+           (str percent "%")]
+          [:td.usage-minutes (when (>= percent 100) {:class "over-usage"})
+           (str (.toLocaleString amount) "/" (.toLocaleString max) " minutes")]])))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1161,7 +1162,15 @@
                                         {:usage usage-map
                                          :max osx-max-minutes})))]
               [:div.monthly-usage
-               (om/build-all usage-bar osx-usage)])
+               [:table
+                [:thead
+                 [:tr
+                  [:th."Billing Period"]
+                  [:th "Usage"]
+                  [:th ""]
+                  [:th ""]]]
+                [:tbody
+                 (om/build-all usage-bar osx-usage)]]])
             [:div.explanation
              [:p "Looks like you haven't run any builds yet."]])])))))
 

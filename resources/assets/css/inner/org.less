@@ -228,17 +228,29 @@
     @progress-bar-color: @brand-info-v2;
     @progress-background-color: @grayLightest;
 
-    .flexy(row, flex-start);
-
-    .month-label {
+    .billing-period {
       min-width: 110px;
+      padding-right: 10px;
+    }
+
+    .usage-bar {
+      width: 70%;
+      padding-right: 10px;
+    }
+
+    .usage-percent{
+      padding-right: 10px;
+    }
+
+    .usage-minutes {
+      text-align: right;
     }
 
     .monthly-usage-bar {
       margin-top: 5px;
       border: 0;
       height: 13px;
-      width: 70%;
+      width: 100%;
       background-color: @progress-background-color;
       padding: 2px;
     }
@@ -255,19 +267,8 @@
       background-color: @progress-bar-color;
     }
 
-    .usage-label {
-      .flexy(row, flex-end);
-
-      min-width: 175px;
-      margin-left: 10px;
-
-      .percent-label {
-        .flex(1,0,auto);
-      }
-
-      .over-usage {
-        color: @brand-red-v2;
-      }
+    .over-usage {
+      color: @brand-red-v2;
     }
   });
 
