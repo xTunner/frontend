@@ -1122,7 +1122,7 @@
     (render [_]
       (html [:progress {:class class :value value :max max} (str value "%")]))))
 
-(defn usage-bar [{:keys [usage max]} owner]
+(defn osx-usage-row [{:keys [usage max]} owner]
   (reify
     om/IRender
     (render [_]
@@ -1130,7 +1130,7 @@
             amount (.round js/Math (/ amount 1000 60))
             percent (.round js/Math (* 100 (/ amount max)))]
         (html
-         [:tr {:data-component `usage-bar}
+         [:tr {:data-component `osx-usage-row}
           [:td.billing-period
            [:div
             [:em (datetime/month-name-day-date from)]
@@ -1170,7 +1170,7 @@
                   [:th ""]
                   [:th ""]]]
                 [:tbody
-                 (om/build-all usage-bar osx-usage)]]])
+                 (om/build-all osx-usage-row osx-usage)]]])
             [:div.explanation
              [:p "Looks like you haven't run any builds yet."]])])))))
 
