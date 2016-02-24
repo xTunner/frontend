@@ -213,3 +213,6 @@
   (>= (current-months-osx-usage-% plan)
       dismissed-osx-usage-level))
 
+(defn stripe-customer?
+  [plan]
+  (boolean (:stripe_customer plan)))

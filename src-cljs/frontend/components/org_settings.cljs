@@ -253,7 +253,7 @@
             plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
             loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
         (html
-          (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
+          (if (pm/stripe-customer? plan)
             (if plan-selected?
               [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
               (forms/managed-button
