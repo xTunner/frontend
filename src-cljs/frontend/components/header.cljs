@@ -330,6 +330,7 @@
            (when (and (feature/enabled? :ios-build-usage)
                       (= :build (:navigation-point app))
                       (project-model/feature-enabled? project :osx)
+                      (plan/osx? plan)
                       (plan/over-usage-threshold? plan plan/first-warning-threshold)
                       (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
              (om/build osx-usage-warning-banner plan))
