@@ -109,7 +109,7 @@
                     latest-build (last (sort-by :build_num (concat (:running_builds branch)
                                                                    (:recent_builds branch))))
                     vcs-url (:vcs_url project)
-                    org-name (project-model/org-name project) 
+                    org-name (project-model/org-name project)
                     repo-name (project-model/repo-name project)]
                 [:li {:class (when (and (= org-name (:org navigation-data))
                                         (= repo-name (:repo navigation-data))
@@ -204,14 +204,16 @@
        (:title item)])))
 
 (defn project-settings-nav-items [data owner]
-  (let [navigation-data (:navigation-data data)]
+  (let [navigation-data (:navigation-data data)
+        project (get-in data state/project-path)]
     (remove nil?
       [{:type :heading :title "Project Settings"}
        {:type :subpage :href "edit" :title "Overview" :subpage :overview}
        {:type :subpage :href (routes/v1-org-settings-path navigation-data) :title "Org Settings"
         :class "project-settings-to-org-settings"}
        {:type :heading :title "Tweaks"}
-       {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds}
+       (when (project-model/parallel-available? project)
+         {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds})
        {:type :subpage :href "#env-vars" :title "Environment variables" :subpage :env-vars}
        {:type :subpage :href "#experimental" :title "Experimental Settings" :subpage :experimental}
        (when (or (feature/enabled? :project-cache-clear-buttons)
@@ -229,7 +231,7 @@
        {:type :subpage :href "#ssh" :title "SSH Permissions" :subpage :ssh}
        {:type :subpage :href "#api" :title "API Permissions" :subpage :api}
        {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
-       (when (feature/enabled? :show-ios-code-signing)
+       (when (project-model/osx? project)
          {:type :subpage :href "#code-signing" :title "iOS Code Signing" :subpage :code-signing})
        {:type :heading :title "Continuous Deployment"}
        {:type :subpage :href "#heroku" :title "Heroku Deployment" :subpage :heroku}
