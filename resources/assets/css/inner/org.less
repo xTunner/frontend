@@ -228,6 +228,20 @@
     @progress-bar-color: @brand-info-v2;
     @progress-background-color: @grayLightest;
 
+    height: 30px;
+    font-size: @fontSizeSmallish;
+    color: @secondary-button-color;
+    border-top: 1px solid @grayLighter;
+    border-bottom: 1px solid @grayLighter;
+
+    td {
+      padding-left: 10px;
+    }
+
+    &:hover {
+      background: @table-alt-row-background;
+    }
+
     .billing-period {
       min-width: 110px;
       padding-right: 10px;
@@ -274,7 +288,25 @@
 
   .ui("osx-usage-table", {
     .monthly-usage {
-      .flexy(column);
+      padding: 10px;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    thead {
+      font-size: @fontSizeSmallish;
+      color: @secondary-button-color;
+      border-bottom: 2px solid @grayLighter;
+
+      tr {
+        height: 30px;
+      }
+
+      th {
+        padding-left: 10px;
+      }
     }
   });
 
