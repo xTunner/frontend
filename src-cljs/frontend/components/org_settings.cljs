@@ -1130,7 +1130,7 @@
             amount (.round js/Math (/ amount 1000 60))
             percent (.round js/Math (* 100 (/ amount max)))]
         (html
-         [:div.usage-group
+         [:div {:data-component `usage-bar}
           [:div.month-label
            [:em (datetime/month-name-day-date from)]
            [:span " - "]
@@ -1150,7 +1150,7 @@
             osx-max-minutes (some-> plan :osx :template :max_minutes)
             osx-usage (-> plan :usage :os:osx)]
         (html
-         [:div
+         [:div {:data-component `osx-usage-table}
           [:fieldset [:legend (str org-name "'s iOS usage")]]
           (if (and (not-empty osx-usage) osx-max-minutes)
             (let [osx-usage (->> osx-usage
