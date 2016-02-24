@@ -296,10 +296,10 @@
         [:div.alert.alert-warning {:data-component `osx-usage-warning-banner}
          [:div.usage-message
            [:span (str "Your current usage represents your "  (plan/current-months-osx-usage-% plan) "% of ")]
-           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})} "current OSX plan"]
+           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)})} "current OSX plan"]
            [:span ". Please "]
-           [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
-                                                       :subpage "containers"})}
+           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                    :_fragment "containers"})}
             "upgrade"]
            [:span " or reach out to your account manager if you have questions about billing."]]
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
