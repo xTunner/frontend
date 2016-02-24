@@ -80,7 +80,8 @@
     (cond
       (= (type from-query-map) js/Boolean) from-query-map
       (= (type from-browser-settings) js/Boolean) from-browser-settings
-      :else from-config)))
+      :else from-config)
+    true))
 
 (defn mlog [& messages]
   (when (logging-enabled?)
