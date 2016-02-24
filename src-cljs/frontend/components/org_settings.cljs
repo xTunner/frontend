@@ -1131,10 +1131,10 @@
             percent (.round js/Math (* 100 (/ amount max)))]
         (html
          [:div.usage-group
-          [:div.month-label 
-           [:span (datetime/year-month-day-date from)]
-           [:span " to "]
-           [:span (datetime/year-month-day-date to)]]
+          [:div.month-label
+           [:em (datetime/month-name-day-date from)]
+           [:span " - "]
+           [:em (datetime/month-name-day-date to)]]
           (om/build progress-bar {:class "monthly-usage-bar" :max max :value amount})
           [:div.usage-label
            (when (>= percent 100) {:class "over-usage"})

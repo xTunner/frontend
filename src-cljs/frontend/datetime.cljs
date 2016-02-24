@@ -123,6 +123,12 @@
 (def year-month-day-date
   (partial format-date year-month-day-date-format))
 
+(def month-name-day-date-format
+  (goog.i18n.DateTimeFormat. "MMM dd"))
+
+(def month-name-day-date
+  (partial format-date month-name-day-date-format))
+
 (defn date->month-name [date]
   (time-format/unparse (time-format/formatter "MMMM") date))
 
