@@ -12,6 +12,7 @@
             [frontend.components.statuspage :as statuspage]
             [frontend.models.project :as project-model]
             [frontend.models.feature :as feature]
+            [frontend.models.plan :as plan]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [inspect]]
@@ -287,6 +288,23 @@
                      :title "AWS"}}]
              nav-point)])))))
 
+(defn osx-usage-warning-banner [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.alert.alert-warning {:data-component `osx-usage-warning-banner}
+         [:div.usage-message
+           [:span (str "Your current usage represents your "  (plan/current-months-osx-usage-% plan) "% of ")]
+           [:a {:href (routes/v1-org-settings {:org (:org_name plan)})} "current OSX plan"]
+           [:span ". Please "]
+           [:a {:href (routes/v1-org-settings-subpage {:org (:org_name plan)
+                                                       :subpage "containers"})}
+            "upgrade"]
+           [:span " or reach out to your account manager if you have questions about billing."]]
+         [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
+          [:i.material-icons "clear"]]]))))
+
 (defn inner-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Inner Header")
@@ -296,7 +314,9 @@
                      (get-in app [:current-user :dev-admin])
                      (get-in app [:current-user :admin]))
             logged-out? (not (get-in app state/user-path))
-            license (get-in app state/license-path)]
+            license (get-in app state/license-path)
+            project (get-in app state/project-path)
+            plan (get-in app state/project-plan-path)]
         (html
           [:header.main-head (when logged-out? {:class "guest"})
            (when (license/show-banner? license)
@@ -307,6 +327,12 @@
              (om/build statuspage/statuspage app))
            (when logged-out?
              (om/build outer-header app))
+           (when (and (feature/enabled? :ios-build-usage)
+                      (= :build (:navigation-point app))
+                      (project-model/feature-enabled? project :osx)
+                      (plan/over-usage-threshold? plan plan/first-warning-threshold)
+                      (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
+             (om/build osx-usage-warning-banner plan))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user app))])))))
 

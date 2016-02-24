@@ -156,7 +156,8 @@
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
             %))
-        (assoc-in state/build-header-tab-path tab))))
+        (assoc-in state/build-header-tab-path tab)
+        state-utils/reset-dismissed-osx-usage-level)))
 
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
