@@ -1153,14 +1153,29 @@
         (html
          [:div {:data-component `osx-usage-table}
           [:fieldset [:legend (str org-name "'s iOS usage")]]
-          (if (and (not-empty osx-usage) osx-max-minutes)
-            (let [osx-usage (->> osx-usage
-                                 (sort)
-                                 (reverse)
-                                 (take 12)
-                                 (map (fn [[_ usage-map]]
-                                        {:usage usage-map
-                                         :max osx-max-minutes})))]
+          (let [osx-usage (->> osx-usage
+                               ;Remove any entries that do not have keys matching :yyyy_mm_dd.
+                               ;This is to filter out the old style of keys which were :yyyy_mm.
+                               (filterv (comp (partial re-matches #"\d{4}_\d{2}_\d{2}") name key))
+
+                               ;Filter returns a vector of vectors [[key value] [key value]] so we
+                               ;need to put them back into a map with (into {})
+                               (into {})
+
+                               ;Sort by key, which also happends to be billing period start date.
+                               (sort)
+
+                               ;Reverse the order so the dates decend
+                               (reverse)
+
+                               ;All we care about are the last 12 billing periods
+                               (take 12)
+
+                               ;Finally feed in the plan's max minutes
+                               (map (fn [[_ usage-map]]
+                                      {:usage usage-map
+                                       :max osx-max-minutes})))]
+            (if (and (not-empty osx-usage) osx-max-minutes)
               [:div.monthly-usage
                [:table
                 [:thead
@@ -1170,9 +1185,9 @@
                   [:th ""]
                   [:th ""]]]
                 [:tbody
-                 (om/build-all osx-usage-row osx-usage)]]])
-            [:div.explanation
-             [:p "Looks like you haven't run any builds yet."]])])))))
+                 (om/build-all osx-usage-row osx-usage)]]]
+              [:div.explanation
+               [:p "Looks like you haven't run any builds yet."]]))])))))
 
 (defn osx-overview [{:keys [plan osx-enabled?]} owner]
   (reify
