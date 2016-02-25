@@ -10,6 +10,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
+            [frontend.models.plan :as plan]
             [frontend.intercom :as intercom]
             [frontend.support :as support]
             [frontend.routes :as routes]
@@ -1382,7 +1383,7 @@
   [target message {:keys [new-branch]} _ current-state]
   (let [nav-data (get-in current-state [:navigation-data])
         comms (get-in current-state [:comms])]
-    (put! (:nav comms) [:navigate! {:path (routes/v1-insights-project (assoc nav-data :branch new-branch))}])
+    (put! (:nav comms) [:navigate! {:path (routes/v1-insights-project-path (assoc nav-data :branch new-branch))}])
     (analytics/track {:event-type :project-branch-changed
                       :current-state current-state
                       :properties {:new-branch new-branch}})))
@@ -1390,3 +1391,18 @@
 (defmethod control-event :logging-enabled-clicked
   [_ _ _ state]
   (update-in state state/logging-enabled-path not))
+
+(defmethod control-event :dismiss-osx-usage-banner
+  [_ _ {:keys [current-usage]} current-state]
+  (cond
+    (>= current-usage plan/third-warning-threshold)
+    (assoc-in current-state state/dismissed-osx-usage-level (+ current-usage plan/future-warning-threshold-increment))
+
+    (>= current-usage plan/second-warning-threshold)
+    (assoc-in current-state state/dismissed-osx-usage-level plan/third-warning-threshold)
+
+    (>= current-usage plan/first-warning-threshold)
+    (assoc-in current-state state/dismissed-osx-usage-level plan/second-warning-threshold)
+
+    :else
+    current-state))

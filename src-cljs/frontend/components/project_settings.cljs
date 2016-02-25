@@ -1585,7 +1585,5 @@
                :deployment (om/build other-deployment project-data)
                :aws (om/build aws project-data)
                :aws-codedeploy (om/build aws-codedeploy project-data)
-               :code-signing (if (feature/enabled? :show-ios-code-signing)
-                               (om/build code-signing {:project-data project-data :error-message error-message})
-                               (om/build overview project-data))
+               :code-signing (om/build code-signing {:project-data project-data :error-message error-message})
                (om/build overview project-data))]]))))))

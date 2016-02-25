@@ -184,3 +184,32 @@
   "Whether the logged-in user is an admin for this plan."
   [plan]
   (boolean (:admin plan)))
+
+(defn usage-key->date [usage-key]
+  (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))
+
+(defn date->usage-key [date]
+  (keyword (time-format/unparse (time-format/formatter "yyyy_MM") date)))
+
+(defn current-months-osx-usage-ms [plan]
+  (get-in plan [:usage :os:osx (date->usage-key (time/now))]))
+
+(defn current-months-osx-usage-% [plan]
+  (let [usage-ms (current-months-osx-usage-ms plan)
+        usage-min (/ usage-ms 1000 60)
+        max-min (-> plan :osx :template :max_minutes)]
+    (.round js/Math (* (/ usage-min max-min) 100))))
+
+(def first-warning-threshold 75)
+(def second-warning-threshold 95)
+(def third-warning-threshold 100)
+(def future-warning-threshold-increment 10)
+
+(defn over-usage-threshold? [plan threshold-percent]
+  (>= (current-months-osx-usage-% plan)
+      threshold-percent))
+
+(defn over-dismissed-level? [plan dismissed-osx-usage-level]
+  (>= (current-months-osx-usage-% plan)
+      dismissed-osx-usage-level))
+

@@ -10,14 +10,21 @@
 //   });
 // });
 .ns(@ns, @ns-rules) {
-  .ui(@component, @component-rules) {
-    [data-component="@{ns}/@{component}"] {
-      @component-rules();
-    }
-  };
-
   @ns-rules();
 };
+
+.ui(@component, @component-rules) {
+  @ui-rules-in-component();
+};
+
+// We implement this as a detached ruleset so that it can get @ns and @component
+// from the dynamic scope.
+@ui-rules-in-component: {
+  [data-component="@{ns}/@{component}"] {
+    @component-rules();
+  }
+};
+
 
 @import "components/insights.less";
 @import "components/insights/project.less";
