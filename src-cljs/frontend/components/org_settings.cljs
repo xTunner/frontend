@@ -306,14 +306,18 @@
     om/IRender
     (render [_]
       (html
-        [:div.card
-         [:div title]
-         [:div "$" price "/mo"]
-         [:div container-count " OS X containers"]
-         [:div "Recommended for teams that do " daily-build-count " builds/day"]
-         [:div max-minutes " max minutes/month"]
-         [:div support-level]
-         [:div "Recommended for " team-size " team members"]]))))
+        [:div.plan-card {:data-component `osx-plan-ga}
+         [:div.header
+          [:div.title title]
+          [:div.price "$" price "/mo"]]
+         [:div.content
+          [:div.containers container-count " OS X containers"]
+          [:div.daily-builds "Recommended for teams that do " daily-build-count " builds/day"]
+          [:div.max-minutes max-minutes " max minutes/month"]
+          [:div.support support-level]
+          [:div.team-size "Recommended for " team-size " team members"]]
+         [:div.action
+          [:a.btn.btn-primary "Select"]]]))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
