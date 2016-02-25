@@ -453,7 +453,7 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn containers [app owner]
+(defn pricing [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
     ;; from the plan component above, but the billing-card component
@@ -1117,7 +1117,7 @@
   {:overview overview
    :users users
    :projects projects
-   :containers containers
+   :containers pricing
    :organizations organizations
    :billing billing
    :cancel cancel})
