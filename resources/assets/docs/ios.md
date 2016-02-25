@@ -301,10 +301,10 @@ versions installed:
   - 7.0 Build version 7A218
   - 7.1.1 Build version 7B1005
   - 7.2.1 Build version 7C1002
-  - 7.3 Build version 7D141l
+  - 7.3 Build version 7D152p
 - Facebook xctool 0.2.8
 - CocoaPods 0.39.0
 - xcpretty 0.2.2
-- fastlane 1.59.0
-- carthage 0.13.0
+- fastlane 1.61.0
+- carthage 0.14.0
 - shenzhen 0.14.2
