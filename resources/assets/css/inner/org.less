@@ -301,5 +301,69 @@
   }
 
   .ui("osx-plan-ga", {
+    @border-color: #ddd;
+    @header-background-color: @grayLightest;
+
+    border: 1px solid @border-color;
+    color: #343434;
+    max-width: 300px;
+
+    .bold {
+      font-weight: bold;
+    }
+
+    .header {
+      border-bottom: 1px solid @border-color;
+      background: @header-background-color;
+      text-align: center;
+      padding: 20px;
+
+      .title {
+        font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
+
+      .price {
+        font-size: 35px;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+
+      }
+    }
+
+    .content {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 300;
+      padding: 20px;
+
+      .containers {
+        letter-spacing: 0.3px;
+        margin-bottom: 20px;
+      }
+
+      .daily-builds {
+        margin-bottom: 20px;
+      }
+
+      .max-minutes {
+        margin-bottom: 20px;
+      }
+
+      .support {
+        margin-bottom: 20px;
+      }
+    }
+
+    .action {
+      text-align: center;
+      padding: 20px;
+
+      .button {
+        width: 94px;
+      }
+
+    }
   });
 });
