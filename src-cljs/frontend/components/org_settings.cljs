@@ -237,6 +237,13 @@
 (defn pluralize-no-val [num word]
   (if (= num 1) (infl/singular word) (infl/plural word)))
 
+(defn osx-plan-ga [{:keys [plan-type plan price current-plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:h1 "An osx plan"]))))
+
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
     om/IRender
@@ -335,7 +342,20 @@
             [:dt question]
             [:dd answer]))]]))))
 
-(defn osx-plans [plan owner]
+(defn osx-plans-list-ga [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [current-plan (some-> plan :osx :template :id)]
+        (html
+          [:div.osx-plans
+           [:fieldset
+            [:legend (str "iOS Plans")]
+            [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]]
+           [:div.plan-selection
+            (om/build osx-plan-ga {:plan plan :price 0 :plan-type "" :current-plan current-plan})]])))))
+
+(defn osx-plans-list [plan owner]
   (reify
     om/IRender
     (render [_]
@@ -475,7 +495,7 @@
                        (project-common/mini-parallelism-faq {})]
 
                :osx [:div.card
-                     (om/build osx-plans plan)
+                     (om/build osx-plans-list-ga plan)
                      (om/build osx-faq osx-faq-items)])]))))
 
 (defn pricing [app owner]
@@ -530,7 +550,7 @@
                  (if  (and  (feature/enabled? :osx-plans)
                            (get-in app state/org-osx-enabled-path))
                    (list
-                     (om/build osx-plans plan)
+                     (om/build osx-plans-list plan)
                      (om/build osx-faq osx-faq-items))
                    (project-common/mini-parallelism-faq  {}))]))))))))
 
