@@ -453,7 +453,7 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn pricing-tabs [_ owner]
+(defn pricing-tabs [{:keys [app plan checkout-loaded?]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -468,7 +468,17 @@
                 [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
               [:li {:class (when (= selected-tab :osx) "active")}
                [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
-                [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]]))))
+                [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
+             (condp = selected-tab
+               :linux
+               [:div (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                (project-common/mini-parallelism-faq {})]
+
+               :osx (if (and (feature/enabled? :osx-plans)
+                             (get-in app state/org-osx-enabled-path))
+                      (list
+                        (om/build osx-plans plan)
+                        (om/build osx-faq osx-faq-items))))]))))
 
 (defn pricing [app owner]
   (reify
@@ -514,14 +524,7 @@
             (if (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name org-vcs-type)
               [:div
-               (om/build pricing-tabs {})
-               (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-               (if (and (feature/enabled? :osx-plans)
-                        (get-in app state/org-osx-enabled-path))
-                 (list
-                   (om/build osx-plans plan)
-                   (om/build osx-faq osx-faq-items))
-                 (project-common/mini-parallelism-faq {}))])))))))
+               (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?})])))))))
 
 (defn piggyback-organizations [app owner]
   (om/component
