@@ -152,6 +152,7 @@ window.stefon_hack_for_om =
     "/docs/github-security-ssh-keys.md": '(asset-path "docs/github-security-ssh-keys.md")'
     "/docs/google-auth.md": '(asset-path "docs/google-auth.md")'
     "/docs/google-cloud-platform.md": '(asset-path "docs/google-cloud-platform.md")'
+    "/docs/google-cloud-test-lab.md": '(asset-path "docs/google-cloud-test-lab.md")'
     "/docs/how-cache-works.md": '(asset-path "docs/how-cache-works.md")'
     "/docs/how-parallelism-works.md": '(asset-path "docs/how-parallelism-works.md")'
     "/docs/how-to.md": '(asset-path "docs/how-to.md")'

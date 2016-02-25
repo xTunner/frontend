@@ -19,6 +19,7 @@ children:
   - google-cloud-platform
   - google-auth
   - deploy-google-app-engine
+  - google-cloud-test-lab
   - deploy-bluemix
   - continuous-deployment-with-ninefold
 
