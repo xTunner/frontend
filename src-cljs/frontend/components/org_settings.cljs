@@ -301,12 +301,19 @@
             [:dt question]
             [:dd answer]))]]))))
 
-(defn osx-plan-ga [{:keys [plan-type plan price current-plan]} owner]
+(defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size]} owner]
   (reify
     om/IRender
     (render [_]
       (html
-        [:h1 "An osx plan"]))))
+        [:div.card
+         [:div title]
+         [:div "$" price "/mo"]
+         [:div container-count " OS X containers"]
+         [:div "Recommended for teams that do " daily-build-count " builds/day"]
+         [:div max-minutes " max minutes/month"]
+         [:div support-level]
+         [:div "Recommended for " team-size " team members"]]))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
@@ -341,6 +348,38 @@
                 :data-failed-text plan-img
                 :on-click new-plan-fn}
                plan-img])))))))
+(def osx-plans
+  {:ga [{:title "SEED"
+         :price 39
+         :container-count "2"
+         :daily-build-count "1-2"
+         :max-minutes "500"
+         :support-level "Community support"
+         :team-size "1-2"}
+
+        {:title "STARTUP"
+         :price 129
+         :container-count "5"
+         :daily-build-count "2-5"
+         :max-minutes "1,800"
+         :support-level "Engineer support"
+         :team-size "unlimited"}
+
+        {:title "GROWTH"
+         :price 249
+         :container-count "5"
+         :daily-build-count "4-10"
+         :max-minutes "5,000"
+         :support-level "Engineer support"
+         :team-size "unlimited"}
+
+        {:title "MOBILE FOCUSED"
+         :price 449
+         :container-count "10"
+         :daily-build-count "more than 10"
+         :max-minutes "25,000"
+         :support-level "Priority support & Account manager"
+         :team-size "unlimited"}]})
 
 (defn osx-plans-list-ga [plan owner]
   (reify
@@ -353,7 +392,7 @@
             [:legend (str "iOS Plans")]
             [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]]
            [:div.plan-selection
-            (om/build osx-plan-ga {:plan plan :price 0 :plan-type "" :current-plan current-plan})]])))))
+            (om/build-all osx-plan-ga (:ga osx-plans))]])))))
 
 (defn osx-plans-list [plan owner]
   (reify
