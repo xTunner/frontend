@@ -395,7 +395,8 @@
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
-             (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
+             (if (and (pm/can-edit-plan? plan org-name)
+                      (or (config/enterprise?) (pm/paid? plan) (pm/stripe-customer? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
                    (if (and (zero? new-total) (not (config/enterprise?)))
