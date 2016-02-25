@@ -521,8 +521,18 @@
 
             (if (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name org-vcs-type)
-              [:div
-               (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?})])))))))
+              (if (feature/enabled? :osx-ga-inner-pricing)
+                [:div
+                 (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?})]
+
+                [:div
+                 (om/build linux-plan  {:app app :checkout-loaded? checkout-loaded?})
+                 (if  (and  (feature/enabled? :osx-plans)
+                           (get-in app state/org-osx-enabled-path))
+                   (list
+                     (om/build osx-plans plan)
+                     (om/build osx-faq osx-faq-items))
+                   (project-common/mini-parallelism-faq  {}))]))))))))
 
 (defn piggyback-organizations [app owner]
   (om/component
