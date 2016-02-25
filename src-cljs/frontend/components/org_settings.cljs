@@ -453,6 +453,23 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
+(defn pricing-tabs [_ owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:selected-tab :linux})
+
+    om/IRenderState
+    (render-state [_ {:keys [selected-tab]}]
+      (html [:div {:data-component `pricing-tabs}
+             [:ul.nav.nav-tabs
+              [:li {:class (when (= selected-tab :linux) "active")}
+               [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
+                [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
+              [:li {:class (when (= selected-tab :osx) "active")}
+               [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
+                [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]]))))
+
 (defn pricing [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
@@ -497,6 +514,7 @@
             (if (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name org-vcs-type)
               [:div
+               (om/build pricing-tabs {})
                (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
                (if (and (feature/enabled? :osx-plans)
                         (get-in app state/org-osx-enabled-path))
