@@ -237,47 +237,6 @@
 (defn pluralize-no-val [num word]
   (if (= num 1) (infl/singular word) (infl/plural word)))
 
-(defn osx-plan-ga [{:keys [plan-type plan price current-plan]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:h1 "An osx plan"]))))
-
-(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [plan-type-key (keyword (str "osx-" plan-type))
-            new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
-                                            {:plan-type {:template plan-type-key}
-                                             :price price
-                                             :description (str "OS X " (clojure.string/capitalize plan-type) " - $" price "/month.")}])
-                             false)
-            update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
-                                false)
-            plan-selected? (= plan-type-key (keyword current-plan))
-            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
-            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
-        (html
-          (if (pm/stripe-customer? plan)
-            (if plan-selected?
-              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
-              (forms/managed-button
-                [:a.unselected
-                 {:data-success-text plan-img
-                  :data-loading-text loading-img
-                  :data-failed-text plan-img
-                  :on-click update-plan-fn}
-                 plan-img]))
-            (forms/managed-button
-              [:a.unselected
-               {:data-success-text plan-img
-                :data-loading-text plan-img
-                :data-failed-text plan-img
-                :on-click new-plan-fn}
-               plan-img])))))))
-
 (def osx-faq-items
   [{:question (list
                [:p "This is a separate service? How will I be billed?"])
@@ -341,6 +300,47 @@
            (list
             [:dt question]
             [:dd answer]))]]))))
+
+(defn osx-plan-ga [{:keys [plan-type plan price current-plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:h1 "An osx plan"]))))
+
+(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan-type-key (keyword (str "osx-" plan-type))
+            new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
+                                            {:plan-type {:template plan-type-key}
+                                             :price price
+                                             :description (str "OS X " (clojure.string/capitalize plan-type) " - $" price "/month.")}])
+                             false)
+            update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
+                                false)
+            plan-selected? (= plan-type-key (keyword current-plan))
+            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
+            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
+        (html
+          (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
+            (if plan-selected?
+              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
+              (forms/managed-button
+                [:a.unselected
+                 {:data-success-text plan-img
+                  :data-loading-text loading-img
+                  :data-failed-text plan-img
+                  :on-click update-plan-fn}
+                 plan-img]))
+            (forms/managed-button
+              [:a.unselected
+               {:data-success-text plan-img
+                :data-loading-text plan-img
+                :data-failed-text plan-img
+                :on-click new-plan-fn}
+               plan-img])))))))
 
 (defn osx-plans-list-ga [plan owner]
   (reify
