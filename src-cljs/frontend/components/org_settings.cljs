@@ -470,15 +470,13 @@
                [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
                 [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
              (condp = selected-tab
-               :linux
-               [:div (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                (project-common/mini-parallelism-faq {})]
+               :linux [:div.card
+                       (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                       (project-common/mini-parallelism-faq {})]
 
-               :osx (if (and (feature/enabled? :osx-plans)
-                             (get-in app state/org-osx-enabled-path))
-                      (list
-                        (om/build osx-plans plan)
-                        (om/build osx-faq osx-faq-items))))]))))
+               :osx [:div.card
+                     (om/build osx-plans plan)
+                     (om/build osx-faq osx-faq-items)])]))))
 
 (defn pricing [app owner]
   (reify
