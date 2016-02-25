@@ -492,12 +492,13 @@
               [:i.material-icons "chat"]
               [:div.nav-label "Support"]]
 
-           [:a.aside-item (open-ext {:data-placement "right"
-                                     :data-trigger "hover"
-                                     :title "Changelog"
-                                     :href "/changelog"})
-              [:i.material-icons "receipt"]
-              [:div.nav-label "Changelog"]]
+            (when-not (config/enterprise?)
+              [:a.aside-item (open-ext {:data-placement "right"
+                                        :data-trigger "hover"
+                                        :title "Changelog"
+                                        :href "/changelog"})
+               [:i.material-icons "receipt"]
+               [:div.nav-label "Changelog"]])
 
             [:hr]
 
