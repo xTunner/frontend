@@ -111,12 +111,12 @@
                        :context {:project-name (str (:org args) "/" (:repo args))})
             (when (:read-settings scopes)
               (ajax/ajax :get
-                         (gstring/format "/api/v1/project/%s/%s/settings" (:org args) (:repo args))
+                         (frontend.api.path/settings-path args)
                          :project-settings
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))})
               (ajax/ajax :get
-                         (gstring/format "/api/v1/project/%s/%s/plan" (:org args) (:repo args))
+                         (frontend.api.path/settings-plan args)
                          :project-plan
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))}))))))
