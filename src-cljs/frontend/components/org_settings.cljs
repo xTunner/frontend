@@ -423,12 +423,15 @@
                            (map (partial merge {:plan plan
                                                 :chosen-plan-id (:chosen-osx-plan-id org-settings)})))]
         (html
-          [:div.osx-plans
+          [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
             [:legend (str "iOS Plans")]
             [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]]
            [:div.plan-selection
-            (om/build-all osx-plan-ga osx-plans)]])))))
+            (om/build-all osx-plan-ga osx-plans)]
+           [:div.update-action
+            [:a.btn.btn-lg.btn-success.center {:disabled (nil? (:chosen-osx-plan-id org-settings))}
+             "Pay Now"]]])))))
 
 (defn osx-plans-list [plan owner]
   (reify
