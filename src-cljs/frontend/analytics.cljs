@@ -2,9 +2,10 @@
   (:require [frontend.analytics.adroll :as adroll]
             [frontend.analytics.perfect-audience :as pa]
             [frontend.analytics.segment :as segment]
+            [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
-            [frontend.utils :refer [mwarn]]
+            [frontend.utils :refer [merror]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
@@ -105,10 +106,16 @@
       (add-properties-to-track-from-owner)
       (merge props)))
 
-(defn- supplement-tracking-properties-from-state [props state]
+(defn- get-user-properties-from-state [current-state]
+  (let [analytics-id (get-in current-state state/user-analytics-id-path)
+        user-data (get-in current-state state/user-path)]
+    {:id analytics-id
+     :user-properties (select-keys user-data (keys common-analytics/UserProperties))}))
+
+(defn- supplement-tracking-properties-from-state [props current-state]
   "Fill in any unsuppplied property values with those supplied
-  in the app state."
-  (-> state
+  in the current app state."
+  (-> current-state
       (add-properties-to-track-from-state)
       (merge props)))
 
@@ -124,8 +131,8 @@
                                  (.getTime (js/Date. (:stop_time build))))
                               1000 60 60)})))
 
-(defn mwarn-unsupported-event [event]
-  (mwarn "Cannot log unsupported event type "event", please add it to the list of supported events"))
+(defn merror-unsupported-event [event]
+  (merror "Cannot log unsupported event type "event", please add it to the list of supported events"))
 
 (defmulti track (fn [data]
                   (when (frontend.config/analytics-enabled?)
@@ -136,7 +143,7 @@
 
 (defmethod track :default [data]
   (when (frontend.config/analytics-enabled?)
-    (mwarn-unsupported-event (:event-type data))))
+    (merror-unsupported-event (:event-type data))))
 
 (s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties owner]} event-data]
@@ -156,7 +163,7 @@
   (let [{:keys [event properties owner]} event-data]
     (if (supported-click-and-impression-events (:event event-data))
       (segment/track-external-click event (supplement-tracking-properties-from-owner properties owner))
-      (mwarn-unsupported-event (:event event-data)))))
+      (merror-unsupported-event (:event event-data)))))
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties current-state]} event-data]
@@ -179,3 +186,6 @@
       (intercom/track :viewed-self-triggered-oss-build
                       {:vcs-url (vcs-url/project-name (:vcs_url build))
                        :outcome (:outcome build)}))))
+
+(s/defmethod track :init-user [event-data :- AnalyticsEventForControllers]
+  (segment/identify (get-user-properties-from-state (:current-state event-data))))
