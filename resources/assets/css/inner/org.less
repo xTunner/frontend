@@ -305,26 +305,43 @@
     @header-background-color: @grayLightest;
     cursor: pointer;
 
-    .highlight {
+    .selected-plan {
       border: 2px solid #66d3e4;
     }
 
-    .plan:not(.highlight) {
+    .updated-plan {
+      border: 2px dashed #66d3e4;
+    }
+
+    .trial-plan {
+      border: 2px solid @green;
+    }
+
+    .plan:not(.selected-plan).plan:not(.updated-plan).plan:not(.trial-plan){
       border: 1px solid @border-color;
+    }
+
+    .selected-notice {
+      height: 40px;
+      padding: 10px;
+      background-color: #66d3e4;
+      color: @white;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .trial-notice {
+      height: 40px;
+      padding: 10px;
+      background-color: @green;
+      color: @white;
+      text-align: center;
+      font-weight: bold;
     }
 
     .plan {
       color: #343434;
       max-width: 300px;
-
-      .selected-notice {
-        height: 30px;
-        padding: 5px;
-        background-color: #66d3e4;
-        text-align: center;
-        font-weight: bold;
-
-      }
 
       .bold {
         font-weight: bold;
@@ -381,7 +398,6 @@
         .button {
           width: 94px;
         }
-
       }
     }
   });

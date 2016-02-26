@@ -302,16 +302,17 @@
             [:dd answer]))]]))))
 
 (defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
-                           selected?]} owner]
+                           currently-selected? updated-selection? trial-start?]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         [:div {:data-component `osx-plan-ga}
          [:div.plan
-          {:class (when selected? "highlight")}
-          (when selected?
-            [:div.selected-notice "Currently Selected"])
+          {:class
+           (cond currently-selected? "selected-plan"
+                 updated-selection? "updated-plan"
+                 trial-start? "trial-plan")}
           [:div.header
            [:div.title title]
            [:div.price "$" [:span.bold price] "/mo"]]
@@ -324,7 +325,12 @@
            [:div.support support-level]
            [:div.team-size "Recommended for " [:span.bold team-size] " team members"]]
           [:div.action
-           [:div "Click to select and then update."]]]]))))
+           [:div "Click to select and then update."]]
+
+          (when trial-start?
+            [:div.trial-notice "FREE TRIAL STARTS HERE"])
+          (when currently-selected?
+            [:div.selected-notice "CURRENTLY SELECTED"])]]))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
@@ -366,8 +372,8 @@
          :daily-build-count "1-2"
          :max-minutes "500"
          :support-level "Community support"
-         :selected? true
-         :team-size "1-2"}
+         :team-size "1-2"
+         :currently-selected? true}
 
         {:title "STARTUP"
          :price 129
@@ -375,7 +381,8 @@
          :daily-build-count "2-5"
          :max-minutes "1,800"
          :support-level "Engineer support"
-         :team-size "unlimited"}
+         :team-size "unlimited"
+         :updated-selection? true}
 
         {:title "GROWTH"
          :price 249
@@ -383,7 +390,8 @@
          :daily-build-count "4-10"
          :max-minutes "5,000"
          :support-level "Engineer support"
-         :team-size "unlimited"}
+         :team-size "unlimited"
+         :trial-start? true}
 
         {:title "MOBILE FOCUSED"
          :price 449
