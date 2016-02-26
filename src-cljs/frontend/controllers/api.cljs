@@ -153,30 +153,23 @@
           add-recent-builds (fn [projects]
                               (for [project projects
                                     :let [{:keys [branch]} target-key
-                                          project-key (-> project
-                                                          api/project-build-key
-                                                          (assoc :branch branch))]]
-                                (if (= project-key target-key)
-                                  (-> project
-                                      (assoc-in [:recent-builds branch] all-recent-builds))
-                                  project)))]
+                                          project-key (api/project-build-key project)]]
+                                (cond-> project
+                                  (= (dissoc project-key :branch) (dissoc target-key :branch))
+                                  (assoc-in [:recent-builds branch] all-recent-builds))))]
       (update-in state state/projects-path add-recent-builds))
     state))
 
 (defmethod api-event [:branch-build-times :success]
   [target message status {timing-data :resp, {:keys [target-key]} :context} state]
   (let [add-timing-data (fn [projects]
-                          (for [project projects
-                                :let [{:keys [branch]} target-key
-                                      project-key (-> project
-                                                      api/project-build-key
-                                                      (assoc :branch branch))]]
-                            (if (= project-key target-key)
-                              (-> project
-                                  (assoc-in [:build-timing (:branch target-key)] timing-data))
-                              project)))]
-    (update-in state state/projects-path add-timing-data))
-  state)
+                          (doall (for [project projects
+                                       :let [{:keys [branch]} target-key
+                                             project-key (api/project-build-key project)]]
+                                   (cond-> project
+                                       (= (dissoc project-key :branch) (dissoc target-key :branch))
+                                       (assoc-in [:build-timing branch] timing-data)))))]
+    (update-in state state/projects-path add-timing-data)))
 
 
 (defmethod api-event [:build :success]
