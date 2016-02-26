@@ -307,7 +307,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [currently-selected? (= plan-id (pm/osx-plan-id plan))
+      (let [currently-selected? (= (name plan-id) (pm/osx-plan-id plan))
             updated-selection? (= plan-id chosen-plan-id)
             trial-start? (and trial-start?
                               (not (pm/osx? plan))
@@ -320,9 +320,10 @@
                    updated-selection? "updated-plan"
                    trial-start? "trial-plan")
 
-             :on-click (if updated-selection?
-                         #(raise! owner [:osx-plan-deselected])
-                         #(raise! owner [:osx-plan-selected {:plan-id plan-id}]))}
+             :on-click (when (not currently-selected?)
+                         (if updated-selection?
+                           #(raise! owner [:osx-plan-deselected])
+                           #(raise! owner [:osx-plan-selected {:plan-id plan-id}])))}
             [:div.header
              [:div.title title]
              [:div.price "$" [:span.bold price] "/mo"]]
@@ -376,7 +377,8 @@
                 :on-click new-plan-fn}
                plan-img])))))))
 (def osx-plans
-  {:ga [{:plan-id :seed
+  {:ga {:seed
+        {:plan-id :seed
          :title "SEED"
          :price 39
          :container-count "2"
@@ -385,6 +387,7 @@
          :support-level "Community support"
          :team-size "1-2"}
 
+        :startup
         {:plan-id :startup
          :title "STARTUP"
          :price 129
@@ -395,6 +398,7 @@
          :team-size "unlimited"
          :updated-selection? true}
 
+        :growth
         {:plan-id :growth
          :title "GROWTH"
          :price 249
@@ -405,6 +409,7 @@
          :team-size "unlimited"
          :trial-start? true}
 
+        :mobile-focused
         {:plan-id :mobile-focused
          :title "MOBILE FOCUSED"
          :price 449
@@ -412,16 +417,25 @@
          :daily-build-count "more than 10"
          :max-minutes "25,000"
          :support-level "Priority support & Account manager"
-         :team-size "unlimited"}]})
+         :team-size "unlimited"}}})
 
 (defn osx-plans-list-ga [{:keys [plan org-settings]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [osx-plans (->> osx-plans
+      (let [chosen-plan-id (:chosen-osx-plan-id org-settings)
+            chosen-plan (get-in osx-plans [:ga chosen-plan-id])
+            osx-plans (->> osx-plans
                            :ga
+                           (vals)
                            (map (partial merge {:plan plan
-                                                :chosen-plan-id (:chosen-osx-plan-id org-settings)})))]
+                                                :chosen-plan-id chosen-plan-id})))
+
+            new-plan-fn #(raise! owner [:new-osx-plan-clicked
+                                            {:plan-type {:template  (name chosen-plan-id)}
+                                             :price (:price chosen-plan)
+                                             :description (str "OS X " (clojure.string/capitalize (name chosen-plan-id)) " - $" (:price chosen-plan) "/month.")}])
+            update-plan-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}}])]
         (html
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
@@ -430,8 +444,23 @@
            [:div.plan-selection
             (om/build-all osx-plan-ga osx-plans)]
            [:div.update-action
-            [:a.btn.btn-lg.btn-success.center {:disabled (nil? (:chosen-osx-plan-id org-settings))}
-             "Pay Now"]]])))))
+            (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
+              (forms/managed-button
+                [:a.btn.btn-lg.btn-success.center
+                 {:data-success-text "Success!"
+                  :data-loading-text "Updating..."
+                  :data-failed-text "Failed"
+                  :on-click update-plan-fn
+                  :disabled (nil? chosen-plan-id)}
+                 "Update"])
+              (forms/managed-button
+                [:a.btn.btn-lg.btn-success.center
+                 {:data-success-text "Success!"
+                  :data-loading-text "Paying..."
+                  :data-failed-text "Failed"
+                  :on-click new-plan-fn
+                  :disabled (nil? chosen-plan-id)}
+                 "Pay Now"]))]])))))
 
 (defn osx-plans-list [plan owner]
   (reify
