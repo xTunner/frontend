@@ -292,10 +292,10 @@
         (.append "foreignObject")
         (.attr #js {:width "100%"
                     :height "100%"})
+        (.style #js {:visibility "hidden"})
         (.append "xhtml:iframe")
         (.attr #js {:width "100%"
                     :height "100%"})
-        (.style #js {:visibility "hidden"})
         ffirst
         .-contentWindow
         (gevents/listen "resize" #(when-let [redraw-fn (.property svg "redraw-fn")] (redraw-fn))))
