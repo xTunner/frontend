@@ -406,6 +406,7 @@
       (assoc :org-settings-subpage subpage)
       (assoc :org-settings-org-name org)
       (assoc :org-settings-vcs_type vcs_type)
+      (assoc-in (conj state/org-settings-path :chosen-osx-plan-id) nil)
       (assoc-in state/crumbs-path [{:type :settings-base}
                                    {:type :org
                                     :username org}])

@@ -954,7 +954,7 @@
                            :params {:containers containers}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))
-    (let [previous-num-containers (get-in previous-state (conj state/org-plan-path :containers)) 
+    (let [previous-num-containers (get-in previous-state (conj state/org-plan-path :containers))
           new-num-containers containers
           upgrade? (> new-num-containers previous-num-containers)]
       (analytics/track {:event-type :container-amount-changed
@@ -1406,3 +1406,11 @@
 
     :else
     current-state))
+
+(defmethod control-event :osx-plan-selected
+  [_ _ {:keys [plan-id]} current-state]
+  (assoc-in current-state (conj state/org-settings-path :chosen-osx-plan-id) plan-id))
+
+(defmethod control-event :osx-plan-deselected
+  [_ _ _ current-state]
+  (assoc-in current-state (conj state/org-settings-path :chosen-osx-plan-id) nil))

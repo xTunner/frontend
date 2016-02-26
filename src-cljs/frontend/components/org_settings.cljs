@@ -302,15 +302,21 @@
             [:dd answer]))]]))))
 
 (defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
-                           plan-id plan
-                           updated-selection? trial-start?]} owner]
+                           plan-id chosen-plan-id plan
+                           trial-start?]} owner]
   (reify
     om/IRender
     (render [_]
       (let [currently-selected? (= plan-id (pm/osx-plan-id plan))
-            trial-start? (and trial-start? (not (pm/osx? plan)))]
+            updated-selection? (= plan-id chosen-plan-id)
+            trial-start? (and trial-start?
+                              (not (pm/osx? plan))
+                              (not updated-selection?))]
         (html
-          [:div {:data-component `osx-plan-ga}
+          [:div {:data-component `osx-plan-ga
+                 :on-click (if updated-selection?
+                             #(raise! owner [:osx-plan-deselected])
+                             #(raise! owner [:osx-plan-selected {:plan-id plan-id}]))}
            [:div.plan
             {:class
              (cond currently-selected? "selected-plan"
@@ -407,13 +413,14 @@
          :support-level "Priority support & Account manager"
          :team-size "unlimited"}]})
 
-(defn osx-plans-list-ga [plan owner]
+(defn osx-plans-list-ga [{:keys [plan org-settings]} owner]
   (reify
     om/IRender
     (render [_]
       (let [osx-plans (->> osx-plans
                            :ga
-                           (map (partial merge {:plan plan})))]
+                           (map (partial merge {:plan plan
+                                                :chosen-plan-id (:chosen-osx-plan-id org-settings)})))]
         (html
           [:div.osx-plans
            [:fieldset
@@ -562,7 +569,8 @@
                        (project-common/mini-parallelism-faq {})]
 
                :osx [:div.card
-                     (om/build osx-plans-list-ga plan)
+                     (om/build osx-plans-list-ga {:plan plan
+                                                  :org-settings (get-in app state/org-settings-path)})
                      (om/build osx-faq osx-faq-items)])]))))
 
 (defn pricing [app owner]
