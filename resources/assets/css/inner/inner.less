@@ -2,7 +2,7 @@
 
   .flexy();
 
-  font-family: @brand-sans-serif-v2;
+  font-family: @sansSerifFontFamily;
   background-color: @background-color-v2;
 
   span.strikeout {
@@ -45,7 +45,7 @@
     padding: 0;
 
     border-radius: 2 * @badge-height;
-    background: lighten(@brand-canceled-v2, @brand-lighten-ratio-v2);
+    background: @grayLightest;
 
     .badge-icon {
       @badge-icon-margin: 4px;
@@ -79,7 +79,7 @@
     }
 
     &.stop {
-      background: @brand-canceled-v2;
+      background: @grayLight;
     }
 
     &.queued {

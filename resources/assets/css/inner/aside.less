@@ -26,8 +26,7 @@
 
 .aside-left-nav {
   width: @aside-nav-width;
-  background: @aside-nav-bg-color-v2;
-  color: fade(@white, 66);
+  background: @gray;
   overflow: visible;
 
   // Because this div can include elements which stretch across the top and the
@@ -202,7 +201,7 @@
       font-size: 12px;
       line-height: 20px;
       font-weight: 600;
-      color: @gray-dark-v2;
+      color: @grayDark;
       &:hover {
         text-decoration: underline;
       }
@@ -263,16 +262,16 @@
       }
 
       .project-name {
-        color: @gray-dark-v2;
+        color: @grayDark;
         font-weight: 600;
       }
 
       .branch-name {
-        color: @gray-dark-v2;
+        color: @grayDark;
       }
 
       .last-build-info {
-        color: @gray-lighter-v2;
+        color: @grayLight;
       }
     }
 
@@ -291,19 +290,6 @@
       transition: all .2s ease;
       opacity: .6;
     }
-    svg {
-      width: 16px;
-      height: 16px;
-
-      stroke: fade(@gray-lighter-v2, 0);
-      transition: 200ms;
-
-      path {
-        &:first-child {
-          stroke-width: 8;
-        }
-      }
-    }
   }
 
   &:hover {
@@ -317,7 +303,7 @@
 }
 
 .aside-activity .when {
-  font-family: @monoFontFamilyV2;
+  font-family: @monoFontFamily;
 }
 
 .aside-activity.open {
@@ -475,11 +461,11 @@
   &.logo {
     .justify-content(center);
 
-    background: @aside-nav-logo-bg-color-v2;
+    background: @grayDark;
     min-height: @tile;
 
     &:hover, &:focus {
-      background: lighten(@aside-nav-logo-bg-color-v2, 12%);
+      background: @gray;
     }
 
     .logomark {
@@ -518,7 +504,7 @@
     color: inherit;
     font-size: 24px;
 
-    transition: margin @aside-transition-speed;
+    transition: (@aside-transition-speed / 2) ease-in-out;
 
     @media screen and ( max-height: 650px ){
       font-size: @fontSizeLarge;

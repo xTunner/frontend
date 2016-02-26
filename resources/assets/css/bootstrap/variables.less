@@ -1,3 +1,6 @@
+// THIS file is for overriding Bootstrap variables.
+// We should NEVER use any of the variables in this file directly.
+
 //
 // Variables
 // --------------------------------------------------
@@ -12,10 +15,10 @@
 //## Gray and brand colors for use across Bootstrap.
 
 @gray-base:              #000;
-@gray-darker:            #343434;
-@gray-dark:              @gray-dark-v2;
+@gray-darker:            @grayDark;
+@gray-dark:              @grayDarker;
 @gray:                   lighten(@gray-base, 33.5%); // #555
-@gray-light:             lighten(@gray-base, 46.7%); // #777
+@gray-light:             @grayLight;
 @gray-lighter:           lighten(@gray-base, 93.5%); // #eee
 
 @brand-primary:         @brand-primary-v2;
@@ -32,7 +35,7 @@
 //** Background color for `<body>`.
 @body-bg:               #fff;
 //** Global text color on `<body>`.
-@text-color:            @gray-dark-v2;
+@text-color:            @grayDarker;
 
 //** Global textual link color.
 @link-color:            @link-color-v2;
@@ -46,11 +49,11 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  @brand-sans-serif-v2;
+@font-family-sans-serif:  @sansSerifFontFamily;
 @font-family-serif:       Georgia, "Times New Roman", Times, serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
-@font-family-monospace:   @monoFontFamilyV2;
-@font-family-base:        @brand-sans-serif-v2;
+@font-family-monospace:   @monoFontFamily;
+@font-family-base:        @sansSerifFontFamily;
 
 @font-size-base:          14px;
 @font-size-large:         ceil((@font-size-base * 1.25));
@@ -72,7 +75,7 @@
 @headings-font-family:    inherit;
 @headings-font-weight:    400;
 @headings-line-height:    1.1;
-@headings-color:          @gray-darker;
+@headings-color:          @grayDark;
 
 
 //== Iconography
@@ -175,7 +178,7 @@
 @btn-danger-bg:                  @brand-danger-v2;
 @btn-danger-border:              @btn-danger-bg;
 
-@btn-link-disabled-color:        @gray-light;
+@btn-link-disabled-color:        @grayLight;
 
 
 //== Forms
@@ -214,7 +217,7 @@
 //** Small `.form-control` height
 @input-height-small:             (floor(@font-size-small * @line-height-small) + (@padding-small-vertical * 2) + 2);
 
-@legend-color:                   @gray-dark;
+@legend-color:                   @grayDarker;
 @legend-border-color:            #e5e5e5;
 
 //** Background color for textual input addons
@@ -240,7 +243,7 @@
 @dropdown-divider-bg:            #e5e5e5;
 
 //** Dropdown link text color.
-@dropdown-link-color:            @gray-darker;
+@dropdown-link-color:            @grayDark;
 //** Hover color for dropdown links.
 @dropdown-link-hover-color:      @link-color;
 //** Hover background for dropdown links.
@@ -252,10 +255,10 @@
 @dropdown-link-active-bg:        @component-active-bg;
 
 //** Disabled dropdown menu item background color.
-@dropdown-link-disabled-color:   @gray-light;
+@dropdown-link-disabled-color:   @grayLight;
 
 //** Text color for headers within dropdown menus.
-@dropdown-header-color:          @gray-light;
+@dropdown-header-color:          @grayLight;
 
 //** Deprecated `@dropdown-caret-color` as of v3.1.0
 @dropdown-caret-color:           #000;
@@ -389,12 +392,12 @@
 
 // Inverted navbar
 // Reset inverted navbar basics
-@navbar-inverse-color:                      lighten(@gray-light, 15%);
+@navbar-inverse-color:                      @grayLighter;
 @navbar-inverse-bg:                         #222;
 @navbar-inverse-border:                     darken(@navbar-inverse-bg, 10%);
 
 // Inverted navbar links
-@navbar-inverse-link-color:                 lighten(@gray-light, 15%);
+@navbar-inverse-link-color:                 @grayLighter;
 @navbar-inverse-link-hover-color:           #fff;
 @navbar-inverse-link-hover-bg:              transparent;
 @navbar-inverse-link-active-color:          @navbar-inverse-link-hover-color;
@@ -421,8 +424,8 @@
 @nav-link-padding:                          10px 20px;
 @nav-link-hover-bg:                         @gray-lighter;
 
-@nav-disabled-link-color:                   @gray-light;
-@nav-disabled-link-hover-color:             @gray-light;
+@nav-disabled-link-color:                   @grayLight;
+@nav-disabled-link-hover-color:             @grayLight;
 
 //== Tabs
 @nav-tabs-border-color:                     #ddd;
@@ -458,7 +461,7 @@
 @pagination-active-bg:                 @brand-primary;
 @pagination-active-border:             @brand-primary;
 
-@pagination-disabled-color:            @gray-light;
+@pagination-disabled-color:            @grayLight;
 @pagination-disabled-bg:               #fff;
 @pagination-disabled-border:           #ddd;
 
@@ -494,19 +497,19 @@
 //
 //## Define colors for form feedback states and, by default, alerts.
 
-@state-success-text:             @gray-dark-v2;
+@state-success-text:             @grayDarker;
 @state-success-bg:               lighten(@brand-success-v2, @brand-lighten-ratio-v2);
 @state-success-border:           @state-success-bg;
 
-@state-info-text:                @gray-dark-v2;
+@state-info-text:                @grayDarker;
 @state-info-bg:                  lighten(@brand-info-v2, @brand-lighten-ratio-v2);
 @state-info-border:              @state-info-bg;
 
-@state-warning-text:             @gray-dark-v2;
+@state-warning-text:             @grayDarker;
 @state-warning-bg:               lighten(@brand-warning-v2, @brand-lighten-ratio-v2);
 @state-warning-border:           @state-warning-bg;
 
-@state-danger-text:              @gray-dark-v2;
+@state-danger-text:              @grayDarker;
 @state-danger-bg:                lighten(@brand-danger-v2, @brand-lighten-ratio-v2);
 @state-danger-border:            @state-danger-bg;
 
@@ -563,7 +566,7 @@
 //##
 
 //** Default label background color
-@label-default-bg:            @gray-light;
+@label-default-bg:            @grayLight;
 //** Primary label background color
 @label-primary-bg:            @brand-primary;
 //** Success label background color
@@ -685,7 +688,7 @@
 @list-group-active-text-color:  lighten(@list-group-active-bg, 40%);
 
 //** Text color of disabled list items
-@list-group-disabled-color:      @gray-light;
+@list-group-disabled-color:      @grayLight;
 //** Background color of disabled list items
 @list-group-disabled-bg:         @gray-lighter;
 //** Text color for content within disabled list items
@@ -710,7 +713,7 @@
 @panel-inner-border:          #ddd;
 @panel-footer-bg:             #f5f5f5;
 
-@panel-default-text:          @gray-dark;
+@panel-default-text:          @grayDarker;
 @panel-default-border:        #ddd;
 @panel-default-heading-bg:    #f5f5f5;
 
@@ -769,7 +772,7 @@
 @badge-color:                 #fff;
 //** Linked badge text color on hover
 @badge-link-hover-color:      #fff;
-@badge-bg:                    @gray-light;
+@badge-bg:                    @grayLight;
 
 //** Badge text color in active nav link
 @badge-active-color:          @link-color;
@@ -790,9 +793,9 @@
 //** Breadcrumb background color
 @breadcrumb-bg:                 transparent;
 //** Breadcrumb text color
-@breadcrumb-color:              @gray-light-v2;
+@breadcrumb-color:              @grayDarker;
 //** Text color of current page in the breadcrumb
-@breadcrumb-active-color:       @gray-light;
+@breadcrumb-active-color:       @grayLight;
 //** Textual separator for between breadcrumb elements
 @breadcrumb-separator:          '»';
 
@@ -834,7 +837,7 @@
 @kbd-bg:                      #333;
 
 @pre-bg:                      #f5f5f5;
-@pre-color:                   @gray-dark;
+@pre-color:                   @grayDarker;
 @pre-border-color:            #ccc;
 @pre-scrollable-max-height:   340px;
 
@@ -846,13 +849,13 @@
 //** Horizontal offset for forms and lists.
 @component-offset-horizontal: 180px;
 //** Text muted color
-@text-muted:                  @gray-light;
+@text-muted:                  @grayLight;
 //** Abbreviations and acronyms border color
-@abbr-border-color:           @gray-light;
+@abbr-border-color:           @grayLight;
 //** Headings small color
-@headings-small-color:        @gray-light;
+@headings-small-color:        @grayLight;
 //** Blockquote small color
-@blockquote-small-color:      @gray-light;
+@blockquote-small-color:      @grayLight;
 //** Blockquote font size
 @blockquote-font-size:        (@font-size-base * 1.25);
 //** Blockquote border color

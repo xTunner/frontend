@@ -1,8 +1,8 @@
 @import "../shared/variables.less";
 
 @side-line-width: 5px;
-@tab-background: #dcdcdc;
-@tab-separator-border: #c7c7c7;
+@tab-background: @grayLightest;
+@tab-separator-border: @grayLighter;
 
 .additional-containers-offer {
   a {
@@ -87,7 +87,6 @@
 }
 
 .action-log-messages {
-
   overflow: hidden;
   width: 100%;
   .exit-code {
@@ -707,7 +706,7 @@ table.code {
 
     a {
       padding: 10px 15px; // BS RESET
-      color: @gray-dark-v2; // BS RESET
+      color: @grayDark; // BS RESET
       border: none; // BS RESET
       margin: 0; // BS RESET
       font-size: @fontSizeSmallish;
@@ -725,7 +724,7 @@ table.code {
 
       &:hover {
         background: none; // BS RESET
-        color: @gray-light-v2; // BS RESET
+        color: @grayDarker; // BS RESET
         border: none; // BS RESET
       }
     }
@@ -744,7 +743,7 @@ table.code {
 }
 
 .commit-message, .sha-one {
-  font-family: @monoFontFamilyV2;
+  font-family: @monoFontFamily;
 }
 
 .build-actions {
@@ -754,10 +753,10 @@ table.code {
 }
 
 .action-log-messages {
-  background: @terminal-background-color-v2;
+  background: @terminalBackground;
 
   &.exit-code {
-    font-family: @monoFontFamilyV2;
+    font-family: @monoFontFamily;
   }
 }
 
@@ -786,11 +785,11 @@ table.code {
 
     // make sure failed command text color is not white on a white background
     .command-text {
-      color: @component-header-text-v2;
+      color: @gray;
     }
 
     .action-source, .time {
-      color: @component-body-text-v2;
+      color: @grayDark;
     }
   }
 
@@ -799,14 +798,14 @@ table.code {
   }
 
   &.canceled {
-    border-left: @side-line-width solid @brand-canceled-v2;
+    border-left: @side-line-width solid @grayLight;
   }
 
   .command-text {
-    color: @component-header-text-v2;
+    color: @gray;
   }
 
   .action-source, .time {
-    color: @component-body-text-v2;
+    color: @grayDark;
   }
 }
