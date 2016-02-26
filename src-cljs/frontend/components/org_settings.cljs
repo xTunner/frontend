@@ -301,25 +301,30 @@
             [:dt question]
             [:dd answer]))]]))))
 
-(defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size]} owner]
+(defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
+                           selected?]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         [:div {:data-component `osx-plan-ga}
-         [:div.header
-          [:div.title title]
-          [:div.price "$" [:span.bold price] "/mo"]]
-         [:div.content
-          [:div.containers [:span.bold container-count] " OS X containers"]
-          [:div.daily-builds
-           [:div "Recommended for teams that do "]
-           [:div.bold daily-build-count " builds/day"]]
-          [:div.max-minutes [:span.bold max-minutes] " max minutes/month"]
-          [:div.support support-level]
-          [:div.team-size "Recommended for " [:span.bold team-size] " team members"]]
-         [:div.action
-          [:a.button.btn.btn-primary "Select"]]]))))
+         [:div.plan
+          {:class (when selected? "highlight")}
+          (when selected?
+            [:div.selected-notice "Currently Selected"])
+          [:div.header
+           [:div.title title]
+           [:div.price "$" [:span.bold price] "/mo"]]
+          [:div.content
+           [:div.containers [:span.bold container-count] " OS X containers"]
+           [:div.daily-builds
+            [:div "Recommended for teams that do "]
+            [:div.bold daily-build-count " builds/day"]]
+           [:div.max-minutes [:span.bold max-minutes] " max minutes/month"]
+           [:div.support support-level]
+           [:div.team-size "Recommended for " [:span.bold team-size] " team members"]]
+          [:div.action
+           [:div "Click to select and then update."]]]]))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
@@ -361,6 +366,7 @@
          :daily-build-count "1-2"
          :max-minutes "500"
          :support-level "Community support"
+         :selected? true
          :team-size "1-2"}
 
         {:title "STARTUP"
