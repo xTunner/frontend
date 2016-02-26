@@ -18,6 +18,7 @@
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
+            [frontend.config :as config]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
@@ -46,7 +47,7 @@
      ", so CircleCI can investigate."]))
 
 
-(defn report-error [build owner]
+(defn report-error [{:keys [build show-premium-content?]} owner]
   (let [build-id (build-model/id build)
         build-url (:build_url build)]
     (when (:failed build)
@@ -55,16 +56,24 @@
        (if (:infrastructure_fail build)
          (infrastructure-fail-message owner)
          [:div.alert-wrap
-          "Error! Check out our "
+          "If you continue to get stuck, we suggest checking out our "
           [:a {:href "/docs/troubleshooting"}
-           "help docs"]
-          " or our "
+           "docs"]
+          " and/or our "
           [:a {:href "https://discuss.circleci.com/"}
            "community site"]
-          " for more information. If you are a paid customer, you may also consider "
-          [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
-           "requesting for help"]
-          " from a support engineer."])])))
+          "."
+          (let [support-link [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
+                              "contact engineering support"]]
+            (cond
+              (config/enterprise?) [:span "As an enterprise customer, you may also "
+                                    support-link
+                                    " to ask for help. Thanks!"]
+              show-premium-content? [:span
+                                     " As this project builds under a paid plan, you may also "
+                                     support-link
+                                     " to ask for help. Thanks!"]
+              :else [:span " Upgrading to a paid plan unlocks access to CircleCI engineering support, faster builds, and advanced features. Thanks!"]))])])))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
@@ -119,7 +128,9 @@
           [:div.row
            [:div.col-xs-12
             (when (empty? (:messages build))
-              [:div (report-error build owner)])
+              [:div (report-error {:build build
+                                   :show-premium-content? (project-model/show-premium-content? project plan)}
+                                  owner)])
 
             (when (and plan (project-common/show-trial-notice? project plan))
               (om/build project-common/trial-notice project-data))
