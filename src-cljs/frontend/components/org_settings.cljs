@@ -313,15 +313,16 @@
                               (not (pm/osx? plan))
                               (not updated-selection?))]
         (html
-          [:div {:data-component `osx-plan-ga
-                 :on-click (if updated-selection?
-                             #(raise! owner [:osx-plan-deselected])
-                             #(raise! owner [:osx-plan-selected {:plan-id plan-id}]))}
+          [:div {:data-component `osx-plan-ga}
            [:div.plan
             {:class
              (cond currently-selected? "selected-plan"
                    updated-selection? "updated-plan"
-                   trial-start? "trial-plan")}
+                   trial-start? "trial-plan")
+
+             :on-click (if updated-selection?
+                         #(raise! owner [:osx-plan-deselected])
+                         #(raise! owner [:osx-plan-selected {:plan-id plan-id}]))}
             [:div.header
              [:div.title title]
              [:div.price "$" [:span.bold price] "/mo"]]
@@ -334,12 +335,12 @@
              [:div.support support-level]
              [:div.team-size "Recommended for " [:span.bold team-size] " team members"]]
             [:div.action
-             [:div "Click to select and then update."]]
+             [:div "Click to select and then update."]]]
 
             (when trial-start?
               [:div.trial-notice "FREE TRIAL STARTS HERE"])
             (when currently-selected?
-              [:div.selected-notice "CURRENTLY SELECTED"])]])))))
+              [:div.selected-notice "CURRENTLY SELECTED"])])))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
