@@ -1,5 +1,5 @@
 (ns frontend.api.path
-            (:require [goog.string :as gstring]))
+  (:require [goog.string :as gstring]))
 
 (defn settings-path [project]
   (case (:vcs_type project)
