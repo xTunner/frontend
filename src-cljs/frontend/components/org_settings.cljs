@@ -302,35 +302,38 @@
             [:dd answer]))]]))))
 
 (defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
-                           currently-selected? updated-selection? trial-start?]} owner]
+                           plan-id plan
+                           updated-selection? trial-start?]} owner]
   (reify
     om/IRender
     (render [_]
-      (html
-        [:div {:data-component `osx-plan-ga}
-         [:div.plan
-          {:class
-           (cond currently-selected? "selected-plan"
-                 updated-selection? "updated-plan"
-                 trial-start? "trial-plan")}
-          [:div.header
-           [:div.title title]
-           [:div.price "$" [:span.bold price] "/mo"]]
-          [:div.content
-           [:div.containers [:span.bold container-count] " OS X containers"]
-           [:div.daily-builds
-            [:div "Recommended for teams that do "]
-            [:div.bold daily-build-count " builds/day"]]
-           [:div.max-minutes [:span.bold max-minutes] " max minutes/month"]
-           [:div.support support-level]
-           [:div.team-size "Recommended for " [:span.bold team-size] " team members"]]
-          [:div.action
-           [:div "Click to select and then update."]]
+      (let [currently-selected? (= plan-id (pm/osx-plan-id plan))
+            trial-start? (and trial-start? (not (pm/osx? plan)))]
+        (html
+          [:div {:data-component `osx-plan-ga}
+           [:div.plan
+            {:class
+             (cond currently-selected? "selected-plan"
+                   updated-selection? "updated-plan"
+                   trial-start? "trial-plan")}
+            [:div.header
+             [:div.title title]
+             [:div.price "$" [:span.bold price] "/mo"]]
+            [:div.content
+             [:div.containers [:span.bold container-count] " OS X containers"]
+             [:div.daily-builds
+              [:div "Recommended for teams that do "]
+              [:div.bold daily-build-count " builds/day"]]
+             [:div.max-minutes [:span.bold max-minutes] " max minutes/month"]
+             [:div.support support-level]
+             [:div.team-size "Recommended for " [:span.bold team-size] " team members"]]
+            [:div.action
+             [:div "Click to select and then update."]]
 
-          (when trial-start?
-            [:div.trial-notice "FREE TRIAL STARTS HERE"])
-          (when currently-selected?
-            [:div.selected-notice "CURRENTLY SELECTED"])]]))))
+            (when trial-start?
+              [:div.trial-notice "FREE TRIAL STARTS HERE"])
+            (when currently-selected?
+              [:div.selected-notice "CURRENTLY SELECTED"])]])))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
@@ -366,16 +369,17 @@
                 :on-click new-plan-fn}
                plan-img])))))))
 (def osx-plans
-  {:ga [{:title "SEED"
+  {:ga [{:plan-id :seed
+         :title "SEED"
          :price 39
          :container-count "2"
          :daily-build-count "1-2"
          :max-minutes "500"
          :support-level "Community support"
-         :team-size "1-2"
-         :currently-selected? true}
+         :team-size "1-2"}
 
-        {:title "STARTUP"
+        {:plan-id :startup
+         :title "STARTUP"
          :price 129
          :container-count "5"
          :daily-build-count "2-5"
@@ -384,7 +388,8 @@
          :team-size "unlimited"
          :updated-selection? true}
 
-        {:title "GROWTH"
+        {:plan-id :growth
+         :title "GROWTH"
          :price 249
          :container-count "5"
          :daily-build-count "4-10"
@@ -393,7 +398,8 @@
          :team-size "unlimited"
          :trial-start? true}
 
-        {:title "MOBILE FOCUSED"
+        {:plan-id :mobile-focused
+         :title "MOBILE FOCUSED"
          :price 449
          :container-count "10"
          :daily-build-count "more than 10"
@@ -405,14 +411,16 @@
   (reify
     om/IRender
     (render [_]
-      (let [current-plan (some-> plan :osx :template :id)]
+      (let [osx-plans (->> osx-plans
+                           :ga
+                           (map (partial merge {:plan plan})))]
         (html
           [:div.osx-plans
            [:fieldset
             [:legend (str "iOS Plans")]
             [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]]
            [:div.plan-selection
-            (om/build-all osx-plan-ga (:ga osx-plans))]])))))
+            (om/build-all osx-plan-ga osx-plans)]])))))
 
 (defn osx-plans-list [plan owner]
   (reify
