@@ -291,7 +291,8 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (api/get-projects api-ch :then (fn []
                                      (let [build-key (api/project-build-key args)]
-                                       (api/get-projects-builds [build-key] 1000 api-ch))))
+                                       (api/get-projects-builds [build-key] 100 api-ch)
+                                       (api/get-branch-build-times build-key api-ch))))
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 

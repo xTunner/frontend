@@ -140,7 +140,7 @@
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
 (defmethod api-event [:recent-project-builds :success]
-  [target message status {page-of-recent-builds :resp, {target-id :project-id
+  [target message status {page-of-recent-builds :resp, {target-key :project-id
                                                         page-result :page-result
                                                         all-page-results :all-page-results} :context} state]
   ;; Deliver the result to the result atom.
@@ -152,14 +152,31 @@
     (let [all-recent-builds (apply concat (map deref all-page-results))
           add-recent-builds (fn [projects]
                               (for [project projects
-                                    :let [overrides {:branch (:branch target-id)}
-                                          project-key (api/project-build-key project overrides)]]
-                                (if (= project-key target-id)
+                                    :let [{:keys [branch]} target-key
+                                          project-key (-> project
+                                                          api/project-build-key
+                                                          (assoc :branch branch))]]
+                                (if (= project-key target-key)
                                   (-> project
-                                      (assoc-in [:recent-builds (:branch target-id)] all-recent-builds))
+                                      (assoc-in [:recent-builds branch] all-recent-builds))
                                   project)))]
       (update-in state state/projects-path add-recent-builds))
     state))
+
+(defmethod api-event [:branch-build-times :success]
+  [target message status {timing-data :resp, {:keys [target-key]} :context} state]
+  (let [add-timing-data (fn [projects]
+                          (for [project projects
+                                :let [{:keys [branch]} target-key
+                                      project-key (-> project
+                                                      api/project-build-key
+                                                      (assoc :branch branch))]]
+                            (if (= project-key target-key)
+                              (-> project
+                                  (assoc-in [:build-timing (:branch target-key)] timing-data))
+                              project)))]
+    (update-in state state/projects-path add-timing-data))
+  state)
 
 
 (defmethod api-event [:build :success]
