@@ -419,6 +419,20 @@
          :support-level "Priority support & Account manager"
          :team-size "unlimited"}}})
 
+(defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (forms/managed-button
+          [:a.btn.btn-lg.btn-success
+           {:data-success-text "Success!"
+            :data-loading-text loading-text
+            :data-failed-text "Failed"
+            :on-click on-click-fn
+            :disabled disabled?}
+           text])))))
+
 (defn osx-plans-list-ga [{:keys [plan org-settings]} owner]
   (reify
     om/IRender
@@ -429,13 +443,7 @@
                            :ga
                            (vals)
                            (map (partial merge {:plan plan
-                                                :chosen-plan-id chosen-plan-id})))
-
-            new-plan-fn #(raise! owner [:new-osx-plan-clicked
-                                            {:plan-type {:template  (name chosen-plan-id)}
-                                             :price (:price chosen-plan)
-                                             :description (str "OS X " (clojure.string/capitalize (name chosen-plan-id)) " - $" (:price chosen-plan) "/month.")}])
-            update-plan-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}}])]
+                                                :chosen-plan-id chosen-plan-id})))]
         (html
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
@@ -445,22 +453,18 @@
             (om/build-all osx-plan-ga osx-plans)]
            [:div.update-action
             (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
-              (forms/managed-button
-                [:a.btn.btn-lg.btn-success.center
-                 {:data-success-text "Success!"
-                  :data-loading-text "Updating..."
-                  :data-failed-text "Failed"
-                  :on-click update-plan-fn
-                  :disabled (nil? chosen-plan-id)}
-                 "Update"])
-              (forms/managed-button
-                [:a.btn.btn-lg.btn-success.center
-                 {:data-success-text "Success!"
-                  :data-loading-text "Paying..."
-                  :data-failed-text "Failed"
-                  :on-click new-plan-fn
-                  :disabled (nil? chosen-plan-id)}
-                 "Pay Now"]))]])))))
+              (om/build plan-payment-button {:text "Update"
+                                             :loading-text "Updating..."
+                                             :disabled? (nil? chosen-plan-id)
+                                             :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}}])})
+              (om/build plan-payment-button {:text "Pay Now"
+                                             :loading-text "Paying..."
+                                             :disabled? (nil? chosen-plan-id)
+                                             :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template  (name chosen-plan-id)}
+                                                                                                 :price (:price chosen-plan)
+                                                                                                 :description (gstring/format "OS X %s - $%d/month "
+                                                                                                                              (clojure.string/capitalize (name chosen-plan-id))
+                                                                                                                              (:price chosen-plan))}])}))]])))))
 
 (defn osx-plans-list [plan owner]
   (reify
