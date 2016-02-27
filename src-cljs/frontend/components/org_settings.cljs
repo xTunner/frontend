@@ -253,7 +253,7 @@
             plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
             loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
         (html
-          (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
+          (if (pm/stripe-customer? plan)
             (if plan-selected?
               [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
               (forms/managed-button
@@ -395,7 +395,8 @@
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
-             (if (and (pm/can-edit-plan? plan org-name) (or (config/enterprise?) (pm/paid? plan)))
+             (if (and (pm/can-edit-plan? plan org-name)
+                      (or (config/enterprise?) (pm/paid? plan) (pm/stripe-customer? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
                    (if (and (zero? new-total) (not (config/enterprise?)))
