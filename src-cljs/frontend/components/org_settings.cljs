@@ -309,6 +309,7 @@
     (render [_]
       (let [currently-selected? (= (name plan-id) (pm/osx-plan-id plan))
             updated-selection? (= plan-id chosen-plan-id)
+            on-trial? (and trial-start? (pm/osx-trial-plan? plan))
             trial-start? (and trial-start?
                               (not (pm/osx? plan))
                               (not updated-selection?))]
@@ -318,7 +319,7 @@
             {:class
              (cond currently-selected? "selected-plan"
                    updated-selection? "updated-plan"
-                   trial-start? "trial-plan")
+                   (or trial-start? on-trial?) "trial-plan")
 
              :on-click (when (not currently-selected?)
                          (if updated-selection?
@@ -340,6 +341,8 @@
 
             (when trial-start?
               [:div.trial-notice "FREE TRIAL STARTS HERE"])
+            (when on-trial?
+              [:div.trial-notice "CURRENTLY EVALUATING"])
             (when currently-selected?
               [:div.selected-notice "CURRENTLY SELECTED"])])))))
 
@@ -452,19 +455,23 @@
            [:div.plan-selection
             (om/build-all osx-plan-ga osx-plans)]
            [:div.update-action
-            (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
-              (om/build plan-payment-button {:text "Update"
-                                             :loading-text "Updating..."
-                                             :disabled? (nil? chosen-plan-id)
-                                             :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}}])})
-              (om/build plan-payment-button {:text "Pay Now"
-                                             :loading-text "Paying..."
-                                             :disabled? (nil? chosen-plan-id)
-                                             :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template  (name chosen-plan-id)}
-                                                                                                 :price (:price chosen-plan)
-                                                                                                 :description (gstring/format "OS X %s - $%d/month "
-                                                                                                                              (clojure.string/capitalize (name chosen-plan-id))
-                                                                                                                              (:price chosen-plan))}])}))]])))))
+            (if-not (or (pm/osx? plan) chosen-plan-id)
+              (om/build plan-payment-button {:text "Start 2 Week Free Trial"
+                                             :loading-text "Starting..."
+                                             :on-click-fn #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])})
+              (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
+                (om/build plan-payment-button {:text "Update"
+                                               :loading-text "Updating..."
+                                               :disabled? (nil? chosen-plan-id)
+                                               :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}}])})
+                (om/build plan-payment-button {:text "Pay Now"
+                                               :loading-text "Paying..."
+                                               :disabled? (nil? chosen-plan-id)
+                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template  (name chosen-plan-id)}
+                                                                                                   :price (:price chosen-plan)
+                                                                                                   :description (gstring/format "OS X %s - $%d/month "
+                                                                                                                                (clojure.string/capitalize (name chosen-plan-id))
+                                                                                                                                (:price chosen-plan))}])})))]])))))
 
 (defn osx-plans-list [plan owner]
   (reify
