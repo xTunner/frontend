@@ -250,7 +250,8 @@
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
                   [:a.login.login-link.menu-item {:href (auth-url)
-                                                  :on-click #(raise! owner [:track-external-link-clicked {:event :login-clicked}])
+                                                  :on-click #(raise! owner [:track-external-link-clicked {:event :login-clicked
+                                                                                                          :path (auth-url)}])
                                                   :title "Log In with Github"}
                    "Log In"]]
                  [:li

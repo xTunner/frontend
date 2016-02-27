@@ -43,6 +43,7 @@
                (if (not logged-in?)
                   [:span ", " [:a {:href (auth-url)
                               :on-click #(raise! owner [:track-external-link-clicked {:event :login-clicked
+                                                                                      :path (auth-url)
                                                                                       :owner owner}])}
                           "logging in"]
                    ", or "

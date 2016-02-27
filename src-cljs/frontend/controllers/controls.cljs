@@ -1189,7 +1189,7 @@
        (release-button! uuid (:status api-result))))))
 
 (defn track-and-redirect [event properties owner path]
-  (let [redirect #(js/window.location.replace path)
+  (let [redirect #(set! js/window.location.href path)
         track-ch (analytics/track {:event-type :external-click
                                    :event event
                                    :owner owner
