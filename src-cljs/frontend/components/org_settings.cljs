@@ -459,7 +459,7 @@
               (om/build plan-payment-button {:text "Start 2 Week Free Trial"
                                              :loading-text "Starting..."
                                              :on-click-fn #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])})
-              (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
+              (if (pm/stripe-customer? plan)
                 (om/build plan-payment-button {:text "Update"
                                                :loading-text "Updating..."
                                                :disabled? (nil? chosen-plan-id)
