@@ -303,14 +303,15 @@
 
 (defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
                            plan-id chosen-plan-id plan
-                           trial-start?]} owner]
+                           trial-starts-here?]} owner]
   (reify
     om/IRender
     (render [_]
       (let [currently-selected? (= (name plan-id) (pm/osx-plan-id plan))
             updated-selection? (= plan-id chosen-plan-id)
-            on-trial? (and trial-start? (pm/osx-trial-plan? plan))
-            trial-start? (and trial-start?
+            on-trial? (and trial-starts-here? (pm/osx-trial-plan? plan))
+            trial-expired? (and on-trial? (not (pm/osx-trial-active? plan)))
+            trial-starts-here? (and trial-starts-here?
                               (not (pm/osx? plan))
                               (not updated-selection?))]
         (html
@@ -319,7 +320,8 @@
             {:class
              (cond currently-selected? "selected-plan"
                    updated-selection? "updated-plan"
-                   (or trial-start? on-trial?) "trial-plan")
+                   trial-expired? "trial-expired-plan"
+                   (or trial-starts-here? on-trial?) "trial-plan")
 
              :on-click (when (not currently-selected?)
                          (if updated-selection?
@@ -339,12 +341,18 @@
             [:div.action
              [:div "Click to select and then update."]]]
 
-            (when trial-start?
-              [:div.trial-notice "FREE TRIAL STARTS HERE"])
-            (when on-trial?
-              [:div.trial-notice "CURRENTLY EVALUATING"])
-            (when currently-selected?
-              [:div.selected-notice "CURRENTLY SELECTED"])])))))
+            (cond
+              trial-starts-here?
+              [:div.trial-notice "Free Trial Starts Here"]
+
+              trial-expired?
+              [:div.trial-expired-notice "Trial Ended - Choose a Plan"]
+
+              on-trial?
+              [:div.trial-notice "Currently Evaluating"]
+
+              currently-selected?
+              [:div.selected-notice "Currently Selected"])])))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
@@ -410,7 +418,7 @@
          :max-minutes "5,000"
          :support-level "Engineer support"
          :team-size "unlimited"
-         :trial-start? true}
+         :trial-starts-here? true}
 
         :mobile-focused
         {:plan-id :mobile-focused
@@ -451,7 +459,9 @@
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
             [:legend (str "iOS Plans")]
-            [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]]
+            [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]
+            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
+              [:p "The iOS trial you've selected has expired, please choose a plan below."])]
            [:div.plan-selection
             (om/build-all osx-plan-ga osx-plans)]
            [:div.update-action

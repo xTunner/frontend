@@ -316,29 +316,43 @@
     @header-background-color: @grayLightest;
 
     .selected-plan {
-      border: 2px solid #66d3e4;
+      border: 2px solid @brand-blue-v2;
     }
 
     .updated-plan {
-      border: 2px dashed #66d3e4;
+      border: 2px dashed @brand-blue-v2;
+    }
+
+    .trial-expired-plan {
+      border: 2px solid @brand-warning-v2;
     }
 
     .trial-plan {
       border: 2px solid @green;
     }
 
-    .plan:not(.selected-plan).plan:not(.updated-plan).plan:not(.trial-plan){
+    .plan:not(.selected-plan).plan:not(.updated-plan).plan:not(.trial-plan).plan:not(.trial-expired-plan){
       border: 1px solid @border-color;
     }
 
     .selected-notice {
       height: 40px;
       padding: 10px;
-      background-color: #66d3e4;
+      background-color: @brand-blue-v2;
       color: @white;
       text-align: center;
       font-weight: bold;
     }
+
+    .trial-expired-notice {
+      height: 40px;
+      padding: 10px;
+      background-color: @brand-warning-v2;
+      color: @white;
+      text-align: center;
+      font-weight: bold;
+    }
+
 
     .trial-notice {
       height: 40px;
