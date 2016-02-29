@@ -119,9 +119,21 @@
                  (select-keys matching-project [:recent-builds :build-timing])))]
     (assoc-in current-state state/projects-path processed-new-projects)))
 
+(def projects-success-thens
+  {:build-insights (fn [state]
+                     (let [projects (get-in state state/projects-path)
+                           build-keys (map api/project-build-key projects)
+                           api-ch (get-in state [:comms :api])]
+                         (api/get-projects-builds build-keys 60 api-ch)))
+   :project-insights (fn [{:keys [navigation-data] :as state}]
+                       (let [build-key (api/project-build-key navigation-data)
+                             api-ch (get-in state [:comms :api])]
+                         (api/get-projects-builds [build-key] 100 api-ch)
+                         (api/get-branch-build-times build-key api-ch)))})
+
 (defmethod post-api-event! [:projects :success]
-  [target message status {{:keys [then]} :context} previous-state current-state]
-  (when then
+  [target message status args previous-state {:keys [navigation-point] :as current-state}]
+  (when-let [then (projects-success-thens navigation-point)]
     (then current-state)))
 
 (defmethod api-event [:me :success]
