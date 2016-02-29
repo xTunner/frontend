@@ -29,25 +29,25 @@
         navigation-data (:navigation-data state)]
     (set (concat []
                  (when user [(pusher/user-channel user)])
-                 (when build [(pusher/build-channel build)])
+                 (when build (pusher/build-channels build))
                  ;; Don't unsubscribe if the build takes a second to load
                  (when (= navigation-point :build)
-                   [(pusher/build-channel-from-parts {:project-name (:project navigation-data)
+                   (pusher/build-channels-from-parts {:project-name (:project navigation-data)
                                                       :build-num (:build-num navigation-data)
-                                                      :vcs-type (:vcs_type build)})])))))
+                                                      :vcs-type (:vcs_type build)}))))))
 
 (defn ignore-build-channel?
   "Returns true if we should ignore pusher updates for the given channel-name. This will be
   true if the channel is stale or if the build hasn't finished loading."
   [state channel-name]
   (if-let [build (get-in state state/build-path)]
-    (not= channel-name (pusher/build-channel build))
+    (not-any? #{channel-name} (pusher/build-channels build))
     true))
 
 (defn usage-queue-build-index-from-channel-name [state channel-name]
   "Returns index if there is a usage-queued build showing with the given channel name"
   (when-let [builds (seq (get-in state state/usage-queue-path))]
-    (find-index #(= channel-name (pusher/build-channel %)) builds)))
+    (find-index #(some #{channel-name} (pusher/build-channels %)) builds)))
 
 ;; --- Navigation Multimethod Declarations ---
 
