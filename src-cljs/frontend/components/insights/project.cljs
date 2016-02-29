@@ -40,8 +40,10 @@
 
 
 (defn build-time-line-chart [timing-data owner]
-  (let [columns [(cons "date" (map (comp time-format/parse :date) timing-data))
-                 (cons "Median Build Time" (map :median_build_time_millis timing-data))]]
+  (let [median-build-time-millis (map :median_build_time_millis timing-data)
+        dates (map (comp time-format/parse :date) timing-data)
+        columns [(cons "date" dates)
+                 (cons "Median Build Time" median-build-time-millis)]]
    (reify
      om/IDidUpdate
      (did-update [_ _ _]
@@ -50,7 +52,21 @@
                                 :columns columns}))))
      om/IDidMount
      (did-mount [_]
-       (let [el (om/get-node owner)]
+       (let [el (om/get-node owner)
+             max-y (apply max median-build-time-millis)
+             max-y-mins (-> max-y
+                            (/ 60000)
+                            (js/Math.ceil))
+             max-y-mins-millis (* 60000 max-y-mins)
+             max-y-ticks 6
+             ;; 1 tick for each minute in max-y, maximum of max-y-ticks
+             y-ticks (min max-y-mins max-y-ticks)
+             y-axis-values (map #(-> %
+                                     (/ y-ticks)
+                                     (* max-y-mins-millis))
+                                ;; a range that ends with y-ticks and
+                                ;; doesn't begin with 0
+                                (-> y-ticks inc range rest))]
          (om/set-state! owner :chart
                         (js/c3.generate (clj->js {:bindto el
                                                   :padding {:top 10
@@ -64,7 +80,10 @@
                                                              :tick {:format "%m/%d"}
                                                              :fit "true"}
                                                          :y {:min 0
-                                                             :tick {:format #(str (quot % 60000) "m")}}}})))))
+                                                             :tick {:format datetime/millis-to-nice-duration
+                                                                    :values y-axis-values}
+                                                             :padding {:bottom 0}}}
+                                                  :tooltip {:format {:value datetime/millis-to-nice-duration}}})))))
      om/IRender
      (render [_]
        (html
