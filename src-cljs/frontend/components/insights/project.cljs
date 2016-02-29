@@ -23,6 +23,7 @@
    :left 30
    :max-bars 100
    :positive-y% 0.6
+   :show-bar-title? false
    :left-legend-items [{:classname "success"
                         :text "Passed"}
                        {:classname "failed"

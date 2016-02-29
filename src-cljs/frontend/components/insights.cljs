@@ -43,7 +43,8 @@
    :bottom 10
    :left 30
    :max-bars 55
-   :positive-y% 0.6})
+   :positive-y% 0.6
+   :show-bar-title? true})
 
 (defn add-legend [plot-info svg]
   (let [{:keys [square-size item-width item-height spacing]} (:legend-info plot-info)
@@ -164,6 +165,7 @@
         height (- (.-height svg-bounds) (:top plot-info) (:bottom plot-info))
 
         y-zero (* height (:positive-y% plot-info))
+        show-bar-title? (:show-bar-title? plot-info)
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-pos-max])
                         (.range #js[y-zero 0]))
@@ -226,6 +228,11 @@
     (-> bars-join
         (.select ".top")
         (.attr #js {"xlink:href" build-timing-url})
+        (.attr #js {"xlink:title" #(when show-bar-title?
+                                     (let [duration-str (datetime/as-duration (unexterned-prop % "build_time_millis"))]
+                                       (gstring/format "%s in %s"
+                                                       (gstring/toTitleCase (unexterned-prop % "outcome"))
+                                                       duration-str)))})
         (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked 
                                              :owner owner
                                              :properties {:build-url (unexterned-prop % "build_url")}})})
@@ -242,6 +249,10 @@
     (-> bars-join
         (.select ".bottom")
         (.attr #js {"xlink:href" build-timing-url})
+        (.attr #js {"xlink:title" #(when show-bar-title?
+                                     (let [duration-str (datetime/as-duration (unexterned-prop % "queued_time_millis"))]
+                                       (gstring/format "Queue time %s" duration-str)))})
+
         (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked
                                              :owner owner
                                              :properties {:build-url (unexterned-prop % "build_url")}})})
