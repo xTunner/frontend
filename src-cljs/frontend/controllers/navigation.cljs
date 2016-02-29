@@ -4,6 +4,7 @@
             [frontend.analytics :as analytics]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
+            [frontend.api.path :as api-path]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
             [frontend.models.feature :as feature]
@@ -111,12 +112,12 @@
                        :context {:project-name (str (:org args) "/" (:repo args))})
             (when (:read-settings scopes)
               (ajax/ajax :get
-                         (frontend.api.path/settings-path args)
+                         (api-path/settings-path args)
                          :project-settings
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))})
               (ajax/ajax :get
-                         (frontend.api.path/settings-plan args)
+                         (api-path/settings-plan args)
                          :project-plan
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))}))))))
