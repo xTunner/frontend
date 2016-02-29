@@ -509,7 +509,8 @@
             container-cost (pm/per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
-                                    selected-paid-containers)]
+                                    selected-paid-containers)
+            title-element (if (feature/enabled? :osx-ga-inner-pricing) :h1 :legend)]
       (html
         [:div#edit-plan {:class "pricing.page"}
          (when-not (config/enterprise?)
@@ -517,7 +518,7 @@
             [:legend "More containers means faster builds and lower queue times."]])
          [:div.main-content
           [:div
-           [:legend "Linux Plan - "
+           [title-element "Linux Plan - "
             [:div.container-input
              [:input.form-control {:style {:margin "4px" :height "calc(2em + 2px)"}
                                    :type "text" :value selected-containers
