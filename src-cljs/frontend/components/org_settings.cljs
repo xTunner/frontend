@@ -559,11 +559,11 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn pricing-tabs [{:keys [app plan checkout-loaded?]} owner]
+(defn pricing-tabs [{:keys [app plan checkout-loaded? starting-tab]} owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:selected-tab :linux})
+      {:selected-tab (or starting-tab :linux)})
 
     om/IRenderState
     (render-state [_ {:keys [selected-tab]}]
@@ -584,6 +584,10 @@
                      (om/build osx-plans-list-ga {:plan plan
                                                   :org-settings (get-in app state/org-settings-path)})
                      (om/build osx-faq osx-faq-items)])]))))
+
+(defn pricing-starting-tab [subpage]
+  (get {:osx-pricing :osx
+        :linux-pricing :linux}  subpage))
 
 (defn pricing [app owner]
   (reify
@@ -630,7 +634,8 @@
               (plans-piggieback-plan-notification plan org-name org-vcs-type)
               (if (feature/enabled? :osx-ga-inner-pricing)
                 [:div
-                 (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?})]
+                 (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
+                                         :starting-tab (pricing-starting-tab (:org-settings-subpage app))})]
 
                 [:div
                  (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
@@ -1168,7 +1173,8 @@
            [:p "You are not currently in the iOS limited-release. If you would like access to iOS builds, please send an email to sayhi@circleci.com."]
            [:div
             [:p "You are in the iOS limited-release, you may also choose an iOS plan "
-             [:a {:href "#containers"} "here"] "."]
+             [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                      :_fragment "osx-pricing"})} "here"] "."]
             (when (pm/osx? plan)
               (let [plan-name (some-> plan :osx :template :name)
                     plan-start (some-> plan :osx_plan_started_on)
@@ -1208,7 +1214,7 @@
                [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
                [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                                   :vcs_type vcs_type
-                                                                  :_fragment "containers"})}
+                                                                  :_fragment "linux-pricing"})}
                     "upgrading"]
                 (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
               :else nil)
@@ -1254,6 +1260,8 @@
    :users users
    :projects projects
    :containers pricing
+   :osx-pricing pricing
+   :linux-pricing pricing
    :organizations organizations
    :billing billing
    :cancel cancel})
