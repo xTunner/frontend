@@ -387,48 +387,6 @@
                 :data-failed-text plan-img
                 :on-click new-plan-fn}
                plan-img])))))))
-(def osx-plans
-  {:ga {:seed
-        {:plan-id :seed
-         :title "SEED"
-         :price 39
-         :container-count "2"
-         :daily-build-count "1-2"
-         :max-minutes "500"
-         :support-level "Community support"
-         :team-size "1-2"}
-
-        :startup
-        {:plan-id :startup
-         :title "STARTUP"
-         :price 129
-         :container-count "5"
-         :daily-build-count "2-5"
-         :max-minutes "1,800"
-         :support-level "Engineer support"
-         :team-size "unlimited"
-         :updated-selection? true}
-
-        :growth
-        {:plan-id :growth
-         :title "GROWTH"
-         :price 249
-         :container-count "5"
-         :daily-build-count "4-10"
-         :max-minutes "5,000"
-         :support-level "Engineer support"
-         :team-size "unlimited"
-         :trial-starts-here? true}
-
-        :mobile-focused
-        {:plan-id :mobile-focused
-         :title "MOBILE FOCUSED"
-         :price 449
-         :container-count "10"
-         :daily-build-count "more than 10"
-         :max-minutes "25,000"
-         :support-level "Priority support & Account manager"
-         :team-size "unlimited"}}})
 
 (defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
   (reify
@@ -449,9 +407,8 @@
     om/IRender
     (render [_]
       (let [chosen-plan-id (:chosen-osx-plan-id org-settings)
-            chosen-plan (get-in osx-plans [:ga chosen-plan-id])
-            osx-plans (->> osx-plans
-                           :ga
+            chosen-plan (get-in pm/osx-plans [chosen-plan-id])
+            osx-plans (->> pm/osx-plans
                            (vals)
                            (map (partial merge {:plan plan
                                                 :chosen-plan-id chosen-plan-id})))]
@@ -477,7 +434,7 @@
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
                                                :disabled? (nil? chosen-plan-id)
-                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template  (name chosen-plan-id)}
+                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}
                                                                                                    :price (:price chosen-plan)
                                                                                                    :description (gstring/format "OS X %s - $%d/month "
                                                                                                                                 (clojure.string/capitalize (name chosen-plan-id))
@@ -676,9 +633,9 @@
                  (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?})]
 
                 [:div
-                 (om/build linux-plan  {:app app :checkout-loaded? checkout-loaded?})
-                 (if  (and  (feature/enabled? :osx-plans)
-                           (get-in app state/org-osx-enabled-path))
+                 (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                 (if (and (feature/enabled? :osx-plans)
+                          (get-in app state/org-osx-enabled-path))
                    (list
                      (om/build osx-plans-list plan)
                      (om/build osx-faq osx-faq-items))

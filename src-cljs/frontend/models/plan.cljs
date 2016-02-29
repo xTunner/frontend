@@ -219,3 +219,42 @@
 (defn stripe-customer?
   [plan]
   (boolean (:stripe_customer plan)))
+
+(def osx-plans
+  {:seed {:plan-id :seed
+          :title "SEED"
+          :price 39
+          :container-count "2"
+          :daily-build-count "1-2"
+          :max-minutes "500"
+          :support-level "Community support"
+          :team-size "1-2"}
+
+   :startup {:plan-id :startup
+             :title "STARTUP"
+             :price 129
+             :container-count "5"
+             :daily-build-count "2-5"
+             :max-minutes "1,800"
+             :support-level "Engineer support"
+             :team-size "unlimited"
+             :updated-selection? true}
+
+   :growth {:plan-id :growth
+            :title "GROWTH"
+            :price 249
+            :container-count "5"
+            :daily-build-count "4-10"
+            :max-minutes "5,000"
+            :support-level "Engineer support"
+            :team-size "unlimited"
+            :trial-starts-here? true}
+
+   :mobile-focused {:plan-id :mobile-focused
+                    :title "MOBILE FOCUSED"
+                    :price 449
+                    :container-count "10"
+                    :daily-build-count "more than 10"
+                    :max-minutes "25,000"
+                    :support-level "Priority support & Account manager"
+                    :team-size "unlimited"}})
