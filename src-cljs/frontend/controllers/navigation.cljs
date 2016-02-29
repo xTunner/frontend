@@ -4,6 +4,7 @@
             [frontend.analytics :as analytics]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
+            [frontend.api.path :as api-path]
             [frontend.components.documentation :as docs]
             [frontend.favicon]
             [frontend.models.feature :as feature]
@@ -111,12 +112,12 @@
                        :context {:project-name (str (:org args) "/" (:repo args))})
             (when (:read-settings scopes)
               (ajax/ajax :get
-                         (frontend.api.path/settings-path args)
+                         (api-path/settings-path args)
                          :project-settings
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))})
               (ajax/ajax :get
-                         (frontend.api.path/settings-plan args)
+                         (api-path/settings-plan args)
                          :project-plan
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))}))))))
@@ -218,10 +219,11 @@
                                  :vcs-type vcs_type}))
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
-                                                                             :build-num build-num
-                                                                             :vcs-type vcs_type})
-                             :messages pusher/build-messages}]))
+    (doseq [channel-name (pusher/build-channels-from-parts {:project-name project-name
+                                                            :build-num build-num
+                                                            :vcs-type vcs_type})]
+      (put! ws-ch [:subscribe {:channel-name channel-name
+                               :messages pusher/build-messages}])))
   (set-page-title! (str project-name " #" build-num)))
 
 (defmethod navigated-to :add-projects
@@ -291,7 +293,8 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (api/get-projects api-ch :then (fn []
                                      (let [build-key (api/project-build-key args)]
-                                       (api/get-projects-builds [build-key] 100 api-ch))))
+                                       (api/get-projects-builds [build-key] 100 api-ch)
+                                       (api/get-branch-build-times build-key api-ch))))
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
