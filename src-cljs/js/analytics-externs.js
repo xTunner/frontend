@@ -13,3 +13,8 @@ twttr.conversion.trackPid;
 
 var _fbq;
 _fbq.push;
+
+var analytics;
+analytics.page;
+analytics.track;
+analytics.identify;
