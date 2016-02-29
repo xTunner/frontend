@@ -231,6 +231,9 @@
     (-> bars-join
         (.select ".bottom")
         (.attr #js {"xlink:href" build-timing-url})
+        (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked
+                                             :owner owner
+                                             :properties {:build-url (unexterned-prop % "build_url")}})})
         (.select "rect.bar")
         (.attr #js {"y" y-zero
                     "x" #(x-scale (unexterned-prop % "build_num"))
