@@ -16,16 +16,11 @@
                          :vcs_type :vcs_type})
 
 (defn project-build-key
-  "Takes project hash and filter down to keys that identify the build.
-
-Use OVERRIDES hash if specified."
-  ([project overrides]
+  "Takes project hash and filter down to keys that identify the build."
+  ([project]
    (-> project
        (set/rename-keys build-keys-mapping)
-       (merge overrides)
-       (select-keys (vals build-keys-mapping))))
-  ([project]
-   (project-build-key project {})))
+       (select-keys (vals build-keys-mapping)))))
 
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
@@ -139,6 +134,13 @@ Use OVERRIDES hash if specified."
           (ajax/ajax :get url :recent-project-builds api-ch :context {:project-id build-key
                                                                       :page-result page-result
                                                                       :all-page-results page-results}))))))
+
+(defn branch-build-times-url [target-key]
+  (sec/render-route "/api/v1/project/:vcs_type/:org/:repo/build-timing/:branch" target-key))
+
+(defn get-branch-build-times [{:keys [org repo branch vcs_type] :as target-key} api-ch]
+  (let [url (branch-build-times-url target-key)]
+    (ajax/ajax :get url :branch-build-times api-ch :context {:target-key target-key} :params {:days 90})))
 
 (defn get-action-output [{:keys [vcs-url build-num step index output-url]
                           :as args} api-ch]

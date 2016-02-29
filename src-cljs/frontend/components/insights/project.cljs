@@ -8,6 +8,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.async :refer [raise!]]
+            [frontend.api :as api]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [cljs-time.core :as time]
@@ -37,53 +38,37 @@
                  :item-height 14   ; assume font is 14px
                  :spacing 4}})
 
-(defn daily-median-build-time
-  "Given a collection of builds, returns a list of vector pairs
-  [build-date median-build-time], where build-date is midnight of each day where
-  a build started (UTC), and median-build-time is the median of the build times
-  of all builds from that day. The list is sorted by build-date, ascending."
-  [builds]
-  (->> builds
-       (group-by #(-> % :start_time time-format/parse time/at-midnight))
-       (into (sorted-map))
-       (map (fn [[build-date bs]]
-              [build-date (->> bs
-                               (map :build_time_millis)
-                               insights/median)]))))
 
-
-(defn build-time-line-chart [builds owner]
-  (reify
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (let [chart (om/get-state owner :chart)
-            build-times (daily-median-build-time builds)]
-        (.load chart (clj->js {:x "date"
-                               :columns [(cons "date" (map first build-times))
-                                         (cons "Median Build Time" (map last build-times))]}))))
-    om/IDidMount
-    (did-mount [_]
-      (let [el (om/get-node owner)
-            build-times (daily-median-build-time builds)]
-        (om/set-state! owner :chart
-                       (js/c3.generate (clj->js {:bindto el
-                                                 :padding {:top 10
-                                                           :right 20}
-                                                 :data {:x "date"
-                                                        :columns [(cons "date" (map first build-times))
-                                                                  (cons "Median Build Time" (map last build-times))]}
-                                                 :legend {:hide true}
-                                                 :grid {:y {:show true}}
-                                                 :axis {:x {:padding {:left "0"}
-                                                            :type "timeseries"
-                                                            :tick {:format "%m/%d"}
-                                                            :fit "true"}
-                                                        :y {:min 0
-                                                            :tick {:format #(str (quot % 60000) "m")}}}})))))
-    om/IRender
-    (render [_]
-      (html
-       [:div]))))
+(defn build-time-line-chart [timing-data owner]
+  (let [columns [(cons "date" (map (comp time-format/parse :date) timing-data))
+                 (cons "Median Build Time" (map :median_build_time_millis timing-data))]]
+   (reify
+     om/IDidUpdate
+     (did-update [_ _ _]
+       (let [chart (om/get-state owner :chart)]
+         (.load chart (clj->js {:x "date"
+                                :columns columns}))))
+     om/IDidMount
+     (did-mount [_]
+       (let [el (om/get-node owner)]
+         (om/set-state! owner :chart
+                        (js/c3.generate (clj->js {:bindto el
+                                                  :padding {:top 10
+                                                            :right 20}
+                                                  :data {:x "date"
+                                                         :columns columns}
+                                                  :legend {:hide true}
+                                                  :grid {:y {:show true}}
+                                                  :axis {:x {:padding {:left "0"}
+                                                             :type "timeseries"
+                                                             :tick {:format "%m/%d"}
+                                                             :fit "true"}
+                                                         :y {:min 0
+                                                             :tick {:format #(str (quot % 60000) "m")}}}})))))
+     om/IRender
+     (render [_]
+       (html
+        [:div])))))
 
 
 (s/defn build-status-bar-chart-hovercard [build :- insights/BarChartableBuild]
@@ -133,63 +118,63 @@
 (defrender project-insights [state owner]
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
-        navigation-data (:navigation-data state)
+        {:keys [branch] :as navigation-data} (:navigation-data state)
         {:keys [branches parallel] :as project} (some->> projects
-                                                         (filter #(and (= (:reponame %) (:repo navigation-data))
-                                                                       (= (:username %) (:org navigation-data))))
+                                                         (filter #(= (dissoc (api/project-build-key %) :branch)
+                                                                     (dissoc (api/project-build-key navigation-data) :branch)))
                                                          first)
-        chartable-builds (some->> (get (:recent-builds project) (:branch navigation-data))
+        timing-data (get-in project [:build-timing branch])
+        chartable-builds (some->> (get (:recent-builds project) branch)
                                   (filter insights/build-chartable?))
         bar-chart-builds (->> chartable-builds
                               (take (:max-bars build-time-bar-chart-plot-info))
                               (map insights/add-queued-time))]
     (html
-      (if (nil? chartable-builds)
-        ;; Loading...
-        [:div.loading-spinner-big common/spinner]
-
-       ;; We have data to show.
-       [:div.insights-project
-        [:div.insights-metadata-header
-         [:div.card.insights-metadata
-          [:dl
-           [:dt "last build"]
-           [:dd (om/build common/updating-duration
-                          {:start (->> chartable-builds
-                                       (filter :start_time)
-                                       first
-                                       :start_time)}
-                          {:opts {:formatter datetime/as-time-since
-                                  :formatter-use-start? true}})]]]
-         [:div.card.insights-metadata
-          [:dl
-           [:dt "median build time"]
-           [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds))) " min"]]]
-         [:div.card.insights-metadata
-          [:dl
-           [:dt "median queue time"]
-           [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds))) " min"]]]
-         [:div.card.insights-metadata
-          [:dl
-           [:dt "current parallelism"]
-           [:dd parallel
-            [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
-                                                                                :repo (:reponame project)
-                                                                                :_fragment "parallel-builds"})
-                                        :on-click #(analytics/track {:event-type :parallelism-clicked
-                                                                     :owner owner})}
-             [:i.material-icons "tune"]]]]]]
-        [:div.card
-         [:div.card-header
-          [:h2 "Build Status"]]
-         [:div.card-body
+     [:div.insights-project
+      [:div.insights-metadata-header
+       [:div.card.insights-metadata
+        [:dl
+         [:dt "last build"]
+         [:dd (om/build common/updating-duration
+                        {:start (->> chartable-builds
+                                     (filter :start_time)
+                                     first
+                                     :start_time)}
+                        {:opts {:formatter datetime/as-time-since
+                                :formatter-use-start? true}})]]]
+       [:div.card.insights-metadata
+        [:dl
+         [:dt "median build time"]
+         [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds))) " min"]]]
+       [:div.card.insights-metadata
+        [:dl
+         [:dt "median queue time"]
+         [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds))) " min"]]]
+       [:div.card.insights-metadata
+        [:dl
+         [:dt "current parallelism"]
+         [:dd parallel
+          [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
+                                                                              :repo (:reponame project)
+                                                                              :_fragment "parallel-builds"})
+                                      :on-click #(analytics/track {:event-type :parallelism-clicked
+                                                                   :owner owner})}
+           [:i.material-icons "tune"]]]]]]
+      [:div.card
+       [:div.card-header
+        [:h2 "Build Status"]]
+       [:div.card-body
+        (if (nil? chartable-builds)
+          [:div.loading-spinner common/spinner]
           (om/build build-status-bar-chart {:plot-info build-time-bar-chart-plot-info
-                                            :builds (reverse bar-chart-builds)})]]
-        [:div.card
-         [:div.card-header
-          [:h2 "Build Performance"]]
-         [:div.card-body
-          (om/build build-time-line-chart chartable-builds)]]]))))
+                                            :builds (reverse bar-chart-builds)}))]]
+      [:div.card
+       [:div.card-header
+        [:h2 "Build Performance"]]
+       [:div.card-body
+        (if (nil? timing-data)
+          [:div.loading-spinner common/spinner]
+          (om/build build-time-line-chart timing-data))]]])))
 
 (defrender header [state owner]
   (let [projects (get-in state state/projects-path)
