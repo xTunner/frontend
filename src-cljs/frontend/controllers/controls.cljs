@@ -1219,13 +1219,13 @@
 
 (defmethod post-control-event! :project-feature-flag-checked
   [target message {:keys [project-id flag value]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        project-name (vcs-url/project-name project-id)
-        comms (get-in current-state [:comms])]
+  (let [project-name (vcs-url/project-name project-id)
+        api-ch (get-in current-state [:comms :api])
+        error-ch (get-in current-state [:comms :errors])]
     (go (let [api-result (<! (ajax/managed-ajax :put (api-path/settings-path (:navigation-data current-state))
                                                 :params {:feature_flags {flag value}}))]
           (when (not= :success (:status api-result))
-            (put! (:errors comms) [:api-error api-result]))
+            (put! error-ch [:api-error api-result]))
           (ajax/ajax :get (api-path/settings-path (:navigation-data current-state)) :project-settings api-ch :context {:project-name project-name})))))
 
 (defmethod post-control-event! :project-experiments-feedback-clicked
