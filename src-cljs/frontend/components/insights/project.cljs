@@ -41,13 +41,8 @@
 
 
 (defn build-time-line-chart [timing-data owner]
-  (let [columns (if (empty? timing-data)
-                  [(cons "date" (if (empty? timing-data)
-                                  [nil]
-                                  (map (comp time-format/parse :date) timing-data)))
-                   (cons "Median Build Time" (if (empty? timing-data)
-                                               [nil]
-                                               (map :median_build_time_millis timing-data)))])]
+  (let [columns [(cons "date" (map (comp time-format/parse :date) timing-data))
+                 (cons "Median Build Time" (map :median_build_time_millis timing-data))]]
    (reify
      om/IDidUpdate
      (did-update [_ _ _]
