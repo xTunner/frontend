@@ -178,9 +178,12 @@
        [:div.card-header
         [:h2 "Build Performance"]]
        [:div.card-body
-        (if (nil? timing-data)
-          [:div.loading-spinner common/spinner]
-          (om/build build-time-line-chart timing-data))]]])))
+        {:class (when (empty? timing-data)
+                  "no-chart")}
+        (cond (nil? timing-data) [:div.loading-spinner common/spinner]
+              (empty? timing-data) [:div.no-builds.no-insights "No builds in the last 90 days."]
+              :else
+              (om/build build-time-line-chart timing-data))]]])))
 
 (defrender header [state owner]
   (let [projects (get-in state state/projects-path)
