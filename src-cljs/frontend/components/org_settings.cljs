@@ -399,7 +399,7 @@
                       (or (config/enterprise?) (pm/paid? plan) (pm/stripe-customer? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
-                   (if (and (zero? new-total) (not (config/enterprise?)))
+                   (if (and (zero? new-total) (not (config/enterprise?)) (not (zero? (pm/paid-containers plan))))
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")

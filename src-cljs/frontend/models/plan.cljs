@@ -23,7 +23,8 @@
   (boolean (:free plan)))
 
 (defn paid? [plan]
-  (boolean (:paid plan)))
+  (boolean (and (:paid plan)
+                (not (zero? (:containers plan))))))
 
 (defn osx? [plan]
   (boolean (:osx plan)))
