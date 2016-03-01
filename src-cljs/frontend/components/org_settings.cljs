@@ -333,11 +333,11 @@
             [:div.content
              [:div.containers [:span.bold container-count] " OS X containers"]
              [:div.daily-builds
-              [:div "Recommended for teams that do "]
-              [:div.bold daily-build-count " builds/day"]]
+              [:div "Recommended for teams building "]
+              [:div.bold daily-build-count " times/day"]]
              [:div.max-minutes [:span.bold max-minutes] " max minutes/month"]
              [:div.support support-level]
-             [:div.team-size "Recommended for " [:span.bold team-size] " team members"]]
+             [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
             [:div.action
              [:div "Click to select and then update."]]]
 

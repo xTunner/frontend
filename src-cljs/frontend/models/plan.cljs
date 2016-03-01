@@ -243,7 +243,7 @@
    :growth {:plan-id :growth
             :title "GROWTH"
             :price 249
-            :container-count "5"
+            :container-count "7"
             :daily-build-count "4-10"
             :max-minutes "5,000"
             :support-level "Engineer support"
@@ -253,8 +253,8 @@
    :mobile-focused {:plan-id :mobile-focused
                     :title "MOBILE FOCUSED"
                     :price 449
-                    :container-count "10"
-                    :daily-build-count "more than 10"
+                    :container-count "12"
+                    :daily-build-count "10+"
                     :max-minutes "25,000"
                     :support-level "Priority support & Account manager"
                     :team-size "unlimited"}})
