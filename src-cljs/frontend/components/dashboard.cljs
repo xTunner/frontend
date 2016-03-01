@@ -58,7 +58,7 @@
                  [:div
                   [:a {:href (routes/v1-org-settings-path {:org (:plan_org_name diagnostic)
                                                            :vcs_type (:vcs_type project)
-                                                           :_fragment "containers"})
+                                                           :_fragment "linux-pricing"})
                        :on-click #(analytics/track {:event-type :add-more-containers-clicked
                                                     :owner owner
                                                     :properties {:org org-name

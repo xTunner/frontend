@@ -335,7 +335,7 @@
                     (project-model/parallel-available? project)
                     [:a.container-selector.add-containers
                      {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                          :_fragment "containers"
+                                                          :_fragment "linux-pricing"
                                                           :vcs_type (:vcs_type build)})
                       :title "Adjust containers"
                       :class (when show-upsell? "upsell")}

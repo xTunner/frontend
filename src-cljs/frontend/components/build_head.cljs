@@ -59,7 +59,7 @@
       " containers, plus 3 additional containers available for free and open source projects. "
       [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                :vcs_type (:vcs_type build)
-                                               :_fragment "containers"})}
+                                               :_fragment "linux-pricing"})}
        "Add Containers"]
       " to run more builds concurrently."]]))
 

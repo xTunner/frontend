@@ -1239,7 +1239,7 @@
               ;; in case of piggiebacking.
               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                        :vcs_type vcs_type
-                                                       :_fragment "containers"})}
+                                                       :_fragment "linux-pricing"})}
                "add more"]
               (when-not piggiebacked?
                 (list " at $" container-cost " per container"))

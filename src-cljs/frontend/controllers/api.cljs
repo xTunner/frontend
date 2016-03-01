@@ -653,7 +653,7 @@
           vcs_type (:org-settings-vcs_type current-state)]
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
                                                                     :vcs_type vcs_type
-                                                                    :_fragment "containers"})
+                                                                    :_fragment (name (get-in current-state [:org-settings-subpage]))})
                                 :replace-token? true}])))
   (analytics/track {:event-type :new-plan-created
                     :current-state current-state}))
