@@ -315,56 +315,40 @@
     @border-color: @border-gray-v2;
     @header-background-color: @grayLightest;
 
-    .selected-plan {
-      border: 2px solid @brand-blue-v2;
-    }
-
-    .updated-plan {
-      border: 2px dashed @brand-blue-v2;
-    }
-
-    .trial-expired-plan {
-      border: 2px solid @brand-warning-v2;
-    }
-
-    .trial-plan {
-      border: 2px solid @green;
-    }
-
-    .plan:not(.selected-plan).plan:not(.updated-plan).plan:not(.trial-plan).plan:not(.trial-expired-plan){
-      border: 1px solid @border-color;
-    }
-
     .selected-notice {
-      height: 40px;
-      padding: 10px;
       background-color: @brand-blue-v2;
-      color: @white;
-      text-align: center;
-      font-weight: bold;
     }
 
     .trial-expired-notice {
-      height: 40px;
-      padding: 10px;
       background-color: @brand-warning-v2;
-      color: @white;
-      text-align: center;
-      font-weight: bold;
     }
 
     .trial-notice {
-      height: 40px;
-      padding: 10px;
       background-color: @green;
+    }
+
+    .plan-notice {
+      margin-top: -5px;
+      border-radius: 6px;
+      padding: 5px;
       color: @white;
       text-align: center;
       font-weight: bold;
     }
 
+    .no-notice {
+      border: 1px solid @border-color;
+    }
+
+    .bottom {
+      padding: 10px;
+    }
+
+
     .plan {
       color: @circleGray;
-      max-width: 300px;
+      background-color: @white;
+      width: 300px;
 
       .bold {
         font-weight: bold;

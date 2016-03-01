@@ -331,62 +331,61 @@
             trial-end (some-> plan :osx_trial_end_date)]
         (html
           [:div {:data-component `osx-plan-ga}
-           [:div.plan
-            {:class
-             (cond currently-selected? "selected-plan"
-                   on-trial? "selected-plan"
-                   trial-expired? "trial-expired-plan"
-                   trial-starts-here?  "trial-plan")}
-            [:div.header
-             [:div.title title]
-             [:div.price "$" [:span.bold price] "/mo"]]
-            [:div.content
-             [:div.containers [:span.bold container-count] " OS X containers"]
-             [:div.daily-builds
-              [:div "Recommended for teams building "]
-              [:div.bold daily-build-count " times/day"]]
-             [:div.max-minutes [:span.bold max-minutes] " max minutes/month" [:sup.bold "*"]]
-             [:div.support support-level]
-             [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
-            [:div.action
-             (if (pm/stripe-customer? plan)
-               (om/build plan-payment-button {:text "Update"
-                                              :loading-text "Updating..."
-                                              :disabled? (= (name plan-id) (pm/osx-plan-id plan))
-                                              :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])})
-               (om/build plan-payment-button {:text "Pay Now"
-                                              :loading-text "Paying..."
-                                              :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
-                                                                                                  :price (:price plan-data)
-                                                                                                  :description (gstring/format "OS X %s - $%d/month "
-                                                                                                                               (clojure.string/capitalize (name plan-id))
-                                                                                                                               (:price plan-data))}])}))
+           [:div {:class (cond currently-selected? "plan-notice selected-notice"
+                               trial-expired? "plan-notice trial-expired-notice"
+                               on-trial? "plan-notice selected-notice"
+                               trial-starts-here?  "plan-notice trial-notice"
+                               :else "no-notice")}
+            [:div.plan
+             [:div.header
+              [:div.title title]
+              [:div.price "$" [:span.bold price] "/mo"]]
+             [:div.content
+              [:div.containers [:span.bold container-count] " OS X containers"]
+              [:div.daily-builds
+               [:div "Recommended for teams building "]
+               [:div.bold daily-build-count " times/day"]]
+              [:div.max-minutes [:span.bold max-minutes] " max minutes/month" [:sup.bold "*"]]
+              [:div.support support-level]
+              [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
+             [:div.action
+              (if (pm/stripe-customer? plan)
+                (om/build plan-payment-button {:text "Update"
+                                               :loading-text "Updating..."
+                                               :disabled? (= (name plan-id) (pm/osx-plan-id plan))
+                                               :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])})
+                (om/build plan-payment-button {:text "Pay Now"
+                                               :loading-text "Paying..."
+                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
+                                                                                                   :price (:price plan-data)
+                                                                                                   :description (gstring/format "OS X %s - $%d/month "
+                                                                                                                                (clojure.string/capitalize (name plan-id))
+                                                                                                                                (:price plan-data))}])}))
 
-             (when (and trial-starts-here? (not (pm/osx? plan)))
-               [:div.start-trial "or "
-                (forms/managed-button
-                  [:a
-                   {:data-success-text "Success!"
-                    :data-loading-text "Starting..."
-                    :data-failed-text "Failed"
-                    :on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])}
-                   "start a 2 week free trial"])])]]
-
+              (when (and trial-starts-here? (not (pm/osx? plan)))
+                [:div.start-trial "or "
+                 (forms/managed-button
+                   [:a
+                    {:data-success-text "Success!"
+                     :data-loading-text "Starting..."
+                     :data-failed-text "Failed"
+                     :on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])}
+                    "start a 2 week free trial"])])]]
             (cond
               trial-starts-here?
-              [:div.trial-notice "Free Trial Starts Here"]
+              [:div.bottom "Free Trial Starts Here"]
 
               trial-expired?
-              [:div.trial-expired-notice "Trial has Ended - Choose a Plan"]
+              [:div.bottom "Trial has Ended - Choose a Plan"]
 
               on-trial?
-              [:div.selected-notice
+              [:div.bottom
                (str "Trial plan ("
                     (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))))
                     " left)")]
 
               currently-selected?
-              [:div.selected-notice "Your Current Plan"])])))))
+              [:div.bottom "Your Current Plan"])]])))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
