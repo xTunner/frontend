@@ -308,6 +308,10 @@
   .ui("osx-plans-list-ga", {
     .plan-selection {
       min-height: 500px;
+
+      @media (max-width: @screen-sm-max) {
+        .flexy(center, center, column);
+      }
     }
   });
 
@@ -343,7 +347,6 @@
     .bottom {
       padding: 10px;
     }
-
 
     .plan {
       color: @circleGray;
