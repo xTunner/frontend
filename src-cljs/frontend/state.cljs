@@ -44,7 +44,6 @@
    :org-settings-subpage nil
    :org-settings-org-name nil
    :org-settings-vcs_type nil
-   :org-settings {:chosen-osx-plan-id nil}
    :admin-settings-subpage nil
    :dashboard-data {:branch nil
                     :repo nil
@@ -176,8 +175,6 @@
 (def cancel-notes-path (conj org-data-path :cancel-notes))
 
 (def settings-path [:settings])
-
-(def org-settings-path [:org-settings])
 
 (def projects-path [:projects])
 

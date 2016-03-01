@@ -1406,11 +1406,3 @@
 
     :else
     current-state))
-
-(defmethod control-event :osx-plan-selected
-  [_ _ {:keys [plan-id]} current-state]
-  (assoc-in current-state (conj state/org-settings-path :chosen-osx-plan-id) plan-id))
-
-(defmethod control-event :osx-plan-deselected
-  [_ _ _ current-state]
-  (assoc-in current-state (conj state/org-settings-path :chosen-osx-plan-id) nil))

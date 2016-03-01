@@ -301,19 +301,32 @@
             [:dt question]
             [:dd answer]))]]))))
 
+(defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (forms/managed-button
+          [:a.btn.btn-lg.btn-success
+           {:data-success-text "Success!"
+            :data-loading-text loading-text
+            :data-failed-text "Failed"
+            :on-click on-click-fn
+            :disabled disabled?}
+           text])))))
+
 (defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
-                           plan-id chosen-plan-id plan
+                           plan-id plan
                            trial-starts-here?]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [currently-selected? (= (name plan-id) (pm/osx-plan-id plan))
-            updated-selection? (= plan-id chosen-plan-id)
+      (let [plan-data (get-in pm/osx-plans [plan-id])
+            currently-selected? (= (name plan-id) (pm/osx-plan-id plan))
             on-trial? (and trial-starts-here? (pm/osx-trial-plan? plan))
             trial-expired? (and on-trial? (not (pm/osx-trial-active? plan)))
             trial-starts-here? (and trial-starts-here?
-                              (not (pm/osx? plan))
-                              (not updated-selection?))
+                                    (not (pm/osx? plan)))
             plan-start (some-> plan :osx_plan_started_on)
             trial-end (some-> plan :osx_trial_end_date)]
         (html
@@ -322,14 +335,8 @@
             {:class
              (cond currently-selected? "selected-plan"
                    on-trial? "selected-plan"
-                   updated-selection? "updated-plan"
                    trial-expired? "trial-expired-plan"
-                   trial-starts-here?  "trial-plan")
-
-             :on-click (when (not currently-selected?)
-                         (if updated-selection?
-                           #(raise! owner [:osx-plan-deselected])
-                           #(raise! owner [:osx-plan-selected {:plan-id plan-id}])))}
+                   trial-starts-here?  "trial-plan")}
             [:div.header
              [:div.title title]
              [:div.price "$" [:span.bold price] "/mo"]]
@@ -342,7 +349,28 @@
              [:div.support support-level]
              [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
             [:div.action
-             [:div "Click to select and then update."]]]
+             (if (pm/stripe-customer? plan)
+               (om/build plan-payment-button {:text "Update"
+                                              :loading-text "Updating..."
+                                              :disabled? (= (name plan-id) (pm/osx-plan-id plan))
+                                              :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])})
+               (om/build plan-payment-button {:text "Pay Now"
+                                              :loading-text "Paying..."
+                                              :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
+                                                                                                  :price (:price plan-data)
+                                                                                                  :description (gstring/format "OS X %s - $%d/month "
+                                                                                                                               (clojure.string/capitalize (name plan-id))
+                                                                                                                               (:price plan-data))}])}))
+
+             (when (and trial-starts-here? (not (pm/osx? plan)))
+               [:div.start-trial "or "
+                (forms/managed-button
+                  [:a
+                   {:data-success-text "Success!"
+                    :data-loading-text "Starting..."
+                    :data-failed-text "Failed"
+                    :on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])}
+                   "start a 2 week free trial"])])]]
 
             (cond
               trial-starts-here?
@@ -394,30 +422,13 @@
                 :on-click new-plan-fn}
                plan-img])))))))
 
-(defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
+(defn osx-plans-list-ga [plan owner]
   (reify
     om/IRender
     (render [_]
-      (html
-        (forms/managed-button
-          [:a.btn.btn-lg.btn-success
-           {:data-success-text "Success!"
-            :data-loading-text loading-text
-            :data-failed-text "Failed"
-            :on-click on-click-fn
-            :disabled disabled?}
-           text])))))
-
-(defn osx-plans-list-ga [{:keys [plan org-settings]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [chosen-plan-id (:chosen-osx-plan-id org-settings)
-            chosen-plan (get-in pm/osx-plans [chosen-plan-id])
-            osx-plans (->> pm/osx-plans
+      (let [osx-plans (->> pm/osx-plans
                            (vals)
-                           (map (partial merge {:plan plan
-                                                :chosen-plan-id chosen-plan-id})))
+                           (map (partial merge {:plan plan})))
             plan-start (some-> plan :osx_plan_started_on)
             trial-end (some-> plan :osx_trial_end_date)]
         (html
@@ -431,25 +442,7 @@
               [:p (gstring/format "You have %s left on the iOS trial."
                                   (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))])]
            [:div.plan-selection
-            (om/build-all osx-plan-ga osx-plans)]
-           [:div.update-action
-            (if-not (or (pm/osx? plan) chosen-plan-id)
-              (om/build plan-payment-button {:text "Start 2 Week Free Trial"
-                                             :loading-text "Starting..."
-                                             :on-click-fn #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])})
-              (if (pm/stripe-customer? plan)
-                (om/build plan-payment-button {:text "Update"
-                                               :loading-text "Updating..."
-                                               :disabled? (nil? chosen-plan-id)
-                                               :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}}])})
-                (om/build plan-payment-button {:text "Pay Now"
-                                               :loading-text "Paying..."
-                                               :disabled? (nil? chosen-plan-id)
-                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name chosen-plan-id)}
-                                                                                                   :price (:price chosen-plan)
-                                                                                                   :description (gstring/format "OS X %s - $%d/month "
-                                                                                                                                (clojure.string/capitalize (name chosen-plan-id))
-                                                                                                                                (:price chosen-plan))}])})))]])))))
+            (om/build-all osx-plan-ga osx-plans)]])))))
 
 (defn osx-plans-list [plan owner]
   (reify
@@ -589,8 +582,7 @@
                        (project-common/mini-parallelism-faq {})]
 
                :osx [:div.card
-                     (om/build osx-plans-list-ga {:plan plan
-                                                  :org-settings (get-in app state/org-settings-path)})
+                     (om/build osx-plans-list-ga plan)
                      (om/build osx-faq osx-faq-items)])]))))
 
 (defn pricing-starting-tab [subpage]
