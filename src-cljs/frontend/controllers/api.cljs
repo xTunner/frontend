@@ -301,9 +301,8 @@
   (let [usage-queue-builds (get-in current-state state/usage-queue-path)
         ws-ch (get-in current-state [:comms :ws])]
     (doseq [build usage-queue-builds]
-      (doseq [channel-name (pusher/build-channels build)]
-        (put! ws-ch [:subscribe {:channel-name channel-name
-                                 :messages [:build/update]}])))))
+      (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build)
+                               :messages [:build/update]}]))))
 
 
 (defmethod api-event [:build-artifacts :success]
