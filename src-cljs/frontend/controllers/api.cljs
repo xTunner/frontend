@@ -1,6 +1,7 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
             [frontend.api :as api]
+            [frontend.api.path :as api-path]
             [frontend.async :refer [put! raise!]]
             [frontend.components.forms :refer [release-button!]]
             [frontend.models.action :as action-model]
@@ -441,7 +442,7 @@
     (let [project-name (vcs-url/project-name (:project-id context))
           api-ch (get-in current-state [:comms :api])]
       (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/settings" project-name)
+                 (api-path/settings-path (:navigation-data current-state))
                  :project-settings
                  api-ch
                  :context {:project-name project-name}))))
