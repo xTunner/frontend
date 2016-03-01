@@ -177,9 +177,7 @@
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
               scopes (:scopes api-result)
-              settings-url (case vcs_type
-                             "github" (gstring/format "/api/v1/project/%s/settings" project-name)
-                             "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/settings" vcs_type project-name))
+              settings-url (api-path/settings-path (:navigation-data current-state))
               plan-url (case vcs_type
                          "github" (gstring/format "/api/v1/project/%s/plan" project-name)
                          "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/plan" vcs_type project-name))]
@@ -348,7 +346,7 @@
     (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
       (ajax/ajax :get
-                 (gstring/format "/api/v1/project/%s/settings" project-name)
+                 (api-path/settings-path (:navigation-data current-state))
                  :project-settings
                  api-ch
                  :context {:project-name project-name}))
@@ -356,7 +354,7 @@
     (cond (and (= subpage :parallel-builds)
                (not (get-in current-state state/project-plan-path)))
           (ajax/ajax :get
-                     (gstring/format "/api/v1/project/%s/plan" project-name)
+                     (api-path/settings-plan (:navigation-data current-state))
                      :project-plan
                      api-ch
                      :context {:project-name project-name})
