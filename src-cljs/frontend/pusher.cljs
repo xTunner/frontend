@@ -45,7 +45,7 @@
 
 (defn build-channel-from-parts
   ([project-name build-num vcs-type]
-   (let [suffix (if (some? vcs-type) (str "@" vcs-type) "")]
+   (let [suffix (if (some? vcs-type) (str "@vcs-" vcs-type) "")]
      (string/replace (str "private-" project-name "@" build-num suffix) "/" "@")))
   ([project-name build-num]
    (build-channel-from-parts project-name build-num nil)))
