@@ -433,12 +433,12 @@
         (html
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
-            [:legend (str "iOS Plans")]
-            [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]
+            [:legend (str "OS X Plans")]
+            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
-              [:p "The iOS trial you've selected has expired, please choose a plan below."])
+              [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
-              [:p (gstring/format "You have %s left on the iOS trial."
+              [:p (gstring/format "You have %s left on the OS X trial."
                                   (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))])]
            [:div.plan-selection
             (om/build-all osx-plan-ga osx-plans)]])))))
