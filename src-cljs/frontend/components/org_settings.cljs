@@ -268,7 +268,7 @@
               (str " and we’ll provide some guidance regarding your recent usage. "
                    "In the near future, we’ll display your usage within the app.")])}
    {:question (list
-               [:p "What if I go over the minute limit?"])
+               [:p [:sup.bold "*"] "What if I go over the minute limit?"])
     :answer (list
              [:p (str "Tiering is to help make sure we can stabilize capacity and offer competitive price points "
                       "which should hopefully lead to the greatest possible utility all around.")
@@ -313,15 +313,18 @@
             trial-expired? (and on-trial? (not (pm/osx-trial-active? plan)))
             trial-starts-here? (and trial-starts-here?
                               (not (pm/osx? plan))
-                              (not updated-selection?))]
+                              (not updated-selection?))
+            plan-start (some-> plan :osx_plan_started_on)
+            trial-end (some-> plan :osx_trial_end_date)]
         (html
           [:div {:data-component `osx-plan-ga}
            [:div.plan
             {:class
              (cond currently-selected? "selected-plan"
+                   on-trial? "selected-plan"
                    updated-selection? "updated-plan"
                    trial-expired? "trial-expired-plan"
-                   (or trial-starts-here? on-trial?) "trial-plan")
+                   trial-starts-here?  "trial-plan")
 
              :on-click (when (not currently-selected?)
                          (if updated-selection?
@@ -335,7 +338,7 @@
              [:div.daily-builds
               [:div "Recommended for teams building "]
               [:div.bold daily-build-count " times/day"]]
-             [:div.max-minutes [:span.bold max-minutes] " max minutes/month"]
+             [:div.max-minutes [:span.bold max-minutes] " max minutes/month" [:sup.bold "*"]]
              [:div.support support-level]
              [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
             [:div.action
@@ -346,13 +349,16 @@
               [:div.trial-notice "Free Trial Starts Here"]
 
               trial-expired?
-              [:div.trial-expired-notice "Trial Ended - Choose a Plan"]
+              [:div.trial-expired-notice "Trial has Ended - Choose a Plan"]
 
               on-trial?
-              [:div.trial-notice "Currently Evaluating"]
+              [:div.selected-notice
+               (str "Trial plan ("
+                    (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))))
+                    " left)")]
 
               currently-selected?
-              [:div.selected-notice "Currently Selected"])])))))
+              [:div.selected-notice "Your Current Plan"])])))))
 
 (defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
   (reify
@@ -411,14 +417,19 @@
             osx-plans (->> pm/osx-plans
                            (vals)
                            (map (partial merge {:plan plan
-                                                :chosen-plan-id chosen-plan-id})))]
+                                                :chosen-plan-id chosen-plan-id})))
+            plan-start (some-> plan :osx_plan_started_on)
+            trial-end (some-> plan :osx_trial_end_date)]
         (html
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
             [:legend (str "iOS Plans")]
             [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
-              [:p "The iOS trial you've selected has expired, please choose a plan below."])]
+              [:p "The iOS trial you've selected has expired, please choose a plan below."])
+            (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
+              [:p (gstring/format "You have %s left on the iOS trial."
+                                  (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))])]
            [:div.plan-selection
             (om/build-all osx-plan-ga osx-plans)]
            [:div.update-action
@@ -476,16 +487,12 @@
             container-cost (pm/per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
-                                    selected-paid-containers)
-            title-element (if (feature/enabled? :osx-ga-inner-pricing) :h1 :legend)]
+                                    selected-paid-containers)]
       (html
-        [:div#edit-plan {:class "pricing.page"}
-         (when-not (config/enterprise?)
-           [:fieldset
-            [:legend "More containers means faster builds and lower queue times."]])
+        [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
          [:div.main-content
           [:div
-           [title-element "Linux Plan - "
+           [:legend "Linux Plan - "
             [:div.container-input
              [:input.form-control {:style {:margin "4px" :height "calc(2em + 2px)"}
                                    :type "text" :value selected-containers
@@ -497,6 +504,7 @@
                                         " + 1 free container")]]]
            [:form
             [:div.container-picker
+             [:h1 "More containers means faster builds and lower queue times."]
              [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" container-cost "/month each.")]
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
@@ -528,7 +536,7 @@
                (if-not checkout-loaded?
                  [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
                  (forms/managed-button
-                   [:button.btn.btn-lg.btn-success.center
+                   [:button.btn.btn-lg.btn-success
                     {:data-success-text "Paid!",
                      :data-loading-text "Paying...",
                      :data-failed-text "Failed!",
@@ -1181,8 +1189,8 @@
                     trial-end (some-> plan :osx_trial_end_date)]
                 [:p
                  (if (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the iOS trial for %d more days. "
-                                   (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
+                   (gstring/format "You're currently on the iOS trial and have %s left. "
+                                   (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))
                    (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
                  [:span "We will support general release in the near future!"]]))])]))))
 
