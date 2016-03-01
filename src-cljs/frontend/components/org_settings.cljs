@@ -344,7 +344,7 @@
               [:div.containers [:span.bold container-count] " OS X containers"]
               [:div.daily-builds
                [:div "Recommended for teams building "]
-               [:div.bold daily-build-count " times/day"]]
+               [:div.bold daily-build-count " builds/day"]]
               [:div.max-minutes [:span.bold max-minutes] " max minutes/month" [:sup.bold "*"]]
               [:div.support support-level]
               [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
