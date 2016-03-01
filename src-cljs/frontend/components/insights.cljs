@@ -1,6 +1,5 @@
 (ns frontend.components.insights
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [cljs.core.match :refer-macros [match]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
             [frontend.analytics :as analytics]
@@ -44,7 +43,8 @@
    :bottom 10
    :left 30
    :max-bars 55
-   :positive-y% 0.6})
+   :positive-y% 0.6
+   :show-bar-title? true})
 
 (defn add-legend [plot-info svg]
   (let [{:keys [square-size item-width item-height spacing]} (:legend-info plot-info)
@@ -116,16 +116,26 @@
                            spacing)})
         (.text #(aget % "text")))))
 
-
-
 (defn add-queued-time [build]
   (let [queued-time (max (build/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
 
+(def insights-outcome-mapping
+  {"success" "success",
+   "failed" "failed",
+   "timedout" "failed",
+   "canceled" "canceled"})
+
+(def pass-fail-outcomes
+  (->> insights-outcome-mapping
+       (filter #(#{"success" "failed"} (second %)))
+       (into {})))
+
 (defn build-chartable? [{:keys [outcome build_time_millis]}]
-  (or (#{"success" "failed"} outcome)
-      (and (= "canceled" outcome)
-           build_time_millis)))
+  (boolean
+   (or (pass-fail-outcomes outcome)
+       (and (= "canceled" outcome)
+            build_time_millis))))
 
 (defn build-timing-url [build]
   (str (utils/uri-to-relative (unexterned-prop build "build_url"))
@@ -155,6 +165,7 @@
         height (- (.-height svg-bounds) (:top plot-info) (:bottom plot-info))
 
         y-zero (* height (:positive-y% plot-info))
+        show-bar-title? (:show-bar-title? plot-info)
         y-pos-scale (-> (js/d3.scale.linear)
                         (.domain #js[0 y-pos-max])
                         (.range #js[y-zero 0]))
@@ -217,11 +228,18 @@
     (-> bars-join
         (.select ".top")
         (.attr #js {"xlink:href" build-timing-url})
+        (.attr #js {"xlink:title" #(when show-bar-title?
+                                     (let [duration-str (datetime/as-duration (unexterned-prop % "build_time_millis"))]
+                                       (gstring/format "%s in %s"
+                                                       (gstring/toTitleCase (unexterned-prop % "outcome"))
+                                                       duration-str)))})
         (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked 
                                              :owner owner
                                              :properties {:build-url (unexterned-prop % "build_url")}})})
         (.select "rect.bar")
-        (.attr #js {"class" #(str "bar " (unexterned-prop % "outcome"))
+        (.attr #js {"class" #(str "bar " (-> %
+                                             (unexterned-prop "outcome")
+                                             insights-outcome-mapping))
                     "y" #(y-pos-scale (unexterned-prop % "build_time_millis"))
                     "x" #(x-scale (unexterned-prop % "build_num"))
                     "width" (.rangeBand x-scale)
@@ -231,6 +249,13 @@
     (-> bars-join
         (.select ".bottom")
         (.attr #js {"xlink:href" build-timing-url})
+        (.attr #js {"xlink:title" #(when show-bar-title?
+                                     (let [duration-str (datetime/as-duration (unexterned-prop % "queued_time_millis"))]
+                                       (gstring/format "Queue time %s" duration-str)))})
+
+        (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked
+                                             :owner owner
+                                             :properties {:build-url (unexterned-prop % "build_url")}})})
         (.select "rect.bar")
         (.attr #js {"y" y-zero
                     "x" #(x-scale (unexterned-prop % "build_num"))
@@ -463,12 +488,15 @@
   [{:keys [show-insights? chartable-builds] :as project}]
   (let [outcome (some->> chartable-builds
                          (map :outcome)
-                         (filter #{"success" "failed"})
-                         last)]
-    (match [show-insights? outcome]
-           [true "success"] :success
-           [true "failed"] :failed
-           :else :other)))
+                         reverse
+                         (filter pass-fail-outcomes)
+                         first)]
+    (if-let [result (and show-insights?
+                         (-> outcome
+                             pass-fail-outcomes
+                             keyword))]
+      result
+      :other)))
 
 (defn project-latest-build-time [project]
   (let [start-time (-> project

@@ -104,18 +104,36 @@
 (defmethod api-event [:projects :success]
   [target message status {:keys [resp]} {:keys [navigation-point] :as current-state}]
   (let [new-projects (map (fn [project] (update project :scopes #(set (map keyword %)))) resp)
-        old-projects-by-build-key (group-by api/project-build-key (get-in current-state state/projects-path))
+        old-projects-lookup (into {} (for [old-p (get-in current-state state/projects-path)]
+                                       [(-> old-p
+                                            api/project-build-key
+                                            (dissoc :branch))
+                                        old-p]))
         processed-new-projects
-        (map (fn [{:keys [default_branch] :as project}]
-               (let [matching-old-project (first (get old-projects-by-build-key (api/project-build-key project)))]
-                 (assoc project
-                        :recent-builds (:recent-builds matching-old-project))))
-             new-projects)]
+        (for [new-project new-projects
+              :let [matching-project (or (old-projects-lookup (-> new-project
+                                                                  api/project-build-key
+                                                                  (dissoc :branch)))
+                                         {})]]
+          (merge new-project
+                 (select-keys matching-project [:recent-builds :build-timing])))]
     (assoc-in current-state state/projects-path processed-new-projects)))
 
+(def projects-success-thens
+  {:build-insights (fn [state]
+                     (let [projects (get-in state state/projects-path)
+                           build-keys (map api/project-build-key projects)
+                           api-ch (get-in state [:comms :api])]
+                         (api/get-projects-builds build-keys 60 api-ch)))
+   :project-insights (fn [{:keys [navigation-data] :as state}]
+                       (let [build-key (api/project-build-key navigation-data)
+                             api-ch (get-in state [:comms :api])]
+                         (api/get-projects-builds [build-key] 100 api-ch)
+                         (api/get-branch-build-times build-key api-ch)))})
+
 (defmethod post-api-event! [:projects :success]
-  [target message status {{:keys [then]} :context} previous-state current-state]
-  (when then
+  [target message status args previous-state {:keys [navigation-point] :as current-state}]
+  (when-let [then (projects-success-thens navigation-point)]
     (then current-state)))
 
 (defmethod api-event [:me :success]

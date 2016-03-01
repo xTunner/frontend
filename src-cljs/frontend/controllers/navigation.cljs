@@ -262,9 +262,7 @@
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-projects api-ch :then (fn [new-state]
-                                     (let [build-keys (map api/project-build-key (get-in new-state state/projects-path))]
-                                       (api/get-projects-builds build-keys 60 api-ch))))
+    (api/get-projects api-ch)
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
@@ -291,10 +289,7 @@
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-projects api-ch :then (fn []
-                                     (let [build-key (api/project-build-key args)]
-                                       (api/get-projects-builds [build-key] 100 api-ch)
-                                       (api/get-branch-build-times build-key api-ch))))
+    (api/get-projects api-ch)
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 

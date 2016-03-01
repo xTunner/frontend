@@ -131,9 +131,11 @@
           ;; Fire off an ajax call for the page. The API controllers will
           ;; deliver the response to page-result, and put the full data in the
           ;; state once all of the page-results are delivered.
-          (ajax/ajax :get url :recent-project-builds api-ch :context {:project-id build-key
-                                                                      :page-result page-result
-                                                                      :all-page-results page-results}))))))
+          (ajax/ajax :get url :recent-project-builds api-ch
+                     :context {:project-id build-key
+                               :page-result page-result
+                               :all-page-results page-results}
+                     :params {:filter "build-insights"}))))))
 
 (defn branch-build-times-url [target-key]
   (sec/render-route "/api/v1/project/:vcs_type/:org/:repo/build-timing/:branch" target-key))
