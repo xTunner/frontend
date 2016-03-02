@@ -1084,7 +1084,8 @@
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
-        (when (pm/paid? plan)
+        (when (and (pm/paid? plan)
+                   (> (pm/paid-containers plan) 0))
           [:p
            (str (pm/paid-containers plan) " of these are paid")
            (if piggiebacked? ". "
