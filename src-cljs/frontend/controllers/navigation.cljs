@@ -333,13 +333,8 @@
           (state-utils/reset-current-project %)
           %))))
 
-(defmethod post-navigated-to! :landing
-  [history-imp navigation-point _ previous-state current-state]
-  (set-page-title! "Continuous Integration and Deployment")
-  (set-page-description! "Free Hosted Continuous Integration and Deployment for web and mobile applications. Build better apps and ship code faster with CircleCI."))
-
 (defmethod post-navigated-to! :project-settings
-  [history-imp navigation-point {:keys [project-name subpage]} previous-state current-state]
+  [history-imp navigation-point {:keys [project-name vcs_type subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
@@ -378,7 +373,9 @@
           (and (= subpage :env-vars)
                (not (get-in current-state state/project-envvars-path)))
           (ajax/ajax :get
-                     (gstring/format "/api/v1/project/%s/envvar" project-name)
+                     (case vcs_type
+                       "github" (gstring/format "/api/v1/project/%s/envvar" project-name)
+                       "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/envvar" vcs_type project-name))
                      :project-envvar
                      api-ch
                      :context {:project-name project-name})
@@ -389,6 +386,11 @@
           :else nil))
 
   (set-page-title! (str "Project settings - " project-name)))
+
+(defmethod post-navigated-to! :landing
+  [history-imp navigation-point _ previous-state current-state]
+  (set-page-title! "Continuous Integration and Deployment")
+  (set-page-description! "Free Hosted Continuous Integration and Deployment for web and mobile applications. Build better apps and ship code faster with CircleCI."))
 
 
 (defmethod navigated-to :org-settings

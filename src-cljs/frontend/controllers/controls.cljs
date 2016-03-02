@@ -586,9 +586,12 @@
 (defmethod post-control-event! :created-env-var
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/envvar" project-name)
+                 (case vcs-type
+                   "github" (gstring/format "/api/v1/project/%s/envvar" project-name)
+                   "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/envvar" vcs-type project-name))
                  :create-env-var
                  api-ch
                  :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
@@ -599,9 +602,12 @@
 (defmethod post-control-event! :deleted-env-var
   [target message {:keys [project-id env-var-name]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
-               (gstring/format "/api/v1/project/%s/envvar/%s" project-name env-var-name)
+               (case vcs-type
+                 "github" (gstring/format "/api/v1/project/%s/envvar/%s" project-name env-var-name)
+                 "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/envvar/%s" vcs-type project-name env-var-name))
                :delete-env-var
                api-ch
                :context {:project-id project-id
