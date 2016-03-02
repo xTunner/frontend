@@ -144,6 +144,9 @@
   (min (plan-model/max-parallelism plan)
        (usable-containers plan project)))
 
+(defn can-write-settings? [project]
+  (-> project :scopes :write-settings))
+
 (defn can-read-settings? [project]
   (-> project :scopes :read-settings))
 

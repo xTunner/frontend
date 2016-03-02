@@ -139,7 +139,7 @@
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         {:keys [branch] :as navigation-data} (:navigation-data state)
-        {:keys [branches parallel] :as project} (some->> projects
+        {:keys [branches parallel scopes] :as project} (some->> projects
                                                          (filter #(= (dissoc (api/project-build-key %) :branch)
                                                                      (dissoc (api/project-build-key navigation-data) :branch)))
                                                          first)
@@ -174,12 +174,13 @@
         [:dl
          [:dt "current parallelism"]
          [:dd parallel
-          [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
-                                                                              :repo (:reponame project)
-                                                                              :_fragment "parallel-builds"})
-                                      :on-click #(analytics/track {:event-type :parallelism-clicked
-                                                                   :owner owner})}
-           [:i.material-icons "tune"]]]]]]
+          (when (project-model/can-write-settings? project)
+           [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
+                                                                               :repo (:reponame project)
+                                                                               :_fragment "parallel-builds"})
+                                       :on-click #(analytics/track {:event-type :parallelism-clicked
+                                                                    :owner owner})}
+            [:i.material-icons "tune"]])]]]]
       [:div.card
        [:div.card-header
         [:h2 "Build Status"]]

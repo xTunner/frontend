@@ -1013,7 +1013,9 @@
             user (get-in data state/user-path)
             logged-in? (not (empty? user))
             has-read-settings? (:read-settings
-                                  (get-in data state/project-scopes-path))]
+                                (get-in data state/project-scopes-path))
+            has-write-settings? (:write-settings
+                                 (get-in data state/project-scopes-path))]
         (html
           [:div.build-actions-v2
            (when (and (build-model/can-cancel? build) has-read-settings?)
@@ -1027,8 +1029,9 @@
                 "cancel build"]))
            (when has-read-settings?
              (om/build rebuild-actions {:build build :project project}))
-           [:div.build-settings
-            [:a.build-action
-             {:href (routes/v1-project-settings-path (:navigation-data data))}
-             [:i.material-icons "settings"]
-             "Project Settings"]]])))))
+           (when has-write-settings?
+             [:div.build-settings
+              [:a.build-action
+               {:href (routes/v1-project-settings-path (:navigation-data data))}
+               [:i.material-icons "settings"]
+               "Project Settings"]])])))))
