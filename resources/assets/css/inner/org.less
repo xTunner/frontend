@@ -224,24 +224,49 @@
     }
   }
 
-  .monthly-usage {
+  .ui("osx-usage-row", {
     @progress-bar-color: @brand-info-v2;
     @progress-background-color: @grayLightest;
 
-    .flexy(column);
+    height: 30px;
+    font-size: @fontSizeSmallish;
+    color: @secondary-button-color;
+    border-top: 1px solid @grayLighter;
+    border-bottom: 1px solid @grayLighter;
 
-    .usage-group {
-      .flexy(row, flex-start);
+    td {
+      padding-left: 10px;
+    }
+
+    &:hover {
+      background: @table-alt-row-background;
+    }
+
+    .billing-period {
+      min-width: 110px;
+      padding-right: 10px;
+    }
+
+    .usage-bar {
+      width: 70%;
+      padding-right: 10px;
+    }
+
+    .usage-percent{
+      padding-right: 10px;
+    }
+
+    .usage-minutes {
+      text-align: right;
     }
 
     .monthly-usage-bar {
       margin-top: 5px;
       border: 0;
       height: 13px;
-      width: 70%;
+      width: 100%;
       background-color: @progress-background-color;
       padding: 2px;
-
     }
 
     .monthly-usage-bar::-webkit-progress-bar {
@@ -256,24 +281,39 @@
       background-color: @progress-bar-color;
     }
 
-    .usage-label {
-      .flexy(row, flex-end);
-      min-width: 175px;
-      margin-left: 10px;
-
-      .percent-label {
-        .flex(1,0,auto);
-      }
-    }
-
-    .month-label {
-      min-width: 80px;
-    }
-
     .over-usage {
       color: @brand-red-v2;
     }
-  }
+  });
+
+  .ui("osx-usage-table", {
+
+    .header {
+      font-size: @fontSizeLarge;
+    }
+
+    .divider {
+      margin-left: -15px;
+      margin-right: -15px;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    thead {
+      font-size: @fontSizeSmallish;
+      color: @secondary-button-color;
+
+      tr {
+        height: 30px;
+      }
+
+      th {
+        padding-left: 10px;
+      }
+    }
+  });
 
   .project-header {
     @header-icon-color: @grayDark;

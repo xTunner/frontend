@@ -1122,20 +1122,26 @@
     (render [_]
       (html [:progress {:class class :value value :max max} (str value "%")]))))
 
-(defn usage-bar [{:keys [usage max month]} owner]
+(defn osx-usage-row [{:keys [usage max]} owner]
   (reify
     om/IRender
     (render [_]
-      (let [percent (.round js/Math (* 100 (/ usage max)))]
+      (let [{:keys [amount from to]} usage
+            amount (.round js/Math (/ amount 1000 60))
+            percent (.round js/Math (* 100 (/ amount max)))]
         (html
-         [:div.usage-group
-          [:div.month-label month]
-          (om/build progress-bar {:class "monthly-usage-bar" :max max :value usage})
-          [:div.usage-label
-           (when (>= percent 100) {:class "over-usage"})
-           [:div.percent-label (str percent "%")]
-           [:div.amounts-label
-            (str (.toLocaleString usage) "/" (.toLocaleString max) " minutes")]]])))))
+         [:tr {:data-component `osx-usage-row}
+          [:td.billing-period
+           [:div
+            [:em (datetime/month-name-day-date from)]
+            [:span " - "]
+            [:em (datetime/month-name-day-date to)]]]
+          [:td.usage-bar
+           (om/build progress-bar {:class "monthly-usage-bar" :max max :value amount})]
+          [:td.usage-percent (when (>= percent 100) {:class "over-usage"})
+           (str percent "%")]
+          [:td.usage-minutes (when (>= percent 100) {:class "over-usage"})
+           (str (.toLocaleString amount) "/" (.toLocaleString max) " minutes")]])))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1145,21 +1151,44 @@
             osx-max-minutes (some-> plan :osx :template :max_minutes)
             osx-usage (-> plan :usage :os:osx)]
         (html
-         [:div
-          [:fieldset [:legend (str org-name "'s iOS usage")]]
-          (if (and (not-empty osx-usage) osx-max-minutes)
-            (let [osx-usage (->> osx-usage
-                                 (sort)
-                                 (reverse)
-                                 (take 12)
-                                 (map (fn [[month amount]]
-                                        {:usage (.round js/Math (/ amount 1000 60))
-                                         :max osx-max-minutes
-                                         :month ((comp datetime/date->month-name pm/usage-key->date) month)})))]
-              [:div.monthly-usage
-               (om/build-all usage-bar osx-usage)])
-            [:div.explanation
-             [:p "Looks like you haven't run any builds yet."]])])))))
+          [:div.card {:data-component `osx-usage-table}
+           [:div.header (str org-name "'s iOS usage")]
+           [:hr.divider]
+           (let [osx-usage (->> osx-usage
+                                ;Remove any entries that do not have keys matching :yyyy_mm_dd.
+                                ;This is to filter out the old style of keys which were :yyyy_mm.
+                                (filterv (comp (partial re-matches #"\d{4}_\d{2}_\d{2}") name key))
+
+                                ;Filter returns a vector of vectors [[key value] [key value]] so we
+                                ;need to put them back into a map with (into {})
+                                (into {})
+
+                                ;Sort by key, which also happends to be billing period start date.
+                                (sort)
+
+                                ;Reverse the order so the dates decend
+                                (reverse)
+
+                                ;All we care about are the last 12 billing periods
+                                (take 12)
+
+                                ;Finally feed in the plan's max minutes
+                                (map (fn [[_ usage-map]]
+                                       {:usage usage-map
+                                        :max osx-max-minutes})))]
+             (if (and (not-empty osx-usage) osx-max-minutes)
+               [:div
+                [:table
+                 [:thead
+                  [:tr
+                   [:th."Billing Period"]
+                   [:th "Usage"]
+                   [:th ""]
+                   [:th ""]]]
+                 [:tbody
+                  (om/build-all osx-usage-row osx-usage)]]]
+               [:div.explanation
+                [:p "Looks like you haven't run any builds yet."]]))])))))
 
 (defn osx-overview [{:keys [plan osx-enabled?]} owner]
   (reify
