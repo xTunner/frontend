@@ -7,7 +7,7 @@
     content: "\f054";
     font-family: FontAwesome;
     font-size: @build-failure-chevron-size;
-    color: @gray-chevron;
+    color: @grayLight;
     cursor: pointer;
     pointer-events: all;
   }
@@ -366,7 +366,7 @@
     .flexy(center, flex-start, row);
 
     color: @white;
-    background: @background-color-dark-v2;
+    background: @gray;
 
     .pill-details {
       @media (max-width: @pills-breakpoint) {
@@ -523,7 +523,7 @@
   }
 
   .chevron-label {
-    color: @gray-chevron-label;
+    color: @gray;
   }
 }
 
@@ -626,7 +626,7 @@
   .build-tests-toggle {
     margin: 0;
     padding: 0;
-    color: @gray-chevron-label;
+    color: @gray;
     &:hover {
       text-decoration: none;
     }
@@ -761,7 +761,7 @@ ul:last-child {
   }
 
   .container-step-start-line {
-    stroke: @background-color-dark-v2;
+    stroke: @gray;
     stroke-width: 1;
   }
 
@@ -783,13 +783,13 @@ ul:last-child {
   }
 
   .y-axis text {
-      fill: @background-color-dark-v2;
+      fill: @gray;
       font-size: round((@baseFontSize * 0.65), 0); // 9px
   }
 
   .y-axis-label {
     font-size: @fontSizeMini;
-    fill: @background-color-dark-v2;
+    fill: @gray;
   }
 }
 
