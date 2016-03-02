@@ -396,10 +396,14 @@
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
              (if (and (pm/can-edit-plan? plan org-name)
-                      (or (config/enterprise?) (pm/paid? plan) (pm/stripe-customer? plan)))
+                      (or (config/enterprise?)
+                          (pm/paid? plan)
+                          (pm/stripe-customer? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
-                   (if (and (zero? new-total) (not (config/enterprise?)) (not (zero? (pm/paid-containers plan))))
+                   (if (and (zero? new-total)
+                            (not (config/enterprise?))
+                            (not (zero? (pm/paid-containers plan))))
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")

@@ -53,10 +53,9 @@
   (or (get-in plan [:free :template :free_containers]) 0))
 
 (defn paid-containers [plan]
-  (max (:containers_override plan)
-       (:containers plan)
-       (get-in plan [:paid :template :free_containers]))
-  0)
+  (max (or (:containers_override plan) 0)
+       (or (:containers plan) 0)
+       (or (get-in plan [:paid :template :free_containers] 0))))
 
 (defn paid? [plan]
   (boolean (and (:paid plan)
