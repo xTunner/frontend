@@ -42,7 +42,7 @@ In addition to differences in the basics of running builds on Jenkins and Circle
 
 Jenkins projects are generally configured in the Jenkins web UI and their settings are stored on the filesystem of the Jenkins server. This makes it difficult to share configuration information within a team or organization. Cloning a GitHub repository doesn’t copy the information stored in Jenkins. Settings living on the Jenkins server also make regular backup of all Jenkins servers extra important.
 
-Almost all configuration of CircleCI builds is stored in a file called `circle.yml` that goes in the root of each project. Treating CI configuration like any other source code makes it easier to back up and share. Just a few project settings like secrets that shouldn’t go in source are stored (encrypted) on CircleCI.
+Almost all configuration of CircleCI builds is stored in a file called `circle.yml` that goes in the root of each project. Treating CI configuration like any other source code makes it easier to back up and share. Just a few project settings, like secrets, that shouldn’t go in source are stored (encrypted) on CircleCI.
 
 ### Access to build machines
 
@@ -50,7 +50,7 @@ It’s often up to an ops person or team to manage Jenkins servers. These people
 
 It’s never necessary to access a CircleCI environment to install dependencies because every build starts in a fresh environment where custom dependencies must be installed automatically (ensuring that the entire build process is truly automated). Troubleshooting in the build environment can be done easily and securely by any developer using CircleCI’s [SSH feature](/docs/ssh-build).
 
-If you install CircleCI Enterprise on your own hardware, the divide between the host OS (at the “metal”/VM level) and the containerized build environments can be extremely useful for security and ops (see Your builds in containers below). Ops team members can do what they need to on the host OS without affecting builds, and they never need to give developers access. Developers on the other hand can use CircleCI’s SSH feature to debug builds at the container level as much as they like without affecting ops.
+If you install CircleCI Enterprise on your own hardware, the divide between the host OS (at the “metal”/VM level) and the containerized build environments can be extremely useful for security and ops (see Your builds in containers below). Ops team members can do what they need to on the host OS without affecting builds, and they never need to give developers access. Developers, on the other hand, can use CircleCI’s SSH feature to debug builds at the container level as much as they like without affecting ops.
 
 ### Web UI
 
