@@ -397,7 +397,6 @@
             [:fieldset
              (if (and (pm/can-edit-plan? plan org-name)
                       (or (config/enterprise?)
-                          (pm/paid? plan)
                           (pm/stripe-customer? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
