@@ -300,7 +300,7 @@
            [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)})} "current OSX plan"]
            [:span ". Please "]
            [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :_fragment "containers"})}
+                                                    :_fragment "osx-pricing"})}
             "upgrade"]
            [:span " or reach out to your account manager if you have questions about billing."]]
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}

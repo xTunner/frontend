@@ -237,40 +237,6 @@
 (defn pluralize-no-val [num word]
   (if (= num 1) (infl/singular word) (infl/plural word)))
 
-(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [plan-type-key (keyword (str "osx-" plan-type))
-            new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
-                                            {:plan-type {:template plan-type-key}
-                                             :price price
-                                             :description (str "OS X " (clojure.string/capitalize plan-type) " - $" price "/month.")}])
-                             false)
-            update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
-                                false)
-            plan-selected? (= plan-type-key (keyword current-plan))
-            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
-            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
-        (html
-          (if (pm/stripe-customer? plan)
-            (if plan-selected?
-              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
-              (forms/managed-button
-                [:a.unselected
-                 {:data-success-text plan-img
-                  :data-loading-text loading-img
-                  :data-failed-text plan-img
-                  :on-click update-plan-fn}
-                 plan-img]))
-            (forms/managed-button
-              [:a.unselected
-               {:data-success-text plan-img
-                :data-loading-text plan-img
-                :data-failed-text plan-img
-                :on-click new-plan-fn}
-               plan-img])))))))
-
 (def osx-faq-items
   [{:question (list
                [:p "This is a separate service? How will I be billed?"])
@@ -302,7 +268,7 @@
               (str " and we’ll provide some guidance regarding your recent usage. "
                    "In the near future, we’ll display your usage within the app.")])}
    {:question (list
-               [:p "What if I go over the minute limit?"])
+               [:p [:sup.bold "*"] "What if I go over the minute limit?"])
     :answer (list
              [:p (str "Tiering is to help make sure we can stabilize capacity and offer competitive price points "
                       "which should hopefully lead to the greatest possible utility all around.")
@@ -335,7 +301,149 @@
             [:dt question]
             [:dd answer]))]]))))
 
-(defn osx-plans [plan owner]
+(defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (forms/managed-button
+          [:a.btn.btn-lg.btn-success
+           {:data-success-text "Success!"
+            :data-loading-text loading-text
+            :data-failed-text "Failed"
+            :on-click on-click-fn
+            :disabled disabled?}
+           text])))))
+
+(defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
+                           plan-id plan
+                           trial-starts-here?]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan-data (get-in pm/osx-plans [plan-id])
+            currently-selected? (= (name plan-id) (pm/osx-plan-id plan))
+            on-trial? (and trial-starts-here? (pm/osx-trial-plan? plan))
+            trial-expired? (and on-trial? (not (pm/osx-trial-active? plan)))
+            trial-starts-here? (and trial-starts-here?
+                                    (not (pm/osx? plan)))
+            plan-start (some-> plan :osx_plan_started_on)
+            trial-end (some-> plan :osx_trial_end_date)]
+        (html
+          [:div {:data-component `osx-plan-ga}
+           [:div {:class (cond currently-selected? "plan-notice selected-notice"
+                               trial-expired? "plan-notice trial-expired-notice"
+                               on-trial? "plan-notice selected-notice"
+                               trial-starts-here?  "plan-notice trial-notice"
+                               :else "no-notice")}
+            [:div.plan
+             [:div.header
+              [:div.title title]
+              [:div.price "$" [:span.bold price] "/mo"]]
+             [:div.content
+              [:div.containers [:span.bold container-count] " OS X containers"]
+              [:div.daily-builds
+               [:div "Recommended for teams building "]
+               [:div.bold daily-build-count " builds/day"]]
+              [:div.max-minutes [:span.bold max-minutes] " max minutes/month" [:sup.bold "*"]]
+              [:div.support support-level]
+              [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
+             [:div.action
+              (if (pm/stripe-customer? plan)
+                (om/build plan-payment-button {:text "Update"
+                                               :loading-text "Updating..."
+                                               :disabled? (= (name plan-id) (pm/osx-plan-id plan))
+                                               :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])})
+                (om/build plan-payment-button {:text "Pay Now"
+                                               :loading-text "Paying..."
+                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
+                                                                                                   :price (:price plan-data)
+                                                                                                   :description (gstring/format "OS X %s - $%d/month "
+                                                                                                                                (clojure.string/capitalize (name plan-id))
+                                                                                                                                (:price plan-data))}])}))
+
+              (when (and trial-starts-here? (not (pm/osx? plan)))
+                [:div.start-trial "or "
+                 (forms/managed-button
+                   [:a
+                    {:data-success-text "Success!"
+                     :data-loading-text "Starting..."
+                     :data-failed-text "Failed"
+                     :on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])}
+                    "start a 2 week free trial"])])]]
+            (cond
+              trial-starts-here?
+              [:div.bottom "Free Trial Starts Here"]
+
+              trial-expired?
+              [:div.bottom "Trial has Ended - Choose a Plan"]
+
+              on-trial?
+              [:div.bottom
+               (str "Trial plan ("
+                    (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))))
+                    " left)")]
+
+              currently-selected?
+              [:div.bottom "Your Current Plan"])]])))))
+
+(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan-type-key (keyword (str "osx-" plan-type))
+            new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
+                                            {:plan-type {:template plan-type-key}
+                                             :price price
+                                             :description (str "OS X " (clojure.string/capitalize plan-type) " - $" price "/month.")}])
+                             false)
+            update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
+                                false)
+            plan-selected? (= plan-type-key (keyword current-plan))
+            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
+            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
+        (html
+          (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
+            (if plan-selected?
+              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
+              (forms/managed-button
+                [:a.unselected
+                 {:data-success-text plan-img
+                  :data-loading-text loading-img
+                  :data-failed-text plan-img
+                  :on-click update-plan-fn}
+                 plan-img]))
+            (forms/managed-button
+              [:a.unselected
+               {:data-success-text plan-img
+                :data-loading-text plan-img
+                :data-failed-text plan-img
+                :on-click new-plan-fn}
+               plan-img])))))))
+
+(defn osx-plans-list-ga [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [osx-plans (->> pm/osx-plans
+                           (vals)
+                           (map (partial merge {:plan plan})))
+            plan-start (some-> plan :osx_plan_started_on)
+            trial-end (some-> plan :osx_trial_end_date)]
+        (html
+          [:div.osx-plans {:data-component `osx-plans-list-ga}
+           [:fieldset
+            [:legend (str "OS X Plans")]
+            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers."]
+            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
+              [:p "The OS X trial you've selected has expired, please choose a plan below."])
+            (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
+              [:p (gstring/format "You have %s left on the OS X trial."
+                                  (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))])]
+           [:div.plan-selection
+            (om/build-all osx-plan-ga osx-plans)]])))))
+
+(defn osx-plans-list [plan owner]
   (reify
     om/IRender
     (render [_]
@@ -373,10 +481,7 @@
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
                                     selected-paid-containers)]
       (html
-        [:div#edit-plan {:class "pricing.page"}
-         (when-not (config/enterprise?)
-           [:fieldset
-            [:legend "More containers means faster builds and lower queue times."]])
+        [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
          [:div.main-content
           [:div
            [:legend "Linux Plan - "
@@ -391,6 +496,7 @@
                                         " + 1 free container")]]]
            [:form
             [:div.container-picker
+             [:h1 "More containers means faster builds and lower queue times."]
              [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" container-cost "/month each.")]
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
@@ -422,7 +528,7 @@
                (if-not checkout-loaded?
                  [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
                  (forms/managed-button
-                   [:button.btn.btn-lg.btn-success.center
+                   [:button.btn.btn-lg.btn-success
                     {:data-success-text "Paid!",
                      :data-loading-text "Paying...",
                      :data-failed-text "Failed!",
@@ -453,7 +559,36 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn containers [app owner]
+(defn pricing-tabs [{:keys [app plan checkout-loaded? starting-tab]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:selected-tab (or starting-tab :linux)})
+
+    om/IRenderState
+    (render-state [_ {:keys [selected-tab]}]
+      (html [:div {:data-component `pricing-tabs}
+             [:ul.nav.nav-tabs
+              [:li {:class (when (= selected-tab :linux) "active")}
+               [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
+                [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
+              [:li {:class (when (= selected-tab :osx) "active")}
+               [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
+                [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
+             (condp = selected-tab
+               :linux [:div.card
+                       (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                       (project-common/mini-parallelism-faq {})]
+
+               :osx [:div.card
+                     (om/build osx-plans-list-ga plan)
+                     (om/build osx-faq osx-faq-items)])]))))
+
+(defn pricing-starting-tab [subpage]
+  (get {:osx-pricing :osx
+        :linux-pricing :linux}  subpage))
+
+(defn pricing [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
     ;; from the plan component above, but the billing-card component
@@ -496,14 +631,19 @@
 
             (if (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name org-vcs-type)
-              [:div
-               (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-               (if (and (feature/enabled? :osx-plans)
-                        (get-in app state/org-osx-enabled-path))
-                 (list
-                   (om/build osx-plans plan)
-                   (om/build osx-faq osx-faq-items))
-                 (project-common/mini-parallelism-faq {}))])))))))
+              (if (feature/enabled? :osx-ga-inner-pricing)
+                [:div
+                 (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
+                                         :starting-tab (pricing-starting-tab (:org-settings-subpage app))})]
+
+                [:div
+                 (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                 (if (and (feature/enabled? :osx-plans)
+                          (get-in app state/org-osx-enabled-path))
+                   (list
+                     (om/build osx-plans-list plan)
+                     (om/build osx-faq osx-faq-items))
+                   (project-common/mini-parallelism-faq  {}))]))))))))
 
 (defn piggyback-organizations [app owner]
   (om/component
@@ -1032,15 +1172,16 @@
            [:p "You are not currently in the iOS limited-release. If you would like access to iOS builds, please send an email to sayhi@circleci.com."]
            [:div
             [:p "You are in the iOS limited-release, you may also choose an iOS plan "
-             [:a {:href "#containers"} "here"] "."]
+             [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                      :_fragment "osx-pricing"})} "here"] "."]
             (when (pm/osx? plan)
               (let [plan-name (some-> plan :osx :template :name)
                     plan-start (some-> plan :osx_plan_started_on)
                     trial-end (some-> plan :osx_trial_end_date)]
                 [:p
                  (if (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the iOS trial for %d more days. "
-                                   (datetime/format-duration (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))) :days))
+                   (gstring/format "You're currently on the iOS trial and have %s left. "
+                                   (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))
                    (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
                  [:span "We will support general release in the near future!"]]))])]))))
 
@@ -1072,7 +1213,7 @@
                [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
                [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                                   :vcs_type vcs_type
-                                                                  :_fragment "containers"})}
+                                                                  :_fragment "linux-pricing"})}
                     "upgrading"]
                 (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
               :else nil)
@@ -1097,7 +1238,7 @@
               ;; in case of piggiebacking.
               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                        :vcs_type vcs_type
-                                                       :_fragment "containers"})}
+                                                       :_fragment "linux-pricing"})}
                "add more"]
               (when-not piggiebacked?
                 (list " at $" container-cost " per container"))
@@ -1117,7 +1258,9 @@
   {:overview overview
    :users users
    :projects projects
-   :containers containers
+   :containers pricing
+   :osx-pricing pricing
+   :linux-pricing pricing
    :organizations organizations
    :billing billing
    :cancel cancel})

@@ -1,300 +1,418 @@
-.org-page {
-  margin: 0;
-  padding-top: (@grid-gutter-width / 2);
+.ns("frontend.components.org-settings", {
+  .org-page {
+    margin: 0;
+    padding-top: (@grid-gutter-width / 2);
 
-  .pricing-plans {
-    margin-top: 0;
-  }
-
-  // When showing tables of numeric data we want to
-  // align the values to the right margin.
-  td.numeric {
-    text-align: right;
-  }
-
-  #subpage {
-    .spinner-container {
-      text-align: center;
-      font-size: 26px;
-      margin-top: 20px;
+    .pricing-plans {
+      margin-top: 0;
     }
 
-    .well {
-      position: relative;
-      padding: 0;
-      border-radius: 0;
-      background-color: white;
-      border: none;
-      border-bottom: #e5e5e5 1px solid;
+    // When showing tables of numeric data we want to
+    // align the values to the right margin.
+    td.numeric {
+      text-align: right;
     }
 
-    ul { list-style-type: none; }
-
-    .followed-projects {
-      margin-bottom: 20px;
-    }
-
-    .followers-container {
-      border-top: 1px solid #eee;
-      padding: 15px;
-    }
-
-    .follower-container {
-      margin-right: 10px;
-      margin-bottom: 10px;
-      width: 140px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .explanation {
-      > div {
-        margin-bottom: 2em;
-      }
-    }
-
-    .users {
-      .row-fluid {
-        .well:nth-of-type(odd) {
-          margin-left: 0
-        }
-      }
-      .om-org-user {
-        display: flex;
-      }
-      .om-org-user-projects-container {
-        flex: 1;
-        padding: 15px;
-
-        .heading {
-          width: 100%;
-          margin-top: 0;
-        }
-      }
-      .om-org-user-projects {
-        display: flex;
-        flex-wrap: wrap;
-        .om-org-user-project {
-          flex: 1 1 50%;
-        }
-      }
-    }
-
-    .gravatar {
-      @size: (@tile / 2);
-      min-width: @size;
-      height: @size;
-      margin-right: 8px;
-      border-radius: (@size / 2);
-    }
-
-    .controls {
-      .control {
-        .radio,
-        .checkbox {
-          margin-left: 20px;
-        }
-      }
-    }
-  }
-
-  #edit-plan {
-    .plan {
-      margin-bottom: 40px;
-      padding: 20px 0;
-      text-align: center;
-      background: lighten(@grayLighter, 4%);
-      border-radius: 3px;
-
-      ul {
-        list-style-type: none;
-        margin: 0 0 20px 0;
-        font-size: 13px;
-      }
-      h2 {
-        margin: 0;
-        font-size: 24px;
+    #subpage {
+      .spinner-container {
         text-align: center;
+        font-size: 26px;
+        margin-top: 20px;
       }
 
-      h4 {
-        margin-top: 0;
-        font-size: 12px;
-        text-transform: uppercase;
-        font-weight: normal;
+      .well {
+        position: relative;
+        padding: 0;
+        border-radius: 0;
+        background-color: white;
+        border: none;
+        border-bottom: #e5e5e5 1px solid;
       }
 
-      h4, p, li {
-        color: @grayLight;
+      ul { list-style-type: none; }
+
+      .followed-projects {
+        margin-bottom: 20px;
       }
 
-      p {
-        padding: 20px 0;
+      .followers-container {
         border-top: 1px solid #eee;
-        font-size: 12px;
+        padding: 15px;
+      }
 
-        strong {
-          font-size: 22px;
-          color: @circleBlue;
+      .follower-container {
+        margin-right: 10px;
+        margin-bottom: 10px;
+        width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .explanation {
+        > div {
+          margin-bottom: 2em;
+        }
+      }
+
+      .users {
+        .row-fluid {
+          .well:nth-of-type(odd) {
+            margin-left: 0
+          }
+        }
+        .om-org-user {
+          display: flex;
+        }
+        .om-org-user-projects-container {
+          flex: 1;
+          padding: 15px;
+
+          .heading {
+            width: 100%;
+            margin-top: 0;
+          }
+        }
+        .om-org-user-projects {
+          display: flex;
+          flex-wrap: wrap;
+          .om-org-user-project {
+            flex: 1 1 50%;
+          }
+        }
+      }
+
+      .gravatar {
+        @size: (@tile / 2);
+        min-width: @size;
+        height: @size;
+        margin-right: 8px;
+        border-radius: (@size / 2);
+      }
+
+      .controls {
+        .control {
+          .radio,
+          .checkbox {
+            margin-left: 20px;
+          }
         }
       }
     }
 
-    .container-picker {
-      .container-slider {
-        display: flex;
+    #edit-plan {
+      .plan {
+        margin-bottom: 40px;
+        padding: 20px 0;
+        text-align: center;
+        background: lighten(@grayLighter, 4%);
+        border-radius: 3px;
+
+        ul {
+          list-style-type: none;
+          margin: 0 0 20px 0;
+          font-size: 13px;
+        }
+        h2 {
+          margin: 0;
+          font-size: 24px;
+          text-align: center;
+        }
+
+        h4 {
+          margin-top: 0;
+          font-size: 12px;
+          text-transform: uppercase;
+          font-weight: normal;
+        }
+
+        h4, p, li {
+          color: @grayLight;
+        }
+
+        p {
+          padding: 20px 0;
+          border-top: 1px solid #eee;
+          font-size: 12px;
+
+          strong {
+            font-size: 22px;
+            color: @circleBlue;
+          }
+        }
+      }
+
+      .container-picker {
+        .container-slider {
+          display: flex;
+          input {
+            width: 90%;
+            .center;
+          }
+        }
+      }
+
+      .container-input {
+        display: inline-flex;
         input {
-          width: 90%;
+          width: 50px;
+          text-align: center;
+          padding: 4px 10px;
           .center;
         }
       }
+
+      .help-block {
+        display: inline;
+        margin-left: 16px;
+        font-style: italic;
+      }
+
+      .upgrade, .cancel {
+        width: 110px;
+        margin-left: 0;
+      }
+
+      .cancel {
+        background-color: @brand-red-v2;
+        border-color: @brand-red-v2;
+      }
+    }
+  }
+
+  .org-cancel {
+    .value-prop {
+      margin-bottom: 5px;
+      font-size: 18px;
     }
 
-    .container-input {
-      display: inline-flex;
-      input {
-        width: 50px;
-        text-align: center;
-        padding: 4px 10px;
-        .center;
+    .bottom-value {
+      margin: 30px 0;
+    }
+
+    .hint {
+      margin: 0;
+      line-height: 1em;
+      color: @redLight;
+      transition: all 200ms ease-in-out, opacity 400ms ease-in-out;
+      overflow: hidden;
+      height: 0;
+      opacity: 0;
+      &.show {
+        height: 1em;
+        opacity: 1;
+      }
+    }
+    form > *:not(label) {
+      margin: 1em 0;
+      max-width: ((2 / 3) * @minimumContentWidth);
+    }
+    label.cancel-reason {
+      display: block;
+      span, input {
+        height: 1em;
+        margin: 0 0;
+        line-height: 1em;
+      }
+      span {
+        padding-left: 4px;
+      }
+    }
+    button {
+      .circleButton(@redLight);
+      min-width: 10em;
+    }
+  }
+
+  .monthly-usage {
+    @progress-bar-color: @brand-info-v2;
+    @progress-background-color: @grayLightest;
+
+    .flexy(column);
+
+    .usage-group {
+      .flexy(row, flex-start);
+    }
+
+    .monthly-usage-bar {
+      margin-top: 5px;
+      border: 0;
+      height: 13px;
+      width: 70%;
+      background-color: @progress-background-color;
+      padding: 2px;
+
+    }
+
+    .monthly-usage-bar::-webkit-progress-bar {
+      background-color: @progress-background-color;
+    }
+
+    .monthly-usage-bar::-webkit-progress-value {
+      background-color: @progress-bar-color;
+    }
+
+    progress::-moz-progress-bar {
+      background-color: @progress-bar-color;
+    }
+
+    .usage-label {
+      .flexy(row, flex-end);
+      min-width: 175px;
+      margin-left: 10px;
+
+      .percent-label {
+        .flex(1,0,auto);
       }
     }
 
-    .help-block {
-      display: inline;
-      margin-left: 16px;
-      font-style: italic;
+    .month-label {
+      min-width: 80px;
     }
 
-    .upgrade, .cancel {
-      width: 110px;
-      margin-left: 0;
-    }
-
-    .cancel {
-      background-color: @brand-red-v2;
-      border-color: @brand-red-v2;
-    }
-  }
-}
-
-.org-cancel {
-  .value-prop {
-    margin-bottom: 5px;
-    font-size: 18px;
-  }
-
-  .bottom-value {
-    margin: 30px 0;
-  }
-
-  .hint {
-    margin: 0;
-    line-height: 1em;
-    color: @redLight;
-    transition: all 200ms ease-in-out, opacity 400ms ease-in-out;
-    overflow: hidden;
-    height: 0;
-    opacity: 0;
-    &.show {
-      height: 1em;
-      opacity: 1;
-    }
-  }
-  form > *:not(label) {
-    margin: 1em 0;
-    max-width: ((2 / 3) * @minimumContentWidth);
-  }
-  label.cancel-reason {
-    display: block;
-    span, input {
-      height: 1em;
-      margin: 0 0;
-      line-height: 1em;
-    }
-    span {
-      padding-left: 4px;
-    }
-  }
-  button {
-    .circleButton(@redLight);
-    min-width: 10em;
-  }
-}
-
-.monthly-usage {
-  @progress-bar-color: @brand-info-v2;
-  @progress-background-color: @grayLightest;
-
-  .flexy(column);
-
-  .usage-group {
-    .flexy(row, flex-start);
-  }
-
-  .monthly-usage-bar {
-    margin-top: 5px;
-    border: 0;
-    height: 13px;
-    width: 70%;
-    background-color: @progress-background-color;
-    padding: 2px;
-
-  }
-
-  .monthly-usage-bar::-webkit-progress-bar {
-    background-color: @progress-background-color;
-  }
-
-  .monthly-usage-bar::-webkit-progress-value {
-    background-color: @progress-bar-color;
-  }
-
-  progress::-moz-progress-bar {
-    background-color: @progress-bar-color;
-  }
-
-  .usage-label {
-    .flexy(row, flex-end);
-    min-width: 175px;
-    margin-left: 10px;
-
-    .percent-label {
-      .flex(1,0,auto);
+    .over-usage {
+      color: @brand-red-v2;
     }
   }
 
-  .month-label {
-    min-width: 80px;
+  .project-header {
+    @header-icon-color: @grayDark;
+    .flexy(center, row);
+    justify-content: center;
+
+    padding: 15px 10px 15px 10px;
+
+    .project-name {
+      font-size: @fontSizeMedium;
+    }
+
+    .octicon,
+    .material-icons {
+      font-size: @fontSizeLarge;
+      color: @grayLight;
+      margin-left: 1ex;
+      vertical-align: middle;
+    }
   }
-
-  .over-usage {
-    color: @brand-red-v2;
-  }
-}
-
-.project-header {
-  @header-icon-color: @grayDark;
-  .flexy(center, row);
-  justify-content: center;
-
-  padding: 15px 10px 15px 10px;
 
   .project-name {
-    font-size: @fontSizeMedium;
+    flex-grow: 1;
+    width: 100%;
   }
 
-  .octicon,
-  .material-icons {
-    font-size: @fontSizeLarge;
-    color: @grayLight;
-    margin-left: 1ex;
-    vertical-align: middle;
-  }
-}
+  .ui("linux-plan", {
+    margin-top: 2em;
+    margin-bottom: 2em;
+  });
 
-.project-name {
-  flex-grow: 1;
-  width: 100%;
-}
+  .ui("osx-plans-list-ga", {
+    .plan-selection {
+      min-height: 500px;
+
+      @media (max-width: @screen-sm-max) {
+        .flexy(center, center, column);
+      }
+    }
+  });
+
+  .ui("osx-plan-ga", {
+    @border-color: @border-gray-v2;
+    @header-background-color: @grayLightest;
+
+    .selected-notice {
+      background-color: @brand-blue-v2;
+    }
+
+    .trial-expired-notice {
+      background-color: @brand-warning-v2;
+    }
+
+    .trial-notice {
+      background-color: @green;
+    }
+
+    .plan-notice {
+      margin-top: -5px;
+      border-radius: 6px;
+      padding: 5px;
+      color: @white;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .no-notice {
+      border: 1px solid @border-color;
+    }
+
+    .bottom {
+      padding: 10px;
+    }
+
+    .plan {
+      color: @circleGray;
+      background-color: @white;
+      width: 300px;
+
+      .bold {
+        font-weight: bold;
+      }
+
+      .header {
+        border-bottom: 1px solid @border-color;
+        background: @header-background-color;
+        text-align: center;
+        padding: 20px;
+
+        .title {
+          font-size: 16px;
+          font-weight: bold;
+          letter-spacing: 0.5px;
+        }
+
+        .price {
+          font-size: 35px;
+          font-weight: 300;
+          letter-spacing: 0.5px;
+
+        }
+      }
+
+      .content {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 300;
+        padding: 20px;
+
+        .containers {
+          letter-spacing: 0.3px;
+          margin-bottom: 20px;
+        }
+
+        .daily-builds {
+          margin-bottom: 20px;
+        }
+
+        .max-minutes {
+          margin-bottom: 20px;
+        }
+
+        .support {
+          margin-bottom: 20px;
+        }
+      }
+
+      .action {
+        text-align: center;
+        padding: 20px;
+
+        .button {
+          width: 94px;
+        }
+
+        .start-trial {
+          padding-top: 20px;
+        }
+      }
+    }
+  });
+});

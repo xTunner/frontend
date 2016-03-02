@@ -169,7 +169,7 @@
                "Not enough containers for " parallelism "x."
                [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                         :vcs_type (:vcs_type project)
-                                                        :_fragment "containers"})
+                                                        :_fragment "linux-pricing"})
                     :on-click #(analytics/track {:event-type :add-more-containers-clicked
                                                  :owner owner})}
                 "Add More"]])
@@ -178,7 +178,7 @@
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
            [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                     :vcs_type (:vcs_type project)
-                                                    :_fragment "containers"})}
+                                                    :_fragment "linux-pricing"})}
             "Add a plan"]]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
@@ -192,7 +192,7 @@
                                                parallelism "x parallelism.")}]
         [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                  :vcs_type (:vcs_type project)
-                                                 :_fragment "containers"})}
+                                                 :_fragment "linux-pricing"})}
          "Upgrade"]]))))
 
 (defn parallelism-picker [project-data owner]

@@ -290,7 +290,7 @@
           "Select a plan to build your iOS projects now."]
          [:div.buttons
           [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org selected-org-login
-                                                                        :_fragment "containers"})}
+                                                                        :_fragment "osx-pricing"})}
            "Select Plan"]
           (managed-button
             [:a.btn.trial {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
@@ -459,7 +459,7 @@
 (defrender payment-plan [{:keys [selected-org view]} owner]
   (let [{:keys [login vcs_type]} selected-org
         org-settings-path (routes/v1-org-settings-path {:org login
-                                                        :_fragment "containers"
+                                                        :_fragment "linux-pricing"
                                                         :vcs_type vcs_type})
         track-payment-plan-click #(analytics/track {:event-type :payment-plan-clicked
                                                     :owner owner
