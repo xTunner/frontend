@@ -723,7 +723,7 @@
                                                        :stop (or (:start_time build) (:stop_time build))})
                    ")"])]])
 
-            (when (and (has-scope :write-settings data)
+            (when (and (has-scope :read-settings data)
                        (show-ssh-button? project))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link {:href "#ssh-info"}
@@ -1012,11 +1012,11 @@
             plan (get-in data state/project-plan-path)
             user (get-in data state/user-path)
             logged-in? (not (empty? user))
-            has-write-settings? (:write-settings
+            has-read-settings? (:read-settings
                                   (get-in data state/project-scopes-path))]
         (html
           [:div.build-actions-v2
-           (when (and (build-model/can-cancel? build) has-write-settings?)
+           (when (and (build-model/can-cancel? build) has-read-settings?)
              (forms/managed-button
                [:a.cancel-build
                 {:data-loading-text "canceling"
@@ -1025,7 +1025,7 @@
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
                 "cancel build"]))
-           (when has-write-settings?
+           (when has-read-settings?
              (om/build rebuild-actions {:build build :project project}))
            [:div.build-settings
             [:a.build-action
