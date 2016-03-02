@@ -22,10 +22,6 @@
 (defn freemium? [plan]
   (boolean (:free plan)))
 
-(defn paid? [plan]
-  (boolean (and (:paid plan)
-                (not (zero? (:containers plan))))))
-
 (defn osx? [plan]
   (boolean (:osx plan)))
 
@@ -57,11 +53,14 @@
   (or (get-in plan [:free :template :free_containers]) 0))
 
 (defn paid-containers [plan]
-  (if (paid? plan)
-    (max (:containers_override plan)
-         (:containers plan)
-         (get-in plan [:paid :template :free_containers]))
-    0))
+  (max (:containers_override plan)
+       (:containers plan)
+       (get-in plan [:paid :template :free_containers]))
+  0)
+
+(defn paid? [plan]
+  (boolean (and (:paid plan)
+                (> (paid-containers plan) 0))))
 
 (defn trial-containers
   "How many containers are provided by this plan's trial? Note that this finds out how many
