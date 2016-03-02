@@ -1,7 +1,3 @@
-
-@circleBlue:           #084963;
-@circleBlueLight:      #9ec5d4;
-
 @brand-red-v2:    #ed5c5c;
 @brand-orange-v2: #ff8c31;
 @brand-green-v2:  #42c88a;
@@ -49,7 +45,7 @@
 
 @table-alt-row-background: #f2f9fa;
 
-@primary-button-background: #3dc1d9;
+@primary-button-background: @blue;
 @primary-button-hover-background: #51c7dd;
 @primary-button-disabled-background: #ddd;
 
@@ -83,13 +79,11 @@
 
 @circleGray:           #343434;
 
-@blue:                                                              #007196; // #007196
-@blueDarkest:           darken(           spin(@blue,  -1.00), 19.7)       ; // #002632
-@blueDarker:            darken(                @blue,  14.80)              ; // #00384b
-@blueDark:              darken(                @blue,   9.80)              ; // #004b64
-@blueLight:            lighten(                @blue,   9.75)              ; // #0096c8
-@blueLighter:          lighten(           spin(@blue,   0.60), 19.7)       ; // #00bafa
-@blueLightest:         lighten(desaturate(spin(@blue, -15.00), 17.0), 58.9); // #c8fafa
+@blue:                  #3dc1d9;
+@blueDark:              #27a0b6;
+@blueDarkest:           darken(           spin(@blue,  -1.00), 19.7)       ; // #FIXME: CALCULATE THESE COLORS
+@blueLight:             #66d3e4;
+@blueLightest:          #d9f4f8;
 
 @green:                @brand-green-v2;
 @greenDarkest:          darken(  saturate(@green, 15.5),  27.3); // #052b05
