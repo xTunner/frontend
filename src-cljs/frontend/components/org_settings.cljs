@@ -279,6 +279,34 @@
              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
              " for access. If you are building a bigger open-source project and need more resources, let us know how we can help you!"]}])
 
+(def linux-faq-items
+  [{:question "How do I get started?"
+    :answer [[:div "Linux plans start with the ability to run one build simultaneously without parallelism at no charge. Open source projects get 3 additional free containers, so you can use the power of parallelism and/or run more than one build concurrently. Purchasing a Linux plan enables access to additional containers at $50/container/month."]
+             [:div "During the signup process, you can decide which plan(s) you need - you can build for free regardless!"]]}
+
+   {:question "How do containers work?"
+    :answer ["Every time you push to your VCS system, we checkout your code and run your build inside of a fresh, on-demand, and isolated Linux container pre-loaded with most popular languages, tools, and framework. CircleCI, in many cases, will detect and automatically download and cache your dependencies, and you can fully script any steps or integrations."]}
+
+   {:question "What is concurrency? What is parallelism?"
+    :answer [[:div "Concurrency refers to utilizing multiple containers to run multiple builds at the same time. Otherwise, if you don't have enough free containers available, your builds queue up until other builds finish."]
+             [:div "Parallelism splits a given build’s tests across multiple containers, allowing you to dramatically speed up your test suite. This enables your developers to finish even the most test-intensive builds in a fraction of the time."]]}
+
+   {:question "How many containers do I need?"
+    :answer ["Most of our customers tend to use about 2-3 containers per full-time developer. Every team is different, however, and we're happy to set you up with a trial to help you figure out how many works best for you. As your team grows and/or as the speed of your build grows you can scale to any number of containers at any level of parallelism and concurrency is right for your team."]}
+
+   {:question "Why should I trust CircleCI with my code?"
+    :answer ["Security is one of our top priorities. Read our security policy to learn more about why many other customers rely on CircleCI to keep their code safe."]}
+
+   {:question "Can I change my plan at a later time? Can I cancel anytime?"
+    :answer ["Yes and yes! We offer in-app tools to fully control your plan and have account managers and an international support team standing by when you need help."]}
+
+   {:question "What if I want something custom?"
+    :answer ["Feel free to contact us "
+             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]}
+
+   {:question "What if I am building open-source?"
+    :answer ["We offer a total of four free linux containers ($2400 annual value) for open-source projects. Simply keeping your project public will enable this for you!"]}])
+
 (defn faq-answer [answer]
   (apply merge [:dd]
          (mapv #(vector :span %) answer)))
@@ -611,7 +639,7 @@
              (condp = selected-tab
                :linux [:div.card
                        (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                       (project-common/mini-parallelism-faq {})]
+                       (om/build faq linux-faq-items)]
 
                :osx [:div.card
                      (om/build osx-plans-list-ga plan)
