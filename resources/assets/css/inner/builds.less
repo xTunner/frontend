@@ -614,7 +614,7 @@
 
 table.code {
   @error_offset: 5px;
-  @error_color: @redLighter;
+  @error_color: @redLightest;
   width: 100%;
   border: 1px solid @grayBoxBorder;
   background: @whiten;
@@ -777,11 +777,11 @@ table.code {
 
 .action_header {
   &.success {
-    border-left: @side-line-width solid @brand-success-v2;
+    border-left: @side-line-width solid @green;
   }
 
   &.failed {
-    border-left: @side-line-width solid @brand-danger-v2;
+    border-left: @side-line-width solid @red;
 
     // make sure failed command text color is not white on a white background
     .command-text {
