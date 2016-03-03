@@ -277,8 +277,46 @@
        (str "No matching repos for organization " selected-org-login)
        (str "No repos found for organization " selected-org-login))]))
 
+(defn select-plan-button [{:keys [selected-org-login]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org selected-org-login
+                                                                      :_fragment "osx-pricing"})
+                                  :on-click #(analytics/track {:event-type :select-plan-clicked
+                                                               :owner owner
+                                                               :properties {:org selected-org-login
+                                                                            :plan-type "osx"}})}
+
+         "Select Plan"]))))
+
+(defn free-trial-button [{:keys [selected-org-login]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (managed-button
+          (let [plan-type :osx
+                template "osx-trial"]
+            [:a.btn.trial {:on-click #(do
+                                        (raise! owner [:activate-plan-trial {plan-type {:template template}}])
+                                        (analytics/track {:event-type :start-trial-clicked
+                                                          :owner owner
+                                                          :properties {:org selected-org-login
+                                                                       :plan-type plan-type
+                                                                       :template template}}))
+                           :data-spinner true}
+             "Start 2 Week Trial"]))))))
+
 (defn no-plan-empty-state [{:keys [selected-org-login]} owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      (analytics/track {:event-type :no-plan-banner-impression
+                        :owner owner
+                        :properties {:org selected-org-login
+                                     :plan-type "osx"}}))
     om/IRender
     (render [_]
       (html
@@ -289,13 +327,9 @@
          [:div.info
           "Select a plan to build your iOS projects now."]
          [:div.buttons
-          [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org selected-org-login
-                                                                        :_fragment "osx-pricing"})}
-           "Select Plan"]
-          (managed-button
-            [:a.btn.trial {:on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])
-                           :data-spinner true}
-             "Start 2 Week Trial"])]]))))
+          (om/build select-plan-button {:selected-org-login selected-org-login})
+          (om/build free-trial-button {:selected-org-login selected-org-login})
+          ]]))))
 
 (defmulti repo-list (fn [{:keys [type]}] type))
 
@@ -456,98 +490,6 @@
                                        {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
            (vals follows-by-orgs))]]))
 
-(defrender payment-plan [{:keys [selected-org view]} owner]
-  (let [{:keys [login vcs_type]} selected-org
-        org-settings-path (routes/v1-org-settings-path {:org login
-                                                        :_fragment "linux-pricing"
-                                                        :vcs_type vcs_type})
-        track-payment-plan-click #(analytics/track {:event-type :payment-plan-clicked
-                                                    :owner owner
-                                                    :properties {:org login}})]
-    (html
-      [:div.payment-plan
-       [:span.big-number "3"]
-       [:div.instruction "Choose how fast you'd like to build."]
-       [:div.table-container
-        [:table.payment-plan.table
-         [:tr.top.row
-          [:td.cell.first "Plan"]
-          [:td.cell "Cost"]
-          [:td.cell.container-amount "Containers"]
-          [:td.cell.last]]
-         [:tr.row
-          [:td.cell "Business"]
-          [:td.cell "$500/month"]
-          [:td.cell.container-amount "11"]
-          [:td.cell [:a {:href org-settings-path
-                         :on-click track-payment-plan-click}
-                     "Select"]]]
-         [:tr.row
-          [:td.cell "Growth"]
-          [:td.cell "$300/month"]
-          [:td.cell.container-amount "7"]
-          [:td.cell [:a {:href org-settings-path
-                         :on-click track-payment-plan-click}
-                     "Select"]]]
-         [:tr.row
-          [:td.cell "Startup"]
-          [:td.cell "$100/month"]
-          [:td.cell.container-amount "3"]
-          [:td.cell [:a{:href org-settings-path
-                        :on-click track-payment-plan-click} 
-                     "Select"]]]
-         [:tr.row
-          [:td.cell "Hobbyist"]
-          [:td.cell "$50/month"]
-          [:td.cell.container-amount "2"]
-          [:td.cell [:a {:href org-settings-path
-                         :on-click track-payment-plan-click}
-                     "Select"]]]
-         [:tr.row
-          [:td.cell "Free"]
-          [:td.cell "$0/month"]
-          [:td.cell.container-amount "1"]
-          [:td.cell [:a {:href org-settings-path
-                         :on-click track-payment-plan-click}
-                    "Selected"]]]]
-       [:table.comparison.table
-        [:tr.top.row
-         [:td.cell.first.metric "Plan Features"]
-         [:td.cell.unpaid "Free"]
-         [:td.cell.last.unpaid "Paid"]]
-        [:tr.row
-         [:td.cell.metric "Build Users"]
-         [:td.cell.unpaid "Unlimited"]
-         [:td.cell.paid "Unlimited"]]
-        [:tr.row
-         [:td.cell.metric "Build Minutes"]
-         [:td.cell.unpaid "1,500 minutes"]
-         [:td.cell.paid "Unlimited"]]
-        [:tr.row
-         [:td.cell.metric "Testing Inference"]
-         [:td.cell.unpaid [:i.material-icons.check "check"]]
-         [:td.cell.paid [:i.material-icons.check "check"]]]
-        [:tr.row
-         [:td.cell.metric "3rd Party Integrations"]
-         [:td.cell.unpaid [:i.material-icons.check "check"]]
-         [:td.cell.paid [:i.material-icons.check "check"]]]
-        [:tr.row
-         [:td.cell.metric "Community Forum"]
-         [:td.cell.unpaid [:i.material-icons.check "check"]]
-         [:td.cell.paid [:i.material-icons.check "check"]]]
-        [:tr.row
-         [:td.cell.metric "Engineer Ticket Support"]
-         [:td.cell.unpaid [:i.material-icons.ex "close"]]
-         [:td.cell.paid [:i.material-icons.check "check"]]]
-        [:tr.row
-         [:td.cell.metric "Parallelization"]
-         [:td.cell.unpaid [:i.material-icons.ex "close"]]
-         [:td.cell.paid [:i.material-icons.check "check"]]]
-        [:tr.row
-         [:td.cell.metric "iOS Support"]
-         [:td.cell.unpaid [:i.material-icons.ex "close"]]
-         [:td.cell.paid [:i.material-icons.check "check"]]]]]])))
-
 (defrender add-projects [data owner]
   (let [user (:current-user data)
         repos (:repos user)
@@ -582,16 +524,4 @@
                              :selected-org selected-org
                              :osx-enabled? (get-in data state/org-osx-enabled-path)
                              :selected-plan (get-in data state/org-plan-path)
-                             :settings settings})
-       [:hr]
-       ;; This is a chain to get the organization that the user has clicked on and whether or not to show a payment plan upsell.
-       ;; The logic is if the user clicked on themselves as the org, or if the api returns show-upsell? as true with the org, then
-       ;; show the payment plan.
-       (let [org (->> user
-                      :organizations
-                      (filter some?)
-                      (first))]
-         (when (and (not (config/enterprise?))
-                    (or (= (:login selected-org) (:login user)) (organization/show-upsell? org)))
-           (om/build payment-plan {:selected-org selected-org
-                                   :view view})))]])))
+                             :settings settings})]])))
