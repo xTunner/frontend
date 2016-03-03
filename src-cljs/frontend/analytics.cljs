@@ -63,17 +63,20 @@
     :cancel-plan-clicked
     :insights-bar-clicked
     :login-clicked
+    :new-plan-clicked
+    :no-plan-banner-impression
     :oauth-authorize-clicked
     :parallelism-clicked
-    :payment-plan-clicked
-    :payment-plan-impression
     :pr-link-clicked
     :project-clicked
     :project-settings-clicked
     :revision-link-clicked
+    :select-plan-clicked
     :set-up-junit-clicked
     :signup-clicked
-    :signup-impression})
+    :signup-impression
+    :start-trial-clicked
+    :update-plan-clicked})
 
 (def supported-controller-events
   ;; These are the api response events.
