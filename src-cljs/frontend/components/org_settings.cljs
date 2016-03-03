@@ -541,10 +541,13 @@
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
              (if (and (pm/can-edit-plan? plan org-name)
-                      (or (config/enterprise?) (pm/paid? plan) (pm/stripe-customer? plan)))
+                      (or (config/enterprise?)
+                          (pm/stripe-customer? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
-                   (if (and (zero? new-total) (not (config/enterprise?)))
+                   (if (and (zero? new-total)
+                            (not (config/enterprise?))
+                            (not (zero? (pm/paid-containers plan))))
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
@@ -1290,7 +1293,8 @@
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
-        (when (pm/paid? plan)
+        (when (and (pm/paid? plan)
+                   (pos? (pm/paid-containers plan)))
           [:p
            (str (pm/paid-containers plan) " of these are paid")
            (if piggiebacked? ". "
