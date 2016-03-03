@@ -299,14 +299,19 @@
          [:div.usage-message
           [:div.icon (om/build svg/svg {:src (common/icon-path "Info-Warning")})]
           [:div.text
-           [:span (str "Your current usage represents your "  (plan/current-months-osx-usage-% plan) "% of ")]
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)})} "current OSX plan"]
+           [:span "Your current usage represents "]
+           [:span.usage (plan/current-months-osx-usage-% plan)]
+           [:span "% of your "]
+           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)})} "current OS X plan"]
            [:span ". Please "]
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :_fragment "osx-pricing"})}
+           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                              :_fragment "osx-pricing"})}
             "upgrade"]
-           [:span " or reach out to your account manager if you have questions about billing"]
-           [:span.overage-rates " (Seed & Startup .08/minute, Venture .05/minute, Mobile Focused .035/minute) "]]]
+           [:span " or reach out to your account manager if you have questions about billing."]
+           [:span " See overage rates "]
+           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                              :_fragment "osx-pricing"})}
+            "here."]]]
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
           [:i.material-icons "clear"]]]))))
 
