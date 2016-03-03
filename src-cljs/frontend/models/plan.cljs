@@ -237,8 +237,8 @@
   {:seed {:plan-id :seed
           :title "SEED"
           :price 39
-          :container-count "2"
-          :daily-build-count "1-2"
+          :container-count "2x"
+          :daily-build-count "1-5"
           :max-minutes "500"
           :support-level "Community support"
           :team-size "1-2"}
@@ -246,8 +246,8 @@
    :startup {:plan-id :startup
              :title "STARTUP"
              :price 129
-             :container-count "5"
-             :daily-build-count "2-5"
+             :container-count "5x"
+             :daily-build-count "5-10"
              :max-minutes "1,800"
              :support-level "Engineer support"
              :team-size "unlimited"
@@ -256,8 +256,8 @@
    :growth {:plan-id :growth
             :title "GROWTH"
             :price 249
-            :container-count "7"
-            :daily-build-count "4-10"
+            :container-count "7x"
+            :daily-build-count "10-30"
             :max-minutes "5,000"
             :support-level "Engineer support"
             :team-size "unlimited"
@@ -266,8 +266,8 @@
    :mobile-focused {:plan-id :mobile-focused
                     :title "MOBILE FOCUSED"
                     :price 449
-                    :container-count "12"
-                    :daily-build-count "10+"
+                    :container-count "12x"
+                    :daily-build-count "more than 20"
                     :max-minutes "25,000"
                     :support-level "Priority support & Account manager"
                     :team-size "unlimited"}})
