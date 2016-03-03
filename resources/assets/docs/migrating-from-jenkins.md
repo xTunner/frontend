@@ -22,10 +22,10 @@ dependencies:
   override:
     - echo "Add any bash commands you want here"
     - echo "Perform any dependency steps required by your build"
-  test:
-    override:
-      - echo "More arbitrary bash"
-      - echo "Probably copy-pasted from 'Execute Shell' on Jenkins"
+test:
+  override:
+    - echo "More arbitrary bash"
+    - echo "Probably copy-pasted from 'Execute Shell' on Jenkins"
 </pre>
 
 
