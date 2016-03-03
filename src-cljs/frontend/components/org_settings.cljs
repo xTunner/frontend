@@ -449,7 +449,7 @@
             (if-let [new-plan (get plan-migrations current-plan-name)]
               [:div.your-plan
                [:span "You are currently on '"]
-               [:span.plan-name "Limited Release " current-plan-name]
+               [:span.plan-name "Limited Release " current-plan-name  " ($" (pm/osx-cost plan) "/mo)" ]
                [:span "' and will be moved to '"]
                [:span.plan-name "General Release " (get plan-migrations current-plan-name)]
                [:span "' on March 31st."]]
