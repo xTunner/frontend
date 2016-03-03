@@ -17,6 +17,7 @@
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.components.project.common :as project-common]
+            [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
@@ -421,6 +422,38 @@
                 :on-click new-plan-fn}
                plan-img])))))))
 
+(defn limited-release-notice [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan-migrations {"Starter" "Seed"
+                             "Standard" "Startup"
+                             "Growth" "Growth"}
+            current-plan-name (some-> plan
+                                      (pm/osx-plan-id)
+                                      (name)
+                                      (clojure.string/split "-")
+                                      (last)
+                                      (clojure.string/capitalize))]
+        (html
+          [:div {:data-component `limited-release-notice}
+           [:div.icon (om/build svg {:src (common/icon-path "Info-Warning")})]
+           [:div.message
+            [:p "Thank you for being part of our limited release. We are happy to move to general release on March 3rd.
+                 We're discontinuing limited release plans on March 31st. All customers on limited release plans that
+                 have not selected a new general release plan by that date will be converted to the corresponding plans."]
+            (if-let [new-plan (get plan-migrations current-plan-name)]
+              [:div
+               [:span "You're currently on '"]
+               [:span.plan-name current-plan-name]
+               [:span "' and will be moved to '"]
+               [:span.plan-name (get plan-migrations current-plan-name)]
+               [:span "' on March 31st."]]
+              [:div
+               [:span "You're currently on a '"]
+               [:span.plan-name "Custom Plan"]
+               [:span "'. Please contact your account manager for details."]])]])))))
+
 (defn osx-plans-list-ga [plan owner]
   (reify
     om/IRender
@@ -434,6 +467,8 @@
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
             [:legend (str "OS X Plans")]
+            (when-not (pm/osx-ga-plan? plan)
+              (om/build limited-release-notice plan))
             [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
