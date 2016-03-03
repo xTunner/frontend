@@ -74,7 +74,8 @@
     :set-up-junit-clicked
     :signup-clicked
     :signup-impression
-    :start-trial-clicked})
+    :start-trial-clicked
+    :update-plan-clicked})
 
 (def supported-controller-events
   ;; These are the api response events.

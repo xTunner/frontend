@@ -354,7 +354,14 @@
                 (om/build plan-payment-button {:text "Update"
                                                :loading-text "Updating..."
                                                :disabled? (= (name plan-id) (pm/osx-plan-id plan))
-                                               :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])})
+                                               :on-click-fn #(do
+                                                               (raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])
+                                                               (analytics/track {:event-type :update-plan-clicked
+                                                                                 :owner owner
+                                                                                 :properties {:plan-type "osx"
+                                                                                              :new-plan plan-id
+                                                                                              :previous-plan (pm/osx-plan-id plan)
+                                                                                              :upgrade? (> (:price plan-data) (pm/osx-cost plan))}}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
                                                :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
