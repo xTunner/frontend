@@ -188,14 +188,27 @@
   [plan]
   (boolean (:admin plan)))
 
+(defn latest-billing-period [plan]
+  (->> plan
+       :billing_periods
+       (map (fn [periods]
+              (for [period periods]
+                (time-format/parse (time-format/formatters :date-time) period))))
+       (sort-by first time/after?)
+       (first)))
+
 (defn usage-key->date [usage-key]
-  (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))
+  (time-format/parse (time-format/formatter "yyyy_MM_dd") (name usage-key)))
 
 (defn date->usage-key [date]
-  (keyword (time-format/unparse (time-format/formatter "yyyy_MM") date)))
+  (keyword (time-format/unparse (time-format/formatter "yyyy_MM_dd") date)))
 
 (defn current-months-osx-usage-ms [plan]
-  (get-in plan [:usage :os:osx (date->usage-key (time/now))]))
+  (let [[period-start period-end] (latest-billing-period plan)]
+    (when (and period-start period-end)
+      (if (time/within? (time/interval period-start period-end) (time/now))
+        (get-in plan [:usage :os:osx (date->usage-key period-start) :amount])
+        0))))
 
 (defn current-months-osx-usage-% [plan]
   (let [usage-ms (current-months-osx-usage-ms plan)
