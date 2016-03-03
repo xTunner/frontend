@@ -323,9 +323,9 @@
         [:div.no-plan-empty-state
          [:i.fa.fa-apple.apple-logo]
          [:div.title
-          [:span.bold selected-org-login] " has no " [:span.bold "iOS plan"] " on CircleCI."]
+          [:span.bold selected-org-login] " has no " [:span.bold "OS X plan"] " on CircleCI."]
          [:div.info
-          "Select a plan to build your iOS projects now."]
+          "Select a plan to build your OS X projects now."]
          [:div.buttons
           (om/build select-plan-button {:selected-org-login selected-org-login})
           (om/build free-trial-button {:selected-org-login selected-org-login})]]))))
@@ -378,7 +378,7 @@
                  [:i.fa.fa-linux.fa-lg] "Linux"]]
                [:li {:class (when (= selected-tab :osx) "active")}
                 [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
-                 [:i.fa.fa-apple.fa-lg] " iOS"]]])
+                 [:i.fa.fa-apple.fa-lg] " OS X"]]])
             (if selected-org-login
               (let [;; we display a repo if it belongs to this org, matches the filter string,
                     ;; and matches the fork settings.
@@ -401,7 +401,7 @@
                  [:div
                   (condp = selected-tab
                     :linux
-                    (om/build repo-list {:repos (if (and osx-enabled? (pm/osx? selected-plan)) ; Allows mistaken ios repos to still be built.
+                    (om/build repo-list {:repos (if (and osx-enabled? (pm/osx? selected-plan)) ; Allows mistaken OS X repos to still be built.
                                                   linux-repos
                                                   filtered-repos)
                                          :loading-repos? loading-repos?
