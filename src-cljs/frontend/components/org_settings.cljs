@@ -283,12 +283,12 @@
   (apply merge [:dd]
          (mapv #(vector :span %) answer)))
 
-(defn osx-faq [items owner]
+(defn faq [items owner]
   (reify
     om/IRender
     (render [_]
       (html
-        [:fieldset.osx-faq
+        [:fieldset.faq
          [:legend "FAQs"]
          (apply merge [:dl]
                 (for [{:keys [question answer]} items]
@@ -615,7 +615,7 @@
 
                :osx [:div.card
                      (om/build osx-plans-list-ga plan)
-                     (om/build osx-faq osx-faq-items)])]))))
+                     (om/build faq osx-faq-items)])]))))
 
 (defn pricing-starting-tab [subpage]
   (get {:osx-pricing :osx
@@ -675,7 +675,7 @@
                           (get-in app state/org-osx-enabled-path))
                    (list
                      (om/build osx-plans-list plan)
-                     (om/build osx-faq osx-faq-items))
+                     (om/build faq osx-faq-items))
                    (project-common/mini-parallelism-faq  {}))]))))))))
 
 (defn piggyback-organizations [app owner]
