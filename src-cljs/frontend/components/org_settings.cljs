@@ -1239,7 +1239,7 @@
          (if-not osx-enabled?
            [:p "You are not currently in the OS X limited-release. If you would like access to OS X builds, please send an email to sayhi@circleci.com."]
            [:div
-            [:p "You are in the OS X limited-release, you may also choose an OS X plan "
+            [:p "Choose an OS X plan "
              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                       :_fragment "osx-pricing"})} "here"] "."]
             (when (pm/osx? plan)
@@ -1250,8 +1250,7 @@
                  (if (pm/osx-trial-active? plan)
                    (gstring/format "You're currently on the OS X trial and have %s left. "
                                    (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))
-                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
-                 [:span "We will support general release in the near future!"]]))])]))))
+                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))])]))))
 
 (defn overview [app owner]
   (om/component
