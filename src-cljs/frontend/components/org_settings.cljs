@@ -364,11 +364,16 @@
                                                                                               :upgrade? (> (:price plan-data) (pm/osx-cost plan))}}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
-                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
-                                                                                                   :price (:price plan-data)
-                                                                                                   :description (gstring/format "OS X %s - $%d/month "
-                                                                                                                                (clojure.string/capitalize (name plan-id))
-                                                                                                                                (:price plan-data))}])}))
+                                               :on-click-fn #(do
+                                                               (raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
+                                                                                                     :price (:price plan-data)
+                                                                                                     :description (gstring/format "OS X %s - $%d/month "
+                                                                                                                                  (clojure.string/capitalize (name plan-id))
+                                                                                                                                  (:price plan-data))}])
+                                                               (analytics/track {:event-type :new-plan-clicked
+                                                                                 :owner owner
+                                                                                 :properties {:plan-type "osx"
+                                                                                              :plan plan-id}}))}))
 
               (when (and trial-starts-here? (not (pm/osx? plan)))
                 [:div.start-trial "or "

@@ -63,6 +63,7 @@
     :cancel-plan-clicked
     :insights-bar-clicked
     :login-clicked
+    :new-plan-clicked
     :no-plan-banner-impression
     :oauth-authorize-clicked
     :parallelism-clicked

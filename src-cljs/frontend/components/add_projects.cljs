@@ -328,8 +328,7 @@
           "Select a plan to build your iOS projects now."]
          [:div.buttons
           (om/build select-plan-button {:selected-org-login selected-org-login})
-          (om/build free-trial-button {:selected-org-login selected-org-login})
-          ]]))))
+          (om/build free-trial-button {:selected-org-login selected-org-login})]]))))
 
 (defmulti repo-list (fn [{:keys [type]}] type))
 
