@@ -245,16 +245,16 @@
              [:p "Yes! This is a standalone service. The charge will be pro-rated and added to your existing plan."]
              [:p (str
                   "The word \"container\" has been pretty vague in the engineering landscape and we’ve done nothing to help with that :). "
-                  "There is a non-trivial difference regarding an iOS-capable container and a linux container "
-                  "because any commercial provider needs to run iOS builds on Apple hardware.")]
+                  "There is a non-trivial difference regarding an OS X-capable container and a linux container "
+                  "because any commercial provider needs to run OS X builds on Apple hardware.")]
              [:p (str "The underlying delivery system is very different, from our cost structure to our software tooling."
                       " Accordingly, we’re currently offering access primarily based on your concurrency needs (use of multiple containers).")])}
    {:question (list
                [:p "What is concurrency vs. parallelism?"])
     :answer (list
              [:p (str "In a linux setting, parallelism refers to splitting a build across multiple containers. "
-                      "This is not currently a feature of iOS builds - however, there are still speed gains from concurrency.")]
-             [:p "Concurrency refers to running multiple jobs at the same time (e.g., two jobs on two containers).  This is a feature of the iOS product."])}
+                      "This is not currently a feature of OS X builds - however, there are still speed gains from concurrency.")]
+             [:p "Concurrency refers to running multiple jobs at the same time (e.g., two jobs on two containers).  This is a feature of the OS X product."])}
    {:question (list
                [:p "Wait...in the beta, how did my access to containers work?"])
     :answer (list
@@ -490,8 +490,8 @@
         (html
           [:div.osx-plans
            [:fieldset
-            [:legend (str "iOS Limited Release Plans")]
-            [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers above."]]
+            [:legend (str "OS X Limited Release Plans")]
+            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers above."]]
            [:div.plan-selection
             (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
@@ -1191,7 +1191,7 @@
             osx-usage (-> plan :usage :os:osx)]
         (html
           [:div.card {:data-component `osx-usage-table}
-           [:div.header (str org-name "'s iOS usage")]
+           [:div.header (str org-name "'s OS X usage")]
            [:hr.divider]
            (let [osx-usage (->> osx-usage
                                 ;Remove any entries that do not have keys matching :yyyy_mm_dd.
@@ -1235,11 +1235,11 @@
     (render [_]
       (html
         [:div
-         [:h2 "iOS"]
+         [:h2 "OS X"]
          (if-not osx-enabled?
-           [:p "You are not currently in the iOS limited-release. If you would like access to iOS builds, please send an email to sayhi@circleci.com."]
+           [:p "You are not currently in the OS X limited-release. If you would like access to OS X builds, please send an email to sayhi@circleci.com."]
            [:div
-            [:p "You are in the iOS limited-release, you may also choose an iOS plan "
+            [:p "You are in the OS X limited-release, you may also choose an OS X plan "
              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                       :_fragment "osx-pricing"})} "here"] "."]
             (when (pm/osx? plan)
@@ -1248,9 +1248,9 @@
                     trial-end (some-> plan :osx_trial_end_date)]
                 [:p
                  (if (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the iOS trial and have %s left. "
+                   (gstring/format "You're currently on the OS X trial and have %s left. "
                                    (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))
-                   (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
+                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
                  [:span "We will support general release in the near future!"]]))])]))))
 
 (defn overview [app owner]

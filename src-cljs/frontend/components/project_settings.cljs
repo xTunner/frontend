@@ -150,12 +150,12 @@
       (if-not (plan-model/in-trial? plan)
         (cond (and (project-model/osx? project)
                    (> parallelism 1))
-              ;; iOS projects should not use parallelism. We don't have the
+              ;; OS X projects should not use parallelism. We don't have the
               ;; ability to parallelise XCode tests yet and have a limited
-              ;; number of available OSX VMs. Setting parallelism for iOS
+              ;; number of available OSX VMs. Setting parallelism for OS X
               ;; wastes VMs, reducing the number of builds we can run.
               [:div.insufficient-plan
-               "iOS projects are currently limited to 1x parallelism."]
+               "OS X projects are currently limited to 1x parallelism."]
 
               (> parallelism (plan-model/max-parallelism plan))
               [:div.insufficient-plan
@@ -441,10 +441,10 @@
                                         "untrusted forks can make pull requests against your repo, then this option "
                                         "isn't for you!"])})
            (describe-flag {:flag :osx
-                           :title "Build iOS project"
+                           :title "Build OS X project"
                            :blurb [:p
                                    "If this option is selected, then CircleCI will run builds for this project "
-                                   "on Mac OSX rather than Linux. Select this if you have an iOS application "
+                                   "on Mac OSX rather than Linux. Select this if you have an OS X application "
                                    "that you want to build using CircleCI."]})
             (describe-flag {:flag :osx-code-signing-enabled
                             :title "Code Signing Support"

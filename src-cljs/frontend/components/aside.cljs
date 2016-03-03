@@ -232,7 +232,7 @@
        {:type :subpage :href "#api" :title "API Permissions" :subpage :api}
        {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
        (when (project-model/osx? project)
-         {:type :subpage :href "#code-signing" :title "iOS Code Signing" :subpage :code-signing})
+         {:type :subpage :href "#code-signing" :title "OS X Code Signing" :subpage :code-signing})
        {:type :heading :title "Continuous Deployment"}
        {:type :subpage :href "#heroku" :title "Heroku Deployment" :subpage :heroku}
        {:type :subpage :href "#aws-codedeploy" :title "AWS CodeDeploy" :subpage :aws-codedeploy}
