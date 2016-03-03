@@ -239,68 +239,62 @@
   (if (= num 1) (infl/singular word) (infl/plural word)))
 
 (def osx-faq-items
-  [{:question (list
-               [:p "This is a separate service? How will I be billed?"])
-    :answer (list
-             [:p "Yes! This is a standalone service. The charge will be pro-rated and added to your existing plan."]
-             [:p (str
-                  "The word \"container\" has been pretty vague in the engineering landscape and we’ve done nothing to help with that :). "
-                  "There is a non-trivial difference regarding an OS X-capable container and a linux container "
-                  "because any commercial provider needs to run OS X builds on Apple hardware.")]
-             [:p (str "The underlying delivery system is very different, from our cost structure to our software tooling."
-                      " Accordingly, we’re currently offering access primarily based on your concurrency needs (use of multiple containers).")])}
-   {:question (list
-               [:p "What is concurrency vs. parallelism?"])
-    :answer (list
-             [:p (str "In a linux setting, parallelism refers to splitting a build across multiple containers. "
-                      "This is not currently a feature of OS X builds - however, there are still speed gains from concurrency.")]
-             [:p "Concurrency refers to running multiple jobs at the same time (e.g., two jobs on two containers).  This is a feature of the OS X product."])}
-   {:question (list
-               [:p "Wait...in the beta, how did my access to containers work?"])
-    :answer (list
-             [:p (str "During the beta, we used your current plan on linux containers as a proxy to enable access to Apple machines. "
-                      "It was just a shortcut on our side to help folks build as soon as possible and a thank-you to customers that pay for multiple linux containers.")])}
-   {:question (list
-               [:p "So what plan should I choose? / I’m concerned about how many minutes I have used?"])
-    :answer (list
-             [:p "If you have questions, please feel free reach out to "
-              [:a {:href "mailto:sayhi@circleci.com"}
-               "sayhi@circleci.com"]
-              (str " and we’ll provide some guidance regarding your recent usage. "
-                   "In the near future, we’ll display your usage within the app.")])}
-   {:question (list
-               [:p [:sup.bold "*"] "What if I go over the minute limit?"])
-    :answer (list
-             [:p (str "Tiering is to help make sure we can stabilize capacity and offer competitive price points "
-                      "which should hopefully lead to the greatest possible utility all around.")
-              [:p (str "In this release, we will not charge overages. We may suspend accounts if minute usage far exceeds the plan limit. "
-                       "We’ll have our team keeping an eye on usage and we will reach out proactively if you get close to your respective plan limit.")]
-              [:p "In the near future, we’ll display your usage within the app."]])}
-   {:question (list
-               [:p "What if I don’t choose a plan?"])
-    :answer (list
-             [:p (str "Starting November 30th, organizations that have not chosen a plan may see degraded performance (as long as we have "
-                      "capacity, we’ll do our best to build while you determine which plan works best for you!).")])}
-   {:question (list
-               [:p "What if we’re building open-source?"])
-    :answer (list
-             [:p "Please reach out to our team at "
-              [:a {:href "mailto:sayhi@circleci.com"}
-               "sayhi@circleci.com"]
-              " - we’re happy to provide significant discounts for open-source projects!"])}])
+  [{:question "Why would I choose an OS X plan (as opposed to a Linux Plan)?"
+    :answer [[:div "If you develop for Apple-related software (e.g., you are an iOS developer), you will likely need an OS X plan to ensure your tests run on our secure, private cloud of OS X machines."]
+             [:div "OS X plans start with a two-week trial with access to our Growth Plan (5x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
+             [:div "Linux plans allow customers to build on multiple isolated Linux systems. All customers get 1 free linux container and then Linux plans offer access to additional containers available at $50/container."]]}
+
+   {:question "What plan do I need?"
+    :answer [[:div "We’ve provided recommendations based on the ranges of builds but every team is different regarding their frequency and length of builds - as well as their need for engineer support."]
+             [:div "To solve for this, everyone starts with a free 2-week trial at the Growth Plan which will help you determine all of those factors. We are happy to help you work through which plan is right for your team."]]}
+
+   {:question "What is concurrency?"
+    :answer [[:div "Concurrency refers to running multiple jobs at the same time (e.g., with 2x concurrency, two builds triggered at the same time will both kick off, but on 1x concurrency one build will queue, waiting for resources)."]
+             [:div "Concurrency avoids slow-downs in work as your builds may otherwise queue behind the builds of someone else on your team."]]}
+
+
+   {:question "*What if I go over the minutes allotted for a given plan?"
+    :answer [[:div  "Minutes and overages ensure we can stabilize capacity while offering as much power as possible which should hopefully lead to the greatest possible utility all around."]
+             [:p "Overages are as follows:"]
+             [:p "Seed & Startup: .08/minute"]
+             [:p "Venture: .05/minute"]
+             [:p "Mobile Focused: .035/minute"]
+             [:div "Users will be alerted in-app as they approach the limit and upon passing their respective limit."]
+             "Feel free to reach out to "
+             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+             " with any additional questions"]}
+
+   {:question "Can I change my plan at a later time? Can I cancel anytime?"
+    :answer [[:p "Yes and yes!"]
+             "Please reach out to "
+             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+             " to cancel." ]}
+
+   {:question "What if I want something customer?"
+    :answer ["Feel free to contact us "
+             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]}
+
+   {:question "What if I am building open-source?"
+    :answer ["We also offer the Seed plan for OS X open-source projects. Contact us at "
+             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+             " for access. If you are building a bigger open-source project and need more resources, let us know how we can help you!"]}])
+
+(defn faq-answer [answer]
+  (apply merge [:dd]
+         (mapv #(vector :span %) answer)))
 
 (defn osx-faq [items owner]
   (reify
     om/IRender
     (render [_]
       (html
-       [:fieldset.osx-faq
-        [:legend "FAQs"]
-        [:dl
-         (for [{:keys [question answer]} items]
-           (list
-            [:dt question]
-            [:dd answer]))]]))))
+        [:fieldset.osx-faq
+         [:legend "FAQs"]
+         (apply merge [:dl]
+                (for [{:keys [question answer]} items]
+                  [:dt
+                   [:dt question]
+                   (faq-answer answer)]))]))))
 
 (defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
   (reify
