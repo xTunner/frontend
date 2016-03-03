@@ -258,3 +258,7 @@
                     :max-minutes "25,000"
                     :support-level "Priority support & Account manager"
                     :team-size "unlimited"}})
+
+(defn osx-ga-plan? [plan]
+  (if-let [plan-id (keyword (osx-plan-id plan))]
+    (boolean (get osx-plans plan-id))))

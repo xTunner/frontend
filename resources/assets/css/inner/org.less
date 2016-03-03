@@ -455,4 +455,33 @@
       }
     }
   });
+
+  .ui("limited-release-notice", {
+    .flexy(space-between);
+
+    background: @statuspage-minor-bg;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+
+    .message {
+      font-weight: 300;
+      color: @grayDark;
+      font-size: 13px;
+    }
+
+    .your-plan {
+      padding-top: 10px;
+    }
+
+    .icon {
+      padding-right: 10px;
+      padding-top: 1px;
+
+    }
+
+    .plan-name {
+      font-weight: 500;
+    }
+  });
 });
