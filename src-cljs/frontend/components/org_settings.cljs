@@ -342,7 +342,7 @@
               [:div.title title]
               [:div.price "$" [:span.bold price] "/mo"]]
              [:div.content
-              [:div.containers [:span.bold container-count] " OS X containers"]
+              [:div.containers [:span.bold container-count] " OS X concurrency"]
               [:div.daily-builds
                [:div "Recommended for teams building "]
                [:div.bold daily-build-count " builds/day"]]
