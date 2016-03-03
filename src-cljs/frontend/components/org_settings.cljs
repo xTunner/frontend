@@ -439,19 +439,23 @@
           [:div {:data-component `limited-release-notice}
            [:div.icon (om/build svg {:src (common/icon-path "Info-Warning")})]
            [:div.message
-            [:p "Thank you for being part of our limited release. We are happy to move to general release on March 3rd.
-                 We're discontinuing limited release plans on March 31st. All customers on limited release plans that
-                 have not selected a new general release plan by that date will be converted to the corresponding plans."]
+            [:span "CircleCI for OS X is now in General Release!
+                    Limited Release plans will be discontinued on March 31st and
+                    all organizations that have not switched to a new plan will be
+                    converted to the corresponding General Release plan. Please
+                    reach out to "]
+            [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+            [:span " with any questions or concerns."]
             (if-let [new-plan (get plan-migrations current-plan-name)]
-              [:div
-               [:span "You're currently on '"]
-               [:span.plan-name current-plan-name]
+              [:div.your-plan
+               [:span "You are currently on '"]
+               [:span.plan-name "Limited Release " current-plan-name]
                [:span "' and will be moved to '"]
-               [:span.plan-name (get plan-migrations current-plan-name)]
+               [:span.plan-name "General Release " (get plan-migrations current-plan-name)]
                [:span "' on March 31st."]]
-              [:div
+              [:div.your-plan
                [:span "You're currently on a '"]
-               [:span.plan-name "Custom Plan"]
+               [:span.plan-name "Limited Release Custom Plan"]
                [:span "'. Please contact your account manager for details."]])]])))))
 
 (defn osx-plans-list-ga [plan owner]
