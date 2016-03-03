@@ -270,7 +270,7 @@
              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
              " to cancel." ]}
 
-   {:question "What if I want something customer?"
+   {:question "What if I want something custom?"
     :answer ["Feel free to contact us "
              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]}
 
@@ -467,7 +467,7 @@
             [:legend (str "OS X Plans")]
             (when-not (pm/osx-ga-plan? plan)
               (om/build limited-release-notice plan))
-            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers."]
+            [:p "Your selection below only applies to OS X service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
