@@ -118,12 +118,10 @@
     om/IDidMount
     (did-mount [_]
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
-    om/IInitState
-    (init-state [_]
-      {:vcs-type "github"})
-    om/IRenderState
-    (render-state [_ {:keys [vcs-type] :as state}]
-      (let [{:keys [user settings repos]} data
+    om/IRender
+    (render [_]
+      (let [{:keys [user settings repos tab]} data
+            vcs-type (or tab "github")
             github-active? (= "github" vcs-type)
             bitbucket-active? (= "bitbucket" vcs-type)]
         (html
@@ -133,11 +131,11 @@
            [:div.instruction "Choose a GitHub or Bitbucket account that you are a member of or have access to."]]
           [:ul.nav.nav-tabs
            [:li {:class (when github-active? "active")}
-            [:a {:on-click #(om/set-state! owner {:vcs-type "github"})}
+            [:a {:href "#github"}
              [:i.octicon.octicon-mark-github]
              " GitHub"]]
            [:li {:class (when bitbucket-active? "active")}
-            [:a {:on-click #(om/set-state! owner {:vcs-type "bitbucket"})}
+            [:a {:href "#bitbucket"}
              [:i.fa.fa-bitbucket]
              " Bitbucket"]]]
           [:div.organizations.card
@@ -493,6 +491,7 @@
   (let [user (:current-user data)
         repos (:repos user)
         settings (:settings data)
+        {{tab :tab} :navigation-data} data 
         selected-org (get-in settings [:add-projects :selected-org])
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
@@ -512,7 +511,8 @@
                    organization-listing)
                  {:user user
                   :settings settings
-                  :repos repos})]
+                  :repos repos
+                  :tab tab})]
       [:hr]
       [:div#project-listing.project-listing
        [:div.overview
