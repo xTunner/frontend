@@ -39,17 +39,16 @@
 
 (defn settings-link [app owner]
   (when (show-settings-link? app)
-    (let [{:keys [repo org] :as navigation-data} (:navigation-data app)
-          has-write-settings? (:write-settings (get-in app state/project-scopes-path))]
-      (cond repo (when has-write-settings?
+    (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
+      (cond repo (when (:write-settings (get-in app state/project-scopes-path))
                    [:a.settings.project-settings
                     {:href (routes/v1-project-settings-path navigation-data) }
                     [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                     "Project Settings"])
-            (:org navigation-data) [:a.settings.org-settings
-                                    {:href (routes/v1-org-settings-path navigation-data)}
-                                      [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                                    "Organization Settings"]
+            org [:a.settings.org-settings
+                 {:href (routes/v1-org-settings-path navigation-data)}
+                 [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+                 "Organization Settings"]
             :else nil))))
 
 (defn head-user [app owner]

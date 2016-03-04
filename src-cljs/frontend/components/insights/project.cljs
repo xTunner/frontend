@@ -139,7 +139,7 @@
   (let [projects (get-in state state/projects-path)
         plans (get-in state state/user-plans-path)
         {:keys [branch] :as navigation-data} (:navigation-data state)
-        {:keys [branches parallel scopes] :as project} (some->> projects
+        {:keys [branches parallel] :as project} (some->> projects
                                                          (filter #(= (dissoc (api/project-build-key %) :branch)
                                                                      (dissoc (api/project-build-key navigation-data) :branch)))
                                                          first)

@@ -144,11 +144,18 @@
   (min (plan-model/max-parallelism plan)
        (usable-containers plan project)))
 
+(defn has-scope? [project scope]
+  (let [scope (keyword scope)]
+    (boolean (some->> project :scopes (map keyword) set scope))))
+
+(defn can-trigger-builds? [project]
+  (has-scope? project :trigger-builds))
+
 (defn can-write-settings? [project]
-  (-> project :scopes :write-settings))
+  (has-scope? project :write-settings))
 
 (defn can-read-settings? [project]
-  (-> project :scopes :read-settings))
+  (has-scope? project :read-settings))
 
 (defn feature-flags [project]
   (:feature_flags project))

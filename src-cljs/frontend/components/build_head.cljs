@@ -723,7 +723,7 @@
                                                        :stop (or (:start_time build) (:stop_time build))})
                    ")"])]])
 
-            (when (and (has-scope :read-settings data)
+            (when (and (has-scope :trigger-builds data)
                        (show-ssh-button? project))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link {:href "#ssh-info"}
@@ -1012,13 +1012,11 @@
             plan (get-in data state/project-plan-path)
             user (get-in data state/user-path)
             logged-in? (not (empty? user))
-            has-read-settings? (:read-settings
-                                (get-in data state/project-scopes-path))
-            has-write-settings? (:write-settings
-                                 (get-in data state/project-scopes-path))]
+            can-trigger-builds? (project-model/can-trigger-builds? project)
+            can-write-settings? (project-model/can-write-settings? project)]
         (html
           [:div.build-actions-v2
-           (when (and (build-model/can-cancel? build) has-read-settings?)
+           (when (and (build-model/can-cancel? build) can-trigger-builds?)
              (forms/managed-button
                [:a.cancel-build
                 {:data-loading-text "canceling"
@@ -1027,9 +1025,9 @@
                                                                   :vcs-url vcs-url
                                                                   :build-num build-num}])}
                 "cancel build"]))
-           (when has-read-settings?
+           (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
-           (when has-write-settings?
+           (when can-write-settings?
              [:div.build-settings
               [:a.build-action
                {:href (routes/v1-project-settings-path (:navigation-data data))}
