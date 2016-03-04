@@ -115,7 +115,7 @@ window.stefon_hack_for_om =
     "/img/outer/docs/code-signing-correct-step-output.png": '(asset-path "img/outer/docs/code-signing-correct-step-output.png")'
     "/img/outer/docs/code-signing-key-uploaded.png": '(asset-path "img/outer/docs/code-signing-key-uploaded.png")'
     "/img/outer/docs/code-signing-settings-section.png": '(asset-path "img/outer/docs/code-signing-settings-section.png")'
-    "/img/outer/docs/code-signing-spash-screen.png": '(asset-path "img/outer/docs/code-signing-spash-screen.png")'
+    "/img/outer/docs/code-signing-splash-screen.png": '(asset-path "img/outer/docs/code-signing-splash-screen.png")'
     "/docs/adding-read-write-deployment-key.md": '(asset-path "docs/adding-read-write-deployment-key.md")'
     "/docs/shipio-to-circleci-migration.md": '(asset-path "docs/shipio-to-circleci-migration.md")'
     "/docs/api.md": '(asset-path "docs/api.md")'
