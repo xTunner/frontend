@@ -64,7 +64,15 @@
              (list
                "in "
                (:environment app)))]
-          "."]]))))
+          "."]
+
+
+         [:p "There are currently "
+          [:b (get-in app (conj state/license-path :seat_usage))]
+          " active users out of "
+          [:b (get-in app (conj state/license-path :seats))]
+          " licensed users.  You can deactivate users in "
+          [:a {:href "/admin/users"} "user settings."]]]))))
 
 (defn builders [builders owner]
   (reify
@@ -184,7 +192,10 @@
              [:div.loading-spinner common/spinner]
              (list
               [:p "License Type: " [:b (:type license)]]
-              [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats (" [:b (:seat_status license)] ")"]
+              [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats ("
+               [:b (:seat_status license)] ": "
+               (get-in app (conj state/license-path :seat_usage)) "/"
+               (get-in app (conj state/license-path :seats)) ")"]
               [:p "Expiry date: " [:b (datetime/medium-date (:expiry_date license))]])))]))))
 
 (defn relevant-scope
@@ -250,10 +261,14 @@
                                  all-users)
             suspended-users (filter :suspended all-users)
             admin-write-scope? (#{"all" "write-settings"}
-                                  (get-in app [:current-user :admin]))]
+                                (get-in app [:current-user :admin]))
+            num-licensed-users (get-in app (conj state/license-path :seats))
+            num-active-users (get-in app (conj state/license-path :seat_usage))]
         (html
-          [:section {:style {:padding-left "10px"}}
-           [:h1 "Users"]
+         [:section {:style {:padding-left "10px"}}
+          [:h1 "Users"]
+
+           [:p "There are currently " [:b num-active-users] " active users out of " [:b num-licensed-users] " licensed users."]
 
           [:p "Suspended users are prevented from logging in and do not count towards the number your license allows."]
 
