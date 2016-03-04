@@ -30,7 +30,7 @@
            "img/outer/docs/code-signing-correct-step-output.png"
            "img/outer/docs/code-signing-key-uploaded.png"
            "img/outer/docs/code-signing-settings-section.png"
-           "img/outer/docs/code-signing-spash-screen.png"
+           "img/outer/docs/code-signing-splash-screen.png"
            "img/outer/about/paul.png"
            "img/outer/about/allen.png"
            "img/outer/about/david.png"
