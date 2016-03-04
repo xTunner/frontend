@@ -683,9 +683,7 @@
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
                                                                     :vcs_type vcs_type
                                                                     :_fragment (name (get-in current-state [:org-settings-subpage]))})
-                                :replace-token? true}])))
-  (analytics/track {:event-type :new-plan-created
-                    :current-state current-state}))
+                                :replace-token? true}]))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
