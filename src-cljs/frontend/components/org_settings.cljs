@@ -732,10 +732,14 @@
           user-orgs (get-in app state/user-organizations-path)
           plan (get-in app state/org-plan-path)
           ;; orgs that this user can add to piggyback orgs
-          elligible-piggyback-orgs (-> (map :login user-orgs)
-                                       (set)
-                                       (conj user-login)
-                                       (disj org-name))
+          eligible-piggyback-orgs (-> (into #{}
+                                            (comp
+                                             ;; Only GitHub orgs are allowed to piggieback (for now).
+                                             (filter #(= "github" (:vcs_type %)))
+                                             (map :login))
+                                            user-orgs)
+                                      (conj user-login)
+                                      (disj org-name))
           ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
           ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
           ;; selected-orgs:           {"org-a" false "org-c" true}
@@ -762,7 +766,7 @@
              [:form
               [:div.controls
                ;; orgs that this user can add to piggyback orgs and existing piggyback orgs
-               (for [org (sort (clojure.set/union elligible-piggyback-orgs
+               (for [org (sort (clojure.set/union eligible-piggyback-orgs
                                                   (set (:piggieback_orgs plan))))]
                  [:div.checkbox
                   [:label
