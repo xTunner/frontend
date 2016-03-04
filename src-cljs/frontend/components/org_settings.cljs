@@ -370,7 +370,8 @@
                [:div.bold daily-build-count " builds/day"]]
               [:div.max-minutes [:span.bold max-minutes] " max minutes/month" [:sup.bold "*"]]
               [:div.support support-level]
-              [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
+              [:div.team-size "Recommended for " [:span.bold team-size]]
+              [:div " team members"]]
              [:div.action
               (if (pm/stripe-customer? plan)
                 (om/build plan-payment-button {:text "Update"

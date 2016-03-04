@@ -348,6 +348,7 @@
   .ui("osx-plans-list-ga", {
     .plan-selection {
       min-height: 500px;
+      .flexy(flex-start, center, row);
 
       @media (max-width: 1280px) {
         .flexy(center, center, column);
@@ -391,7 +392,7 @@
     .plan {
       color: @circleGray;
       background-color: @white;
-      width: 300px;
+      max-width: 300px;
 
       .bold {
         font-weight: bold;
@@ -404,22 +405,19 @@
         padding: 20px;
 
         .title {
-          font-size: 16px;
           font-weight: bold;
           letter-spacing: 0.5px;
         }
 
         .price {
-          font-size: 35px;
+          font-size: round((@baseFontSize * 2.14), 0); //30px
           font-weight: 300;
           letter-spacing: 0.5px;
-
         }
       }
 
       .content {
         text-align: center;
-        font-size: 16px;
         font-weight: 300;
         padding: 20px;
 
