@@ -157,11 +157,6 @@
   (let [{:keys [event-type properties current-state]} event-data]
     (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))
 
-(s/defmethod track :new-plan-created [event-data :- AnalyticsEventForControllers]
-  (let [{:keys [event-type properties owner]} event-data] 
-    (segment/track-event :new-plan-created (supplement-tracking-properties-from-owner properties owner))
-    (intercom/track :paid-for-plan)))
-
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner]} event-data]
     (if (supported-click-and-impression-events (:event event-data))
