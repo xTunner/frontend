@@ -256,28 +256,31 @@
    {:question "*What if I go over the minutes allotted for a given plan?"
     :answer [[:div  "Minutes and overages ensure we can stabilize capacity while offering as much power as possible which should hopefully lead to the greatest possible utility all around."]
              [:p "Overages are as follows:"]
-             [:p "Seed & Startup: .08/minute"]
-             [:p "Venture: .05/minute"]
-             [:p "Mobile Focused: .035/minute"]
+             [:ul.overage-list
+              [:li "Seed & Startup: .08/minute"]
+              [:li "Venture: .05/minute"]
+              [:li "Mobile Focused: .035/minute"]]
              [:div "Users will be alerted in-app as they approach the limit and upon passing their respective limit."]
-             "Feel free to reach out to "
-             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
-             " with any additional questions"]}
+             [:div
+              "Feel free to reach out to "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+              " with any additional questions"]]}
 
    {:question "Can I change my plan at a later time? Can I cancel anytime?"
     :answer [[:p "Yes and yes!"]
-             "Please reach out to "
-             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
-             " to cancel." ]}
+             [:div
+              "Please reach out to "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+              " to cancel."] ]}
 
    {:question "What if I want something custom?"
-    :answer ["Feel free to contact us "
-             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]}
+    :answer [[:div "Feel free to contact us "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]]}
 
    {:question "What if I am building open-source?"
-    :answer ["We also offer the Seed plan for OS X open-source projects. Contact us at "
-             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
-             " for access. If you are building a bigger open-source project and need more resources, let us know how we can help you!"]}])
+    :answer [[:div "We also offer the Seed plan for OS X open-source projects. Contact us at "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+              " for access. If you are building a bigger open-source project and need more resources, let us know how we can help you!"]]}])
 
 (def linux-faq-items
   [{:question "How do I get started?"
@@ -285,44 +288,57 @@
              [:div "During the signup process, you can decide which plan(s) you need - you can build for free regardless!"]]}
 
    {:question "How do containers work?"
-    :answer ["Every time you push to your VCS system, we checkout your code and run your build inside of a fresh, on-demand, and isolated Linux container pre-loaded with most popular languages, tools, and framework. CircleCI, in many cases, will detect and automatically download and cache your dependencies, and you can fully script any steps or integrations."]}
+    :answer [[:div "Every time you push to your VCS system, we checkout your code and run your build inside of a fresh, on-demand, and isolated Linux container pre-loaded with most popular languages, tools, and framework. CircleCI, in many cases, will detect and automatically download and cache your dependencies, and you can fully script any steps or integrations."]]}
 
    {:question "What is concurrency? What is parallelism?"
     :answer [[:div "Concurrency refers to utilizing multiple containers to run multiple builds at the same time. Otherwise, if you don't have enough free containers available, your builds queue up until other builds finish."]
              [:div "Parallelism splits a given build’s tests across multiple containers, allowing you to dramatically speed up your test suite. This enables your developers to finish even the most test-intensive builds in a fraction of the time."]]}
 
    {:question "How many containers do I need?"
-    :answer ["Most of our customers tend to use about 2-3 containers per full-time developer. Every team is different, however, and we're happy to set you up with a trial to help you figure out how many works best for you. As your team grows and/or as the speed of your build grows you can scale to any number of containers at any level of parallelism and concurrency is right for your team."]}
+    :answer [[:div "Most of our customers tend to use about 2-3 containers per full-time developer. Every team is different, however, and we're happy to set you up with a trial to help you figure out how many works best for you. As your team grows and/or as the speed of your build grows you can scale to any number of containers at any level of parallelism and concurrency is right for your team."]]}
 
    {:question "Why should I trust CircleCI with my code?"
-    :answer ["Security is one of our top priorities. Read our security policy to learn more about why many other customers rely on CircleCI to keep their code safe."]}
+    :answer [[:div "Security is one of our top priorities. Read our security policy to learn more about why many other customers rely on CircleCI to keep their code safe."]]}
 
    {:question "Can I change my plan at a later time? Can I cancel anytime?"
-    :answer ["Yes and yes! We offer in-app tools to fully control your plan and have account managers and an international support team standing by when you need help."]}
+    :answer [[:div "Yes and yes! We offer in-app tools to fully control your plan and have account managers and an international support team standing by when you need help."]]}
 
    {:question "What if I want something custom?"
-    :answer ["Feel free to contact us "
-             [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]}
+    :answer [[:div "Feel free to contact us "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]]}
 
    {:question "What if I am building open-source?"
-    :answer ["We offer a total of four free linux containers ($2400 annual value) for open-source projects. Simply keeping your project public will enable this for you!"]}])
+    :answer [[:div "We offer a total of four free linux containers ($2400 annual value) for open-source projects. Simply keeping your project public will enable this for you!"]]}])
 
-(defn faq-answer [answer]
-  (apply merge [:dd]
-         (mapv #(vector :span %) answer)))
+(defn faq-answer-line [answer-line owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.answer-line answer-line]))))
+
+(defn faq-item [{:keys [question answer]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.faq-item
+         [:h1.question question]
+         [:div.answer
+          (om/build-all faq-answer-line answer)]]))))
 
 (defn faq [items owner]
   (reify
     om/IRender
     (render [_]
+      (let [[first-half second-half] (split-at (quot (count items) 2) items)]
       (html
-        [:fieldset.faq
+        [:fieldset.faq {:data-component `faq}
          [:legend "FAQs"]
-         (apply merge [:dl]
-                (for [{:keys [question answer]} items]
-                  [:dt
-                   [:dt question]
-                   (faq-answer answer)]))]))))
+         [:div.column
+          (om/build-all faq-item first-half)]
+         [:div.column
+          (om/build-all faq-item second-half)]])))))
 
 (defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
   (reify

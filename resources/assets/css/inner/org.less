@@ -482,4 +482,36 @@
       font-weight: 500;
     }
   });
+
+  .ui("faq", {
+    .column {
+      float: left;
+      width: 50%;
+      padding: 10px;
+    }
+
+    .faq-item {
+      padding-bottom: 20px;
+    }
+
+    .question {
+      font-size: @fontSizeLarge;
+      font-weight: 600;
+      color: @gray;
+    }
+
+    .answer-line {
+      font-weight: 300;
+      font-size: @fontSizeMedium;
+
+      &:not(:last-child) {
+        padding-bottom: 10px;
+      }
+    }
+
+    .overage-list {
+      list-style-type: disc !important;
+    }
+
+  });
 });
