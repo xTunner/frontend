@@ -506,7 +506,9 @@
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
             [:legend (str "OS X Plans")]
-            (when (and (pm/osx? plan) (not (pm/osx-ga-plan? plan)))
+            (when (and (pm/osx? plan)
+                       (not (pm/osx-trial-plan? plan))
+                       (not (pm/osx-ga-plan? plan)))
               (om/build limited-release-notice plan))
             [:p "Your selection below only applies to OS X service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
