@@ -22,8 +22,9 @@
 (defn contact-support-a-info [owner & {:keys [tags]
                                        :or {tags [:support-dialog-raised]}}]
   (if user/support-eligible?
-    (if (or (elevio/broken?)
-            (not (config/elevio-enabled?)))
+    (if (and (or (elevio/broken?)
+                 (not (config/elevio-enabled?)))
+             (not (config/zd-widget-enabled?)))
       {:href (str "mailto:" (config/support-email))
        :target "_blank"}
       {:on-click #(raise! owner tags)})
