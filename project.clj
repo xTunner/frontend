@@ -150,4 +150,5 @@
                                                                    :asset-path "cljs/devcards-out"
                                                                    :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
                                                                    :output-dir "resources/public/cljs/devcards-out"
-                                                                   :optimizations :none}}}}}})
+                                                                   :optimizations :none
+                                                                   :recompile-dependents false}}}}}})
