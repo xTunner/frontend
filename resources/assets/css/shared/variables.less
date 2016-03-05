@@ -1,20 +1,58 @@
+// Colors
 
-@brand-lighten-ratio-v2:   29%; //FIXME
+@black:                 #000000;
+@blacken:               #080808;
+@grayDarkest:           #131313;
+@grayDarker:            #212121;
+@grayDark:              #333333;
+@gray:                  #555555;
+@grayLight:             #898989;
+@grayLighter:           #cccccc;
+@grayLightest:          #eeeeee;
+@whiten:                #fbfbfb;
+@white:                 #ffffff;
+
+@circleGray:            #343434;
+
+@blueDarkest:           darken(spin(@blue,  -1.00), 19.7); // #FIXME: CALCULATE THESE COLORS
+@blueDark:              #27a0b6;
+@blue:                  #3dc1d9; // .brand-primary
+@blueLight:             #66d3e4; // .brand-info
+@blueLightest:          #d9f4f8;
+
+@green:                 #42c88a; // .brand-success
+@greenLightest:         #d0f1e2;
+
+@red:                   #ed5c5c; // .brand-danger
+@redLight:              #f7b4b4;
+@redLightest:           #fad6d6;
+
+@orange:                #ff8c31; // .brand-warning
+
+@purple:                #ab7fd1;
+
+// Text
+
+@successText:           @green;
+@errorText:             @redLight;
+
+// Links
+
+@linkColor:             @blueDark;
+@linkColorHover:        @blueDark;
+
+// UI Colors
+
+@grayBoxBorder:       @grayLighter; // FIXME should we change these in all the files?
+@grayBorder:          @grayLightest; // FIXME should we change these in all the files?
 
 // Terminal colors
 @terminalBackground: @grayDarker;
 @terminalText: #edede3;
 
-@build-failure-chevron-size: 0.8em;
+@brand-lighten-ratio-v2:   29%; //FIXME
 
-@insights-header-fail: rgba(232, 67, 67, 0.2); // FIXME
-
-@beta-header-color: #aaa;
-@beta-text-color: #666;
-@alert-success-color: #d0f1e2;
-
-@input-border-blue: #9ec5d4;
-@input-border-focus-blue: #acd9de;
+// misc colors
 
 @table-alt-row-background: #f2f9fa;
 
@@ -26,63 +64,27 @@
 
 @statuspage-major-bg: #fad6d6;
 @statuspage-minor-bg: #f7ebcf;
-@statuspage-text-color: @background-color-dark-v2;
+@statuspage-text-color: @gray;
 
-// Misc.
+@insights-header-fail: rgba(232, 67, 67, 0.2); // FIXME
 
-@imgPath: "../../img";
 
-// Colors
 
-@black:                #000000;
-@blacken:              #080808;
-@grayDarkest:          #131313;
-@grayDarker:           #212121;
-@grayDark:             #333333;
-@gray:                 #555555;
-@grayLight:            #898989;
-@grayLighter:          #cccccc;
-@grayLightest:         #eeeeee;
-@whiten:               #fbfbfb;
-@white:                #ffffff;
+// Typography
 
-@circleGray:           #343434;
+@sansSerifFontFamily:   "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@monoFontFamily:        "RobotoMono", Monaco, "Courier New", monospace;
 
-@blue:                  #3dc1d9;
-@blueDark:              #27a0b6;
-@blueDarkest:           darken(           spin(@blue,  -1.00), 19.7)       ; // #FIXME: CALCULATE THESE COLORS
-@blueLight:             #66d3e4;
-@blueLightest:          #d9f4f8;
+@baseFontSize:          14px;
+@baseLineHeight:        20px;
 
-@green:                #42c88a;
-@greenLightest:        #d0f1e2;
-
-@red:                  #ed5c5c;
-@redLight:             #f7b4b4;
-@redLightest:          #fad6d6;
-
-@orange:               #ff8c31;
-
-@purple:               #ab7fd1;
-
-// Text
-
-@successText:              @green;
-@errorText:                @redLight;
-
-@sansSerifFontFamily:    "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-@monoFontFamily:         "RobotoMono", Monaco, "Courier New", monospace;
-
-@baseFontSize:             14px;
-@baseLineHeight:           20px;
-
-@fontSizeJumbo:            round((@baseFontSize * 2), 0); // 28px
-@fontSizeLarger:           round((@baseFontSize * 1.45), 0); // 20px
-@fontSizeLarge:            round((@baseFontSize * 1.25), 0); // 18px
-@fontSizeMedium:           round((@baseFontSize * 1.15), 0); // 16px
-@fontSizeSmallish:         round((@baseFontSize * 0.95), 0); // 13px
-@fontSizeSmall:            round((@baseFontSize * 0.85), 0); // 12px
-@fontSizeMini:             round((@baseFontSize * 0.75), 0); // 11px
+@fontSizeJumbo:         round((@baseFontSize * 2), 0); // 28px
+@fontSizeLarger:        round((@baseFontSize * 1.45), 0); // 20px
+@fontSizeLarge:         round((@baseFontSize * 1.25), 0); // 18px
+@fontSizeMedium:        round((@baseFontSize * 1.15), 0); // 16px
+@fontSizeSmallish:      round((@baseFontSize * 0.95), 0); // 13px
+@fontSizeSmall:         round((@baseFontSize * 0.85), 0); // 12px
+@fontSizeMini:          round((@baseFontSize * 0.75), 0); // 11px
 
 h1, .h1 { font-size: @fontSizeLarger !important; } // 20px
 h2, .h2 { font-size: @fontSizeLarge !important; }  // 18px
@@ -91,31 +93,20 @@ h4, .h4 { font-size: @baseFontSize !important; }   // 14px
 h5, .h5 { font-size: @fontSizeSmall !important; }  // 12px
 h6, .h6 { font-size: @fontSizeMini !important; }   // 11px
 
-@codeFontSize:             @fontSizeSmall;
-@codeCharacterWidth:       round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
+@codeFontSize:          @fontSizeSmall;
+@codeCharacterWidth:    round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
 
 // Spacing
 
-@standardBlockSize: 250px;
-@minimumContentWidth: 960px;
-@spinnerSize: (@baseFontSize * 3);
-@innerContentPadding: @baseFontSize;
+@standardBlockSize:     250px;
+@minimumContentWidth:   960px;
+@spinnerSize:           (@baseFontSize * 3);
+@innerContentPadding:   @baseFontSize;
 @tile: 70px;
 
-// Links
+// Navigation
 
-@linkColor:                @blueDark;
-@linkColorHover:           @blueDark;
-
-// UI Colors
-
-@grayBoxBorder:       lighten(@grayLighter, 6.75);
-@grayBorder:          lighten(@gray, 55.50); //#e3e3e3
-
-// 3D Lighting (soft to hard)
-
-@lightSoft:  fadein(fadeout(@white, 100), 5);
-@shadowSoft: fadein(fadeout(@black, 100), 8);
+@top-nav-height: 50px;
 
 // Footer
 
@@ -127,4 +118,8 @@ h6, .h6 { font-size: @fontSizeMini !important; }   // 11px
 @zindex-aside: 901;
 @zindex-app-main: 900;
 
-@top-nav-height: 50px;
+// Misc.
+
+@imgPath: "../../img";
+
+@build-failure-chevron-size: 0.8em;
