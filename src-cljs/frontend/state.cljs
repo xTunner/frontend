@@ -43,8 +43,7 @@
    :project-settings-project-name nil
    :org-settings {:subpage nil
                   :org-name nil
-                  :vcs_type nil
-                  :plan-tab nil}
+                  :vcs_type nil}
    :admin-settings-subpage nil
    :dashboard-data {:branch nil
                     :repo nil
@@ -103,7 +102,6 @@
 (def org-settings-subpage-path (conj org-settings-path :subpage))
 (def org-settings-org-name-path (conj org-settings-path :org-name))
 (def org-settings-vcs-type-path (conj org-settings-path :vcs_type))
-(def org-settings-plan-tab-path (conj org-settings-path :plan-tab))
 
 (defn container-path [container-index] (conj containers-path container-index))
 (defn actions-path [container-index] (conj (container-path container-index) :actions))
