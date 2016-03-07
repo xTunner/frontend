@@ -400,7 +400,7 @@
                                                                                  :properties {:plan-type "osx"
                                                                                               :new-plan plan-id
                                                                                               :previous-plan (pm/osx-plan-id plan)
-                                                                                              :upgrade? (> (:price plan-data) (pm/osx-cost plan))}}))})
+                                                                                              :is-upgrade (> (:price plan-data) (pm/osx-cost plan))}}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
                                                :on-click-fn #(do
