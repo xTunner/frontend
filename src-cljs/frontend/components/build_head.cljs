@@ -646,7 +646,7 @@
                (om/build commit-line {:build build
                                       :subject (:subject build)
                                       :body (:body build)
-                                      :commit_url (build-model/github-commit-url build)
+                                      :commit_url (build-model/commit-url build)
                                       :commit (:vcs_revision build)})
                (list
                  (om/build-all commit-line top-commits)
