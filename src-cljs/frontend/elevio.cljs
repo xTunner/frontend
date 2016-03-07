@@ -40,7 +40,7 @@
         user-info (-> js/window
                       (aget "elevSettings")
                       (aget "user"))
-        support-module-id 2968
+        support-module-id "support"
         discuss-link-module-id 3003
         discuss-support-link-module-id 3762]
     (if user/support-eligible?
