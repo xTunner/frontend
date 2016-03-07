@@ -10,8 +10,7 @@
   In an ideal world, when a feature launches to 100%, the code will be updated
   and old behavior branches and conditionals get removed.  This manifest intends
   to be a stop-gap until it's removed"
-  {"ui-v2" true
-   "ui-v2-opt-in-banner" false})
+  {})
 
 (defn- feature-flag-value-true? [value]
   (= value "true"))
