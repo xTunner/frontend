@@ -729,7 +729,7 @@
               (if (feature/enabled? :osx-ga-inner-pricing)
                 [:div
                  (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
-                                         :starting-tab (pricing-starting-tab (:org-settings-subpage app))})]
+                                         :starting-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})]
 
                 [:div
                  (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
@@ -1399,7 +1399,7 @@
     (render [_]
       (let [org-data (get-in app state/org-data-path)
             vcs_type (:vcs_type org-data)
-            subpage (or (get app :org-settings-subpage) :overview)
+            subpage (or (get-in app state/org-settings-subpage-path) :overview)
             plan (get-in app state/org-plan-path)]
         (html [:div.org-page
                (if-not (:loaded org-data)
@@ -1414,6 +1414,6 @@
                       (om/build (get main-component subpage projects) app)
                       [:div (om/build non-admin-plan
                                       {:login (get-in app [:current-user :login])
-                                       :org-name (:org-settings-org-name app)
-                                       :vcs_type (:org-settings-vcs_type app)
+                                       :org-name (get-in app state/org-settings-org-name-path)
+                                       :vcs_type (get-in app state/org-settings-vcs-type-path)
                                        :subpage subpage})])]]])])))))
