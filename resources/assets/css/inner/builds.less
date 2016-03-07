@@ -389,12 +389,6 @@
         border: none;
         padding: 0;
         &[type="email"] {
-          width: auto;
-          background: none;
-          border-radius: 1em;
-          box-shadow: none;
-          transition: .3s;
-          height: @baseLineHeight;
           &:valid {
             + label {
               opacity: 0;
@@ -408,17 +402,13 @@
             }
           }
           &:focus {
-            .outlineInside(@grayBoxBorder);
-            padding-left: 1ex;
             &:valid {
-              .outlineInside(@blueLight);
-              padding-left: 1ex;
               color: @blueLight;
+              border-color: @blueLight;
             }
             &:invalid {
-              .outlineInside(@redLight);
-              padding-left: 1ex;
               color: @redLight;
+              border-color: @redLight;
             }
             + label {
               opacity: 0;
