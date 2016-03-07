@@ -4,6 +4,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.github :as github]
             [goog.string :as gstring]
             goog.string.format)
@@ -20,9 +21,13 @@
   (when (:vcs_revision build)
     (subs (:vcs_revision build) 0 7)))
 
-(defn github-commit-url [build]
+(defn commit-url [build]
   (when (:vcs_revision build)
-    (gstring/format "%s/commit/%s" (:vcs_url build) (:vcs_revision build))))
+    (gstring/format
+      (case (-> build :vcs_url vcs-url/vcs-type)
+       "github" "%s/commit/%s"
+       "bitbucket" "%s/commits/%s")
+      (:vcs_url build) (:vcs_revision build))))
 
 (defn vcs-ref-name [build]
   (cond
