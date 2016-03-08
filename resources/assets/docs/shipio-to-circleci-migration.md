@@ -54,10 +54,10 @@ You can configure build notifications using the "Notifications" section of your 
 You can add to or override our inferred commands through your Project Settings or through a [circle.yml file](https://circleci.com/docs/configuration).
 
 ### Deploy my app
-We recommend using [Fastlane](https://medium.com/mitoo-insider/how-to-set-up-continuous-delivery-for-ios-with-fastlane-and-circleci-c7dae19df2ed). 
+We recommend using [fastlane](https://medium.com/mitoo-insider/how-to-set-up-continuous-delivery-for-ios-with-fastlane-and-circleci-c7dae19df2ed).
 
 ### Get more help
-* [iOS build docs](https://circleci.com/docs/ios)
+* [OS X build docs](https://circleci.com/docs/ios-builds-on-os-x)
 * [discuss.circleci.com](https://discuss.circleci.com/c/mobile)
 * [CircleCI Support](mailto:sayhi@circleci.com)
 
