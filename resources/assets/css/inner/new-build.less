@@ -50,7 +50,7 @@
   margin-bottom: 15px;
 
   .alert-icon {
-    padding-right: ((2 / 3) * @alert-padding);
+    padding-right: ((2 / 3) * 15px);
   }
 
   &.expanded {
@@ -75,12 +75,12 @@
     }
 
     .alert-header {
-      padding: ((2 / 3) * @alert-padding) @alert-padding;
+      padding: ((2 / 3) * 15px) 15px;
       text-transform: uppercase;
     }
 
     .alert-body {
-      padding: @alert-padding;
+      padding: 15px;
     }
   }
 
@@ -593,7 +593,7 @@
 .test-file {
   text-align: right;
   margin-left: auto;
-  padding-left: @padding-small-horizontal;
+  padding-left: 10px;
   margin-right: 0;
   .wrap-words;
 }
@@ -611,16 +611,14 @@
 
   .expander {
     float: right;
-    padding-left: @padding-small-horizontal;
-    padding-right: @padding-small-horizontal;
-    margin-left: @padding-small-horizontal;
-    color: #ccc;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 10px;
+    color: @grayLighter;
     background-color: rgba(255,255,255, 0.2);
     .user-select(none);
   }
-
 }
-
 
 .alert {
   .build-tests-toggle {
@@ -773,7 +771,7 @@ ul:last-child {
   }
 
   .x-axis text {
-      font-size: @fontSizeMini;
+      font-size: @fontSizeSmallest;
   }
 
   .y-axis {
@@ -788,7 +786,7 @@ ul:last-child {
   }
 
   .y-axis-label {
-    font-size: @fontSizeMini;
+    font-size: @fontSizeSmallest;
     fill: @gray;
   }
 }

@@ -8,10 +8,10 @@
 
 .breadcrumb {
   margin: 0;
-  font-size: 20px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  font-size: @fontSizeLarger;
+  display: inline-block;
+
+  .text-overflow;
 
   &[disabled] {
     pointer-events: none;
@@ -30,6 +30,8 @@
   }
 
   a {
+    text-decoration: none;
+
     &:not(:hover) {
       color: @grayDark;
     }
@@ -82,18 +84,18 @@
 
   .message {
     .flex(1 0 auto);
-    font-size: @font-size-large;
+    font-size: @fontSizeLarge;
   }
 
   .stat {
-    font-size: @font-size-base;
+    font-size: @baseFontSize;
     text-transform: uppercase;
 
     .count {
       // The span here is the space after .count, which looks better if it's the
       // same size as the .count.
       &, & + span {
-        font-size: @font-size-large;
+        font-size: @fontSizeLarge;
       }
     }
   }
@@ -103,7 +105,7 @@
     height: 40px;
     margin-left: 40px;
 
-    font-size: @font-size-large;
+    font-size: @fontSizeLarge;
     font-weight: bold;
     line-height: 40px;
 
@@ -150,7 +152,7 @@
 
   .status-page-color(@color, @background-color) {
     visibility: visible;
-    padding: @alert-padding;
+    padding: 15px;
     background-color: @background-color;
     color: @color;
     h4 { color: @color; }
@@ -332,7 +334,7 @@
 .subnav {
   min-height: 0;
   top: 70px;
-  z-index: @zindex-subnav;
+  z-index: 999;
 
   .navbar-nav {
     @media (min-width: @screen-sm-min) {
@@ -384,7 +386,7 @@
         height: 40px;
       }
       &.active {
-        color: @brand-primary;
+        color: @blue
       }
     }
     .navbar-container {
