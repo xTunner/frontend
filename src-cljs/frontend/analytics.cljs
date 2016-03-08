@@ -63,23 +63,25 @@
     :cancel-plan-clicked
     :insights-bar-clicked
     :login-clicked
+    :new-plan-clicked
+    :no-plan-banner-impression
     :oauth-authorize-clicked
     :parallelism-clicked
-    :payment-plan-clicked
-    :payment-plan-impression
     :pr-link-clicked
     :project-clicked
     :project-settings-clicked
     :revision-link-clicked
+    :select-plan-clicked
     :set-up-junit-clicked
     :signup-clicked
-    :signup-impression})
+    :signup-impression
+    :start-trial-clicked
+    :update-plan-clicked})
 
 (def supported-controller-events
   ;; These are the api response events.
   ;; They are in the format of <object>-<action take in the past tense>
-  #{:container-amount-changed
-    :plan-cancelled
+  #{:plan-cancelled
     :project-branch-changed
     :project-builds-stopped
     :project-followed
@@ -153,11 +155,6 @@
 (s/defmethod track :track-controller-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
     (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))
-
-(s/defmethod track :new-plan-created [event-data :- AnalyticsEventForControllers]
-  (let [{:keys [event-type properties owner]} event-data] 
-    (segment/track-event :new-plan-created (supplement-tracking-properties-from-owner properties owner))
-    (intercom/track :paid-for-plan)))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner]} event-data]

@@ -301,9 +301,8 @@
   (let [usage-queue-builds (get-in current-state state/usage-queue-path)
         ws-ch (get-in current-state [:comms :ws])]
     (doseq [build usage-queue-builds]
-      (doseq [channel-name (pusher/build-channels build)]
-        (put! ws-ch [:subscribe {:channel-name channel-name
-                                 :messages [:build/update]}])))))
+      (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build)
+                               :messages [:build/update]}]))))
 
 
 (defmethod api-event [:build-artifacts :success]
@@ -558,7 +557,7 @@
     updated-state))
 
 (defn org-selectable? [state org-name]
-  (or (= org-name (:org-settings-org-name state))
+  (or (= org-name (get-in state state/org-settings-org-name-path))
       (= org-name (get-in state state/add-projects-selected-org-login-path))))
 
 (defmethod api-event [:org-plan :success]
@@ -664,7 +663,7 @@
 
 (defmethod api-event [:plan-card :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
     state
     (let [card (or resp {})] ; special case in case card gets deleted
       (assoc-in state state/stripe-card-path card))))
@@ -672,21 +671,19 @@
 
 (defmethod api-event [:create-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
     state
     (assoc-in state state/org-plan-path resp)))
 
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
-  (when (= (:org-name context) (:org-settings-org-name current-state))
+  (when (= (:org-name context) (get-in current-state state/org-settings-org-name-path))
     (let [nav-ch (get-in current-state [:comms :nav])
-          vcs_type (:org-settings-vcs_type current-state)]
+          vcs_type (get-in current-state state/org-settings-vcs-type-path)]
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
                                                                     :vcs_type vcs_type
-                                                                    :_fragment (name (get-in current-state [:org-settings-subpage]))})
-                                :replace-token? true}])))
-  (analytics/track {:event-type :new-plan-created
-                    :current-state current-state}))
+                                                                    :_fragment (name (get-in current-state state/org-settings-subpage-path))})
+                                :replace-token? true}]))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
@@ -712,7 +709,7 @@
 (defmethod api-event [:plan-invoices :success]
   [target message status {:keys [resp context]} state]
   (utils/mlog ":plan-invoices API event: " resp)
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
     state
     (assoc-in state state/org-invoices-path resp)))
 

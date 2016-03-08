@@ -188,14 +188,27 @@
   [plan]
   (boolean (:admin plan)))
 
+(defn latest-billing-period [plan]
+  (->> plan
+       :billing_periods
+       (map (fn [periods]
+              (for [period periods]
+                (time-format/parse (time-format/formatters :date-time) period))))
+       (sort-by first time/after?)
+       (first)))
+
 (defn usage-key->date [usage-key]
-  (time-format/parse (time-format/formatter "yyyy_MM") (name usage-key)))
+  (time-format/parse (time-format/formatter "yyyy_MM_dd") (name usage-key)))
 
 (defn date->usage-key [date]
-  (keyword (time-format/unparse (time-format/formatter "yyyy_MM") date)))
+  (keyword (time-format/unparse (time-format/formatter "yyyy_MM_dd") date)))
 
 (defn current-months-osx-usage-ms [plan]
-  (get-in plan [:usage :os:osx (date->usage-key (time/now))]))
+  (let [[period-start period-end] (latest-billing-period plan)]
+    (when (and period-start period-end)
+      (if (time/within? (time/interval period-start period-end) (time/now))
+        (get-in plan [:usage :os:osx (date->usage-key period-start) :amount])
+        0))))
 
 (defn current-months-osx-usage-% [plan]
   (let [usage-ms (current-months-osx-usage-ms plan)
@@ -224,8 +237,8 @@
   {:seed {:plan-id :seed
           :title "SEED"
           :price 39
-          :container-count "2"
-          :daily-build-count "1-2"
+          :container-count "2x"
+          :daily-build-count "1-5"
           :max-minutes "500"
           :support-level "Community support"
           :team-size "1-2"}
@@ -233,8 +246,8 @@
    :startup {:plan-id :startup
              :title "STARTUP"
              :price 129
-             :container-count "5"
-             :daily-build-count "2-5"
+             :container-count "5x"
+             :daily-build-count "5-10"
              :max-minutes "1,800"
              :support-level "Engineer support"
              :team-size "unlimited"
@@ -243,8 +256,8 @@
    :growth {:plan-id :growth
             :title "GROWTH"
             :price 249
-            :container-count "7"
-            :daily-build-count "4-10"
+            :container-count "7x"
+            :daily-build-count "10-30"
             :max-minutes "5,000"
             :support-level "Engineer support"
             :team-size "unlimited"
@@ -253,8 +266,12 @@
    :mobile-focused {:plan-id :mobile-focused
                     :title "MOBILE FOCUSED"
                     :price 449
-                    :container-count "12"
-                    :daily-build-count "10+"
+                    :container-count "12x"
+                    :daily-build-count "more than 20"
                     :max-minutes "25,000"
                     :support-level "Priority support & Account manager"
                     :team-size "unlimited"}})
+
+(defn osx-ga-plan? [plan]
+  (if-let [plan-id (keyword (osx-plan-id plan))]
+    (boolean (get osx-plans plan-id))))

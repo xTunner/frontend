@@ -16,16 +16,18 @@ CircleCI is a very different product from Jenkins with a lot of different concep
 
 <li>**Copy-paste your commands from “Execute Shell”:** If you really want to simply duplicate your project exactly as it is in Jenkins, then you can add a file called `circle.yml` to the root of your project with the following content:
 
-```
+
+<pre>
 dependencies:
   override:
     - echo "Add any bash commands you want here"
     - echo "Perform any dependency steps required by your build"
-  test:
-    override:
-      - echo "More arbitrary bash"
-      - echo "Probably copy-pasted from 'Execute Shell' on Jenkins"
-```
+test:
+  override:
+    - echo "More arbitrary bash"
+    - echo "Probably copy-pasted from 'Execute Shell' on Jenkins"
+</pre>
+
 
   Some programs and utilities are [pre-installed on CircleCI](/docs/environment), but anything else required by your build must be installed in the `dependencies` section. Your project’s dependencies will be [cached](/docs/how-cache-works) for the next build, so that they only need to be fully downloaded and installed once.</li>
 

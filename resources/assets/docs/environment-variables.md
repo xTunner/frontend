@@ -49,7 +49,13 @@ We publish the details of the currently running build in these variables:
     `CIRCLE_BRANCH`
   </dt>
   <dd>
-    The name of the branch being tested, e.g. 'master'.
+    The name of the git branch being tested, e.g. 'master', if the build is running for a branch.
+  </dd>
+  <dt>
+    `CIRCLE_TAG`
+  </dt>
+  <dd>
+    The name of the git tag being tested, e.g. 'release-v1.5.4', if the build is running [for a tag](https://circleci.com/docs/configuration#tags).
   </dd>
   <dt>
     `CIRCLE_SHA1`

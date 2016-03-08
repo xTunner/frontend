@@ -137,7 +137,7 @@
          [:i.octicon.octicon-git-commit]
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
-                :href (build-model/github-commit-url build)
+                :href (build-model/commit-url build)
                 :on-click #(analytics/track {:event-type :revision-link-clicked
                                              :owner owner
                                              :properties {:repo (:reponame build)

@@ -82,6 +82,10 @@
   []
   (and (aget js/window "elevSettings") (feature/enabled? "elevio")))
 
+(defn zd-widget-enabled?
+  []
+  (boolean (aget js/window "zdUser")))
+
 (defn statuspage-header-enabled?
   "If true, we should show statuspage alerts with incidents activated"
   []

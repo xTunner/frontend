@@ -165,4 +165,6 @@
     "configure-php" "language-php"
     "reference-api" "api"
     "reference-api#build" "api#build"
+
+    "ios" "ios-builds-on-os-x"
     token))

@@ -78,7 +78,7 @@
              (sidebar-build build {:vcs_type vcs_type :org org :repo repo :branch (name name-kw)}))]])))))
 
 (defn project-settings-link [{:keys [project]} owner]
-  (when (and (project-model/can-read-settings? project))
+  (when (and (project-model/can-write-settings? project))
     (let [org-name (:username project)
           repo-name (:reponame project)
           vcs-type (:vcs_type project)]
@@ -232,7 +232,7 @@
        {:type :subpage :href "#api" :title "API Permissions" :subpage :api}
        {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
        (when (project-model/osx? project)
-         {:type :subpage :href "#code-signing" :title "iOS Code Signing" :subpage :code-signing})
+         {:type :subpage :href "#code-signing" :title "OS X Code Signing" :subpage :code-signing})
        {:type :heading :title "Continuous Deployment"}
        {:type :subpage :href "#heroku" :title "Heroku Deployment" :subpage :heroku}
        {:type :subpage :href "#aws-codedeploy" :title "AWS CodeDeploy" :subpage :aws-codedeploy}
@@ -260,10 +260,8 @@
       [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
       (when (pm/transferrable-or-piggiebackable-plan? plan)
         [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
-      (when (or (pm/paid? plan) (pm/osx? plan))
-        [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}])
-      (when (pm/paid? plan)
-        [{:type :subpage :title "Cancel" :href "#cancel" :subpage :cancel}])))
+      (when (pm/stripe-customer? plan)
+        [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}])))
    [{:type :heading :title "Organization"}
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))

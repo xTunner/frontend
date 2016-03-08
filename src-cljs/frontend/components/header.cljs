@@ -10,6 +10,7 @@
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
+            [frontend.components.svg :as svg]
             [frontend.models.project :as project-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan]
@@ -39,15 +40,16 @@
 
 (defn settings-link [app owner]
   (when (show-settings-link? app)
-    (let [navigation-data (:navigation-data app)]
-      (cond (:repo navigation-data) [:a.settings.project-settings
-                                     {:href (routes/v1-project-settings-path navigation-data) }
-                                     [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                                     "Project Settings"]
-            (:org navigation-data) [:a.settings.org-settings
-                                    {:href (routes/v1-org-settings-path navigation-data)}
-                                      [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                                    "Organization Settings"]
+    (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
+      (cond repo (when (:write-settings (get-in app state/project-scopes-path))
+                   [:a.settings.project-settings
+                    {:href (routes/v1-project-settings-path navigation-data) }
+                    [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+                    "Project Settings"])
+            org [:a.settings.org-settings
+                 {:href (routes/v1-org-settings-path navigation-data)}
+                 [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+                 "Organization Settings"]
             :else nil))))
 
 (defn head-user [app owner]
@@ -296,13 +298,21 @@
       (html
         [:div.alert.alert-warning {:data-component `osx-usage-warning-banner}
          [:div.usage-message
-           [:span (str "Your current usage represents your "  (plan/current-months-osx-usage-% plan) "% of ")]
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)})} "current OSX plan"]
+          [:div.icon (om/build svg/svg {:src (common/icon-path "Info-Warning")})]
+          [:div.text
+           [:span "Your current usage represents "]
+           [:span.usage (plan/current-months-osx-usage-% plan)]
+           [:span "% of your "]
+           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)})} "current OS X plan"]
            [:span ". Please "]
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :_fragment "osx-pricing"})}
+           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                              :_fragment "osx-pricing"})}
             "upgrade"]
-           [:span " or reach out to your account manager if you have questions about billing."]]
+           [:span " or reach out to your account manager if you have questions about billing."]
+           [:span " See overage rates "]
+           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                              :_fragment "osx-pricing"})}
+            "here."]]]
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
           [:i.material-icons "clear"]]]))))
 

@@ -426,11 +426,12 @@
             [:div.github-icon
              [:a {:href (:vcs_url project)}
               [:i.octicon.octicon-mark-github]]]
-            [:div.settings-icon
-             [:a {:href (routes/v1-project-settings-path {:org username
-                                                          :repo reponame
-                                                          :vcs_type vcs_type})}
-              [:i.material-icons "settings"]]]]
+            (when (project-model/can-write-settings? project)
+             [:div.settings-icon
+              [:a {:href (routes/v1-project-settings-path {:org username
+                                                           :repo reponame
+                                                           :vcs_type vcs_type})}
+               [:i.material-icons "settings"]]])]
            [:h4 (if show-insights?
                   (str "Branch: " branch)
                   (gstring/unescapeEntities "&nbsp;"))]

@@ -1,5 +1,6 @@
 (ns frontend.components.admin
   (:require [ankha.core :as ankha]
+            [inflections.core :refer [pluralize]]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
             [frontend.async :refer [raise!]]
@@ -45,6 +46,14 @@
            [:button.btn.btn-primary {:value "Switch user", :type "submit"}
             "Switch user"]]]]]))))
 
+(defn current-seat-usage-p
+  [active-users total-seats]
+  [:p "There " (if (= 1 active-users) "is" "are" ) " currently "
+   [:b (pluralize active-users "active user")]
+   " out of "
+   [:b (pluralize total-seats "licensed user")]
+   "."])
+
 (defn overview [app owner]
   (reify
     om/IDisplayName (display-name [_] "Admin Build State")
@@ -64,7 +73,12 @@
              (list
                "in "
                (:environment app)))]
-          "."]]))))
+          "."]
+
+         (conj (current-seat-usage-p (get-in app (conj state/license-path :seat_usage))
+                                     (get-in app (conj state/license-path :seats)))
+               " You can deactivate users in "
+               [:a {:href "/admin/users"} "user settings."])]))))
 
 (defn builders [builders owner]
   (reify
@@ -184,7 +198,10 @@
              [:div.loading-spinner common/spinner]
              (list
               [:p "License Type: " [:b (:type license)]]
-              [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats (" [:b (:seat_status license)] ")"]
+              [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats ("
+               [:b (:seat_status license)] ": "
+               (get-in app (conj state/license-path :seat_usage)) "/"
+               (get-in app (conj state/license-path :seats)) ")"]
               [:p "Expiry date: " [:b (datetime/medium-date (:expiry_date license))]])))]))))
 
 (defn relevant-scope
@@ -250,10 +267,14 @@
                                  all-users)
             suspended-users (filter :suspended all-users)
             admin-write-scope? (#{"all" "write-settings"}
-                                  (get-in app [:current-user :admin]))]
+                                (get-in app [:current-user :admin]))
+            num-licensed-users (get-in app (conj state/license-path :seats))
+            num-active-users (get-in app (conj state/license-path :seat_usage))]
         (html
-          [:section {:style {:padding-left "10px"}}
-           [:h1 "Users"]
+         [:section {:style {:padding-left "10px"}}
+          [:h1 "Users"]
+
+          (current-seat-usage-p num-active-users num-licensed-users)
 
           [:p "Suspended users are prevented from logging in and do not count towards the number your license allows."]
 

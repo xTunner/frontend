@@ -347,10 +347,12 @@
 
   .ui("osx-plans-list-ga", {
     .plan-selection {
+      padding-top: 20px;
       min-height: 500px;
-
-      @media (max-width: @screen-sm-max) {
-        .flexy(center, center, column);
+      .flexy(flex-start, center, row);
+      @media (max-width: 1150px) {
+        // ^ magic number chosen so that things wrap into a 2x2.
+        .flex-wrap(wrap);
       }
     }
   });
@@ -358,6 +360,9 @@
   .ui("osx-plan-ga", {
     @border-color: @grayLighter;
     @header-background-color: @grayLightest;
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
+    max-width: 300px;
 
     .selected-notice {
       background-color: @blueLight;
@@ -391,7 +396,7 @@
     .plan {
       color: @circleGray;
       background-color: @white;
-      width: 300px;
+      max-width: 300px;
 
       .bold {
         font-weight: bold;
@@ -404,22 +409,19 @@
         padding: 20px;
 
         .title {
-          font-size: 16px;
           font-weight: bold;
           letter-spacing: 0.5px;
         }
 
         .price {
-          font-size: 35px;
+          font-size: round((@baseFontSize * 2.14), 0); //30px
           font-weight: 300;
           letter-spacing: 0.5px;
-
         }
       }
 
       .content {
         text-align: center;
-        font-size: 16px;
         font-weight: 300;
         padding: 20px;
 
@@ -454,5 +456,66 @@
         }
       }
     }
+  });
+
+  .ui("limited-release-notice", {
+    .flexy(space-between);
+
+    background: @statuspage-minor-bg;
+    padding: 20px;
+    margin-bottom: 10px;
+    border-radius: 3px;
+
+    .message {
+      font-weight: 300;
+      color: @grayDark;
+      font-size: 13px;
+    }
+
+    .your-plan {
+      padding-top: 10px;
+    }
+
+    .icon {
+      padding-right: 10px;
+      padding-top: 1px;
+
+    }
+
+    .plan-name {
+      font-weight: 500;
+    }
+  });
+
+  .ui("faq", {
+    .column {
+      float: left;
+      width: 50%;
+      padding: 10px;
+    }
+
+    .faq-item {
+      padding-bottom: 20px;
+    }
+
+    .question {
+      font-size: @fontSizeLarge;
+      font-weight: 600;
+      color: @gray;
+    }
+
+    .answer-line {
+      font-weight: 300;
+      font-size: @fontSizeMedium;
+
+      &:not(:last-child) {
+        padding-bottom: 10px;
+      }
+    }
+
+    .overage-list {
+      list-style-type: disc !important;
+    }
+
   });
 });

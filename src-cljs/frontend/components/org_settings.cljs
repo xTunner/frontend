@@ -17,6 +17,7 @@
             [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.components.project.common :as project-common]
+            [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
@@ -238,68 +239,106 @@
   (if (= num 1) (infl/singular word) (infl/plural word)))
 
 (def osx-faq-items
-  [{:question (list
-               [:p "This is a separate service? How will I be billed?"])
-    :answer (list
-             [:p "Yes! This is a standalone service. The charge will be pro-rated and added to your existing plan."]
-             [:p (str
-                  "The word \"container\" has been pretty vague in the engineering landscape and we’ve done nothing to help with that :). "
-                  "There is a non-trivial difference regarding an iOS-capable container and a linux container "
-                  "because any commercial provider needs to run iOS builds on Apple hardware.")]
-             [:p (str "The underlying delivery system is very different, from our cost structure to our software tooling."
-                      " Accordingly, we’re currently offering access primarily based on your concurrency needs (use of multiple containers).")])}
-   {:question (list
-               [:p "What is concurrency vs. parallelism?"])
-    :answer (list
-             [:p (str "In a linux setting, parallelism refers to splitting a build across multiple containers. "
-                      "This is not currently a feature of iOS builds - however, there are still speed gains from concurrency.")]
-             [:p "Concurrency refers to running multiple jobs at the same time (e.g., two jobs on two containers).  This is a feature of the iOS product."])}
-   {:question (list
-               [:p "Wait...in the beta, how did my access to containers work?"])
-    :answer (list
-             [:p (str "During the beta, we used your current plan on linux containers as a proxy to enable access to Apple machines. "
-                      "It was just a shortcut on our side to help folks build as soon as possible and a thank-you to customers that pay for multiple linux containers.")])}
-   {:question (list
-               [:p "So what plan should I choose? / I’m concerned about how many minutes I have used?"])
-    :answer (list
-             [:p "If you have questions, please feel free reach out to "
-              [:a {:href "mailto:sayhi@circleci.com"}
-               "sayhi@circleci.com"]
-              (str " and we’ll provide some guidance regarding your recent usage. "
-                   "In the near future, we’ll display your usage within the app.")])}
-   {:question (list
-               [:p [:sup.bold "*"] "What if I go over the minute limit?"])
-    :answer (list
-             [:p (str "Tiering is to help make sure we can stabilize capacity and offer competitive price points "
-                      "which should hopefully lead to the greatest possible utility all around.")
-              [:p (str "In this release, we will not charge overages. We may suspend accounts if minute usage far exceeds the plan limit. "
-                       "We’ll have our team keeping an eye on usage and we will reach out proactively if you get close to your respective plan limit.")]
-              [:p "In the near future, we’ll display your usage within the app."]])}
-   {:question (list
-               [:p "What if I don’t choose a plan?"])
-    :answer (list
-             [:p (str "Starting November 30th, organizations that have not chosen a plan may see degraded performance (as long as we have "
-                      "capacity, we’ll do our best to build while you determine which plan works best for you!).")])}
-   {:question (list
-               [:p "What if we’re building open-source?"])
-    :answer (list
-             [:p "Please reach out to our team at "
-              [:a {:href "mailto:sayhi@circleci.com"}
-               "sayhi@circleci.com"]
-              " - we’re happy to provide significant discounts for open-source projects!"])}])
+  [{:question "Why would I choose an OS X plan (as opposed to a Linux Plan)?"
+    :answer [[:div "If you develop for Apple-related software (e.g., you are an iOS developer), you will likely need an OS X plan to ensure your tests run on our secure, private cloud of OS X machines."]
+             [:div "OS X plans start with a two-week trial with access to our Growth Plan (5x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
+             [:div "Linux plans allow customers to build on multiple isolated Linux systems. All customers get 1 free linux container and then Linux plans offer access to additional containers available at $50/container."]]}
 
-(defn osx-faq [items owner]
+   {:question "What plan do I need?"
+    :answer [[:div "We’ve provided recommendations based on the ranges of builds but every team is different regarding their frequency and length of builds - as well as their need for engineer support."]
+             [:div "To solve for this, everyone starts with a free 2-week trial at the Growth Plan which will help you determine all of those factors. We are happy to help you work through which plan is right for your team."]]}
+
+   {:question "What is concurrency?"
+    :answer [[:div "Concurrency refers to running multiple jobs at the same time (e.g., with 2x concurrency, two builds triggered at the same time will both kick off, but on 1x concurrency one build will queue, waiting for resources)."]
+             [:div "Concurrency avoids slow-downs in work as your builds may otherwise queue behind the builds of someone else on your team."]]}
+
+
+   {:question "*What if I go over the minutes allotted for a given plan?"
+    :answer [[:div  "Minutes and overages ensure we can stabilize capacity while offering as much power as possible which should hopefully lead to the greatest possible utility all around."]
+             [:p "Overages are as follows:"]
+             [:ul.overage-list
+              [:li "Seed & Startup: .08/minute"]
+              [:li "Growth: .05/minute"]
+              [:li "Mobile Focused: .035/minute"]]
+             [:div "Users will be alerted in-app as they approach the limit and upon passing their respective limit."]
+             [:div
+              "Feel free to reach out to "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+              " with any additional questions"]]}
+
+   {:question "Can I change my plan at a later time? Can I cancel anytime?"
+    :answer [[:p "Yes and yes!"]
+             [:div
+              "Please reach out to "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+              " to cancel."] ]}
+
+   {:question "What if I want something custom?"
+    :answer [[:div "Feel free to contact us "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]]}
+
+   {:question "What if I am building open-source?"
+    :answer [[:div "We also offer the Seed plan for OS X open-source projects. Contact us at "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+              " for access. If you are building a bigger open-source project and need more resources, let us know how we can help you!"]]}])
+
+(def linux-faq-items
+  [{:question "How do I get started?"
+    :answer [[:div "Linux plans start with the ability to run one build simultaneously without parallelism at no charge. Open source projects get 3 additional free containers, so you can use the power of parallelism and/or run more than one build concurrently. Purchasing a Linux plan enables access to additional containers at $50/container/month."]
+             [:div "During the signup process, you can decide which plan(s) you need - you can build for free regardless!"]]}
+
+   {:question "How do containers work?"
+    :answer [[:div "Every time you push to your VCS system, we checkout your code and run your build inside of a fresh, on-demand, and isolated Linux container pre-loaded with most popular languages, tools, and framework. CircleCI, in many cases, will detect and automatically download and cache your dependencies, and you can fully script any steps or integrations."]]}
+
+   {:question "What is concurrency? What is parallelism?"
+    :answer [[:div "Concurrency refers to utilizing multiple containers to run multiple builds at the same time. Otherwise, if you don't have enough free containers available, your builds queue up until other builds finish."]
+             [:div "Parallelism splits a given build’s tests across multiple containers, allowing you to dramatically speed up your test suite. This enables your developers to finish even the most test-intensive builds in a fraction of the time."]]}
+
+   {:question "How many containers do I need?"
+    :answer [[:div "Most of our customers tend to use about 2-3 containers per full-time developer. Every team is different, however, and we're happy to set you up with a trial to help you figure out how many works best for you. As your team grows and/or as the speed of your build grows you can scale to any number of containers at any level of parallelism and concurrency is right for your team."]]}
+
+   {:question "Why should I trust CircleCI with my code?"
+    :answer [[:div "Security is one of our top priorities. Read our security policy to learn more about why many other customers rely on CircleCI to keep their code safe."]]}
+
+   {:question "Can I change my plan at a later time? Can I cancel anytime?"
+    :answer [[:div "Yes and yes! We offer in-app tools to fully control your plan and have account managers and an international support team standing by when you need help."]]}
+
+   {:question "What if I want something custom?"
+    :answer [[:div "Feel free to contact us "
+              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]]}
+
+   {:question "What if I am building open-source?"
+    :answer [[:div "We offer a total of four free linux containers ($2400 annual value) for open-source projects. Simply keeping your project public will enable this for you!"]]}])
+
+(defn faq-answer-line [answer-line owner]
   (reify
     om/IRender
     (render [_]
       (html
-       [:fieldset.osx-faq
-        [:legend "FAQs"]
-        [:dl
-         (for [{:keys [question answer]} items]
-           (list
-            [:dt question]
-            [:dd answer]))]]))))
+        [:div.answer-line answer-line]))))
+
+(defn faq-item [{:keys [question answer]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.faq-item
+         [:h1.question question]
+         [:div.answer
+          (om/build-all faq-answer-line answer)]]))))
+
+(defn faq [items owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [[first-half second-half] (split-at (quot (count items) 2) items)]
+      (html
+        [:fieldset.faq {:data-component `faq}
+         [:legend "FAQs"]
+         [:div.column
+          (om/build-all faq-item first-half)]
+         [:div.column
+          (om/build-all faq-item second-half)]])))))
 
 (defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
   (reify
@@ -341,26 +380,39 @@
               [:div.title title]
               [:div.price "$" [:span.bold price] "/mo"]]
              [:div.content
-              [:div.containers [:span.bold container-count] " OS X containers"]
+              [:div.containers [:span.bold container-count] " OS X concurrency"]
               [:div.daily-builds
                [:div "Recommended for teams building "]
                [:div.bold daily-build-count " builds/day"]]
               [:div.max-minutes [:span.bold max-minutes] " max minutes/month" [:sup.bold "*"]]
               [:div.support support-level]
-              [:div.team-size "Recommended for " [:span.bold team-size] " team members, " [:span.bold " unlimited "] " projects"]]
+              [:div.team-size "Recommended for " [:span.bold team-size]]
+              [:div " team members"]]
              [:div.action
               (if (pm/stripe-customer? plan)
                 (om/build plan-payment-button {:text "Update"
                                                :loading-text "Updating..."
                                                :disabled? (= (name plan-id) (pm/osx-plan-id plan))
-                                               :on-click-fn #(raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])})
+                                               :on-click-fn #(do
+                                                               (raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])
+                                                               (analytics/track {:event-type :update-plan-clicked
+                                                                                 :owner owner
+                                                                                 :properties {:plan-type "osx"
+                                                                                              :new-plan plan-id
+                                                                                              :previous-plan (pm/osx-plan-id plan)
+                                                                                              :is-upgrade (> (:price plan-data) (pm/osx-cost plan))}}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
-                                               :on-click-fn #(raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
-                                                                                                   :price (:price plan-data)
-                                                                                                   :description (gstring/format "OS X %s - $%d/month "
-                                                                                                                                (clojure.string/capitalize (name plan-id))
-                                                                                                                                (:price plan-data))}])}))
+                                               :on-click-fn #(do
+                                                               (raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
+                                                                                                     :price (:price plan-data)
+                                                                                                     :description (gstring/format "OS X %s - $%d/month "
+                                                                                                                                  (clojure.string/capitalize (name plan-id))
+                                                                                                                                  (:price plan-data))}])
+                                                               (analytics/track {:event-type :new-plan-clicked
+                                                                                 :owner owner
+                                                                                 :properties {:plan-type "osx"
+                                                                                              :plan plan-id}}))}))
 
               (when (and trial-starts-here? (not (pm/osx? plan)))
                 [:div.start-trial "or "
@@ -421,6 +473,42 @@
                 :on-click new-plan-fn}
                plan-img])))))))
 
+(defn limited-release-notice [plan owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [plan-migrations {"Starter" "Seed"
+                             "Standard" "Startup"
+                             "Growth" "Growth"}
+            current-plan-name (some-> plan
+                                      (pm/osx-plan-id)
+                                      (name)
+                                      (clojure.string/split "-")
+                                      (last)
+                                      (clojure.string/capitalize))]
+        (html
+          [:div {:data-component `limited-release-notice}
+           [:div.icon (om/build svg {:src (common/icon-path "Info-Warning")})]
+           [:div.message
+            [:span "CircleCI for OS X is now in General Release!
+                    Limited Release plans will be discontinued on March 31st and
+                    all organizations that have not switched to a new plan will be
+                    converted to the corresponding General Release plan. Please
+                    reach out to "]
+            [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
+            [:span " with any questions or concerns."]
+            (if-let [new-plan (get plan-migrations current-plan-name)]
+              [:div.your-plan
+               [:span "You are currently on '"]
+               [:span.plan-name "Limited Release " current-plan-name  " ($" (pm/osx-cost plan) "/mo)" ]
+               [:span "' and will be moved to '"]
+               [:span.plan-name "General Release " (get plan-migrations current-plan-name)]
+               [:span "' on March 31st."]]
+              [:div.your-plan
+               [:span "You're currently on a '"]
+               [:span.plan-name "Limited Release Custom Plan"]
+               [:span "'. Please contact your account manager for details."]])]])))))
+
 (defn osx-plans-list-ga [plan owner]
   (reify
     om/IRender
@@ -434,7 +522,11 @@
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
             [:legend (str "OS X Plans")]
-            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers."]
+            (when (and (pm/osx? plan)
+                       (not (pm/osx-trial-plan? plan))
+                       (not (pm/osx-ga-plan? plan)))
+              (om/build limited-release-notice plan))
+            [:p "Your selection below only applies to OS X service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
@@ -451,8 +543,8 @@
         (html
           [:div.osx-plans
            [:fieldset
-            [:legend (str "iOS Limited Release Plans")]
-            [:p "Your selection selection below only applies to iOS service and will not affect Linux Containers above."]]
+            [:legend (str "OS X Limited Release Plans")]
+            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers above."]]
            [:div.plan-selection
             (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
             (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
@@ -502,10 +594,13 @@
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
              (if (and (pm/can-edit-plan? plan org-name)
-                      (or (config/enterprise?) (pm/paid? plan) (pm/stripe-customer? plan)))
+                      (or (config/enterprise?)
+                          (pm/stripe-customer? plan)))
                (forms/managed-button
                  (let [enterprise-text "Save changes"]
-                   (if (and (zero? new-total) (not (config/enterprise?)))
+                   (if (and (zero? new-total)
+                            (not (config/enterprise?))
+                            (not (zero? (pm/paid-containers plan))))
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
@@ -559,34 +654,30 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn pricing-tabs [{:keys [app plan checkout-loaded? starting-tab]} owner]
+(defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab]}]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:selected-tab (or starting-tab :linux)})
-
-    om/IRenderState
-    (render-state [_ {:keys [selected-tab]}]
+    om/IRender
+    (render[_]
       (html [:div {:data-component `pricing-tabs}
              [:ul.nav.nav-tabs
               [:li {:class (when (= selected-tab :linux) "active")}
-               [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
+               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan) :_fragment "linux-pricing"})}
                 [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
               [:li {:class (when (= selected-tab :osx) "active")}
-               [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
+               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan) :_fragment "osx-pricing"})}
                 [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
              (condp = selected-tab
                :linux [:div.card
                        (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                       (project-common/mini-parallelism-faq {})]
+                       (om/build faq linux-faq-items)]
 
                :osx [:div.card
                      (om/build osx-plans-list-ga plan)
-                     (om/build osx-faq osx-faq-items)])]))))
+                     (om/build faq osx-faq-items)])]))))
 
 (defn pricing-starting-tab [subpage]
   (get {:osx-pricing :osx
-        :linux-pricing :linux}  subpage))
+        :linux-pricing :linux} subpage :linux))
 
 (defn pricing [app owner]
   (reify
@@ -634,7 +725,7 @@
               (if (feature/enabled? :osx-ga-inner-pricing)
                 [:div
                  (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
-                                         :starting-tab (pricing-starting-tab (:org-settings-subpage app))})]
+                                         :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})]
 
                 [:div
                  (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
@@ -642,7 +733,7 @@
                           (get-in app state/org-osx-enabled-path))
                    (list
                      (om/build osx-plans-list plan)
-                     (om/build osx-faq osx-faq-items))
+                     (om/build faq osx-faq-items))
                    (project-common/mini-parallelism-faq  {}))]))))))))
 
 (defn piggyback-organizations [app owner]
@@ -653,10 +744,14 @@
           user-orgs (get-in app state/user-organizations-path)
           plan (get-in app state/org-plan-path)
           ;; orgs that this user can add to piggyback orgs
-          elligible-piggyback-orgs (-> (map :login user-orgs)
-                                       (set)
-                                       (conj user-login)
-                                       (disj org-name))
+          eligible-piggyback-orgs (-> (into #{}
+                                            (comp
+                                             ;; Only GitHub orgs are allowed to piggieback (for now).
+                                             (filter #(= "github" (:vcs_type %)))
+                                             (map :login))
+                                            user-orgs)
+                                      (conj user-login)
+                                      (disj org-name))
           ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
           ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
           ;; selected-orgs:           {"org-a" false "org-c" true}
@@ -683,7 +778,7 @@
              [:form
               [:div.controls
                ;; orgs that this user can add to piggyback orgs and existing piggyback orgs
-               (for [org (sort (clojure.set/union elligible-piggyback-orgs
+               (for [org (sort (clojure.set/union eligible-piggyback-orgs
                                                   (set (:piggieback_orgs plan))))]
                  [:div.checkbox
                   [:label
@@ -1152,7 +1247,7 @@
             osx-usage (-> plan :usage :os:osx)]
         (html
           [:div.card {:data-component `osx-usage-table}
-           [:div.header (str org-name "'s iOS usage")]
+           [:div.header (str org-name "'s OS X usage")]
            [:hr.divider]
            (let [osx-usage (->> osx-usage
                                 ;Remove any entries that do not have keys matching :yyyy_mm_dd.
@@ -1196,11 +1291,11 @@
     (render [_]
       (html
         [:div
-         [:h2 "iOS"]
+         [:h2 "OS X"]
          (if-not osx-enabled?
-           [:p "You are not currently in the iOS limited-release. If you would like access to iOS builds, please send an email to sayhi@circleci.com."]
+           [:p "You are not currently in the OS X limited-release. If you would like access to OS X builds, please send an email to sayhi@circleci.com."]
            [:div
-            [:p "You are in the iOS limited-release, you may also choose an iOS plan "
+            [:p "Choose an OS X plan "
              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                       :_fragment "osx-pricing"})} "here"] "."]
             (when (pm/osx? plan)
@@ -1209,10 +1304,9 @@
                     trial-end (some-> plan :osx_trial_end_date)]
                 [:p
                  (if (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the iOS trial and have %s left. "
+                   (gstring/format "You're currently on the OS X trial and have %s left. "
                                    (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))
-                   (gstring/format "Your current iOS plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))
-                 [:span "We will support general release in the near future!"]]))])]))))
+                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))])]))))
 
 (defn overview [app owner]
   (om/component
@@ -1251,7 +1345,8 @@
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
-        (when (pm/paid? plan)
+        (when (and (pm/paid? plan)
+                   (pos? (pm/paid-containers plan)))
           [:p
            (str (pm/paid-containers plan) " of these are paid")
            (if piggiebacked? ". "
@@ -1300,7 +1395,7 @@
     (render [_]
       (let [org-data (get-in app state/org-data-path)
             vcs_type (:vcs_type org-data)
-            subpage (or (get app :org-settings-subpage) :overview)
+            subpage (or (get-in app state/org-settings-subpage-path) :overview)
             plan (get-in app state/org-plan-path)]
         (html [:div.org-page
                (if-not (:loaded org-data)
@@ -1315,6 +1410,6 @@
                       (om/build (get main-component subpage projects) app)
                       [:div (om/build non-admin-plan
                                       {:login (get-in app [:current-user :login])
-                                       :org-name (:org-settings-org-name app)
-                                       :vcs_type (:org-settings-vcs_type app)
+                                       :org-name (get-in app state/org-settings-org-name-path)
+                                       :vcs_type (get-in app state/org-settings-vcs-type-path)
                                        :subpage subpage})])]]])])))))

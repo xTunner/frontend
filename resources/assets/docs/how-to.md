@@ -6,6 +6,7 @@ children:
   - background-process
   - code-coverage
   - docker
+  - ios-code-signing
   - external-resources
   - dont-run
   - skip-a-build

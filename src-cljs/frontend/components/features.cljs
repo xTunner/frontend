@@ -206,8 +206,8 @@
        [:div.feature-row
         [:div.feature.feature-offset
          (common/feature-icon "mobile")
-         [:h4.text-center "iOS and Android"]
-         [:p "Test both iOS and Android versions of your mobile app and any backend services, all on CircleCI."]]
+         [:h4.text-center "OS X and Android"]
+         [:p "Test both OS X and Android versions of your mobile app and any backend services, all on CircleCI."]]
         [:div.feature
          (common/feature-icon "docker")
          [:h4.text-center "Docker"]
