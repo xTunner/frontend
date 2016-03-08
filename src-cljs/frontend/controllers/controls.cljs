@@ -962,15 +962,7 @@
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                            :params {:containers containers}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
-       (release-button! uuid (:status api-result))))
-    (let [previous-num-containers (get-in previous-state (conj state/org-plan-path :containers))
-          new-num-containers containers
-          upgrade? (> new-num-containers previous-num-containers)]
-      (analytics/track {:event-type :container-amount-changed
-                        :current-state current-state
-                        :properties {:previous-num-containers previous-num-containers
-                                     :new-num-containers new-num-containers
-                                     :is-upgrade upgrade?}}))))
+       (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :update-osx-plan-clicked
   [target message {:keys [plan-type]} previous-state current-state]
