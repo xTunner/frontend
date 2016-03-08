@@ -3,24 +3,33 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.intercom :as intercom]
             [frontend.elevio :as elevio]
+            [frontend.zendesk :as zendesk]
             [goog.dom :as gdom]))
+
+(defn support-widget []
+  (cond (config/zd-widget-enabled?) :zd
+        (config/elevio-enabled?) :elevio
+        :else :intercom))
 
 (defn raise-dialog [ch]
   (try
-    (if (config/elevio-enabled?)
-      (elevio/show-support!)
-      (js/Intercom "show"))
+    (case (support-widget)
+      :zd (zendesk/show!)
+      :elevio (elevio/show-support!)
+      :intercom (js/Intercom "show"))
     (catch :default e
       (utils/notify-error ch "Uh-oh, our Help system isn't available. Please email us instead, at sayhi@circleci.com")
       (utils/merror e))))
 
 (defn enable-one!
-  "If elevio is enabled, show elevio. Otherwise, disable elevio"
+  "Enables zendesk widget, elevio, or Intercom, depending on LD flags"
   []
-  (if (config/elevio-enabled?)
-    (do
+  (case (support-widget)
+    :zd (elevio/disable!)
+    :elevio (do
       (intercom/enable!)
       (elevio/enable!))
-    (do
-      (elevio/disable!)
-      (intercom/enable!))))
+    ;; default
+    :intercom (do
+                (elevio/disable!)
+                (intercom/enable!))))
