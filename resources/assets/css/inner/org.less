@@ -347,11 +347,12 @@
 
   .ui("osx-plans-list-ga", {
     .plan-selection {
+      padding-top: 20px;
       min-height: 500px;
       .flexy(flex-start, center, row);
-
-      @media (max-width: 1280px) {
-        .flexy(center, center, column);
+      @media (max-width: 1150px) {
+        // ^ magic number chosen so that things wrap into a 2x2.
+        .flex-wrap(wrap);
       }
     }
   });
@@ -359,6 +360,9 @@
   .ui("osx-plan-ga", {
     @border-color: @border-gray-v2;
     @header-background-color: @grayLightest;
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
+    max-width: 300px;
 
     .selected-notice {
       background-color: @brand-blue-v2;

@@ -258,7 +258,7 @@
              [:p "Overages are as follows:"]
              [:ul.overage-list
               [:li "Seed & Startup: .08/minute"]
-              [:li "Venture: .05/minute"]
+              [:li "Growth: .05/minute"]
               [:li "Mobile Focused: .035/minute"]]
              [:div "Users will be alerted in-app as they approach the limit and upon passing their respective limit."]
              [:div
