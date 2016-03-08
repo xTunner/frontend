@@ -260,7 +260,7 @@
       [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
       (when (pm/transferrable-or-piggiebackable-plan? plan)
         [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
-      (when (or (pm/paid? plan) (pm/osx? plan))
+      (when (pm/stripe-customer? plan)
         [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}])))
    [{:type :heading :title "Organization"}
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
