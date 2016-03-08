@@ -557,7 +557,7 @@
     updated-state))
 
 (defn org-selectable? [state org-name]
-  (or (= org-name (:org-settings-org-name state))
+  (or (= org-name (get-in state state/org-settings-org-name-path))
       (= org-name (get-in state state/add-projects-selected-org-login-path))))
 
 (defmethod api-event [:org-plan :success]
@@ -663,7 +663,7 @@
 
 (defmethod api-event [:plan-card :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
     state
     (let [card (or resp {})] ; special case in case card gets deleted
       (assoc-in state state/stripe-card-path card))))
@@ -671,18 +671,18 @@
 
 (defmethod api-event [:create-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
     state
     (assoc-in state state/org-plan-path resp)))
 
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
-  (when (= (:org-name context) (:org-settings-org-name current-state))
+  (when (= (:org-name context) (get-in current-state state/org-settings-org-name-path))
     (let [nav-ch (get-in current-state [:comms :nav])
-          vcs_type (:org-settings-vcs_type current-state)]
+          vcs_type (get-in current-state state/org-settings-vcs-type-path)]
       (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
                                                                     :vcs_type vcs_type
-                                                                    :_fragment (name (get-in current-state [:org-settings-subpage]))})
+                                                                    :_fragment (name (get-in current-state state/org-settings-subpage-path))})
                                 :replace-token? true}]))))
 
 (defmethod api-event [:update-plan :success]
@@ -709,7 +709,7 @@
 (defmethod api-event [:plan-invoices :success]
   [target message status {:keys [resp context]} state]
   (utils/mlog ":plan-invoices API event: " resp)
-  (if-not (= (:org-name context) (:org-settings-org-name state))
+  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
     state
     (assoc-in state state/org-invoices-path resp)))
 
