@@ -654,7 +654,7 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab] :or {selected-tab :linux}} owner]
+(defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab]}]
   (reify
     om/IRender
     (render[_]
@@ -677,7 +677,7 @@
 
 (defn pricing-starting-tab [subpage]
   (get {:osx-pricing :osx
-        :linux-pricing :linux}  subpage))
+        :linux-pricing :linux} subpage :linux))
 
 (defn pricing [app owner]
   (reify
