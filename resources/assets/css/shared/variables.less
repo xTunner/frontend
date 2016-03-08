@@ -1,3 +1,7 @@
+//
+// CircleCI CSS/LESS Variables
+// --------------------------------------------------
+
 // Colors
 
 @black:                 #000000;
@@ -33,32 +37,32 @@
 
 @purple:                #ab7fd1;
 
-// Text
+// Text Colors
 
 @successText:           @green;
 @errorText:             @redLight;
 
-// Links
+// Link Colors
 
 @linkColor:             @blueDark;
 @linkColorHover:        @blueDark;
 
 // UI Colors
 
-@grayBoxBorder:       @grayLighter; // FIXME should we change these in all the files?
-@grayBorder:          @grayLightest; // FIXME should we change these in all the files?
+@grayBoxBorder:       @grayLighter;
+@grayBorder:          @grayLightest;
 
 // Terminal colors
 @terminalBackground: @grayDarker;
 @terminalText: #edede3;
 
-@brand-lighten-ratio-v2:   29%; //FIXME
+@brand-lighten-ratio-v2:   29%; //FIXME: We should do this differently
 
-// Button colors
+// Button Colors
 
 @button-border: lighten(@black, 90);
 
-// Status colors
+// Status Colors
 
 @statuspage-major-bg:   @redLightest;
 @statuspage-minor-bg:   @yellowLightest;
@@ -72,20 +76,20 @@
 @baseFontSize:          14px;
 @baseLineHeight:        20px;
 
-@fontSizeJumbo:         round((@baseFontSize * 2), 0); // 28px
+@fontSizeLargest:       round((@baseFontSize * 2.00), 0); // 28px
 @fontSizeLarger:        round((@baseFontSize * 1.45), 0); // 20px
 @fontSizeLarge:         round((@baseFontSize * 1.25), 0); // 18px
 @fontSizeMedium:        round((@baseFontSize * 1.15), 0); // 16px
-@fontSizeSmallish:      round((@baseFontSize * 0.95), 0); // 13px
+@fontSizeSmallish:      round((@baseFontSize * 0.95), 0); // 13px Fixme: need to rename this variable
 @fontSizeSmall:         round((@baseFontSize * 0.85), 0); // 12px
-@fontSizeMini:          round((@baseFontSize * 0.75), 0); // 11px
+@fontSizeSmallest:      round((@baseFontSize * 0.75), 0); // 11px
 
 h1, .h1 { font-size: @fontSizeLarger !important; } // 20px
 h2, .h2 { font-size: @fontSizeLarge !important; }  // 18px
 h3, .h3 { font-size: @fontSizeMedium !important; } // 16px
 h4, .h4 { font-size: @baseFontSize !important; }   // 14px
 h5, .h5 { font-size: @fontSizeSmall !important; }  // 12px
-h6, .h6 { font-size: @fontSizeMini !important; }   // 11px
+h6, .h6 { font-size: @fontSizeSmallest !important; }   // 11px
 
 @codeFontSize:          @fontSizeSmall;
 @codeCharacterWidth:    round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
