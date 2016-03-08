@@ -42,7 +42,7 @@
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
-            [cider/cider-nrepl "0.10.2"]
+            [cider/cider-nrepl "0.11.0"]
             [lein-environ "1.0.1"]]
 
   ;; Don't include these dependencies transitively. These are foundational
