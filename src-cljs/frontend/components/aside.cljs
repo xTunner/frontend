@@ -78,7 +78,7 @@
              (sidebar-build build {:vcs_type vcs_type :org org :repo repo :branch (name name-kw)}))]])))))
 
 (defn project-settings-link [{:keys [project]} owner]
-  (when (and (project-model/can-read-settings? project))
+  (when (and (project-model/can-write-settings? project))
     (let [org-name (:username project)
           repo-name (:reponame project)
           vcs-type (:vcs_type project)]
