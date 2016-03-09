@@ -3,6 +3,6 @@
 title: Mobile Platforms
 children:
   - android
-  - ios
+  - ios-builds-on-os-x
 
 -->
