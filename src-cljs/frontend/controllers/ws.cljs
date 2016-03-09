@@ -17,7 +17,7 @@
 ;; Example: (put! ws-ch [:subscribe {:channel-name "my-channel" :messages [:my-message]}])
 ;;
 ;; Unsubscribe by putting an unsubscribe message in the channel with the channel name
-;; Exampel: (put! ws-ch [:unsubscribe "my-channel"])
+;; Example: (put! ws-ch [:unsubscribe "my-channel"])
 ;; the api-post-controller can do any other actions
 
 (defn fresh-channels
@@ -156,6 +156,7 @@
 
 (defmethod post-ws-event! :unsubscribe
   [pusher-imp message channel-name previous-state current-state]
+  (utils/mlog "unsubscribing from " channel-name)
   (pusher/unsubscribe pusher-imp channel-name))
 
 (defmethod post-ws-event! :unsubscribe-stale-channels

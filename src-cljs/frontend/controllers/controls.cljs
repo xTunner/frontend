@@ -224,15 +224,6 @@
   [target message {:keys [container-id]} state]
   (assoc-in state state/current-container-path container-id))
 
-(defn update-pusher-subscriptions
-  [state old-index new-index]
-  (let [ws-ch (get-in state [:comms :ws])
-        build (get-in state state/build-path)]
-    (put! ws-ch [:unsubscribe {:channel-name (pusher/build-channel build old-index)
-                               :messages pusher/container-messages}])
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build new-index)
-                             :messages pusher/container-messages}])))
-
 (defmethod post-control-event! :container-selected
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state]
   (when-let [parent (goog.dom/getElement "container_parent")]
@@ -264,17 +255,14 @@
   (let [previous-container-id (get-in previous-state state/current-container-path)]
     (when (not= previous-container-id container-id)
       (let [container (get-in current-state (state/container-path container-id))
-            last-action (-> container :actions last)]
-        (when (and (:has_output last-action)
-                   (action-model/visible? last-action)
-                   (:missing-pusher-output last-action))
-          (api/get-action-output {:vcs-url (:vcs_url (get-in current-state state/build-path))
-                                  :build-num (:build_num (get-in current-state state/build-path))
-                                  :step (:step last-action)
-                                  :index (:index last-action)
-                                  :output-url (:output_url last-action)}
-                                 (get-in current-state [:comms :api]))
-          (update-pusher-subscriptions current-state previous-container-id container-id))))))
+            last-action (-> container :actions last)
+            vcs-url (:vcs_url (get-in current-state state/build-path))]
+        (api/get-action-steps {:vcs-url vcs-url
+                               :build-num (:build_num (get-in current-state state/build-path))
+                               :project-name (vcs-url/project-name vcs-url)
+                               :old-container-id previous-container-id
+                               :new-container-id container-id}
+                              (get-in current-state [:comms :api]))))))
 
 (defmethod control-event :container-paging-offset-changed
   [target message {:keys [paging-offset]} state]

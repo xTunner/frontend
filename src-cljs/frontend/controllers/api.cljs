@@ -325,6 +325,43 @@
                                             tests
                                             (vec old-tests)))))))
 
+(defmethod api-event [:action-steps :success]
+  [target message status args state]
+  (let [build (get-in state state/build-path)
+        action-steps (:resp args)
+        {:keys [build-num project-name]} (:context args)]
+    (if-not (and (= build-num (:build_num build))
+                 (= project-name (vcs-url/project-name (:vcs_url build))))
+      state
+      (assoc-in state (conj state/build-path :steps) action-steps))))
+
+(defn update-pusher-subscriptions
+  [state old-index new-index]
+  (let [ws-ch (get-in state [:comms :ws])
+        build (get-in state state/build-path)]
+    (put! ws-ch [:unsubscribe (pusher/build-channel build old-index)])
+    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build new-index)
+                             :messages pusher/container-messages}])))
+
+(defmethod post-api-event! [:action-steps :success]
+  [target message status args previous-state current-state]
+  (let [{:keys [build-num project-name old-container-id new-container-id]} (:context args)
+        build (get-in current-state state/build-path)]
+    (when (and (= build-num (:build_num build))
+               (= project-name (vcs-url/project-name (:vcs_url build))))
+      (doseq [action (mapcat :actions (get-in current-state state/containers-path))
+              :when (and (:has_output action)
+                         (action-model/visible? action))]
+        (api/get-action-output {:vcs-url (:vcs_url build)
+                                :build-num build-num
+                                :step (:step action)
+                                :index (:index action)
+                                :output-url (:output_url action)}
+                               (get-in current-state [:comms :api])))
+      (update-pusher-subscriptions current-state old-container-id new-container-id)
+      (frontend.favicon/set-color! (build-model/favicon-color build))
+      (set-containers-filter! current-state))))
+
 (defmethod api-event [:action-log :success]
   [target message status args state]
   (let [action-log (:resp args)

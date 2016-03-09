@@ -160,11 +160,19 @@
                                            build-num
                                            step
                                            index)))]
-    (ajax/ajax :get
-               url
-               :action-log
-               api-ch
-               :context args)))
+    (ajax/ajax :get url :action-log api-ch :context args)))
+
+(defn get-action-steps [{:keys [vcs-url build-num] :as args} api-ch]
+  (let [vcs-type (vcs-url/vcs-type vcs-url)
+        url (case vcs-type
+              "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/action-steps"
+                                          vcs-type
+                                          (vcs-url/project-name vcs-url)
+                                          build-num)
+              "github" (gstring/format "/api/v1/project/%s/%s/action-steps"
+                                       (vcs-url/project-name vcs-url)
+                                       build-num))]
+    (ajax/ajax :get url :action-steps api-ch :context args)))
 
 (defn get-org-settings [org-name api-ch]
   (ajax/ajax :get
