@@ -140,7 +140,7 @@
 (defn branch-build-times-url [target-key]
   (sec/render-route "/api/v1/project/:vcs_type/:org/:repo/build-timing/:branch" target-key))
 
-(defn get-branch-build-times [{:keys [org repo branch vcs_type] :as target-key} api-ch]
+(defn get-branch-build-times [{:keys [org repo branch] :as target-key} api-ch]
   (let [url (branch-build-times-url target-key)]
     (ajax/ajax :get url :branch-build-times api-ch :context {:target-key target-key} :params {:days 90})))
 
@@ -166,9 +166,11 @@
                api-ch
                :context args)))
 
-(defn get-org-settings [org-name api-ch]
+(defn get-org-settings [vcs-type org-name api-ch]
   (ajax/ajax :get
-             (gstring/format "/api/v1/organization/%s/settings" org-name)
+             (case vcs-type
+               "bitbucket" (gstring/format "/api/dangerzone/organization/%s/%s/settings" vcs-type org-name)
+               "github" (gstring/format "/api/v1/organization/%s/settings" org-name))
              :org-settings
              api-ch
              :context {:org-name org-name}))

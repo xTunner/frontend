@@ -250,18 +250,22 @@
            [:div.aside-user-options
             (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
-(defn org-settings-nav-items [plan org-name]
+(defn org-settings-nav-items [plan {org-name :name
+                                    org-vcs-type :vcs_type
+                                    :as org-data}]
   (concat
-   [{:type :heading :title "Plan"}
-    {:type :subpage :title "Overview" :href "#" :subpage :overview}]
-   (if-not (pm/can-edit-plan? plan org-name)
-     [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
-     (concat
-      [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
-      (when (pm/transferrable-or-piggiebackable-plan? plan)
-        [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
-      (when (pm/stripe-customer? plan)
-        [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}])))
+   ;; Only GitHub orgs support paid plans currently.
+   (when (= "github" org-vcs-type)
+     [{:type :heading :title "Plan"}
+      {:type :subpage :title "Overview" :href "#" :subpage :overview}]
+     (if-not (pm/can-edit-plan? plan org-name)
+       [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
+       (concat
+        [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
+        (when (pm/transferrable-or-piggiebackable-plan? plan)
+          [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
+        (when (pm/stripe-customer? plan)
+          [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}]))))
    [{:type :heading :title "Organization"}
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
@@ -318,9 +322,8 @@
     (render [_]
       (let [plan (get-in app state/org-plan-path)
             org-data (get-in app state/org-data-path)
-            org-name (:name org-data)
-            subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan org-name)
-            items (org-settings-nav-items plan org-name)]
+            subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan (:name org-data))
+            items (org-settings-nav-items plan org-data)]
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
           [:header
