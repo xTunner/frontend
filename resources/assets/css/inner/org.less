@@ -137,7 +137,7 @@
 
           strong {
             font-size: 22px;
-            color: @circleBlue;
+            color: @blueDark;
           }
         }
       }
@@ -174,8 +174,8 @@
       }
 
       .cancel {
-        background-color: @brand-red-v2;
-        border-color: @brand-red-v2;
+        background-color: @red;
+        border-color: @red;
       }
     }
   }
@@ -225,12 +225,12 @@
   }
 
   .ui("osx-usage-row", {
-    @progress-bar-color: @brand-info-v2;
+    @progress-bar-color: @blueLight;
     @progress-background-color: @grayLightest;
 
     height: 30px;
     font-size: @fontSizeSmallish;
-    color: @secondary-button-color;
+    color: @gray;
     border-top: 1px solid @grayLighter;
     border-bottom: 1px solid @grayLighter;
 
@@ -239,7 +239,7 @@
     }
 
     &:hover {
-      background: @table-alt-row-background;
+      background: @whiten;
     }
 
     .billing-period {
@@ -282,7 +282,7 @@
     }
 
     .over-usage {
-      color: @brand-red-v2;
+      color: @red;
     }
   });
 
@@ -303,7 +303,7 @@
 
     thead {
       font-size: @fontSizeSmallish;
-      color: @secondary-button-color;
+      color: @gray;
 
       tr {
         height: 30px;
@@ -358,18 +358,18 @@
   });
 
   .ui("osx-plan-ga", {
-    @border-color: @border-gray-v2;
+    @border-color: @grayLighter;
     @header-background-color: @grayLightest;
     flex-grow: 1;
     -webkit-flex-grow: 1;
     max-width: 300px;
 
     .selected-notice {
-      background-color: @brand-blue-v2;
+      background-color: @blueLight;
     }
 
     .trial-expired-notice {
-      background-color: @brand-warning-v2;
+      background-color: @orange;
     }
 
     .trial-notice {

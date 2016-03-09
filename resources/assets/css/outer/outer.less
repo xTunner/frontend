@@ -3,20 +3,7 @@
   @outer-font-family-sans-serif:      'ProximaNova', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
   @outer-font-family-monospace:       RobotoMono-Light, Monaco, Consolas, "Courier New", monospace;
-  @outer-font-family-base:            @font-family-sans-serif;
-
-  font-family: @outer-font-family-sans-serif;
-
-  @font-size-base:          16px;
-  @font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
-  @font-size-small:         ceil((@font-size-base * 0.70)); // ~12px
-
-  @font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
-  @font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
-  @font-size-h3:            ceil((@font-size-base * 1.7)); // ~24px
-  @font-size-h4:            ceil((@font-size-base * 1.25)); // ~18px
-  @font-size-h5:            @font-size-base;
-  @font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
+  @outer-font-family-base:            @outer-font-family-sans-serif;
 
   //** Unit-less `line-height` for use in components like buttons.
   @line-height-base:        1.428571429; // 20/14
@@ -37,11 +24,11 @@
   .btn-cta {
     .btn-success;
 
-    padding: @padding-xl-vertical @padding-xl-horizontal;
+    padding: 16px 22px;
     width: @btn-cta-width;
 
-    font-size: @font-size-large;
-    line-height: @line-height-large;
+    font-size: @fontSizeLarge;
+    line-height: 1.3333333;
     letter-spacing: 0.5px;
     font-weight: 600;
     text-transform: capitalize;
@@ -157,8 +144,8 @@
 
   // Hover background should override active background
   .navbar-default .navbar-nav  > .active:hover {
-    color: @navbar-default-link-hover-color;
-    background-color: @navbar-default-link-hover-bg;
+    color: @blueDark;
+    background-color: transparent;
   }
 
   // Emphasis & misc

@@ -1,165 +1,111 @@
+//
+// CircleCI CSS/LESS Variables
+// --------------------------------------------------
 
-@circleBlue:           #084963;
-@circleBlueLight:      #9ec5d4;
+// Colors
 
-@brand-red-v2:    #ed5c5c;
-@brand-orange-v2: #ff8c31;
-@brand-green-v2:  #42c88a;
-@brand-blue-v2:   #66d3e4;
-@brand-purple-v2: #ab7fd1;
+@black:                 #000000;
+@blacken:               #080808;
+@grayDarkest:           #131313;
+@grayDarker:            #212121;
+@grayDark:              #333333;
+@gray:                  #555555;
+@grayLight:             #898989;
+@grayLighter:           #cccccc;
+@grayLightest:          #eeeeee;
+@whiten:                #fbfbfb;
+@white:                 #ffffff;
 
-@brand-primary-v2:         @brand-blue-v2;
-@brand-success-v2:         @brand-green-v2;
-@brand-info-v2:            @brand-blue-v2;
-@brand-warning-v2:         @brand-orange-v2;
-@brand-danger-v2:          @brand-red-v2;
-@brand-canceled-v2:        @grayLight;
-@brand-pending-v2:         #ab7fd1;
+@circleGray:            #343434;
 
-@brand-lighten-ratio-v2:   29%;
+@blueDarkest:           darken(spin(@blue,  -1.00), 19.7); // #FIXME: CALCULATE THESE COLORS
+@blueDark:              #27a0b6;
+@blue:                  #3dc1d9; // .brand-primary
+@blueLight:             #66d3e4; // .brand-info
+@blueLightest:          #d9f4f8;
 
-@background-color-v2: #f5f5f5;
-@background-color-dark-v2: #666;
-@gray-chevron: #9b9b9b;
-@gray-chevron-label: #505050;
-@link-color-v2: #27a0b6;
+@green:                 #42c88a; // .brand-success
+@greenLightest:         #d0f1e2;
+
+@red:                   #ed5c5c; // .brand-danger
+@redLight:              #f7b4b4;
+@redLightest:           #fad6d6;
+
+@yellowLightest:        #f7ebcf;
+
+@orange:                #ff8c31; // .brand-warning
+
+@purple:                #ab7fd1;
+
+// Text Colors
+
+@successText:           @green;
+@errorText:             @redLight;
+
+// Link Colors
+
+@linkColor:             @blueDark;
+@linkColorHover:        @blueDark;
+
+// UI Colors
+
+@grayBoxBorder:       @grayLighter;
+@grayBorder:          @grayLightest;
+@header-hover-bg:     #f2fafc;
 
 // Terminal colors
 @terminalBackground: @grayDarker;
 @terminalText: #edede3;
 
-@build-card-title: #666;
-@build-card-color: #555;
+@brand-lighten-ratio-v2:   29%; //FIXME: We should do this differently
 
-@list-border-color: @grayLightest;
-
-@build-failure-chevron-size: 0.8em;
-@border-gray-v2: #ddd;
-
-@build-timings-axis: #d8d8d8;
-
-@insights-header-fail: rgba(232, 67, 67, 0.2);
-
-@beta-header-color: #aaa;
-@beta-text-color: #666;
-@alert-success-color: #d0f1e2;
-
-@input-border-blue: #9ec5d4;
-@input-border-focus-blue: #acd9de;
-
-@table-alt-row-background: #f2f9fa;
-
-@primary-button-background: #3dc1d9;
-@primary-button-hover-background: #51c7dd;
-@primary-button-disabled-background: #ddd;
-
-@secondary-button-color: #505050;
-@secondary-button-background: #f0f0f0;
-@secondary-button-hover-background: #f8f8f8;
+// Button Colors
 
 @button-border: lighten(@black, 90);
 
-@statuspage-major-bg: #fad6d6;
-@statuspage-minor-bg: #f7ebcf;
-@statuspage-text-color: @background-color-dark-v2;
+// Status Colors
 
-// Misc.
+@statuspage-major-bg:   @redLightest;
+@statuspage-minor-bg:   @yellowLightest;
+@statuspage-text-color: @gray;
 
-@imgPath: "../../img";
+// Typography
 
-// Colors
+@sansSerifFontFamily:   "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@monoFontFamily:        "RobotoMono", Monaco, "Courier New", monospace;
 
-@black:                #000000;
-@blacken:              #080808;
-@grayDarkest:          #131313;
-@grayDarker:           #212121;
-@grayDark:             #333333;
-@gray:                 #555555;
-@grayLight:            #898989;
-@grayLighter:          #cccccc;
-@grayLightest:         #eeeeee;
-@whiten:               #fbfbfb;
-@white:                #ffffff;
+@baseFontSize:          14px;
+@baseLineHeight:        20px;
 
-@circleGray:           #343434;
-
-@blue:                                                              #007196; // #007196
-@blueDarkest:           darken(           spin(@blue,  -1.00), 19.7)       ; // #002632
-@blueDarker:            darken(                @blue,  14.80)              ; // #00384b
-@blueDark:              darken(                @blue,   9.80)              ; // #004b64
-@blueLight:            lighten(                @blue,   9.75)              ; // #0096c8
-@blueLighter:          lighten(           spin(@blue,   0.60), 19.7)       ; // #00bafa
-@blueLightest:         lighten(desaturate(spin(@blue, -15.00), 17.0), 58.9); // #c8fafa
-
-@green:                @brand-green-v2;
-@greenDarkest:          darken(  saturate(@green, 15.5),  27.3); // #052b05
-@greenDarker:           darken(  saturate(@green,  9.2),  17.3); // #0d550d
-@greenDark:             darken(  saturate(@green,  5.0),   9.8); // #157415
-@greenLight:           lighten(desaturate(@green,  8.0),  12.0); // #37c137
-@greenLighter:         lighten(  saturate(@green,  4.0),  24.5); // #59df59
-@greenLightest:        lighten(  saturate(@green, 19.0),  51.5); // #c8fac8
-
-@red:                                                   #992222; // #992222
-@redDarkest:            darken(  saturate(@red,     15), 27.30); // #2b0505
-@redDarker:             darken(  saturate(@red,      9), 17.34); // #550d0d
-@redDark:               darken(  saturate(@red,      5),  9.80); // #741515
-@redLight:             lighten(desaturate(@red,      8), 12.00); // #c13737
-@redLighter:           lighten(  saturate(@red,      4), 24.60); // #df5959
-@redLightest:          lighten(  saturate(@red,     19), 51.50); // #fac8c8
-
-@orange:                       #e95900;
-
-// Text
-
-@successText:              @green;
-@errorText:                @redLight;
-
-@sansSerifFontFamily:    "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-@monoFontFamily:         "RobotoMono", Monaco, "Courier New", monospace;
-
-@baseFontSize:             14px;
-@baseLineHeight:           20px;
-
-@fontSizeJumbo:            round((@baseFontSize * 2), 0); // 28px
-@fontSizeLarger:           round((@baseFontSize * 1.45), 0); // 20px
-@fontSizeLarge:            round((@baseFontSize * 1.25), 0); // 18px
-@fontSizeMedium:           round((@baseFontSize * 1.15), 0); // 16px
-@fontSizeSmallish:         round((@baseFontSize * 0.95), 0); // 13px
-@fontSizeSmall:            round((@baseFontSize * 0.85), 0); // 12px
-@fontSizeMini:             round((@baseFontSize * 0.75), 0); // 11px
+@fontSizeLargest:       round((@baseFontSize * 2.00), 0); // 28px
+@fontSizeLarger:        round((@baseFontSize * 1.45), 0); // 20px
+@fontSizeLarge:         round((@baseFontSize * 1.25), 0); // 18px
+@fontSizeMedium:        round((@baseFontSize * 1.15), 0); // 16px
+@fontSizeSmallish:      round((@baseFontSize * 0.95), 0); // 13px Fixme: need to rename this variable
+@fontSizeSmall:         round((@baseFontSize * 0.85), 0); // 12px
+@fontSizeSmallest:      round((@baseFontSize * 0.75), 0); // 11px
 
 h1, .h1 { font-size: @fontSizeLarger !important; } // 20px
 h2, .h2 { font-size: @fontSizeLarge !important; }  // 18px
 h3, .h3 { font-size: @fontSizeMedium !important; } // 16px
 h4, .h4 { font-size: @baseFontSize !important; }   // 14px
 h5, .h5 { font-size: @fontSizeSmall !important; }  // 12px
-h6, .h6 { font-size: @fontSizeMini !important; }   // 11px
+h6, .h6 { font-size: @fontSizeSmallest !important; }   // 11px
 
-@codeFontSize:             @fontSizeSmall;
-@codeCharacterWidth:       round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
+@codeFontSize:          @fontSizeSmall;
+@codeCharacterWidth:    round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
 
 // Spacing
 
-@standardBlockSize: 250px;
-@minimumContentWidth: 960px;
-@spinnerSize: (@baseFontSize * 3);
-@innerContentPadding: @baseFontSize;
+@standardBlockSize:     250px;
+@minimumContentWidth:   960px;
+@spinnerSize:           (@baseFontSize * 3);
+@innerContentPadding:   @baseFontSize;
 @tile: 70px;
 
-// Links
+// Navigation
 
-@linkColor:                @link-color-v2;
-@linkColorHover:           @link-color-v2;
-
-// UI Colors
-
-@grayBoxBorder:       lighten(@grayLighter, 6.75);
-@grayBorder:          lighten(@gray, 55.50); //#e3e3e3
-
-// 3D Lighting (soft to hard)
-
-@lightSoft:  fadein(fadeout(@white, 100), 5);
-@shadowSoft: fadein(fadeout(@black, 100), 8);
+@top-nav-height: 50px;
 
 // Footer
 
@@ -171,4 +117,8 @@ h6, .h6 { font-size: @fontSizeMini !important; }   // 11px
 @zindex-aside: 901;
 @zindex-app-main: 900;
 
-@top-nav-height: 50px;
+// Misc.
+
+@imgPath: "../../img";
+
+@build-failure-chevron-size: 0.8em;

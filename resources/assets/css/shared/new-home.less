@@ -109,15 +109,15 @@
 @mobile-scale-factor: 0.8;
 @home-section-height: 100vh;
 
-.scaled-header (@font-size, @line-height) {
-  font-size: @font-size;
-  line-height: @line-height;
+// .scaled-header (@font-size, @line-height) {
+//   font-size: @font-size;
+//   line-height: @line-height;
 
-  @media (max-width: @screen-sm-max) {
-    font-size: (@font-size * @mobile-scale-factor);
-    line-height: (@line-height * @mobile-scale-factor);
-  }
-}
+//   @media (max-width: @screen-sm-max) {
+//     font-size: (@font-size * @mobile-scale-factor);
+//     line-height: (@line-height * @mobile-scale-factor);
+//   }
+// }
 
 .scaled-page (@page-height: @home-section-height) {
   min-height: @page-height;
@@ -133,21 +133,21 @@
     font-size: 1.1428572em; // 16px
     line-height: 1.5em; // 24px
 
-    h1 {
-      .scaled-header(@prolog-h1-font, @prolog-h1-line);
-      font-weight: 300;
-    }
+    // h1 {
+    //   .scaled-header(@prolog-h1-font, @prolog-h1-line);
+    //   font-weight: 300;
+    // }
 
-    h3 {
-      .scaled-header(@prolog-h3-font, @prolog-h3-line);
-      font-weight: normal;
-    }
+    // h3 {
+    //   .scaled-header(@prolog-h3-font, @prolog-h3-line);
+    //   font-weight: normal;
+    // }
 
-    h5 {
-      .scaled-header(@prolog-h5-font, @prolog-h5-line);
-      font-weight: normal;
-      margin: 1em 0;
-    }
+    // h5 {
+    //   .scaled-header(@prolog-h5-font, @prolog-h5-line);
+    //   font-weight: normal;
+    //   margin: 1em 0;
+    // }
   }
 
   a {
@@ -326,7 +326,7 @@
 }
 .home-prolog {
   // adjustment for header
-  .scaled-page(~"calc(100vh - @{navbar-height})");
+  .scaled-page(~"calc(100vh - 70px)");
 
   background: @grayDark;
   color: @prolog-light-on-dark;
@@ -967,7 +967,9 @@
       } .margin(@c2);
     }
 
-  } .selected-quote(@customers-brands);
+  }
+
+  // .selected-quote(@customers-brands);
 
   .flexy(flex-end);
   flex-wrap: wrap;

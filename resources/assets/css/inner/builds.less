@@ -60,7 +60,7 @@
 
 .build-artifacts-list {
   .clearfix();
-  font-family: @font-family-monospace;
+  font-family: @monoFontFamily;
   font-size: @codeFontSize;
   list-style-type: none;
   padding: 0;
@@ -545,7 +545,7 @@
     }
     h5, h6 {
       font-weight: normal;
-      font-family: @font-family-monospace;
+      font-family: @monoFontFamily;
     }
     table.code {
       color: @grayLighter;
@@ -604,7 +604,7 @@
 
 table.code {
   @error_offset: 5px;
-  @error_color: @redLighter;
+  @error_color: @redLightest;
   width: 100%;
   border: 1px solid @grayBoxBorder;
   background: @whiten;
@@ -612,7 +612,7 @@ table.code {
   border-radius: 4px;
   font-size: @codeFontSize;
   line-height: @fontSizeLarge;
-  font-family: @font-family-monospace;
+  font-family: @monoFontFamily;
   thead {
     th {
       padding: 0;      //
@@ -767,11 +767,11 @@ table.code {
 
 .action_header {
   &.success {
-    border-left: @side-line-width solid @brand-success-v2;
+    border-left: @side-line-width solid @green;
   }
 
   &.failed {
-    border-left: @side-line-width solid @brand-danger-v2;
+    border-left: @side-line-width solid @red;
 
     // make sure failed command text color is not white on a white background
     .command-text {
@@ -784,7 +784,7 @@ table.code {
   }
 
   &.running {
-    border-left: @side-line-width solid @brand-primary-v2;
+    border-left: @side-line-width solid @blueLight;
   }
 
   &.canceled {

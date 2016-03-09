@@ -9,7 +9,7 @@
   margin-top: 15px;
 
   a {
-    color: @link-color-v2;
+    color: @blueDark;
   }
 
   .alert {
@@ -41,7 +41,7 @@
   }
 
   > .diagnostics-header {
-    background-color: @state-info-bg;
+    background-color: lighten(@blueLight, @brand-lighten-ratio-v2);;
     color: @blacken;
     cursor: pointer;
 
@@ -90,7 +90,7 @@
 
 .recent-time {
   white-space: nowrap;
-  font-family: @font-family-monospace;
+  font-family: @monoFontFamily;
   font-size: @codeFontSize;
   min-width: 55px;
 
@@ -466,15 +466,15 @@
 }
 
 .build.pass .metadata {
-  border-color: @brand-success-v2;
+  border-color: @green;
 }
 
 .build.fail .metadata {
-  border-color: @brand-danger-v2;
+  border-color: @red;
 }
 
 .build.busy .metadata {
-  border-color: @brand-primary-v2;
+  border-color: @blueLight;
 }
 
 .build.stop .metadata {
@@ -482,5 +482,5 @@
 }
 
 .build.queued .metadata {
-  border-color: @brand-pending-v2;
+  border-color: @purple;
 }

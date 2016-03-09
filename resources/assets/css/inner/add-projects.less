@@ -33,7 +33,7 @@
     text-align: center;
     color: @white;
 
-    background: @brand-blue-v2;
+    background: @blueLight;
     border-radius: 50%;
   }
 
@@ -69,7 +69,7 @@
     height: 1.4em;
     margin: 5px;
     padding: 5px 15px;
-    border: 1px solid @input-border-blue;
+    border: 1px solid @blueLight;
   }
 
   .org-listing {
@@ -105,7 +105,7 @@
     text-align: center;
 
     .title {
-      font-size: @fontSizeJumbo;
+      font-size: @fontSizeLargest;
     }
 
     .info {
@@ -130,11 +130,11 @@
 
       .plan {
         min-width: 180px;
-        background: @primary-button-background;
+        background: @blue;
         border: 1px solid @button-border;
 
         &:hover {
-          background: @primary-button-hover-background;
+          background: @blueDark;
         }
       }
 
@@ -143,11 +143,11 @@
         margin-left: 15px;
         border-radius: 3px;
         border: 1px solid @button-border;
-        background: @secondary-button-background;
-        color: @secondary-button-color;
+        background: @grayLightest;
+        color: @gray;
 
         &:hover {
-          background: @secondary-button-hover-background;
+          background: @whiten;
         }
       }
     }
@@ -254,17 +254,17 @@
         text-decoration: none;
 
         &:hover {
-          color: @link-color-v2;
+          color: @blueDark;
           text-decoration: none;
         }
       }
 
       &.active {
-        color: @link-color-v2;
-        border-color: @brand-blue-v2;
+        color: @blueDark;
+        border-color: @blueLight;
 
         > a.visit-org {
-          color: @link-color-v2;
+          color: @blueDark;
         }
       }
     }
@@ -551,11 +551,11 @@
           vertical-align: middle;
 
           &.check {
-            color: @brand-success-v2;
+            color: @green;
           }
 
           &.ex {
-            color: @brand-danger-v2;
+            color: @red;
           }
         }
       }
