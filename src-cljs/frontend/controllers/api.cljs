@@ -328,12 +328,14 @@
 (defmethod api-event [:action-steps :success]
   [target message status args state]
   (let [build (get-in state state/build-path)
-        action-steps (:resp args)
         {:keys [build-num project-name]} (:context args)]
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
-      (assoc-in state (conj state/build-path :steps) action-steps))))
+      (let [build (assoc build :steps (:resp args))]
+        (-> state
+            (assoc-in state/build-path build)
+            (assoc-in state/containers-path (vec (build-model/containers build))))))))
 
 (defn update-pusher-subscriptions
   [state old-index new-index]
