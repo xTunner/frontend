@@ -411,16 +411,18 @@
           %))))
 
 (defmethod post-navigated-to! :org-settings
-  [history-imp navigation-point {:keys [org subpage]} previous-state current-state]
+  [history-imp navigation-point {:keys [vcs_type org subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (if (get-in current-state state/org-plan-path)
       (mlog "plan details already loaded for" org)
-      (api/get-org-plan org api-ch))
+      ;; Only GitHub orgs support paid plans currently.
+      (when (= "github" vcs_type)
+        (api/get-org-plan org api-ch)))
     (if (= org (get-in current-state state/org-name-path))
       (mlog "organization details already loaded for" org)
-      (api/get-org-settings org api-ch))
+      (api/get-org-settings vcs_type org api-ch))
     (condp = subpage
       :organizations (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
       :billing (do
