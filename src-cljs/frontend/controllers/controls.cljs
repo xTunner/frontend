@@ -402,19 +402,21 @@
 (defmethod post-control-event! :retry-build-clicked
   [target message {:keys [build-num build-id vcs-url no-cache?] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
-        org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)
-        uuid frontend.async/*uuid*]
+        uuid frontend.async/*uuid*
+        build {:org-name (vcs-url/org-name vcs-url)
+               :repo-name (vcs-url/repo-name vcs-url)
+               :build-num build-num
+               :vcs-type (vcs-url/vcs-type vcs-url)}]
     (go
-     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
-                                             :params (when no-cache? {:no-cache true})))]
-       (put! api-ch [:retry-build (:status api-result) api-result])
-       (release-button! uuid (:status api-result))
-       (when (= :success (:status api-result))
-         (analytics/track {:event-type :build-triggered
-                           :current-state current-state
-                           :build (:resp api-result)
-                           :properties {:no-cache? no-cache?}}))))))
+      (let [api-result (<! (ajax/managed-ajax :post (api-path/build-retry build)
+                                              :params (when no-cache? {:no-cache true})))]
+        (put! api-ch [:retry-build (:status api-result) api-result])
+        (release-button! uuid (:status api-result))
+        (when (= :success (:status api-result))
+          (analytics/track {:event-type :build-triggered
+                            :current-state current-state
+                            :build (:resp api-result)
+                            :properties {:no-cache? no-cache?}}))))))
 
 
 (defmethod post-control-event! :ssh-build-clicked
