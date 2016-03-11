@@ -65,23 +65,17 @@
   [pusher-imp message args previous-state current-state]
   (utils/mlog "No post-ws for: " message))
 
-(defmethod ws-event :build/update
-  [pusher-imp message {:keys [data channel-name]} state]
-  (if-not (ignore-build-channel? state channel-name)
-    (update-in state state/build-path merge (utils/js->clj-kw data))
-    (if-let [index (usage-queue-build-index-from-channel-name state channel-name)]
-      (update-in state (state/usage-queue-build-path index) merge (utils/js->clj-kw data))
-      state)))
 
 (defmethod post-ws-event! :build/update
-  [pusher-imp message {:keys [data channel-name]} previous-state current-state]
-  (when-not (ignore-build-channel? current-state channel-name)
-    (frontend.favicon/set-color! (build-model/favicon-color (utils/js->clj-kw data)))
-    (let [build (get-in current-state state/build-path)]
-      (when (and (build-model/finished? build)
-                 (empty? (get-in current-state state/tests-path)))
-        (api/get-build-tests build
-                             (get-in current-state [:comms :api]))))))
+  [pusher-imp message {:keys [channel-name]} previous-state current-state]
+  (when-let [resolved-build-path
+             (if (ignore-build-channel? current-state channel-name)
+               (some-> (state/usage-queue-build-index-from-channel-name state channel-name)
+                       (state/usage-queue-build-path))
+               state/build-path)]
+    (let [build (get-in current-state resolved-build-path)]
+      (api/get-build-observables build channel-name (get-in current-state [:comms :api])))))
+
 
 (defmethod ws-event :build/new-action
   [pusher-imp message {:keys [data channel-name]} state]

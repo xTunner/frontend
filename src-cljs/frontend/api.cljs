@@ -178,7 +178,9 @@
              :context {:org-name org-name}))
 
 (defn get-project-settings [project-name api-ch]
-  (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))
+  (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)
+             :project-settings api-ch
+             :context {:project-name project-name}))
 
 (defn get-build-tests [build api-ch]
   (let [vcs-type (:vcs_type build)
@@ -195,6 +197,19 @@
                :build-tests
                api-ch
                :context (build-model/id build))))
+
+(defn get-build-observables [build channel-name api-ch]
+  (let [vcs-type (:vcs_type build)
+        project-name (vcs-url/project-name (:vcs_url build))
+        build-num (:build_num build)
+        url (case vcs-type
+              "github" (gstring/format "/api/v1/project/%s/%s/observables"
+                                       project-name build-num)
+              "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/observables"
+                                          vcs-type project-name build-num))]
+    (ajax/ajax :get url :build-observables api-ch
+               :context {:build-id (build-model/id build)
+                         :channel-name channel-name})))
 
 (defn get-build-state [api-ch]
   (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))

@@ -215,8 +215,26 @@
           true (assoc-in state/page-scopes-path (:scopes args))
           true (assoc-in state/containers-path containers))))))
 
+(defmethod api-event [:build-observables :success]
+  [target message status {:keys [context resp]} state]
+  (let [{:keys [build-id channel-name]} context]
+    (if (= build-id (build-model/id (get-in state state/build-path)))
+      (update-in state state/build-path merge resp)
+      (if-let [index (state/usage-queue-build-index-from-channel-name state channel-name)]
+        (update-in state (state/usage-queue-build-path index) merge resp)
+        state))))
+
+(defmethod post-api-event! [:build-observables :success]
+  [target message status args previous-state current-state]
+  (let [build (get-in state state/build-path)]
+    (frontend.favicon/set-color! (build-model/favicon-color build))
+    (when (and (build-model/finished? build)
+               (empty? (get-in current-state state/tests-path)))
+      (api/get-build-tests build (get-in current-state [:comms :api])))))
+
 (defn maybe-set-containers-filter!
-  "Depending on the status and outcome of the build, set active container filter to failed."
+  "Depending on the status and outcome of the build, set active
+  container filter to failed."
   [state]
   (let [build (get-in state state/build-path)
         containers (get-in state state/containers-path)
@@ -248,14 +266,12 @@
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
       (maybe-set-containers-filter! current-state))))
 
-
 (defmethod api-event [:cancel-build :success]
-  [target message status args state]
-  (let [build-id (get-in args [:context :build-id])]
-    (if-not (= (build-model/id (get-in state state/build-path))
-               build-id)
+  [target message status {:keys [context resp]} state]
+  (let [build-id (:build-id context)]
+    (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
-      (update-in state state/build-path merge (:resp args)))))
+      (update-in state state/build-path merge resp))))
 
 (defmethod api-event [:github-repos :success]
   [target message status args state]
