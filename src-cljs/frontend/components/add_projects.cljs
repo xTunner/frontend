@@ -52,26 +52,20 @@
      (cond
        ;; TODO remove the nil check after a migration adds vcs-type to all entities
        (vcs-github? org)
-       [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
-                      :target "_blank"}
-        [:i.octicon.octicon-mark-github]]
-
-       (vcs-bitbucket? org)
-       [:a.visit-org
-        [:i.fa.fa-bitbucket]])]))
+       (vcs-bitbucket? org))]))
 
 (defn missing-org-info
   "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
   [owner]
   [:p
-   "Missing an organization? You or an admin may need to enable CircleCI for your organization in "
+   "Are you missing an organization? You or an admin may need to enable CircleCI for your organization in "
    [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
     "GitHub's application permissions"]
-   ". Then come back and "
+   "."
    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
                       :class "active"}
-    "refresh these listings"]
-   "."])
+    "Refresh this list"] ;; FIXME: This is not working
+   " when you are done."])
 
 (defn organization-listing [data owner]
   (reify
@@ -128,7 +122,7 @@
          [:div
           [:div.overview
            [:span.big-number "1"]
-           [:div.instruction "Choose a GitHub or Bitbucket account that you are a member of or have access to."]]
+           [:div.instruction "Choose an organization that you are a member of."]]
           [:ul.nav.nav-tabs
            [:li {:class (when github-active? "active")}
             [:a {:href "#github"}
@@ -142,7 +136,9 @@
            (when github-active?
              (missing-org-info owner))
            (when (and bitbucket-active? (-> user :bitbucket_authorized not))
-             [:div.text-center [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
+             [:div
+             [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
+             [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
            [:ul.organizations
             (map (fn [org] (organization org settings owner))
                  ;; here we display you, then all of your organizations, then all of the owners of
@@ -174,8 +170,16 @@
   [:div.add-repos
    [:ul
     [:li
-     "Get started by selecting your GitHub username or organization above."]
+     "Get started by selecting your GitHub or Bitbucket username or organization."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
+
+(defn add-projects-head-actions [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div.refresh-repos
+       [:button.btn.btn-primary.set-user "Reload repositories"]]))))
 
 (defn repo-item [data owner]
   (reify
@@ -240,14 +244,14 @@
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
-                [:div.proj-name
+                [:div.proj-name ;; FIXME: this should be a link
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
                  (when (:fork repo)
-                   [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
+                   [:span.forked [:i.octicon.octicon-repo-forked] (str " " (vcs-url/org-name (:vcs_url repo)) "")])]
                 [:div.notice {:title "You must be an admin to add a project on CircleCI"}
-                 [:i.material-icons.lock "lock"]
+                 [:i.material-icons.lock "lock"] ;; FIXME: this should be a link
                  "Contact repo admin"]]))))))
 
 (defrender repo-filter [settings owner]
@@ -491,7 +495,7 @@
   (let [user (:current-user data)
         repos (:repos user)
         settings (:settings data)
-        {{tab :tab} :navigation-data} data 
+        {{tab :tab} :navigation-data} data
         selected-org (get-in settings [:add-projects :selected-org])
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
@@ -501,11 +505,11 @@
         (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
       (when (seq followed-inaccessible)
         (inaccessible-orgs-notice followed-inaccessible settings))
-      [:h2 "Welcome!"]
-      [:h3 "You're about to set up a new project in CircleCI."]
-      [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
+      [:h2 "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."]
+      [:p "To kick things off, you'll need to pick some projects to build:"]
       [:hr]
-      [:div.org-listing
+      [:div.org-repo-container
+        [:div.app-aside.org-listing
        (om/build (if (feature/enabled? :bitbucket)
                    organization-listing-with-bitbucket
                    organization-listing)
@@ -513,14 +517,15 @@
                   :settings settings
                   :repos repos
                   :tab tab})]
-      [:hr]
-      [:div#project-listing.project-listing
+       [:div#project-listing.project-listing
        [:div.overview
         [:span.big-number "2"]
-        [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+        [:div.instruction "Choose a repo below and we will watch the repository for activity like commits and pull requests."
+        [:br]
+        "We'll kick off the first build immediately and new builds will be initiated each time someone pushes commits."]]
        (om/build repo-lists {:user user
                              :repos repos
                              :selected-org selected-org
                              :osx-enabled? (get-in data state/org-osx-enabled-path)
                              :selected-plan (get-in data state/org-plan-path)
-                             :settings settings})]])))
+                             :settings settings})]]])))
