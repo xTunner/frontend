@@ -57,7 +57,7 @@
     (when (and username project build-num)
       {:username username
        :project project
-       :build-num (Integer/parseInt build-num)
+       :build-num (js/parseInt build-num)
        :vcs-type (keyword (or vcs-type :github))})))
 
 (defn build-channel-base

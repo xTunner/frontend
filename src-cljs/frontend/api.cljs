@@ -10,7 +10,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
-            [secretary.core :as sec]))
+            [secretary.core :as sec]
+            [frontend.pusher :as pusher]))
 
 (def build-keys-mapping {:username :org
                          :reponame :repo

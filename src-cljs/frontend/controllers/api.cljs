@@ -219,13 +219,13 @@
   (let [channel-name (:channel-name context)]
     (if (= channel-name (pusher/build-channel (get-in state state/build-path)))
       (update-in state state/build-path merge resp)
-      (if-let [index (state/usage-queue-build-index-from-channel-name state channel-name)]
+      (if-let [index (state-utils/usage-queue-build-index-from-channel-name state channel-name)]
         (update-in state (state/usage-queue-build-path index) merge resp)
         state))))
 
 (defmethod post-api-event! [:build-observables :success]
   [target message status args previous-state current-state]
-  (let [build (get-in state state/build-path)]
+  (let [build (get-in current-state state/build-path)]
     (frontend.favicon/set-color! (build-model/favicon-color build))
     (when (and (build-model/finished? build)
                (empty? (get-in current-state state/tests-path)))
