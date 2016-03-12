@@ -68,13 +68,7 @@
 
 (defmethod post-ws-event! :build/update
   [pusher-imp message {:keys [channel-name]} previous-state current-state]
-  (when-let [resolved-build-path
-             (if (ignore-build-channel? current-state channel-name)
-               (some-> (state/usage-queue-build-index-from-channel-name state channel-name)
-                       (state/usage-queue-build-path))
-               state/build-path)]
-    (let [build (get-in current-state resolved-build-path)]
-      (api/get-build-observables build channel-name (get-in current-state [:comms :api])))))
+  (api/get-build-observables channel-name (get-in current-state [:comms :api])))
 
 
 (defmethod ws-event :build/new-action

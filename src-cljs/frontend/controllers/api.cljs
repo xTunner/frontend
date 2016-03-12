@@ -186,10 +186,9 @@
                                        :let [{:keys [branch]} target-key
                                              project-key (api/project-build-key project)]]
                                    (cond-> project
-                                       (= (dissoc project-key :branch) (dissoc target-key :branch))
-                                       (assoc-in [:build-timing branch] timing-data)))))]
+                                     (= (dissoc project-key :branch) (dissoc target-key :branch))
+                                     (assoc-in [:build-timing branch] timing-data)))))]
     (update-in state state/projects-path add-timing-data)))
-
 
 (defmethod api-event [:build :success]
   [target message status args state]
@@ -217,8 +216,8 @@
 
 (defmethod api-event [:build-observables :success]
   [target message status {:keys [context resp]} state]
-  (let [{:keys [build-id channel-name]} context]
-    (if (= build-id (build-model/id (get-in state state/build-path)))
+  (let [channel-name (:channel-name context)]
+    (if (= channel-name (pusher/build-channel (get-in state state/build-path)))
       (update-in state state/build-path merge resp)
       (if-let [index (state/usage-queue-build-index-from-channel-name state channel-name)]
         (update-in state (state/usage-queue-build-path index) merge resp)

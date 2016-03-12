@@ -51,6 +51,15 @@
                             ;; names even if they don't need it.
                             (str "private-" (:pusher_id user) "@all"))))
 
+(defn build-parts-from-channel [channel-name]
+  (let [[_ username project build-num vcs-type]
+        (re-find #"^(?:private-)?([^@]+?)@([^@]+?)@(\d+?)(?:@vcs-(github|bitbucket))?(?:@(?:\d+?|all))?$" channel-name)]
+    (when (and username project build-num)
+      {:username username
+       :project project
+       :build-num (Integer/parseInt build-num)
+       :vcs-type (keyword (or vcs-type :github))})))
+
 (defn build-channel-base
   [{:keys [project-name build-num vcs-type]}]
   (let [project-prefix (-> (str "private-" project-name)
