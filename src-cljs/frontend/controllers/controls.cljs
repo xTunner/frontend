@@ -27,7 +27,8 @@
             [goog.string :as gstring]
             [goog.labs.userAgent.engine :as engine]
             goog.style
-            [frontend.models.user :as user-model])
+            [frontend.models.user :as user-model]
+            [frontend.pusher :as pusher])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.fx.dom.Scroll]))
 
@@ -234,8 +235,9 @@
           new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
       (let [scroller (or (.-scroll_handler parent)
                          (set! (.-scroll_handler parent)
-                               ;; Store this on the parent so that we don't handle parent scroll while
-                               ;; the animation is playing
+                               ;; Store this on the parent so that we
+                               ;; don't handle parent scroll while the
+                               ;; animation is playing
                                (goog.fx.dom.Scroll. parent
                                                     #js [0 0]
                                                     #js [0 0]
@@ -250,19 +252,17 @@
                                       (set! (.-scrollTop body)
                                             (+ body-scroll-top current-scroll-top))))
         (.play scroller))))
-  (when (not= (get-in previous-state state/current-container-path)
-              container-id)
-    (let [container (get-in current-state (state/container-path container-id))
-          last-action (-> container :actions last)]
-      (when (and (:has_output last-action)
-                 (action-model/visible? last-action)
-                 (:missing-pusher-output last-action))
-        (api/get-action-output {:vcs-url (:vcs_url (get-in current-state state/build-path))
-                                :build-num (:build_num (get-in current-state state/build-path))
-                                :step (:step last-action)
-                                :index (:index last-action)
-                                :output-url (:output_url last-action)}
-                               (get-in current-state [:comms :api]))))))
+  (let [previous-container-id (get-in previous-state state/current-container-path)]
+    (when (not= previous-container-id container-id)
+      (let [container (get-in current-state (state/container-path container-id))
+            last-action (-> container :actions last)
+            vcs-url (:vcs_url (get-in current-state state/build-path))]
+        (api/get-action-steps {:vcs-url vcs-url
+                               :build-num (:build_num (get-in current-state state/build-path))
+                               :project-name (vcs-url/project-name vcs-url)
+                               :old-container-id previous-container-id
+                               :new-container-id container-id}
+                              (get-in current-state [:comms :api]))))))
 
 (defmethod control-event :container-paging-offset-changed
   [target message {:keys [paging-offset]} state]
