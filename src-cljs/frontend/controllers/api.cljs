@@ -457,9 +457,12 @@
   [target message status {:keys [context resp]} previous-state current-state]
   (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
     (let [project-name (vcs-url/project-name (:project-id context))
-          api-ch (get-in current-state [:comms :api])]
+          api-ch (get-in current-state [:comms :api])
+          vcs-type (vcs-url/vcs-type (:project-id context))
+          org-name (vcs-url/org-name (:project-id context))
+          repo-name (vcs-url/repo-name (:project-id context))]
       (ajax/ajax :get
-                 (api-path/settings-path (:navigation-data current-state))
+                 (api-path/project-settings vcs-type org-name repo-name)
                  :project-settings
                  api-ch
                  :context {:project-name project-name}))))

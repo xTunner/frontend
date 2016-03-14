@@ -112,12 +112,12 @@
                        :context {:project-name (str (:org args) "/" (:repo args))})
             (when (:read-settings scopes)
               (ajax/ajax :get
-                         (api-path/settings-path args)
+                         (api-path/project-settings (:vcs_type args) (:org args) (:repo args))
                          :project-settings
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))})
               (ajax/ajax :get
-                         (api-path/settings-plan args)
+                         (api-path/project-plan (:vcs_type args) (:org args) (:repo args))
                          :project-plan
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))}))))))
@@ -177,7 +177,10 @@
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
               scopes (:scopes api-result)
-              settings-url (api-path/settings-path (:navigation-data current-state))
+              navigation-data (:navigation-data current-state)
+              vcs-type (:vcs_type navigation-data)
+              org (:org navigation-data)
+              repo (:repo navigation-data)
               plan-url (case vcs_type
                          "github" (gstring/format "/api/v1/project/%s/plan" project-name)
                          "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/plan" vcs_type project-name))]
@@ -202,7 +205,7 @@
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
-                       settings-url
+                       (api-path/project-settings vcs-type org repo)
                        :project-settings
                        api-ch
                        :context {:project-name project-name
@@ -334,13 +337,17 @@
 
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name vcs_type subpage]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        navigation-data (:navigation-data current-state)
+        vcs-type (:vcs_type navigation-data)
+        org (:org navigation-data)
+        repo (:repo navigation-data)]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
       (ajax/ajax :get
-                 (api-path/settings-path (:navigation-data current-state))
+                 (api-path/project-settings vcs-type org repo)
                  :project-settings
                  api-ch
                  :context {:project-name project-name}))
@@ -348,7 +355,7 @@
     (cond (and (= subpage :parallel-builds)
                (not (get-in current-state state/project-plan-path)))
           (ajax/ajax :get
-                     (api-path/settings-plan (:navigation-data current-state))
+                     (api-path/project-plan vcs-type org repo)
                      :project-plan
                      api-ch
                      :context {:project-name project-name})

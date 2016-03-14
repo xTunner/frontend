@@ -314,11 +314,14 @@
   [target message {:keys [project-id parallelism]} previous-state current-state]
   (when (not= (get-in previous-state state/project-path)
               (get-in current-state state/project-path))
-    (let [project-name (vcs-url/project-name project-id)
-          api-ch (get-in current-state [:comms :api])]
+    (let [api-ch (get-in current-state [:comms :api])
+          project-name (vcs-url/project-name project-id)
+          org-name (vcs-url/org-name project-id)
+          repo-name (vcs-url/repo-name project-id)
+          vcs-type (vcs-url/vcs-type project-id)]
       ;; TODO: edit project settings api call should respond with updated project settings
       (ajax/ajax :put
-                 (api-path/settings-path (:navigation-data current-state))
+                 (api-path/project-settings vcs-type org-name repo-name)
                  :update-project-parallelism
                  api-ch
                  :params {:parallel parallelism}
@@ -402,19 +405,20 @@
 (defmethod post-control-event! :retry-build-clicked
   [target message {:keys [build-num build-id vcs-url no-cache?] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
+        uuid frontend.async/*uuid*
+        vcs-type (vcs-url/vcs-type vcs-url)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)
-        uuid frontend.async/*uuid*]
+        repo-name (vcs-url/repo-name vcs-url)]
     (go
-     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/retry" org-name repo-name build-num)
-                                             :params (when no-cache? {:no-cache true})))]
-       (put! api-ch [:retry-build (:status api-result) api-result])
-       (release-button! uuid (:status api-result))
-       (when (= :success (:status api-result))
-         (analytics/track {:event-type :build-triggered
-                           :current-state current-state
-                           :build (:resp api-result)
-                           :properties {:no-cache? no-cache?}}))))))
+      (let [api-result (<! (ajax/managed-ajax :post (api-path/build-retry vcs-type org-name repo-name build-num)
+                                              :params (when no-cache? {:no-cache true})))]
+        (put! api-ch [:retry-build (:status api-result) api-result])
+        (release-button! uuid (:status api-result))
+        (when (= :success (:status api-result))
+          (analytics/track {:event-type :build-triggered
+                            :current-state current-state
+                            :build (:resp api-result)
+                            :properties {:no-cache? no-cache?}}))))))
 
 
 (defmethod post-control-event! :ssh-build-clicked
@@ -627,10 +631,10 @@
         comms (get-in current-state [:comms])]
     (go
       (let [api-result (<! (ajax/managed-ajax
-                             :put (api-path/settings-path (:navigation-data current-state))
+                             :put (api-path/project-settings vcs-type org repo)
                              :params settings))]
        (if (= :success (:status api-result))
-         (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/settings-path (:navigation-data current-state))))]
+         (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/project-settings vcs-type org repo)))]
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
            (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-path {:org org :repo repo :vcs_type vcs-type :_fragment "tests"})}]))
@@ -645,14 +649,15 @@
         inputs (get-in current-state state/inputs-path)
         settings (state-utils/merge-inputs project inputs [:test :extra])
         branch (get inputs :settings-branch (:default_branch project))
+        vcs-type (vcs-url/vcs-type project-id)
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
         uuid frontend.async/*uuid*
         comms (get-in current-state [:comms])]
     (go
-     (let [api-result (<! (ajax/managed-ajax :put (api-path/settings-path (:navigation-data current-state)) :params settings))]
+     (let [api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org repo) :params settings))]
        (if (= :success (:status api-result))
-         (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/settings-path (:navigation-data current-state))))]
+         (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/project-settings vcs-type org repo)))]
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
            (when start-build?
@@ -693,11 +698,15 @@
         comms (get-in current-state [:comms])
         inputs (get-in current-state state/inputs-path)
         project (get-in current-state state/project-path)
-        settings (merge-settings merge-paths project inputs)]
+        settings (merge-settings merge-paths project inputs)
+        org-name (vcs-url/org-name project-id)
+        repo-name (vcs-url/repo-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)]
+
     (go
-      (let [api-result (<! (ajax/managed-ajax :put (api-path/settings-path (:navigation-data current-state)) :params settings))]
+      (let [api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org-name repo-name) :params settings))]
         (if (= :success (:status api-result))
-          (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/settings-path (:navigation-data current-state))))]
+          (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/project-settings vcs-type org-name repo-name)))]
             (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
             (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
           (put! (:errors comms) [:api-error api-result]))
@@ -1219,12 +1228,15 @@
   [target message {:keys [project-id flag value]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
-        error-ch (get-in current-state [:comms :errors])]
-    (go (let [api-result (<! (ajax/managed-ajax :put (api-path/settings-path (:navigation-data current-state))
+        error-ch (get-in current-state [:comms :errors]) 
+        org-name (vcs-url/org-name project-id)
+        repo-name (vcs-url/repo-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)]
+    (go (let [api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org-name repo-name)
                                                 :params {:feature_flags {flag value}}))]
           (when (not= :success (:status api-result))
             (put! error-ch [:api-error api-result]))
-          (ajax/ajax :get (api-path/settings-path (:navigation-data current-state)) :project-settings api-ch :context {:project-name project-name})))))
+          (ajax/ajax :get (api-path/project-settings vcs-type org-name repo-name) :project-settings api-ch :context {:project-name project-name})))))
 
 (defmethod post-control-event! :project-experiments-feedback-clicked
   [target message _ previous-state current-state]
