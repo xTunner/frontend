@@ -415,14 +415,21 @@
                                                                                               :plan plan-id}}))}))
 
               (when (and trial-starts-here? (not (pm/osx? plan)))
-                [:div.start-trial "or "
-                 (forms/managed-button
-                   [:a
-                    {:data-success-text "Success!"
-                     :data-loading-text "Starting..."
-                     :data-failed-text "Failed"
-                     :on-click #(raise! owner [:activate-plan-trial {:osx {:template "osx-trial"}}])}
-                    "start a 2 week free trial"])])]]
+                (let [template "osx-trial"
+                      plan-type :osx]
+                  [:div.start-trial "or "
+                   (forms/managed-button
+                     [:a
+                      {:data-success-text "Success!"
+                       :data-loading-text "Starting..."
+                       :data-failed-text "Failed"
+                       :on-click #(do
+                                    (raise! owner [:activate-plan-trial {plan-type {:template template}}])
+                                    (analytics/track {:event-type :start-trial-clicked
+                                                      :owner owner
+                                                      :properties {:plan-type plan-type
+                                                                   :template template}}))}
+                      "start a 2 week free trial"])]))]]
             (cond
               trial-starts-here?
               [:div.bottom "Free Trial Starts Here"]
