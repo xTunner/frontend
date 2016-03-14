@@ -89,29 +89,29 @@
 (defn app-state []
   (let [initial-state (state/initial-state)]
     (atom (assoc initial-state
-                 :current-user (-> js/window
-                                   (aget "renderContext")
-                                   (aget "current_user")
-                                   utils/js->clj-kw)
-                 :render-context (-> js/window
-                                     (aget "renderContext")
-                                     utils/js->clj-kw)
-                 :comms {:controls  controls-ch
-                         :api       api-ch
-                         :errors    errors-ch
-                         :nav       navigation-ch
-                         :ws        ws-ch
-                         :controls-mult (async/mult controls-ch)
-                         :api-mult (async/mult api-ch)
-                         :errors-mult (async/mult errors-ch)
-                         :nav-mult (async/mult navigation-ch)
-                         :ws-mult (async/mult ws-ch)
-                         :mouse-move {:ch mouse-move-ch
-                                      :mult (async/mult mouse-move-ch)}
-                         :mouse-down {:ch mouse-down-ch
-                                      :mult (async/mult mouse-down-ch)}
-                         :mouse-up {:ch mouse-up-ch
-                                    :mult (async/mult mouse-up-ch)}}))))
+              :current-user (-> js/window
+                                (aget "renderContext")
+                                (aget "current_user")
+                                utils/js->clj-kw)
+              :render-context (-> js/window
+                                  (aget "renderContext")
+                                  utils/js->clj-kw)
+              :comms {:controls  controls-ch
+                      :api       api-ch
+                      :errors    errors-ch
+                      :nav       navigation-ch
+                      :ws        ws-ch
+                      :controls-mult (async/mult controls-ch)
+                      :api-mult (async/mult api-ch)
+                      :errors-mult (async/mult errors-ch)
+                      :nav-mult (async/mult navigation-ch)
+                      :ws-mult (async/mult ws-ch)
+                      :mouse-move {:ch mouse-move-ch
+                                   :mult (async/mult mouse-move-ch)}
+                      :mouse-down {:ch mouse-down-ch
+                                   :mult (async/mult mouse-down-ch)}
+                      :mouse-up {:ch mouse-up-ch
+                                 :mult (async/mult mouse-up-ch)}}))))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"

@@ -48,4 +48,13 @@
                                    :build/append-action
                                    {:data (clj->js [{:index 0 :step 3}])}
                                    dummy-container-state)]
-        (is (= 4 (count (get-in new-state (state/actions-path 0)))))))))
+        (is (= 4 (count (get-in new-state (state/actions-path 0))))))
+      (testing "we create filler steps if output comes out of order on a container that's not active"
+        (let [dummy-state (assoc-in dummy-container-state state/selected-containers-path 0)
+              ;; ^^ make sure we're ignoring the container that the output is coming in on
+              new-state (ws/ws-event dummy-pusher-imp
+                                     :build/append-action
+                                     {:data (clj->js [{:index 1 :step 3}])}
+                                     dummy-state)]
+          (is (= 4 (count (get-in new-state (state/actions-path 1)))))
+          (is (:missing-pusher-output (last (get-in new-state (state/actions-path 1))))))))))
