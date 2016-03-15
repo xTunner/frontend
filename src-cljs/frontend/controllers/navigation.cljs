@@ -160,10 +160,25 @@
         (assoc-in state/build-header-tab-path tab)
         state-utils/reset-dismissed-osx-usage-level)))
 
+(defn initialize-pusher-subscriptions
+  "Subscribe to pusher channels for initial messaging. This subscribes
+  us to build messages (`update`, `add-messages` and `test-results`),
+  and container messages for container 0 (`new-action`,`update-action`
+  and `append-action`). The first subscription remains for the whole
+  build. The second channel will be unsubscribed when other containers
+  come into view."
+  [state parts]
+  (let [ws-ch (get-in state [:comms :ws])
+        build-channel (pusher/build-channel-from-parts parts)
+        container-channel (pusher/build-channel-from-parts (assoc parts :container-index 0))]
+    (put! ws-ch [:subscribe {:channel-name build-channel
+                             :messages pusher/build-messages}])
+    (put! ws-ch [:subscribe {:channel-name container-channel
+                             :messages pusher/container-messages}])))
+
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        ws-ch (get-in current-state [:comms :ws])
         nav-ch (get-in current-state [:comms :nav])
         err-ch (get-in current-state [:comms :errors])
         projects-loaded? (seq (get-in current-state state/projects-path))
@@ -220,10 +235,9 @@
                                  :vcs-type vcs_type}))
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
-                                                                             :build-num build-num
-                                                                             :vcs-type vcs_type})
-                             :messages pusher/build-messages}]))
+    (initialize-pusher-subscriptions current-state {:project-name project-name
+                                                    :build-num build-num
+                                                    :vcs-type vcs_type}))
   (set-page-title! (str project-name " #" build-num)))
 
 (defmethod navigated-to :add-projects
