@@ -44,21 +44,40 @@
   (str "private-" (:login user)))
 
 (defn build-channel-from-parts
-  [{:keys [project-name build-num vcs-type]}]
+  [{:keys [project-name build-num vcs-type container-index]}]
   (let [project-prefix (-> (str "private-" project-name)
                            (string/replace "/" "@"))
-        vcs-suffix (str "vcs-" vcs-type)]
-    (str project-prefix "@" build-num "@" vcs-suffix)))
+        vcs-str (str "vcs-" vcs-type)
+        suffix (or container-index "all")]
+    (str project-prefix "@" build-num "@" vcs-str "@" suffix)))
 
-(defn build-channel [build]
-  (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
-                             :build-num (:build_num build)
-                             :vcs-type (name (:vcs_type build))}))
+(defn build-channel-pair-from-parts
+  [parts]
+  [(build-channel-from-parts (dissoc parts :container-index))
+   (build-channel-from-parts (merge {:container-index 0} parts))])
 
-(def build-messages [:build/new-action
-                     :build/update-action
-                     :build/append-action
-                     :build/update
+(defn build-channel
+  ([build]
+   (build-channel build nil))
+  ([build container-index]
+   (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
+                              :build-num (or (:build_num build) (:build-num build))
+                              :vcs-type (name (:vcs_type build))
+                              :container-index container-index})))
+
+(defn build-channel-pair
+  ([build]
+   (build-channel-pair build nil))
+  ([build container-index]
+   [(build-channel build)
+    (build-channel build (or container-index 0))]))
+
+
+(def container-messages [:build/new-action
+                         :build/update-action
+                         :build/append-action])
+
+(def build-messages [:build/update
                      :build/add-messages
                      :build/test-results])
 
@@ -76,8 +95,8 @@
 
 (defn subscribe
   "Subscribes to channel and binds to events. Takes a pusher-instance,
-  a channel-name, a list of messages to subscribe to and a websocket channel.
-  Will put data from the pusher events onto the websocket
+  a channel-name, a list of messages to subscribe to and a websocket
+  channel. Will put data from the pusher events onto the websocket
   channel with the message. Returns the channel."
   [pusher-instance channel-name ws-ch & {:keys [messages context]}]
   (let [channel (.subscribe pusher-instance channel-name)]
