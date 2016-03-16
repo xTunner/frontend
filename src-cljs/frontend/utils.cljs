@@ -138,6 +138,9 @@
                               path
                               (str "/" path))))
 
+(defn display-tag [tag]
+  (-> tag name js/decodeURIComponent (str " (tag)")))
+
 (defn display-branch [branch]
   (-> branch name js/decodeURIComponent))
 

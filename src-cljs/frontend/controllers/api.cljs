@@ -200,14 +200,20 @@
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
-      (-> state
-          (assoc-in state/build-path build)
-          (assoc-in state/project-scopes-path (:scopes args))
-          (assoc-in state/page-scopes-path (:scopes args))
-          (assoc-in (conj (state/project-branch-crumb-path state)
-                          :branch)
-                    (some-> build :branch utils/encode-branch))
-          (assoc-in state/containers-path containers)))))
+      (let [branch (some-> build :branch utils/encode-branch)
+            tag (some-> build :vcs_tag utils/encode-branch)
+            crumb-path (state/project-branch-crumb-path state)
+            tag-crumb-path (conj crumb-path :tag)
+            active-crumb-path (conj crumb-path :active)
+            branch-crumb-path (conj crumb-path :branch)]
+        (cond-> state
+          (and branch (not tag)) (assoc-in branch-crumb-path branch)
+          tag (assoc-in tag-crumb-path tag)
+          tag (assoc-in active-crumb-path true)
+          true (assoc-in state/build-path build)
+          true (assoc-in state/project-scopes-path (:scopes args))
+          true (assoc-in state/page-scopes-path (:scopes args))
+          true (assoc-in state/containers-path containers))))))
 
 (defn set-containers-filter!
   "Takes project hash and filter down to keys that identify the build."
