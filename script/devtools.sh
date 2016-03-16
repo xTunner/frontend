@@ -17,6 +17,7 @@ echo "Using '$CHROME_APP' from $CHROME_PATH"
 "$CHROME_PATH/$CHROME_APP/Contents/MacOS/Google Chrome Canary" \
   --remote-debugging-port=9222 \
   --no-first-run \
+  --user-data-dir=.dirac-chrome-profile \
   https://prod.circlehost:4443 &
 
 lein with-profile +devtools repl
