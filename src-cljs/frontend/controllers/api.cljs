@@ -314,16 +314,16 @@
       (assoc-in state state/artifacts-path artifacts))))
 
 (defmethod api-event [:build-tests :success]
-  [target message status args state]
-  (let [tests (get-in args [:resp :tests])
-        build-id (:context args)]
-    (if-not (= build-id (build-model/id (get-in state state/build-path)))
-      state
-      (update-in state state/tests-path (fn [old-tests]
-                                          ;; prevent om from thrashing while doing comparisons
-                                          (if (> (count tests) (count old-tests))
-                                            tests
-                                            (vec old-tests)))))))
+  [target message status {{:keys [tests exceptions]} :resp :as args} state]
+  (let [build-id (:context args)]
+    (cond-> state
+      (= build-id (build-model/id (get-in state state/build-path)))
+      (-> (update-in state/tests-path (fn [old-tests]
+                                        ;; prevent om from thrashing while doing comparisons
+                                        (if (> (count tests) (count old-tests))
+                                          tests
+                                          (vec old-tests))))
+          (assoc-in state/tests-parse-errors-path exceptions)))))
 
 (defmethod api-event [:action-steps :success]
   [target message status args state]

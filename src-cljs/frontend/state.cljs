@@ -88,6 +88,7 @@
 (def show-artifacts-path [:current-build-data :artifacts-data :show-artifacts])
 
 (def tests-path [:current-build-data :tests-data :tests])
+(def tests-parse-errors-path [:current-build-data :tests-data :exceptions])
 
 (def show-config-path [:current-build-data :config-data :show-config])
 
