@@ -5,9 +5,9 @@ last_updated: Feb 2, 2013
 
 -->
 
-CircleCI supports the `[ci skip]` standard for ignoring builds.
+CircleCI supports the `[ci skip]` or `[skip ci]` standard for ignoring builds.
 
-CircleCI won't run the build if we find `[ci skip]` anywhere in the commit message of the head commit.
+CircleCI won't run the build if we find `[ci skip]` or `[skip ci]` anywhere in the commit message of the head commit.
 You can use the handy retry button on the build page if you decide that you want to run the build after all.
 
 ## Example
@@ -30,5 +30,4 @@ Date:   Wed Jan 23 16:30:24 2013 -0800
     add "Skip a build" doc
 ```
 
-Note that if the commits were in the opposite order, then the push would have been built. Currently `[ci skip]` does not support fork PRs.
-
+Note that if the commits were in the opposite order, then the push would have been built. Currently `[ci skip]` or `[skip ci]` does not support fork PRs.
