@@ -215,8 +215,8 @@
           true (assoc-in state/page-scopes-path (:scopes args))
           true (assoc-in state/containers-path containers))))))
 
-(defn set-containers-filter!
-  "Takes project hash and filter down to keys that identify the build."
+(defn maybe-set-containers-filter!
+  "Depending on the status and outcome of the build, set active container filter to failed."
   [state]
   (let [build (get-in state state/build-path)
         containers (get-in state state/containers-path)
@@ -225,8 +225,8 @@
                                   containers)
         controls-ch (get-in state [:comms :controls])]
     ;; set filter
-    (if (and (not build-running?)
-             (seq failed-containers))
+    (when (and (not build-running?)
+               (seq failed-containers))
       (put! controls-ch [:container-filter-changed {:new-filter :failed
                                                     :containers failed-containers}]))))
 
@@ -247,7 +247,7 @@
                                 :output-url (:output_url action)}
                                (get-in current-state [:comms :api])))
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
-      (set-containers-filter! current-state))))
+      (maybe-set-containers-filter! current-state))))
 
 
 (defmethod api-event [:cancel-build :success]
@@ -367,8 +367,7 @@
                                 :output-url (:output_url action)}
                                (get-in current-state [:comms :api])))
       (update-pusher-subscriptions current-state old-container-id new-container-id)
-      (frontend.favicon/set-color! (build-model/favicon-color build))
-      (set-containers-filter! current-state))))
+      (frontend.favicon/set-color! (build-model/favicon-color build)))))
 
 (defmethod api-event [:action-log :success]
   [target message status args state]
