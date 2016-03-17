@@ -47,35 +47,43 @@
     true (conj (str "private-" (:login user)))
     (:pusher_id user) (conj (str "private-" (:pusher_id user)))))
 
-(defn build-channel-from-parts
-  [{:keys [project-name build-num vcs-type container-index]}]
+(defn build-channel-base
+  [{:keys [project-name build-num vcs-type]}]
   (let [project-prefix (-> (str "private-" project-name)
                            (string/replace "/" "@"))
-        vcs-str (str "vcs-" vcs-type)
-        suffix (or container-index "all")]
-    (str project-prefix "@" build-num "@" vcs-str "@" suffix)))
+        vcs-str (str "vcs-" (name vcs-type))]
+    (str project-prefix "@" build-num "@" vcs-str)))
 
-(defn build-channel-pair-from-parts
+(def obsolete-build-channel build-channel-base)
+
+(defn build-parts
+  ([build]
+   {:project-name (vcs-url/project-name (:vcs_url build))
+    :build-num (or (:build_num build) (:build-num build))
+    :vcs-type (or (:vcs_type build) "github")})
+  ([build container-index]
+   (assoc (build-parts build) :container-index container-index)))
+
+(defn build-container-channel
+  [{:keys [container-index] :as parts}]
+  (str (build-channel-base parts) "@" (or container-index 0)))
+
+(defn build-all-channel
   [parts]
-  [(build-channel-from-parts (dissoc parts :container-index))
-   (build-channel-from-parts (merge {:container-index 0} parts))])
+  (str (build-channel-base parts) "@all"))
 
-(defn build-channel
-  ([build]
-   (build-channel build nil))
+(defn build-channels-from-parts
+  [parts]
+  (let [obsolete-channel (obsolete-build-channel parts)
+        container-channel (build-container-channel parts)
+        all-channel (build-all-channel parts)]
+    [obsolete-channel container-channel all-channel]))
+
+(defn build-channels
   ([build container-index]
-   (build-channel-from-parts {:project-name (vcs-url/project-name (:vcs_url build))
-                              :build-num (or (:build_num build) (:build-num build))
-                              :vcs-type (name (:vcs_type build))
-                              :container-index container-index})))
-
-(defn build-channel-pair
+   (build-channels-from-parts (build-parts build container-index)))
   ([build]
-   (build-channel-pair build nil))
-  ([build container-index]
-   [(build-channel build)
-    (build-channel build (or container-index 0))]))
-
+   (build-channels-from-parts (build-parts build))))
 
 (def container-messages [:build/new-action
                          :build/update-action

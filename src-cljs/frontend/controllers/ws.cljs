@@ -28,7 +28,7 @@
         container-index (or (get-in state state/current-container-path) 0)]
     (cond-> #{}
       user (into (pusher/user-channels user))
-      build (into (pusher/build-channel-pair build container-index)))))
+      build (into (pusher/build-channels build container-index)))))
 
 (defn ignore-build-channel?
   "Returns true if we should ignore pusher updates for the given channel-name. This will be
@@ -36,13 +36,13 @@
   [state channel-name]
   (if-let [build (get-in state state/build-path)]
     (let [container-index (get-in state state/current-container-path)]
-      (not-any? #{channel-name} (pusher/build-channel-pair build container-index)))
+      (not-any? #{channel-name} (pusher/build-channels build container-index)))
     true))
 
 (defn usage-queue-build-index-from-channel-name [state channel-name]
   "Returns index if there is a usage-queued build showing with the given channel name"
   (when-let [builds (seq (get-in state state/usage-queue-path))]
-    (find-index #(= channel-name (pusher/build-channel %)) builds)))
+    (find-index #(some #{channel-name} (pusher/build-channels %)) builds)))
 
 ;; --- Navigation Multimethod Declarations ---
 
