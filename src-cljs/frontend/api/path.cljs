@@ -27,3 +27,12 @@
     "github" (gstring/format
                "/api/v1/project/%s/%s/%s/retry"
                org-name repo-name build-num)))
+
+(defn heroku-deploy-user [vcs-type repo-name]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/heroku-deploy-user"
+                  vcs-type repo-name)
+    "github" (gstring/format
+               "/api/v1/project/%s/heroku-deploy-user"
+               repo-name)))
