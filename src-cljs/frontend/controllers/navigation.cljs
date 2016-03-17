@@ -377,7 +377,7 @@
           (and (= subpage :checkout)
                (not (get-in current-state state/project-checkout-keys-path)))
           (ajax/ajax :get
-                     (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                     (api-path/project-checkout-keys vcs-type project-name)
                      :project-checkout-key
                      api-ch
                      :context {:project-name project-name})
