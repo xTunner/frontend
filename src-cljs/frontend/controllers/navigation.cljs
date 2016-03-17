@@ -174,14 +174,13 @@
   enterprise sites."
   [state parts]
   (let [ws-ch (get-in state [:comms :ws])
-        parts (assoc parts :container-index 0)]
-    (doseq [[messages channel] [[pusher/build-messages
-                                 (pusher/build-all-channel parts)]
-                                [(concat pusher/build-messages pusher/container-messages)
-                                 (pusher/obsolete-build-channel parts)]
-                                [pusher/container-messages
-                                 (pusher/build-container-channel parts)]]]
-      (put! ws-ch [:subscribe {:channel-name channel :messages messages}]))))
+        parts (assoc parts :container-index 0)
+        subscribe (fn [channel messages]
+                    (put! ws-ch [:subscribe {:channel-name channel :messages messages}]))]
+    (subscribe (pusher/build-all-channel parts) pusher/build-messages)
+    (subscribe (pusher/build-container-channel parts) pusher/container-messages)
+    (subscribe (pusher/obsolete-build-channel parts) (concat pusher/build-messages
+                                                             pusher/container-messages))))
 
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
