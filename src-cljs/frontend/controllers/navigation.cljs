@@ -112,12 +112,12 @@
                        :context {:project-name (str (:org args) "/" (:repo args))})
             (when (:read-settings scopes)
               (ajax/ajax :get
-                         (api-path/settings-path args)
+                         (api-path/project-settings (:vcs_type args) (:org args) (:repo args))
                          :project-settings
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))})
               (ajax/ajax :get
-                         (api-path/settings-plan args)
+                         (api-path/project-plan (:vcs_type args) (:org args) (:repo args))
                          :project-plan
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))}))))))
@@ -160,10 +160,25 @@
         (assoc-in state/build-header-tab-path tab)
         state-utils/reset-dismissed-osx-usage-level)))
 
+(defn initialize-pusher-subscriptions
+  "Subscribe to pusher channels for initial messaging. This subscribes
+  us to build messages (`update`, `add-messages` and `test-results`),
+  and container messages for container 0 (`new-action`,`update-action`
+  and `append-action`). The first subscription remains for the whole
+  build. The second channel will be unsubscribed when other containers
+  come into view."
+  [state parts]
+  (let [ws-ch (get-in state [:comms :ws])
+        build-channel (pusher/build-channel-from-parts parts)
+        container-channel (pusher/build-channel-from-parts (assoc parts :container-index 0))]
+    (put! ws-ch [:subscribe {:channel-name build-channel
+                             :messages pusher/build-messages}])
+    (put! ws-ch [:subscribe {:channel-name container-channel
+                             :messages pusher/container-messages}])))
+
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        ws-ch (get-in current-state [:comms :ws])
         nav-ch (get-in current-state [:comms :nav])
         err-ch (get-in current-state [:comms :errors])
         projects-loaded? (seq (get-in current-state state/projects-path))
@@ -177,7 +192,10 @@
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
               scopes (:scopes api-result)
-              settings-url (api-path/settings-path (:navigation-data current-state))
+              navigation-data (:navigation-data current-state)
+              vcs-type (:vcs_type navigation-data)
+              org (:org navigation-data)
+              repo (:repo navigation-data)
               plan-url (case vcs_type
                          "github" (gstring/format "/api/v1/project/%s/plan" project-name)
                          "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/plan" vcs_type project-name))]
@@ -202,7 +220,7 @@
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
-                       settings-url
+                       (api-path/project-settings vcs-type org repo)
                        :project-settings
                        api-ch
                        :context {:project-name project-name
@@ -217,10 +235,9 @@
                                  :vcs-type vcs_type}))
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel-from-parts {:project-name project-name
-                                                                             :build-num build-num
-                                                                             :vcs-type vcs_type})
-                             :messages pusher/build-messages}]))
+    (initialize-pusher-subscriptions current-state {:project-name project-name
+                                                    :build-num build-num
+                                                    :vcs-type vcs_type}))
   (set-page-title! (str project-name " #" build-num)))
 
 (defmethod navigated-to :add-projects
@@ -334,13 +351,17 @@
 
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name vcs_type subpage]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        navigation-data (:navigation-data current-state)
+        vcs-type (:vcs_type navigation-data)
+        org (:org navigation-data)
+        repo (:repo navigation-data)]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (if (get-in current-state state/project-path)
       (mlog "project settings already loaded for" project-name)
       (ajax/ajax :get
-                 (api-path/settings-path (:navigation-data current-state))
+                 (api-path/project-settings vcs-type org repo)
                  :project-settings
                  api-ch
                  :context {:project-name project-name}))
@@ -348,7 +369,7 @@
     (cond (and (= subpage :parallel-builds)
                (not (get-in current-state state/project-plan-path)))
           (ajax/ajax :get
-                     (api-path/settings-plan (:navigation-data current-state))
+                     (api-path/project-plan vcs-type org repo)
                      :project-plan
                      api-ch
                      :context {:project-name project-name})

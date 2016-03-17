@@ -200,14 +200,20 @@
     (if-not (and (= build-num (:build_num build))
                  (= project-name (vcs-url/project-name (:vcs_url build))))
       state
-      (-> state
-          (assoc-in state/build-path build)
-          (assoc-in state/project-scopes-path (:scopes args))
-          (assoc-in state/page-scopes-path (:scopes args))
-          (assoc-in (conj (state/project-branch-crumb-path state)
-                          :branch)
-                    (some-> build :branch utils/encode-branch))
-          (assoc-in state/containers-path containers)))))
+      (let [branch (some-> build :branch utils/encode-branch)
+            tag (some-> build :vcs_tag utils/encode-branch)
+            crumb-path (state/project-branch-crumb-path state)
+            tag-crumb-path (conj crumb-path :tag)
+            active-crumb-path (conj crumb-path :active)
+            branch-crumb-path (conj crumb-path :branch)]
+        (cond-> state
+          (and branch (not tag)) (assoc-in branch-crumb-path branch)
+          tag (assoc-in tag-crumb-path tag)
+          tag (assoc-in active-crumb-path true)
+          true (assoc-in state/build-path build)
+          true (assoc-in state/project-scopes-path (:scopes args))
+          true (assoc-in state/page-scopes-path (:scopes args))
+          true (assoc-in state/containers-path containers))))))
 
 (defn set-containers-filter!
   "Takes project hash and filter down to keys that identify the build."
@@ -324,6 +330,45 @@
                                           (if (> (count tests) (count old-tests))
                                             tests
                                             (vec old-tests)))))))
+
+(defmethod api-event [:action-steps :success]
+  [target message status args state]
+  (let [build (get-in state state/build-path)
+        {:keys [build-num project-name]} (:context args)]
+    (if-not (and (= build-num (:build_num build))
+                 (= project-name (vcs-url/project-name (:vcs_url build))))
+      state
+      (let [build (assoc build :steps (:resp args))]
+        (-> state
+            (assoc-in state/build-path build)
+            (assoc-in state/containers-path (vec (build-model/containers build))))))))
+
+(defn update-pusher-subscriptions
+  [state old-index new-index]
+  (let [ws-ch (get-in state [:comms :ws])
+        build (get-in state state/build-path)]
+    (put! ws-ch [:unsubscribe (pusher/build-channel build old-index)])
+    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build new-index)
+                             :messages pusher/container-messages}])))
+
+(defmethod post-api-event! [:action-steps :success]
+  [target message status args previous-state current-state]
+  (let [{:keys [build-num project-name old-container-id new-container-id]} (:context args)
+        build (get-in current-state state/build-path)]
+    (when (and (= build-num (:build_num build))
+               (= project-name (vcs-url/project-name (:vcs_url build))))
+      (doseq [action (mapcat :actions (get-in current-state state/containers-path))
+              :when (and (:has_output action)
+                         (action-model/visible? action))]
+        (api/get-action-output {:vcs-url (:vcs_url build)
+                                :build-num build-num
+                                :step (:step action)
+                                :index (:index action)
+                                :output-url (:output_url action)}
+                               (get-in current-state [:comms :api])))
+      (update-pusher-subscriptions current-state old-container-id new-container-id)
+      (frontend.favicon/set-color! (build-model/favicon-color build))
+      (set-containers-filter! current-state))))
 
 (defmethod api-event [:action-log :success]
   [target message status args state]
@@ -457,9 +502,12 @@
   [target message status {:keys [context resp]} previous-state current-state]
   (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
     (let [project-name (vcs-url/project-name (:project-id context))
-          api-ch (get-in current-state [:comms :api])]
+          api-ch (get-in current-state [:comms :api])
+          vcs-type (vcs-url/vcs-type (:project-id context))
+          org-name (vcs-url/org-name (:project-id context))
+          repo-name (vcs-url/repo-name (:project-id context))]
       (ajax/ajax :get
-                 (api-path/settings-path (:navigation-data current-state))
+                 (api-path/project-settings vcs-type org-name repo-name)
                  :project-settings
                  api-ch
                  :context {:project-name project-name}))))
