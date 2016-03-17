@@ -10,6 +10,24 @@
                "/api/v1/project/%s/%s/settings"
                org repo)))
 
+(defn project-checkout-keys [vcs-type repo-name]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/checkout-key"
+                  vcs-type repo-name)
+    "github" (gstring/format
+               "/api1/v1/project/%s/checkout-key"
+               repo-name)))
+
+(defn project-checkout-key  [vcs-type repo-name fingerprint]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/checkout-key/%s"
+                  vcs-type repo-name fingerprint)
+    "github" (gstring/format
+               "/api/v1/project/%s/checkout-key/%s"
+               repo-name fingerprint)))
+
 (defn project-plan [vcs-type org repo]
   (case vcs-type
     "bitbucket" (gstring/format
