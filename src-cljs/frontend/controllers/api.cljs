@@ -308,10 +308,10 @@
         ws-ch (get-in current-state [:comms :ws])]
     (doseq [build usage-queue-builds
             :let [parts (pusher/build-parts build)]]
-      (doseq [channel [(pusher/build-all-channel parts)
-                       (pusher/obsolete-build-channel parts)]]
-        (put! ws-ch [:subscribe {:channel-name channel
-                                 :messages [:build/update]}])))))
+      (put! ws-ch [:subscribe {:channel-name (pusher/build-all-channel parts)
+                               :messages [:build/update]}])
+      (put! ws-ch [:subscribe {:channel-name (pusher/obsolete-build-channel parts)
+                               :messages [:build/update]}]))))
 
 
 (defmethod api-event [:build-artifacts :success]
