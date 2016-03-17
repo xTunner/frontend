@@ -801,9 +801,10 @@
 (defmethod post-control-event! :set-heroku-deploy-user
   [target message {:keys [project-id login]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 (api-path/heroku-deploy-user vcs-type project-name)
                  :set-heroku-deploy-user
                  api-ch
                  :context {:project-id project-id
@@ -813,9 +814,10 @@
 (defmethod post-control-event! :removed-heroku-deploy-user
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :delete
-                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 (api-path/heroku-deploy-user vcs-type project-name)
                  :remove-heroku-deploy-user
                  api-ch
                  :context {:project-id project-id})))
