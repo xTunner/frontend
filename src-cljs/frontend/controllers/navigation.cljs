@@ -175,9 +175,12 @@
   [state parts]
   (let [ws-ch (get-in state [:comms :ws])
         parts (assoc parts :container-index 0)]
-    (doseq [[messages channel] [[pusher/build-messages (pusher/build-all-channel parts)]
-                                [pusher/build-messages (pusher/obsolete-build-channel parts)]
-                                [pusher/container-messages (pusher/build-container-channel parts)]]]
+    (doseq [[messages channel] [[pusher/build-messages
+                                 (pusher/build-all-channel parts)]
+                                [(concat pusher/build-messages pusher/container-messages)
+                                 (pusher/obsolete-build-channel parts)]
+                                [pusher/container-messages
+                                 (pusher/build-container-channel parts)]]]
       (put! ws-ch [:subscribe {:channel-name channel :messages messages}]))))
 
 (defmethod post-navigated-to! :build
