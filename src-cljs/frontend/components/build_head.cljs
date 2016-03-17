@@ -484,9 +484,9 @@
             [:div.loading-spinner common/spinner]
             (list
              (when (> (count exceptions) 0)
-               [:div.alert.iconified {:class "alert-info" }
+               [:div.alert.iconified {:class "alert-danger" }
                 [:div [:img.alert-icon {:src (common/icon-path
-                                              (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                                              "Info-Error")}]]
                 (om/build parse-errors exceptions)])
              (cond
                (seq failed-sources) (om/build-all build-tests-source-block failed-sources)
