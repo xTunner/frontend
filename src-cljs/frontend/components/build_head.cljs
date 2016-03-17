@@ -357,6 +357,16 @@
     [:li "Identify your slowest tests"]
     [:li [:a {:href "/docs/parallel-manual-setup"} "Balance tests between containers when using properly configured parallelization"]]]])
 
+(defrender parse-errors [exceptions owner]
+  (html
+   [:div
+    "The following errors were encountered parsing test results:"
+    [:dl
+     (for [[file exception] exceptions]
+       (list
+        [:dt [:a {:href "#artifacts"} file]]
+        [:dd exception]))]]))
+
 (defmulti format-test-name test-model/source)
 
 (defmethod format-test-name :default [test]
@@ -441,7 +451,7 @@
                    (om/build-all build-tests-file-block bottom-map))))))]]]]))))
 
 (defn build-tests-list [{project :project
-                        {{tests :tests} :tests-data
+                        {{:keys [tests exceptions]} :tests-data
                          {build-status :status} :build
                          :as data} :build-data}
                         owner]
@@ -472,26 +482,32 @@
          [:div.test-results
           (if-not tests
             [:div.loading-spinner common/spinner]
-            (cond
-              (seq failed-sources) (om/build-all build-tests-source-block failed-sources)
-              (seq tests) [:div
-                           "Your build ran "
-                           [:strong (count tests)]
-                           " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
-                           [:strong "0 failures"]
-                           (when slowest
-                             [:div.build-tests-summary
-                              [:p
-                               [:strong "Slowest test:"]
-                               (gstring/format
-                                    " %s %s (took %.2f seconds)."
-                                    (:classname slowest)
-                                    (:name slowest)
-                                    (:run_time slowest))]])]
-              :else [:div.alert.iconified {:class "alert-info" }
-                     [:div [:img.alert-icon {:src (common/icon-path
-                                                   (if build-succeeded? "Info-Info" "Info-Error"))}]]
-                     (tests-ad owner (:language project))]))])))))
+            (list
+             (when (> (count exceptions) 0)
+               [:div.alert.iconified {:class "alert-danger" }
+                [:div [:img.alert-icon {:src (common/icon-path
+                                              "Info-Error")}]]
+                (om/build parse-errors exceptions)])
+             (cond
+               (seq failed-sources) (om/build-all build-tests-source-block failed-sources)
+               (seq tests) [:div
+                            "Your build ran "
+                            [:strong (count tests)]
+                            " tests in " (string/join ", " (map test-model/pretty-source (keys source-hash))) " with "
+                            [:strong "0 failures"]
+                            (when slowest
+                              [:div.build-tests-summary
+                               [:p
+                                [:strong "Slowest test:"]
+                                (gstring/format
+                                 " %s %s (took %.2f seconds)."
+                                 (:classname slowest)
+                                 (:name slowest)
+                                 (:run_time slowest))]])]
+               :else [:div.alert.iconified {:class "alert-info" }
+                      [:div [:img.alert-icon {:src (common/icon-path
+                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                      (tests-ad owner (:language project))])))])))))
 
 (defn circle-yml-ad []
   [:div
