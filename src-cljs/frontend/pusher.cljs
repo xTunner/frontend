@@ -40,8 +40,12 @@
   (let [pusher-config (pusher-object-config config)]
     (js/Pusher. (:key config) (clj->js pusher-config))))
 
-(defn user-channel [user]
-  (str "private-" (:login user)))
+(defn user-channels [user]
+  (cond-> #{}
+    ;; This will be removed once the entire fleet is using the pusher-id-based
+    ;; channel name.
+    true (conj (str "private-" (:login user)))
+    (:pusher_id user) (conj (str "private-" (:pusher_id user)))))
 
 (defn build-channel-from-parts
   [{:keys [project-name build-num vcs-type container-index]}]

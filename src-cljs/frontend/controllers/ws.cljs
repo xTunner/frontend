@@ -21,23 +21,14 @@
 ;; the api-post-controller can do any other actions
 
 (defn fresh-channels
-  "Returns all of the channels that a user should not be unsubscribed from"
+  "Returns all of the channels that a user should not be unsubscribed from."
   [state]
-  (let [build (get-in state state/build-path)
-        container-index (or (get-in state state/current-container-path) 0)
-        user (get-in state state/user-path)
-        navigation-point (:navigation-point state)
-        navigation-data (:navigation-data state)]
-    (set (concat []
-                 (when user [(pusher/user-channel user)])
-                 (when build (pusher/build-channel-pair build container-index))
-                 ;; Don't unsubscribe if the build takes a second to load
-                 (when (= navigation-point :build)
-                   (pusher/build-channel-pair-from-parts
-                    {:project-name (:project navigation-data)
-                     :build-num (:build-num navigation-data)
-                     :vcs-type (:vcs_type build)
-                     :container-index container-index}))))))
+  (let [user (get-in state state/user-path)
+        build (get-in state state/build-path)
+        container-index (or (get-in state state/current-container-path) 0)]
+    (cond-> #{}
+      user (into (pusher/user-channels user))
+      build (into (pusher/build-channel-pair build container-index)))))
 
 (defn ignore-build-channel?
   "Returns true if we should ignore pusher updates for the given channel-name. This will be
@@ -61,7 +52,7 @@
 (defmulti post-ws-event!
   (fn [pusher-imp message args previous-state current-state] message))
 
-;; --- Navigation Mutlimethod Implementations ---
+;; --- Navigation Multimethod Implementations ---
 
 (defmethod ws-event :default
   [pusher-imp message args state]
