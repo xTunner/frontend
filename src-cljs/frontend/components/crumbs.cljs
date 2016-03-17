@@ -36,14 +36,16 @@
                :active active}))
 
 (defmethod render-crumb :project-branch
-  [{:keys [vcs_type username project branch active]}]
-  (crumb-node {:name (if branch
-                       (utils/trim-middle (utils/display-branch branch) 45)
-                       "...")
-               :path (routes/v1-dashboard-path {:vcs_type vcs_type
-                                                :org username
-                                                :repo project
-                                                :branch branch})
+  [{:keys [vcs_type username project branch active tag]}]
+  (crumb-node {:name (cond
+                       tag (utils/trim-middle (utils/display-tag tag) 45)
+                       branch (utils/trim-middle (utils/display-branch branch) 45)
+                       :else "...")
+               :path (when branch
+                       (routes/v1-dashboard-path {:vcs_type vcs_type
+                                                  :org username
+                                                  :repo project
+                                                  :branch branch}))
                :active active}))
 
 (defmethod render-crumb :build
