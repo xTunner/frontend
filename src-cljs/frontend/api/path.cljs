@@ -16,7 +16,7 @@
                   "/api/dangerzone/project/%s/%s/checkout-key"
                   vcs-type repo-name)
     "github" (gstring/format
-               "/api1/v1/project/%s/checkout-key"
+               "/api/v1/project/%s/checkout-key"
                repo-name)))
 
 (defn project-checkout-key  [vcs-type repo-name fingerprint]
