@@ -1197,9 +1197,7 @@
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name
                                                                     :vcs_type vcs_type})
-                                     :replace-token? true}])
-           (analytics/track {:event-type :plan-cancelled
-                             :current-state current-state})))
+                                     :replace-token? true}])))
        (release-button! uuid (:status api-result))))))
 
 (defn track-and-redirect [event properties owner path]
