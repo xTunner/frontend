@@ -8,8 +8,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
-            [secretary.core :as sec])
-  (:require-macros [frontend.utils :refer [inspect]]))
+            [secretary.core :as sec]))
 
 (def build-keys-mapping {:username :org
                          :reponame :repo

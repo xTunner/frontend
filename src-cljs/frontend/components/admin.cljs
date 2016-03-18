@@ -292,7 +292,7 @@
   (reify
     om/IRender
     (render [_]
-      (html [:div
+      (html [:div.details
              [:div.btn-group
               [:button.btn.btn-default
                (if-let [value (:value item)]
@@ -319,13 +319,13 @@
                                       .-value
                                       js/Number)]
         (html
-         [:div.form-group
+         [:div.form-group.details
           [:input.form-control
            {:type "text"
             :default-value (:value item)
             :ref field-ref}]
           (when-let [error-message (:error item)]
-            [:div.alert-block.alert-danger error-message])
+            (om/build common/flashes (str error-message ". ")))
           [:button.btn.btn-primary
            {:on-click #(raise! owner [:system-setting-changed
                                       (assoc item
@@ -338,8 +338,9 @@
   (reify
     om/IRender
     (render [_]
-      (html [:div
-             [:p (:description item)]
+      (html [:div.card.detailed
+             [:h4 (:human_name item)]
+             [:div.details (:description item)]
              (om/build (case (:value_type item)
                          "Boolean" boolean-setting-entry
                          "Number" number-setting-entry)
@@ -352,8 +353,8 @@
       (html [:div
              [:h1 "System Settings"]
              [:p "Low level settings for tweaking the behavior of the system."]
-             [:ul (om/build-all system-setting
-                                (get-in app state/system-settings-path))]]))))
+             [:div (om/build-all system-setting
+                                 (get-in app state/system-settings-path))]]))))
 
 (defn admin-settings [app owner]
   (reify
