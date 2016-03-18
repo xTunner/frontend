@@ -1,7 +1,6 @@
 (ns frontend.controllers.controls-test
   (:require [cemerick.cljs.test :as test]
-            [frontend.controllers.controls :as controls]
-            [bond.james :as bond])
+            [frontend.controllers.controls :as controls])
   (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
 
 (deftest extract-from-works
@@ -58,24 +57,3 @@
     (is (= {:a {:b {:c 2}}} (controls/merge-settings [[:a :b :c]], {:a {:b {:c 1}}}, {:a {:b {:c 2}}})))
 
     (is (= {:a {:b {:c 1, :d 2}}} (controls/merge-settings [[:a :b :c]], {:a {:b {:c 1}}}, {:a {:b {:d 2}}})))))
-
-(deftest button-ajax-works
-  (testing "button-ajax correctly sends a success event on success"
-    (let [success-event (fn [] "success")
-          failed-event (fn [] "failed")]
-      (bond/with-stub [success-event failed-event
-                       [ajax/ajax (fn [_ _ _ c _] (>! c ["" :success ""]))]]
-        (controls/button-ajax "a" "b" "c" :events {:success success-event
-                                                   :failed failed-event})
-        (is (= 1 (-> success-event bond/with-calls count)))
-        (is (= 0 (-> failed-event bond/with-calls count))))))
-
-  (testing "button-ajax correctly sends a failed event on failed"
-    (let [success-event (fn [] "success")
-          failed-event (fn [] "failed")]
-      (bond/with-stub [success-event failed-event
-                       [ajax/ajax (fn [_ _ _ c _] (>! c ["" :success ""]))]]
-        (controls/button-ajax "a" "b" "c" :events {:success success-event
-                                                   :failed failed-event})
-        (is (= 0 (-> success-event bond/with-calls count)))
-        (is (= 1 (-> failed-event bond/with-calls count)))))))

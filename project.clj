@@ -36,7 +36,6 @@
                  ;; Frontend tests
                  [com.cemerick/clojurescript.test "0.3.0"]
                  [org.clojure/tools.reader "0.9.2"]
-                 [circleci/bond "0.2.8"]
 
                  ;; For Dirac DevTools
                  [environ "1.0.1"]]
