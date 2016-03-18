@@ -252,3 +252,5 @@
 (def insights-sorting-path [:insights :selected-sorting])
 
 (def current-view-path [:navigation-point])
+
+(def system-settings-path [:system-settings])

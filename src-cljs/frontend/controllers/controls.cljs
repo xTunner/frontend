@@ -936,13 +936,14 @@
   [target message {:keys [project-id project-name key-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        err-ch (get-in current-state [:comms :errors])]
+        err-ch (get-in current-state [:comms :errors])
+        vcs-type (vcs-url/vcs-type project-id)]
     (go (let [api-resp (<! (ajax/managed-ajax
                              :post
-                             (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                             (api-path/project-checkout-keys vcs-type project-name)
                              :params {:type key-type}))]
           (if (= :success (:status api-resp))
-            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+            (let [api-resp (<! (ajax/managed-ajax :get (api-path/project-checkout-keys vcs-type project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
             (put! err-ch [:api-error api-resp]))
           (release-button! uuid (:status api-resp))))))
@@ -951,12 +952,13 @@
   [target message {:keys [project-id project-name fingerprint]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        err-ch (get-in current-state [:comms :errors])]
+        err-ch (get-in current-state [:comms :errors])
+        vcs-type (vcs-url/vcs-type project-id)]
     (go (let [api-resp (<! (ajax/managed-ajax
                              :delete
-                             (gstring/format "/api/v1/project/%s/checkout-key/%s" project-name fingerprint)))]
+                             (api-path/project-checkout-key vcs-type project-name fingerprint)))]
           (if (= :success (:status api-resp))
-            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+            (let [api-resp (<! (ajax/managed-ajax :get (api-path/project-checkout-keys vcs-type project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
             (put! err-ch [:api-error api-resp]))
           (release-button! uuid (:status api-resp))))))
@@ -1195,9 +1197,7 @@
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name
                                                                     :vcs_type vcs_type})
-                                     :replace-token? true}])
-           (analytics/track {:event-type :plan-cancelled
-                             :current-state current-state})))
+                                     :replace-token? true}])))
        (release-button! uuid (:status api-result))))))
 
 (defn track-and-redirect [event properties owner path]
@@ -1370,6 +1370,19 @@
 (defmethod post-control-event! :set-admin-scope
   [_ _ {:keys [login scope]} _ {{api-ch :api} :comms}]
   (api/set-user-admin-scope login scope api-ch))
+
+(defmethod control-event :system-setting-changed
+  [_ _ {:keys [name]} state]
+  (update-in state state/system-settings-path
+             (fn [settings]
+               (mapv #(if (= name (:name %))
+                        (assoc % :updating true)
+                        %)
+                     settings))))
+
+(defmethod post-control-event! :system-setting-changed
+  [_ _ {:keys [name value]} _ {{api-ch :api} :comms}]
+  (api/set-system-setting name value api-ch))
 
 (defmethod control-event :insights-sorting-changed
   [_ _ {:keys [new-sorting]} state]

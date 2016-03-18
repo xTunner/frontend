@@ -164,17 +164,23 @@
   "Subscribe to pusher channels for initial messaging. This subscribes
   us to build messages (`update`, `add-messages` and `test-results`),
   and container messages for container 0 (`new-action`,`update-action`
-  and `append-action`). The first subscription remains for the whole
-  build. The second channel will be unsubscribed when other containers
-  come into view."
+  and `append-action`). The first two subscriptions[1] remain for the
+  whole build. The second channel will be unsubscribed when other
+  containers come into view.
+
+  [1] We currently subscribe to both the old single-channel-per-build
+  pusher channel, and the new \"@all\" style channel. This should be
+  removed as soon it has been rolled in all environments including
+  enterprise sites."
   [state parts]
   (let [ws-ch (get-in state [:comms :ws])
-        build-channel (pusher/build-channel-from-parts parts)
-        container-channel (pusher/build-channel-from-parts (assoc parts :container-index 0))]
-    (put! ws-ch [:subscribe {:channel-name build-channel
-                             :messages pusher/build-messages}])
-    (put! ws-ch [:subscribe {:channel-name container-channel
-                             :messages pusher/container-messages}])))
+        parts (assoc parts :container-index 0)
+        subscribe (fn [channel messages]
+                    (put! ws-ch [:subscribe {:channel-name channel :messages messages}]))]
+    (subscribe (pusher/build-all-channel parts) pusher/build-messages)
+    (subscribe (pusher/build-container-channel parts) pusher/container-messages)
+    (subscribe (pusher/obsolete-build-channel parts) (concat pusher/build-messages
+                                                             pusher/container-messages))))
 
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
@@ -377,7 +383,7 @@
           (and (= subpage :checkout)
                (not (get-in current-state state/project-checkout-keys-path)))
           (ajax/ajax :get
-                     (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                     (api-path/project-checkout-keys vcs-type project-name)
                      :project-checkout-key
                      api-ch
                      :context {:project-name project-name})
@@ -591,14 +597,16 @@
 
 (defmethod post-navigated-to! :admin-settings
   [history-imp navigation-point {:keys [subpage tab]} previous-state current-state]
-  (case subpage
-    :fleet-state (do
-                   (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (case subpage
+      :fleet-state (do
                      (api/get-fleet-state api-ch)
-                     (api/get-admin-dashboard-builds tab api-ch))
-                   (set-page-title! "Fleet State"))
-    :license (set-page-title! "License")
-    :users (do
-             (let [api-ch (get-in current-state [:comms :api])]
-               (api/get-all-users api-ch))
-             (set-page-title! "Users"))))
+                     (api/get-admin-dashboard-builds tab api-ch)
+                     (set-page-title! "Fleet State"))
+      :license (set-page-title! "License")
+      :users (do
+               (api/get-all-users api-ch)
+               (set-page-title! "Users"))
+      :system-settings (do
+                         (api/get-all-system-settings api-ch)
+                         (set-page-title! "System Settings")))))
