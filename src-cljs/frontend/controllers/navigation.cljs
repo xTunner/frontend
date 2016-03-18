@@ -597,14 +597,16 @@
 
 (defmethod post-navigated-to! :admin-settings
   [history-imp navigation-point {:keys [subpage tab]} previous-state current-state]
-  (case subpage
-    :fleet-state (do
-                   (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])]
+    (case subpage
+      :fleet-state (do
                      (api/get-fleet-state api-ch)
-                     (api/get-admin-dashboard-builds tab api-ch))
-                   (set-page-title! "Fleet State"))
-    :license (set-page-title! "License")
-    :users (do
-             (let [api-ch (get-in current-state [:comms :api])]
-               (api/get-all-users api-ch))
-             (set-page-title! "Users"))))
+                     (api/get-admin-dashboard-builds tab api-ch)
+                     (set-page-title! "Fleet State"))
+      :license (set-page-title! "License")
+      :users (do
+               (api/get-all-users api-ch)
+               (set-page-title! "Users"))
+      :system-settings (do
+                         (api/get-all-system-settings api-ch)
+                         (set-page-title! "System Settings")))))

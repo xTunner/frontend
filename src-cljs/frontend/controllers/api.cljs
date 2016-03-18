@@ -771,6 +771,10 @@
   [target message status {:keys [resp]} state]
   (assoc-in state state/fleet-state-path resp))
 
+(defmethod api-event [:get-all-system-settings :success]
+  [_ _ _ {:keys [resp]} state]
+  (assoc-in state state/system-settings-path resp))
+
 (defmethod api-event [:build-system-summary :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/build-system-summary-path resp))
@@ -791,6 +795,26 @@
                     user
                     %)
                  (get-in state state/all-users-path))))
+
+(defmethod api-event [:system-setting-set :success]
+  [_ _ _ {updated-setting :resp} state]
+  (update-in state
+             state/system-settings-path
+             (fn [settings]
+               (mapv #(if (= (:name  %) (:name updated-setting))
+                        updated-setting
+                        %)
+                     settings))))
+
+(defmethod api-event [:system-setting-set :failed]
+  [_ _ _ {{{:keys [error setting]} :message} :resp} state]
+  (update-in state
+             state/system-settings-path
+             (fn [settings]
+               (mapv #(if (= (:name %) (:name setting))
+                        (assoc setting :error error)
+                        %)
+                     settings))))
 
 (defmethod api-event [:docs-articles :success]
   [target message status {:keys [resp context]} state]

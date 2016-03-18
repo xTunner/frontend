@@ -1373,6 +1373,19 @@
   [_ _ {:keys [login scope]} _ {{api-ch :api} :comms}]
   (api/set-user-admin-scope login scope api-ch))
 
+(defmethod control-event :system-setting-changed
+  [_ _ {:keys [name]} state]
+  (update-in state state/system-settings-path
+             (fn [settings]
+               (mapv #(if (= name (:name %))
+                        (assoc % :updating true)
+                        %)
+                     settings))))
+
+(defmethod post-control-event! :system-setting-changed
+  [_ _ {:keys [name value]} _ {{api-ch :api} :comms}]
+  (api/set-system-setting name value api-ch))
+
 (defmethod control-event :insights-sorting-changed
   [_ _ {:keys [new-sorting]} state]
   (assoc-in state state/insights-sorting-path new-sorting))

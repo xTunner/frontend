@@ -212,6 +212,9 @@
 (defn get-all-users [api-ch]
   (ajax/ajax :get "/api/v1/admin/users" :all-users api-ch))
 
+(defn get-all-system-settings [api-ch]
+  (ajax/ajax :get "/api/v1/admin/settings" :get-all-system-settings api-ch))
+
 (defn set-user-suspension [login suspended? api-ch]
   (ajax/ajax :post
              (gstring/format "/api/v1/admin/user/%s" login)
@@ -225,6 +228,13 @@
              :set-user-admin-state
              api-ch
              :params {:admin scope}))
+
+(defn set-system-setting [name value api-ch]
+  (ajax/ajax :post
+             (gstring/format "/api/v1/admin/setting/%s" name)
+             :system-setting-set
+             api-ch
+             :params value))
 
 (defn get-project-code-signing-keys [project-name api-ch]
   (ajax/ajax :get
