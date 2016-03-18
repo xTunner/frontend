@@ -288,6 +288,73 @@
                                                   :admin-write-scope? admin-write-scope?})
                                          suspended-users))]])))))
 
+(defn boolean-setting-entry [item owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:div
+             [:div.btn-group
+              [:button.btn.btn-default
+               (if-let [value (:value item)]
+                 {:class "active"}
+                 {:on-click #(raise! owner [:system-setting-changed
+                                            (assoc item :value true)])})
+               "true"]
+              [:button.btn.btn-default
+               (if-let [value (:value item)]
+                 {:on-click #(raise! owner [:system-setting-changed
+                                            (assoc item :value false)])}
+                 {:class "active"})
+               "false"]]
+             (when (:updating item)
+                   [:div.loading-spinner common/spinner])]))))
+
+(defn number-setting-entry [item owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [field-ref (str (:name item) "-input")
+            get-field-value #(some->> field-ref
+                                      (om/get-node owner)
+                                      .-value
+                                      js/Number)]
+        (html
+         [:div.form-group
+          [:input.form-control
+           {:type "text"
+            :default-value (:value item)
+            :ref field-ref}]
+          (when-let [error-message (:error item)]
+            [:div.alert-block.alert-danger error-message])
+          [:button.btn.btn-primary
+           {:on-click #(raise! owner [:system-setting-changed
+                                      (assoc item
+                                             :value (get-field-value))])}
+           (if-not (:updating item)
+                   "Save"
+                   common/spinner)]])))))
+
+(defn system-setting [item owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:div
+             [:p (:description item)]
+             (om/build (case (:value_type item)
+                         "Boolean" boolean-setting-entry
+                         "Number" number-setting-entry)
+                       item)]))))
+
+(defn system-settings [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:div
+             [:h1 "System Settings"]
+             [:p "Low level settings for tweaking the behavior of the system."]
+             [:ul (om/build-all system-setting
+                                (get-in app state/system-settings-path))]]))))
+
 (defn admin-settings [app owner]
   (reify
     om/IRender
@@ -295,10 +362,11 @@
       (let [subpage (:admin-settings-subpage app)]
         (html
          [:div#admin-settings
-            [:div.admin-settings-inner
-             [:div#subpage
-              (case subpage
-                :fleet-state (om/build fleet-state app)
-                :license (om/build license app)
-                :users (om/build users app)
-                (om/build overview app))]]])))))
+          [:div.admin-settings-inner
+           [:div#subpage
+            (case subpage
+              :fleet-state (om/build fleet-state app)
+              :license (om/build license app)
+              :users (om/build users app)
+              :system-settings (om/build system-settings app)
+              (om/build overview app))]]])))))
