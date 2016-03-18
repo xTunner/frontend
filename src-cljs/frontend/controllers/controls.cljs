@@ -936,14 +936,13 @@
   [target message {:keys [project-id project-name key-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        err-ch (get-in current-state [:comms :errors])
-        vcs-type (vcs-url/vcs-type project-id)]
+        err-ch (get-in current-state [:comms :errors])]
     (go (let [api-resp (<! (ajax/managed-ajax
                              :post
-                             (api-path/project-checkout-keys vcs-type project-name)
+                             (gstring/format "/api/v1/project/%s/checkout-key" project-name)
                              :params {:type key-type}))]
           (if (= :success (:status api-resp))
-            (let [api-resp (<! (ajax/managed-ajax :get (api-path/project-checkout-keys vcs-type project-name)))]
+            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
             (put! err-ch [:api-error api-resp]))
           (release-button! uuid (:status api-resp))))))
@@ -952,13 +951,12 @@
   [target message {:keys [project-id project-name fingerprint]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        err-ch (get-in current-state [:comms :errors])
-        vcs-type (vcs-url/vcs-type project-id)]
+        err-ch (get-in current-state [:comms :errors])]
     (go (let [api-resp (<! (ajax/managed-ajax
                              :delete
-                             (api-path/project-checkout-key vcs-type project-name fingerprint)))]
+                             (gstring/format "/api/v1/project/%s/checkout-key/%s" project-name fingerprint)))]
           (if (= :success (:status api-resp))
-            (let [api-resp (<! (ajax/managed-ajax :get (api-path/project-checkout-keys vcs-type project-name)))]
+            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
             (put! err-ch [:api-error api-resp]))
           (release-button! uuid (:status api-resp))))))
