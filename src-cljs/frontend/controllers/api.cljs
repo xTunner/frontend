@@ -306,8 +306,11 @@
   [target message status args previous-state current-state]
   (let [usage-queue-builds (get-in current-state state/usage-queue-path)
         ws-ch (get-in current-state [:comms :ws])]
-    (doseq [build usage-queue-builds]
-      (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build)
+    (doseq [build usage-queue-builds
+            :let [parts (pusher/build-parts build)]]
+      (put! ws-ch [:subscribe {:channel-name (pusher/build-all-channel parts)
+                               :messages [:build/update]}])
+      (put! ws-ch [:subscribe {:channel-name (pusher/obsolete-build-channel parts)
                                :messages [:build/update]}]))))
 
 
@@ -347,8 +350,8 @@
   [state old-index new-index]
   (let [ws-ch (get-in state [:comms :ws])
         build (get-in state state/build-path)]
-    (put! ws-ch [:unsubscribe (pusher/build-channel build old-index)])
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build new-index)
+    (put! ws-ch [:unsubscribe (pusher/build-container-channel (pusher/build-parts build old-index))])
+    (put! ws-ch [:subscribe {:channel-name (pusher/build-container-channel (pusher/build-parts build new-index))
                              :messages pusher/container-messages}])))
 
 (defmethod post-api-event! [:action-steps :success]
