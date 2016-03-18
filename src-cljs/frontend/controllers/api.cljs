@@ -215,8 +215,8 @@
           true (assoc-in state/page-scopes-path (:scopes args))
           true (assoc-in state/containers-path containers))))))
 
-(defn set-containers-filter!
-  "Takes project hash and filter down to keys that identify the build."
+(defn maybe-set-containers-filter!
+  "Depending on the status and outcome of the build, set active container filter to failed."
   [state]
   (let [build (get-in state state/build-path)
         containers (get-in state state/containers-path)
@@ -225,8 +225,8 @@
                                   containers)
         controls-ch (get-in state [:comms :controls])]
     ;; set filter
-    (if (and (not build-running?)
-             (seq failed-containers))
+    (when (and (not build-running?)
+               (seq failed-containers))
       (put! controls-ch [:container-filter-changed {:new-filter :failed
                                                     :containers failed-containers}]))))
 
@@ -247,7 +247,7 @@
                                 :output-url (:output_url action)}
                                (get-in current-state [:comms :api])))
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
-      (set-containers-filter! current-state))))
+      (maybe-set-containers-filter! current-state))))
 
 
 (defmethod api-event [:cancel-build :success]
@@ -306,8 +306,11 @@
   [target message status args previous-state current-state]
   (let [usage-queue-builds (get-in current-state state/usage-queue-path)
         ws-ch (get-in current-state [:comms :ws])]
-    (doseq [build usage-queue-builds]
-      (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build)
+    (doseq [build usage-queue-builds
+            :let [parts (pusher/build-parts build)]]
+      (put! ws-ch [:subscribe {:channel-name (pusher/build-all-channel parts)
+                               :messages [:build/update]}])
+      (put! ws-ch [:subscribe {:channel-name (pusher/obsolete-build-channel parts)
                                :messages [:build/update]}]))))
 
 
@@ -347,8 +350,8 @@
   [state old-index new-index]
   (let [ws-ch (get-in state [:comms :ws])
         build (get-in state state/build-path)]
-    (put! ws-ch [:unsubscribe (pusher/build-channel build old-index)])
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-channel build new-index)
+    (put! ws-ch [:unsubscribe (pusher/build-container-channel (pusher/build-parts build old-index))])
+    (put! ws-ch [:subscribe {:channel-name (pusher/build-container-channel (pusher/build-parts build new-index))
                              :messages pusher/container-messages}])))
 
 (defmethod post-api-event! [:action-steps :success]
@@ -367,8 +370,7 @@
                                 :output-url (:output_url action)}
                                (get-in current-state [:comms :api])))
       (update-pusher-subscriptions current-state old-container-id new-container-id)
-      (frontend.favicon/set-color! (build-model/favicon-color build))
-      (set-containers-filter! current-state))))
+      (frontend.favicon/set-color! (build-model/favicon-color build)))))
 
 (defmethod api-event [:action-log :success]
   [target message status args state]
@@ -769,6 +771,10 @@
   [target message status {:keys [resp]} state]
   (assoc-in state state/fleet-state-path resp))
 
+(defmethod api-event [:get-all-system-settings :success]
+  [_ _ _ {:keys [resp]} state]
+  (assoc-in state state/system-settings-path resp))
+
 (defmethod api-event [:build-system-summary :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/build-system-summary-path resp))
@@ -789,6 +795,26 @@
                     user
                     %)
                  (get-in state state/all-users-path))))
+
+(defmethod api-event [:system-setting-set :success]
+  [_ _ _ {updated-setting :resp} state]
+  (update-in state
+             state/system-settings-path
+             (fn [settings]
+               (mapv #(if (= (:name  %) (:name updated-setting))
+                        updated-setting
+                        %)
+                     settings))))
+
+(defmethod api-event [:system-setting-set :failed]
+  [_ _ _ {{{:keys [error setting]} :message} :resp} state]
+  (update-in state
+             state/system-settings-path
+             (fn [settings]
+               (mapv #(if (= (:name %) (:name setting))
+                        (assoc setting :error error)
+                        %)
+                     settings))))
 
 (defmethod api-event [:docs-articles :success]
   [target message status {:keys [resp context]} state]

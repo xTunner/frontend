@@ -81,8 +81,7 @@
 (def supported-controller-events
   ;; These are the api response events.
   ;; They are in the format of <object>-<action take in the past tense>
-  #{:plan-cancelled
-    :project-branch-changed
+  #{:project-branch-changed
     :project-builds-stopped
     :project-followed
     :project-unfollowed})

@@ -280,7 +280,9 @@
      (when (config/enterprise?)
        {:type :subpage :href "/admin/license" :title "License" :subpage :license})
      (when (config/enterprise?)
-       {:type :subpage :href "/admin/users" :title "Users" :subpage :users})]))
+       {:type :subpage :href "/admin/users" :title "Users" :subpage :users})
+     (when (config/enterprise?)
+       {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings})]))
 
 (defn admin-settings-menu [app owner]
   (reify
