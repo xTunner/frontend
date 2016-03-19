@@ -391,7 +391,7 @@
           (and (#{:api :badges} subpage)
                (not (get-in current-state state/project-tokens-path)))
           (ajax/ajax :get
-                     (gstring/format "/api/v1/project/%s/token" project-name)
+                     (api-path/project-tokens vcs-type project-name)
                      :project-token
                      api-ch
                      :context {:project-name project-name})
