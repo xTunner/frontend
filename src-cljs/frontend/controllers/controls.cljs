@@ -733,9 +733,10 @@
 (defmethod post-control-event! :saved-ssh-key
   [target message {:keys [project-id ssh-key]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+                 (api-path/project-ssh-key vcs-type project-name)
                  :save-ssh-key
                  api-ch
                  :params ssh-key
@@ -745,9 +746,10 @@
 (defmethod post-control-event! :deleted-ssh-key
   [target message {:keys [project-id hostname fingerprint]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
-               (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+               (api-path/project-ssh-key vcs-type project-name)
                :delete-ssh-key
                api-ch
                :params {:fingerprint fingerprint
