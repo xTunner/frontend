@@ -37,6 +37,24 @@
                "/api/v1/project/%s/%s/plan"
                org repo)))
 
+(defn project-tokens  [vcs-type project-name]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/token"
+                  vcs-type project-name)
+    "github" (gstring/format
+               "/api/v1/project/%s/token"
+               project-name)))
+
+(defn project-token [vcs-type project-name token]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/token/%s"
+                  vcs-type project-name token)
+    "github" (gstring/format
+               "/api/v1/project/%s/token/%s"
+               project-name token)))
+
 (defn build-retry [vcs-type org-name repo-name build-num]
   (case vcs-type
     "bitbucket" (gstring/format
