@@ -331,7 +331,10 @@
               [:div.form-group
                [:label "Value"]
                [:input.form-control#env-var-value
-                {:required true, :type "text", :value new-env-var-value
+                {:required true
+                 :type "text"
+                 :value new-env-var-value
+                 :auto-complete "off"
                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]
 
               [:div.form-group
@@ -1174,7 +1177,10 @@
            [:label {:placeholder "Access Key ID"}]
 
            [:input#secret-access-key
-            {:required true, :type "text", :value (or secret_access_key "")
+            {:required true,
+             :type "text",
+             :value (or secret_access_key "")
+             :auto-complete "off"
              :on-change #(utils/edit-input owner (input-path :secret_access_key) %)}]
            [:label {:placeholder "Secret Access Key"}]
 
