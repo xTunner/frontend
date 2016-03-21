@@ -331,9 +331,9 @@
               [:div.form-group
                [:label "Value"]
                [:input.form-control#env-var-value
-                {:required true,
-                 :type "text",
-                 :value new-env-var-value,
+                {:required true
+                 :type "text"
+                 :value new-env-var-value
                  :auto-complete "off"
                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]
 
