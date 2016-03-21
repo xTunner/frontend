@@ -29,7 +29,9 @@ From here, we'll assume that you're manually setting up your tests.
 
 The first thing to do is to add an empty `circle.yml`
 file to the root directory of your repository.
-We recommend adding this on a branch the first time so you don't piss off your colleagues.
+We recommend adding this on a branch the first time so that your
+colleagues can continue building as before while you iterate on the
+configuration.
 
 We have provided a
 [full reference for the `circle.yml` file](/docs/configuration)
@@ -149,5 +151,5 @@ You should be good to go. Happy testing!
 If your tests fail and you need to fix something, CircleCI has a
 [list of common problems and their solutions](/docs/troubleshooting)
 that can help you debug many issues.
-You might also like to know that we allow you to SSH in during your builds.
+You might also like to know that we allow you to [SSH in during your builds](/docs/ssh).
 This lets you check out how CircleCI works and facilitates nimble and efficient debugging.
