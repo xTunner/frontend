@@ -73,16 +73,18 @@
 (defn button-ajax
   "An ajax/ajax wrapper that releases the current managed-button after the API
   request.  Exists to faciliate migration away from stateful-button."
-  [method url message channel & opts]
+  [method url message channel & {:keys [context params events] :as opts}]
   (let [uuid frontend.async/*uuid*
         c (chan)]
     (apply ajax/ajax method url message c opts)
     (go-loop []
-      (when-let [[_ status _ :as event] (<! c)]
-        (when (#{:success :failed} status)
-          (release-button! uuid status))
-        (>! channel event)
-        (recur)))))
+             (when-let [[_ status _ :as event] (<! c)]
+               (when-let [tracking-event (-> opts :events status)]
+                 (tracking-event))
+               (when (#{:success :failed} status)
+                 (release-button! uuid status))
+               (>! channel event)
+               (recur)))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -460,11 +462,11 @@
                  :follow-repo
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}
-                 :context repo)
-    (analytics/track {:event-type :project-followed
-                      :current-state current-state
-                      :properties {:org org-name
-                                   :repo repo-name}})))
+                 :context repo
+                 :events {:success #(analytics/track {:event-type :project-followed
+                                                      :current-state current-state
+                                                      :properties {:org org-name
+                                                                   :repo repo-name}})})))
 
 
 (defmethod control-event :inaccessible-org-toggled
@@ -483,11 +485,11 @@
                  (gstring/format "/api/v1/project/%s/follow" project)
                  :follow-project
                  api-ch
-                 :context {:project-id project-id})
-    (analytics/track {:event-type :project-followed
-                      :current-state current-state
-                      :properties {:org org-name
-                                   :repo repo-name}})))
+                 :context {:project-id project-id}
+                 :events {:success #(analytics/track {:event-type :project-followed
+                                                     :current-state current-state
+                                                     :properties {:org org-name
+                                                                  :repo repo-name}})})))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -503,11 +505,11 @@
                  :unfollow-repo
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}
-                 :context repo)
-    (analytics/track {:event-type :project-unfollowed
-                      :current-state current-state
-                      :properties {:org org-name
-                                   :repo repo-name}})))
+                 :context repo
+                 :events {:success #(analytics/track {:event-type :project-unfollowed
+                                                      :current-state current-state
+                                                      :properties {:org org-name
+                                                                   :repo repo-name}})})))
 
 
 (defmethod post-control-event! :unfollowed-project
@@ -522,11 +524,11 @@
                  :unfollow-project
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}
-                 :context {:project-id project-id})
-    (analytics/track {:event-type :project-unfollowed
-                      :current-state current-state
-                      :properties {:org org-name
-                                   :repo repo-name}})))
+                 :context {:project-id project-id}
+                 :events {:success #(analytics/track {:event-type :project-unfollowed
+                                                      :current-state current-state
+                                                      :properties {:org org-name
+                                                                   :repo repo-name}})})))
 
 (defmethod post-control-event! :stopped-building-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
@@ -539,11 +541,11 @@
                  (gstring/format "/api/v1/project/%s/enable" project)
                  :stop-building-project
                  api-ch
-                 :context {:project-id project-id})
-    (analytics/track {:event-type :project-builds-stopped
-                      :current-state current-state
-                      :properties {:org org-name
-                                   :repo repo-name}})))
+                 :context {:project-id project-id}
+                 :events {:success #(analytics/track {:event-type :project-builds-stopped
+                                                      :current-state current-state
+                                                      :properties {:org org-name
+                                                                   :repo repo-name}})})))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
