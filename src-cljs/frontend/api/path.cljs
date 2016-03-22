@@ -46,6 +46,24 @@
                "/api/v1/project/%s/%s/plan"
                org repo)))
 
+(defn project-follow [vcs-type project]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/follow"
+                  vcs-type project)
+    "github" (gstring/format
+               "/api/v1/project/%s/follow"
+               project)))
+
+(defn project-unfollow [vcs-type project]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/unfollow"
+                  vcs-type project)
+    "github" (gstring/format
+               "/api/v1/project/%s/unfollow"
+               project)))
+
 (defn build-retry [vcs-type org-name repo-name build-num]
   (case vcs-type
     "bitbucket" (gstring/format
