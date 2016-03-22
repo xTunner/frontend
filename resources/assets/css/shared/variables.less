@@ -81,18 +81,18 @@
 @fontSizeLarger:        round((@baseFontSize * 1.45), 0); // 20px
 @fontSizeLarge:         round((@baseFontSize * 1.25), 0); // 18px
 @fontSizeMedium:        round((@baseFontSize * 1.15), 0); // 16px
-@fontSizeSmallish:      round((@baseFontSize * 0.95), 0); // 13px Fixme: need to rename this variable
-@fontSizeSmall:         round((@baseFontSize * 0.85), 0); // 12px
+@fontSizeSmall:         round((@baseFontSize * 0.95), 0); // 13px
+@fontSizeSmaller:       round((@baseFontSize * 0.85), 0); // 12px
 @fontSizeSmallest:      round((@baseFontSize * 0.75), 0); // 11px
 
-h1, .h1 { font-size: @fontSizeLarger !important; } // 20px
-h2, .h2 { font-size: @fontSizeLarge !important; }  // 18px
-h3, .h3 { font-size: @fontSizeMedium !important; } // 16px
-h4, .h4 { font-size: @baseFontSize !important; }   // 14px
-h5, .h5 { font-size: @fontSizeSmall !important; }  // 12px
-h6, .h6 { font-size: @fontSizeSmallest !important; }   // 11px
+h1, .h1 { font-size: @fontSizeLarger    !important; } // override Bootstrap - 20px
+h2, .h2 { font-size: @fontSizeLarge     !important; } // override Bootstrap - 18px
+h3, .h3 { font-size: @fontSizeMedium    !important; } // override Bootstrap - 16px
+h4, .h4 { font-size: @baseFontSize      !important; } // override Bootstrap - 14px
+h5, .h5 { font-size: @fontSizeSmaller   !important; } // override Bootstrap - 12px
+h6, .h6 { font-size: @fontSizeSmallest  !important; } // override Bootstrap - 11px
 
-@codeFontSize:          @fontSizeSmall;
+@codeFontSize:          @fontSizeSmaller;
 @codeCharacterWidth:    round((3 / 5) * @codeFontSize); // Monaco's character width is 60% of size (height)
 
 // Spacing
