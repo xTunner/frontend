@@ -179,7 +179,10 @@
     (render [_]
       (html
        [:div.refresh-repos
-       [:button.btn.btn-primary.set-user "Reload repositories"]]))))
+       [:button.btn.btn-primary.set-user
+        {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
+         :class "active"}
+        "Reload repositories"]]))))
 
 (defn repo-item [data owner]
   (reify
