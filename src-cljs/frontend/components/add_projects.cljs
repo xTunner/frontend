@@ -61,11 +61,11 @@
    "Are you missing an organization? You or an admin may need to enable CircleCI for your organization in "
    [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
     "GitHub's application permissions"]
-   "."
+   ". "
    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
                       :class "active"}
     "Refresh this list"] ;; FIXME: This is not working
-   " when you are done."])
+   " after you have updated permissions."])
 
 (defn organization-listing [data owner]
   (reify
@@ -169,8 +169,8 @@
 (def repos-explanation
   [:div.add-repos
    [:ul
-    [:li
-     "Get started by selecting your GitHub or Bitbucket username or organization."]
+    [:li "Get started by selecting your GitHub or Bitbucket username or organization."]
+    [:br]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
 (defn add-projects-head-actions [data owner]
@@ -520,9 +520,7 @@
        [:div#project-listing.project-listing
        [:div.overview
         [:span.big-number "2"]
-        [:div.instruction "Choose a repo below and we will watch the repository for activity like commits and pull requests."
-        [:br]
-        "We'll kick off the first build immediately and new builds will be initiated each time someone pushes commits."]]
+        [:div.instruction "Choose a repo below and we will watch the repository for activity like commits and pull requests. We'll kick off the first build immediately and new builds will be initiated each time someone pushes commits."]]
        (om/build repo-lists {:user user
                              :repos repos
                              :selected-org selected-org

@@ -5,10 +5,6 @@
     text-align: justify;
     margin-right: 1ex;
     padding: 10px 0 30px;
-
-    @media only screen and (max-width: 960px) {
-      width: 100%;
-    }
   }
 
   @content: {
@@ -20,7 +16,7 @@
   @big-number-margin-right: 8px;
   .big-number {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: top;
     box-sizing: border-box;
     width: @big-number-width;
     height: @big-number-width;
@@ -116,6 +112,7 @@
     color: @grayLight;
 
     ul {
+      padding: 2em;
       list-style: none;
     }
 
@@ -481,9 +478,13 @@
     .flex(auto);
 
     margin: 0;
-    padding: 0 15px 100px;
+    padding: 0 0 100px 15px;
 
     @media (max-width: @screen-xs-max) {
+      padding: 20px 0 100px;
+    }
+
+    @media (max-width: @screen-sm-max) {
       width: 100%;
     }
   }
