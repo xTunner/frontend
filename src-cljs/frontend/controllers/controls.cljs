@@ -779,9 +779,10 @@
 (defmethod post-control-event! :saved-project-api-token
   [target message {:keys [project-id api-token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/token" project-name)
+                 (api-path/project-tokens vcs-type project-name)
                  :save-project-api-token
                  api-ch
                  :params api-token
@@ -791,9 +792,10 @@
 (defmethod post-control-event! :deleted-project-api-token
   [target message {:keys [project-id token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
-               (gstring/format "/api/v1/project/%s/token/%s" project-name token)
+               (api-path/project-token vcs-type project-name token)
                :delete-project-api-token
                api-ch
                :context {:project-id project-id
