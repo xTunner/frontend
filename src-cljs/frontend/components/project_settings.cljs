@@ -19,6 +19,7 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -852,8 +853,9 @@
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
-        (str (gh-utils/http-endpoint) "/" (vcs-url/project-name (:vcs_url project)) "/settings/keys")
-
+        (case (:vcs-type project)
+          "bitbucket" (str (bb-utils/http-endpoint) "/" (vcs-url/project-name (:vcs_url project)) "/admin/deploy-keys/")
+          "github" (str (gh-utils/http-endpoint) "/" (vcs-url/project-name (:vcs_url project)) "/settings/keys"))
         (and (= "github-user-key" (:type key)) (= (:login key) (:login user)))
         (str (gh-utils/http-endpoint) "/settings/ssh")
 
@@ -896,12 +898,15 @@
                    [:tbody
                     (for [checkout-key checkout-keys
                           :let [fingerprint (:fingerprint checkout-key)
-                                github-link (checkout-key-link checkout-key project user)]]
+                                vcs-link (checkout-key-link checkout-key project user)]]
                       [:tr {:class (when (:preferred checkout-key) "preferred")}
                        [:td
-                        (if github-link
-                          [:a.slideBtn {:href github-link :target "_blank"}
-                           (checkout-key-description checkout-key project) " " [:i.fa.fa-github]]
+                        (if vcs-link
+                          [:a.slideBtn {:href vcs-link :target "_blank"}
+                           (checkout-key-description checkout-key project) " "
+                           (case (vcs-url/vcs-type project-id)
+                             "bitbucket" [:i.fa.fa-bitbucket]
+                             "github" [:i.fa.fa-github])]
                           (checkout-key-description checkout-key project))]
                        [:td fingerprint]
                        [:td
