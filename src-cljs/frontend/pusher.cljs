@@ -45,7 +45,11 @@
     ;; This will be removed once the entire fleet is using the pusher-id-based
     ;; channel name.
     true (conj (str "private-" (:login user)))
-    (:pusher_id user) (conj (str "private-" (:pusher_id user)))))
+    (:pusher_id user) (conj (str "private-" (:pusher_id user))
+                            ;; This will be removed once the entire fleet is
+                            ;; clear of the bug that appends "@all" to channel
+                            ;; names even if they don't need it.
+                            (str "private-" (:pusher_id user) "@all"))))
 
 (defn build-channel-base
   [{:keys [project-name build-num vcs-type]}]
