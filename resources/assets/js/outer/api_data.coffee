@@ -334,10 +334,22 @@ window.circle_api_data =
           name: "tag"
           description: "The tag to build. Default is null. Cannot be used with revision parameter."
           example: "f1baeb913288519dd9a942499cef2873f5b1c2bf"
+        ,
+          name: "parallel"
+          description: "The number of containers to use to run the build.  Default is null and the project default is used."
+          example: 4
+        ,
+          name: "build_parameters"
+          description: "Additional environment variables to inject into the build environment.  A map of names to values."
+          example: "{\"JAVA_OPTS\": \"+Xms128m\"}"
       ]
       body: """
       {
-        "tag": "v0.1" // optional
+        "tag": "v0.1", // optional
+        "parallel": 2, //optional, default null
+        "build_parameters": { // optional
+          "RUN_EXTRA_TESTS": "true"
+        }
       }
       """
       response: """

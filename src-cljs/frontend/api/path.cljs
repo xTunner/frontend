@@ -28,6 +28,15 @@
                "/api/v1/project/%s/checkout-key/%s"
                repo-name fingerprint)))
 
+(defn project-ssh-key  [vcs-type repo-name]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/ssh-key"
+                  vcs-type repo-name)
+    "github" (gstring/format
+               "/api/v1/project/%s/ssh-key"
+               repo-name)))
+
 (defn project-plan [vcs-type org repo]
   (case vcs-type
     "bitbucket" (gstring/format
