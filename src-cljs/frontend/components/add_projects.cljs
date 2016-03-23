@@ -180,8 +180,7 @@
       (html
        [:div.refresh-repos
        [:button.btn.btn-primary.set-user
-        {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
-         :class "active"}
+        {:on-click #(raise! owner [:refreshed-user-orgs {}])} ;; TODO: spinner while working?
         "Reload repositories"]]))))
 
 (defn repo-item [data owner]
