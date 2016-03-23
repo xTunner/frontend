@@ -48,11 +48,7 @@
                        :class (when (= selected-org-view (get-in settings [:add-projects :selected-org])) "active")}
      [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
             :height 50}]
-     [:div.orgname login]
-     (cond
-       ;; TODO remove the nil check after a migration adds vcs-type to all entities
-       (vcs-github? org)
-       (vcs-bitbucket? org))]))
+     [:div.orgname login]]))
 
 (defn missing-org-info
   "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
