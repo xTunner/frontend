@@ -510,14 +510,14 @@
       [:p "To kick things off, you'll need to pick some projects to build:"]
       [:hr]
       [:div.org-repo-container
-        [:div.app-aside.org-listing
+      [:div.app-aside.org-listing
        (om/build (if (feature/enabled? :bitbucket)
-                   organization-listing-with-bitbucket
-                   organization-listing)
-                 {:user user
-                  :settings settings
-                  :repos repos
-                  :tab tab})]
+        organization-listing-with-bitbucket
+        organization-listing)
+        {:user user
+         :settings settings
+         :repos repos
+         :tab tab})]
        [:div#project-listing.project-listing
        [:div.overview
         [:span.big-number "2"]
