@@ -48,20 +48,30 @@
                        :class (when (= selected-org-view (get-in settings [:add-projects :selected-org])) "active")}
      [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
             :height 50}]
-     [:div.orgname login]]))
+     [:div.orgname login]
+     (cond
+       ;; TODO remove the nil check after a migration adds vcs-type to all entities
+       (vcs-github? org)
+       [:a.visit-org {:href (str (gh-utils/http-endpoint) "/" login)
+                      :target "_blank"}
+        [:i.octicon.octicon-mark-github]]
+
+       (vcs-bitbucket? org)
+       [:a.visit-org
+        [:i.fa.fa-bitbucket]])]))
 
 (defn missing-org-info
   "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
   [owner]
   [:p
-   "Are you missing an organization? You or an admin may need to enable CircleCI for your organization in "
+   "Missing an organization? You or an admin may need to enable CircleCI for your organization in "
    [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
     "GitHub's application permissions"]
-   ". "
+   ". Then come back and "
    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
                       :class "active"}
-    "Refresh this list"]
-   " after you have updated permissions."])
+    "refresh these listings"]
+   "."])
 
 (defn organization-listing [data owner]
   (reify
@@ -118,7 +128,7 @@
          [:div
           [:div.overview
            [:span.big-number "1"]
-           [:div.instruction "Choose an organization that you are a member of."]]
+           [:div.instruction "Choose a GitHub or Bitbucket account that you are a member of or have access to."]]
           [:ul.nav.nav-tabs
            [:li {:class (when github-active? "active")}
             [:a {:href "#github"}
@@ -132,9 +142,7 @@
            (when github-active?
              (missing-org-info owner))
            (when (and bitbucket-active? (-> user :bitbucket_authorized not))
-             [:div
-             [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
-             [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
+             [:div.text-center [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
            [:ul.organizations
             (map (fn [org] (organization org settings owner))
                  ;; here we display you, then all of your organizations, then all of the owners of
@@ -165,18 +173,9 @@
 (def repos-explanation
   [:div.add-repos
    [:ul
-    [:li "Get started by selecting your GitHub or Bitbucket username or organization."]
+    [:li
+     "Get started by selecting your GitHub username or organization above."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
-
-(defn add-projects-head-actions [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       [:div.refresh-repos
-       [:button.btn.btn-primary.set-user
-        {:on-click #(raise! owner [:refreshed-user-orgs {}])} ;; TODO: spinner while working?
-        "Reload repositories"]]))))
 
 (defn repo-item [data owner]
   (reify
@@ -246,7 +245,7 @@
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
                  (when (:fork repo)
-                   [:span.forked [:i.octicon.octicon-repo-forked] (str " " (vcs-url/org-name (:vcs_url repo)) "")])]
+                   [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
                 [:div.notice {:title "You must be an admin to add a project on CircleCI"}
                  [:i.material-icons.lock "lock"]
                  "Contact repo admin"]]))))))
@@ -476,7 +475,7 @@
 (defn inaccessible-orgs-notice [follows settings]
   (let [inaccessible-orgs (set (map :username follows))
         follows-by-orgs (group-by :username follows)]
-    [:div.inaccessible-notice.card
+    [:div.inaccessible-notice
      [:h2 "Warning: Access Problems"]
      [:p.missing-org-info
       "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
@@ -492,7 +491,7 @@
   (let [user (:current-user data)
         repos (:repos user)
         settings (:settings data)
-        {{tab :tab} :navigation-data} data
+        {{tab :tab} :navigation-data} data 
         selected-org (get-in settings [:add-projects :selected-org])
         followed-inaccessible (inaccessible-follows user
                                                     (get-in data state/projects-path))]
@@ -502,25 +501,26 @@
         (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
       (when (seq followed-inaccessible)
         (inaccessible-orgs-notice followed-inaccessible settings))
-      [:h2 "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."]
-      [:p "To kick things off, you'll need to pick some projects to build:"]
+      [:h2 "Welcome!"]
+      [:h3 "You're about to set up a new project in CircleCI."]
+      [:p "CircleCI helps you ship better code, faster. To kick things off, you'll need to pick some projects to build:"]
       [:hr]
-      [:div.org-repo-container
-       [:div.app-aside.org-listing
-        (om/build (if (feature/enabled? :bitbucket)
-                    organization-listing-with-bitbucket
-                    organization-listing)
-                  {:user user
-                   :settings settings
-                   :repos repos
-                   :tab tab})]
-       [:div#project-listing.project-listing
-        [:div.overview
-         [:span.big-number "2"]
-         [:div.instruction "Choose a repo below, and we will watch the repository for activity like commits and pull requests. We'll kick off the first build immediately, and new builds will be initiated each time someone pushes commits."]]
-         (om/build repo-lists {:user user
-                               :repos repos
-                               :selected-org selected-org
-                               :osx-enabled? (get-in data state/org-osx-enabled-path)
-                               :selected-plan (get-in data state/org-plan-path)
-                               :settings settings})]]])))
+      [:div.org-listing
+       (om/build (if (feature/enabled? :bitbucket)
+                   organization-listing-with-bitbucket
+                   organization-listing)
+                 {:user user
+                  :settings settings
+                  :repos repos
+                  :tab tab})]
+      [:hr]
+      [:div#project-listing.project-listing
+       [:div.overview
+        [:span.big-number "2"]
+        [:div.instruction "Choose a repo, and we'll watch the repository for activity in GitHub such as pushes and pull requests. We'll kick off the first build immediately, and a new build will be initiated each time someone pushes commits."]]
+       (om/build repo-lists {:user user
+                             :repos repos
+                             :selected-org selected-org
+                             :osx-enabled? (get-in data state/org-osx-enabled-path)
+                             :selected-plan (get-in data state/org-plan-path)
+                             :settings settings})]])))

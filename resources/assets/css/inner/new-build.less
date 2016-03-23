@@ -479,6 +479,11 @@
   .summary-build-contents {
     .flexy(stretch, flex-start, row);
   }
+
+  .head-user {
+    .flexy(stretch, flex-start, column);
+    height: inherit;
+  }
 }
 
 .summary-header {
@@ -642,12 +647,12 @@ ul:last-child {
     padding-top: 0.2em;
     margin-bottom: 0;
   }
-
+  
   dt {
     clear: both;
     float: left;
 
-    &::after {
+    &::after { 
       content: ":";
     }
   }
@@ -656,7 +661,7 @@ ul:last-child {
     float: left;
     padding-left: 0.5em;
   }
-
+  
   .alert {
     margin-bottom: 15px;
 
