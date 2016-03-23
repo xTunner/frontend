@@ -83,8 +83,6 @@
   @new-aside-menu-width: 285px;
 
   .org-listing {
-    // .flexy(column);
-    // .flex(1 0 1px);
     width: @new-aside-menu-width;
 
     .nav-header {
@@ -114,6 +112,10 @@
     ul {
       padding: 2em;
       list-style: none;
+
+      li {
+        margin-bottom: 20px;
+      }
     }
 
     &:empty {
@@ -240,8 +242,6 @@
 
       > .orgname {
         @offset: @avatar-size + @avatar-margin-right;
-        .flex(1, 100%);
-
         font-weight: 600;
         .text-overflow();
         display: inline-block;

@@ -64,7 +64,7 @@
    ". "
    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
                       :class "active"}
-    "Refresh this list"] ;; FIXME: This is not working
+    "Refresh this list"]
    " after you have updated permissions."])
 
 (defn organization-listing [data owner]
@@ -170,7 +170,6 @@
   [:div.add-repos
    [:ul
     [:li "Get started by selecting your GitHub or Bitbucket username or organization."]
-    [:br]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
 (defn add-projects-head-actions [data owner]
@@ -246,14 +245,14 @@
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
-                [:div.proj-name ;; FIXME: this should be a link
+                [:div.proj-name
                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
                                      (when (:fork repo) " (forked)"))}
                   (:name repo)]
                  (when (:fork repo)
                    [:span.forked [:i.octicon.octicon-repo-forked] (str " " (vcs-url/org-name (:vcs_url repo)) "")])]
                 [:div.notice {:title "You must be an admin to add a project on CircleCI"}
-                 [:i.material-icons.lock "lock"] ;; FIXME: this should be a link
+                 [:i.material-icons.lock "lock"]
                  "Contact repo admin"]]))))))
 
 (defrender repo-filter [settings owner]
