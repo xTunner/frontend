@@ -517,10 +517,10 @@
        [:div#project-listing.project-listing
         [:div.overview
          [:span.big-number "2"]
-         [:div.instruction "Choose a repo below and we will watch the repository for activity like commits and pull requests. We'll kick off the first build immediately and new builds will be initiated each time someone pushes commits."]]
-        (om/build repo-lists {:user user
-                              :repos repos
-                              :selected-org selected-org
-                              :osx-enabled? (get-in data state/org-osx-enabled-path)
-                              :selected-plan (get-in data state/org-plan-path)
-                              :settings settings})]]])))
+         [:div.instruction "Choose a repo below, and we will watch the repository for activity like commits and pull requests. We'll kick off the first build immediately, and new builds will be initiated each time someone pushes commits."]]
+         (om/build repo-lists {:user user
+                               :repos repos
+                               :selected-org selected-org
+                               :osx-enabled? (get-in data state/org-osx-enabled-path)
+                               :selected-plan (get-in data state/org-plan-path)
+                               :settings settings})]]])))
