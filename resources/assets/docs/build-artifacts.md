@@ -22,7 +22,22 @@ After the build finishes, everything in these directories is saved and linked to
 
 You'll find links to the artifacts at the top of the build page. You can also consume them via our [API](/docs/api#build-artifacts).
 
+You can also access your artifacts in your browser with the following url:
+
+```
+https://circleci.com/api/v1/project/:org/:repo/:build_num/artifacts/:container-index/path/to/artifact
+```
+
+You can also use `latest` in place of `:build_num` together with query parameters `branch` and `filter` to access the artifact from the latest build on a branch. `filter` can have a value of `completed`, `successful`, or `failed` and defaults to `completed`.
+
+For example:
+
+```
+https://circleci.com/api/v1/project/circleci/mongofinil/latest/artifacts/0/$CIRCLE_ARTIFACTS/cherry-pie.png?branch=master&filter=failed
+```
+
 That's all there is to it!
 
 Feel free to [contact us](mailto:sayhi@circleci.com)
 if you have any questions or feedback!
+
