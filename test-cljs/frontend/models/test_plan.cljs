@@ -1,5 +1,6 @@
 (ns frontend.models.test-plan
   (:require [cemerick.cljs.test :as t]
+            [cljs-time.core :as time]
             [frontend.test-utils :refer (example-plan)]
             [frontend.models.plan :as pm])
   (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var]]))
@@ -19,3 +20,24 @@
   (is (not (pm/grandfathered? (example-plan :free :paid))))
   (is (not (pm/grandfathered? (example-plan :free :big-paid))))
   (is (not (pm/grandfathered? (example-plan :trial :free :paid)))))
+
+(deftest osx-trial-days-left-works
+  (testing "a plan with no trial end date returns 0"
+    (is (= "0 days" (pm/osx-trial-days-left {}))))
+
+  (testing "a plan which has already ended returns 0"
+    (is (= "0 days" (pm/osx-trial-days-left {:osx_trial_end_date (time/yesterday)}))))
+
+  (testing "a plan which started today and has 14 days left has 14 days left"
+    (is (= "14 days" (pm/osx-trial-days-left {:osx_plan_started_on (time/now)
+                                              :osx_trial_end_date (-> 14
+                                                                      time/days
+                                                                      time/from-now)}))))
+
+  (testing "a plan which started a week ago and has 7 days left has 7 days left"
+    (is (= "7 days" (pm/osx-trial-days-left {:osx_plan_started_on (-> 7
+                                                                      time/days
+                                                                      time/ago)
+                                             :osx_trial_end_date (-> 7
+                                                                     time/days
+                                                                     time/from-now)})))))
