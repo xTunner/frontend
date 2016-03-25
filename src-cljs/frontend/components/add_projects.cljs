@@ -165,7 +165,11 @@
 (def repos-explanation
   [:div.add-repos
    [:ul
-    [:li "Get started by selecting your GitHub or Bitbucket username or organization."]
+    [:li
+     "Get started by selecting your GitHub "
+     (when (feature/enabled? :bitbucket)
+       "or Bitbucket ")
+     "username or organization."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
 (defn add-projects-head-actions [data owner]
