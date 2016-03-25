@@ -1,6 +1,7 @@
 (ns frontend.models.plan
   (:require [frontend.utils :as utils :include-macros true]
             [goog.string :as gstring]
+            [frontend.datetime :as datetime]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]))
 
@@ -275,3 +276,9 @@
 (defn osx-ga-plan? [plan]
   (if-let [plan-id (keyword (osx-plan-id plan))]
     (boolean (get osx-plans plan-id))))
+
+(defn osx-trial-days-left [plan]
+  (let [trial-end (some-> plan :osx_trial_end_date)]
+    (if (<= (.getTime (time/now)) (.getTime (js/Date. trial-end)))
+      (datetime/time-ago (time/in-millis (time/interval (time/now) (js/Date. trial-end))))
+      "0 days")))

@@ -365,9 +365,7 @@
             on-trial? (and trial-starts-here? (pm/osx-trial-plan? plan))
             trial-expired? (and on-trial? (not (pm/osx-trial-active? plan)))
             trial-starts-here? (and trial-starts-here?
-                                    (not (pm/osx? plan)))
-            plan-start (some-> plan :osx_plan_started_on)
-            trial-end (some-> plan :osx_trial_end_date)]
+                                    (not (pm/osx? plan)))]
         (html
           [:div {:data-component `osx-plan-ga}
            [:div {:class (cond currently-selected? "plan-notice selected-notice"
@@ -439,9 +437,7 @@
 
               on-trial?
               [:div.bottom
-               (str "Trial plan ("
-                    (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end))))
-                    " left)")]
+               (str "Trial plan ("(pm/osx-trial-days-left plan)" left)")]
 
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
@@ -522,9 +518,7 @@
     (render [_]
       (let [osx-plans (->> pm/osx-plans
                            (vals)
-                           (map (partial merge {:plan plan})))
-            plan-start (some-> plan :osx_plan_started_on)
-            trial-end (some-> plan :osx_trial_end_date)]
+                           (map (partial merge {:plan plan})))]
         (html
           [:div.osx-plans {:data-component `osx-plans-list-ga}
            [:fieldset
@@ -537,8 +531,7 @@
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
-              [:p (gstring/format "You have %s left on the OS X trial."
-                                  (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))])]
+              [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
            [:div.plan-selection
             (om/build-all osx-plan-ga osx-plans)]])))))
 
@@ -1306,13 +1299,19 @@
              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                       :_fragment "osx-pricing"})} "here"] "."]
             (when (pm/osx? plan)
-              (let [plan-name (some-> plan :osx :template :name)
-                    plan-start (some-> plan :osx_plan_started_on)
-                    trial-end (some-> plan :osx_trial_end_date)]
+              (let [plan-name (some-> plan :osx :template :name)]
                 [:p
-                 (if (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the OS X trial and have %s left. "
-                                   (datetime/time-ago (time/in-millis (time/interval (js/Date. plan-start) (js/Date. trial-end)))))
+                 (cond
+                   (pm/osx-trial-active? plan)
+                   (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
+
+                   (and (pm/osx-trial-plan? plan)
+                        (not (pm/osx-trial-active? plan)))
+                   [:span "Your free trial of CircleCI for OS X has expired. Please "
+                    [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                             :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
+
+                   :else
                    (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))])]))))
 
 (defn overview [app owner]
