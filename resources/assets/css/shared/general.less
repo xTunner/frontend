@@ -35,6 +35,15 @@ a {
     height: 70px;
     padding: 15px;
 
+    @media (max-width: @screen-sm-max) {
+      .breadcrumb {
+        margin-bottom: 12px;
+      }
+
+      .flexy(stretch, flex-start, column);
+      height: inherit;
+    }
+
     .settings {
       .flexy(center, center);
       height: initial;

@@ -21,6 +21,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.html :refer [open-ext]]
             [frontend.components.insights.project :as insights-project]
+            [frontend.components.add-projects :as add-projects]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -80,7 +81,9 @@
            (when (= :build (:navigation-point app))
              (om/build build-head/build-head-actions app))
            (when (= :project-insights (:navigation-point app))
-             (om/build insights-project/header app))])))))
+             (om/build insights-project/header app))
+           (when (= :add-projects (:navigation-point app))
+             (om/build add-projects/add-projects-head-actions app))])))))
 
 (defn head-admin [app owner]
   (reify
