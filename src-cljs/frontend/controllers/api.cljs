@@ -243,8 +243,7 @@
         (api/get-action-output {:vcs-url (get-in args [:resp :vcs_url])
                                 :build-num build-num
                                 :step (:step action)
-                                :index (:index action)
-                                :output-url (:output_url action)}
+                                :index (:index action)}
                                (get-in current-state [:comms :api])))
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
       (maybe-set-containers-filter! current-state))))
@@ -366,8 +365,7 @@
         (api/get-action-output {:vcs-url (:vcs_url build)
                                 :build-num build-num
                                 :step (:step action)
-                                :index (:index action)
-                                :output-url (:output_url action)}
+                                :index (:index action)}
                                (get-in current-state [:comms :api])))
       (update-pusher-subscriptions current-state old-container-id new-container-id)
       (frontend.favicon/set-color! (build-model/favicon-color build)))))
@@ -375,9 +373,23 @@
 (defmethod api-event [:action-log :success]
   [target message status args state]
   (let [action-log (:resp args)
-        {action-index :step container-index :index} (:context args)]
+        {action-index :step container-index :index} (:context args)
+        build (get-in state state/build-path)
+        vcs-url (:vcs_url build)]
     (-> state
         (assoc-in (state/action-output-path container-index action-index) action-log)
+        (update-in (state/action-path container-index action-index)
+                   (fn [action]
+                     (if (some :truncated action-log)
+                       (assoc action :truncated-client-side? true)
+                       action)))
+        (assoc-in (conj (state/action-path container-index action-index) :user-facing-output-url)
+                  (api-path/action-output-file
+                   (vcs-url/vcs-type vcs-url)
+                   (vcs-url/project-name vcs-url)
+                   (:build_num build)
+                   action-index
+                   container-index))
         (update-in (state/action-path container-index action-index) action-model/format-all-output))))
 
 

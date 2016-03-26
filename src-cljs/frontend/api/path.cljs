@@ -1,5 +1,7 @@
 (ns frontend.api.path
-  (:require [goog.string :as gstring]))
+  (:require
+   [frontend.models.action :as action-model]
+   [goog.string :as gstring]))
 
 (defn base-project-url-path [vcs-type]
   (case vcs-type
@@ -37,12 +39,12 @@
 (defn project-tokens  [vcs-type project-name]
   (gstring/format
    "%s/%s/token"
-   (base-prject-url-path vcs-type) project-name))
+   (base-project-url-path vcs-type) project-name))
 
 (defn project-token [vcs-type project-name token]
   (gstring/format
    "%s/%s/token/%s"
-   (base-project-url-path) vcs-type project-name token))
+   (base-project-url-path vcs-type) vcs-type project-name token))
 
 (defn build-retry [vcs-type org-name repo-name build-num]
   (gstring/format
@@ -53,3 +55,20 @@
   (gstring/format
    "%s/%s/heroku-deploy-user"
    (base-project-url-path vcs-type) repo-name))
+
+(defn action-output [vcs-type project-name build-num step index]
+  (gstring/format "%s/%s/%s/output/%s/%s?truncate=%s"
+                  (base-project-url-path vcs-type)
+                  project-name
+                  build-num
+                  step
+                  index
+                  action-model/max-output-size))
+
+(defn action-output-file [vcs-type project-name build-num step index]
+  (gstring/format "%s/%s/%s/output-file/%s/%s"
+                  (base-project-url-path vcs-type)
+                  project-name
+                  build-num
+                  step
+                  index))

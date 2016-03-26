@@ -9,6 +9,7 @@
             [frontend.state :as state]
             [frontend.disposable :as disposable :refer [dispose]]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.html :as html-utils]
             [om.core :as om :include-macros true]
             [goog.events]
             [goog.string :as gstring]
@@ -85,6 +86,30 @@
           [:span {:dangerouslySetInnerHTML
                   #js {"__html" trailing-out}}])))))
 
+(defn action-output [action owner]
+  (reify
+    om/IRenderState
+    (render-state [_ state]
+      (let [truncated-notification
+            (when (:truncated-client-side? action)
+              [:span.truncated
+               "Your build output is too large to display in the browser."
+               [:br]
+               (if (= "running" (:status action))
+                 "You can download the output once this step is finished."
+                 [:a
+                  (html-utils/open-ext
+                   {:href (:user-facing-output-url action)
+                    :download "BuildOutput.txt"
+                    :target "_new"})
+                  "Download the output as a file."])])]
+        (html
+         [:pre.output
+          truncated-notification
+          (om/build-all output (:output action) {:key :react-key})
+          (om/build trailing-output (:converters-state action))
+          truncated-notification])))))
+
 (defn action [action owner {:keys [uses-parallelism?] :as opts}]
   (reify
     om/IRender
@@ -150,16 +175,7 @@
                        [:pre.bash-command
                         {:title "The full bash command used to run this setup"}
                         (:bash_command action)]])
-                    [:pre.output {:style {:white-space "normal"}}
-                     (when (:truncated action)
-                       [:span.truncated "(this output has been truncated)"])
-
-                     (om/build-all output (:output action) {:key :react-key})
-
-                     (om/build trailing-output (:converters-state action))
-
-                     (when (:truncated action)
-                       [:span.truncated "(this output has been truncated)"])]])])]]]]])))))
+                    (om/build action-output action)])])]]]]])))))
 
 (defn container-view [{:keys [container non-parallel-actions]} owner {:keys [uses-parallelism?] :as opts}]
   (reify
