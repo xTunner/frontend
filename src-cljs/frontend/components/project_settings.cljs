@@ -132,6 +132,80 @@
           " in your repo. Very powerful."]]
         (om/build follow-sidebar (:project project-data))]))))
 
+(defn build [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            project-id (project-model/id project)
+            project-name (vcs-url/project-name (:vcs_url project))
+            ;; This project's feature flags
+            feature-flags (project-model/feature-flags project)
+            describe-flag (fn [{:keys [flag title blurb]}]
+                            (when (contains? (set (keys feature-flags)) flag)
+                              [:li
+                               [:h4 title]
+                               [:p blurb]
+                               [:form
+                                [:ul
+                                 [:li.radio
+                                  [:label
+                                   [:input
+                                    {:type "radio"
+                                     :checked (get feature-flags flag)
+                                     :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                               :flag flag
+                                                                                               :value true}])}]
+                                   " On"]]
+                                 [:li.radio
+                                  [:label
+                                   [:input
+                                    {:type "radio"
+                                     :checked (not (get feature-flags flag))
+                                     :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                               :flag flag
+                                                                                               :value false}])}]
+                                   " Off"]]]]]))]
+        (html
+          [:section
+           [:article
+            [:h2 "Build Environment"]
+            [:ul
+             (describe-flag {:flag :osx
+                             :title "Build OS X project"
+                             :blurb [:p
+                                     "This option reflects whether CircleCI will run builds for this project "
+                                     "against Linux-based hardware or OS X-based hardware. Please use this "
+                                     "setting as an override if we have incorrectly inferred where this build should run."
+                                     ]})
+             (when (feature/enabled? :enable-trusty-setting)
+               [:li
+                [:h4 "OS to use for builds"]
+                [:p [:p
+                     "Select the operating system in which to run your Linux builds."
+                     [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]]
+                [:form
+                 [:ul
+                  [:li.radio
+                   [:label
+                    [:input
+                     {:type "radio"
+                      :checked (not (get feature-flags :trusty-beta))
+                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                :flag :trusty-beta
+                                                                                :value false}])}]
+                    " Ubuntu 12.04 (Precise)"]]
+                  [:li.radio
+                   [:label
+                    [:input
+                     {:type "radio"
+                      :checked (get feature-flags :trusty-beta)
+                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                :flag :trusty-beta
+                                                                                :value true}])}]
+                    " Ubuntu 14.04 (Trusty)"]]]]]
+               )]]])))))
+
 (defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
    []
@@ -439,25 +513,11 @@
                                         "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                         "untrusted forks can make pull requests against your repo, then this option "
                                         "isn't for you!"])})
-           (describe-flag {:flag :osx
-                           :title "Build OS X project"
-                           :blurb [:p
-                                   "This option reflects whether CircleCI will run builds for this project "
-                                   "against Linux-based hardware or OS X-based hardware. Please use this "
-                                   "setting as an override if we have incorrectly inferred where this build should run."
-                                   ]})
             (describe-flag {:flag :osx-code-signing-enabled
                             :title "Code Signing Support"
                             :blurb [:p
                                     "Enable automatic importing of code-signing identities and provisioning "
                                     "profiles into the system keychain to simplify the code-signing process."]})
-
-           (when (feature/enabled? :enable-trusty-setting)
-             (describe-flag {:flag :trusty-beta
-                             :title "Ubuntu 14.04 Trusty container"
-                             :blurb [:p
-                                     "Select the operating system in which to run your Linux builds."
-                                       [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]}))
             ]]])))))
 
 (defn dependencies [project-data owner]
@@ -1571,9 +1631,10 @@
               (om/build common/flashes error-message))
             [:div#subpage
              (condp = subpage
+               :build-environment (om/build build project-data)
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
-               :advance (om/build advance project-data)
+               :advance-settings (om/build advance project-data)
                :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
                                      (config/enterprise?))
                                (om/build clear-caches project-data)

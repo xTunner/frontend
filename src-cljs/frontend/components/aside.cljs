@@ -212,11 +212,11 @@
        {:type :subpage :href (routes/v1-org-settings-path navigation-data) :title "Org Settings"
         :class "project-settings-to-org-settings"}
        {:type :heading :title "Build Settings"}
-       {:type :subpage :href "#build" :title "Build Environment" :subpage :build}
+       {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build}
        (when (project-model/parallel-available? project)
          {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds})
        {:type :subpage :href "#env-vars" :title "Environment variables" :subpage :env-vars}
-       {:type :subpage :href "#advance" :title "Advanced Settings" :subpage :advance}
+       {:type :subpage :href "#advance-settings" :title "Advanced Settings" :subpage :advance}
        (when (or (feature/enabled? :project-cache-clear-buttons)
                  (config/enterprise?))
          {:type :subpage :href "#clear-caches" :title "Clear Caches" :subpage :clear-caches})
