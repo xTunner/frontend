@@ -364,7 +364,7 @@
                       [:i.fa.fa-times-circle]
                       [:span " Remove"]]]])]])]]])))))
 
-(defn experiments [project-data owner]
+(defn advance [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -401,12 +401,7 @@
         (html
          [:section
           [:article
-           [:h2 "Experimental Settings"]
-           [:p
-            " We've got a few settings you can play with, to enable things we're working on. We'd love to "
-            [:a {:on-click #(raise! owner [:project-experiments-feedback-clicked])}
-             "know what you think about them"] "."
-            " These " [:em "are"] " works-in-progress, though, and there may be some sharp edges. Be careful!"]
+           [:h2 "Advanced Settings"]
            [:ul
             (describe-flag {:flag :junit
                             :title "JUnit support"
@@ -447,9 +442,10 @@
            (describe-flag {:flag :osx
                            :title "Build OS X project"
                            :blurb [:p
-                                   "If this option is selected, then CircleCI will run builds for this project "
-                                   "on Mac OSX rather than Linux. Select this if you have an OS X application "
-                                   "that you want to build using CircleCI."]})
+                                   "This option reflects whether CircleCI will run builds for this project "
+                                   "against Linux-based hardware or OS X-based hardware. Please use this "
+                                   "setting as an override if we have incorrectly inferred where this build should run."
+                                   ]})
             (describe-flag {:flag :osx-code-signing-enabled
                             :title "Code Signing Support"
                             :blurb [:p
@@ -460,9 +456,7 @@
              (describe-flag {:flag :trusty-beta
                              :title "Ubuntu 14.04 Trusty container"
                              :blurb [:p
-                                     "Select this option to run builds in our Ubuntu 14.04 (Trusty) container."
-                                     "This container is currently in beta."
-                                     "Our default container is Ubuntu 12.04 (Precise)."
+                                     "Select the operating system in which to run your Linux builds."
                                        [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]}))
             ]]])))))
 
@@ -1579,7 +1573,7 @@
              (condp = subpage
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
-               :experimental (om/build experiments project-data)
+               :advance (om/build advance project-data)
                :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
                                      (config/enterprise?))
                                (om/build clear-caches project-data)
