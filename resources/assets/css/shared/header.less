@@ -13,19 +13,16 @@
 
   .text-overflow;
 
-  &[disabled] {
-    pointer-events: none;
-  }
-
-  &:last-child{
-    pointer-events: none;
-  }
 
   > li {
     display: inline;
 
     &:before {
       padding: 0;
+    }
+
+    &:last-child {
+      pointer-events: none;
     }
   }
 
@@ -39,6 +36,10 @@
     &:hover {
       color: @grayDark;
       text-decoration: underline;
+    }
+
+    &[disabled] {
+        pointer-events: none;
     }
   }
 }
