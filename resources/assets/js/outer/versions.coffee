@@ -325,6 +325,6 @@ CI.Versions =
 
   heroku: "3.42.44"
   awscli: "1.10.14"
-  gcloud: "0.9.70"
+  gcloud: "101.0.0"
   docker: "1.8.2"
   docker_compose: "1.5.1"
