@@ -17,15 +17,15 @@
     pointer-events: none;
   }
 
-  &:last-child{
-    pointer-events: none;
-  }
-
   > li {
     display: inline;
 
     &:before {
       padding: 0;
+    }
+
+    &:last-child {
+      pointer-events: none;
     }
   }
 
