@@ -77,6 +77,7 @@ CI.Versions =
     "2.2.1",
     "2.2.2",
     "2.2.3",
+    "2.3.0",
     "jruby-1.7.19",
     "jruby-1.7.18",
     "jruby-1.7.16",
@@ -99,6 +100,10 @@ CI.Versions =
 
   default_node: "0.10.33"
   node_versions: [
+     "5.5.0",
+     "5.4.0",
+     "5.3.0",
+     "5.2.0",
      "5.1.0",
      "5.0.0",
      "4.2.2",
@@ -169,6 +174,7 @@ CI.Versions =
   default_php: "5.3.10-1ubuntu3.7"
   php: "5.3.10-1ubuntu3.18"
   php_versions: [
+    "7.0.4"
     "7.0.0RC7"
     "5.6.14"
     "5.6.5"
@@ -205,7 +211,7 @@ CI.Versions =
     "5.3.3"
   ]
 
-  golang: '1.5'
+  golang: '1.5.3'
   erlang: 'r14b04'
 
   default_java_package: "oraclejdk7"
@@ -284,6 +290,7 @@ CI.Versions =
   # you can copy-paste these from image-maker/src/circlevm/pallet/android.clj
   android_sdk_packages: [
     "platform-tools",
+    "build-tools-23.0.2",
     "build-tools-23.0.1",
     "build-tools-22.0.1",
     "build-tools-21.1.2",
@@ -316,8 +323,8 @@ CI.Versions =
     "extra-android-m2repository"
   ]
 
-  heroku: "3.40.9"
-  awscli: "1.7.44"
+  heroku: "3.42.44"
+  awscli: "1.10.14"
   gcloud: "0.9.70"
   docker: "1.8.2"
   docker_compose: "1.5.1"
