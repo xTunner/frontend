@@ -242,6 +242,35 @@ window.circle_api_data =
           }
         ]
         """
+    artifacts_latest:
+      url: "/api/v1/project/:username/:project/latest/artifacts"
+      description: "List the artifacts produced by the latest build on a given branch. Filter "
+      method: "GET"
+      params: [
+          name: "branch"
+          description: "The branch you would like to look in for the latest build. Returns artifacts for latest build in entire project if omitted."
+          example: ":branch"
+        ,
+          name: "filter"
+          description: "Restricts which builds are returned. Set to \"completed\", \"successful\", \"failed\". Defaults to \"completed\"."
+          example: ":filter"
+        ]
+      response: """
+        [
+          {
+            node_index: 0,
+            path: "/tmp/circle-artifacts.NHQxLku/cherry-pie.png",
+            pretty_path: "$CIRCLE_ARTIFACTS/cherry-pie.png",
+            url: "https://circleci.com/gh/circleci/mongofinil/22/artifacts/0/tmp/circle-artifacts.NHQxLku/cherry-pie.png"
+          },
+          {
+            node_index: 0,
+            path: "/tmp/circle-artifacts.NHQxLku/rhubarb-pie.png",
+            pretty_path: "$CIRCLE_ARTIFACTS/rhubarb-pie.png",
+            url: "https://circleci.com/gh/circleci/mongofinil/22/artifacts/0/tmp/circle-artifacts.NHQxLku/rhubarb-pie.png"
+          }
+        ]
+        """        
     retry_build:
       url: "/api/v1/project/:username/:project/:build_num/retry"
       description: "Retries the build, returns a summary of the new build."

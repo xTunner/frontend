@@ -210,6 +210,10 @@ The branch name should be url-encoded.
 
 {{ api_data.artifacts | api-endpoint }}
 
+<h2 id="build-artifacts">Artifacts of the latest Build</h2>
+
+{{ api_data.artifacts_latest | api-endpoint }}
+
 <h2 id="retry-build">Retry a Build</h2>
 
 {{ api_data.retry_build | api-endpoint }}
