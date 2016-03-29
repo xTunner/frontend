@@ -93,7 +93,9 @@
       (let [truncated-notification
             (when (:truncated-client-side? action)
               [:span.truncated
-               "Your build output is too large to display in the browser."
+               (gstring/format
+                "Your build output is too large to display in the browser. Only the last %s characters are displayed."
+                action-model/max-output-size)
                [:br]
                (if (= "running" (:status action))
                  "You can download the output once this step is finished."
