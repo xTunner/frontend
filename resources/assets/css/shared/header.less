@@ -13,9 +13,6 @@
 
   .text-overflow;
 
-  &[disabled] {
-    pointer-events: none;
-  }
 
   > li {
     display: inline;
@@ -39,6 +36,10 @@
     &:hover {
       color: @grayDark;
       text-decoration: underline;
+    }
+
+    &[disabled] {
+        pointer-events: none;
     }
   }
 }
