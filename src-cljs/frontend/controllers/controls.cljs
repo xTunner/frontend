@@ -73,18 +73,19 @@
 (defn button-ajax
   "An ajax/ajax wrapper that releases the current managed-button after the API
   request.  Exists to faciliate migration away from stateful-button."
-  [method url message channel & {:keys [context params events] :as opts}]
+  [method url message channel & opts]
   (let [uuid frontend.async/*uuid*
-        c (chan)]
+        c (chan)
+        events (:events opts)]
     (apply ajax/ajax method url message c opts)
     (go-loop []
-             (when-let [[_ status _ :as event] (<! c)]
-               (when-let [track-event (-> opts :events status)]
-                 (track-event))
-               (when (#{:success :failed} status)
-                 (release-button! uuid status))
-               (>! channel event)
-               (recur)))))
+      (when-let [[_ status _ :as event] (<! c)]
+        (when-let [track-event (-> events status)]
+          (track-event))
+        (when (#{:success :failed} status)
+          (release-button! uuid status))
+        (>! channel event)
+        (recur)))))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -465,8 +466,7 @@
                  :events {:success #(analytics/track {:event-type :project-followed
                                                       :current-state current-state
                                                       :properties {:org org-name
-                                                                   :repo repo-name}})})))
-
+                                                                   :repo repo-name}})}))) 
 
 (defmethod control-event :inaccessible-org-toggled
   [target message {:keys [org-name value]} state]
@@ -486,9 +486,9 @@
                  api-ch
                  :context {:project-id project-id}
                  :events {:success #(analytics/track {:event-type :project-followed
-                                                     :current-state current-state
-                                                     :properties {:org org-name
-                                                                  :repo repo-name}})})))
+                                                      :current-state current-state
+                                                      :properties {:org org-name
+                                                                   :repo repo-name}})})))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -540,11 +540,11 @@
                  (gstring/format "/api/v1/project/%s/enable" project)
                  :stop-building-project
                  api-ch
-                 :context {:project-id project-id}
-                 :events {:success #(analytics/track {:event-type :project-builds-stopped
-                                                      :current-state current-state
-                                                      :properties {:org org-name
-                                                                   :repo repo-name}})})))
+                 :context {:project-id project-id})
+    :events {:success #(analytics/track {:event-type :project-builds-stopped
+                                         :current-state current-state
+                                         :properties {:org org-name
+                                                      :repo repo-name}})}))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
@@ -734,9 +734,10 @@
 (defmethod post-control-event! :saved-ssh-key
   [target message {:keys [project-id ssh-key]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+                 (api-path/project-ssh-key vcs-type project-name)
                  :save-ssh-key
                  api-ch
                  :params ssh-key
@@ -746,9 +747,10 @@
 (defmethod post-control-event! :deleted-ssh-key
   [target message {:keys [project-id hostname fingerprint]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
-               (gstring/format "/api/v1/project/%s/ssh-key" project-name)
+               (api-path/project-ssh-key vcs-type project-name)
                :delete-ssh-key
                api-ch
                :params {:fingerprint fingerprint
@@ -778,9 +780,10 @@
 (defmethod post-control-event! :saved-project-api-token
   [target message {:keys [project-id api-token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/token" project-name)
+                 (api-path/project-tokens vcs-type project-name)
                  :save-project-api-token
                  api-ch
                  :params api-token
@@ -790,9 +793,10 @@
 (defmethod post-control-event! :deleted-project-api-token
   [target message {:keys [project-id token]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
-               (gstring/format "/api/v1/project/%s/token/%s" project-name token)
+               (api-path/project-token vcs-type project-name token)
                :delete-project-api-token
                api-ch
                :context {:project-id project-id
@@ -802,9 +806,10 @@
 (defmethod post-control-event! :set-heroku-deploy-user
   [target message {:keys [project-id login]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 (api-path/heroku-deploy-user vcs-type project-name)
                  :set-heroku-deploy-user
                  api-ch
                  :context {:project-id project-id
@@ -814,9 +819,10 @@
 (defmethod post-control-event! :removed-heroku-deploy-user
   [target message {:keys [project-id]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :delete
-                 (gstring/format "/api/v1/project/%s/heroku-deploy-user" project-name)
+                 (api-path/heroku-deploy-user vcs-type project-name)
                  :remove-heroku-deploy-user
                  api-ch
                  :context {:project-id project-id})))
@@ -935,13 +941,14 @@
   [target message {:keys [project-id project-name key-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        err-ch (get-in current-state [:comms :errors])]
+        err-ch (get-in current-state [:comms :errors])
+        vcs-type (vcs-url/vcs-type project-id)]
     (go (let [api-resp (<! (ajax/managed-ajax
                              :post
-                             (gstring/format "/api/v1/project/%s/checkout-key" project-name)
+                             (api-path/project-checkout-keys vcs-type project-name)
                              :params {:type key-type}))]
           (if (= :success (:status api-resp))
-            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+            (let [api-resp (<! (ajax/managed-ajax :get (api-path/project-checkout-keys vcs-type project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
             (put! err-ch [:api-error api-resp]))
           (release-button! uuid (:status api-resp))))))
@@ -950,12 +957,13 @@
   [target message {:keys [project-id project-name fingerprint]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        err-ch (get-in current-state [:comms :errors])]
+        err-ch (get-in current-state [:comms :errors])
+        vcs-type (vcs-url/vcs-type project-id)]
     (go (let [api-resp (<! (ajax/managed-ajax
                              :delete
-                             (gstring/format "/api/v1/project/%s/checkout-key/%s" project-name fingerprint)))]
+                             (api-path/project-checkout-key vcs-type project-name fingerprint)))]
           (if (= :success (:status api-resp))
-            (let [api-resp (<! (ajax/managed-ajax :get (gstring/format "/api/v1/project/%s/checkout-key" project-name)))]
+            (let [api-resp (<! (ajax/managed-ajax :get (api-path/project-checkout-keys vcs-type project-name)))]
               (put! api-ch [:project-checkout-key (:status api-resp) (assoc api-resp :context {:project-name project-name})]))
             (put! err-ch [:api-error api-resp]))
           (release-button! uuid (:status api-resp))))))
@@ -1212,9 +1220,7 @@
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name
                                                                     :vcs_type vcs_type})
-                                     :replace-token? true}])
-           (analytics/track {:event-type :plan-cancelled
-                             :current-state current-state})))
+                                     :replace-token? true}])))
        (release-button! uuid (:status api-result))))))
 
 (defn track-and-redirect [event properties owner path]
@@ -1387,6 +1393,19 @@
 (defmethod post-control-event! :set-admin-scope
   [_ _ {:keys [login scope]} _ {{api-ch :api} :comms}]
   (api/set-user-admin-scope login scope api-ch))
+
+(defmethod control-event :system-setting-changed
+  [_ _ {:keys [name]} state]
+  (update-in state state/system-settings-path
+             (fn [settings]
+               (mapv #(if (= name (:name %))
+                        (assoc % :updating true)
+                        %)
+                     settings))))
+
+(defmethod post-control-event! :system-setting-changed
+  [_ _ {:keys [name value]} _ {{api-ch :api} :comms}]
+  (api/set-system-setting name value api-ch))
 
 (defmethod control-event :insights-sorting-changed
   [_ _ {:keys [new-sorting]} state]
