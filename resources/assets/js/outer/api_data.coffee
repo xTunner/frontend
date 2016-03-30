@@ -244,7 +244,7 @@ window.circle_api_data =
         """
     artifacts_latest:
       url: "/api/v1/project/:username/:project/latest/artifacts"
-      description: "List the artifacts produced by the latest build on a given branch. Filter "
+      description: "List the artifacts produced by the latest build on a given branch."
       method: "GET"
       params: [
           name: "branch"
