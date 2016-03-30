@@ -359,7 +359,8 @@
                                                  (compare x-name y-name)
                                                  vcs-compare))))
                             (map (fn [{:keys [vcs_type username]}]
-                                   [vcs_type username])
+                                   [(keyword vcs_type)
+                                    (keyword username)])
                                  projects))]
     (reify
       om/IRenderState
@@ -372,9 +373,11 @@
             [:label "Choose an account"]
             [:select.form-control
              {:on-change #(let [value (-> % .-target .-value)]
-                            (om/set-state! owner [:selected-org] (string/split value #"/")))}
+                            (om/set-state! owner [:selected-org] (map keyword (string/split value #"/"))))}
              (for [[vcs_type username] followed-orgs
-                   :let [org-id (string/join "/" [vcs_type username])]]
+                   :let [org-id (->> [vcs_type username]
+                                     (map name)
+                                     (string/join "/"))]]
                [:option
                 {:value org-id}
                 org-id])]]]
@@ -399,7 +402,7 @@
              [:h4 "Repo"]
              [:h4 "Email preference"]]
             (for [project projects
-                  :when (= [(:vcs_type project) (:username project)] selected-org)]
+                  :when (= [(keyword (:vcs_type project)) (keyword (:username project))] selected-org)]
               (om/build project/email-pref {:project project :user user} {:react-key (:reponame project)}))]]])))))
 
 (defn notifications [app owner]
