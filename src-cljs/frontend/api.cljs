@@ -152,7 +152,8 @@
                                 (vcs-url/project-name vcs-url)
                                 build-num
                                 step
-                                index)]
+                                index
+                                action-model/max-output-size)]
     (ajax/ajax :get url :action-log api-ch :context args)))
 
 (defn get-action-steps [{:keys [vcs-url build-num] :as args} api-ch]

@@ -1,7 +1,5 @@
 (ns frontend.api.path
-  (:require
-   [frontend.models.action :as action-model]
-   [goog.string :as gstring]))
+  (:require [goog.string :as gstring]))
 
 (defn base-project-url-path [vcs-type]
   (case vcs-type
@@ -56,17 +54,17 @@
    "%s/%s/heroku-deploy-user"
    (base-project-url-path vcs-type) repo-name))
 
-(defn action-output [vcs-type project-name build-num step index]
+(defn action-output [vcs-type project-name build-num step index max-chars]
   (gstring/format "%s/%s/%s/output/%s/%s?truncate=%s"
                   (base-project-url-path vcs-type)
                   project-name
                   build-num
                   step
                   index
-                  action-model/max-output-size))
+                  max-chars))
 
 (defn action-output-file [vcs-type project-name build-num step index]
-  (gstring/format "%s/%s/%s/output-file/%s/%s"
+  (gstring/format "%s/%s/%s/output/%s/%s?file=true"
                   (base-project-url-path vcs-type)
                   project-name
                   build-num

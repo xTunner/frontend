@@ -94,7 +94,7 @@
             (when (:truncated-client-side? action)
               [:span.truncated
                (gstring/format
-                "Your build output is too large to display in the browser. Only the last %s characters are displayed."
+                "Your build output is too large to display in the browser. Only the first %s characters are displayed."
                 action-model/max-output-size)
                [:br]
                (if (= "running" (:status action))

@@ -301,8 +301,7 @@
       (api/get-action-output {:vcs-url (:vcs_url build)
                               :build-num (:build_num build)
                               :step step
-                              :index index
-                              :output-url (:output_url action)}
+                              :index index}
                              (get-in current-state [:comms :api])))))
 
 
