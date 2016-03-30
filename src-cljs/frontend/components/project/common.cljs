@@ -131,8 +131,8 @@
             pref (get-in prefs [vcs_url :emails] "default")
             ch (om/get-shared owner [:comms :controls])]
         (html
-          [:div
-           [:h3 (project-model/project-name project)]
+          [:div.email-pref
+           [:div (project-model/project-name project)]
            [:select.form-control {:value pref
                                   :on-change #(let [value (.. % -target -value)
                                                     args {vcs_url {:emails value}}]
