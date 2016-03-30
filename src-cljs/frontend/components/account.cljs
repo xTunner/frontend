@@ -386,13 +386,17 @@
             [:h3 "Notified email"]
             [:select.form-control
              {:on-change #(let [val (-> % .-target .-value)
-                                args {:email val}]
+                                args {:email (if (= "Default" val)
+                                               nil
+                                               val)}]
                             (raise! owner [:org-preferences-updated {:org selected-org
                                                                      :prefs args}]))
-              :value (get-in user (-> [:organizations]
-                                      (into selected-org)
-                                      (conj :email)))}
-             (for [email (:all_emails user)]
+              :value (if-let [selected-email (get-in user (-> [:organizations]
+                                                              (into selected-org)
+                                                              (conj :email)))]
+                       selected-email
+                       "Default")}
+             (for [email (cons "Default" (:all_emails user))]
                [:option
                 {:value email}
                 email])]]
