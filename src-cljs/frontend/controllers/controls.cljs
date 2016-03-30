@@ -1091,8 +1091,8 @@
 
 (defmethod control-event :org-preferences-updated
   [target message {:keys [org prefs]} state]
-  (update-in state (into (conj state/user-path :organizations)
-                         org)
+  (update-in state
+             (-> state/user-path (conj :organizations) (into org))
              merge
              prefs))
 

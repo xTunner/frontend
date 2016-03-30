@@ -312,11 +312,11 @@
        [:p "These are the email addressed associated with your GitHub and Bitbucket accounts."]
        [:select.form-control
         {:on-change #(let [email (-> % .-target .-value)]
-                       (raise! owner [:preferences-updated {:selected_email email}]))}
+                       (raise! owner [:preferences-updated {:selected_email email}]))
+         :value (:selected_email user)}
         (for [email (:all_emails user)]
           [:option
-           {:value email
-            :selected (= (:selected_email user) email)}
+           {:value email}
            email])]]]]]])
 
 (defn default-email-pref [owner email-pref]
@@ -385,12 +385,13 @@
              {:on-change #(let [val (-> % .-target .-value)
                                 args {:email val}]
                             (raise! owner [:org-preferences-updated {:org selected-org
-                                                                     :prefs args}]))}
+                                                                     :prefs args}]))
+              :value (get-in user (-> [:organizations]
+                                      (into selected-org)
+                                      (conj :email)))}
              (for [email (:all_emails user)]
                [:option
-                {:value email
-                 :selected (= (get-in user (conj (into [:organizations] selected-org)
-                                                 :email)) email)}
+                {:value email}
                 email])]]
            [:div.section
             [:h3 "Repo notification emails"]
@@ -399,7 +400,7 @@
              [:h4 "Email preference"]]
             (for [project projects
                   :when (= [(:vcs_type project) (:username project)] selected-org)]
-              (om/build project/email-pref {:project project :user user}))]]])))))
+              (om/build project/email-pref {:project project :user user} {:react-key (:reponame project)}))]]])))))
 
 (defn notifications [app owner]
   (reify
