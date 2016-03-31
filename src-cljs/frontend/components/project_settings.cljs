@@ -1634,7 +1634,7 @@
                :build-environment (om/build build project-data)
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
-               :advance-settings (om/build advance project-data)
+               :advanced-settings (om/build advance project-data)
                :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
                                      (config/enterprise?))
                                (om/build clear-caches project-data)
