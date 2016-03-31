@@ -302,9 +302,7 @@
   [:div.card
    [:div.header
     [:h2
-     "Primary Email Address"
-     [:i.material-icons#email-addresses-tooltip-hack
-      {:title "These are the email addresses associated with your GitHub account."} "info_outline"]]]
+     "Primary Email Address"]]
    [:div.body
     [:div.section
      [:form#email_address.form-horizontal
@@ -411,9 +409,6 @@
 
 (defn notifications [app owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip "#email-addresses-tooltip-hack" {:placement "right" :trigger "hover"}))
     om/IRender
     (render [_]
       (let [user (get-in app state/user-path)
