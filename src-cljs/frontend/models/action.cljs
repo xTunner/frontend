@@ -41,23 +41,32 @@
   (string/replace message #"\u001B\[[^A-Za-z]*[A-Za-z]" ""))
 
 (defn format-output [action output-index]
+  "Html-escape the output, and then either:
+   1. skip colorization because it was truncated + stripped by the backend.
+   2. strip the console codes when there are too many because the browser
+      can't handle crazy large numbers of spans.
+   3. colorize the output."
   (let [output (get-in action [:output output-index])
-        html-escaped-message (gstring/htmlEscape (:message output))
-        should-strip? (< (* 1024 1024) (count html-escaped-message))
-        converter (new-converter action (keyword (:type output)))
-        message (if should-strip?
-                  (strip-console-codes html-escaped-message)
-                  (.append converter html-escaped-message))]
+        html-escaped-message (-> output :message gstring/htmlEscape)
+        stripped-message (strip-console-codes html-escaped-message)
+        converter (->> output :type keyword (new-converter action))
+        plain-style {:color "white" :italic false :bold false}
+
+        [style-map converted-message] (cond
+                                        (:truncated-client-side? action)
+                                        [plain-style html-escaped-message]
+
+                                        (> (count stripped-message) (+ 1000 (count html-escaped-message)))
+                                        [plain-style stripped-message]
+
+                                        :else ; colorize it
+                                        [(utils/js->clj-kw (.currentState converter))
+                                         (.append converter html-escaped-message)])]
     (-> action
-        (assoc-in [:output output-index :converted-message] message)
+        (assoc-in [:output output-index :converted-message] converted-message)
         (assoc-in [:output output-index :react-key] (utils/uuid))
-        (assoc-in [:converters-state (keyword (:type output))] (if should-strip?
-                                                                 {:color "white"
-                                                                  :italic false
-                                                                  :bold false
-                                                                  :converted-output message}
-                                                                 (merge (utils/js->clj-kw (.currentState converter))
-                                                                        {:converted-output (.get_trailing converter)}))))))
+        (assoc-in [:converters-state (keyword (:type output))]
+                  (merge style-map {:converted-output converted-message})))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]
