@@ -72,3 +72,9 @@
 (defn trailing-output [converters-state]
   (str (get-in converters-state [:out :converted-output])
        (get-in converters-state [:err :converted-output])))
+
+
+(def max-output-size
+  "Limits the number of chacaters we will try to display in the dom.
+   The full output is availible for download."
+  (* 100 1000))

@@ -1,5 +1,7 @@
 (ns frontend.api
   (:require [clojure.set :as set]
+            [frontend.api.path :as path]
+            [frontend.models.action :as action-model]
             [frontend.models.user :as user-model]
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
@@ -144,22 +146,14 @@
   (let [url (branch-build-times-url target-key)]
     (ajax/ajax :get url :branch-build-times api-ch :context {:target-key target-key} :params {:days 90})))
 
-(defn get-action-output [{:keys [vcs-url build-num step index output-url]
+(defn get-action-output [{:keys [vcs-url build-num step index]
                           :as args} api-ch]
-  (let [vcs-type (vcs-url/vcs-type vcs-url)
-        url (or output-url
-                (case vcs-type
-                  "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/output/%s/%s"
-                                              vcs-type
-                                              (vcs-url/project-name vcs-url)
-                                              build-num
-                                              step
-                                              index)
-                  "github" (gstring/format "/api/v1/project/%s/%s/output/%s/%s"
-                                           (vcs-url/project-name vcs-url)
-                                           build-num
-                                           step
-                                           index)))]
+  (let [url (path/action-output (vcs-url/vcs-type vcs-url)
+                                (vcs-url/project-name vcs-url)
+                                build-num
+                                step
+                                index
+                                action-model/max-output-size)]
     (ajax/ajax :get url :action-log api-ch :context args)))
 
 (defn get-action-steps [{:keys [vcs-url build-num] :as args} api-ch]
