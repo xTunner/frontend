@@ -66,6 +66,9 @@
     }
 
     select.form-control {
+      .fancy-select(@arrow-margin: 6px; @color: inherit);
+      border: 1px solid @input-border;
+      
       .flex(0 0 auto);
       width: @selectWidth;
       font-size: inherit;
