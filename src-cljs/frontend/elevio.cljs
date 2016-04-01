@@ -63,6 +63,6 @@
                          "reply_placeholder" "Write your reply here"
                          "no_tickets" "Currently no existing support requests"
                          "back_to_tickets" "Back to your support requests"
-                         "thankyou" "Thanks for submitting a support request. We try to respond to all tickets within 24-48 hours. If you need assistance sooner, <a target=\"_blank\" href=\"https://discuss.circleci.com/\">our community</a> may be able to help."
+                         "thankyou" "Thanks for submitting a support request. We try to respond to all tickets within 1-2 business days. If you need assistance sooner, <a target=\"_blank\" href=\"https://discuss.circleci.com/\">our community</a> may be able to help."
                          "delayed_appearance" ""
                          "deflect" "Before you submit a support request, please check to see if your question has already been answered on <a target=\"_blank\" href=\"https://discuss.circleci.com/\">Discuss</a>."}}})))
