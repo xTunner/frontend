@@ -86,4 +86,4 @@
 (def max-output-size
   "Limits the number of chacaters we will try to display in the dom.
    The full output is availible for download."
-  (* 100 1000))
+  (* 200 1000))
