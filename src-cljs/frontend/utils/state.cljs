@@ -90,4 +90,4 @@
 (defn usage-queue-build-index-from-channel-name [state channel-name]
   "Returns index if there is a usage-queued build showing with the given channel name"
   (when-let [builds (seq (get-in state state/usage-queue-path))]
-    (find-index #(= channel-name (pusher/build-all-channel %)) builds)))
+    (find-index #(= channel-name (-> % pusher/build-parts pusher/build-all-channel)) builds)))
