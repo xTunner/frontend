@@ -1094,7 +1094,7 @@
   ;; org is expected to be a vector [vcs_type username] where both are
   ;; keywords
   (update-in state
-             (-> state/user-path (conj :organizations) (into org))
+             (into state/user-org-prefs-path org)
              merge
              prefs))
 
@@ -1105,7 +1105,7 @@
    "/api/v1/user/save-preferences"
    :update-preferences
    (get-in current-state [:comms :api])
-   :params {:organizations (assoc-in {} org prefs)}))
+   :params {:organization_prefs (assoc-in {} org prefs)}))
 
 (defmethod post-control-event! :heroku-key-add-attempted
   [target message args previous-state current-state]

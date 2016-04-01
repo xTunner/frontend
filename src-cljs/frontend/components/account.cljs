@@ -390,7 +390,7 @@
                                                val)}]
                             (raise! owner [:org-preferences-updated {:org selected-org
                                                                      :prefs args}]))
-              :value (if-let [selected-email (get-in user (-> [:organizations]
+              :value (if-let [selected-email (get-in user (-> [:organization_prefs]
                                                               (into selected-org)
                                                               (conj :email)))]
                        selected-email

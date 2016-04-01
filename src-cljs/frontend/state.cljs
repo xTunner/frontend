@@ -138,6 +138,7 @@
 ;; TODO we probably shouldn't be storing repos in the user...
 (def user-login-path (conj user-path :login))
 (def user-organizations-path (conj user-path :organizations))
+(def user-org-prefs-path (conj user-path :organization_prefs))
 (def user-plans-path (conj user-path :plans))
 (def user-tokens-path (conj user-path :tokens))
 (def user-analytics-id-path (conj user-path :analytics_id))
