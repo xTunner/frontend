@@ -86,31 +86,27 @@
           [:span {:dangerouslySetInnerHTML
                   #js {"__html" trailing-out}}])))))
 
-(defn action-output [action owner]
+(defn truncation-notification [action ownder]
   (reify
-    om/IRenderState
-    (render-state [_ state]
-      (let [truncated-notification
-            (when (:truncated-client-side? action)
-              [:span.truncated
-               (gstring/format
-                "Your build output is too large to display in the browser. Only the first %s characters are displayed."
-                action-model/max-output-size)
-               [:br]
-               (if (= "running" (:status action))
-                 "You can download the output once this step is finished."
-                 [:a
-                  (html-utils/open-ext
-                   {:href (:user-facing-output-url action)
-                    :download "BuildOutput.txt"
-                    :target "_new"})
-                  "Download the output as a file."])])]
-        (html
-         [:pre.output
-          truncated-notification
-          (om/build-all output (:output action) {:key :react-key})
-          (om/build trailing-output (:converters-state action))
-          truncated-notification])))))
+    om/IRender
+    (render [_]
+      (html
+       (when (:truncated-client-side? action)
+         [:span.truncated
+          (gstring/format
+           "Your build output is too large to display in the browser. Only the first %s characters are displayed."
+           action-model/max-output-size)
+          [:br]
+          (if (= "running" (:status action))
+            "You can download the output once this step is finished."
+            [:a
+             (html-utils/open-ext
+              {:href (:user-facing-output-url action)
+               :download "BuildOutput.txt"
+               :target "_new"})
+             (if (:truncated action)
+               "Download the first 4MB as a file."
+               "Download the full output as a file.")])])))))
 
 (defn action [action owner {:keys [uses-parallelism?] :as opts}]
   (reify
@@ -177,7 +173,11 @@
                        [:pre.bash-command
                         {:title "The full bash command used to run this setup"}
                         (:bash_command action)]])
-                    (om/build action-output action)])])]]]]])))))
+                    [:pre.output
+                     (om/build truncation-notification action)
+                     (om/build-all output (:output action) {:key :react-key})
+                     (om/build trailing-output (:converters-state action))
+                     (om/build truncation-notification action)]])])]]]]])))))
 
 (defn container-view [{:keys [container non-parallel-actions]} owner {:keys [uses-parallelism?] :as opts}]
   (reify
