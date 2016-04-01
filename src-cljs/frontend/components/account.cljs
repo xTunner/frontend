@@ -17,6 +17,7 @@
             [frontend.utils.seq :refer [select-in]]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.models.project :as project-model]
+            [frontend.models.organization :as org-model]
             [om.core :as om :include-macros true]
             [om.dom :as dom]
             [sablono.core :as html :refer-macros [html]]))
@@ -371,14 +372,14 @@
             [:label "Choose an account"]
             [:select.form-control
              {:on-change #(let [value (-> % .-target .-value)]
-                            (om/set-state! owner [:selected-org] (map keyword (string/split value #"/"))))}
-             (for [[vcs_type username] followed-orgs
-                   :let [org-id (->> [vcs_type username]
-                                     (map name)
-                                     (string/join "/"))]]
+                            (om/set-state! owner
+                                           [:selected-org]
+                                           (org-model/uglify-org-id value)))}
+             (for [org-id followed-orgs
+                   :let [org-id-pretty (org-model/prettify-org-id org-id)]]
                [:option
-                {:value org-id}
-                org-id])]]]
+                {:value org-id-pretty}
+                org-id-pretty])]]]
           [:div.body
            [:div.section
             [:h3 "Notified email"]

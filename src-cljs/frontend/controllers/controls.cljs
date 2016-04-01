@@ -1091,6 +1091,8 @@
 
 (defmethod control-event :org-preferences-updated
   [target message {:keys [org prefs]} state]
+  ;; org is expected to be a vector [vcs_type username] where both are
+  ;; keywords
   (update-in state
              (-> state/user-path (conj :organizations) (into org))
              merge

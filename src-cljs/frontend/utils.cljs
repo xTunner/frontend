@@ -398,3 +398,17 @@ top.  The remaining keys/values goes into the bottom."
   []
   (when-let [user (aget js/window "renderContext" "current_user")]
     (js->clj user :keywordize-keys true)))
+
+(defn prettify-vcs_type
+  "Takes a keyword vcs_type and converts it to a pretty string (e.g. :github becomes \"GitHub\")"
+  [vcs_type]
+  (case vcs_type
+    :github "GitHub"
+    :bitbucket "Bitbucket"))
+
+(defn keywordize-pretty-vcs_type
+  "Takes a pretty vcs_type and converts it to a keyword. (e.g. \"GitHub\" becomes :github)"
+  [vcs_type-pretty]
+  (-> vcs_type-pretty
+      clojure.string/lower-case
+      keyword))
