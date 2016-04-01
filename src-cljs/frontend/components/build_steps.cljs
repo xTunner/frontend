@@ -104,7 +104,9 @@
               {:href (:user-facing-output-url action)
                :download "BuildOutput.txt"
                :target "_new"})
-             "Download the output as a file."])])))))
+             (if (:truncated action)
+               "Download the first 4MB as a file."
+               "Download the full output as a file.")])])))))
 
 (defn action [action owner {:keys [uses-parallelism?] :as opts}]
   (reify
