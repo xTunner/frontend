@@ -236,7 +236,7 @@
                    [:li (maybe-active nav-point :pricing)
                     [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
-                [:a.menu-item {:href "/docs"} "Documentation"]]
+                [:a.menu-item (open-ext {:href "/docs"}) "Documentation"]]
                [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
                (when (config/show-marketing-pages?)
                  (list

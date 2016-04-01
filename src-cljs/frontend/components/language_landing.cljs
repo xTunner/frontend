@@ -10,6 +10,7 @@
             [frontend.stefon :as stefon]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true]
             [goog.string :as gstring]
             [goog.string.format])
@@ -126,7 +127,7 @@
              (:features template))
 
             [:div.button
-             [:a {:href (:docs-link template)} "Read documentation on " (:language template)]]]]
+             [:a {:href (open-ext (:docs-link template))} "Read documentation on " (:language template)]]]]
           (when (:testimonials template)
             [:div.languages-testimonials {:class (arrow-class selected-testimonial)}
              [:div.languages-body

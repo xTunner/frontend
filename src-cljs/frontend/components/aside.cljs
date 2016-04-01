@@ -482,10 +482,10 @@
 
             [:hr]
 
-            [:a.aside-item {:title "Documentation"
-                            :data-placement "right"
-                            :data-trigger "hover"
-                            :href "/docs"}
+           [:a.aside-item (open-ext {:title "Documentation"
+                                     :data-placement "right"
+                                     :data-trigger "hover"
+                                     :href "/docs"})
               [:i.material-icons "description"]
               [:div.nav-label "Docs"]]
 

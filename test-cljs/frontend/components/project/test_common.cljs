@@ -5,7 +5,6 @@
             [frontend.test-utils :as test-utils]
             [frontend.components.app :as app]
             [frontend.components.project.common :as project-common]
-            [frontend.components.documentation :as documentation]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
@@ -47,7 +46,7 @@
     (testing "1: never show trial notice for paid, regardless of oss status of project"
       (doseq [project (vals projects)]
         (is (not (project-common/show-trial-notice? project (:paid plans))))))
-    
+
     (testing "2: never show trial notice for oss, regardless of plan"
       (doseq [plan (vals plans)]
         (do
@@ -68,34 +67,4 @@
               :let [project (project-key projects)
                     plan (plan-key plans)]]
         (testing (str "with " project-key " and " plan-key)
-          (is (not (project-common/show-trial-notice? project plan))))))
-
-    (testing "5: checkout actual rendered values"
-      (let [project (:org-private projects)]
-        (om/root documentation/docs-subpage {} {:target (goog.dom/htmlToDocumentFragment "<div class='content'></div>")})
-        ;; The test-utils/render-into-document call below triggers
-        ;;
-        ;;	ERROR in (frontend.components.project.test-common/test-show-trial-notice?) (/home/emile/workspaces/circle-base/resources/public/cljs/out/frontend/components/project/common.js:59)
-        ;; Uncaught exception, not in assertion.
-        ;;	expected: nil
-        ;;	  actual: 
-        ;;	trial_notice/frontend.components.project.common.t24013.prototype.om$core$IRender$render$arity$1@/home/emile/workspaces/circle-base/resources/public/cljs/out/frontend/components/project/common.js:59:1
-        ;;	render@/home/emile/workspaces/circle-base/resources/public/cljs/out/om/core.js:217:2
-        ;;
-        ;; when run in karma; I can't figure out why. Seems like it's
-        ;; just the same as the test_documentation usage?
-        #_(doseq [plan (vals plans)
-                  :when (project-common/show-trial-notice? project plan)
-                  :let [notice-elem (-> (om/build project-common/trial-notice {:project project :plan plan})
-                                        (test-utils/render-into-document)
-                                        om/get-node)
-                        span (-> notice-elem (utils/sel1 "span"))
-                        link (-> notice-elem (utils/sel1 "a"))
-                        plan-msg (gstring/format (:msg plan)
-                                                 "circleci/circle" (:org_name plan))]]
-            (do
-              ;; TODO: tree's suck! checking the message including the
-              ;; link and the part after the link is crazy annoying.
-              ;; Calling this good for now.
-              ;;(println plan-msg " LINK: " (utils/text link))
-              (is (= plan-msg (utils/text span)))))))))
+          (is (not (project-common/show-trial-notice? project plan))))))))

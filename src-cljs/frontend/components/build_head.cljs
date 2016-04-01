@@ -20,6 +20,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.html :refer [open-ext]]
             [frontend.components.build-timings :as build-timings]
             [frontend.components.svg :refer [svg]]
             [goog.dom]
@@ -191,7 +192,7 @@
      [:p
       "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
        This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
-       More information " [:a {:href (routes/v1-doc-subpage {:subpage "ssh-build"})} "in our docs"] "."
+       More information " [:a (open-ext {:href "/docs/ssh-build"}) "in our docs"] "."
      (om/build ssh-buttons build)]])
 
 (defn ssh-command [node]
@@ -251,7 +252,7 @@
   [:div
    [:p "We didn't find any build artifacts for this build. You can upload build artifacts by moving files to the $CIRCLE_ARTIFACTS directory."]
    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
-   [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "build-artifacts"})} "in our docs"] "."]])
+   [:p "More information " [:a (open-ext {:href "/docs/build-artifacts"}) "in our docs"] "."]])
 
 (defn artifacts-tree [prefix artifacts]
   (->> (for [artifact artifacts
@@ -512,7 +513,7 @@
 (defn circle-yml-ad []
   [:div
    [:p "We didn't find a circle.yml for this build. You can specify deployment or override our inferred test steps from a circle.yml checked in to your repo's root directory."]
-   [:p "More information " [:a {:href (routes/v1-doc-subpage {:subpage "configuration"})} "in our docs"] "."]])
+   [:p "More information " [:a (open-ext {:href "/docs/configuration"}) "in our docs"] "."]])
 
 (defn build-config [{:keys [config-string build build-data]} owner opts]
   (reify

@@ -6,7 +6,6 @@
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
-            [frontend.components.documentation :as docs]
             [frontend.components.features :as features]
             [frontend.components.mobile :as mobile]
             [frontend.components.press :as press]
@@ -69,7 +68,6 @@
     :loading loading
 
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
-    :documentation docs/documentation
     :pricing pricing/pricing
 
     :signup signup/signup
