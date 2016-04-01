@@ -1,6 +1,5 @@
 (ns frontend.components.test-insights
-  (:require [cemerick.cljs.test :as test]
-            [frontend.test-utils :as test-utils]
+  (:require [frontend.test-utils :as test-utils]
             [frontend.utils :as utils :refer [sel1 sel]]
             [frontend.models.test-project :as test-project]
             [frontend.utils.docs :as doc-utils]
@@ -8,8 +7,10 @@
             [frontend.timer :as timer]
             [goog.dom]
             [frontend.components.insights :as insights]
-            [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is are deftest with-test run-tests testing test-var)]))
+            [om.core :as om :include-macros true]
+            [cljs.test :refer-macros [deftest is testing use-fixtures]]))
+
+(use-fixtures :once (aset js/window "SVGInjector" (fn [node] node)))
 
 (def insights-plot-info
   {:top 30
@@ -103,13 +104,12 @@
                 :shared {:timer-atom (timer/initialize)}}))))
 
 (deftest median
-  (are [m xs] (= m (insights/median xs))
-      nil []
-      1 [1]
-      1.5 [1 2]
-      2 [1 2 3]
-      1.5 [1 1 2 3]
-      1 [1 1 1 2 3]))
+  (is (= nil (insights/median [])))
+  (is (= 1 (insights/median [1])))
+  (is (= 1.5 (insights/median [1 2])))
+  (is (= 2 (insights/median [1 2 3])))
+  (is (= 1.5 (insights/median [1 1 2 3])))
+  (is (= 1 (insights/median [1 1 1 2 3]))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO: Async testing does not work right now, it's not in scope to fix it ;;

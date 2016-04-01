@@ -30,8 +30,8 @@
                     (if (plan-model/freemium? plan)
                       (not (plan-model/trial-over? plan))
                       true)]]
-    (utils/mlog (gstring/format "show-trial-notice? has conditions %s days left %d"
-                                conditions (plan-model/days-left-in-trial plan)))
+    ;;(utils/mlog (gstring/format "show-trial-notice? has conditions %s days left %d"
+    ;;                            conditions (plan-model/days-left-in-trial plan)))
     (every? identity conditions)))
 
 (defn non-freemium-trial-html [plan project project-name days org-name plan-path]

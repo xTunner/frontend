@@ -2,11 +2,10 @@
   (:require [clojure.string :as string]
             [om.core :as om :include-macros true]
             [om.dom]
-            [cemerick.cljs.test]
+            [cljs.test :refer-macros [is deftest testing]]
             [secretary.core :as secretary]
             [cljs.core.async :as async]
-            [frontend.routes :as routes])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
+            [frontend.routes :as routes]))
 
 (deftest parse-uri-works
   (testing "a basic uri"

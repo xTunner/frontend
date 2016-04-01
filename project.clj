@@ -34,7 +34,6 @@
                  [devcards "0.2.1-6"]
 
                  ;; Frontend tests
-                 [com.cemerick/clojurescript.test "0.3.0"]
                  [org.clojure/tools.reader "0.9.2"]
                  [circleci/bond "0.2.9"]
 
@@ -44,7 +43,8 @@
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
             [cider/cider-nrepl "0.11.0"]
-            [lein-environ "1.0.1"]]
+            [lein-environ "1.0.1"]
+            [lein-doo "0.1.6"]]
 
   ;; Don't include these dependencies transitively. These are foundational
   ;; dependencies that lots of our direct dependencies depend on. We want to
@@ -75,13 +75,17 @@
   :figwheel {:css-dirs ["resources/assets/css"]
              :nrepl-port 7888}
 
+  :doo {:paths {:karma "./node_modules/karma/bin/karma"}}
+
   :cljsbuild {:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
+                             :main frontend.test-runner
                              :figwheel {:websocket-host "prod.circlehost"
                                         :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
                                         :on-jsload "frontend.core/reinstall-om!"}
                              :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                         :output-dir "resources/public/cljs/out"
                                         :optimizations :none
+                                         :main frontend.test-runner
                                         ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
                                         :recompile-dependents false}}
                        :whitespace {:source-paths ["src-cljs"]
@@ -93,6 +97,7 @@
                               :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                          :output-dir "resources/public/cljs/test"
                                          :optimizations :advanced
+                                         :main frontend.test-runner
                                          :foreign-libs [{:provides ["cljsjs.react"]
                                                          ;; Unminified React necessary for TestUtils addon.
                                                          :file "resources/components/react/react-with-addons.js"

@@ -1,14 +1,13 @@
 (ns frontend.components.test-build-head
-  (:require [cemerick.cljs.test :as t]
-            [frontend.test-utils :as test-utils]
+  (:require [frontend.test-utils :as test-utils]
             [frontend.components.build-head :as bh]
             [frontend.utils :as utils :refer [sel1 sel]]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.stefon :as stefon]
             [goog.dom]
-            [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
+            [om.core :as om :include-macros true]
+            [cljs.test :refer-macros [deftest is testing]]))
 
 
 (def test-build-data

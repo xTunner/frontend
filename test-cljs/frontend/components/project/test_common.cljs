@@ -1,18 +1,16 @@
 (ns frontend.components.project.test-common
-  (:require [cemerick.cljs.test :as t]
-            [cljs-time.core :as time]
+  (:require [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [frontend.test-utils :as test-utils]
-            [frontend.components.app :as app]
             [frontend.components.project.common :as project-common]
-            [frontend.utils :as utils :include-macros true]
             [frontend.utils.docs :as doc-utils]
             [frontend.stefon :as stefon]
+            [frontend.config :as config]
             [goog.dom]
             [goog.string :as gstring]
             [goog.string.format]
-            [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
+            [om.core :as om :include-macros true]
+            [cljs.test :refer-macros [is deftest testing]]))
 
 (defn ->iso8601 [time]
   (time-format/unparse (time-format/formatters :date-time) time))

@@ -1,7 +1,7 @@
 (ns frontend.test-pusher
   (:require [frontend.pusher :as pusher]
-            [frontend.utils.seq :refer (submap?)])
-  (:require-macros [cemerick.cljs.test :refer (is deftest with-test run-tests testing test-var)]))
+            [frontend.utils.seq :refer (submap?)]
+            [cljs.test :refer-macros [is deftest testing]]))
 
 (deftest pusher-config-works-with-default
   (let [config {:key "app-key"}]

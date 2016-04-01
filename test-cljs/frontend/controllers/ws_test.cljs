@@ -1,9 +1,9 @@
 (ns frontend.controllers.ws-test
-  (:require [cemerick.cljs.test :as test]
-            [frontend.controllers.ws :as ws]
+  (:require [frontend.controllers.ws :as ws]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
+            [frontend.utils :as utils :include-macros true]
+            [frontend.models.action :as action]
+            [cljs.test :refer-macros [deftest is testing]]))
 
 (def dummy-pusher-imp {})
 
@@ -43,7 +43,8 @@
 
 (deftest append-action-works
   (testing "we create filler steps if output comes out of order"
-    (with-redefs [ws/ignore-build-channel? (constantly false)]
+    (with-redefs [ws/ignore-build-channel? (constantly false)
+                  action/format-output (fn [action _] action)]
       (let [new-state (ws/ws-event dummy-pusher-imp
                                    :build/append-action
                                    {:data (clj->js [{:index 0 :step 3}])}

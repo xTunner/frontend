@@ -1,7 +1,6 @@
 (ns frontend.components.test-org-settings
-  (:require [cemerick.cljs.test :as t]
-            [cljs.core.async :as async]
-            [frontend.test-utils :as test-utils :refer (example-plan)]
+  (:require [cljs.core.async :as async]
+            [frontend.test-utils :as test-utils :refer [example-plan is-re]]
             [frontend.components.org-settings :as org-settings]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.html :refer [hiccup->html-str]]
@@ -9,11 +8,8 @@
             [goog.dom]
             [om.core :as om :include-macros true]
             [frontend.routes :as routes]
-            [om.dom :refer (render-to-str)])
-  (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var use-fixtures]]
-                   [frontend.test-macros :refer [is-re]]))
-
-(use-fixtures :once test-utils/with-routes-defined)
+            [om.dom :refer (render-to-str)]
+            [cljs.test :as test :refer-macros [deftest is testing]]))
 
 (deftest test-discount-rendering
   (let [format (fn [plan] (.-innerText (goog.dom/htmlToDocumentFragment (hiccup->html-str (org-settings/format-discount plan)))))
