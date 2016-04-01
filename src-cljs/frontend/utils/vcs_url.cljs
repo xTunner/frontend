@@ -6,7 +6,9 @@
 (def url-project-re #"^https?://([^/]+)/(.*)")
 
 (defn project-name [vcs-url]
-  (last (re-matches url-project-re vcs-url)))
+  (some->> vcs-url
+           (re-matches url-project-re)
+           (last)))
 
 (defn vcs-type [vcs-url]
   (or ({"github.com" "github"
