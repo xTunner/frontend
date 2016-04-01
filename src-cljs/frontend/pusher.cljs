@@ -61,7 +61,8 @@
        :vcs-type (keyword (or vcs-type :github))})))
 
 (defn build-channel-base
-  [{:keys [project-name build-num vcs-type]}]
+  [{:keys [project-name build-num vcs-type]
+    :or {vcs-type :github}}]
   (let [project-prefix (-> (str "private-" project-name)
                            (string/replace "/" "@"))
         vcs-str (str "vcs-" (name vcs-type))]
