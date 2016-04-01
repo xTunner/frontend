@@ -38,7 +38,8 @@
 (defn strip-console-codes
   "Strips console codes if output is over 2mb (assuming 2 bytes per char)"
   [message]
-  (string/replace message #"\u001B\[[^A-Za-z]*[A-Za-z]" ""))
+  (when message
+    (string/replace message #"\u001B\[[^A-Za-z]*[A-Za-z]" "")))
 
 (defn format-output [action output-index]
   "Html-escape the output, and then either:
