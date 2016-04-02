@@ -76,13 +76,11 @@
   (let [from-query-map (:logging-enabled? initial-query-map)
         from-browser-settings (and state/debug-state
                                    (get-in @state/debug-state state/logging-enabled-path))
-       ;; from-config (config/logging-enabled?)
-        
-        ]
+        from-config (config/logging-enabled?)]
     (cond
       (= (type from-query-map) js/Boolean) from-query-map
       (= (type from-browser-settings) js/Boolean) from-browser-settings
-      :else "from-config")))
+      :else from-config)))
 
 (defn mlog [& messages]
   (when (logging-enabled?)

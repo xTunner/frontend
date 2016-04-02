@@ -75,7 +75,6 @@
                  (let [channel (chan)]
                    (controls/button-ajax "a" "b" "c" channel {:events {:success success-event
                                                                        :failed failed-event}})
-
                    (<! channel)
                    (is (= 1 (-> success-event bond/calls count)))
                    (is (= 0 (-> failed-event bond/calls count)))
@@ -89,7 +88,6 @@
                  (let [channel (chan)]
                    (controls/button-ajax "a" "b" "c" channel {:events {:success success-event
                                                                        :failed failed-event}})
-
                    (<! channel)
                    (is (= 0 (-> success-event bond/calls count)))
                    (is (= 1 (-> failed-event bond/calls count)))
