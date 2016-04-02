@@ -97,27 +97,25 @@ lein run -m frontend.tasks.http/precompile-assets
 If you add a new document, you will have to re-run that; but if you just change
 one of the existing documents it should show up with just a page refresh.
 
-### Running the Karma Tests
+### Running the Tests
 
-You can run the tests locally with
-````
-node_modules/karma/bin/karma start karma.dev.conf.js --single-run
-````
+There are two main ways for running tests using the plugin `lein doo`. If you wish to run the tests only once, you can do that with
 
-If you have karma-cli installed globally, you can say
-````
-karma start karma.dev.conf.js --single-run
-````
-instead.
+```
+lein doo chrome dev once
+```
 
-Alternatively, you can leave a karma process running (`karma start karma.dev.conf.js`) and connect to it
-and run the tests with `karma run`.
+To have a process watch for changes and run the tests every time you make changes, you can run
+
+```
+lein doo chrome dev auto
+```
+
+The default option is `auto`, so it will run in that state if you ommit that argument. You can also use `phantom `, `firefox`, and a variety of our js enviornments to run the tests on. For full documentation read [lein doo's README](https://github.com/bensu/doo/)
 
 ### Adding Tests
 
-Take a look at `test-cljs/frontend/sample_test.cljs` for a starting point. Save a copy to the appropriate path for the namespace you want to test.
-
-Karma won't automatically require the test namespaces, so open `test-js/require-karma.js` and add a require statement. Now the ns tests should run with every karma invocation.
+To add a test you can either create a new test in an existing ns using `deftest`, or create a new ns. However, if you add a new ns it will not automatically be added to the test runner, to do that add it to the list of test ns's in `test-cljs/frontend/test_runner.cljs`.
 
 ### Asset Compilation Errors
 
