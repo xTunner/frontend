@@ -36,6 +36,7 @@
                  ;; Frontend tests
                  [org.clojure/tools.reader "0.9.2"]
                  [circleci/bond "0.2.9"]
+                 [lein-doo "0.1.6"]
 
                  ;; For Dirac DevTools
                  [environ "1.0.1"]]
