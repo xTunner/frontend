@@ -10,8 +10,6 @@
             [om.core :as om :include-macros true]
             [cljs.test :refer-macros [deftest is testing use-fixtures]]))
 
-(use-fixtures :once (aset js/window "SVGInjector" (fn [node] node)))
-
 (def insights-plot-info
   {:top 30
    :right 10
@@ -84,9 +82,7 @@
                                :stop_time "2015-09-13T03:39:56.305Z",
                                :start_time "2015-09-13T03:28:13.314Z",
                                :lifecycle "finished",
-                               :subject "Merge pull request #5051 from circleci/nginx-upcheck"
-                               }
-                              ]}}])
+                               :subject "Merge pull request #5051 from circleci/nginx-upcheck"}]}}])
 
 (deftest can-render-feature-container
   (testing "Simple render of feature container."
