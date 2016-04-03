@@ -567,7 +567,7 @@
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
             new-total (pm/cost plan (+ selected-containers (pm/freemium-containers plan)))
-            container-cost (pm/per-container-cost plan)
+            linux-container-cost (pm/linux-per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)]
@@ -588,7 +588,7 @@
            [:form
             [:div.container-picker
              [:h1 "More containers means faster builds and lower queue times."]
-             [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" container-cost "/month each.")]
+             [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
@@ -1321,7 +1321,7 @@
           vcs_type (get-in app state/org-vcs_type-path)
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
-          container-cost (pm/per-container-cost plan)
+          linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name)]
@@ -1369,7 +1369,7 @@
                                                        :_fragment "linux-pricing"})}
                "add more"]
               (when-not piggiebacked?
-                (list " at $" container-cost " per container"))
+                (list " at $" linux-container-cost " per container"))
               " for more parallelism and shorter queue times."))])
         (when (and (pm/freemium? plan) (> containers 1))
           [:p (str (pm/freemium-containers plan) " container is free.")])

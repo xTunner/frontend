@@ -131,12 +131,12 @@
             :else
             (str (time/in-minutes trial-interval) " minutes")))))
 
-(defn per-container-cost [plan]
+(defn linux-per-container-cost [plan]
   (or (-> plan :paid :template :container_cost)
       (-> plan :enterprise :template :container_cost)
       (:container_cost default-template-properties)))
 
-(defn container-cost [plan containers]
+(defn linux-container-cost [plan containers]
   (let [template-properties (or (-> plan :paid :template)
                                 (-> plan :enterprise :template)
                                 default-template-properties)
@@ -148,15 +148,15 @@
                                (-> plan :enterprise :template)
                                default-template-properties)
         plan-base-price (:price paid-plan-template)
-        linux-plan-containers (- containers
+        linux-containers (- containers
                                 (freemium-containers plan)
                                 (if-not include-trial?
                                   0
                                   (trial-containers plan)))]
-    (if (< linux-plan-containers 1)
+    (if (< linux-containers 1)
       0
       (+ plan-base-price
-         (container-cost plan linux-plan-containers)))))
+         (linux-container-cost plan linux-containers)))))
 
 (defn stripe-cost
   "Normalizes the Stripe amount on the plan to dollars."
