@@ -14,7 +14,6 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
-            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]

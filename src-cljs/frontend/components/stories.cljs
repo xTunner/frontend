@@ -5,7 +5,6 @@
             [frontend.components.common :as common]
             [frontend.components.docker :as docker]
             [frontend.components.features :as features]
-            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]

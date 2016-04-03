@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [frontend.components.common :as common]
             [frontend.components.features :as features]
-            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stefon :as stefon]

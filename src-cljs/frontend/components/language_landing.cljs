@@ -4,7 +4,6 @@
             [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
