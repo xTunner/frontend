@@ -1324,7 +1324,7 @@
           plan-total (pm/stripe-cost plan)
           container-cost (pm/per-container-cost plan)
           price (-> plan :paid :template :price)
-          containers (pm/usable-containers plan)
+          containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name)]
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
@@ -1359,7 +1359,7 @@
            (if (pm/grandfathered? plan)
              (list "We've changed our pricing model since this plan began, so its current price "
                    "is grandfathered in. "
-                   "It would be $" (pm/cost plan (pm/usable-containers plan)) " at current prices. "
+                   "It would be $" (pm/cost plan (pm/linux-containers plan)) " at current prices. "
                    "We'll switch it to the new model if you upgrade or downgrade. ")
              (list
               "You can "

@@ -81,18 +81,8 @@
     (:containers plan)
     0))
 
-(defn paid-plan-min-containers
-  "A plan has a price, and a free container count. If you are paying for
-   the plan, you can't go below the free container count."
-  [plan]
-  (or (get-in plan [:paid :template :free_containers]) 0))
-
-(defn default-plan-min-containers
-  []
-  (:free_containers default-template-properties))
-
-(defn usable-containers
-  "Maximum containers that the plan has available to it"
+(defn linux-containers
+  "Maximum containers that a linux plan has available to it"
   [plan]
   (+ (freemium-containers plan)
      (enterprise-containers plan)
@@ -158,15 +148,15 @@
                                (-> plan :enterprise :template)
                                default-template-properties)
         plan-base-price (:price paid-plan-template)
-        paid-plan-containers (- containers
+        linux-plan-containers (- containers
                                 (freemium-containers plan)
                                 (if-not include-trial?
                                   0
                                   (trial-containers plan)))]
-    (if (< paid-plan-containers 1)
+    (if (< linux-plan-containers 1)
       0
       (+ plan-base-price
-         (container-cost plan paid-plan-containers)))))
+         (container-cost plan linux-plan-containers)))))
 
 (defn stripe-cost
   "Normalizes the Stripe amount on the plan to dollars."
@@ -184,7 +174,7 @@
 (defn grandfathered? [plan]
   (and (linux? plan)
        (< (stripe-cost plan)
-          (cost plan (usable-containers plan) :include-trial? true))))
+          (cost plan (linux-containers plan) :include-trial? true))))
 
 (defn admin?
   "Whether the logged-in user is an admin for this plan."

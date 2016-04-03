@@ -212,7 +212,7 @@
    (when (and (> parallelism 1) (project-model/osx? project)) ["disabled"])
    (when (> parallelism (project-model/buildable-parallelism plan project)) ["disabled"])
    (when (= parallelism (get-in project-data [:project :parallel])) ["selected"])
-   (when (not= 0 (mod (project-model/usable-containers plan project) parallelism)) ["bad_choice"])))
+   (when (not= 0 (mod (project-model/linux-containers plan project) parallelism)) ["bad_choice"])))
 
 (defn parallelism-tile
   "Determines what we show when they hover over the parallelism option"
@@ -258,9 +258,9 @@
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
      ;; but only on the tiles between (allowed parallelism and their current parallelism]
-     (when (and (> (:parallel project) (project-model/usable-containers plan project))
+     (when (and (> (:parallel project) (project-model/linux-containers plan project))
                 (>= (:parallel project) parallelism)
-                (> parallelism (project-model/usable-containers plan project)))
+                (> parallelism (project-model/linux-containers plan project)))
        [:div.insufficient-minimum
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "

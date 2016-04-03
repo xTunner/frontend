@@ -137,12 +137,12 @@
   (get-in project [:feature_flags :osx]))
 
 (defn usable-containers [plan project]
-  (+ (plan-model/usable-containers plan)
+  (+ (plan-model/linux-containers plan)
      (if (oss? project) plan-model/oss-containers 0)))
 
 (defn buildable-parallelism [plan project]
   (min (plan-model/max-parallelism plan)
-       (usable-containers plan project)))
+       (linux-containers plan project)))
 
 (defn has-scope? [project scope]
   (let [scope (keyword scope)]
