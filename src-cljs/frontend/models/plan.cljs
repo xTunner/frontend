@@ -143,7 +143,7 @@
         {:keys [free_containers container_cost]} template-properties]
     (max 0 (* container_cost (- containers free_containers)))))
 
-(defn cost [plan containers & {:keys [include-trial?]}]
+(defn linux-cost [plan containers & {:keys [include-trial?]}]
   (let [paid-plan-template (or (-> plan :paid :template)
                                (-> plan :enterprise :template)
                                default-template-properties)
@@ -174,7 +174,7 @@
 (defn grandfathered? [plan]
   (and (linux? plan)
        (< (stripe-cost plan)
-          (cost plan (linux-containers plan) :include-trial? true))))
+          (linux-cost plan (linux-containers plan) :include-trial? true))))
 
 (defn admin?
   "Whether the logged-in user is an admin for this plan."
