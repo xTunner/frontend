@@ -142,7 +142,7 @@
 
 (defn buildable-parallelism [plan project]
   (min (plan-model/max-parallelism plan)
-       (linux-containers plan project)))
+       (usable-containers plan project)))
 
 (defn has-scope? [project scope]
   (let [scope (keyword scope)]
