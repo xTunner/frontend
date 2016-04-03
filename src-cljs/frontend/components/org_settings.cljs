@@ -631,7 +631,7 @@
                      :on-click (when button-clickable?
                                  #(do (raise! owner [:new-plan-clicked
                                                      {:containers selected-paid-containers
-                                                      :paid {:template (:id pm/default-template-properties)}
+                                                      :linux {:template (:id pm/default-template-properties)}
                                                       :price new-total
                                                       :description (str "$" new-total "/month, includes "
                                                                         (pluralize selected-containers "container"))}])
