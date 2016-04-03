@@ -166,7 +166,7 @@
 (defn- show-premium-content? [project plan]
   (or (config/enterprise?)
       (:oss project)
-      (> (plan-model/paid-linux-containers plan) 0)
+      (pos? (plan-model/paid-linux-containers plan))
       (plan-model/in-trial? plan)
       (plan-model/osx? plan)))
 

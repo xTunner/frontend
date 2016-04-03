@@ -26,7 +26,7 @@
 (defn linux? [plan]
   (boolean (and
              (:paid plan)
-             (> (:containers plan) 0))))
+             (pos? (:containers plan)))))
 
 (defn osx? [plan]
   (boolean (:osx plan)))
