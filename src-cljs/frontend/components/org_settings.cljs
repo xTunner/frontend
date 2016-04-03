@@ -641,7 +641,7 @@
 
              (when-not (config/enterprise?)
                ;; TODO: Clean up conditional here - super nested and many interactions
-               (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+               (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
                  [:span.help-block
                   (cond
                     (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
@@ -1351,8 +1351,7 @@
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
-        (when (and (pm/paid? plan)
-                   (pos? (pm/paid-containers plan)))
+        (when (pm/linux? plan)
           [:p
            (str (pm/paid-containers plan) " of these are paid")
            (if piggiebacked? ". "

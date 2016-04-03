@@ -23,8 +23,10 @@
 (defn freemium? [plan]
   (boolean (:free plan)))
 
-(defn paid? [plan]
-  (boolean (:paid plan)))
+(defn linux? [plan]
+  (boolean (and
+             (:paid plan)
+             (> (:containers plan) 0))))
 
 (defn osx? [plan]
   (boolean (:osx plan)))
@@ -60,7 +62,7 @@
   (or (get-in plan [:free :template :free_containers]) 0))
 
 (defn paid-containers [plan]
-  (if (paid? plan)
+  (if (linux? plan)
     (max (:containers_override plan)
          (:containers plan)
          (get-in plan [:paid :template :free_containers]))
@@ -103,7 +105,7 @@
   (not (piggieback? plan org-name)))
 
 (defn transferrable-or-piggiebackable-plan? [plan]
-  (or (paid? plan)
+  (or (linux? plan)
       (osx? plan)
       ;; Trial plans shouldn't really be transferrable
       ;; but they are piggiebackable and the UI mixes the two :(
@@ -180,7 +182,7 @@
   (- (stripe-cost plan) (osx-cost plan)))
 
 (defn grandfathered? [plan]
-  (and (paid? plan)
+  (and (linux? plan)
        (< (stripe-cost plan)
           (cost plan (usable-containers plan) :include-trial? true))))
 
