@@ -203,7 +203,7 @@
        [:a {:href "mailto:sayhi@circleci.com"} "Get in touch."]])]])
 
 (defn piggieback-plan-wording [plan]
-  (let [containers (pm/paid-containers plan)]
+  (let [containers (pm/paid-linux-containers plan)]
     (str
       (when (pos? containers)
         (str containers " containers"))
@@ -559,18 +559,18 @@
       (let [org-name (get-in app state/org-name-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                     (pm/paid-containers plan))
+                                     (pm/paid-linux-containers plan))
             login (get-in app state/user-login-path)
             view (get-in app state/current-view-path)
             min-slider-val 0
-            max-slider-val (max 80 (* 2 (pm/paid-containers plan)))
+            max-slider-val (max 80 (* 2 (pm/paid-linux-containers plan)))
             selected-paid-containers (max 0 selected-containers)
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
             new-total (pm/cost plan (+ selected-containers (pm/freemium-containers plan)))
             container-cost (pm/per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
-            button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
+            button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)]
       (html
         [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
@@ -600,7 +600,7 @@
                  (let [enterprise-text "Save changes"]
                    (if (and (zero? new-total)
                             (not (config/enterprise?))
-                            (not (zero? (pm/paid-containers plan))))
+                            (not (zero? (pm/paid-linux-containers plan))))
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
@@ -1353,7 +1353,7 @@
                 ".")])
         (when (pm/linux? plan)
           [:p
-           (str (pm/paid-containers plan) " of these are paid")
+           (str (pm/paid-linux-containers plan) " of these are paid")
            (if piggiebacked? ". "
                (list ", at $" (pm/linux-cost plan) "/month. "))
            (if (pm/grandfathered? plan)

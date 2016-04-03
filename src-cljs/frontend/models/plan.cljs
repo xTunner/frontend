@@ -61,7 +61,7 @@
 (defn freemium-containers [plan]
   (or (get-in plan [:free :template :free_containers]) 0))
 
-(defn paid-containers [plan]
+(defn paid-linux-containers [plan]
   (if (linux? plan)
     (max (:containers_override plan)
          (:containers plan)

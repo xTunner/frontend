@@ -166,7 +166,7 @@
 (defn- show-premium-content? [project plan]
   (or (config/enterprise?)
       (:oss project)
-      (> (plan-model/paid-containers plan) 0)
+      (> (plan-model/paid-linux-containers plan) 0)
       (plan-model/in-trial? plan)
       (plan-model/osx? plan)))
 
@@ -183,7 +183,7 @@
                                         (= org-name)))
                            (first)
                            (:plans)
-                           (apply max-key plan-model/paid-containers))]
+                           (apply max-key plan-model/paid-linux-containers))]
     (show-premium-content? project org-best-plan)))
 
 (defn show-upsell? [project plan]
