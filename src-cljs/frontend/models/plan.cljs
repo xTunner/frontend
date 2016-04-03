@@ -167,7 +167,7 @@
   [plan]
   (or (some-> plan :osx :template :price) 0))
 
-(defn linux-cost
+(defn current-linux-cost
   [plan]
   (- (stripe-cost plan) (osx-cost plan)))
 

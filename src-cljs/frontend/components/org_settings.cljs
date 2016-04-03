@@ -566,7 +566,7 @@
             selected-paid-containers (max 0 selected-containers)
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
-            new-total (pm/cost plan (+ selected-containers (pm/freemium-containers plan)))
+            new-total (pm/linux-cost plan (+ selected-containers (pm/freemium-containers plan)))
             linux-container-cost (pm/linux-per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
@@ -1354,11 +1354,11 @@
           [:p
            (str (pm/paid-linux-containers plan) " of these are paid")
            (if piggiebacked? ". "
-               (list ", at $" (pm/linux-cost plan) "/month. "))
+               (list ", at $" (pm/current-linux-cost plan) "/month. "))
            (if (pm/grandfathered? plan)
              (list "We've changed our pricing model since this plan began, so its current price "
                    "is grandfathered in. "
-                   "It would be $" (pm/cost plan (pm/linux-containers plan)) " at current prices. "
+                   "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
                    "We'll switch it to the new model if you upgrade or downgrade. ")
              (list
               "You can "
