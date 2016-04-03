@@ -87,7 +87,7 @@
   (+ (freemium-containers plan)
      (enterprise-containers plan)
      (trial-containers plan)
-     (paid-containers plan)))
+     (paid-linux-containers plan)))
 
 (defn can-edit-plan? [plan org-name]
   ;; kill plan pricing page for trial plans by making
