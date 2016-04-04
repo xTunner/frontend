@@ -77,15 +77,6 @@
          [:span.pre {:dangerouslySetInnerHTML
                      #js {"__html" message-html}}])))))
 
-(defn trailing-output [converters-state owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [trailing-out (action-model/trailing-output converters-state)]
-        (html
-          [:span {:dangerouslySetInnerHTML
-                  #js {"__html" trailing-out}}])))))
-
 (defn truncation-notification [action ownder]
   (reify
     om/IRender
@@ -176,7 +167,6 @@
                     [:pre.output
                      (om/build truncation-notification action)
                      (om/build-all output (:output action) {:key :react-key})
-                     (om/build trailing-output (:converters-state action))
                      (om/build truncation-notification action)]])])]]]]])))))
 
 (defn container-view [{:keys [container non-parallel-actions]} owner {:keys [uses-parallelism?] :as opts}]

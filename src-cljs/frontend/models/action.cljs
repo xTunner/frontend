@@ -30,9 +30,10 @@
                                                       (js/Date.parse start_time)))
         :else nil))
 
-(defn new-converter [action type]
+(defn new-converter [action converter-path]
   (let [default-color "white"
-        starting-state (clj->js (get-in action [:converters-state type]))]
+        starting-state (clj->js (or (get-in action converter-path)
+                                    {:color "white" :italic false :bold false}))]
     (js/CI.terminal.ansiToHtmlConverter default-color "brblack" starting-state)))
 
 (defn strip-console-codes
@@ -48,28 +49,28 @@
       can't handle crazy large numbers of spans.
    3. colorize the output."
   (let [output (get-in action [:output output-index])
+        converter-path [:converters-state (keyword (:type output))]
         html-escaped-message (-> output :message gstring/htmlEscape)
         stripped-message (strip-console-codes html-escaped-message)
-        converter (->> output :type keyword (new-converter action))
-        plain-style {:color "white" :italic false :bold false}
+        converter (new-converter action converter-path)
 
+        [converted-message converter-state] (cond
+                                              (:truncated-client-side? action)
+                                              [html-escaped-message nil]
 
-        [style-map converted-message trailing-out] (cond
-                                                   (:truncated-client-side? action)
-                                                   [plain-style html-escaped-message html-escaped-message]
+                                              (> (count stripped-message) (+ 1000 (count html-escaped-message)))
+                                              [stripped-message nil]
 
-                                                   (> (count stripped-message) (+ 1000 (count html-escaped-message)))
-                                                   [plain-style stripped-message stripped-message]
-
-                                                   :else ; colorize it
-                                                   [(utils/js->clj-kw (.currentState converter))
-                                                    (.append converter html-escaped-message)
-                                                    (.get_trailing converter)])]
+                                              :else    ; colorize it
+                                              [(str (.append converter html-escaped-message)
+                                                    (.get_trailing converter))
+                                               (utils/js->clj-kw (.currentState converter))])]
     (-> action
         (assoc-in [:output output-index :converted-message] converted-message)
         (assoc-in [:output output-index :react-key] (utils/uuid))
-        (assoc-in [:converters-state (keyword (:type output))]
-                  (merge style-map {:converted-output trailing-out})))))
+        ;; set the converter state to nil if unused,
+        ;; so that the next converter reverts to defaults
+        (assoc-in converter-path converter-state))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]
@@ -80,11 +81,6 @@
   (if-let [output (seq (:output action))]
     (reduce format-output action (range (count output)))
     action))
-
-(defn trailing-output [converters-state]
-  (str (get-in converters-state [:out :converted-output])
-       (get-in converters-state [:err :converted-output])))
-
 
 (def max-output-size
   "Limits the number of chacaters we will try to display in the dom.
