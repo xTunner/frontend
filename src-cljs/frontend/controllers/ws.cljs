@@ -85,7 +85,8 @@
   (let [data (utils/js->clj-kw data)]
     (if (empty? data)
       ;; the new path
-      (api/get-build-observables channel-name (get-in current-state [:comms :api]))
+      (api/get-build-observables (pusher/build-parts-from-channel channel-name)
+                                 (get-in current-state [:comms :api]))
       ;; the old path
       (when-not (ignore-build-channel? current-state channel-name)
         (frontend.favicon/set-color! (build-model/favicon-color data))

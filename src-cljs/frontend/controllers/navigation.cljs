@@ -241,9 +241,11 @@
                                  :vcs-type vcs_type}))
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
-    (initialize-pusher-subscriptions current-state {:project-name project-name
-                                                    :build-num build-num
-                                                    :vcs-type vcs_type}))
+    (let [[username project] (str/split project-name #"/")]
+      (initialize-pusher-subscriptions current-state {:username username
+                                                      :project project
+                                                      :build-num build-num
+                                                      :vcs-type vcs_type})))
   (set-page-title! (str project-name " #" build-num)))
 
 (defmethod navigated-to :add-projects

@@ -216,12 +216,10 @@
 
 (defmethod api-event [:build-observables :success]
   [target message status {:keys [context resp]} state]
-  (let [channel-name (:channel-name context)]
-    (if (= channel-name (-> (get-in state state/build-path)
-                            (pusher/build-parts)
-                            (pusher/build-all-channel)))
+  (let [parts (:build-parts context)]
+    (if (= parts (state-utils/build-parts (get-in state state/build-path)))
       (update-in state state/build-path merge resp)
-      (if-let [index (state-utils/usage-queue-build-index-from-channel-name state channel-name)]
+      (if-let [index (state-utils/usage-queue-build-index-from-build-parts state parts)]
         (update-in state (state/usage-queue-build-path index) merge resp)
         state))))
 
@@ -323,7 +321,7 @@
   (let [usage-queue-builds (get-in current-state state/usage-queue-path)
         ws-ch (get-in current-state [:comms :ws])]
     (doseq [build usage-queue-builds
-            :let [parts (pusher/build-parts build)]]
+            :let [parts (state-utils/build-parts build)]]
       (put! ws-ch [:subscribe {:channel-name (pusher/build-all-channel parts)
                                :messages [:build/update]}])
       (put! ws-ch [:subscribe {:channel-name (pusher/obsolete-build-channel parts)
@@ -366,8 +364,12 @@
   [state old-index new-index]
   (let [ws-ch (get-in state [:comms :ws])
         build (get-in state state/build-path)]
-    (put! ws-ch [:unsubscribe (pusher/build-container-channel (pusher/build-parts build old-index))])
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-container-channel (pusher/build-parts build new-index))
+    (put! ws-ch [:unsubscribe (-> build
+                                  (state-utils/build-parts old-index)
+                                  (pusher/build-container-channel))])
+    (put! ws-ch [:subscribe {:channel-name (-> build
+                                               (state-utils/build-parts new-index)
+                                               (pusher/build-container-channel))
                              :messages pusher/container-messages}])))
 
 (defmethod post-api-event! [:action-steps :success]
