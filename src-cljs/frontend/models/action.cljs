@@ -53,21 +53,23 @@
         converter (->> output :type keyword (new-converter action))
         plain-style {:color "white" :italic false :bold false}
 
-        [style-map converted-message] (cond
-                                        (:truncated-client-side? action)
-                                        [plain-style html-escaped-message]
 
-                                        (> (count stripped-message) (+ 1000 (count html-escaped-message)))
-                                        [plain-style stripped-message]
+        [style-map converted-message trailing-out] (cond
+                                                   (:truncated-client-side? action)
+                                                   [plain-style html-escaped-message html-escaped-message]
 
-                                        :else ; colorize it
-                                        [(utils/js->clj-kw (.currentState converter))
-                                         (.append converter html-escaped-message)])]
+                                                   (> (count stripped-message) (+ 1000 (count html-escaped-message)))
+                                                   [plain-style stripped-message stripped-message]
+
+                                                   :else ; colorize it
+                                                   [(utils/js->clj-kw (.currentState converter))
+                                                    (.append converter html-escaped-message)
+                                                    (.get_trailing converter)])]
     (-> action
         (assoc-in [:output output-index :converted-message] converted-message)
         (assoc-in [:output output-index :react-key] (utils/uuid))
         (assoc-in [:converters-state (keyword (:type output))]
-                  (merge style-map {:converted-output (.get_trailing converter)})))))
+                  (merge style-map {:converted-output trailing-out})))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]
