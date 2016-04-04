@@ -67,7 +67,7 @@
         (assoc-in [:output output-index :converted-message] converted-message)
         (assoc-in [:output output-index :react-key] (utils/uuid))
         (assoc-in [:converters-state (keyword (:type output))]
-                  (merge style-map {:converted-output converted-message})))))
+                  (merge style-map {:converted-output (.get_trailing converter)})))))
 
 (defn format-latest-output [action]
   (if-let [output (seq (:output action))]
