@@ -53,12 +53,18 @@
         html-escaped-message (-> output :message gstring/htmlEscape)
         stripped-message (strip-console-codes html-escaped-message)
         converter (new-converter action converter-path)
+        ;; This is a rough proxy for "if we put this string into our ansiToHtmlConverter
+        ;; it will create so many spans the browser will fall over"
+        ;; we should evetnually use a better proxy (or a better ansiToHtmlConverter)
+        max-escape-code-characters 1000
 
         [converted-message converter-state] (cond
                                               (:truncated-client-side? action)
                                               [html-escaped-message nil]
 
-                                              (> (count stripped-message) (+ 1000 (count html-escaped-message)))
+                                              (< max-escape-code-characters
+                                                 (- (count stripped-message)
+                                                    (count html-escaped-message)))
                                               [stripped-message nil]
 
                                               :else    ; colorize it
