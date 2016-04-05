@@ -1,6 +1,6 @@
 (ns frontend.test-datetime
   (:require [frontend.datetime :as datetime]
-            [cljs.test :refer-macros [is deftest testing]]))
+            [cljs.test :refer-macros [is deftest testing are]]))
 
 (deftest milli-to-float-duration-works
   (testing "basic"
@@ -42,28 +42,30 @@
 
 (deftest format-duration-works
   (testing "full units"
-    (= (datetime/time-ago 1000) "1 second")
-    (= (datetime/time-ago 2000) "2 seconds")
-    (= (datetime/time-ago (* 60 1000)) "1 minute")
-    (= (datetime/time-ago (* 60 2000)) "2 minutes")
-    (= (datetime/time-ago (* 60 60 1000)) "1 hour")
-    (= (datetime/time-ago (* 60 60 2000)) "2 hours")
-    (= (datetime/time-ago (* 24 60 60 1000)) "1 day")
-    (= (datetime/time-ago (* 24 60 60 2000)) "2 days")
-    (= (datetime/time-ago (* 30 24 60 60 1000)) "1 month")
-    (= (datetime/time-ago (* 30 24 60 60 2000)) "2 months")
-    (= (datetime/time-ago (* 12 30 24 60 60 1000)) "1 year")
-    (= (datetime/time-ago (* 12 30 24 60 60 2000)) "2 years"))
+    (are [ms formatted] (= (datetime/time-ago ms) formatted)
+      1000 "1 second"
+      2000 "2 seconds"
+      (* 60 1000) "1 minute"
+      (* 60 2000) "2 minutes"
+      (* 60 60 1000) "1 hour"
+      (* 60 60 2000) "2 hours"
+      (* 24 60 60 1000) "1 day"
+      (* 24 60 60 2000) "2 days"
+      (* 30 24 60 60 1000) "1 month"
+      (* 30 24 60 60 2000) "2 months"
+      (* 12 30 24 60 60 1000) "1 year"
+      (* 12 30 24 60 60 2000) "2 years"))
   (testing "abbreviated units"
-    (= (datetime/time-ago-abbreviated 1000) "1 sec")
-    (= (datetime/time-ago-abbreviated 2000) "2 sec")
-    (= (datetime/time-ago-abbreviated (* 60 1000)) "1 min")
-    (= (datetime/time-ago-abbreviated (* 60 2000)) "2 min")
-    (= (datetime/time-ago-abbreviated (* 60 60 1000)) "1 hr")
-    (= (datetime/time-ago-abbreviated (* 60 60 2000)) "2 hr")
-    (= (datetime/time-ago-abbreviated (* 24 60 60 1000)) "1 day")
-    (= (datetime/time-ago-abbreviated (* 24 60 60 2000)) "2 days")
-    (= (datetime/time-ago-abbreviated (* 30 24 60 60 1000)) "1 month")
-    (= (datetime/time-ago-abbreviated (* 30 24 60 60 2000)) "2 months")
-    (= (datetime/time-ago-abbreviated (* 12 30 24 60 60 1000)) "1 year")
-    (= (datetime/time-ago-abbreviated (* 12 30 24 60 60 2000)) "2 years")))
+    (are [ms formatted] (= (datetime/time-ago-abbreviated ms) formatted)
+      1000 "1 sec"
+      2000 "2 sec"
+      (* 60 1000) "1 min"
+      (* 60 2000) "2 min"
+      (* 60 60 1000) "1 hr"
+      (* 60 60 2000) "2 hr"
+      (* 24 60 60 1000) "1 day"
+      (* 24 60 60 2000) "2 days"
+      (* 30 24 60 60 1000) "1 month"
+      (* 30 24 60 60 2000) "2 months"
+      (* 12 30 24 60 60 1000) "1 year"
+      (* 12 30 24 60 60 2000) "2 years")))
