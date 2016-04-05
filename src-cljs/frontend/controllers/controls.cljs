@@ -80,8 +80,8 @@
     (apply ajax/ajax method url message c opts)
     (go-loop []
              (when-let [[_ status _ :as event] (<! c)]
-               (when-let [track-event (-> events status)]
-                 (track-event))
+               (when-let [event-handler (-> events status)]
+                 (event-handler))
                (when (#{:success :failed} status)
                  (release-button! uuid status))
                (>! channel event)
