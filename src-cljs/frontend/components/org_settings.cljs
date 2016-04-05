@@ -241,7 +241,7 @@
 (def osx-faq-items
   [{:question "Why would I choose an OS X plan (as opposed to a Linux Plan)?"
     :answer [[:div "If you develop for Apple-related software (e.g., you are an iOS developer), you will likely need an OS X plan to ensure your tests run on our secure, private cloud of OS X machines."]
-             [:div "OS X plans start with a two-week trial with access to our Growth Plan (5x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
+             [:div "OS X plans start with a two-week trial with access to our Growth Plan (7x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
              [:div "Linux plans allow customers to build on multiple isolated Linux systems. All customers get 1 free linux container and then Linux plans offer access to additional containers available at $50/container."]]}
 
    {:question "What plan do I need?"
