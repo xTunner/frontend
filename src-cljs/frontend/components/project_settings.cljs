@@ -1019,7 +1019,7 @@
                 [:h2 "About checkout keys"]
                 [:h4 "What is a deploy key?"]
                 [:p "A deploy key is a repo-specific SSH key. GitHub has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
-                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a {:href "/docs/adding-read-write-deployment-key"} "read-write deployment key"]"."]
+                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a (open-ext {:href "/docs/adding-read-write-deployment-key"}) "read-write deployment key"]"."]
                 [:h4 "What is a user key?"]
                 [:p "A user key is a user-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
                 [:h4 "How are these keys used?"]
