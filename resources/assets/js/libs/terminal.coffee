@@ -107,7 +107,7 @@ CI.terminal =
     append: (str) ->
       # http://en.wikipedia.org/wiki/ANSI_escape_code
       start   = 0
-      current = trailing_raw + str
+      current = "" + str
       output  = ""
 
       trailing_raw = ""
