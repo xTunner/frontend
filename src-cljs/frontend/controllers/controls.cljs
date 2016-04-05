@@ -455,7 +455,7 @@
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/follow" project)
+                 (api-path/project-follow (:vcs_type repo) project)
                  :follow-repo
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}
@@ -477,9 +477,10 @@
         login (get-in current-state state/user-login-path)
         project (vcs-url/project-name vcs-url)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/follow" project)
+                 (api-path/project-follow vcs-type project)
                  :follow-project
                  api-ch
                  :context {:project-id project-id})
@@ -498,7 +499,7 @@
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/unfollow" project)
+                 (api-path/project-unfollow (:vcs_type repo) project)
                  :unfollow-repo
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}
@@ -517,7 +518,7 @@
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/unfollow" project)
+                 (api-path/project-unfollow (:vcs_type repo) project)
                  :unfollow-project
                  api-ch
                  :params {:vcs-type (:vcs_type repo)}

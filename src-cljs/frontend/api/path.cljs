@@ -44,6 +44,24 @@
    "%s/%s/token/%s"
    (base-project-url-path vcs-type) vcs-type project-name token))
 
+(defn project-follow [vcs-type project]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/follow"
+                  vcs-type project)
+    "github" (gstring/format
+               "/api/v1/project/%s/follow"
+               project)))
+
+(defn project-unfollow [vcs-type project]
+  (case vcs-type
+    "bitbucket" (gstring/format
+                  "/api/dangerzone/project/%s/%s/unfollow"
+                  vcs-type project)
+    "github" (gstring/format
+               "/api/v1/project/%s/unfollow"
+               project)))
+
 (defn build-retry [vcs-type org-name repo-name build-num]
   (gstring/format
    "%s/%s/%s/%s/retry"
