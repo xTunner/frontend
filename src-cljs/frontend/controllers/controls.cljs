@@ -1089,6 +1089,24 @@
    (get-in current-state [:comms :api])
    :params {:projects args}))
 
+(defmethod control-event :org-preferences-updated
+  [target message {:keys [org prefs]} state]
+  ;; org is expected to be a vector [vcs_type username] where both are
+  ;; keywords
+  (update-in state
+             (into state/user-org-prefs-path org)
+             merge
+             prefs))
+
+(defmethod post-control-event! :org-preferences-updated
+  [target message {:keys [org prefs]} previous-state current-state]
+  (ajax/ajax
+   :put
+   "/api/v1/user/save-preferences"
+   :update-preferences
+   (get-in current-state [:comms :api])
+   :params {:organization_prefs (assoc-in {} org prefs)}))
+
 (defmethod post-control-event! :heroku-key-add-attempted
   [target message args previous-state current-state]
   (let [uuid frontend.async/*uuid*

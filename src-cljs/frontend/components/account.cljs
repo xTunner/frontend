@@ -16,6 +16,8 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.models.project :as project-model]
+            [frontend.models.organization :as org-model]
             [om.core :as om :include-macros true]
             [om.dom :as dom]
             [sablono.core :as html :refer-macros [html]]))
@@ -298,69 +300,116 @@
              (om/build join-beta-program app))]])))))
 
 (defn preferred-email-address [owner user]
-  [:div.notification-item
-   [:form#email_address.form-horizontal
-    [:h1#email-address-tooltip-parent
-     "Email Addresses"
-     [:i.material-icons#email-addresses-tooltip-hack
-      {:title "These are the email addresses associated with your GitHub account."} "info_outline"]]
-    [:div
-     (for [email (:all_emails user)]
-       [:div.radio
-        [:label
-         [:input
-          {:checked (= (:selected_email user) email)
-           :value email
-           :name "selected_email"
-           :type "radio"
-           :on-click #(raise! owner [:preferences-updated {:selected_email email}])}]
-         email]])]]])
+  [:div.card
+   [:div.header
+    [:h2
+     "Primary Email Address"]]
+   [:div.body
+    [:div.section
+     [:form#email_address.form-horizontal
+      [:div
+       [:p "These are the email addressed associated with your GitHub and Bitbucket accounts."]
+       [:select.form-control
+        {:on-change #(let [email (-> % .-target .-value)]
+                       (raise! owner [:preferences-updated {:selected_email email}]))
+         :value (:selected_email user)}
+        (for [email (:all_emails user)]
+          [:option
+           {:value email}
+           email])]]]]]])
 
 (defn default-email-pref [owner email-pref]
-  [:div.notification-item
-   [:form
-    [:h1 "Default Email Notifications"]
-    [:div.radio
-     [:label
-      [:input
-       {:name "email_pref",
-        :type "radio"
-        :checked (= email-pref "all")
-        :on-change (partial handle-email-notification-change owner "all")}]
-      "Send me a personalized email for every build in my projects."]]
-    [:div.radio
-     [:label
-      [:input
-       {:name "email_pref",
-        :type "radio"
-        :checked (= email-pref "smart")
-        :on-change (partial handle-email-notification-change owner "smart")}]
-      "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
-    [:div.radio
-     [:label
-      [:input
-       {:name "email_pref",
-        :type "radio"
-        :checked (= email-pref "none")
-        :on-change (partial handle-email-notification-change owner "none")}]
-      "Don't send me emails."]]]])
+  [:div.card
+   [:div.header
+    [:h2 "Default Email Notifications"]]
+   [:div.body
+    [:div.section
+     [:form
+      [:div.radio
+       [:label
+        [:input
+         {:name "email_pref",
+          :type "radio"
+          :checked (= email-pref "all")
+          :on-change (partial handle-email-notification-change owner "all")}]
+        "Send me a personalized email for every build in my projects."]]
+      [:div.radio
+       [:label
+        [:input
+         {:name "email_pref",
+          :type "radio"
+          :checked (= email-pref "smart")
+          :on-change (partial handle-email-notification-change owner "smart")}]
+        "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
+      [:div.radio
+       [:label
+        [:input
+         {:name "email_pref",
+          :type "radio"
+          :checked (= email-pref "none")
+          :on-change (partial handle-email-notification-change owner "none")}]
+        "Don't send me emails."]]]]]])
 
-(defn project-email-prefs [{:keys [projects user]}]
-  [:div.notification-item
-   [:form
-    [:h1 "Project Email Preferences"]
-    [:p "You can override your default email preferences for individual projects here."]
-    [:p "Other project settings can be configured via the project's 'Settings' page."]
-    [:div.row
-     [:div.col-md-6
-      (for [project projects]
-        (om/build project/email-pref {:project project :user user}))]]]])
+(defn granular-email-prefs [{:keys [projects user] :as x} owner]
+  (let [followed-orgs (into (sorted-set-by (fn [[x-vcs-type x-name]
+                                                [y-vcs-type y-name]]
+                                             (let [vcs-compare (compare x-vcs-type y-vcs-type)]
+                                               (if (= vcs-compare 0)
+                                                 (compare x-name y-name)
+                                                 vcs-compare))))
+                            (map (fn [{:keys [vcs_type username]}]
+                                   [(keyword vcs_type)
+                                    (keyword username)])
+                                 projects))]
+    (reify
+      om/IRenderState
+      (render-state [_ {:keys [selected-org] :or {selected-org (first followed-orgs)}}]
+        (html
+         [:div.card
+          [:div.header
+           [:h2 "Email preferences"]
+           [:div
+            [:label "Choose an account"]
+            [:select.form-control
+             {:on-change #(let [value (-> % .-target .-value)]
+                            (om/set-state! owner
+                                           [:selected-org]
+                                           (org-model/uglify-org-id value)))}
+             (for [org-id followed-orgs
+                   :let [org-id-pretty (org-model/prettify-org-id org-id)]]
+               [:option
+                {:value org-id-pretty}
+                org-id-pretty])]]]
+          [:div.body
+           [:div.section
+            [:h3 "Notified email"]
+            [:select.form-control
+             {:on-change #(let [val (-> % .-target .-value)
+                                args {:email (if (= "Default" val)
+                                               nil
+                                               val)}]
+                            (raise! owner [:org-preferences-updated {:org selected-org
+                                                                     :prefs args}]))
+              :value (if-let [selected-email (get-in user (-> [:organization_prefs]
+                                                              (into selected-org)
+                                                              (conj :email)))]
+                       selected-email
+                       "Default")}
+             (for [email (cons "Default" (:all_emails user))]
+               [:option
+                {:value email}
+                email])]]
+           [:div.section
+            [:h3 "Repo notification emails"]
+            [:div.table-header
+             [:h4 "Repo"]
+             [:h4 "Email preference"]]
+            (for [project projects
+                  :when (= [(keyword (:vcs_type project)) (keyword (:username project))] selected-org)]
+              (om/build project/email-pref {:project project :user user} {:react-key (:reponame project)}))]]])))))
 
 (defn notifications [app owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip "#email-addresses-tooltip-hack" {:placement "right" :trigger "hover"}))
     om/IRender
     (render [_]
       (let [user (get-in app state/user-path)
@@ -369,7 +418,7 @@
          [:div#settings-notification
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
-          (project-email-prefs {:projects projects :user user})])))))
+          (om/build granular-email-prefs {:projects projects :user user})])))))
 
 (defn account [app owner]
   (reify
