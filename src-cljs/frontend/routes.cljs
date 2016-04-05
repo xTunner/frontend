@@ -201,15 +201,6 @@
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
-  (defroute v1-doc "/docs" []
-    (if (config/enterprise?)
-      (.replace js/location "https://circleci.com/docs")
-      (open-to-outer! nav-ch :documentation {})))
-  (defroute v1-doc-subpage "/docs/:subpage" {:keys [subpage] :as params}
-    (if (config/enterprise?)
-      (.replace js/location (str "https://circleci.com/docs/" subpage))
-      (open-to-outer! nav-ch :documentation (assoc params :subpage (keyword subpage)))))
-
   (defroute v1-mobile "/mobile" {:as params}
     (open-to-outer! nav-ch :mobile (assoc params
                                      :_title "Mobile Continuous Integration and Mobile App Testing"

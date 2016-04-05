@@ -9,6 +9,7 @@
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
+            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
@@ -113,7 +114,7 @@
       [:p (:explanation data)]
       (let [doc-link (:documentation data)]
         [:a.home-action.documentation
-         {:href (:href doc-link)}
+         (open-ext {:href (:href doc-link)})
          (:title doc-link)])]]
 
     [:section.container
@@ -148,8 +149,8 @@
                                   changes. More testing leads to fewer bugs. Ship your app with
                                   more confidence by continuously testing to ease the pain of the
                                   App Store review process."
-                     :documentation {:title "iOS Documentation"
-                                     :href "/docs/ios"}
+                     :documentation (open-ext {:title "iOS Documentation"
+                                               :href "/docs/ios"})
                      :features-heading "Everything you've come to expect from CircleCI, just on OS X."
                      :features [{:icon "circle"
                                  :heading "Test your app on our dedicated iOS cloud"
@@ -179,8 +180,8 @@
                                   More testing leads equals less bugs. Ship
                                   your app with confidence by continually
                                   testing and shipping great code."
-                     :documentation {:title "Android Documentation"
-                                     :href "/docs/android"}
+                     :documentation (open-ext {:title "Android Documentation"
+                                               :href "/docs/android"})
                      :features-heading "The same CircleCI you love, for Android."
                      :features [{:icon "circle"
                                  :heading "Easy Setup"

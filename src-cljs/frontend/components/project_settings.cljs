@@ -20,7 +20,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
-            [frontend.utils.html :refer [hiccup->html-str]]
+            [frontend.utils.html :refer [hiccup->html-str open-ext]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
@@ -509,7 +509,7 @@
                                       "pull request page."]
                                        [:p
                                         "There are serious security concerns with this setting (see "
-                                        [:a {:href "/docs/fork-pr-builds"} "the documentation"] " for details.) "
+                                        [:a (open-ext {:href "/docs/fork-pr-builds"}) "the documentation"] " for details.) "
                                         "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                         "untrusted forks can make pull requests against your repo, then this option "
                                         "isn't for you!"])})
@@ -707,7 +707,7 @@
           [:article
            [:h2 "Chatroom Integrations"]
            [:p "If you want to control chat notifications on a per branch basis, "
-                                          [:a {:href "https://circleci.com/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
+            [:a (open-ext {:href "https://circleci.com/docs/configuration#per-branch-notifications"}) "see our documentation"] "."]
            [:div.chat-rooms
             (for [chat-spec [{:service "Slack"
                               :doc [:p "To get your Webhook URL, visit Slack's "
@@ -1019,7 +1019,7 @@
                 [:h2 "About checkout keys"]
                 [:h4 "What is a deploy key?"]
                 [:p "A deploy key is a repo-specific SSH key. GitHub has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
-                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a {:href "/docs/adding-read-write-deployment-key"} "read-write deployment key"]"."]
+                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a (open-ext {:href "/docs/adding-read-write-deployment-key"}) "read-write deployment key"]"."]
                 [:h4 "What is a user key?"]
                 [:p "A user key is a user-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
                 [:h4 "How are these keys used?"]
@@ -1200,8 +1200,8 @@
        "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
       [:div.doc
        [:p "Circle supports deploying to any server, using custom commands. See "
-        [:a {:target "_blank",
-             :href "https://circleci.com/docs/configuration#deployment"}
+        [:a (open-ext {:target "_blank",
+                       :href "https://circleci.com/docs/configuration#deployment"})
          "our deployment documentation"]
         " to set it up."]]]])))
 

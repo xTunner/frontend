@@ -47,7 +47,7 @@
           [:div.col-md-2
             [:h6 "Support"]
             [:ul.list-unstyled
-              [:li [:a {:href "/docs"} "Documentation"]]
+              [:li [:a (open-ext {:href "/docs"}) "Documentation"]]
               [:li [:a {:href "https://discuss.circleci.com/"} "Discuss"]]
               [:li [:a (open-ext {:href "/security/"}) "Security"]]
               [:li [:a (open-ext {:href "/privacy/"}) "Privacy"]]
