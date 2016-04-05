@@ -7,6 +7,7 @@
             [goog.Uri]
             [om.core :as om :include-macros true]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [secretary.core :as sec])
 
@@ -51,22 +52,23 @@
                             ;; names even if they don't need it.
                             (str "private-" (:pusher_id user) "@all"))))
 
+(defn build-parts-from-channel [channel-name]
+  (let [[_ username project build-num vcs-type]
+        (re-find #"^(?:private-)?([^@]+?)@([^@]+?)@(\d+?)(?:@vcs-(github|bitbucket))?(?:@(?:\d+?|all))?$" channel-name)]
+    (when (and username project build-num)
+      {:username username
+       :project project
+       :build-num (js/parseInt build-num)
+       :vcs-type (or vcs-type "github")})))
+
 (defn build-channel-base
-  [{:keys [project-name build-num vcs-type]}]
-  (let [project-prefix (-> (str "private-" project-name)
-                           (string/replace "/" "@"))
+  [{:keys [username project build-num vcs-type]
+    :or {vcs-type "github"}}]
+  (let [project-prefix (str "private-" username "@" project)
         vcs-str (str "vcs-" (name vcs-type))]
     (str project-prefix "@" build-num "@" vcs-str)))
 
 (def obsolete-build-channel build-channel-base)
-
-(defn build-parts
-  ([build]
-   {:project-name (vcs-url/project-name (:vcs_url build))
-    :build-num (or (:build_num build) (:build-num build))
-    :vcs-type (or (:vcs_type build) "github")})
-  ([build container-index]
-   (assoc (build-parts build) :container-index container-index)))
 
 (defn build-container-channel
   [{:keys [container-index] :as parts}]
@@ -85,9 +87,9 @@
 
 (defn build-channels
   ([build container-index]
-   (build-channels-from-parts (build-parts build container-index)))
+   (build-channels-from-parts (state-utils/build-parts build container-index)))
   ([build]
-   (build-channels-from-parts (build-parts build))))
+   (build-channels-from-parts (state-utils/build-parts build))))
 
 (def container-messages [:build/new-action
                          :build/update-action

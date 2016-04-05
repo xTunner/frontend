@@ -8,6 +8,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
             [goog.string.format]
             [secretary.core :as sec]))
@@ -178,7 +179,9 @@
              :context {:org-name org-name}))
 
 (defn get-project-settings [project-name api-ch]
-  (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name) :project-settings api-ch :context {:project-name project-name}))
+  (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)
+             :project-settings api-ch
+             :context {:project-name project-name}))
 
 (defn get-build-tests [build api-ch]
   (let [vcs-type (:vcs_type build)
@@ -195,6 +198,14 @@
                :build-tests
                api-ch
                :context (build-model/id build))))
+
+(defn get-build-observables [{:keys [username project build-num vcs-type] :as parts} api-ch]
+  (let [url (case (name vcs-type)
+              "github" (gstring/format "/api/v1/project/%s/%s/%d/observables"
+                                       username project build-num)
+              "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/%d/observables"
+                                          vcs-type username project build-num))]
+    (ajax/ajax :get url :build-observables api-ch :context {:build-parts parts})))
 
 (defn get-build-state [api-ch]
   (ajax/ajax :get "/api/v1/admin/build-state" :build-state api-ch))

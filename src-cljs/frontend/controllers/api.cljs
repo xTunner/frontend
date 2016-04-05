@@ -186,10 +186,9 @@
                                        :let [{:keys [branch]} target-key
                                              project-key (api/project-build-key project)]]
                                    (cond-> project
-                                       (= (dissoc project-key :branch) (dissoc target-key :branch))
-                                       (assoc-in [:build-timing branch] timing-data)))))]
+                                     (= (dissoc project-key :branch) (dissoc target-key :branch))
+                                     (assoc-in [:build-timing branch] timing-data)))))]
     (update-in state state/projects-path add-timing-data)))
-
 
 (defmethod api-event [:build :success]
   [target message status args state]
@@ -215,8 +214,26 @@
           true (assoc-in state/page-scopes-path (:scopes args))
           true (assoc-in state/containers-path containers))))))
 
+(defmethod api-event [:build-observables :success]
+  [target message status {:keys [context resp]} state]
+  (let [parts (:build-parts context)]
+    (if (= parts (state-utils/build-parts (get-in state state/build-path)))
+      (update-in state state/build-path merge resp)
+      (if-let [index (state-utils/usage-queue-build-index-from-build-parts state parts)]
+        (update-in state (state/usage-queue-build-path index) merge resp)
+        state))))
+
+(defmethod post-api-event! [:build-observables :success]
+  [target message status args previous-state current-state]
+  (let [build (get-in current-state state/build-path)]
+    (frontend.favicon/set-color! (build-model/favicon-color build))
+    (when (and (build-model/finished? build)
+               (empty? (get-in current-state state/tests-path)))
+      (api/get-build-tests build (get-in current-state [:comms :api])))))
+
 (defn maybe-set-containers-filter!
-  "Depending on the status and outcome of the build, set active container filter to failed."
+  "Depending on the status and outcome of the build, set active
+  container filter to failed."
   [state]
   (let [build (get-in state state/build-path)
         containers (get-in state state/containers-path)
@@ -248,14 +265,12 @@
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
       (maybe-set-containers-filter! current-state))))
 
-
 (defmethod api-event [:cancel-build :success]
-  [target message status args state]
-  (let [build-id (get-in args [:context :build-id])]
-    (if-not (= (build-model/id (get-in state state/build-path))
-               build-id)
+  [target message status {:keys [context resp]} state]
+  (let [build-id (:build-id context)]
+    (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
-      (update-in state state/build-path merge (:resp args)))))
+      (update-in state state/build-path merge resp))))
 
 (defmethod api-event [:github-repos :success]
   [target message status args state]
@@ -306,7 +321,7 @@
   (let [usage-queue-builds (get-in current-state state/usage-queue-path)
         ws-ch (get-in current-state [:comms :ws])]
     (doseq [build usage-queue-builds
-            :let [parts (pusher/build-parts build)]]
+            :let [parts (state-utils/build-parts build)]]
       (put! ws-ch [:subscribe {:channel-name (pusher/build-all-channel parts)
                                :messages [:build/update]}])
       (put! ws-ch [:subscribe {:channel-name (pusher/obsolete-build-channel parts)
@@ -349,8 +364,12 @@
   [state old-index new-index]
   (let [ws-ch (get-in state [:comms :ws])
         build (get-in state state/build-path)]
-    (put! ws-ch [:unsubscribe (pusher/build-container-channel (pusher/build-parts build old-index))])
-    (put! ws-ch [:subscribe {:channel-name (pusher/build-container-channel (pusher/build-parts build new-index))
+    (put! ws-ch [:unsubscribe (-> build
+                                  (state-utils/build-parts old-index)
+                                  (pusher/build-container-channel))])
+    (put! ws-ch [:subscribe {:channel-name (-> build
+                                               (state-utils/build-parts new-index)
+                                               (pusher/build-container-channel))
                              :messages pusher/container-messages}])))
 
 (defmethod post-api-event! [:action-steps :success]

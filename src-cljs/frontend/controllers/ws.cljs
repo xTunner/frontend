@@ -65,23 +65,36 @@
   [pusher-imp message args previous-state current-state]
   (utils/mlog "No post-ws for: " message))
 
+;; TODO once the backend change associated with the migration to empty
+;; :build/update payload has rolled out across .com production and all
+;; enterprise customers, this method can be removed, along with the
+;; conditional handling in the post-ws-event! handler below.
 (defmethod ws-event :build/update
   [pusher-imp message {:keys [data channel-name]} state]
-  (if-not (ignore-build-channel? state channel-name)
-    (update-in state state/build-path merge (utils/js->clj-kw data))
-    (if-let [index (usage-queue-build-index-from-channel-name state channel-name)]
-      (update-in state (state/usage-queue-build-path index) merge (utils/js->clj-kw data))
-      state)))
+  (let [data (utils/js->clj-kw data)]
+    (if (empty? data)
+      state
+      (if-not (ignore-build-channel? state channel-name)
+        (update-in state state/build-path merge data)
+        (if-let [index (usage-queue-build-index-from-channel-name state channel-name)]
+          (update-in state (state/usage-queue-build-path index) merge data)
+          state)))))
 
 (defmethod post-ws-event! :build/update
   [pusher-imp message {:keys [data channel-name]} previous-state current-state]
-  (when-not (ignore-build-channel? current-state channel-name)
-    (frontend.favicon/set-color! (build-model/favicon-color (utils/js->clj-kw data)))
-    (let [build (get-in current-state state/build-path)]
-      (when (and (build-model/finished? build)
-                 (empty? (get-in current-state state/tests-path)))
-        (api/get-build-tests build
-                             (get-in current-state [:comms :api]))))))
+  (let [data (utils/js->clj-kw data)]
+    (if (empty? data)
+      ;; the new path
+      (api/get-build-observables (pusher/build-parts-from-channel channel-name)
+                                 (get-in current-state [:comms :api]))
+      ;; the old path
+      (when-not (ignore-build-channel? current-state channel-name)
+        (frontend.favicon/set-color! (build-model/favicon-color data))
+        (let [build (get-in current-state state/build-path)]
+          (when (and (build-model/finished? build)
+                     (empty? (get-in current-state state/tests-path)))
+            (api/get-build-tests build (get-in current-state [:comms :api]))))))))
+
 
 (defmethod ws-event :build/new-action
   [pusher-imp message {:keys [data channel-name]} state]

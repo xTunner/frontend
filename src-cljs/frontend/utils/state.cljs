@@ -2,7 +2,8 @@
   (:require [frontend.state :as state]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.seq :refer [find-index]]
-            [frontend.models.plan :as plan])
+            [frontend.models.plan :as plan]
+            [clojure.string :as string])
   (:require-macros [frontend.utils :refer [inspect]]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch vcs_type]}]
@@ -85,3 +86,19 @@
     (if (< (plan/current-months-osx-usage-% plan) plan/first-warning-threshold)
       (assoc-in state state/dismissed-osx-usage-level plan/first-warning-threshold)
       state)))
+
+(defn build-parts
+  ([build]
+   (let [[username project] (string/split (vcs-url/project-name (:vcs_url build)) #"/")]
+     {:username username
+      :project project
+      :build-num (or (:build_num build) (:build-num build))
+      :vcs-type (or (:vcs_type build) "github")}))
+  ([build container-index]
+   (assoc (build-parts build) :container-index container-index)))
+
+(defn usage-queue-build-index-from-build-parts [state parts]
+  "Returns index if there is a usage-queued build showing which
+  matches the provided build-id."
+  (when-let [builds (seq (get-in state state/usage-queue-path))]
+    (find-index #(= parts (build-parts %)) builds)))
