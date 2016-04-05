@@ -27,15 +27,7 @@
                       (throw (ex-info "Couldn't update hosted script" script e)))))
         (recur (dec tries))))))
 
-(defn generate-doc-manifest []
-  (let [doc-root "resources/assets/docs"
-        json (-> doc-root
-                 doc-utils/read-doc-manifest
-                 (json/generate-string {:pretty true}))]
-    (spit (fs/join doc-root "manifest.json") json)))
-
 (defn precompile-assets []
-  (generate-doc-manifest)
   (update-hosted-scripts frontend.stefon/hosted-scripts)
   (less/compile! :minify true)
   (println (format "Stefon options: %s" stefon-options))
