@@ -8,7 +8,7 @@
             [goog.dom]
             [frontend.components.insights :as insights]
             [om.core :as om :include-macros true]
-            [cljs.test :refer-macros [deftest is testing use-fixtures]]))
+            [cljs.test :refer-macros [deftest is testing are]]))
 
 (def insights-plot-info
   {:top 30
@@ -100,12 +100,13 @@
                 :shared {:timer-atom (timer/initialize)}}))))
 
 (deftest median
-  (is (= nil (insights/median [])))
-  (is (= 1 (insights/median [1])))
-  (is (= 1.5 (insights/median [1 2])))
-  (is (= 2 (insights/median [1 2 3])))
-  (is (= 1.5 (insights/median [1 1 2 3])))
-  (is (= 1 (insights/median [1 1 1 2 3]))))
+  (are [m xs] (= m (insights/median xs))
+       nil []
+       1 [1]
+       1.5 [1 2]
+       2 [1 2 3]
+       1.5 [1 1 2 3]
+       1 [1 1 1 2 3]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO: Async testing does not work right now, it's not in scope to fix it ;;
