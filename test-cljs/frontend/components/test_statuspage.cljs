@@ -1,6 +1,6 @@
 (ns frontend.components.test-statuspage
-  (:require [frontend.components.statuspage :as sp])
-  (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var use-fixtures]]))
+  (:require [frontend.components.statuspage :as sp]
+            [cljs.test :refer-macros [deftest is testing run-tests]]))
 
 (deftest finds-the-right-severtity
   (is (= "none" (sp/severity-class {})))

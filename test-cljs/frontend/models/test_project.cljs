@@ -1,8 +1,8 @@
 (ns frontend.models.test-project
   (:require [frontend.models.project :as project]
             [frontend.test-utils :as test-utils]
-            [frontend.config :as config])
-  (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var]]))
+            [frontend.config :as config]
+            [cljs.test :refer-macros [is deftest testing]]))
 
 (def oss-project
   {:oss true

@@ -1,6 +1,5 @@
 (ns frontend.components.test-insights
-  (:require [cemerick.cljs.test :as test]
-            [frontend.test-utils :as test-utils]
+  (:require [frontend.test-utils :as test-utils]
             [frontend.utils :as utils :refer [sel1 sel]]
             [frontend.models.test-project :as test-project]
             [frontend.utils.docs :as doc-utils]
@@ -8,8 +7,8 @@
             [frontend.timer :as timer]
             [goog.dom]
             [frontend.components.insights :as insights]
-            [om.core :as om :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is are deftest with-test run-tests testing test-var)]))
+            [om.core :as om :include-macros true]
+            [cljs.test :refer-macros [deftest is testing are]]))
 
 (def insights-plot-info
   {:top 30
@@ -83,9 +82,7 @@
                                :stop_time "2015-09-13T03:39:56.305Z",
                                :start_time "2015-09-13T03:28:13.314Z",
                                :lifecycle "finished",
-                               :subject "Merge pull request #5051 from circleci/nginx-upcheck"
-                               }
-                              ]}}])
+                               :subject "Merge pull request #5051 from circleci/nginx-upcheck"}]}}])
 
 (deftest can-render-feature-container
   (testing "Simple render of feature container."
@@ -104,12 +101,12 @@
 
 (deftest median
   (are [m xs] (= m (insights/median xs))
-      nil []
-      1 [1]
-      1.5 [1 2]
-      2 [1 2 3]
-      1.5 [1 1 2 3]
-      1 [1 1 1 2 3]))
+       nil []
+       1 [1]
+       1.5 [1 2]
+       2 [1 2 3]
+       1.5 [1 1 2 3]
+       1 [1 1 1 2 3]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO: Async testing does not work right now, it's not in scope to fix it ;;

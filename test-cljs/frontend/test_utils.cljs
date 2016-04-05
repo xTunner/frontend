@@ -1,17 +1,19 @@
 (ns frontend.test-utils
   (:require [clojure.string :as string]
+            [cljs.test :refer-macros [is]]
             [om.core :as om :include-macros true]
             [om.dom]
-            [cemerick.cljs.test :as test]
             [goog.dom]
             [secretary.core :as secretary]
             [cljs.core.async :as async]
             [frontend.routes :as routes]
             [cljs-time.core :as time]
-            [cljs-time.format :as time-format])
-  (:require-macros [frontend.utils :refer [inspect]]))
+            [cljs-time.format :as time-format]))
 
 (def test-utils js/React.addons.TestUtils)
+
+(defn is-re [regex string]
+  (is (re-find regex string)))
 
 (defn simulate [key component-or-node & [event-data]]
   (let [simulate-obj (.-Simulate test-utils)]

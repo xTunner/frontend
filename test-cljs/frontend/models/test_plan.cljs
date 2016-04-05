@@ -1,9 +1,8 @@
 (ns frontend.models.test-plan
-  (:require [cemerick.cljs.test :as t]
-            [cljs-time.core :as time]
+  (:require [cljs-time.core :as time]
             [frontend.test-utils :refer (example-plan)]
-            [frontend.models.plan :as pm])
-  (:require-macros [cemerick.cljs.test :refer [is deftest with-test run-tests testing test-var]]))
+            [frontend.models.plan :as pm]
+            [cljs.test :refer-macros [is deftest testing]]))
 
 (deftest grandfathered-works
   (is (pm/grandfathered? (example-plan :grandfathered)))

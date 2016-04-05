@@ -1,6 +1,6 @@
 (ns frontend.test-datetime
-  (:require [frontend.datetime :as datetime])
-  (:require-macros [cemerick.cljs.test :refer (is are deftest testing)]))
+  (:require [frontend.datetime :as datetime]
+            [cljs.test :refer-macros [is deftest testing are]]))
 
 (deftest milli-to-float-duration-works
   (testing "basic"

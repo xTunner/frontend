@@ -1,8 +1,7 @@
 (ns frontend.utils-test
-  (:require [cemerick.cljs.test :as test]
+  (:require [cljs.test :as test :refer-macros [deftest is testing]]
             [frontend.utils :as utils]
-            [frontend.utils.github :as gh-utils])
-  (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
+            [frontend.utils.github :as gh-utils]))
 
 
 (deftest deep-merge-works

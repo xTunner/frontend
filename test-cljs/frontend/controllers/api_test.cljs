@@ -1,10 +1,9 @@
 (ns frontend.controllers.api-test
-  (:require [cemerick.cljs.test :as test]
-            [frontend.controllers.ws :as ws]
+  (:require [frontend.controllers.ws :as ws]
             [frontend.state :as state]
             [frontend.controllers.api :as api]
-            [frontend.utils :as utils :include-macros true])
-  (:require-macros [cemerick.cljs.test :refer (is deftest testing)]))
+            [frontend.utils :as utils :include-macros true]
+            [cljs.test :refer-macros [deftest is testing]]))
 
 (deftest follow-repo-event
   (testing "selected repo is marked as being followed"

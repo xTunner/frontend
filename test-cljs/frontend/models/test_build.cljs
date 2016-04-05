@@ -1,7 +1,6 @@
 (ns frontend.models.test-build
-  (:require [cemerick.cljs.test :as t]
-            [frontend.models.build :as build-model])
-  (:require-macros [cemerick.cljs.test :refer (deftest are testing)]))
+  (:require [frontend.models.build :as build-model]
+            [cljs.test :refer-macros [deftest is testing are]]))
 
 (deftest status-badge-classes
   (testing "correct classes are mapped to build states"
