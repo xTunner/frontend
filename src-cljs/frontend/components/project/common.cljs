@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.components.forms :as forms]
+            [frontend.components.common :as common]
             [frontend.config :as config]
             [frontend.datetime :as time-utils]
             [frontend.models.feature :as feature]
@@ -132,7 +133,9 @@
             ch (om/get-shared owner [:comms :controls])]
         (html
           [:div.email-pref
-           [:div (project-model/project-name project)]
+           [:div.email-pref-repo-name
+            (common/ico :repo)
+            (project-model/project-name project)]
            [:select.form-control {:value pref
                                   :on-change #(let [value (.. % -target -value)
                                                     args {vcs_url {:emails value}}]

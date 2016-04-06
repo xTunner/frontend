@@ -131,14 +131,24 @@
     }
   }
 
+  @emailPrefPadding: 10px;
+  
   .email-pref {
     .flexy(center, space-between);
-    padding: 10px;
+    padding: @emailPrefPadding;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     font-size: inherit;
 
     &:last-child {
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .email-pref-repo-name {
+    .flexy(center, flex-start);
+
+    span {
+      margin-left: @emailPrefPadding;
     }
   }
 }
