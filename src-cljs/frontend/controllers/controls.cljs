@@ -884,7 +884,7 @@
                          :project-id project-id}))
 
 (defmethod post-control-event! :new-plan-clicked
-  [target message {:keys [containers price description paid]} previous-state current-state]
+  [target message {:keys [containers price description linux]} previous-state current-state]
   (utils/mlog "handling new-plan-clicked")
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
@@ -906,7 +906,7 @@
                                              :containers containers
                                              :billing-name org-name
                                              :billing-email (get-in current-state (conj state/user-path :selected_email))
-                                             :paid paid}))]
+                                             :paid linux}))]
                 (put! api-ch [:create-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
                 (release-button! uuid (:status api-result))))
             nil)))))

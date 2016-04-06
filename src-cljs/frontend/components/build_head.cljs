@@ -56,7 +56,7 @@
       " under "
       (:org_name plan)
       "'s plan which provides "
-      (plan-model/usable-containers plan)
+      (plan-model/linux-containers plan)
       " containers, plus 3 additional containers available for free and open source projects. "
       [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                :vcs_type (:vcs_type build)
@@ -931,7 +931,7 @@
                      parallelism
                      (str parallelism
                           " out of "
-                          (min (+ (plan-model/usable-containers plan)
+                          (min (+ (plan-model/linux-containers plan)
                                   (if (project-model/oss? project)
                                     plan-model/oss-containers
                                     0))

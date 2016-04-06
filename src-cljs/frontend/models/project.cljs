@@ -137,7 +137,7 @@
   (get-in project [:feature_flags :osx]))
 
 (defn usable-containers [plan project]
-  (+ (plan-model/usable-containers plan)
+  (+ (plan-model/linux-containers plan)
      (if (oss? project) plan-model/oss-containers 0)))
 
 (defn buildable-parallelism [plan project]
@@ -166,7 +166,7 @@
 (defn- show-premium-content? [project plan]
   (or (config/enterprise?)
       (:oss project)
-      (> (plan-model/paid-containers plan) 0)
+      (pos? (plan-model/paid-linux-containers plan))
       (plan-model/in-trial? plan)
       (plan-model/osx? plan)))
 
@@ -183,7 +183,7 @@
                                         (= org-name)))
                            (first)
                            (:plans)
-                           (apply max-key plan-model/paid-containers))]
+                           (apply max-key plan-model/paid-linux-containers))]
     (show-premium-content? project org-best-plan)))
 
 (defn show-upsell? [project plan]

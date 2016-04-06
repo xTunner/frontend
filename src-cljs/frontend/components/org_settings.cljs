@@ -14,7 +14,6 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
-            [frontend.components.plans :as plans-component]
             [frontend.components.shared :as shared]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
@@ -203,7 +202,7 @@
        [:a {:href "mailto:sayhi@circleci.com"} "Get in touch."]])]])
 
 (defn piggieback-plan-wording [plan]
-  (let [containers (pm/paid-containers plan)]
+  (let [containers (pm/paid-linux-containers plan)]
     (str
       (when (pos? containers)
         (str containers " containers"))
@@ -559,18 +558,18 @@
       (let [org-name (get-in app state/org-name-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                     (pm/paid-containers plan))
+                                     (pm/paid-linux-containers plan))
             login (get-in app state/user-login-path)
             view (get-in app state/current-view-path)
             min-slider-val 0
-            max-slider-val (max 80 (* 2 (pm/paid-containers plan)))
+            max-slider-val (max 80 (* 2 (pm/paid-linux-containers plan)))
             selected-paid-containers (max 0 selected-containers)
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
-            new-total (pm/cost plan (+ selected-containers (pm/freemium-containers plan)))
-            container-cost (pm/per-container-cost plan)
+            new-total (pm/linux-cost plan (+ selected-containers (pm/freemium-containers plan)))
+            linux-container-cost (pm/linux-per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name)
-            button-clickable? (not= (if piggiebacked? 0 (pm/paid-containers plan))
+            button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)]
       (html
         [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
@@ -589,7 +588,7 @@
            [:form
             [:div.container-picker
              [:h1 "More containers means faster builds and lower queue times."]
-             [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" container-cost "/month each.")]
+             [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
@@ -600,7 +599,7 @@
                  (let [enterprise-text "Save changes"]
                    (if (and (zero? new-total)
                             (not (config/enterprise?))
-                            (not (zero? (pm/paid-containers plan))))
+                            (not (zero? (pm/paid-linux-containers plan))))
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
@@ -632,7 +631,7 @@
                      :on-click (when button-clickable?
                                  #(do (raise! owner [:new-plan-clicked
                                                      {:containers selected-paid-containers
-                                                      :paid {:template (:id pm/default-template-properties)}
+                                                      :linux {:template (:id pm/default-template-properties)}
                                                       :price new-total
                                                       :description (str "$" new-total "/month, includes "
                                                                         (pluralize selected-containers "container"))}])
@@ -641,7 +640,7 @@
 
              (when-not (config/enterprise?)
                ;; TODO: Clean up conditional here - super nested and many interactions
-               (if (or (pm/paid? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+               (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
                  [:span.help-block
                   (cond
                     (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
@@ -1322,9 +1321,9 @@
           vcs_type (get-in app state/org-vcs_type-path)
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
-          container-cost (pm/per-container-cost plan)
+          linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
-          containers (pm/usable-containers plan)
+          containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name)]
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
@@ -1351,16 +1350,15 @@
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
-        (when (and (pm/paid? plan)
-                   (pos? (pm/paid-containers plan)))
+        (when (pm/linux? plan)
           [:p
-           (str (pm/paid-containers plan) " of these are paid")
+           (str (pm/paid-linux-containers plan) " of these are paid")
            (if piggiebacked? ". "
-               (list ", at $" (pm/linux-cost plan) "/month. "))
+               (list ", at $" (pm/current-linux-cost plan) "/month. "))
            (if (pm/grandfathered? plan)
              (list "We've changed our pricing model since this plan began, so its current price "
                    "is grandfathered in. "
-                   "It would be $" (pm/cost plan (pm/usable-containers plan)) " at current prices. "
+                   "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
                    "We'll switch it to the new model if you upgrade or downgrade. ")
              (list
               "You can "
@@ -1371,7 +1369,7 @@
                                                        :_fragment "linux-pricing"})}
                "add more"]
               (when-not piggiebacked?
-                (list " at $" container-cost " per container"))
+                (list " at $" linux-container-cost " per container"))
               " for more parallelism and shorter queue times."))])
         (when (and (pm/freemium? plan) (> containers 1))
           [:p (str (pm/freemium-containers plan) " container is free.")])

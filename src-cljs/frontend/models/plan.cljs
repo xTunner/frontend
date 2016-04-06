@@ -23,8 +23,10 @@
 (defn freemium? [plan]
   (boolean (:free plan)))
 
-(defn paid? [plan]
-  (boolean (:paid plan)))
+(defn linux? [plan]
+  (boolean (and
+             (:paid plan)
+             (pos? (:containers plan)))))
 
 (defn osx? [plan]
   (boolean (:osx plan)))
@@ -59,8 +61,8 @@
 (defn freemium-containers [plan]
   (or (get-in plan [:free :template :free_containers]) 0))
 
-(defn paid-containers [plan]
-  (if (paid? plan)
+(defn paid-linux-containers [plan]
+  (if (linux? plan)
     (max (:containers_override plan)
          (:containers plan)
          (get-in plan [:paid :template :free_containers]))
@@ -79,23 +81,13 @@
     (:containers plan)
     0))
 
-(defn paid-plan-min-containers
-  "A plan has a price, and a free container count. If you are paying for
-   the plan, you can't go below the free container count."
-  [plan]
-  (or (get-in plan [:paid :template :free_containers]) 0))
-
-(defn default-plan-min-containers
-  []
-  (:free_containers default-template-properties))
-
-(defn usable-containers
-  "Maximum containers that the plan has available to it"
+(defn linux-containers
+  "Maximum containers that a linux plan has available to it"
   [plan]
   (+ (freemium-containers plan)
      (enterprise-containers plan)
      (trial-containers plan)
-     (paid-containers plan)))
+     (paid-linux-containers plan)))
 
 (defn can-edit-plan? [plan org-name]
   ;; kill plan pricing page for trial plans by making
@@ -103,7 +95,7 @@
   (not (piggieback? plan org-name)))
 
 (defn transferrable-or-piggiebackable-plan? [plan]
-  (or (paid? plan)
+  (or (linux? plan)
       (osx? plan)
       ;; Trial plans shouldn't really be transferrable
       ;; but they are piggiebackable and the UI mixes the two :(
@@ -139,32 +131,32 @@
             :else
             (str (time/in-minutes trial-interval) " minutes")))))
 
-(defn per-container-cost [plan]
+(defn linux-per-container-cost [plan]
   (or (-> plan :paid :template :container_cost)
       (-> plan :enterprise :template :container_cost)
       (:container_cost default-template-properties)))
 
-(defn container-cost [plan containers]
+(defn linux-container-cost [plan containers]
   (let [template-properties (or (-> plan :paid :template)
                                 (-> plan :enterprise :template)
                                 default-template-properties)
         {:keys [free_containers container_cost]} template-properties]
     (max 0 (* container_cost (- containers free_containers)))))
 
-(defn cost [plan containers & {:keys [include-trial?]}]
+(defn linux-cost [plan containers & {:keys [include-trial?]}]
   (let [paid-plan-template (or (-> plan :paid :template)
                                (-> plan :enterprise :template)
                                default-template-properties)
         plan-base-price (:price paid-plan-template)
-        paid-plan-containers (- containers
+        linux-containers (- containers
                                 (freemium-containers plan)
                                 (if-not include-trial?
                                   0
                                   (trial-containers plan)))]
-    (if (< paid-plan-containers 1)
+    (if (< linux-containers 1)
       0
       (+ plan-base-price
-         (container-cost plan paid-plan-containers)))))
+         (linux-container-cost plan linux-containers)))))
 
 (defn stripe-cost
   "Normalizes the Stripe amount on the plan to dollars."
@@ -175,14 +167,14 @@
   [plan]
   (or (some-> plan :osx :template :price) 0))
 
-(defn linux-cost
+(defn current-linux-cost
   [plan]
   (- (stripe-cost plan) (osx-cost plan)))
 
 (defn grandfathered? [plan]
-  (and (paid? plan)
+  (and (linux? plan)
        (< (stripe-cost plan)
-          (cost plan (usable-containers plan) :include-trial? true))))
+          (linux-cost plan (linux-containers plan) :include-trial? true))))
 
 (defn admin?
   "Whether the logged-in user is an admin for this plan."
