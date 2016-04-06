@@ -199,7 +199,7 @@
     [:p
      "For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can "
      [:a
-      {:href "/docs/parallel-manual-setup"}
+      (open-ext {:href "/docs/parallel-manual-setup"})
       "control the parallelism directly"]
      "."]]
    (when-not (config/enterprise?)
