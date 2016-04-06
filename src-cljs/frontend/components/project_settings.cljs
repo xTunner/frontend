@@ -128,7 +128,7 @@
          [:h4 "Option 3"]
          [:p
           "Override all settings via a "
-          [:a {:href "/docs/configuration"} "circle.yml file"]
+          [:a (open-ext {:href "/docs/configuration"}) "circle.yml file"]
           " in your repo. Very powerful."]]
         (om/build follow-sidebar (:project project-data))]))))
 
@@ -485,7 +485,7 @@
                                     " efficient.  It also adds the necessary flags for collecting this to automatically"
                                     " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
                                     " to add the necessary formatter gem - see "
-                                    [:a {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"}
+                                    [:a (open-ext {:href "/docs/test-metadata#metadata-collection-in-custom-test-steps"})
                                      "the docs"] " for more information."
                                     ]})
             (describe-flag {:flag :set-github-status
@@ -534,7 +534,7 @@
            [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your dependencies commands from your "
-            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+            [:a (open-ext {:href "/docs/configuration#dependencies"}) "circle.yml"] ". "
             "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
             "Don't put any secrets here that you wouldn't check in! Use our "
             [:a {:href "#env-vars"} "environment variables settings page"]
@@ -585,7 +585,7 @@
            [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your test commands from your "
-            [:a {:href "/docs/configuration#dependencies"} "circle.yml"] ". "
+            [:a (open-ext {:href "/docs/configuration#dependencies"}) "circle.yml"] ". "
             "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
             "Don't put any secrets here that you wouldn't check in! Use our "
             [:a {:href "#env-vars"} "environment variables settings page"]
@@ -684,7 +684,7 @@
       [:div.doc
        [:p
         "Circle also support webhooks, which run at the end of a build. They can be configured in your "
-        [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
+        [:a (open-ext {:href "https://circleci.com/docs/configuration#notify" :target "_blank"})
          "circle.yml file"]
         "."]]]])))
 
@@ -1049,9 +1049,9 @@
     [:h5 "Status"]
     [:p
      "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
-     [:a {:target "_blank" :href "/docs/status-badges"} "sharing status badges"]
+     [:a (open-ext {:target "_blank" :href "/docs/status-badges"}) "sharing status badges"]
      " and "
-     [:a {:target "_blank", :href "/docs/polling-project-status"} "status polling tools"]
+     [:a (open-ext {:target "_blank", :href "/docs/polling-project-status"}) "status polling tools"]
      " for private projects."]
 
     [:h5 "Build Artifacts"]
@@ -1182,7 +1182,7 @@
            [:div.heroku-step
             [:h4
              "Step 3: Add deployment settings to your "
-             [:a {:href "/docs/configuration#deployment"} "circle.yml file"] " (example below)."]
+             [:a (open-ext {:href "/docs/configuration#deployment"}) "circle.yml file"] " (example below)."]
             [:pre
              [:code
               "deployment:\n"
@@ -1227,7 +1227,7 @@
            [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
            [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
           [:p "We recommend that you create a unique "
-           [:a {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"} "IAM user"]
+           [:a (open-ext {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"}) "IAM user"]
            " for use by CircleCI."]
           [:form
            [:input#access-key-id
@@ -1317,7 +1317,7 @@
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Key Pattern"
                         :content (hiccup->html-str [:p "A template used to construct S3 keys for storing application revisions."
-                                                    "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy#key-patterns"} "substitution variables"]
+                                                    "You can use " [:a (open-ext {:href "/docs/continuous-deployment-with-aws-codedeploy#key-patterns"}) "substitution variables"]
                                                     " in the Key Pattern to generate a unique key for each build."])})))
     om/IRender
     (render [_]
@@ -1405,7 +1405,7 @@
           [:article
            [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
            [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
-            "Check out our " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy"} "getting started with CodeDeploy"]
+            "Check out our " [:a (open-ext {:href "/docs/continuous-deployment-with-aws-codedeploy"}) "getting started with CodeDeploy"]
             " guide for detailed information on getting set up."]
            [:div.aws-page-inner
             [:div.aws-codedeploy-step
@@ -1419,7 +1419,7 @@
               "(e.g. staging, production) depending on which branch was built. "
               "With application settings configured in the UI you only need to set the "
               "deployment group and, optionally, deployment configuration, in each deployment "
-              "block in your " [:a {:href "/docs/configuration#deployment"} "circle.yml file"] ". "
+              "block in your " [:a (open-ext {:href "/docs/configuration#deployment"}) "circle.yml file"] ". "
               "If you skip this step you will need to add all deployment settings into your circle.yml file."]
              (if (not (seq applications))
                ;; No settings set, need to get the application name first
@@ -1429,7 +1429,7 @@
             [:div.aws-codedeploy-step
              [:h4 "Step 3"]
              [:p "Add deployment settings to your "
-              [:a {:href "/docs/configuration#deployment"} "circle.yml file"]
+              [:a (open-ext {:href "/docs/configuration#deployment"}) "circle.yml file"]
               " (example below)."]
              [:pre
               [:code

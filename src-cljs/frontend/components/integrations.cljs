@@ -11,6 +11,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.html :refer [open-ext]]
             ;; TODO: Remove; see :allowFullscreen TODO below.
             [goog.dom :as dom]
             [om.core :as om :include-macros true])
@@ -64,7 +65,7 @@
                                "The deployment of your application is configured through just a "
                                "few lines of YAML that are kept safe in your source code. All "
                                "you need to do to deploy to Heroku from CircleCI is to "
-                               [:a {:href "/docs/continuous-deployment-with-heroku"}
+                               [:a (open-ext {:href "/docs/continuous-deployment-with-heroku"})
                                 "configure your Heroku credentials in our UI, add a simple config file to your project, and push"]
                                ". You can also easily deploy "
                                "different branches to different Heroku apps (e.g. one for staging "
@@ -77,7 +78,7 @@
                                "your application and deploy to Heroku, and how CircleCI keeps "
                                "defects from getting into production. "
                                "See our docs for a "
-                               [:a {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"}
+                               [:a (open-ext {:href "/docs/continuous-deployment-with-heroku#part-2-multiple-environments"})
                                 "followup video"]
                                " showing how to setup a more robust continuous delivery pipeline "
                                "with staging and prod environments."]}
@@ -88,7 +89,7 @@
             :bottom-header "Ready for world-class continuous delivery?"
             :secondary-cta [:span
                             "Or see our "
-                            [:a {:href "/docs/continuous-deployment-with-heroku"}
+                            [:a (open-ext {:href "/docs/continuous-deployment-with-heroku"})
                              "docs on deploying to Heroku."]]}
    :saucelabs {:hero {:icon (utils/cdn-path "/img/outer/integrations/sauce-labs-logo.svg")
                       :heading "Test with Sauce Labs on CircleCI"
@@ -145,9 +146,9 @@
                                   "CircleCI build and use Sauce Connect to setup a secure tunnel "
                                   "between Sauce Labs' browsers and your build containers on "
                                   "CircleCI. There is an in-depth example of this in "
-                                  [:a {:href "/docs/browser-testing-with-sauce-labs"} "our docs."]]}]
+                                  [:a (open-ext {:href "/docs/browser-testing-with-sauce-labs"}) "our docs."]]}]
                :bottom-header "Want to get rid of browser bugs?"
-               :secondary-cta [:span "Or see our " [:a {:href "/docs/browser-testing-with-sauce-labs"} "docs on Sauce Labs."]]}})
+               :secondary-cta [:span "Or see our " [:a (open-ext {:href "/docs/browser-testing-with-sauce-labs"}) "docs on Sauce Labs."]]}})
 
 
 (defn video-url [video-id]

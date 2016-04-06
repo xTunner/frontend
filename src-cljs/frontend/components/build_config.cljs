@@ -6,6 +6,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true]
             [clojure.string :as string])
     (:require-macros [frontend.utils :refer [html]]))
@@ -65,7 +66,7 @@
              "These may be causing your builds to fail. "
              "We recommend that you fix them as soon as possible. "
              "You may want to look at "
-             [:a {:href "/docs/configuration"} "our docs"]
+             [:a (open-ext {:href "/docs/configuration"}) "our docs"]
              " or "
              (common/contact-us-inner owner)
              " us if you’re having trouble."]

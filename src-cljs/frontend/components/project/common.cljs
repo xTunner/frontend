@@ -11,6 +11,7 @@
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.html :refer [open-ext]]
             [cljs-time.format :as time-format]
             [goog.string :as gstring]
             [goog.string.format]
@@ -199,7 +200,7 @@
     [:p
      "For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can "
      [:a
-      {:href "/docs/parallel-manual-setup"}
+      (open-ext {:href "/docs/parallel-manual-setup"})
       "control the parallelism directly"]
      "."]]
    (when-not (config/enterprise?)

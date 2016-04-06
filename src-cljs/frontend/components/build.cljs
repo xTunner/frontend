@@ -22,6 +22,7 @@
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.html :refer [open-ext]]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html defrender]]))
@@ -57,7 +58,7 @@
          (infrastructure-fail-message owner)
          [:div.alert-wrap
           "If you continue to get stuck, we suggest checking out our "
-          [:a {:href "/docs/troubleshooting"}
+          [:a (open-ext {:href "/docs/troubleshooting"})
            "docs"]
           " and/or our "
           [:a {:href "https://discuss.circleci.com/"}
@@ -434,4 +435,3 @@
                                 (om/build build-steps/container-build-steps
                                            container-data
                                            {:key :current-container-id}))]])])))))
-
