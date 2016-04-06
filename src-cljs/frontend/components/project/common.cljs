@@ -11,6 +11,7 @@
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.html :refer [open-ext]]
             [cljs-time.format :as time-format]
             [goog.string :as gstring]
             [goog.string.format]

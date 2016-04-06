@@ -22,6 +22,7 @@
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.html :refer [open-ext]]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html defrender]]))

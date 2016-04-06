@@ -6,6 +6,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true]
             [clojure.string :as string])
     (:require-macros [frontend.utils :refer [html]]))

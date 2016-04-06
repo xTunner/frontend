@@ -11,6 +11,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.html :refer [open-ext]]
             ;; TODO: Remove; see :allowFullscreen TODO below.
             [goog.dom :as dom]
             [om.core :as om :include-macros true])
