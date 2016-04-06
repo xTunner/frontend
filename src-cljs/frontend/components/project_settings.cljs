@@ -509,7 +509,7 @@
                                       "pull request page."]
                                        [:p
                                         "There are serious security concerns with this setting (see "
-                                        [:a (open-ext {:href "/docs/fork-pr-builds"}) "the documentation"] " for details.) "
+                                        [:a {:data-external true :href "/docs/fork-pr-builds"} "the documentation"] " for details.) "
                                         "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                         "untrusted forks can make pull requests against your repo, then this option "
                                         "isn't for you!"])})
