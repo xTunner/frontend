@@ -290,7 +290,7 @@
                                   :on-click #(analytics/track {:event-type :select-plan-clicked
                                                                :owner owner
                                                                :properties {:org selected-org-login
-                                                                            :plan-type "osx"}})}
+                                                                            :plan-type (pm/osx-plan-type)}})}
 
          "Select Plan"]))))
 
@@ -319,7 +319,7 @@
       (analytics/track {:event-type :no-plan-banner-impression
                         :owner owner
                         :properties {:org selected-org-login
-                                     :plan-type "osx"}}))
+                                     :plan-type (pm/osx-plan-type)}}))
     om/IRender
     (render [_]
       (html

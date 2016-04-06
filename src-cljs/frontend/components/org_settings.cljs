@@ -415,7 +415,7 @@
                                                                                                                                   (:price plan-data))}])
                                                                (analytics/track {:event-type :new-plan-clicked
                                                                                  :owner owner
-                                                                                 :properties {:plan-type "osx"
+                                                                                 :properties {:plan-type (pm/osx-plan-type)
                                                                                               :plan plan-id}}))}))
 
               (when (and trial-starts-here? (not (pm/osx? plan)))
@@ -624,9 +624,9 @@
                                                        {:containers selected-paid-containers}])
                                         (track-update-plan-clicked {:owner owner
                                                                     :new-plan selected-paid-containers
-                                                                    :previous-plan (pm/paid-containers plan)
+                                                                    :previous-plan (pm/paid-linux-containers plan)
                                                                     :plan-type (pm/linux-plan-type)
-                                                                    :upgrade? (> selected-paid-containers (pm/paid-containers plan))})
+                                                                    :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})
                                         false))}
                       (if (config/enterprise?)
                         enterprise-text
