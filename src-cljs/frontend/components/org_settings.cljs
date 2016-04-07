@@ -34,6 +34,14 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [html]]))
 
+(defn track-update-plan-clicked [{:keys [new-plan previous-plan plan-type upgrade? owner]}]
+  (analytics/track {:event-type :update-plan-clicked
+                    :owner owner
+                    :properties {:plan-type plan-type
+                                 :new-plan new-plan
+                                 :previous-plan previous-plan
+                                 :is-upgrade upgrade?}}))
+
 (defn non-admin-plan [{:keys [org-name login vcs_type]} owner]
   (reify
     om/IRender
@@ -392,12 +400,11 @@
                                                :disabled? (= (name plan-id) (pm/osx-plan-id plan))
                                                :on-click-fn #(do
                                                                (raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])
-                                                               (analytics/track {:event-type :update-plan-clicked
-                                                                                 :owner owner
-                                                                                 :properties {:plan-type "osx"
-                                                                                              :new-plan plan-id
-                                                                                              :previous-plan (pm/osx-plan-id plan)
-                                                                                              :is-upgrade (> (:price plan-data) (pm/osx-cost plan))}}))})
+                                                               (track-update-plan-clicked {:owner owner
+                                                                                           :new-plan plan-id
+                                                                                           :previous-plan (pm/osx-plan-id plan)
+                                                                                           :plan-type (pm/osx-plan-type)
+                                                                                           :upgrade? (> (:price plan-data) (pm/osx-cost plan))}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
                                                :on-click-fn #(do
@@ -408,7 +415,7 @@
                                                                                                                                   (:price plan-data))}])
                                                                (analytics/track {:event-type :new-plan-clicked
                                                                                  :owner owner
-                                                                                 :properties {:plan-type "osx"
+                                                                                 :properties {:plan-type (pm/osx-plan-type)
                                                                                               :plan plan-id}}))}))
 
               (when (and trial-starts-here? (not (pm/osx? plan)))
@@ -615,6 +622,11 @@
                        :on-click (when button-clickable?
                                    #(do (raise! owner [:update-containers-clicked
                                                        {:containers selected-paid-containers}])
+                                        (track-update-plan-clicked {:owner owner
+                                                                    :new-plan selected-paid-containers
+                                                                    :previous-plan (pm/paid-linux-containers plan)
+                                                                    :plan-type (pm/linux-plan-type)
+                                                                    :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})
                                         false))}
                       (if (config/enterprise?)
                         enterprise-text

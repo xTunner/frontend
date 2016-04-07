@@ -1,7 +1,5 @@
 (ns frontend.analytics
-  (:require [frontend.analytics.adroll :as adroll]
-            [frontend.analytics.perfect-audience :as pa]
-            [frontend.analytics.segment :as segment]
+  (:require [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]

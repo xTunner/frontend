@@ -12,6 +12,12 @@
 
 (def oss-containers 3)
 
+(defn osx-plan-type []
+  "osx")
+
+(defn linux-plan-type []
+  "linux")
+
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
   [plan]
