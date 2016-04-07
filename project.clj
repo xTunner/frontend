@@ -76,7 +76,9 @@
   :figwheel {:css-dirs ["resources/assets/css"]
              :nrepl-port 7888}
 
-  :doo {:paths {:karma "./node_modules/karma/bin/karma"}}
+  :doo {:build "dev-test"
+        :alias {:default [:chrome]}
+        :paths {:karma "./node_modules/karma/bin/karma"}}
 
   :cljsbuild {:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
                              :figwheel {:websocket-host "prod.circlehost"
