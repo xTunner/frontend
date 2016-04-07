@@ -89,16 +89,25 @@
                                         :optimizations :none
                                         ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
                                         :recompile-dependents false}}
+
+                       ;; This is the build normally used for testing on
+                       ;; development machines. Use it by running lein doo.
                        :dev-test {:source-paths ["src-cljs" "test-cljs"]
                                   :compiler {:output-to "resources/public/cljs/dev-test/frontend-dev.js"
                                              :output-dir "resources/public/cljs/dev-test"
                                              :optimizations :none
                                              :main frontend.test-runner}}
+
                        :whitespace {:source-paths ["src-cljs"]
                                     :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
                                                :output-dir "resources/public/cljs/whitespace"
                                                :optimizations :whitespace
                                                :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
+
+                       ;; This build runs the tests
+                       ;; with :optimizations :advanced to catch advanced
+                       ;; compilation bugs. That's too slow to run in
+                       ;; development, so we run this one in CI.
                        :test {:source-paths ["src-cljs" "test-cljs"]
                               :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                          :output-dir "resources/public/cljs/test"
@@ -116,6 +125,7 @@
                                                    "src-cljs/js/d3-externs.js"
                                                    "src-cljs/js/prismjs-externs.js"]
                                          :source-map "resources/public/cljs/test/frontend-test.js.map"}}
+
                        :production {:source-paths ["src-cljs"]
                                     :compiler {:pretty-print false
                                                :output-to "resources/public/cljs/production/frontend.js"
