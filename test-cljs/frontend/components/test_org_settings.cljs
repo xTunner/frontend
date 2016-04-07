@@ -1,14 +1,7 @@
 (ns frontend.components.test-org-settings
-  (:require [cljs.core.async :as async]
-            [frontend.test-utils :as test-utils :refer [example-plan is-re]]
+  (:require [frontend.test-utils :as test-utils :refer [example-plan is-re]]
             [frontend.components.org-settings :as org-settings]
-            [frontend.utils.docs :as doc-utils]
             [frontend.utils.html :refer [hiccup->html-str]]
-            [frontend.stefon :as stefon]
-            [goog.dom]
-            [om.core :as om :include-macros true]
-            [frontend.routes :as routes]
-            [om.dom :refer (render-to-str)]
             [cljs.test :as test :refer-macros [deftest is testing]]))
 
 (deftest test-discount-rendering
