@@ -2,6 +2,7 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs.reader :as reader]
             [frontend.analytics :as analytics]
+            [frontend.analytics.track :as analytics-track]
             [frontend.api :as api]
             [frontend.async :refer [put!]]
             [frontend.api.path :as api-path]
@@ -1252,6 +1253,9 @@
 
 (defmethod post-control-event! :project-feature-flag-checked
   [target message {:keys [project-id flag value]} previous-state current-state]
+  (analytics-track/project-image-change {:current-state current-state
+                                         :flag flag
+                                         :value value})
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
         error-ch (get-in current-state [:comms :errors]) 
