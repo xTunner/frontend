@@ -1253,10 +1253,17 @@
 
 (defmethod post-control-event! :project-feature-flag-checked
   [target message {:keys [project-id flag value]} previous-state current-state]
+<<<<<<< 7e75d73964b1d66bdb1a36077232c5e7bd9037ee
   (analytics-track/project-image-change {:previous-state previous-state
                                          :current-state current-state
                                          :flag flag
                                          :value value})
+||||||| merged common ancestors
+=======
+  (analytics-track/project-image-change {:current-state current-state
+                                         :flag flag
+                                         :value value})
+>>>>>>> added a :change-image-clicked event for the Build Enviornments page
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
         error-ch (get-in current-state [:comms :errors]) 
