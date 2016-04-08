@@ -15,11 +15,11 @@
             [frontend.controllers.api-test]
             [frontend.test-datetime]
             [frontend.test-routes]
-            [frontend.test-pusher]))
+            [frontend.test-pusher]
+            [frontend.analytics.test-track]))
 
-(use-fixtures :once
-              (aset js/window "renderContext" "{}")
-              (aset js/window "SVGInjector" (fn [node] node)))
+(aset js/window "renderContext" "{}")
+(aset js/window "SVGInjector" (fn [node] node))
 
 (doo-tests 'frontend.test-pusher
            'frontend.components.project.test-common
@@ -34,5 +34,6 @@
            'frontend.models.test-feature
            'frontend.controllers.api-test
            'frontend.test-datetime
-           'frontend.test-routes)
+           'frontend.test-routes
+           'frontend.analytics.test-track)
 
