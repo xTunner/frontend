@@ -80,7 +80,7 @@
 
 (defn elevio-enabled?
   []
-  (and (aget js/window "elevSettings") (feature/enabled? "elevio")))
+  (boolean (aget js/window "elevSettings")))
 
 (defn zd-widget-enabled?
   []
