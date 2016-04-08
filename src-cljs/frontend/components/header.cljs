@@ -1,7 +1,7 @@
 (ns frontend.components.header
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.config :as config]
             [frontend.components.build-head :as build-head]
             [frontend.components.common :as common]

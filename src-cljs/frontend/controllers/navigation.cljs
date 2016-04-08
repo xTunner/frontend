@@ -1,7 +1,7 @@
 (ns frontend.controllers.navigation
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.api.path :as api-path]

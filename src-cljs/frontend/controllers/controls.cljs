@@ -1,7 +1,7 @@
 (ns frontend.controllers.controls
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs.reader :as reader]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.analytics.track :as analytics-track]
             [frontend.api :as api]
             [frontend.async :refer [put!]]

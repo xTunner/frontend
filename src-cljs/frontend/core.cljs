@@ -6,7 +6,7 @@
             [goog.dom.DomHelper]
             [goog.dom.classlist]
             [frontend.ab :as ab]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.components.app :as app]
             [frontend.config :as config]
             [frontend.controllers.controls :as controls-con]

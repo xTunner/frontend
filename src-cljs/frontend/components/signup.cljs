@@ -2,7 +2,7 @@
   (:require [frontend.components.common :as common]
             [frontend.utils.github :as gh-util]
             [frontend.utils :as utils :include-macros true]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.stefon :as stefon]
             [om.core :as om :include-macros true])

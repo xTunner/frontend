@@ -1,4 +1,4 @@
-(ns frontend.analytics
+(ns frontend.analytics.core
   (:require [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]

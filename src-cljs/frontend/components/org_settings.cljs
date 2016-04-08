@@ -6,7 +6,7 @@
             [frontend.datetime :as datetime]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.models.organization :as org-model]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]

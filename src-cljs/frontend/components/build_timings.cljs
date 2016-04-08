@@ -1,7 +1,7 @@
 (ns frontend.components.build-timings
   (:require [om.core :as om :include-macros true]
             [goog.string :as gstring]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build]
             [frontend.models.project :as project-model]
