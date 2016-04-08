@@ -59,7 +59,6 @@
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
     :cancel-plan-clicked
-    :change-image-clicked
     :insights-bar-clicked
     :login-clicked
     :new-plan-clicked
