@@ -20,16 +20,12 @@
 (def AnalyticsEvent
   (merge
     CoreAnalyticsEvent
-    {:owner s/Any}))
-
-(def AnalyticsEventForControllers
-  (merge
-    CoreAnalyticsEvent
-    {:current-state {s/Any s/Any}}))
+    (s/either {:owner s/Any}
+              {:current-state {s/Any s/Any}})))
 
 (def PageviewEvent
   (merge
-    AnalyticsEventForControllers
+    AnalyticsEvent
     {:navigation-point s/Keyword}))
 
 (def ExternalClickEvent
@@ -39,7 +35,7 @@
 
 (def BuildEvent
   (merge
-    AnalyticsEventForControllers
+    AnalyticsEvent
     {:build {s/Keyword s/Any}}))
 
 ;; Below are the lists of our supported events.
@@ -137,21 +133,26 @@
 (defmulti track (fn [data]
                   (when (frontend.config/analytics-enabled?)
                     (cond
-                      (supported-click-and-impression-events (:event-type data)) :track-click-and-impression-event
-                      (supported-controller-events (:event-type data)) :track-controller-events
-                      :else (:event-type data)))))
+                      (or (supported-click-and-impression-events (:event-type data))
+                          (supported-controller-events (:event-type data)))
+                      :event
+
+                      :else
+                      (:event-type data)))))
 
 (defmethod track :default [data]
   (when (frontend.config/analytics-enabled?)
     (merror-unsupported-event (:event-type data))))
 
-(s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
-  (let [{:keys [event-type properties owner]} event-data]
-    (segment/track-event event-type (supplement-tracking-properties-from-owner properties owner))))
+(s/defmethod track :event [event-data :- AnalyticsEvent]
+  (let [{:keys [event-type properties owner current-state]} event-data]
+    (if owner
+      (segment/track-event event-type (supplement-tracking-properties-from-owner properties owner))
+      (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state)))))
 
 (s/defmethod track :track-controller-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
-    (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))
+    (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state)))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner]} event-data]
@@ -181,5 +182,5 @@
                       {:vcs-url (vcs-url/project-name (:vcs_url build))
                        :outcome (:outcome build)}))))
 
-(s/defmethod track :init-user [event-data :- AnalyticsEventForControllers]
+(s/defmethod track :init-user [event-data :- AnalyticsEvent]
   (segment/identify (get-user-properties-from-state (:current-state event-data))))
