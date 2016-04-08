@@ -448,40 +448,6 @@
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
 
-(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [plan-type-key (keyword (str "osx-" plan-type))
-            new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
-                                            {:plan-type {:template plan-type-key}
-                                             :price price
-                                             :description (str "OS X " (clojure.string/capitalize plan-type) " - $" price "/month.")}])
-                             false)
-            update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
-                                false)
-            plan-selected? (= plan-type-key (keyword current-plan))
-            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
-            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
-        (html
-          (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
-            (if plan-selected?
-              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
-              (forms/managed-button
-                [:a.unselected
-                 {:data-success-text plan-img
-                  :data-loading-text loading-img
-                  :data-failed-text plan-img
-                  :on-click update-plan-fn}
-                 plan-img]))
-            (forms/managed-button
-              [:a.unselected
-               {:data-success-text plan-img
-                :data-loading-text plan-img
-                :data-failed-text plan-img
-                :on-click new-plan-fn}
-               plan-img])))))))
-
 (defn osx-plans-list-ga [plan owner]
   (reify
     om/IRender
@@ -503,23 +469,6 @@
               [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
            [:div.plan-selection
             (om/build-all osx-plan-ga osx-plans)]])))))
-
-(defn osx-plans-list [plan owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [current-plan (some-> plan :osx :template :id)]
-        (html
-          [:div.osx-plans
-           [:fieldset
-            [:legend (str "OS X Limited Release Plans")]
-            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers above."]]
-           [:div.plan-selection
-            (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :price 279 :plan-type "growth" :current-plan current-plan})
-            [:a.unselected {:href "mailto:sayhi@circleci.com"}
-             [:img {:src (utils/cdn-path "img/inner/mobile-focused-2x.png")}]]]])))))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
   (reify
@@ -696,18 +645,9 @@
 
             (if (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name org-vcs-type)
-              (if (feature/enabled? :osx-ga-inner-pricing)
-                [:div
-                 (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
-                                         :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})]
-
-                [:div
-                 (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                 (if (feature/enabled? :osx-plans)
-                   (list
-                     (om/build osx-plans-list plan)
-                     (om/build faq osx-faq-items))
-                   (project-common/mini-parallelism-faq  {}))]))))))))
+              [:div
+               (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
+                                       :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
 (defn piggyback-organizations [app owner]
   (om/component
