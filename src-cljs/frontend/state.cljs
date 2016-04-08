@@ -163,7 +163,6 @@
 (def org-name-path (conj org-data-path :name))
 (def org-vcs_type-path (conj org-data-path :vcs_type))
 (def org-plan-path (conj org-data-path :plan))
-(def org-osx-enabled-path (conj org-data-path :osx_builds_enabled?))
 (def org-plan-balance-path (conj org-plan-path :account_balance))
 (def stripe-card-path (conj org-data-path :card))
 (def org-users-path (conj org-data-path :users))

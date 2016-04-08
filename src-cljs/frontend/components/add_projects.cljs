@@ -359,7 +359,7 @@
              (for [repo repos]
                (om/build repo-item {:repo repo :settings settings})))])))))
 
-(defn repo-lists [{:keys [user repos selected-org osx-enabled? selected-plan settings] :as data} owner]
+(defn repo-lists [{:keys [user repos selected-org selected-plan settings] :as data} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -374,14 +374,13 @@
         (html
           [:div.proj-wrapper
            [:div.tabbed-wrapper
-            (when osx-enabled?
-              [:ul.nav.nav-tabs
-               [:li {:class (when (= selected-tab :linux) "active")}
-                [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
-                 [:i.fa.fa-linux.fa-lg] "Linux"]]
-               [:li {:class (when (= selected-tab :osx) "active")}
-                [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
-                 [:i.fa.fa-apple.fa-lg] " OS X"]]])
+            [:ul.nav.nav-tabs
+             [:li {:class (when (= selected-tab :linux) "active")}
+              [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
+               [:i.fa.fa-linux.fa-lg] "Linux"]]
+             [:li {:class (when (= selected-tab :osx) "active")}
+              [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
+               [:i.fa.fa-apple.fa-lg] " OS X"]]]
             (if selected-org-login
               (let [;; we display a repo if it belongs to this org, matches the filter string,
                     ;; and matches the fork settings.
@@ -404,7 +403,7 @@
                  [:div
                   (condp = selected-tab
                     :linux
-                    (om/build repo-list {:repos (if (and osx-enabled? (pm/osx? selected-plan)) ; Allows mistaken OS X repos to still be built.
+                    (om/build repo-list {:repos (if (pm/osx? selected-plan) ; Allows mistaken OS X repos to still be built.
                                                   linux-repos
                                                   filtered-repos)
                                          :loading-repos? loading-repos?
@@ -525,6 +524,5 @@
          (om/build repo-lists {:user user
                                :repos repos
                                :selected-org selected-org
-                               :osx-enabled? (get-in data state/org-osx-enabled-path)
                                :selected-plan (get-in data state/org-plan-path)
                                :settings settings})]]])))

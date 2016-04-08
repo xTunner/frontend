@@ -703,8 +703,7 @@
 
                 [:div
                  (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                 (if (and (feature/enabled? :osx-plans)
-                          (get-in app state/org-osx-enabled-path))
+                 (if (feature/enabled? :osx-plans)
                    (list
                      (om/build osx-plans-list plan)
                      (om/build faq osx-faq-items))
@@ -1259,40 +1258,37 @@
                [:div.explanation
                 [:p "Looks like you haven't run any builds yet."]]))])))))
 
-(defn osx-overview [{:keys [plan osx-enabled?]} owner]
+(defn osx-overview [{:keys [plan]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         [:div
          [:h2 "OS X"]
-         (if-not osx-enabled?
-           [:p "You are not currently in the OS X limited-release. If you would like access to OS X builds, please send an email to sayhi@circleci.com."]
-           [:div
-            [:p "Choose an OS X plan "
-             [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                      :_fragment "osx-pricing"})} "here"] "."]
-            (when (pm/osx? plan)
-              (let [plan-name (some-> plan :osx :template :name)]
-                [:p
-                 (cond
-                   (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
+         [:div
+          [:p "Choose an OS X plan "
+           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                    :_fragment "osx-pricing"})} "here"] "."]
+          (when (pm/osx? plan)
+            (let [plan-name (some-> plan :osx :template :name)]
+              [:p
+               (cond
+                 (pm/osx-trial-active? plan)
+                 (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
 
-                   (and (pm/osx-trial-plan? plan)
-                        (not (pm/osx-trial-active? plan)))
-                   [:span "Your free trial of CircleCI for OS X has expired. Please "
-                    [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                             :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
+                 (and (pm/osx-trial-plan? plan)
+                      (not (pm/osx-trial-active? plan)))
+                 [:span "Your free trial of CircleCI for OS X has expired. Please "
+                  [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                           :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
-                   :else
-                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))])]))))
+                 :else
+                 (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]]))))
 
 (defn overview [app owner]
   (om/component
    (html
     (let [org-name (get-in app state/org-name-path)
-          osx-enabled? (get-in app state/org-osx-enabled-path)
           vcs_type (get-in app state/org-vcs_type-path)
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
@@ -1351,8 +1347,7 @@
         (when-not (config/enterprise?)
           [:div
            [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
-           (om/build osx-overview {:plan plan
-                                   :osx-enabled? osx-enabled?})])
+           (om/build osx-overview {:plan plan})])
         (when (pm/osx? plan)
           (om/build osx-usage-table {:plan plan}))]]))))
 
