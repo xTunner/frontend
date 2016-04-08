@@ -202,8 +202,7 @@
                     :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
                                                                               :flag :trusty-beta
                                                                               :value true}])}]
-                  " Ubuntu 14.04 (Trusty)"]]]]]
-               ]]])))))
+                  " Ubuntu 14.04 (Trusty)"]]]]]]]])))))
 
 (defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
