@@ -71,7 +71,7 @@
                 event
                 {:image "trusty"})))))
 
-    (testing "if there is nothing set in the state and the user turns osx off the image is nil"
+    (testing "if there is nothing set in the state and the user turns osx off the image is precise"
       (bond/with-stub [segment/track-event]
         (let [data {:project-id "some-fake-org/some-fake-project"
                    :flag :osx
@@ -81,4 +81,4 @@
         (is (analytics-utils/is-correct-arguments?
               (-> segment/track-event bond/calls first :args)
               event
-              {:image nil})))))))
+              {:image "precise"})))))))
