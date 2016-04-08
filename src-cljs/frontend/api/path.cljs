@@ -42,7 +42,7 @@
 (defn project-token [vcs-type project-name token]
   (gstring/format
    "%s/%s/token/%s"
-   (base-project-url-path vcs-type) vcs-type project-name token))
+   (base-project-url-path vcs-type) project-name token))
 
 (defn project-follow [vcs-type project]
   (case vcs-type
