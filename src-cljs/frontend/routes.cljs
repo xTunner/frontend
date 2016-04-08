@@ -183,9 +183,8 @@
                                               :org org
                                               :repo repo}))
 
-  (defroute v1-add-projects #"/add-projects" [_ _ maybe-fragment]
-    (let [_fragment (:_fragment maybe-fragment)]
-      (open-to-inner! nav-ch :add-projects {:tab _fragment})))
+  (defroute v1-add-projects "/add-projects" {:keys [_fragment]}
+    (open-to-inner! nav-ch :add-projects {:tab _fragment}))
   (defroute v1-insights "/build-insights" []
     (open-to-inner! nav-ch :build-insights {}))
   (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
