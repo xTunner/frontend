@@ -81,6 +81,11 @@
     :project-followed
     :project-unfollowed})
 
+(def SupportedEvents
+  (apply s/enum
+         (concat supported-click-and-impression-events
+                 supported-controller-events)))
+
 (defn- add-properties-to-track-from-state [current-state]
   "Get a map of the mutable properties we want to track out of the
   state. Also add a timestamp."
@@ -126,28 +131,17 @@
 
 (defmulti track (fn [data]
                   (when (frontend.config/analytics-enabled?)
-                    (cond
-                      (or (supported-click-and-impression-events (:event-type data))
-                          (supported-controller-events (:event-type data)))
-                      :event
-
-                      :else
-                      (:event-type data)))))
-
-(defmethod track :default [data]
-  (when (frontend.config/analytics-enabled?)
-    (merror-unsupported-event (:event-type data))))
+                    (:event-type data))))
 
 (defn- supplement-tracking-properties [{:keys [properties owner current-state]}]
   (if owner
     (supplement-tracking-properties-from-owner properties owner)
     (supplement-tracking-properties-from-state properties current-state)))
 
-(s/defmethod track :event [event-data :- AnalyticsEvent]
-  (let [{:keys [event-type properties owner current-state]} event-data]
+(s/defmethod track :default [{:keys [event-type :- SupportedEvents properties owner current-state]} :as event-data :- AnalyticsEvent]
     (segment/track-event event-type (supplement-tracking-properties {:properties properties
                                                                      :owner owner
-                                                                     :current-state current-state}))))
+                                                                     :current-state current-state})))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties owner current-state]} event-data]
