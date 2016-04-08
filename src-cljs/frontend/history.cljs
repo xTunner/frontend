@@ -1,6 +1,6 @@
 (ns frontend.history
   (:require [clojure.string :as string]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true :refer [unexterned-prop]]
             [frontend.utils.html :as html]

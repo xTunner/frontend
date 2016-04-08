@@ -12,7 +12,7 @@
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.favicon]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]

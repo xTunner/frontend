@@ -3,7 +3,7 @@
             [clojure.set :as set]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.project.common :as project]

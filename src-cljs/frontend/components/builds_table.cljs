@@ -1,7 +1,7 @@
 (ns frontend.components.builds-table
   (:require [cemerick.url :as url]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.components.common :as common]
