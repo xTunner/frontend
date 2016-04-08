@@ -1249,7 +1249,7 @@
 
 (defmethod control-event :project-feature-flag-checked
   [target message {:keys [project-id flag value]} state]
-  (assoc-in state (conj state/project-path :feature_flags flag) value))
+  (assoc-in state (conj state/feature-flags-path flag) value))
 
 (defmethod post-control-event! :project-feature-flag-checked
   [target message {:keys [project-id flag value]} previous-state current-state]

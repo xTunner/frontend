@@ -1,6 +1,6 @@
 (ns frontend.analytics.track
   (:require [frontend.state :as state]
-            [frontend.analytics.core]))
+            [frontend.analytics.core :as analytics]))
 
 (def trusty-beta :trusty-beta)
 
@@ -16,7 +16,7 @@
                 (and (= flag :osx) value) "osx"
                 ;; This means that the user has turned off osx, so we need to get
                 ;; the linux image out of the state
-                (and (= flag :osx) (not value)) (some->> (conj state/project-path :feature_flags trusty-beta) 
+                (and (= flag :osx) (not value)) (some->> (conj state/feature-flags-path trusty-beta) 
                                                          (get-in current-state)
                                                          (linux-name-for-flag-and-value trusty-beta)))]
     (analytics/track {:event-type :change-image-clicked
