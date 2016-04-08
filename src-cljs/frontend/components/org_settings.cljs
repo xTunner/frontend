@@ -1390,8 +1390,7 @@
            [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
            (om/build osx-overview {:plan plan
                                    :osx-enabled? osx-enabled?})])
-        (when (and (feature/enabled? :ios-build-usage)
-                   (pm/osx? plan))
+        (when (pm/osx? plan)
           (om/build osx-usage-table {:plan plan}))]]))))
 
 (def main-component
