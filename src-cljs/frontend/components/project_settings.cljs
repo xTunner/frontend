@@ -178,33 +178,31 @@
                                      "against Linux-based hardware or OS X-based hardware. Please use this "
                                      "setting as an override if we have incorrectly inferred where this build should run."
                                      ]})
-             (when (feature/enabled? :enable-trusty-setting)
-               [:li
-                [:h4 "OS to use for builds"]
-                [:p [:p
-                     "Select the operating system in which to run your Linux builds."
-                     [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]]
-                [:form
-                 [:ul
-                  [:li.radio
-                   [:label
-                    [:input
-                     {:type "radio"
-                      :checked (not (get feature-flags :trusty-beta))
-                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
-                                                                                :flag :trusty-beta
-                                                                                :value false}])}]
-                    " Ubuntu 12.04 (Precise)"]]
-                  [:li.radio
-                   [:label
-                    [:input
-                     {:type "radio"
-                      :checked (get feature-flags :trusty-beta)
-                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
-                                                                                :flag :trusty-beta
-                                                                                :value true}])}]
-                    " Ubuntu 14.04 (Trusty)"]]]]]
-               )]]])))))
+             [:li
+              [:h4 "OS to use for builds"]
+              [:p [:p
+                   "Select the operating system in which to run your Linux builds."
+                   [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]]
+              [:form
+               [:ul
+                [:li.radio
+                 [:label
+                  [:input
+                   {:type "radio"
+                    :checked (not (get feature-flags :trusty-beta))
+                    :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                              :flag :trusty-beta
+                                                                              :value false}])}]
+                  " Ubuntu 12.04 (Precise)"]]
+                [:li.radio
+                 [:label
+                  [:input
+                   {:type "radio"
+                    :checked (get feature-flags :trusty-beta)
+                    :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                              :flag :trusty-beta
+                                                                              :value true}])}]
+                  " Ubuntu 14.04 (Trusty)"]]]]]]]])))))
 
 (defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat

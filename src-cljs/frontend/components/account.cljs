@@ -445,9 +445,8 @@
              [:a {:href (routes/v1-account-subpage {:subpage "heroku"})} "Heroku Key"]]
             [:li#plans (active-class-if-active subpage :plans)
              [:a {:href (routes/v1-account-subpage {:subpage "plans"})} "Plan Pricing"]]
-            (when (feature/enabled? :beta-program-available)
-              [:li#beta (active-class-if-active subpage :beta)
-               [:a {:href (routes/v1-account-subpage {:subpage "beta"})} "Beta Program"]])]]
+            [:li#beta (active-class-if-active subpage :beta)
+             [:a {:href (routes/v1-account-subpage {:subpage "beta"})} "Beta Program"]]]]
 
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div.settings-item
