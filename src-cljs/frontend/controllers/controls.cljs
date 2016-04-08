@@ -1253,7 +1253,8 @@
 
 (defmethod post-control-event! :project-feature-flag-checked
   [target message {:keys [project-id flag value]} previous-state current-state]
-  (analytics-track/project-image-change {:current-state current-state
+  (analytics-track/project-image-change {:previous-state previous-state
+                                         :current-state current-state
                                          :flag flag
                                          :value value})
   (let [project-name (vcs-url/project-name project-id)

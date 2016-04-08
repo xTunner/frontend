@@ -16,17 +16,25 @@
                                (let [data {:project-id "some-fake-org/some-fake-project"
                                            :flag flag
                                            :value value}
-                                     state (if (nil? trusty-state-value)
-                                             state
-                                             (assoc-in state
-                                                       (conj state/feature-flags-path :trusty-beta)
-                                                       trusty-state-value))]
-                                 (controls/post-control-event! "" :project-feature-flag-checked data state state)
+                                     previous-state state
+                                     current-state (if (nil? trusty-state-value)
+                                                     state
+                                                     (assoc-in state
+                                                               (conj state/feature-flags-path :trusty-beta)
+                                                               trusty-state-value))]
+                                 (controls/post-control-event! "" :project-feature-flag-checked data previous-state current-state)
                                  (is (= 1 (-> segment/track-event bond/calls count)))
                                  (is (analytics-utils/is-correct-arguments?
-                                      (-> segment/track-event bond/calls first :args)
-                                      event
-                                      {:image image-name})))))]
+                                       (-> segment/track-event bond/calls first :args)
+                                       event
+                                       {:new-image image-name
+                                        :flag-changed flag
+                                        :value-changed-to value
+                                        :new-osx-feature-flag (get-in current-state (conj state/feature-flags-path track/osx-flag))
+                                        :new-trusty-beta-feature-flag (get-in current-state (conj state/feature-flags-path track/trusty-beta-flag))
+                                        :previous-osx-feature-flag (get-in previous-state (conj state/feature-flags-path track/osx-flag))
+                                        :previous-trusty-beta-feature-flag (get-in previous-state (conj state/feature-flags-path track/trusty-beta-flag))})))))]
+
     (testing "switching between precise and trusty with osx off sends the correct event"
       (test-image-logging :trusty-beta true "trusty")
       (test-image-logging :trusty-beta false "precise"))
