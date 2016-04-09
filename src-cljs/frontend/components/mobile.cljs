@@ -137,11 +137,7 @@
                                          "Shipping your app on iOS is hard. The App Store review process is
                                          long and painful. It’s important to get your app built right the first time to avoid
                                          bugs and those nasty 1-star reviews. Let CircleCI help your iOS app development
-                                         cycle with our expertise in Continuous Integration and Continuous Delivery."
-                                         [:br]
-                                         [:br]
-                                         "Currently in beta. Interested in joining? Please "
-                                         [:a {:href "mailto:sayhi@circleci.com?subject=ios"} "contact us."]]
+                                         cycle with our expertise in Continuous Integration and Continuous Delivery."]
                      :subheadline "More testing, fewer bugs, better iOS apps."
                      :explanation "Each time you push new code to your repo on Github for your
                                   iOS app, CircleCI will automatically build and test your

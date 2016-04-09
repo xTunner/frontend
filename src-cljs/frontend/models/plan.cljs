@@ -271,10 +271,6 @@
                     :support-level "Priority support & Account manager"
                     :team-size "unlimited"}})
 
-(defn osx-ga-plan? [plan]
-  (if-let [plan-id (keyword (osx-plan-id plan))]
-    (boolean (get osx-plans plan-id))))
-
 (defn osx-trial-days-left [plan]
   (let [trial-end (some-> plan :osx_trial_end_date)]
     (if (<= (.getTime (time/now)) (.getTime (js/Date. trial-end)))
