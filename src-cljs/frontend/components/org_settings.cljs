@@ -361,7 +361,7 @@
             :disabled disabled?}
            text])))))
 
-(defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
+(defn osx-plan [{:keys [title price container-count daily-build-count max-minutes support-level team-size
                            plan-id plan
                            trial-starts-here?]} owner]
   (reify
@@ -374,7 +374,7 @@
             trial-starts-here? (and trial-starts-here?
                                     (not (pm/osx? plan)))]
         (html
-          [:div {:data-component `osx-plan-ga}
+          [:div {:data-component `osx-plan}
            [:div {:class (cond currently-selected? "plan-notice selected-notice"
                                trial-expired? "plan-notice trial-expired-notice"
                                on-trial? "plan-notice selected-notice"
@@ -448,7 +448,7 @@
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
 
-(defn osx-plans-list-ga [plan owner]
+(defn osx-plans-list [plan owner]
   (reify
     om/IRender
     (render [_]
@@ -456,19 +456,16 @@
                            (vals)
                            (map (partial merge {:plan plan})))]
         (html
-          [:div.osx-plans {:data-component `osx-plans-list-ga}
+          [:div.osx-plans {:data-component `osx-plans-list}
            [:fieldset
             [:legend (str "OS X Plans")]
-            (when (and (pm/osx? plan)
-                       (not (pm/osx-trial-plan? plan))
-                       (not (pm/osx-ga-plan? plan))))
             [:p "Your selection below only applies to OS X service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
               [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
            [:div.plan-selection
-            (om/build-all osx-plan-ga osx-plans)]])))))
+            (om/build-all osx-plan osx-plans)]])))))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
   (reify
@@ -595,7 +592,7 @@
                        (om/build faq linux-faq-items)]
 
                :osx [:div.card
-                     (om/build osx-plans-list-ga plan)
+                     (om/build osx-plans-list plan)
                      (om/build faq osx-faq-items)])]))))
 
 (defn pricing-starting-tab [subpage]
