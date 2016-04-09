@@ -13,7 +13,8 @@
         event :change-image-clicked
         test-image-logging (fn [flag value image-name & [trusty-state-value]]
                              (let [call-args (atom [])]
-                               (with-redefs [segment/track-event (fn [& args] (swap! call-args conj args))]
+                               (with-redefs [analytics/track (fn [& args]
+                                                               (swap! call-args conj args))]
                                  (let [data {:project-id "some-fake-org/some-fake-project"
                                              :flag flag
                                              :value value}
@@ -25,16 +26,15 @@
                                                                  trusty-state-value))]
                                    (controls/post-control-event! "" :project-feature-flag-checked data previous-state current-state)
                                    (is (= 1 (count @call-args)))
-                                   (is (analytics-utils/is-correct-arguments?
-                                         (first @call-args)
-                                         event
-                                         {:new-image image-name
-                                          :flag-changed flag
-                                          :value-changed-to value
-                                          :new-osx-feature-flag (get-in current-state (conj state/feature-flags-path track/osx-flag))
-                                          :new-trusty-beta-feature-flag (get-in current-state (conj state/feature-flags-path track/trusty-beta-flag))
-                                          :previous-osx-feature-flag (get-in previous-state (conj state/feature-flags-path track/osx-flag))
-                                          :previous-trusty-beta-feature-flag (get-in previous-state (conj state/feature-flags-path track/trusty-beta-flag))}))))))]
+                                   (is (= (-> @call-args first :event-type event)))
+                                   (is (= (-> @call-args first :properties
+                                              {:new-image image-name
+                                               :flag-changed flag
+                                               :value-changed-to value
+                                               :new-osx-feature-flag (get-in current-state (conj state/feature-flags-path track/osx-flag))
+                                               :new-trusty-beta-feature-flag (get-in current-state (conj state/feature-flags-path track/trusty-beta-flag))
+                                               :previous-osx-feature-flag (get-in previous-state (conj state/feature-flags-path track/osx-flag))
+                                               :previous-trusty-beta-feature-flag (get-in previous-state (conj state/feature-flags-path track/trusty-beta-flag))})))))))]
 
     (testing "switching between precise and trusty with osx off sends the correct event"
       (test-image-logging :trusty-beta true "trusty")

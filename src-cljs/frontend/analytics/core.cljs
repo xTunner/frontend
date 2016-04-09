@@ -149,7 +149,6 @@
   (let [{:keys [event-type properties owner]} event-data]
     (segment/track-event event-type (supplement-tracking-properties-from-owner properties owner))))
 
-;; Gotta finish this + add schema event
 (s/defmethod track :track-controller-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
     (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))
