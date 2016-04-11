@@ -138,7 +138,7 @@
     (supplement-tracking-properties-from-owner properties owner)
     (supplement-tracking-properties-from-state properties current-state)))
 
-(s/defmethod track :default [{:keys [event-type :- SupportedEvents properties owner current-state]} :as event-data :- AnalyticsEvent]
+(s/defmethod track :default [{:keys [event-type :- SupportedEvents properties owner current-state] :as event-data :- AnalyticsEvent}]
     (segment/track-event event-type (supplement-tracking-properties {:properties properties
                                                                      :owner owner
                                                                      :current-state current-state})))
