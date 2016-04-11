@@ -17,26 +17,23 @@
   {:event-type s/Keyword
    (s/optional-key :properties) (s/maybe {s/Keyword s/Any})})
 
+(defn analytics-event-schema
+  ([] (analytics-event-schema {}))
+  ([schema]
+   (s/conditional :owner (merge schema CoreAnalyticsEvent {:owner s/Any})
+                  :current-state (merge schema CoreAnalyticsEvent {:current-state {s/Any s/Any}}))))
+
 (def AnalyticsEvent
-  (merge
-    CoreAnalyticsEvent
-    (s/either {:owner s/Any}
-              {:current-state {s/Any s/Any}})))
+  (analytics-event-schema))
 
 (def PageviewEvent
-  (merge
-    AnalyticsEvent
-    {:navigation-point s/Keyword}))
+  (analytics-event-schema {:navigation-point s/Keyword}))
 
 (def ExternalClickEvent
-  (merge 
-    AnalyticsEvent
-    {:event s/Keyword}))
+  (analytics-event-schema {:event s/Keyword}))
 
 (def BuildEvent
-  (merge
-    AnalyticsEvent
-    {:build {s/Keyword s/Any}}))
+  (analytics-event-schema {:build {s/Keyword s/Any}}))
 
 ;; Below are the lists of our supported events.
 ;; Events should NOT be view specific. They should be view agnostic and
