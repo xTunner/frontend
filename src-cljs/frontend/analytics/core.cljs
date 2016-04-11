@@ -51,6 +51,7 @@
     :build-insights-upsell-impression
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
+    :change-image-clicked
     :cancel-plan-clicked
     :insights-bar-clicked
     :login-clicked
@@ -72,8 +73,7 @@
 (def supported-controller-events
   ;; These are the api response events.
   ;; They are in the format of <object>-<action take in the past tense>
-  #{:change-image-clicked
-    :project-branch-changed
+  #{:project-branch-changed
     :project-builds-stopped
     :project-followed
     :project-unfollowed})

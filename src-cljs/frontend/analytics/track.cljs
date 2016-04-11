@@ -28,3 +28,12 @@
                                  :new-trusty-beta-feature-flag (get-in current-state (conj state/feature-flags-path trusty-beta-flag))
                                  :previous-osx-feature-flag (get-in previous-state (conj state/feature-flags-path osx-flag))
                                  :previous-trusty-beta-feature-flag (get-in previous-state (conj state/feature-flags-path trusty-beta-flag))}}))
+
+(defn track-update-plan-clicked [{:keys [new-plan previous-plan plan-type upgrade? owner]}]
+  (analytics/track {:event-type :update-plan-clicked
+                    :owner owner
+                    :properties {:plan-type plan-type
+                                 :new-plan new-plan
+                                 :previous-plan previous-plan
+                                 :is-upgrade upgrade?}}))
+
