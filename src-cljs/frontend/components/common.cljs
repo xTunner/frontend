@@ -1,6 +1,6 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]

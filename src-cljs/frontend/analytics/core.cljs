@@ -1,4 +1,4 @@
-(ns frontend.analytics
+(ns frontend.analytics.core
   (:require [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
@@ -79,7 +79,8 @@
 (def supported-controller-events
   ;; These are the api response events.
   ;; They are in the format of <object>-<action take in the past tense>
-  #{:project-branch-changed
+  #{:change-image-clicked
+    :project-branch-changed
     :project-builds-stopped
     :project-followed
     :project-unfollowed})
@@ -148,7 +149,6 @@
   (let [{:keys [event-type properties owner]} event-data]
     (segment/track-event event-type (supplement-tracking-properties-from-owner properties owner))))
 
-;; Gotta finish this + add schema event
 (s/defmethod track :track-controller-events [event-data :- AnalyticsEventForControllers]
   (let [{:keys [event-type properties current-state]} event-data]
     (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))

@@ -1,6 +1,6 @@
 (ns frontend.components.dashboard
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]

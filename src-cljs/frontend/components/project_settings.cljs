@@ -1,7 +1,7 @@
 (ns frontend.components.project-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]

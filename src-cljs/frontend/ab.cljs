@@ -1,7 +1,7 @@
 (ns frontend.ab
   (:require [goog.net.Cookies]
             [goog.crypt.Md5]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.utils :as utils :include-macros true]))
 
 (def cookie-name "ab_test_user_seed")

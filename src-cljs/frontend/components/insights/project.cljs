@@ -1,6 +1,6 @@
 (ns frontend.components.insights.project
   (:require [frontend.components.common :as common]
-            [frontend.analytics :as analytics]
+            [frontend.analytics.core :as analytics]
             [frontend.components.insights :as insights]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
