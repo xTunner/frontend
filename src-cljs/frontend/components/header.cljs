@@ -341,8 +341,7 @@
              (om/build statuspage/statuspage app))
            (when logged-out?
              (om/build outer-header app))
-           (when (and (feature/enabled? :ios-build-usage)
-                      (= :build (:navigation-point app))
+           (when (and (= :build (:navigation-point app))
                       (project-model/feature-enabled? project :osx)
                       (plan/osx? plan)
                       (plan/over-usage-threshold? plan plan/first-warning-threshold)

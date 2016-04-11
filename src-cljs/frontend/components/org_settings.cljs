@@ -361,7 +361,7 @@
             :disabled disabled?}
            text])))))
 
-(defn osx-plan-ga [{:keys [title price container-count daily-build-count max-minutes support-level team-size
+(defn osx-plan [{:keys [title price container-count daily-build-count max-minutes support-level team-size
                            plan-id plan
                            trial-starts-here?]} owner]
   (reify
@@ -374,7 +374,7 @@
             trial-starts-here? (and trial-starts-here?
                                     (not (pm/osx? plan)))]
         (html
-          [:div {:data-component `osx-plan-ga}
+          [:div {:data-component `osx-plan}
            [:div {:class (cond currently-selected? "plan-notice selected-notice"
                                trial-expired? "plan-notice trial-expired-notice"
                                on-trial? "plan-notice selected-notice"
@@ -448,77 +448,7 @@
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
 
-(defn osx-plan [{:keys [plan-type plan price current-plan]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [plan-type-key (keyword (str "osx-" plan-type))
-            new-plan-fn #(do (raise! owner [:new-osx-plan-clicked
-                                            {:plan-type {:template plan-type-key}
-                                             :price price
-                                             :description (str "OS X " (clojure.string/capitalize plan-type) " - $" price "/month.")}])
-                             false)
-            update-plan-fn #(do (raise! owner [:update-osx-plan-clicked {:plan-type {:template plan-type-key}}])
-                                false)
-            plan-selected? (= plan-type-key (keyword current-plan))
-            plan-img     [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-2x.png"))}]
-            loading-img  [:img {:src (utils/cdn-path (str "img/inner/" plan-type "-loading-2x.png"))}]]
-        (html
-          (if (and (pm/osx? plan) (not (pm/osx-trial-plan? plan)))
-            (if plan-selected?
-              [:img.selected {:src (utils/cdn-path (str "img/inner/" plan-type "-selected-2x.png"))}]
-              (forms/managed-button
-                [:a.unselected
-                 {:data-success-text plan-img
-                  :data-loading-text loading-img
-                  :data-failed-text plan-img
-                  :on-click update-plan-fn}
-                 plan-img]))
-            (forms/managed-button
-              [:a.unselected
-               {:data-success-text plan-img
-                :data-loading-text plan-img
-                :data-failed-text plan-img
-                :on-click new-plan-fn}
-               plan-img])))))))
-
-(defn limited-release-notice [plan owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [plan-migrations {"Starter" "Seed"
-                             "Standard" "Startup"
-                             "Growth" "Growth"}
-            current-plan-name (some-> plan
-                                      (pm/osx-plan-id)
-                                      (name)
-                                      (clojure.string/split "-")
-                                      (last)
-                                      (clojure.string/capitalize))]
-        (html
-          [:div {:data-component `limited-release-notice}
-           [:div.icon (om/build svg {:src (common/icon-path "Info-Warning")})]
-           [:div.message
-            [:span "CircleCI for OS X is now in General Release!
-                    Limited Release plans will be discontinued on March 31st and
-                    all organizations that have not switched to a new plan will be
-                    converted to the corresponding General Release plan. Please
-                    reach out to "]
-            [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
-            [:span " with any questions or concerns."]
-            (if-let [new-plan (get plan-migrations current-plan-name)]
-              [:div.your-plan
-               [:span "You are currently on '"]
-               [:span.plan-name "Limited Release " current-plan-name  " ($" (pm/osx-cost plan) "/mo)" ]
-               [:span "' and will be moved to '"]
-               [:span.plan-name "General Release " (get plan-migrations current-plan-name)]
-               [:span "' on March 31st."]]
-              [:div.your-plan
-               [:span "You're currently on a '"]
-               [:span.plan-name "Limited Release Custom Plan"]
-               [:span "'. Please contact your account manager for details."]])]])))))
-
-(defn osx-plans-list-ga [plan owner]
+(defn osx-plans-list [plan owner]
   (reify
     om/IRender
     (render [_]
@@ -526,37 +456,16 @@
                            (vals)
                            (map (partial merge {:plan plan})))]
         (html
-          [:div.osx-plans {:data-component `osx-plans-list-ga}
+          [:div.osx-plans {:data-component `osx-plans-list}
            [:fieldset
             [:legend (str "OS X Plans")]
-            (when (and (pm/osx? plan)
-                       (not (pm/osx-trial-plan? plan))
-                       (not (pm/osx-ga-plan? plan)))
-              (om/build limited-release-notice plan))
             [:p "Your selection below only applies to OS X service and will not affect Linux Containers."]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
               [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
            [:div.plan-selection
-            (om/build-all osx-plan-ga osx-plans)]])))))
-
-(defn osx-plans-list [plan owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [current-plan (some-> plan :osx :template :id)]
-        (html
-          [:div.osx-plans
-           [:fieldset
-            [:legend (str "OS X Limited Release Plans")]
-            [:p "Your selection selection below only applies to OS X service and will not affect Linux Containers above."]]
-           [:div.plan-selection
-            (om/build osx-plan {:plan plan :price 79 :plan-type "starter" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :price 139 :plan-type "standard" :current-plan current-plan})
-            (om/build osx-plan {:plan plan :price 279 :plan-type "growth" :current-plan current-plan})
-            [:a.unselected {:href "mailto:sayhi@circleci.com"}
-             [:img {:src (utils/cdn-path "img/inner/mobile-focused-2x.png")}]]]])))))
+            (om/build-all osx-plan osx-plans)]])))))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
   (reify
@@ -683,7 +592,7 @@
                        (om/build faq linux-faq-items)]
 
                :osx [:div.card
-                     (om/build osx-plans-list-ga plan)
+                     (om/build osx-plans-list plan)
                      (om/build faq osx-faq-items)])]))))
 
 (defn pricing-starting-tab [subpage]
@@ -733,19 +642,9 @@
 
             (if (pm/piggieback? plan org-name)
               (plans-piggieback-plan-notification plan org-name org-vcs-type)
-              (if (feature/enabled? :osx-ga-inner-pricing)
-                [:div
-                 (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
-                                         :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})]
-
-                [:div
-                 (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                 (if (and (feature/enabled? :osx-plans)
-                          (get-in app state/org-osx-enabled-path))
-                   (list
-                     (om/build osx-plans-list plan)
-                     (om/build faq osx-faq-items))
-                   (project-common/mini-parallelism-faq  {}))]))))))))
+              [:div
+               (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
+                                       :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
 (defn piggyback-organizations [app owner]
   (om/component
@@ -1296,40 +1195,37 @@
                [:div.explanation
                 [:p "Looks like you haven't run any builds yet."]]))])))))
 
-(defn osx-overview [{:keys [plan osx-enabled?]} owner]
+(defn osx-overview [{:keys [plan]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         [:div
          [:h2 "OS X"]
-         (if-not osx-enabled?
-           [:p "You are not currently in the OS X limited-release. If you would like access to OS X builds, please send an email to sayhi@circleci.com."]
-           [:div
-            [:p "Choose an OS X plan "
-             [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                      :_fragment "osx-pricing"})} "here"] "."]
-            (when (pm/osx? plan)
-              (let [plan-name (some-> plan :osx :template :name)]
-                [:p
-                 (cond
-                   (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
+         [:div
+          [:p "Choose an OS X plan "
+           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                    :_fragment "osx-pricing"})} "here"] "."]
+          (when (pm/osx? plan)
+            (let [plan-name (some-> plan :osx :template :name)]
+              [:p
+               (cond
+                 (pm/osx-trial-active? plan)
+                 (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
 
-                   (and (pm/osx-trial-plan? plan)
-                        (not (pm/osx-trial-active? plan)))
-                   [:span "Your free trial of CircleCI for OS X has expired. Please "
-                    [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                             :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
+                 (and (pm/osx-trial-plan? plan)
+                      (not (pm/osx-trial-active? plan)))
+                 [:span "Your free trial of CircleCI for OS X has expired. Please "
+                  [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                           :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
-                   :else
-                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))])]))))
+                 :else
+                 (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]]))))
 
 (defn overview [app owner]
   (om/component
    (html
     (let [org-name (get-in app state/org-name-path)
-          osx-enabled? (get-in app state/org-osx-enabled-path)
           vcs_type (get-in app state/org-vcs_type-path)
           plan (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
@@ -1388,10 +1284,8 @@
         (when-not (config/enterprise?)
           [:div
            [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
-           (om/build osx-overview {:plan plan
-                                   :osx-enabled? osx-enabled?})])
-        (when (and (feature/enabled? :ios-build-usage)
-                   (pm/osx? plan))
+           (om/build osx-overview {:plan plan})])
+        (when (pm/osx? plan)
           (om/build osx-usage-table {:plan plan}))]]))))
 
 (def main-component

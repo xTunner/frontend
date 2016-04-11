@@ -415,8 +415,7 @@
              (om/build svg {:class "badge-icon"
                             :src (-> latest-build build/status-icon common/icon-path)})]
             [:span.project-name
-             (if (and (feature/enabled? :insights-dashboard)
-                      show-insights?)
+             (if show-insights?
                [:a {:href (routes/v1-insights-project-path {:org org-name
                                                             :repo repo-name
                                                             :branch (:default_branch project)

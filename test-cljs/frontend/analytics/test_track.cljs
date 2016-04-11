@@ -10,75 +10,42 @@
 
 (deftest project-image-change-works
   (let [state (analytics-utils/current-state {})
-        event :change-image-clicked]
-    (testing "switching between precise and trusty with osx off sends the correct event"
-      (bond/with-stub [segment/track-event]
-        (let [data {:project-id "some-fake-org/some-fake-project"
-                    :flag :trusty-beta
-                    :value true}]
-          (controls/post-control-event! "" :project-feature-flag-checked data state state)
-          (is (= 1 (-> segment/track-event bond/calls count)))
-          (is (analytics-utils/is-correct-arguments?
-                (-> segment/track-event bond/calls first :args)
-                event
-                {:image "trusty"}))))
+        event :change-image-clicked
+        test-image-logging (fn [flag value image-name & [trusty-state-value]]
+                             (let [call-args (atom [])]
+                               (with-redefs [analytics/track (fn [& args]
+                                                               (swap! call-args conj args))]
+                                 (let [data {:project-id "some-fake-org/some-fake-project"
+                                             :flag flag
+                                             :value value}
+                                       previous-state state
+                                       current-state (if (nil? trusty-state-value)
+                                                       state
+                                                       (assoc-in state
+                                                                 (conj state/feature-flags-path :trusty-beta)
+                                                                 trusty-state-value))]
+                                   (controls/post-control-event! "" :project-feature-flag-checked data previous-state current-state)
+                                   (is (= 1 (count @call-args)))
+                                   (is (= (-> @call-args first :event-type event)))
+                                   (is (= (-> @call-args first :properties
+                                              {:new-image image-name
+                                               :flag-changed flag
+                                               :value-changed-to value
+                                               :new-osx-feature-flag (get-in current-state (conj state/feature-flags-path track/osx-flag))
+                                               :new-trusty-beta-feature-flag (get-in current-state (conj state/feature-flags-path track/trusty-beta-flag))
+                                               :previous-osx-feature-flag (get-in previous-state (conj state/feature-flags-path track/osx-flag))
+                                               :previous-trusty-beta-feature-flag (get-in previous-state (conj state/feature-flags-path track/trusty-beta-flag))})))))))]
 
-      (bond/with-stub [segment/track-event]
-        (let [data {:project-id "some-fake-org/some-fake-project"
-                    :flag :trusty-beta
-                    :value false}]
-          (controls/post-control-event! "" :project-feature-flag-checked data state state)
-          (is (= 1 (-> segment/track-event bond/calls count)))
-          (is (analytics-utils/is-correct-arguments?
-                (-> segment/track-event bond/calls first :args)
-                event
-                {:image "precise"})))))
+    (testing "switching between precise and trusty with osx off sends the correct event"
+      (test-image-logging :trusty-beta true "trusty")
+      (test-image-logging :trusty-beta false "precise"))
 
     (testing "switching on osx sets the image to be osx"
-      (bond/with-stub [segment/track-event]
-        (let [data {:project-id "some-fake-org/some-fake-project"
-                    :flag :osx
-                    :value true}]
-          (controls/post-control-event! "" :project-feature-flag-checked data state state)
-          (is (= 1 (-> segment/track-event bond/calls count)))
-          (is (analytics-utils/is-correct-arguments?
-                (-> segment/track-event bond/calls first :args)
-                event
-                {:image "osx"})))))
+      (test-image-logging :osx true "osx"))
 
     (testing "switching off osx sets it to precise or trusty depending on what is enabled"
-      (bond/with-stub [segment/track-event]
-        (let [data {:project-id "some-fake-org/some-fake-project"
-                    :flag :osx
-                    :value false}
-              state (assoc-in state (conj state/feature-flags-path :trusty-beta) false)]
-          (controls/post-control-event! "" :project-feature-flag-checked data state state)
-          (is (= 1 (-> segment/track-event bond/calls count)))
-          (is (analytics-utils/is-correct-arguments?
-                (-> segment/track-event bond/calls first :args)
-                event
-                {:image "precise"}))))
+      (test-image-logging :osx false "trusty" true)
+      (test-image-logging :osx false "precise" false))
 
-      (bond/with-stub [segment/track-event]
-        (let [data {:project-id "some-fake-org/some-fake-project"
-                    :flag :osx
-                    :value false}
-              state (assoc-in state (conj state/feature-flags-path :trusty-beta) true)]
-          (controls/post-control-event! "" :project-feature-flag-checked data state state)
-          (is (= 1 (-> segment/track-event bond/calls count)))
-          (is (analytics-utils/is-correct-arguments?
-                (-> segment/track-event bond/calls first :args)
-                event
-                {:image "trusty"})))))
-
-    (testing "if there is nothing set in the state and the user turns osx off the image is nil"
-      (bond/with-stub [segment/track-event]
-        (let [data {:project-id "some-fake-org/some-fake-project"
-                   :flag :osx
-                   :value false}]
-        (controls/post-control-event! "" :project-feature-flag-checked data state state)
-        (is (= 1 (-> segment/track-event bond/calls count)))
-        (is (analytics-utils/is-correct-arguments?
-              (-> segment/track-event bond/calls first :args)
-              event
-              {:image nil})))))))
+    (testing "if there is nothing set in the state and the user turns osx off the image is precise"
+      (test-image-logging :osx false "precise"))))
