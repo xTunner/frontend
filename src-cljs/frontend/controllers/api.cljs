@@ -847,22 +847,6 @@
                         %)
                      settings))))
 
-(defmethod api-event [:docs-articles :success]
-  [target message status {:keys [resp context]} state]
-  (if-not (= (get-in state state/docs-search-path) (:query resp))
-    state
-    (-> state
-        (assoc-in state/docs-articles-results-path (:results resp))
-        (assoc-in state/docs-articles-results-query-path (:query resp)))))
-
-(defmethod api-event [:doc-markdown :success]
-  [target message status {:keys [resp context] :as data} state]
-  (assoc-in state (concat state/docs-data-path [(:subpage context) :markdown]) resp))
-
-(defmethod api-event [:doc-manifest :success]
-  [target message status {:keys [resp] :as data} state]
-  (assoc-in state state/docs-data-path (doc-utils/format-doc-manifest resp)))
-
 (defmethod api-event [:user-plans :success]
   [target message status {:keys [resp]} state]
   (assoc-in state state/user-plans-path resp))

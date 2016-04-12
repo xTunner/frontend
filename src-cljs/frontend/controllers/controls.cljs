@@ -467,7 +467,7 @@
                  :events {:success #(analytics/track {:event-type :project-followed
                                                       :current-state current-state
                                                       :properties {:org org-name
-                                                                   :repo repo-name}})}))) 
+                                                                   :repo repo-name}})})))
 
 (defmethod control-event :inaccessible-org-toggled
   [target message {:keys [org-name value]} state]
@@ -1243,10 +1243,6 @@
   [_ _ {:keys [event properties owner path]} _ _]
   (track-and-redirect event properties owner path))
 
-(defmethod control-event :language-testimonial-tab-selected
-  [target message {:keys [index]} state]
-  (assoc-in state state/language-testimonial-tab-path index))
-
 (defmethod control-event :project-feature-flag-checked
   [target message {:keys [project-id flag value]} state]
   (assoc-in state (conj state/feature-flags-path flag) value))
@@ -1259,7 +1255,7 @@
                                          :value value})
   (let [project-name (vcs-url/project-name project-id)
         api-ch (get-in current-state [:comms :api])
-        error-ch (get-in current-state [:comms :errors]) 
+        error-ch (get-in current-state [:comms :errors])
         org-name (vcs-url/org-name project-id)
         repo-name (vcs-url/repo-name project-id)
         vcs-type (vcs-url/vcs-type project-id)]
@@ -1309,61 +1305,6 @@
   [_ _ {:keys [test-index]} state]
   (let [test-path (concat state/tests-path [test-index :show-message])]
     (update-in state test-path not)))
-
-(defmethod post-control-event! :doc-search-submitted
-  [target message {:keys [query]} previous-state current-state]
-  (let [comms (get-in current-state [:comms])]
-    (go (let [api-result (<! (ajax/managed-ajax :get "/search-articles" :params {:query query}))]
-          (put! (:api comms) [:docs-articles (:status api-result) api-result])
-          (when (= :success (:status api-result))
-            (put! (:nav comms) [:navigate! {:path "/docs/search"}]))))))
-
-(defn scroll-home-by-offset!
-  "Scrolls down to the next section of copy on the landing page."
-  [target index]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                                #js [(.-scrollLeft body) (.-scrollTop body)]
-                                #js [(.-scrollLeft body) (* index vh)]
-                                250))))
-
-(defmethod post-control-event! :home-scroll-1st-clicked
-  [target _ _ _ _]
-  (scroll-home-by-offset! target 1))
-
-(defmethod post-control-event! :home-scroll-2nd-clicked
-  [target _ _ _ _]
-  (scroll-home-by-offset! target 2))
-
-(defmethod post-control-event! :home-scroll-3rd-clicked
-  [target _ _ _ _]
-  (scroll-home-by-offset! target 3))
-
-(defmethod post-control-event! :home-scroll-4th-clicked
-  [target _ _ _ _]
-  (scroll-home-by-offset! target 4))
-
-(defmethod post-control-event! :home-scroll-5th-clicked
-  [target _ _ _ _]
-  (scroll-home-by-offset! target 5))
-
-(defmethod post-control-event! :home-scroll-logo-clicked
-  [target message _ previous-state current-state]
-  (let [body (.-body js/document)
-        vh (.-height (goog.dom/getViewportSize))]
-    (.play (goog.fx.dom.Scroll. body
-                         #js [(.-scrollLeft body) (.-scrollTop body)]
-                         #js [(.-scrollLeft body) 0]
-                         0))))
-
-(defmethod control-event :customer-logo-clicked
-  [target message {:keys [customer]} state]
-  (assoc-in state state/customer-logo-customer-path customer))
-
-(defmethod control-event :toolset-clicked
-  [target message {:keys [toolset]} state]
-  (assoc-in state state/selected-toolset-path toolset))
 
 (defmethod control-event :pricing-parallelism-clicked
   [target message {:keys [p]} state]
