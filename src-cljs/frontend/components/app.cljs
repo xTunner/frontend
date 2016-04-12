@@ -6,9 +6,6 @@
             [frontend.components.aside :as aside]
             [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
-            [frontend.components.features :as features]
-            [frontend.components.mobile :as mobile]
-            [frontend.components.press :as press]
             [frontend.components.add-projects :as add-projects]
             [frontend.components.insights :as insights]
             [frontend.components.insights.project :as project-insights]
@@ -20,14 +17,12 @@
             [frontend.components.inspector :as inspector]
             [frontend.components.key-queue :as keyq]
             [frontend.components.placeholder :as placeholder]
-            [frontend.components.pricing :as pricing]
             [frontend.components.project-settings :as project-settings]
             [frontend.components.shared :as shared]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
-            [frontend.components.signup :as signup]
             [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
@@ -68,9 +63,6 @@
     :loading loading
 
     :landing (if (config/enterprise?) enterprise-landing/home landing/home)
-    :pricing pricing/pricing
-
-    :signup signup/signup
 
     :error errors/error-page))
 

@@ -5,7 +5,6 @@
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
-            [frontend.components.drawings :as drawings]
             [frontend.components.shared :as shared]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
@@ -248,10 +247,6 @@
        [:section.home-purpose {:class (when (om/get-state owner [:first-fig-animate]) "animate")}
         [:div.home-top-shelf]
         [:div.home-purpose-content
-         [:div.home-drawings.drawing-left
-          [:figure]
-          [:figure]
-          [:figure drawings/drawing-dashboard]]
          [:div.home-articles
           [:article {:ref "purpose-article"}
            [:h2 "Launches are dead, long live iteration."]
@@ -376,11 +371,7 @@
              [:li "Build artifacts"]
              [:li "Clean build environments"]
              [:li "GitHub Integration"]
-             [:li "Free Open Source Support"]]]]]
-         [:div.home-drawings.drawing-right
-          [:figure]
-          [:figure]
-          [:figure drawings/draw-build-large]]]
+             [:li "Free Open Source Support"]]]]]]
         [:div.home-bottom-shelf
          [:a {:on-click #(raise! owner [:home-scroll-4th-clicked])}
           ;; "Continue" ; hold off on this line of copy, it's cleanr w/o
