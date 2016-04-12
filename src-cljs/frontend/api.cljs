@@ -241,16 +241,16 @@
              api-ch
              :params value))
 
-(defn get-project-code-signing-keys [project-name api-ch]
+(defn get-project-code-signing-keys [project-name vcs-type api-ch]
   (ajax/ajax :get
-             (gstring/format "/api/v1/project/%s/code-signing/osx-keys" project-name)
+             (gstring/format "/api/v1/project/%s/code-signing/osx-keys?vcs-type=%s" project-name vcs-type)
              :get-code-signing-keys
              api-ch
              :context {:project-name project-name}))
 
-(defn set-project-code-signing-keys [project-name file-content file-name password description api-ch uuid on-success]
+(defn set-project-code-signing-keys [project-name vcs-type file-content file-name password description api-ch uuid on-success]
   (ajax/ajax :post
-             (gstring/format "/api/v1/project/%s/code-signing/osx-keys" project-name)
+             (gstring/format "/api/v1/project/%s/code-signing/osx-keys?vcs-type=%s" project-name vcs-type)
              :set-code-signing-keys
              api-ch
              :params {:file-content file-content
@@ -258,12 +258,13 @@
                       :password password
                       :description description}
              :context {:project-name project-name
+                       :vcs-type vcs-type
                        :uuid uuid
                        :on-success on-success}))
 
-(defn delete-project-code-signing-key [project-name id api-ch uuid]
+(defn delete-project-code-signing-key [project-name vcs-type id api-ch uuid]
   (ajax/ajax :delete
-             (gstring/format "/api/v1/project/%s/code-signing/osx-keys/%s" project-name id)
+             (gstring/format "/api/v1/project/%s/code-signing/osx-keys/%s?vcs-type=%s" project-name id vcs-type)
              :delete-code-signing-key
              api-ch
              :context {:project-name project-name
