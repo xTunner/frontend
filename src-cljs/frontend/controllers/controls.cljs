@@ -74,9 +74,11 @@
 (defn button-ajax
   "An ajax/ajax wrapper that releases the current managed-button after the API
   request.  Exists to faciliate migration away from stateful-button."
-  [method url message channel & {:keys [events] :as opts}]
+  [method url message channel & opts]
   (let [uuid frontend.async/*uuid*
-        c (chan)]
+        c (chan)
+        events (-> (apply hash-map opts)
+                   :events)]
     (apply ajax/ajax method url message c opts)
     (go-loop []
       (when-let [[_ status _ :as event] (<! c)]
