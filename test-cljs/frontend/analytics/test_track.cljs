@@ -6,10 +6,10 @@
             [frontend.analytics.core :as analytics]
             [frontend.analytics.track :as track]
             [frontend.analytics.segment :as segment]
-            [frontend.analytics.test-utils :as analytics-utils]))
+            [frontend.test-utils :as test-utils]))
 
 (deftest project-image-change-works
-  (let [state (analytics-utils/current-state {})
+  (let [state (test-utils/current-state {})
         event :change-image-clicked
         test-image-logging (fn [flag value image-name & [trusty-state-value]]
                              (let [call-args (atom [])]
