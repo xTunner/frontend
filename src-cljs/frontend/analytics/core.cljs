@@ -123,9 +123,6 @@
                                  (.getTime (js/Date. (:stop_time build))))
                               1000 60 60)})))
 
-(defn merror-unsupported-event [event]
-  (merror "Cannot log unsupported event type "event", please add it to the list of supported events"))
-
 (defmulti track (fn [data]
                   (when (frontend.config/analytics-enabled?)
                     (:event-type data))))
@@ -141,12 +138,10 @@
                                                                      :current-state current-state})))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
-  (let [{:keys [event properties owner current-state]} event-data]
-    (if (supported-click-and-impression-events (:event event-data))
-      (segment/track-external-click event (supplement-tracking-properties {:properties properties
-                                                                           :owner owner
-                                                                           :current-state current-state}))
-      (merror-unsupported-event (:event event-data)))))
+  (let [{:keys [event :- SupportedEvents properties owner current-state]} event-data]
+    (segment/track-external-click event (supplement-tracking-properties {:properties properties
+                                                                         :owner owner
+                                                                         :current-state current-state}))))
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties owner current-state]} event-data]
