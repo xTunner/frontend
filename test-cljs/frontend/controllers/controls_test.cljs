@@ -66,7 +66,7 @@
 
 (defn failed-event [] "failed")
 
-(deftest button-ajax-success-event-works
+(deftest button-ajax-failed-event-works
   (testing "button-ajax correctly sends a failed event on failed"
     (async done
            (go
@@ -82,7 +82,7 @@
                    (is (= 1 (-> failed-event bond/calls count)))
                    (done))))))))
 
-(deftest button-ajax-failed-event-works
+(deftest button-ajax-success-event-works
   (testing "button-ajax correctly sends a success event on success"
     (async done
            (go
