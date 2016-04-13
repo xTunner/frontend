@@ -17,30 +17,23 @@
   {:event-type s/Keyword
    (s/optional-key :properties) (s/maybe {s/Keyword s/Any})})
 
-(def AnalyticsEvent
-  (merge
-    CoreAnalyticsEvent
-    {:owner s/Any}))
+(defn analytics-event-schema
+  ([] (analytics-event-schema {}))
+  ([schema]
+   (s/conditional :owner (merge schema CoreAnalyticsEvent {:owner s/Any})
+                  :current-state (merge schema CoreAnalyticsEvent {:current-state {s/Any s/Any}}))))
 
-(def AnalyticsEventForControllers
-  (merge
-    CoreAnalyticsEvent
-    {:current-state {s/Any s/Any}}))
+(def AnalyticsEvent
+  (analytics-event-schema))
 
 (def PageviewEvent
-  (merge
-    AnalyticsEventForControllers
-    {:navigation-point s/Keyword}))
+  (analytics-event-schema {:navigation-point s/Keyword}))
 
 (def ExternalClickEvent
-  (merge 
-    AnalyticsEvent
-    {:event s/Keyword}))
+  (analytics-event-schema {:event s/Keyword}))
 
 (def BuildEvent
-  (merge
-    AnalyticsEventForControllers
-    {:build {s/Keyword s/Any}}))
+  (analytics-event-schema {:build {s/Keyword s/Any}}))
 
 ;; Below are the lists of our supported events.
 ;; Events should NOT be view specific. They should be view agnostic and
@@ -58,6 +51,7 @@
     :build-insights-upsell-impression
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
+    :change-image-clicked
     :cancel-plan-clicked
     :insights-bar-clicked
     :login-clicked
@@ -79,11 +73,15 @@
 (def supported-controller-events
   ;; These are the api response events.
   ;; They are in the format of <object>-<action take in the past tense>
-  #{:change-image-clicked
-    :project-branch-changed
+  #{:project-branch-changed
     :project-builds-stopped
     :project-followed
     :project-unfollowed})
+
+(def SupportedEvents
+  (apply s/enum
+         (concat supported-click-and-impression-events
+                 supported-controller-events)))
 
 (defn- add-properties-to-track-from-state [current-state]
   "Get a map of the mutable properties we want to track out of the
@@ -105,12 +103,6 @@
   (-> owner
       (add-properties-to-track-from-owner)
       (merge props)))
-
-(defn- get-user-properties-from-state [current-state]
-  (let [analytics-id (get-in current-state state/user-analytics-id-path)
-        user-data (get-in current-state state/user-path)]
-    {:id analytics-id
-     :user-properties (select-keys user-data (keys common-analytics/UserProperties))}))
 
 (defn- supplement-tracking-properties-from-state [props current-state]
   "Fill in any unsuppplied property values with those supplied
@@ -136,50 +128,59 @@
 
 (defmulti track (fn [data]
                   (when (frontend.config/analytics-enabled?)
-                    (cond
-                      (supported-click-and-impression-events (:event-type data)) :track-click-and-impression-event
-                      (supported-controller-events (:event-type data)) :track-controller-events
-                      :else (:event-type data)))))
+                    (:event-type data))))
 
-(defmethod track :default [data]
-  (when (frontend.config/analytics-enabled?)
-    (merror-unsupported-event (:event-type data))))
+(defn- supplement-tracking-properties [{:keys [properties owner current-state]}]
+  (if owner
+    (supplement-tracking-properties-from-owner properties owner)
+    (supplement-tracking-properties-from-state properties current-state)))
 
-(s/defmethod track :track-click-and-impression-event [event-data :- AnalyticsEvent]
-  (let [{:keys [event-type properties owner]} event-data]
-    (segment/track-event event-type (supplement-tracking-properties-from-owner properties owner))))
-
-(s/defmethod track :track-controller-events [event-data :- AnalyticsEventForControllers]
-  (let [{:keys [event-type properties current-state]} event-data]
-    (segment/track-event event-type (supplement-tracking-properties-from-state properties current-state))))
+(s/defmethod track :default [{:keys [event-type :- SupportedEvents properties owner current-state] :as event-data :- AnalyticsEvent}]
+    (segment/track-event event-type (supplement-tracking-properties {:properties properties
+                                                                     :owner owner
+                                                                     :current-state current-state})))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
-  (let [{:keys [event properties owner]} event-data]
+  (let [{:keys [event properties owner current-state]} event-data]
     (if (supported-click-and-impression-events (:event event-data))
-      (segment/track-external-click event (supplement-tracking-properties-from-owner properties owner))
+      (segment/track-external-click event (supplement-tracking-properties {:properties properties
+                                                                           :owner owner
+                                                                           :current-state current-state}))
       (merror-unsupported-event (:event event-data)))))
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
-  (let [{:keys [navigation-point properties current-state]} event-data]
-    (segment/track-pageview navigation-point (supplement-tracking-properties-from-state properties current-state))))
+  (let [{:keys [navigation-point properties owner current-state]} event-data]
+    (segment/track-pageview navigation-point (supplement-tracking-properties {:properties properties
+                                                                              :owner owner
+                                                                              :current-state current-state}))))
 
 (s/defmethod track :build-triggered [event-data :- BuildEvent]
-  (let [{:keys [build properties owner]} event-data
+  (let [{:keys [build properties owner current-state]} event-data
         props (merge {:project (vcs-url/project-name (:vcs_url build))
                       :build-num (:build_num build)
                       :retry? true}
                      properties)]
-    (segment/track-event :build-triggered (supplement-tracking-properties-from-owner props owner))))
+    (segment/track-event :build-triggered (supplement-tracking-properties {:properties properties
+                                                                           :owner owner
+                                                                           :current-state current-state}))))
 
 (s/defmethod track :view-build [event-data :- BuildEvent]
-  (let [{:keys [build properties current-state]} event-data
+  (let [{:keys [build properties owner current-state]} event-data
         props (merge (build-properties build) properties)
         user (get-in current-state state/user-path)]
-    (segment/track-event :view-build (supplement-tracking-properties-from-state props current-state))
+    (segment/track-event :view-build (supplement-tracking-properties {:properties properties
+                                                                      :owner owner
+                                                                      :current-state current-state}))
     (when (and (:oss build) (build-model/owner? build user))
       (intercom/track :viewed-self-triggered-oss-build
                       {:vcs-url (vcs-url/project-name (:vcs_url build))
                        :outcome (:outcome build)}))))
 
-(s/defmethod track :init-user [event-data :- AnalyticsEventForControllers]
+(defn- get-user-properties-from-state [current-state]
+  (let [analytics-id (get-in current-state state/user-analytics-id-path)
+        user-data (get-in current-state state/user-path)]
+    {:id analytics-id
+     :user-properties (select-keys user-data (keys common-analytics/UserProperties))}))
+
+(s/defmethod track :init-user [event-data :- AnalyticsEvent]
   (segment/identify (get-user-properties-from-state (:current-state event-data))))
