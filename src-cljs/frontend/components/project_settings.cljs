@@ -1463,7 +1463,7 @@
             (om/build common/flashes error-message)
             (om/build body-component body-params)]]]]))))
 
-(defn p12-upload-form [{:keys [project-name]} owner]
+(defn p12-upload-form [{:keys [project-name vcs-type]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -1529,6 +1529,7 @@
                             :type "submit"
                             :disabled (not (and file-content description))
                             :on-click #(do (raise! owner [:upload-p12 {:project-name project-name
+                                                                       :vcs-type vcs-type
                                                                        :description description
                                                                        :password (or password "")
                                                                        :file-content (base64/encodeString file-content)
@@ -1536,7 +1537,7 @@
                                                                        :on-success (comp clear-form-fn close-modal-fn)}]))}])]])))))
 
 
-(defn p12-key-row [{:keys [project-name id filename description uploaded_at]} owner]
+(defn p12-key-row [{:keys [project-name vcs-type id filename description uploaded_at]} owner]
   (reify
     om/IRender
     (render [_]
@@ -1546,7 +1547,7 @@
          [:td filename]
          [:td id]
          [:td (datetime/as-time-since uploaded_at)]
-         [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :id id}])} [:i.delete.material-icons "cancel"]]]))))
+         [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :vcs-type vcs-type :id id}])} [:i.delete.material-icons "cancel"]]]))))
 
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
@@ -1585,7 +1586,8 @@
     om/IRender
     (render [_]
       (let [{:keys [project osx-keys]} project-data
-            project-name (vcs-url/project-name (:vcs_url project))]
+            project-name (vcs-url/project-name (:vcs_url project))
+            vcs-type (project-model/vcs-type project)]
         (html
           [:section.code-signing-page {:data-component `code-signing}
            [:article
@@ -1603,12 +1605,14 @@
               "code-signing documentation."]]
             (if-not (empty? osx-keys)
               (om/build p12-key-table {:rows (->> osx-keys
-                                                  (map (partial merge {:project-name project-name})))})
+                                                  (map (partial merge {:project-name project-name
+                                                                       :vcs-type vcs-type})))})
               (om/build no-keys-empty-state {:project-name project-name}))
             (om/build modal {:id "p12-upload-modal"
                              :title "Upload a New Apple Code Signing Key"
                              :body-component p12-upload-form
-                             :body-params {:project-name project-name}
+                             :body-params {:project-name project-name
+                                           :vcs-type vcs-type}
                              :error-message error-message})]])))))
 
 (defn project-settings [data owner]

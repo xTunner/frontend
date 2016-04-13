@@ -881,7 +881,7 @@
 
 (defmethod post-api-event! [:set-code-signing-keys :success]
   [target message status {:keys [context]} previous-state current-state]
-  (api/get-project-code-signing-keys (:project-name context) (-> current-state :comms :api))
+  (api/get-project-code-signing-keys (:project-name context) (:vcs-type context) (-> current-state :comms :api))
   ((:on-success context))
   (forms/release-button! (:uuid context) status))
 
