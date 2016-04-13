@@ -686,8 +686,9 @@
   https://en.wikipedia.org/wiki/Truth_table#Logical_implication
   osx -> launch-darkly"
   [project]
-  (or (not (project-model/feature-enabled? project :osx))
-      (feature/enabled? :ios-ssh-builds)))
+  (and (or (not (project-model/feature-enabled? project :osx))
+           (feature/enabled? :ios-ssh-builds))
+       (not (project-model/feature-enabled? project :disable-ssh))))
 
 (def tab-tag :li.build-info-tab)
 (def tab-link :a.tab-link)
@@ -741,7 +742,8 @@
                    ")"])]])
 
             (when (and (has-scope :trigger-builds data)
-                       (show-ssh-button? project))
+                       (show-ssh-button? project)
+                       (not (:ssh_disabled build)))
               [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
                [tab-link {:href "#ssh-info"}
                 "Debug via SSH"]])
