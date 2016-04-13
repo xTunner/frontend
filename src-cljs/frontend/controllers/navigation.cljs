@@ -521,37 +521,6 @@
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
 
-(defmethod post-navigated-to! :language-landing
-  [history-imp navigation-point {:keys [language] :as args} previous-state current-state]
-  (let [titles {:ruby "Ruby and Ruby on Rails CI Support"
-                :python "Python Continuous Integration"}
-        descriptions {:ruby "CircleCI makes Continuous Integration for your Ruby project simple and easy. Get started testing for free!"
-                      :python "Get started for free with Continuous Integration and Deployment for your Python projects. CircleCI integrates with any language."}]
-    (when-let [title (get titles language)]
-      (set-page-title! title))
-    (when-let [description (get descriptions language)]
-      (set-page-description! description))))
-
-(defmethod post-navigated-to! :integrations
-  [history-imp navigation-point {:keys [integration] :as args} previous-state current-state]
-  (let [titles {:docker "Integration with Docker Containers"
-                :heroku "Integrate with Heroku Deployment"
-                :saucelabs "Sauce Labs Browser Testing"}
-        descriptions {:docker "CircleCI integrates with your Docker container so you can easily build, run, and ship your applications anywhere."
-                      :heroku "CircleCI integrates seamlessly with Heroku to provide a simple continuous delivery workflow for your organization."
-                      :saucelabs "Integrate with SauceLabs to test against hundreds of desktop and mobile browsers with Selenium WebDriver to get rid of your browser bugs."}]
-    (set-page-title! (get titles integration))
-    (set-page-description! (get descriptions integration))))
-
-(defmethod post-navigated-to! :stories
-  [history-imp navigation-point {:keys [story] :as args} previous-state current-state]
-  (let [titles {:shopify "Shopify's Success with Continuous Integration"
-                :wit "Wit.ai's Success with Continuous Integration"}
-        descriptions {:shopify "See how Shopify has scaled its Continuous Integration efforts with CircleCI and made its developer team of over 130 people more efficient."
-                      :wit ""}]
-    (set-page-title! (get titles story))
-    (set-page-description! (get descriptions story))))
-
 (defmethod navigated-to :admin-settings
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (-> state
