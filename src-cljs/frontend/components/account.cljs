@@ -303,7 +303,7 @@
   [:div.card
    [:div.header
     [:h2
-     "Primary Email Address"]]
+     "Default Email Address"]]
    [:div.body
     [:div.section
      [:form#email_address.form-horizontal
