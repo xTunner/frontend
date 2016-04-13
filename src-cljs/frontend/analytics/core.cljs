@@ -165,11 +165,7 @@
         user (get-in current-state state/user-path)]
     (segment/track-event :view-build (supplement-tracking-properties {:properties properties
                                                                       :owner owner
-                                                                      :current-state current-state}))
-    (when (and (:oss build) (build-model/owner? build user))
-      (intercom/track :viewed-self-triggered-oss-build
-                      {:vcs-url (vcs-url/project-name (:vcs_url build))
-                       :outcome (:outcome build)}))))
+                                                                      :current-state current-state}))))
 
 (defn- get-user-properties-from-state [current-state]
   (let [analytics-id (get-in current-state state/user-analytics-id-path)
