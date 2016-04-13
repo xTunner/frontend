@@ -66,34 +66,35 @@
 
 (defn failed-event [] "failed")
 
+(defn check-button-ajax [{:keys [status success-count failed-count]}]
+  (async done
+         (go
+           (bond/with-spy [success-event failed-event]
+             (bond/with-stub [[ajax/ajax (fn [_ _ _ c _] (go (>! c  ["" status ""])))]]
+               (let [channel (chan)]
+                 (controls/button-ajax "a" "b" "c" channel
+                                       :fake "data"
+                                       :events {:success success-event
+                                                :failed failed-event})
+                 (<! channel)
+                 (is (= success-count (-> success-event bond/calls count)))
+                 (is (= failed-count (-> failed-event bond/calls count)))
+                 (done)))))))
+
 (deftest button-ajax-failed-event-works
   (testing "button-ajax correctly sends a failed event on failed"
-    (async done
-           (go
-             (bond/with-spy [success-event failed-event]
-               (bond/with-stub [[ajax/ajax (fn [_ _ _ c _] (go (>! c  ["" :failed ""])))]]
-                 (let [channel (chan)]
-                   (controls/button-ajax "a" "b" "c" channel
-                                         :fake "data"
-                                         :events {:success success-event
-                                                  :failed failed-event})
-                   (<! channel)
-                   (is (= 0 (-> success-event bond/calls count)))
-                   (is (= 1 (-> failed-event bond/calls count)))
-                   (done))))))))
+    (check-button-ajax {:status :success
+                        :success-count 1
+                        :failed-count 0})))
 
 (deftest button-ajax-success-event-works
   (testing "button-ajax correctly sends a success event on success"
-    (async done
-           (go
-             (bond/with-spy [success-event failed-event]
-               (bond/with-stub [[ajax/ajax (fn [_ _ _ c _] (go (>! c  ["" :success ""])))]]
-                 (let [channel (chan)]
-                   (controls/button-ajax "a" "b" "c" channel
-                                         :fake "data"
-                                         :events {:success success-event
-                                                  :failed failed-event})
-                   (<! channel)
-                   (is (= 1 (-> success-event bond/calls count)))
-                   (is (= 0 (-> failed-event bond/calls count)))
-                   (done))))))))
+    (check-button-ajax {:status :failed
+                        :success-count 0
+                        :failed-count 1})))
+
+(deftest button-ajax-random-status-no-event-fires
+  (testing "a non success or failed event fire no events"
+    (check-button-ajax {:status :foobar
+                        :success-count 0
+                        :failed-count 0})))
