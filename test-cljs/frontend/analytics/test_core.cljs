@@ -51,3 +51,23 @@
       (test-utils/fails-schema-validation #(analytics/track {:event-type :shibbity-ibbity-ima-fake-event
                                                              :owner (test-utils/owner data)})))))
 
+(deftest track-external-click-works
+  (testing "a valid external-click event is fired")
+  (testing "track :external-click is checking for valid event-data")
+  (testing "track :external-click is not allowing non-valid events")
+  )
+
+(deftest track-build-triggered-works
+  (testing "track :build-triggered adds the correct properties")
+  (testing "track :build-triggered is checking for valid event-data")
+  )
+
+(deftest track-view-build-works
+  (testing "track :view-build adds the correct properties")
+  (testing "track :view-build is checking for valid event-data")
+  )
+
+(deftest track-init-user-works
+  (testing "track :init-user adds the correct properties and calls segment/identify")
+  (testing "track :init-user is checking for valid event-data")
+  )
