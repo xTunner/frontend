@@ -201,6 +201,7 @@
 (def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
 (def logging-enabled-path (conj browser-settings-path :logging-enabled))
 (def dismissed-osx-usage-level (conj browser-settings-path :dismissed-osx-usage-level))
+(def dismissed-osx-command-change-banner-path (conj browser-settings-path :dismissed-osx-command-change-banner))
 
 (def add-projects-settings-path (conj settings-path :add-projects))
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
