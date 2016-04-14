@@ -9,7 +9,7 @@
             [frontend.test-utils :as test-utils]))
 
 (deftest project-image-change-works
-  (let [state (test-utils/current-state {})
+  (let [state (test-utils/state {})
         event :change-image-clicked
         test-image-logging (fn [flag value image-name & [trusty-state-value]]
                              (let [call-args (atom [])]

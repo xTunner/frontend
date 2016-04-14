@@ -1,7 +1,6 @@
 (ns frontend.components.builds-table
   (:require [cemerick.url :as url]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.datetime :as datetime]
             [frontend.components.common :as common]
@@ -125,10 +124,9 @@
             ", "
             (for [url urls]
               [:a {:href url
-                   :on-click #(analytics/track {:event-type :pr-link-clicked
-                                                :owner owner
-                                                :properties {:repo (:reponame build)
-                                                             :org (:username build)}})}
+                   :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
+                                                                   :properties {:repo (:reponame build)
+                                                                                :org (:username build)}})}
                "#"
                (let [[_ number] (re-find #"/(\d+)$" url)]
                  (or number "?"))]))])
@@ -138,10 +136,9 @@
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
                 :href (build-model/commit-url build)
-                :on-click #(analytics/track {:event-type :revision-link-clicked
-                                             :owner owner
-                                             :properties {:repo (:reponame build)
-                                                          :org (:username build)}})}
+                :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
+                                                                :properties {:repo (:reponame build)
+                                                                             :org (:username build)}})}
             (build-model/github-revision build)])]]]]))
 
 (defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]

@@ -1,6 +1,5 @@
 (ns frontend.components.dashboard
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
@@ -59,10 +58,9 @@
                   [:a {:href (routes/v1-org-settings-path {:org (:plan_org_name diagnostic)
                                                            :vcs_type (:vcs_type project)
                                                            :_fragment "linux-pricing"})
-                       :on-click #(analytics/track {:event-type :add-more-containers-clicked
-                                                    :owner owner
-                                                    :properties {:org org-name
-                                                                 :repo repo-name}})}
+                       :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                       :properties {:org org-name
+                                                                                    :repo repo-name}})}
                    "Add More Containers"]]])]]))))))
 
 (defn dashboard [data owner]

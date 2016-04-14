@@ -1,7 +1,6 @@
 (ns frontend.components.aside
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :refer [lower-case]]
-            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.license :as license]
@@ -88,10 +87,9 @@
                                  :title  (str
                                            (project-model/project-name project)
                                            " settings")
-                                 :on-click #(analytics/track {:event-type :project-settings-clicked
-                                                              :owner owner
-                                                              :properties {:org org-name
-                                                                           :repo repo-name}})}
+                                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                                 :properties {:org org-name
+                                                                                              :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
 (defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
@@ -120,11 +118,10 @@
                                                        :org (:username project)
                                                        :repo (:reponame project)
                                                        :branch (name (:identifier branch))})
-                      :on-click #(analytics/track {:event-type :branch-clicked
-                                                   :owner owner
-                                                   :properties {:repo repo-name
-                                                                :org org-name
-                                                                :branch (name (:identifier branch))}})}
+                      :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
+                                                                      :properties {:repo repo-name
+                                                                                   :org org-name
+                                                                                   :branch (name (:identifier branch))}})}
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
@@ -174,10 +171,9 @@
                 [:a.project-name {:href (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
                                                                            :org (:username project)
                                                                            :repo (:reponame project)})
-                                  :on-click #(analytics/track {:event-type :project-clicked
-                                                               :owner owner
-                                                               :properties {:org org-name
-                                                                            :repo repo-name}})}
+                                  :on-click #((om/get-shared owner :track-event) {:event-type :project-clicked
+                                                                                  :properties {:org org-name
+                                                                                               :repo repo-name}})}
                  (project-model/project-name project)]
                 (project-settings-link {:project project} owner)]
 

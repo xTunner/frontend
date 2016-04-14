@@ -194,7 +194,8 @@
              ;; note that changing ab-tests dynamically requires reinstalling om
              :ab-tests ab-tests
              :timer-atom (timer/initialize)
-             :_app-state-do-not-use state}
+             :_app-state-do-not-use state
+             :track-event #(analytics/track (assoc % :current-state @state))}
     ;; :instrument (let [methods (cond-> om/pure-methods
     ;;                             instrument? instrumentation/instrument-methods)
     ;;                   descriptor (om/specify-state-methods! (clj->js methods))]

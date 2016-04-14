@@ -13,7 +13,8 @@
   was passed."
   [f]
   (let [calls (atom [])]
-    (with-redefs [segment/track-event (fn [& args] (swap! calls conj {:args args}))]
+    (with-redefs [segment/track-event (fn [event & [properties]]
+                                        (swap! calls conj {:args (list event properties)}))]
       (f)
       @calls)))
 
@@ -22,34 +23,26 @@
         data {:view :a-view
               :user "foobar-user"
               :repo "foobar-repo"
-              :org "foobar-org"}]
-    (testing "track :default works with a owner"
-      (let [calls (stub-segment-track-event #(analytics/track {:event-type click-event
-                                                               :owner (test-utils/owner data)}))]
-        (is (= 1 (count calls)))
-        (is (= click-event (-> calls first :args first)))
-        (is (submap? data (-> calls first :args second)))))
-
+              :org "foobar-org"}
+        current-state (test-utils/state data)]
     (testing "track :default works with a current-state"
       (let [calls (stub-segment-track-event #(analytics/track {:event-type click-event
-                                                               :current-state (test-utils/current-state data)}))]
+                                                               :current-state current-state}))]
         (is (= 1 (count calls)))
         (is (= click-event (-> calls first :args first)))
         (is (submap? data (-> calls first :args second)))))
 
-    (testing "you can't call track with a owner and a current-state"
-      (test-utils/fails-schema-validation #(analytics/track {:event-type click-event
-                                                             :owner (test-utils/owner data)
-                                                             :current-state (test-utils/current-state data)})))
+    (testing "you need an event-type"
+      (test-utils/fails-schema-validation #(analytics/track {:current-state current-state})))
 
     (testing "track :default is checking for valid event-data"
       (test-utils/fails-schema-validation #(analytics/track {:event-type click-event
-                                                             :owner (test-utils/owner data)
+                                                             :current-state current-state
                                                              :shibbity-doo-bot "heyooooo"})))
 
     (testing "track :default is not allowing non-valid events"
       (test-utils/fails-schema-validation #(analytics/track {:event-type :shibbity-ibbity-ima-fake-event
-                                                             :owner (test-utils/owner data)})))))
+                                                             :current-state current-state})))))
 
 (deftest track-external-click-works
   (testing "a valid external-click event is fired")

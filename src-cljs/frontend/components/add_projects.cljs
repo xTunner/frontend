@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.analytics.core :as analytics]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
             [frontend.config :as config]
@@ -287,10 +286,9 @@
       (html
         [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org selected-org-login
                                                                       :_fragment "osx-pricing"})
-                                  :on-click #(analytics/track {:event-type :select-plan-clicked
-                                                               :owner owner
-                                                               :properties {:org selected-org-login
-                                                                            :plan-type (pm/osx-plan-type)}})}
+                                  :on-click #((om/get-shared owner :track-event) {:event-type :select-plan-clicked
+                                                                                  :properties {:org selected-org-login
+                                                                                               :plan-type (pm/osx-plan-type)}})}
 
          "Select Plan"]))))
 
@@ -304,11 +302,10 @@
                 template "osx-trial"]
             [:a.btn.trial {:on-click #(do
                                         (raise! owner [:activate-plan-trial {plan-type {:template template}}])
-                                        (analytics/track {:event-type :start-trial-clicked
-                                                          :owner owner
-                                                          :properties {:org selected-org-login
-                                                                       :plan-type plan-type
-                                                                       :template template}}))
+                                        ((om/get-shared owner :track-event) {:event-type :start-trial-clicked
+                                                                             :properties {:org selected-org-login
+                                                                                          :plan-type plan-type
+                                                                                          :template template}}))
                            :data-spinner true}
              "Start 2 Week Trial"]))))))
 
@@ -316,10 +313,9 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (analytics/track {:event-type :no-plan-banner-impression
-                        :owner owner
-                        :properties {:org selected-org-login
-                                     :plan-type (pm/osx-plan-type)}}))
+      ((om/get-shared owner :track-event) {:event-type :no-plan-banner-impression
+                                           :properties {:org selected-org-login
+                                                        :plan-type (pm/osx-plan-type)}}))
     om/IRender
     (render [_]
       (html
