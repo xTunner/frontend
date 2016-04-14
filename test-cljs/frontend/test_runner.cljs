@@ -17,7 +17,8 @@
             [frontend.test-routes]
             [frontend.test-pusher]
             [frontend.analytics.test-track]
-            [frontend.analytics.test-segment]))
+            [frontend.analytics.test-segment]
+            [frontend.analytics.test-core]))
 
 (aset js/window "renderContext" "{}")
 (aset js/window "SVGInjector" (fn [node] node))
@@ -37,4 +38,5 @@
            'frontend.test-datetime
            'frontend.test-routes
            'frontend.analytics.test-track
-           'frontend.analytics.test-segment)
+           'frontend.analytics.test-segment
+           'frontend.analytics.test-core)

@@ -13,28 +13,6 @@
             [goog.style]
             [goog.string :as gstr]))
 
-(def CoreAnalyticsEvent
-  {:event-type s/Keyword
-   (s/optional-key :properties) (s/maybe {s/Keyword s/Any})})
-
-(defn analytics-event-schema
-  ([] (analytics-event-schema {}))
-  ([schema]
-   (s/conditional :owner (merge schema CoreAnalyticsEvent {:owner s/Any})
-                  :current-state (merge schema CoreAnalyticsEvent {:current-state {s/Any s/Any}}))))
-
-(def AnalyticsEvent
-  (analytics-event-schema))
-
-(def PageviewEvent
-  (analytics-event-schema {:navigation-point s/Keyword}))
-
-(def ExternalClickEvent
-  (analytics-event-schema {:event s/Keyword}))
-
-(def BuildEvent
-  (analytics-event-schema {:build {s/Keyword s/Any}}))
-
 ;; Below are the lists of our supported events.
 ;; Events should NOT be view specific. They should be view agnostic and
 ;; include a view in the properties.
@@ -82,6 +60,28 @@
   (apply s/enum
          (concat supported-click-and-impression-events
                  supported-controller-events)))
+
+(def CoreAnalyticsEvent
+  {:event-type s/Keyword
+   (s/optional-key :properties) (s/maybe {s/Keyword s/Any})})
+
+(defn analytics-event-schema
+  ([] (analytics-event-schema {}))
+  ([schema]
+   (s/conditional :owner (merge CoreAnalyticsEvent {:owner s/Any} schema)
+                  :current-state (merge CoreAnalyticsEvent {:current-state {s/Any s/Any}} schema))))
+
+(def AnalyticsEvent
+  (analytics-event-schema {:event-type SupportedEvents}))
+
+(def PageviewEvent
+  (analytics-event-schema {:navigation-point s/Keyword}))
+
+(def ExternalClickEvent
+  (analytics-event-schema {:event s/Keyword}))
+
+(def BuildEvent
+  (analytics-event-schema {:build {s/Keyword s/Any}}))
 
 (defn- add-properties-to-track-from-state [current-state]
   "Get a map of the mutable properties we want to track out of the
@@ -132,10 +132,11 @@
     (supplement-tracking-properties-from-owner properties owner)
     (supplement-tracking-properties-from-state properties current-state)))
 
-(s/defmethod track :default [{:keys [event-type :- SupportedEvents properties owner current-state] :as event-data :- AnalyticsEvent}]
+(s/defmethod track :default [event-data :- AnalyticsEvent]
+  (let [{:keys [event-type properties owner current-state]} event-data]
     (segment/track-event event-type (supplement-tracking-properties {:properties properties
                                                                      :owner owner
-                                                                     :current-state current-state})))
+                                                                     :current-state current-state}))))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event :- SupportedEvents properties owner current-state]} event-data]
@@ -161,8 +162,7 @@
 
 (s/defmethod track :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties owner current-state]} event-data
-        props (merge (build-properties build) properties)
-        user (get-in current-state state/user-path)]
+        props (merge (build-properties build) properties)]
     (segment/track-event :view-build (supplement-tracking-properties {:properties properties
                                                                       :owner owner
                                                                       :current-state current-state}))))
