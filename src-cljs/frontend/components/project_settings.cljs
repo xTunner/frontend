@@ -495,7 +495,7 @@
             (describe-flag {:flag :oss
                             :title "Free and Open Source"
                             :blurb [:p
-                                   "Be part of our F/OSS beta! Organizations now have three free containers "
+                                   "Organizations have three free containers "
                                     "reserved for F/OSS projects; enabling this will allow this project's "
                                     "builds to use them and let others see your builds, both through the "
                                     "web UI and the API."]})
