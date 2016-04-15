@@ -960,7 +960,11 @@
               [:div.summary-item
                (build-canceler canceler github-endpoint)]]])
           [:div.card
-           [:div.small-emphasis "Commits (" (-> build :all_commit_details count) ")"]
+           [:div.small-emphasis
+            (let [n (-> build :all_commit_details count)]
+              (if (:all_commit_details_truncated build)
+                (gstring/format "Last %d Commits" n)
+                (gstring/format "Commits (%d)" n)))]
            (om/build build-commits build-data)]
           [:div.build-head-wrapper
            [:div.build-head
