@@ -74,11 +74,11 @@
 (def AnalyticsEvent
   (analytics-event-schema {:event-type SupportedEvents}))
 
+(def ExternalClickEvent
+  (analytics-event-schema {:event SupportedEvents}))
+
 (def PageviewEvent
   (analytics-event-schema {:navigation-point s/Keyword}))
-
-(def ExternalClickEvent
-  (analytics-event-schema {:event s/Keyword}))
 
 (def BuildEvent
   (analytics-event-schema {:build {s/Keyword s/Any}}))
@@ -120,7 +120,7 @@
                                                                      :current-state current-state}))))
 
 (s/defmethod track :external-click [event-data :- ExternalClickEvent]
-  (let [{:keys [event :- SupportedEvents properties current-state]} event-data]
+  (let [{:keys [event properties current-state]} event-data]
     (segment/track-external-click event (supplement-tracking-properties {:properties properties
                                                                          :current-state current-state}))))
 
@@ -135,13 +135,13 @@
                       :build-num (:build_num build)
                       :retry? true}
                      properties)]
-    (segment/track-event :build-triggered (supplement-tracking-properties {:properties properties
+    (segment/track-event :build-triggered (supplement-tracking-properties {:properties props
                                                                            :current-state current-state}))))
 
 (s/defmethod track :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
         props (merge (build-properties build) properties)]
-    (segment/track-event :view-build (supplement-tracking-properties {:properties properties
+    (segment/track-event :view-build (supplement-tracking-properties {:properties props
                                                                       :current-state current-state}))))
 
 (defn- get-user-properties-from-state [current-state]
