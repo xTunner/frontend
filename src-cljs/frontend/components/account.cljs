@@ -308,7 +308,7 @@
     [:div.section
      [:form#email_address.form-horizontal
       [:div
-       [:p "These are the email addressed associated with your GitHub and Bitbucket accounts."]
+       [:p "These are the email addresses associated with your GitHub and Bitbucket organizations."]
        [:select.form-control
         {:on-change #(let [email (-> % .-target .-value)]
                        (raise! owner [:preferences-updated {:selected_email email}]))
@@ -369,7 +369,7 @@
           [:div.header
            [:h2 "Email preferences"]
            [:div
-            [:label "Choose an account"]
+            [:label "Choose an organization"]
             [:select.form-control
              {:on-change #(let [value (-> % .-target .-value)]
                             (om/set-state! owner
