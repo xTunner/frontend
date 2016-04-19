@@ -148,3 +148,15 @@
 (def example-user-plans-piggieback
   [(-> {:org_name "circleci"}
        (assoc :plans [example-piggieback-plan (example-plan :free)]))])
+
+(defn state [{:keys [view user repo org state]}]
+  (merge {:current-user {:login (or user "test-user")}
+          :navigation-point (or view :test-view)
+          :navigation-data {:repo (or repo "test-view")
+                            :org (or org "test-org")}}
+         state))
+
+(defn fails-schema-validation
+  "Ensure that a fn fails schema validation."
+  [f]
+  (is (thrown-with-msg? js/Error #"Input to .* does not match schema:" (f))))
