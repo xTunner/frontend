@@ -458,12 +458,14 @@
         vcs-url (:vcs_url repo)
         project (vcs-url/project-name vcs-url)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)]
+
     (button-ajax :post
-                 (api-path/project-follow (:vcs_type repo) project)
+                 (api-path/project-follow vcs-type project)
                  :follow-repo
                  api-ch
-                 :params {:vcs-type (:vcs_type repo)}
+                 :params {:vcs-type vcs-type}
                  :context repo
                  :events {:success #(analytics/track {:event-type :project-followed
                                                       :current-state current-state
@@ -501,12 +503,13 @@
         vcs-url (:vcs_url repo)
         project (vcs-url/project-name vcs-url)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)]
     (button-ajax :post
-                 (api-path/project-unfollow (:vcs_type repo) project)
+                 (api-path/project-unfollow vcs-type project)
                  :unfollow-repo
                  api-ch
-                 :params {:vcs-type (:vcs_type repo)}
+                 :params {:vcs-type vcs-type}
                  :context repo
                  :events {:success #(analytics/track {:event-type :project-unfollowed
                                                       :current-state current-state
@@ -520,12 +523,13 @@
         login (get-in current-state state/user-login-path)
         project (vcs-url/project-name vcs-url)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
+        repo-name (vcs-url/repo-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)]
     (button-ajax :post
-                 (api-path/project-unfollow (:vcs_type repo) project)
+                 (api-path/project-unfollow vcs-type project)
                  :unfollow-project
                  api-ch
-                 :params {:vcs-type (:vcs_type repo)}
+                 :params {:vcs-type vcs-type}
                  :context {:project-id project-id}
                  :events {:success #(analytics/track {:event-type :project-unfollowed
                                                       :current-state current-state
