@@ -1,7 +1,6 @@
 (ns frontend.components.project-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
-            [frontend.analytics.core :as analytics]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
@@ -243,8 +242,7 @@
                [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                         :vcs_type (:vcs_type project)
                                                         :_fragment "linux-pricing"})
-                    :on-click #(analytics/track {:event-type :add-more-containers-clicked
-                                                 :owner owner})}
+                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked})}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial

@@ -1,6 +1,5 @@
 (ns frontend.components.common
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -203,15 +202,13 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (analytics/track {:event-type :signup-impression
-                        :owner owner}))
+      ((om/get-shared owner :track-event) {:event-type :signup-impression}))
     om/IRender
     (render [_]
       (html
         [:a.btn.btn-cta {:href "/signup"
                          :role "button"
-                         :on-mouse-up #(analytics/track {:event-type :signup-clicked
-                                                         :owner owner})}
+                         :on-mouse-up #((om/get-shared owner :track-event) {:event-type :signup-clicked})}
          (str (sign-up-text))]))))
 
 (defn feature-icon [name]

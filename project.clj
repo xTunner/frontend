@@ -95,6 +95,10 @@
                        :dev-test {:source-paths ["src-cljs" "test-cljs"]
                                   :compiler {:output-to "resources/public/cljs/dev-test/frontend-dev.js"
                                              :output-dir "resources/public/cljs/dev-test"
+                                             ;; This is the default when we have :optimizations :advanced. It causes some
+                                             ;; unexpected behavior when using with-redefs, so leaving it on so dev-test
+                                             ;; and test behave more similarly.
+                                             :static-fns true
                                              :optimizations :none
                                              :main frontend.test-runner}}
 

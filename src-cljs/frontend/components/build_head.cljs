@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.analytics.core :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
@@ -349,9 +348,8 @@
                           "Python" "/docs/test-metadata#python"
                           "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
                           "/docs/test-metadata#metadata-collection-in-custom-test-steps")
-                  :on-mouse-up #(analytics/track {:event-type :set-up-junit-clicked
-                                                  :owner owner
-                                                  :properties {:language language}})})
+                  :on-mouse-up #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
+                                                                     :properties {:language language}})})
     "Set up your test runner to output in JUnit-style XML"] ", so we can:"
    [:ul
     [:li "Show a summary of all test failures across all containers"]
@@ -634,8 +632,7 @@
         [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
                                    :title commit
-                                   :on-click #(analytics/track {:event-type :revision-link-clicked
-                                                                :owner owner})}
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked})}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -817,8 +814,7 @@
      ", "
      (for [url urls]
        [:a {:href url
-            :on-click #(analytics/track {:event-type :pr-link-clicked
-                                         :owner owner})}
+            :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
         "#"
         (let [[_ number] (re-find #"/(\d+)$" url)]
           (or number "?"))]))]])
@@ -924,10 +920,9 @@
                [:div.summary-item
                 [:span.summary-label "Parallelism: "]
                 [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                           :on-click #(analytics/track {:event-type :parallelism-clicked
-                                                                        :owner owner
-                                                                        :properties {:repo (project-model/repo-name project)
-                                                                                     :org (project-model/org-name project)}})
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                                                                           :properties {:repo (project-model/repo-name project)
+                                                                                                        :org (project-model/org-name project)}})
                                            :href (build-model/path-for-parallelism build)}
                  (let [parallelism (str (:parallel build) "x")]
                    (if (enterprise?)

@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [frontend.async :refer [raise!]]
             [frontend.routes :as routes]
-            [frontend.analytics.core :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]

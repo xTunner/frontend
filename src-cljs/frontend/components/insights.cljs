@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.analytics.core :as analytics]
             [frontend.routes :as routes]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
@@ -233,9 +232,8 @@
                                        (gstring/format "%s in %s"
                                                        (gstring/toTitleCase (unexterned-prop % "outcome"))
                                                        duration-str)))})
-        (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked 
-                                             :owner owner
-                                             :properties {:build-url (unexterned-prop % "build_url")}})})
+        (.on #js {"click" #((om/get-shared owner :track-event) {:event-type :insights-bar-clicked 
+                                                                :properties {:build-url (unexterned-prop % "build_url")}})})
         (.select "rect.bar")
         (.attr #js {"class" #(str "bar " (-> %
                                              (unexterned-prop "outcome")
@@ -253,9 +251,8 @@
                                      (let [duration-str (datetime/as-duration (unexterned-prop % "queued_time_millis"))]
                                        (gstring/format "Queue time %s" duration-str)))})
 
-        (.on #js {"click" #(analytics/track {:event-type :insights-bar-clicked
-                                             :owner owner
-                                             :properties {:build-url (unexterned-prop % "build_url")}})})
+        (.on #js {"click" #((om/get-shared owner :track-event) {:event-type :insights-bar-clicked
+                                                                :properties {:build-url (unexterned-prop % "build_url")}})})
         (.select "rect.bar")
         (.attr #js {"y" y-zero
                     "x" #(x-scale (unexterned-prop % "build_num"))
@@ -398,10 +395,9 @@
     om/IDidMount
     (did-mount [_]
       (when (not show-insights?)
-        (analytics/track {:event-type :build-insights-upsell-impression
-                          :owner owner
-                          :properties {:repo (project-model/repo-name project)
-                                       :org (project-model/org-name project)}})))
+        ((om/get-shared owner :track-event) {:event-type :build-insights-upsell-impression
+                                             :properties {:repo (project-model/repo-name project)
+                                                          :org (project-model/org-name project)}})))
     om/IRender
     (render [_]
       (html
@@ -439,10 +435,9 @@
                                        [:div.message "This release of Insights is only available for repos belonging to paid plans."]
                                        [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))
                                                                                              :vcs_type (:vcs_type project)})
-                                                         :on-click #(analytics/track {:event-type :build-insights-upsell-click
-                                                                                      :owner owner
-                                                                                      :properties  {:repo repo-name
-                                                                                                    :org org-name}})} "Upgrade here"]]
+                                                         :on-click #((om/get-shared owner :track-event) {:event-type :build-insights-upsell-click
+                                                                                                         :properties  {:repo repo-name
+                                                                                                                       :org org-name}})} "Upgrade here"]]
                 (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
                 :else
                 (list

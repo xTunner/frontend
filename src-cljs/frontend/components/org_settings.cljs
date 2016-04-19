@@ -6,7 +6,6 @@
             [frontend.datetime :as datetime]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [frontend.analytics.core :as analytics]
             [frontend.analytics.track :as analytics-track]
             [frontend.models.organization :as org-model]
             [frontend.models.plan :as pm]
@@ -406,10 +405,9 @@
                                                                                                      :description (gstring/format "OS X %s - $%d/month "
                                                                                                                                   (clojure.string/capitalize (name plan-id))
                                                                                                                                   (:price plan-data))}])
-                                                               (analytics/track {:event-type :new-plan-clicked
-                                                                                 :owner owner
-                                                                                 :properties {:plan-type (pm/osx-plan-type)
-                                                                                              :plan plan-id}}))}))
+                                                               ((om/get-shared owner :track-event) {:event-type :new-plan-clicked
+                                                                                                    :properties {:plan-type (pm/osx-plan-type)
+                                                                                                                 :plan plan-id}}))}))
 
               (when (and trial-starts-here? (not (pm/osx? plan)))
                 (let [template "osx-trial"
@@ -422,10 +420,9 @@
                        :data-failed-text "Failed"
                        :on-click #(do
                                     (raise! owner [:activate-plan-trial {plan-type {:template template}}])
-                                    (analytics/track {:event-type :start-trial-clicked
-                                                      :owner owner
-                                                      :properties {:plan-type plan-type
-                                                                   :template template}}))}
+                                    ((om/get-shared owner :track-event) {:event-type :start-trial-clicked
+                                                                         :properties {:plan-type plan-type
+                                                                                      :template template}}))}
                       "start a 2 week free trial"])]))]]
             (cond
               trial-starts-here?
@@ -512,9 +509,8 @@
                      [:a.btn.btn-large.btn-primary.cancel
                       {:href "#cancel"
                        :disabled (when-not button-clickable? "disabled")
-                       :on-click #(analytics/track {:event-type :cancel-plan-clicked
-                                                    :owner owner
-                                                    :properties {:repo nil}})}
+                       :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
+                                                                       :properties {:repo nil}})}
                       "Cancel plan"]
                      [:button.btn.btn-large.btn-primary.upgrade
                       {:data-success-text "Saved",

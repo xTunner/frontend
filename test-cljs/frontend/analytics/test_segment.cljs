@@ -91,5 +91,6 @@
     (test-utils/fails-schema-validation #(segment/track-external-click :event {}))
     (test-utils/fails-schema-validation #(segment/track-external-click "event" logged-out-data)))
   (testing "track-external-click returns a channel"
+
     (let [ch (segment/track-external-click :event logged-out-data)]
       (is (= cljs.core.async.impl.channels/ManyToManyChannel (type ch)))))))

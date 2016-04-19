@@ -3,7 +3,6 @@
             [clojure.set :as set]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.analytics.core :as analytics]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.project.common :as project]
@@ -220,8 +219,7 @@
            [:input.btn
             {:on-click #(do
                           (om/set-state! owner :clicked-join? true)
-                          (analytics/track {:event-type :beta-join-clicked
-                                            :owner owner})
+                          ((om/get-shared owner :track-event) {:event-type :beta-join-clicked})
                           false)
              :type "submit"
              :value "Join Beta Program"}]
@@ -244,8 +242,7 @@
             [:input.btn
             {:on-click #(do
                           (set-beta-program-preference! owner true)
-                          (analytics/track {:event-type :beta-accept-terms-clicked
-                                            :owner owner})
+                          ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked })
                           false)
              :type "submit"
              :value "Accept"}]])]]))))
@@ -263,8 +260,7 @@
           [:input.btn.btn-danger
            {:on-click #(do
                          (set-beta-program-preference! owner false)
-                         (analytics/track {:event-type :beta-leave-clicked
-                                           :owner owner})
+                         ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked})
                          false)
             :type "submit"
             :value "Leave Beta Program"}]]]

@@ -1,7 +1,6 @@
 (ns frontend.components.landing
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
@@ -36,8 +35,7 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (analytics/track {:event-type :signup-impression
-                        :owner owner}))
+      ((om/get-shared owner :track-event) {:event-type :signup-impression}))
     om/IRender
     (render [_]
       (html
@@ -46,8 +44,7 @@
                            {:class cta-class
                             :href "/signup"
                             :role "button"
-                            :on-mouse-up #(analytics/track {:event-type :signup-clicked
-                                                            :owner owner})})
+                            :on-mouse-up #((om/get-shared owner :track-event) {:event-type :signup-clicked})})
            (str (common/sign-up-text))]
           [:a.home-action
            {:href  (auth-url :destination "/dashboard")

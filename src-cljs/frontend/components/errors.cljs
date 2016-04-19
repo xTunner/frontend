@@ -1,6 +1,5 @@
 (ns frontend.components.errors
   (:require [frontend.state :as state]
-            [frontend.analytics.core :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.utils :as utils :include-macros true]

@@ -1,7 +1,6 @@
 (ns frontend.components.build-timings
   (:require [om.core :as om :include-macros true]
             [goog.string :as gstring]
-            [frontend.analytics.core :as analytics]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build]
             [frontend.models.project :as project-model]
@@ -225,8 +224,7 @@
           (draw-chart! build)
           (om/set-state! owner [:loading?] false)
           (om/set-state! owner [:drawn?] true))
-        (analytics/track {:event-type :build-timing-upsell-impression
-                          :owner owner})))
+        ((om/get-shared owner :track-event) {:event-type :build-timing-upsell-impression})))
     om/IRenderState
     (render-state [_ {:keys [loading?]}]
       (html
@@ -238,6 +236,5 @@
             [:svg#build-timings]]
            [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
             [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (:org_name plan) :vcs_type (:vcs_type project)})
-                              :on-click #(analytics/track {:event-type :build-timing-upsell-click
-                                                           :owner owner})}
+                              :on-click #((om/get-shared owner :track-event) {:event-type :build-timing-upsell-click})}
              "upgrade here."]])]))))
