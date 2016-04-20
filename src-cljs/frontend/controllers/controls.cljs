@@ -89,6 +89,32 @@
         (>! channel event)
         (recur)))))
 
+(defn toggle-project
+  "Toggle follow and unfollow project repos."
+  [current-state vcs-url context control-event follow-path]
+  (let [api-ch (get-in current-state [:comms :api])
+        login (get-in current-state state/user-login-path)
+        project (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        repo-name (vcs-url/repo-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)
+        analytics-event (case control-event
+                          :follow-repo :project-followed
+                          :follow-project :project-followed
+                          :unfollow-repo :project-unfollowed
+                          :unfollow-project :project-unfollowed)]
+
+      (button-ajax :post
+                  (follow-path vcs-type project)
+                  control-event
+                  api-ch
+                  :context context
+                  :events {:success #(analytics/track {:event-type analytics-event
+                                                       :current-state current-state
+                                                       :properties {:org org-name
+                                                                    :repo repo-name
+                                                                    :vcs-type vcs-type}})})))
+
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti control-event
@@ -453,24 +479,8 @@
 
 (defmethod post-control-event! :followed-repo
   [target message repo previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        login (get-in current-state state/user-login-path)
-        vcs-url (:vcs_url repo)
-        project (vcs-url/project-name vcs-url)
-        org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)
-        vcs-type (vcs-url/vcs-type vcs-url)]
-
-    (button-ajax :post
-                 (api-path/project-follow vcs-type project)
-                 :follow-repo
-                 api-ch
-                 :params {:vcs-type vcs-type}
-                 :context repo
-                 :events {:success #(analytics/track {:event-type :project-followed
-                                                      :current-state current-state
-                                                      :properties {:org org-name
-                                                                   :repo repo-name}})})))
+  (toggle-project current-state (:vcs_url repo) repo 
+                  :follow-repo api-path/project-follow))
 
 (defmethod control-event :inaccessible-org-toggled
   [target message {:keys [org-name value]} state]
@@ -479,62 +489,20 @@
 
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        login (get-in current-state state/user-login-path)
-        project (vcs-url/project-name vcs-url)
-        org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)
-        vcs-type (vcs-url/vcs-type vcs-url)]
-    (button-ajax :post
-                 (api-path/project-follow vcs-type project)
-                 :follow-project
-                 api-ch
-                 :context {:project-id project-id}
-                 :events {:success #(analytics/track {:event-type :project-followed
-                                                      :current-state current-state
-                                                      :properties {:org org-name
-                                                                   :repo repo-name}})})))
+  (toggle-project current-state vcs-url {:project-id project-id} 
+                  :follow-project api-path/project-follow))
 
 
 (defmethod post-control-event! :unfollowed-repo
   [target message repo previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        login (get-in current-state state/user-login-path)
-        vcs-url (:vcs_url repo)
-        project (vcs-url/project-name vcs-url)
-        org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)
-        vcs-type (vcs-url/vcs-type vcs-url)]
-    (button-ajax :post
-                 (api-path/project-unfollow vcs-type project)
-                 :unfollow-repo
-                 api-ch
-                 :params {:vcs-type vcs-type}
-                 :context repo
-                 :events {:success #(analytics/track {:event-type :project-unfollowed
-                                                      :current-state current-state
-                                                      :properties {:org org-name
-                                                                   :repo repo-name}})})))
+  (toggle-project current-state (:vcs_url repo) repo 
+                  :unfollow-repo api-path/project-unfollow))
 
 
 (defmethod post-control-event! :unfollowed-project
   [target message {:keys [vcs-url project-id] :as repo} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        login (get-in current-state state/user-login-path)
-        project (vcs-url/project-name vcs-url)
-        org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)
-        vcs-type (vcs-url/vcs-type vcs-url)]
-    (button-ajax :post
-                 (api-path/project-unfollow vcs-type project)
-                 :unfollow-project
-                 api-ch
-                 :params {:vcs-type vcs-type}
-                 :context {:project-id project-id}
-                 :events {:success #(analytics/track {:event-type :project-unfollowed
-                                                      :current-state current-state
-                                                      :properties {:org org-name
-                                                                   :repo repo-name}})})))
+  (toggle-project current-state vcs-url {:project-id project-id}
+                  :unfollow-project api-path/project-unfollow))
 
 (defmethod post-control-event! :stopped-building-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
