@@ -136,7 +136,7 @@
   (if (and (= :build (:navigation-point state))
            (not (state-utils/stale-current-build? state project-name build-num)))
     ;; page didn't change, just switched tabs
-    (assoc-in state state/build-header-tab-path tab)
+    (assoc-in state state/navigation-tab-path tab)
     ;; navigated to page, load everything
     (-> state
         state-utils/clear-page-state
@@ -427,7 +427,7 @@
   (-> state
       state-utils/clear-page-state
       (assoc :navigation-point navigation-point)
-      (assoc :navigation-data args)
+      (assoc-in state/navigation-data args)
       (assoc-in state/org-settings-subpage-path subpage)
       (assoc-in state/org-settings-org-name-path org)
       (assoc-in state/org-settings-vcs-type-path vcs_type)

@@ -701,7 +701,7 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            selected-tab (or (:selected-header-tab build-data)
+            selected-tab (or (:current-tab data)
                              (default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)

@@ -411,6 +411,7 @@
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
+                                              :current-tab (get-in data state/navigation-tab-path)
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in data state/project-scopes-path)})

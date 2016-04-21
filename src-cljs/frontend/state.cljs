@@ -183,9 +183,12 @@
 
 (def projects-path [:projects])
 
+(def navigation-data [:navigation-data])
 (def inner?-path [:navigation-data :inner?])
 (def navigation-repo-path [:navigation-data :repo])
 (def navigation-org-path [:navigation-data :org])
+(def navigation-subpage-path [:navigation-data :subpage])
+(def navigation-tab-path [:navigation-data :tab])
 
 (def instrumentation-path [:instrumentation])
 
