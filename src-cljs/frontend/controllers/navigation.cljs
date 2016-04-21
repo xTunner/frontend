@@ -426,8 +426,8 @@
 
   (-> state
       state-utils/clear-page-state
-      (assoc state/current-view navigation-point)
-      (assoc-in state/navigation-data args)
+      (assoc-in state/current-view-path navigation-point)
+      (assoc-in state/navigation-data-path args)
       (assoc-in state/org-settings-subpage-path subpage)
       (assoc-in state/org-settings-org-name-path org)
       (assoc-in state/org-settings-vcs-type-path vcs_type)

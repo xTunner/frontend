@@ -98,6 +98,14 @@
       (add-properties-to-track-from-state)
       (merge properties)))
 
+(defn- subpage
+  "Get the subpage for a pageview. If there is a subpage as well as a tab, the subpage
+  takes preference since it is a step higher in the UI'f information hierarchy."
+  [current-state]
+  (or (get-in current-state state/navigation-subpage-path)
+      (get-in current-state state/navigation-tab-path)
+      :default))
+
 (defn build-properties [build]
   (merge {:running (build-model/running? build)
           :build-num (:build_num build)
@@ -126,8 +134,10 @@
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties current-state]} event-data]
-    (segment/track-pageview navigation-point (supplement-tracking-properties {:properties properties
-                                                                              :current-state current-state}))))
+    (segment/track-pageview navigation-point
+                            (subpage current-state)
+                            (supplement-tracking-properties {:properties properties
+                                                             :current-state current-state}))))
 
 (s/defmethod track :build-triggered [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
