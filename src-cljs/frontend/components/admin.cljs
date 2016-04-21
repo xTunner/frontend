@@ -230,7 +230,7 @@
               {:on-click #(raise! owner [action (select-keys user [:login])])}
               (case action
                 :suspend-user "suspend"
-                :unsuspend-user "reactivate")]))
+                :unsuspend-user "activate")]))
          " "
          (let [relevant-scope (-> user :admin_scopes relevant-scope)]
            (if admin-write-scope?
@@ -262,10 +262,18 @@
     om/IRender
     (render [_]
       (let [all-users (:all-users app)
-            active-users (filter #(and (not= 0 (:login-count %))
+            active-users (filter #(and (pos? (:sign_in_count %))
                                        (not (:suspended %)))
                                  all-users)
-            suspended-users (filter :suspended all-users)
+            suspended-users (filter #(and (pos? (:sign_in_count %))
+                                          (:suspended %))
+                                    all-users)
+            suspended-new-users (filter #(and  (zero? (:sign_in_count %))
+                                               (:suspended %))
+                                        all-users)
+            inactive-users (filter #(and (zero? (:sign_in_count %))
+                                         (not (:suspended %)))
+                                   all-users)
             admin-write-scope? (#{"all" "write-settings"}
                                 (get-in app [:current-user :admin]))
             num-licensed-users (get-in app (conj state/license-path :seats))
@@ -276,17 +284,27 @@
 
           (current-seat-usage-p num-active-users num-licensed-users)
 
-          [:p "Suspended users are prevented from logging in and do not count towards the number your license allows."]
+          [:p "Suspended users are prevented from logging in and do not count towards the number your license allows.  Inactive users have never logged on and also do not count towards your license limits."]
 
           [:h2 "active"]
-           [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                  :admin-write-scope? admin-write-scope?})
+          [:ul (om/build-all user (mapv (fn [u] {:user u
+                                                 :admin-write-scope? admin-write-scope?})
                                         active-users))]
 
-         [:h2 "suspended"]
-           [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                  :admin-write-scope? admin-write-scope?})
-                                         suspended-users))]])))))
+          [:h2 "suspended"]
+          [:ul (om/build-all user (mapv (fn [u] {:user u
+                                                 :admin-write-scope? admin-write-scope?})
+                                        suspended-users))]
+
+          [:h2 "suspended new users"]
+          [:ul (om/build-all user (mapv (fn [u] {:user u
+                                                 :admin-write-scope? admin-write-scope?})
+                                        suspended-new-users))]
+
+          [:h2 "inactive users"]
+          [:ul (om/build-all user (mapv (fn [u] {:user u
+                                                 :admin-write-scope? admin-write-scope?})
+                                        inactive-users))]])))))
 
 (defn boolean-setting-entry [item owner]
   (reify
