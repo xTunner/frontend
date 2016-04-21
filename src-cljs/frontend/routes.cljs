@@ -194,7 +194,7 @@
   (defroute v1-invite-teammates-org "/invite-teammates/organization/:org" [org]
     (open-to-inner! nav-ch :invite-teammates {:org org}))
   (defroute v1-account "/account" []
-    (open-to-inner! nav-ch :account {:subpage nil}))
+    (open-to-inner! nav-ch :account {:subpage :notifications}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
     (open-to-inner! nav-ch :account {:subpage (keyword subpage)}))
   (defroute v1-logout "/logout" []
