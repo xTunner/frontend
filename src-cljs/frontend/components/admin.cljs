@@ -216,44 +216,46 @@
     "read-settings" "read-only admin"
     "none"))
 
-(defn user [{:keys [user admin-write-scope?]} owner]
+(defn user [{:keys [user current-user]} owner]
   (reify
     om/IRender
     (render [_]
-      (html
-        [:li
-         (:login user)
-         " "
-         (when admin-write-scope?
-           (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
-             [:button.btn.btn-xs.btn-default
-              {:on-click #(raise! owner [action (select-keys user [:login])])}
-              (case action
-                :suspend-user "suspend"
-                :unsuspend-user "activate")]))
-         " "
-         (let [relevant-scope (-> user :admin_scopes relevant-scope)]
-           (if admin-write-scope?
-             [:div.btn-group.btn-group-xs
-              [:button.btn.btn-default
-               (if (= "write-settings" relevant-scope)
-                 {:class "active"}
-                 {:on-click #(raise! owner [:set-admin-scope
-                                            {:login (:login user)
-                                             :scope :write-settings}])})
-               "admin"]
-              ;; read-settings generally hidden for until we sort out what we
-              ;; really want the scope precision to be
-              (when (= "read-settings" relevant-scope)
-                [:button.btn.btn-default.active "read-only admin"])
-              [:button.btn.btn-default
-               (if (= "none" relevant-scope)
-                 {:class "active"}
-                 {:on-click #(raise! owner [:set-admin-scope
-                                            {:login (:login user)
-                                             :scope :none}])})
-               "none"]]
-             (-> user :admin_scopes admin-in-words)))]))))
+      (let [show-suspend-unsuspend? (and (#{"all" "write-settings"} (:admin current-user))
+                                         (not= (:login current-user) (:login user)))]
+        (html
+          [:li
+           (:login user)
+           " "
+           (when show-suspend-unsuspend?
+             (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
+               [:button.btn.btn-xs.btn-default
+                {:on-click #(raise! owner [action (select-keys user [:login])])}
+                (case action
+                  :suspend-user "suspend"
+                  :unsuspend-user "activate")]))
+           " "
+           (let [relevant-scope (-> user :admin_scopes relevant-scope)]
+             (if show-suspend-unsuspend?
+               [:div.btn-group.btn-group-xs
+                [:button.btn.btn-default
+                 (if (= "write-settings" relevant-scope)
+                   {:class "active"}
+                   {:on-click #(raise! owner [:set-admin-scope
+                                              {:login (:login user)
+                                               :scope :write-settings}])})
+                 "admin"]
+                ;; read-settings generally hidden for until we sort out what we
+                ;; really want the scope precision to be
+                (when (= "read-settings" relevant-scope)
+                  [:button.btn.btn-default.active "read-only admin"])
+                [:button.btn.btn-default
+                 (if (= "none" relevant-scope)
+                   {:class "active"}
+                   {:on-click #(raise! owner [:set-admin-scope
+                                              {:login (:login user)
+                                               :scope :none}])})
+                 "none"]]
+               (-> user :admin_scopes admin-in-words)))])))))
 
 (defn users [app owner]
   (reify
@@ -274,8 +276,7 @@
             inactive-users (filter #(and (zero? (:sign_in_count %))
                                          (not (:suspended %)))
                                    all-users)
-            admin-write-scope? (#{"all" "write-settings"}
-                                (get-in app [:current-user :admin]))
+            current-user (:current-user app)
             num-licensed-users (get-in app (conj state/license-path :seats))
             num-active-users (get-in app (conj state/license-path :seat_usage))]
         (html
@@ -288,22 +289,22 @@
 
           [:h2 "active"]
           [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :admin-write-scope? admin-write-scope?})
+                                                 :current-user current-user})
                                         active-users))]
 
           [:h2 "suspended"]
           [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :admin-write-scope? admin-write-scope?})
+                                                 :current-user current-user})
                                         suspended-users))]
 
           [:h2 "suspended new users"]
           [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :admin-write-scope? admin-write-scope?})
+                                                 :current-user current-user})
                                         suspended-new-users))]
 
           [:h2 "inactive users"]
           [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :admin-write-scope? admin-write-scope?})
+                                                 :current-user current-user})
                                         inactive-users))]])))))
 
 (defn boolean-setting-entry [item owner]
