@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [frontend.config :as config]
             [frontend.utils :as utils]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [goog.string.format]
             [cemerick.url :refer [url]]))
@@ -47,8 +48,8 @@
        "/settings/connections/applications/"
        (aget js/window "renderContext" "githubClientId")))
 
-(defn login-url [login]
-  (str (http-endpoint) "/" login))
+(defmethod vcs-url/profile-url :github [user]
+  (str (http-endpoint) "/" (:login user)))
 
 (defn make-avatar-url [{:keys [avatar_url gravatar_id login]} & {:keys [size] :or {size 200}}]
   "Takes a map of user/org data and returns a url for the desired size of the user's avatar

@@ -546,7 +546,7 @@
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
-    [:a {:href (gh-utils/login-url (:login user))}
+    [:a {:href (vcs-url/profile-url user)}
      (build-model/ui-user build)]))
 
 (defn link-to-commit [build]

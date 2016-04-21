@@ -15,6 +15,8 @@
         "bitbucket.org" "bitbucket"} (second (re-matches url-project-re vcs-url)))
       "github"))
 
+(defmulti profile-url (comp keyword :vcs_type))
+
 ;; slashes aren't allowed in github org/user names or project names
 (defn org-name [vcs-url]
   (first (string/split (project-name vcs-url) #"/")))
