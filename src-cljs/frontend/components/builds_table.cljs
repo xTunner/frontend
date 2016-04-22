@@ -8,6 +8,7 @@
             [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
+            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
@@ -68,7 +69,11 @@
       [:div.build-info-header
        [:div.contextual-identifier
         [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
-             :href url}
+             :href url
+             :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
+                                                             :properties {:org (vcs-url/org-name (:vcs_url build))
+                                                                          :repo (:reponame build)
+                                                                          :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
 
          (when show-project?
            (str (:username build) " / " (:reponame build) " "))
