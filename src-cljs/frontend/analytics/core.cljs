@@ -21,6 +21,7 @@
   ;; These are the click and impression events.
   ;; They are in the fomat <item>-<clicked or impression>.
   #{:add-more-containers-clicked
+    :authorize-vcs-clicked
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
@@ -29,6 +30,7 @@
     :build-insights-upsell-impression
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
+    :build-link-clicked
     :change-image-clicked
     :cancel-plan-clicked
     :insights-bar-clicked

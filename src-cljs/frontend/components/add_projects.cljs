@@ -132,8 +132,11 @@
              (missing-org-info owner))
            (when (and bitbucket-active? (-> user :bitbucket_authorized not))
              [:div
-             [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
-             [:a.btn.btn-primary {:href (bitbucket/auth-url)} "Authorize with Bitbucket"]])
+              [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
+              [:a.btn.btn-primary {:href (bitbucket/auth-url)
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                   :properties {:vcs-type vcs-type}})}
+               "Authorize with Bitbucket"]])
            [:ul.organizations
             (map (fn [org] (organization org settings owner))
                  ;; here we display you, then all of your organizations, then all of the owners of
