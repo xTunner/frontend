@@ -3,6 +3,7 @@
             [schema.test]
             [frontend.state :as state]
             [frontend.utils.seq :refer [submap?]]
+            [frontend.utils.build :as build-util]
             [frontend.test-utils :as test-utils]
             [frontend.analytics.core :as analytics]
             [frontend.analytics.common :as common-analytics]
@@ -113,6 +114,7 @@
         calls (stub-segment-track-event #(analytics/track {:event-type event-type
                                                            :build build
                                                            :current-state current-state}))]
+
     (testing "track :view-build adds the correct properties"
       (is (= 1 (count calls)))
       (is (= event-type (-> calls first :args first)))
@@ -126,7 +128,28 @@
 
     (testing "track :view-build requires a build"
       (test-utils/fails-schema-validation #(analytics/track {:event-type event-type
-                                                             :current-state current-state})))))
+                                                             :current-state current-state})))
+
+    (testing "track :view-build adds the correct :tab in the correct situations"
+      ;; first assure that :tab and :subpage are not set in state
+      ;; note: subpage should never be set when viewing a build (since the build vier does not have a subpage)
+      (is (nil? (get-in current-state state/navigation-subpage-path)))
+      (is (nil? (get-in current-state state/navigation-tab-path)))
+
+      (let [default-tab :i-am-the-default-tab]
+        (with-redefs [build-util/default-tab (constantly default-tab)]
+          (testing "track :view-build makes :tab the build/default-tab when one is not specified in state"
+            (let [calls (stub-segment-track-event #(analytics/track {:event-type event-type
+                                                                     :build build
+                                                                     :current-state current-state}))]
+              (is (= default-tab (-> calls first :args second :tab)))))
+
+          (testing "track :view-build makes :tab the navigation-tab-path when one is specified in state"
+            (let [tab :non-default-tab
+                  calls (stub-segment-track-event #(analytics/track {:event-type event-type
+                                                                     :build build
+                                                                     :current-state (assoc-in current-state state/navigation-tab-path tab)}))]
+              (is (= tab (-> calls first :args second :tab))))))))))
 
 (deftest track-init-user-works
   (testing "track :init-user adds the correct properties and calls segment/identify"
