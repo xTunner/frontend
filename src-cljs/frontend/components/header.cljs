@@ -254,20 +254,12 @@
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
                   [:a.login.login-link.menu-item {:href (auth-url)
-                                                  :on-click #(raise! owner [:track-external-link-clicked {:event :login-clicked
-                                                                                                          :path (auth-url)}])
+                                                  :on-click #((om/get-shared owner :track-event) {:event-type :login-clicked})
                                                   :title "Log In with Github"}
                    "Log In"]]
                  [:li
-                  (if (= :page (om/get-shared owner [:ab-tests :auth-button-vs-page]))
-                    [:a.signup-link.btn.btn-success.navbar-btn.menu-item (open-ext {:href "/signup/"}) "Sign Up"]
-                    [:a.signup-link.btn.btn-success.navbar-btn.menu-item
-                     {:href (auth-url :destination "/dashboard")
-                      :on-click #(raise! owner [:track-external-link-clicked
-                                                {:event :oauth-authorize-clicked
-                                                 :properties {:oauth-provider "github"}
-                                                 :path (auth-url :destination "/dashboard")}])}
-                     "Sign Up"])]])]]]
+                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item (open-ext {:href "/signup/"
+                                                                                  :on-click #((om/get-shared owner :track-event) {:event-type :signup-clicked})}) "Sign Up"]]])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
                         :title "Mobile"}

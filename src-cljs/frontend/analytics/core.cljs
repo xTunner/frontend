@@ -35,7 +35,6 @@
     :login-clicked
     :new-plan-clicked
     :no-plan-banner-impression
-    :oauth-authorize-clicked
     :parallelism-clicked
     :pr-link-clicked
     :project-clicked
