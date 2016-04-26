@@ -211,7 +211,6 @@
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
 (def add-projects-selected-org-login-path (conj add-projects-selected-org-path :login))
 
-(def account-subpage-path [:account-settings-subpage])
 (def new-user-token-path (conj user-path :new-user-token))
 
 (def flash-path [:render-context :flash])
