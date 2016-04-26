@@ -214,6 +214,7 @@
   ul.organizations {
     margin: 0;
     padding: 0;
+    width: 100%;
 
     > li {
       .flexy(row);
@@ -245,7 +246,19 @@
         .text-overflow();
         display: inline-block;
       }
-
+      > .org-icon {
+        position: relative;
+        .flex(1, 0, auto);
+        > a {
+          padding: 0 10px 20px 0;
+          float: right;
+          i {
+            width: 13.9px;
+            height: 16px;
+            font-size: @fontSizeLarge;
+          }
+        }
+      }
       &.active {
         color: @blueDark;
         border-color: @blueLight;
