@@ -32,8 +32,8 @@
   (reify
     om/IRender
     (render [_]
-      (let [user-and-orgs (conj (get-in app state/user-organizations-path)
-                                (get-in app state/user-path))]
+      (let [user-and-orgs (sort-by (comp not :foo)
+                                   (get-in app state/user-organizations-path))]
         (html/html
          [:div#settings-plans
           [:div.plans-item [:h1 "Org Settings"]]

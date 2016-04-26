@@ -222,8 +222,7 @@
 
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
-          (put! api-ch [:organizations (:status api-result) api-result])))))
+    (api/get-orgs api-ch :include-user? true)))
 
 (defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state]

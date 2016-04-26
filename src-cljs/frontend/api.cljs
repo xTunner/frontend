@@ -42,7 +42,7 @@
              api-ch
              :context {:page page}))
 
-(defn get-orgs [api-ch & [{:keys [include-user?]}]]
+(defn get-orgs [api-ch & {:keys [include-user?]}]
   (ajax/ajax :get (str "/api/v1/user/organizations" (when include-user? "?include-user=true"))
              :organizations
              api-ch))

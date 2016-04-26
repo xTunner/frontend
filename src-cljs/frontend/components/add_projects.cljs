@@ -96,11 +96,10 @@
                  ;; in this order (rather than e.g. putting the whole thing into a set)
                  ;; so that new ones don't jump up in the middle as they're loaded.
                  (filter vcs-github?
-                  (concat [user]
-                          (:organizations user)
-                          (let [org-names (->> user :organizations (cons user) (map :login) set)
-                                in-orgs? (comp org-names :login)]
-                            (->> repos (map :owner) (remove in-orgs?) (set))))))]
+                         (concat (sort-by :org (:organizations user))
+                                 (let [org-names (->> user :organizations (map :login) set)
+                                       in-orgs? (comp org-names :login)]
+                                   (->> repos (map :owner) (remove in-orgs?) (set))))))]
            (when (get-in user [:repos-loading :github])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])
@@ -155,12 +154,9 @@
                  ;; in this order (rather than e.g. putting the whole thing into a set)
                  ;; so that new ones don't jump up in the middle as they're loaded.
                  (filter (partial select-vcs-type vcs-type)
-                         (concat [(when (= "github" vcs-type)
-                                    (assoc user :vcs_type "github"))]
-                                 (:organizations user)
+                         (concat (sort-by :org (:organizations user))
                                  (let [org-names (->> user
                                                       :organizations
-                                                      (cons user)
                                                       (map :login)
                                                       set)
                                        in-orgs? (comp org-names :login)]
@@ -437,7 +433,11 @@
   we have been removed from, or an org that turned on 3rd party app restrictions
   and didn't enable CircleCI"
   [user-data followed]
-  (let [org-set (set (map :login (:organizations user-data)))
+  (let [org-set (->> user-data
+                     :organizations
+                     (filter :org)
+                     (map :login)
+                     set)
         org-set (conj org-set (:login user-data))]
     (filter #(not (contains? org-set (:username %))) followed)))
 
