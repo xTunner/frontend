@@ -420,8 +420,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage     (or (get-in app state/account-subpage-path)
-                            :notifications)
+      (let [subpage     (get-in app state/navigation-subpage-path)
             coms        {:notifications notifications
                          :heroku        heroku-key
                          :api           api-tokens

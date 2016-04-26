@@ -23,9 +23,10 @@
   {:id s/Str
    :user-properties common-analytics/UserProperties})
 
-(s/defn track-pageview [navigation-point :- s/Keyword & [properties :- SegmentProperties]]
+(s/defn track-pageview [navigation-point :- s/Keyword subpage :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors
     (js/analytics.page (name navigation-point)
+                       (when subpage (name subpage))
                        (clj-keys-with-dashes->js-keys-with-underscores properties))))
 
 (s/defn track-event [event :- s/Keyword & [properties :- SegmentProperties]]

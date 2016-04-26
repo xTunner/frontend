@@ -3,6 +3,7 @@
             [schema.test]
             [frontend.state :as state]
             [frontend.utils.seq :refer [submap?]]
+            [frontend.utils.build :as build-util]
             [frontend.test-utils :as test-utils]
             [frontend.analytics.core :as analytics]
             [frontend.analytics.common :as common-analytics]
@@ -113,6 +114,7 @@
         calls (stub-segment-track-event #(analytics/track {:event-type event-type
                                                            :build build
                                                            :current-state current-state}))]
+
     (testing "track :view-build adds the correct properties"
       (is (= 1 (count calls)))
       (is (= event-type (-> calls first :args first)))
@@ -126,7 +128,28 @@
 
     (testing "track :view-build requires a build"
       (test-utils/fails-schema-validation #(analytics/track {:event-type event-type
-                                                             :current-state current-state})))))
+                                                             :current-state current-state})))
+
+    (testing "track :view-build adds the correct :tab in the correct situations"
+      ;; first assure that :tab and :subpage are not set in state
+      ;; note: subpage should never be set when viewing a build (since the build vier does not have a subpage)
+      (is (nil? (get-in current-state state/navigation-subpage-path)))
+      (is (nil? (get-in current-state state/navigation-tab-path)))
+
+      (let [default-tab :i-am-the-default-tab]
+        (with-redefs [build-util/default-tab (constantly default-tab)]
+          (testing "track :view-build makes :tab the build/default-tab when one is not specified in state"
+            (let [calls (stub-segment-track-event #(analytics/track {:event-type event-type
+                                                                     :build build
+                                                                     :current-state current-state}))]
+              (is (= default-tab (-> calls first :args second :tab)))))
+
+          (testing "track :view-build makes :tab the navigation-tab-path when one is specified in state"
+            (let [tab :non-default-tab
+                  calls (stub-segment-track-event #(analytics/track {:event-type event-type
+                                                                     :build build
+                                                                     :current-state (assoc-in current-state state/navigation-tab-path tab)}))]
+              (is (= tab (-> calls first :args second :tab))))))))))
 
 (deftest track-init-user-works
   (testing "track :init-user adds the correct properties and calls segment/identify"
@@ -148,10 +171,11 @@
 (deftest track-pageview-works
   (let [event-type :pageview
         nav-point :some-view-some-place
-        stub-track-pageview (fn [properties]
-                              (let [calls (atom [])]
-                                (with-redefs [segment/track-pageview (fn [nav-point & [event-data]]
-                                                                     (swap! calls conj {:args (list nav-point event-data)}))]
+        stub-track-pageview (fn [properties & [state]]
+                              (let [current-state (or state current-state)
+                                    calls (atom [])]
+                                (with-redefs [segment/track-pageview (fn [nav-point subpage & [event-data]]
+                                                                     (swap! calls conj {:args (list nav-point subpage event-data)}))]
                                 (analytics/track {:event-type event-type
                                                   :navigation-point nav-point
                                                   :properties properties
@@ -162,15 +186,37 @@
       (let [calls (stub-track-pageview {})]
         (is (= 1 (-> calls count)))
         (is (= nav-point (-> calls first :args first)))
-        (is (submap? data (-> calls first :args second)))))
+        (is (submap? data (-> calls first :args (#(nth % 2)))))))
 
     (testing "track :pageview :properties overwrite default values from current-state"
       (let [calls (stub-track-pageview properties)]
-        (is (submap? properties (-> calls first :args second)))))
+        (is (submap? properties (-> calls first :args (#(nth % 2)))))))
 
     (testing "track :pageview requires a :navigation-point"
       (test-utils/fails-schema-validation #(analytics/track {:event-type event-type
-                                                             :current-state current-state})))))
+                                                             :current-state current-state})))
+
+    (testing "track :pageview automatically add a :default subpage when there isn't one in state"
+        (let [calls (stub-track-pageview {})]
+          (is (= :default (-> calls first :args second)))))
+
+    (testing "track :pageview adds a subpage if one is present in state/navigation-subpage-path"
+        (let [subpage :a-subpage
+              calls (stub-track-pageview {} (assoc-in current-state state/navigation-subpage-path subpage))]
+          (is (= subpage (-> calls first :args second)))))
+
+    (testing "track :pageview adds a subpage if one is present in state/navigation-tab-path"
+        (let [tab :a-tab
+              calls (stub-track-pageview {} (assoc-in current-state state/navigation-tab-path tab))]
+          (is (= tab (-> calls first :args second)))))
+
+    (testing "state/navigation-subpage-path takes precedent over state/navigation-tab-path for the subpage"
+        (let [tab :a-tab
+              subpage :a-subpage
+              calls (stub-track-pageview {} (-> current-state
+                                                (assoc-in state/navigation-tab-path tab)
+                                                (assoc-in state/navigation-subpage-path subpage)))]
+          (is (= subpage (-> calls first :args second)))))))
 
 (deftest properties-overwrite-default-state
   (testing "for each type of tracking that calls segment/track-event, ensure that :properties overwrite the default values from :current-state"

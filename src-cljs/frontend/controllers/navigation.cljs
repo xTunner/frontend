@@ -40,8 +40,8 @@
 (defn navigated-default [navigation-point args state]
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args)))
+      (assoc state/current-view navigation-point
+             state/navigation-data args)))
 
 (defmethod navigated-to :default
   [history-imp navigation-point args state]
@@ -76,8 +76,8 @@
   [history-imp navigation-point args state]
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args
+      (assoc state/current-view navigation-point
+             state/navigation-data args
              :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build
@@ -93,7 +93,7 @@
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (go (let [builds-url (api/dashboard-builds-url (assoc (:navigation-data current-state)
+    (go (let [builds-url (api/dashboard-builds-url (assoc (state/navigation-data current-state)
                                                           :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
               scopes (:scopes api-resp)
@@ -133,15 +133,15 @@
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab] :as args} state]
   (mlog "navigated-to :build with args " args)
-  (if (and (= :build (:navigation-point state))
+  (if (and (= :build (state/current-view state))
            (not (state-utils/stale-current-build? state project-name build-num)))
     ;; page didn't change, just switched tabs
-    (assoc-in state state/build-header-tab-path tab)
+    (assoc-in state state/navigation-tab-path tab)
     ;; navigated to page, load everything
     (-> state
         state-utils/clear-page-state
-        (assoc :navigation-point navigation-point
-               :navigation-data (assoc args
+        (assoc state/current-view navigation-point
+               state/navigation-data (assoc args
                                        :show-aside-menu? false
                                        :show-settings-link? false)
                :project-settings-project-name project-name)
@@ -197,7 +197,7 @@
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
               scopes (:scopes api-result)
-              navigation-data (:navigation-data current-state)
+              navigation-data (state/navigation-data current-state)
               vcs-type (:vcs_type navigation-data)
               org (:org navigation-data)
               repo (:repo navigation-data)
@@ -251,8 +251,8 @@
   [history-imp navigation-point args state]
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data (assoc args :show-aside-menu? false))
+      (assoc state/current-view navigation-point
+             state/navigation-data (assoc args :show-aside-menu? false))
       ;; force a reload of repos.
       (assoc-in state/repos-path [])
       (assoc-in state/github-repos-loading-path true)
@@ -275,8 +275,8 @@
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
   (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data (assoc args :show-aside-menu? false))
+      (assoc state/current-view navigation-point
+             state/navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}])))
 
@@ -290,8 +290,8 @@
 (defmethod navigated-to :project-insights
   [history-imp navigation-point {:keys [org repo branch vcs_type] :as args} state]
   (-> state
-      (assoc :navigation-point navigation-point
-             :navigation-data (assoc args :show-aside-menu? false))
+      (assoc state/current-view navigation-point
+             state/navigation-data (assoc args :show-aside-menu? false))
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}
                                    {:type :org
@@ -318,8 +318,8 @@
   [history-imp navigation-point args state]
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data (assoc args :show-aside-menu? false))
+      (assoc state/current-view navigation-point
+             state/navigation-data (assoc args :show-aside-menu? false))
       (assoc-in [:invite-data :org] (:org args))
       (assoc-in state/crumbs-path [{:type :invite-teammates}])))
 
@@ -339,8 +339,8 @@
   [history-imp navigation-point {:keys [project-name subpage org repo vcs_type] :as args} state]
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args
+      (assoc state/current-view navigation-point
+             state/navigation-data args
              ;; TODO can we get rid of project-settings-subpage in favor of navigation-data?
              :project-settings-subpage subpage
              :project-settings-project-name project-name)
@@ -359,7 +359,7 @@
 (defmethod post-navigated-to! :project-settings
   [history-imp navigation-point {:keys [project-name vcs_type subpage]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        navigation-data (:navigation-data current-state)
+        navigation-data (state/navigation-data current-state)
         vcs-type (:vcs_type navigation-data)
         org (:org navigation-data)
         repo (:repo navigation-data)]
@@ -426,8 +426,8 @@
 
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point)
-      (assoc :navigation-data args)
+      (assoc-in state/current-view-path navigation-point)
+      (assoc-in state/navigation-data-path args)
       (assoc-in state/org-settings-subpage-path subpage)
       (assoc-in state/org-settings-org-name-path org)
       (assoc-in state/org-settings-vcs-type-path vcs_type)
@@ -480,11 +480,11 @@
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]
   (let [orig-nav-point (get-in state [:navigation-point])]
-    (mlog "navigated-to :error with (:navigation-point state) of " orig-nav-point)
+    (mlog "navigated-to :error with (state/current-view state) of " orig-nav-point)
     (-> state
         state-utils/clear-page-state
-        (assoc :navigation-point navigation-point
-               :navigation-data args
+        (assoc state/current-view navigation-point
+               state/navigation-data args
                :original-navigation-point orig-nav-point))))
 
 (defmethod post-navigated-to! :error
@@ -503,9 +503,8 @@
     (if logged-in?
        (-> state
            state-utils/clear-page-state
-           (assoc :navigation-point navigation-point
-                  :navigation-data (assoc args :show-aside-menu? false))
-           (assoc :account-settings-subpage subpage)
+           (assoc state/current-view navigation-point
+                  state/navigation-data (assoc args :show-aside-menu? false))
            (assoc-in state/crumbs-path [{:type :account}]))
        (do
          (routes/open-to-outer! nav-ch :error {:status 401})
@@ -525,8 +524,8 @@
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (-> state
       state-utils/clear-page-state
-      (assoc :navigation-point navigation-point
-             :navigation-data args
+      (assoc state/current-view navigation-point
+             state/navigation-data args
              :admin-settings-subpage subpage
              :recent-builds nil)))
 

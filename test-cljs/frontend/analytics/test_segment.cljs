@@ -8,13 +8,14 @@
 (use-fixtures :once schema.test/validate-schemas)
 
 (aset js/window "analytics" (js-obj))
-(let [stub-fn (fn [fn-name arg1 arg2]
-                (let [calls (atom [])]
+(let [stub-fn (fn [fn-name arg1 arg2 & [arg3]]
+                (let [
+                      calls (atom [])]
                   (swap! calls conj {:fn fn-name
-                                     :args (list arg1 arg2)})
+                                     :args (list arg1 arg2 arg3)})
                   @calls))]
-  (aset js/analytics "page" (fn [nav-point props]
-                              (stub-fn "page" nav-point props)))
+  (aset js/analytics "page" (fn [nav-point subpage props]
+                              (stub-fn "page" nav-point subpage props)))
   (aset js/analytics "track" (fn [nav-point props]
                               (stub-fn "track" nav-point props)))
   (aset js/analytics "identify" (fn [nav-point props]
@@ -44,17 +45,20 @@
   (clj-keys-with-dashes->js-keys-with-underscores mock-segment-props))
 
 (deftest track-pageview-works
-  (testing "track-pageview required a keyword and SegmentProperties"
-    (test-utils/fails-schema-validation #(segment/track-pageview :nav-point {}))
-    (test-utils/fails-schema-validation #(segment/track-pageview "nav-point" outbound-segment-props)))
+  (testing "track-pageview required a a nav-point :- Keyword, subpage :- Keyword, event-data :- SegmentProperties"
+    (test-utils/fails-schema-validation #(segment/track-pageview :nav-point :subpage {}))
+    (test-utils/fails-schema-validation #(segment/track-pageview :nav-point "subpage" {}))
+    (test-utils/fails-schema-validation #(segment/track-pageview "nav-point" :subpage outbound-segment-props)))
 
   (testing "track-pageview does the correct data manipulation before sending data to segment"
     (let [nav-point :nav-point
-          calls (segment/track-pageview nav-point mock-segment-props)]
+          subpage :subpage
+          calls (segment/track-pageview nav-point subpage mock-segment-props)]
       (is (= 1 (count calls)))
       (is (= "page" (-> calls first :fn)))
       (is (= (name nav-point) (-> calls first :args first)))
-      (is (= (js->clj outbound-segment-props) (-> calls first :args second js->clj))))))
+      (is (= (name subpage) (-> calls first :args second)))
+      (is (= (js->clj outbound-segment-props) (-> calls first :args (#(nth % 2)) js->clj))))))
 
 (deftest track-event-works
   (testing "track-event requires a keyword and SegmentProperties"

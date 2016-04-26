@@ -183,9 +183,13 @@
 
 (def projects-path [:projects])
 
-(def inner?-path [:navigation-data :inner?])
-(def navigation-repo-path [:navigation-data :repo])
-(def navigation-org-path [:navigation-data :org])
+(def navigation-data :navigation-data)
+(def navigation-data-path [navigation-data])
+(def inner?-path (conj navigation-data-path :inner?))
+(def navigation-repo-path (conj navigation-data-path :repo))
+(def navigation-org-path (conj navigation-data-path :org))
+(def navigation-subpage-path (conj navigation-data-path :subpage))
+(def navigation-tab-path (conj navigation-data-path :tab))
 
 (def instrumentation-path [:instrumentation])
 
@@ -207,7 +211,6 @@
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
 (def add-projects-selected-org-login-path (conj add-projects-selected-org-path :login))
 
-(def account-subpage-path [:account-settings-subpage])
 (def new-user-token-path (conj user-path :new-user-token))
 
 (def flash-path [:render-context :flash])
@@ -252,7 +255,8 @@
 (def insights-filter-path [:insights :selected-filter])
 (def insights-sorting-path [:insights :selected-sorting])
 
-(def current-view-path [:navigation-point])
+(def current-view :navigation-point)
+(def current-view-path [current-view])
 
 (def system-settings-path [:system-settings])
 (def feature-flags-path (conj project-path :feature_flags))

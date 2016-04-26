@@ -6,6 +6,7 @@
             [frontend.utils :refer [merror]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.build :as build-util]
             [frontend.intercom :as intercom]
             [frontend.utils.vcs-url :as vcs-url]
             [schema.core :as s]
@@ -99,8 +100,25 @@
       (add-properties-to-track-from-state)
       (merge properties)))
 
-(defn build-properties [build]
+(defn- current-subpage
+  "Get the subpage for a pageview. If there is a subpage as well as a tab, the subpage
+  takes preference since it is a step higher in the UI'f information hierarchy."
+  [current-state]
+  (or (get-in current-state state/navigation-subpage-path)
+      (get-in current-state state/navigation-tab-path)
+      :default))
+
+(defn- current-build-tab
+  "Get the tab for a build."
+  [build current-state]
+  (let [subpage (current-subpage current-state)]
+    (if-not (= :default subpage)
+      subpage
+      (build-util/default-tab build (get-in current-state state/project-scopes-path)))))
+
+(defn build-properties [build current-state]
   (merge {:running (build-model/running? build)
+          :tab (current-build-tab build current-state)
           :build-num (:build_num build)
           :repo (vcs-url/repo-name (:vcs_url build))
           :org (vcs-url/org-name (:vcs_url build))
@@ -127,8 +145,10 @@
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point properties current-state]} event-data]
-    (segment/track-pageview navigation-point (supplement-tracking-properties {:properties properties
-                                                                              :current-state current-state}))))
+    (segment/track-pageview navigation-point
+                            (current-subpage current-state)
+                            (supplement-tracking-properties {:properties properties
+                                                             :current-state current-state}))))
 
 (s/defmethod track :build-triggered [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
@@ -141,7 +161,7 @@
 
 (s/defmethod track :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
-        props (merge (build-properties build) properties)]
+        props (merge (build-properties build current-state) properties)]
     (segment/track-event :view-build (supplement-tracking-properties {:properties props
                                                                       :current-state current-state}))))
 
