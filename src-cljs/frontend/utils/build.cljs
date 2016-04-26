@@ -21,4 +21,3 @@
                                    :config)
     ;; Otherwise, just use the first one.
     :else :tests))
-
