@@ -59,7 +59,7 @@
   (let [url (cond branch (str "/" (->short-vcs vcs_type) "/" org "/" repo "/tree/" branch)
                   repo (str "/" (->short-vcs vcs_type) "/" org "/" repo)
                   org (str "/" (->short-vcs vcs_type) "/" org)
-                  :else "/")]
+                  :else "/dashboard")]
     (str url (when page (str "?page=" page)))))
 
 (defn generate-url-str [format-str {:keys [vcs_type _fragment] :as params}]
