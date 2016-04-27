@@ -437,14 +437,14 @@
            [:a.aside-item.logo {:title "Dashboard"
                                 :data-placement "right"
                                 :data-trigger "hover"
-                                :href "/dashboard"}
+                                :href (routes/v1-dashboard-path {})}
              [:div.logomark
               (common/ico :logo)]]
 
             [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
                             :title "Builds"
-                            :href "/dashboard"}
+                            :href (routes/v1-dashboard-path {})}
              [:i.material-icons "storage"]
              [:div.nav-label "Builds"]]
 
