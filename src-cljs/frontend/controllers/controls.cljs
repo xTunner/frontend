@@ -982,15 +982,21 @@
         (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
 
-(defmethod post-control-event! :save-piggyback-orgs-clicked
-  [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
+(defmethod post-control-event! :save-piggieback-orgs-clicked
+  [target message {:keys [selected-piggieback-orgs org-name]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
-        api-ch (get-in current-state [:comms :api])]
+        api-ch (get-in current-state [:comms :api])
+        piggieback-org-maps (mapcat (fn [[vcs-type org-names]]
+                                      (map (fn [org-name]
+                                             {:vcs-type vcs-type
+                                              :name org-name})
+                                           org-names))
+                                    selected-piggieback-orgs)]
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
-                           :params {:piggieback-orgs selected-piggyback-orgs}))]
+                           :params {:piggieback-org-maps piggieback-org-maps}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))))
 
