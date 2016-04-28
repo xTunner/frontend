@@ -382,7 +382,7 @@
         (html
           [:section
            [:article
-            [:h2 "Environment variables for " (vcs-url/project-name (:vcs_url project))]
+            [:h2 "Environment Variables for " (vcs-url/project-name (:vcs_url project))]
             [:div.environment-variables-inner
              [:p
               "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
