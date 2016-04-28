@@ -392,7 +392,7 @@
         [:div.properties
          [:div.test-name (format-test-name test)]
          [:div.test-file (:file test)]]
-        (let [message (:message test)
+        (let [message (or (:message test) "(no output)")
               message (if (:show-message test) message
                           (.replace message (js/RegExp. "^\\s+" "m") ""))
               expander-label (if (:show-message test) "less" "more")]
