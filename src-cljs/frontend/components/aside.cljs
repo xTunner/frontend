@@ -211,7 +211,7 @@
        {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build}
        (when (project-model/parallel-available? project)
          {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds})
-       {:type :subpage :href "#env-vars" :title "Environment variables" :subpage :env-vars}
+       {:type :subpage :href "#env-vars" :title "Environment Variables" :subpage :env-vars}
        {:type :subpage :href "#advanced-settings" :title "Advanced Settings" :subpage :advance}
        (when (or (feature/enabled? :project-cache-clear-buttons)
                  (config/enterprise?))
