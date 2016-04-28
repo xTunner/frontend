@@ -393,16 +393,17 @@
          [:div.test-name (format-test-name test)]
          [:div.test-file (:file test)]]
         (let [message (or (:message test) "(no output)")
-              message (if (:show-message test) message
-                          (.replace message (js/RegExp. "^\\s+" "m") ""))
-              expander-label (if (:show-message test) "less" "more")]
+              display-message (if (:show-message test)
+                                message
+                                (second (re-find #"(?m)^\s*(.*)$" message)))
+              expander-label (if (:show-message test) "less" "more")
+              multiple-lines? (re-find #"\n|\r\n" message)]
           [:pre.build-test-output
-           [:div.expander {:role "button"
-                           :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
-            expander-label]
-           [:span {:class (when-not (:show-message test)
-                            "preview")}
-            message]])]))))
+           (when multiple-lines?
+             [:div.expander {:role "button"
+                             :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
+              expander-label])
+           display-message])]))))
 
 (def initial-test-render-count 3)
 
