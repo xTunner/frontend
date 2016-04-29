@@ -392,7 +392,7 @@
         [:div.properties
          [:div.test-name (format-test-name test)]
          [:div.test-file (:file test)]]
-        (let [message (or (:message test) "(no output)")
+        (let [message (or (:message test) "")
               display-message (if (:show-message test)
                                 message
                                 (second (re-find #"(?m)^\s*(.*)$" message)))
@@ -403,7 +403,9 @@
              [:div.expander {:role "button"
                              :on-click #(raise! owner [:show-test-message-toggled {:test-index (:i test)}])}
               expander-label])
-           display-message])]))))
+           (if (empty? message)
+             "(no output)"
+             display-message)])]))))
 
 (def initial-test-render-count 3)
 
