@@ -635,7 +635,7 @@
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
                                        :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
-(defn piggieback-org-list [app [{vcs-type :vcs_type} :as vcs-users-and-orgs] owner]
+(defn piggieback-org-list [piggieback-orgs selected-orgs [{vcs-type :vcs_type} :as vcs-users-and-orgs] owner]
   (let [{[{vcs-user-name :login}] nil
          vcs-orgs true} (group-by :org vcs-users-and-orgs)
         ;; split user orgs from real ones so we can later cons the
@@ -643,58 +643,48 @@
         vcs-org-names (->> vcs-orgs
                            (map :login)
                            set)
-        {piggieback-orgs :piggieback_org_maps
-         :as plan} (get-in app state/org-plan-path)
         vcs-rider-names (into #{}
                               (comp
                                (filter #(= vcs-type (:vcs_type %)))
                                (map :name))
-                              piggieback-orgs)
-        ;; This lets users toggle selected piggieback orgs that are already in the plan. Merges:
-        ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
-        ;; selected-orgs:           {"org-a" false "org-c" true}
-        ;; to return #{"org-b" "org-c"}
-        vcs-selected-piggieback-orgs (->> (merge (zipmap vcs-rider-names (repeat true))
-                                                 (get-in app (conj state/selected-piggieback-orgs-path vcs-type)))
-                                          (filter last)
-                                          keys
-                                          set)]
+                              piggieback-orgs)]
     [:div.controls.col-md-4
+     (utils/prettify-vcs_type vcs-type)
      ;; orgs that this user can add to piggieback orgs and existing piggieback orgs
-     (for [org (cons vcs-user-name
+     (for [org-name (cons vcs-user-name
                      (sort-by string/lower-case
                               (disj (clojure.set/union vcs-org-names
                                                        vcs-rider-names)
                                     vcs-user-name)))
-           :when org]
+           :when org-name]
        [:div.checkbox
         [:label
          [:input
-          (let [checked? (contains? vcs-selected-piggieback-orgs org)]
-            {:value org
+          (let [checked? (contains? selected-orgs {:name org-name
+                                                   :vcs_type vcs-type})]
+            {:value org-name
              :checked checked?
-             :on-change #(do
-                           (utils/edit-input owner (conj state/selected-piggieback-orgs-path vcs-type org) % :value (not checked?))
-                           (om/set-state! owner [:selected-piggieback-orgs vcs-type] (if (not checked?)
-                                                                                       (conj vcs-selected-piggieback-orgs org)
-                                                                                       (disj vcs-selected-piggieback-orgs org))))
+             :on-change (fn [event]
+                          (raise! owner [:selected-piggieback-orgs-updated {:org {:name org-name
+                                                                                  :vcs_type vcs-type}
+                                                                            :selected? (not checked?)}]))
              :type "checkbox"})]
-         org]])]))
+         org-name]])]))
 
-(defn piggieback-organizations [app owner]
+(defn piggieback-organizations [{{org-name :name
+                                  org-vcs_type :vcs_type
+                                  {piggieback-orgs :piggieback-org-maps} :plan
+                                  :keys [selected-piggieback-orgs]} :current-org
+                                 :keys [user-orgs]} owner]
   (reify
-    om/IRenderState
-    (render-state [_ {:keys [selected-piggieback-orgs]}]
+    om/IRender
+    (render [_]
       (html
-       (let [org-name (get-in app state/org-name-path)
-             org-vcs_type (get-in app state/org-vcs_type-path)
-             user-login (:login (get-in app state/user-path))
-             ;; orgs excluding the current org
-             users-and-orgs (remove #(and (= (:login %) org-name)
-                                          (= (:vcs_type %) org-vcs_type))
-                                    (get-in app state/user-organizations-path))
-             {gh-users-and-orgs "github"
-              bb-users-and-orgs "bitbucket"} (group-by :vcs_type users-and-orgs)]
+       (let [{gh-users-and-orgs "github"
+              bb-users-and-orgs "bitbucket"} (->> user-orgs
+                                                  (remove #(and (= (:login %) org-name)
+                                                                (= (:vcs_type %) org-vcs_type)))
+                                                  (group-by :vcs_type))]
          [:div.row-fluid
           [:div.span8
            [:fieldset
@@ -707,15 +697,15 @@
             [:p
              [:span.label.label-info "Note:"]
              " Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
-            (if-not users-and-orgs
+            (if-not (or gh-users-and-orgs bb-users-and-orgs)
               [:div "Loading organization list..."]
               [:form
                [:div.container-fluid
                 [:div.row
                  (when (seq gh-users-and-orgs)
-                   (piggieback-org-list app gh-users-and-orgs owner))
+                   (piggieback-org-list piggieback-orgs selected-piggieback-orgs gh-users-and-orgs owner))
                  (when (seq bb-users-and-orgs)
-                   (piggieback-org-list app bb-users-and-orgs owner))]
+                   (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
                 [:div.form-actions.span7
                  (forms/managed-button
                   [:button.btn.btn-large.btn-primary
@@ -793,7 +783,8 @@
   (om/component
    (html
     [:div
-     (om/build piggieback-organizations app)
+     (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
+                                         :user-orgs (get-in app state/user-organizations-path)})
      (om/build transfer-organizations app)])))
 
 (defn- billing-card [app owner]

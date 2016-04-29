@@ -1,6 +1,7 @@
 (ns frontend.controllers.controls
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs.reader :as reader]
+            [clojure.set :as set]
             [frontend.analytics.core :as analytics]
             [frontend.analytics.track :as analytics-track]
             [frontend.api :as api]
@@ -687,6 +688,13 @@
           (put! (:errors comms) [:api-error api-result]))
         api-result))))
 
+(defmethod control-event :selected-piggieback-orgs-updated
+  [_ _ {:keys [org selected?]} state]
+  (update-in state
+             state/selected-piggieback-orgs-path
+             (if selected? conj disj)
+             org))
+
 (defmethod post-control-event! :saved-project-settings
   [target message {:keys [project-id merge-paths]} previous-state current-state]
   (let [uuid frontend.async/*uuid*]
@@ -986,12 +994,8 @@
   [target message {:keys [selected-piggieback-orgs org-name]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        piggieback-org-maps (mapcat (fn [[vcs-type org-names]]
-                                      (map (fn [org-name]
-                                             {:vcs-type vcs-type
-                                              :name org-name})
-                                           org-names))
-                                    selected-piggieback-orgs)]
+        piggieback-org-maps (map #(set/rename-keys % {:vcs_type :vcs-type})
+                                 selected-piggieback-orgs)]
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put

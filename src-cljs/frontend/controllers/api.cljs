@@ -646,7 +646,11 @@
   (let [org-name (:org-name context)]
     (if-not (org-selectable? state org-name)
       state
-      (assoc-in state state/org-plan-path resp))))
+      (let [{piggieback-orgs :piggieback_org_maps
+             :as plan} resp]
+        (-> state
+            (assoc-in state/org-plan-path plan)
+            (assoc-in state/selected-piggieback-orgs-path (set piggieback-orgs)))))))
 
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
