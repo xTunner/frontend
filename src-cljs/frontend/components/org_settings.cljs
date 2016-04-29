@@ -649,7 +649,7 @@
                                (map :name))
                               piggieback-orgs)]
     [:div.controls.col-md-4
-     (utils/prettify-vcs_type vcs-type)
+     [:h4 (str (utils/prettify-vcs_type vcs-type) " Organizations")]
      ;; orgs that this user can add to piggieback orgs and existing piggieback orgs
      (for [org-name (cons vcs-user-name
                      (sort-by string/lower-case
@@ -685,27 +685,27 @@
                                                   (remove #(and (= (:login %) org-name)
                                                                 (= (:vcs_type %) org-vcs_type)))
                                                   (group-by :vcs_type))]
-         [:div.row-fluid
-          [:div.span8
-           [:fieldset
-            [:legend "Extra organizations"]
-            [:p
-             "Your plan covers all repositories (including forks) in the "
-             [:strong org-name]
-             " organization by default."]
-            [:p "You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
-            [:p
-             [:span.label.label-info "Note:"]
-             " Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
-            (if-not (or gh-users-and-orgs bb-users-and-orgs)
-              [:div "Loading organization list..."]
-              [:form
-               [:div.container-fluid
-                [:div.row
-                 (when (seq gh-users-and-orgs)
-                   (piggieback-org-list piggieback-orgs selected-piggieback-orgs gh-users-and-orgs owner))
-                 (when (seq bb-users-and-orgs)
-                   (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
+         [:div
+          [:fieldset
+           [:legend "Extra organizations"]
+           [:p
+            "Your plan covers all repositories (including forks) in the "
+            [:strong org-name]
+            " organization by default."]
+           [:p "You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
+           [:p
+            [:span.label.label-info "Note:"]
+            " Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
+           (if-not (or gh-users-and-orgs bb-users-and-orgs)
+             [:div "Loading organization list..."]
+             [:form
+              [:div.container-fluid
+               [:div.row
+                (when (seq gh-users-and-orgs)
+                  (piggieback-org-list piggieback-orgs selected-piggieback-orgs gh-users-and-orgs owner))
+                (when (seq bb-users-and-orgs)
+                  (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
+               [:div.row
                 [:div.form-actions.span7
                  (forms/managed-button
                   [:button.btn.btn-large.btn-primary
@@ -715,7 +715,7 @@
                     :on-click #(do (raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
                                                                                  :selected-piggieback-orgs selected-piggieback-orgs}])
                                    false)}
-                   "Also pay for these organizations"])]]])]]])))))
+                   "Also pay for these organizations"])]]]])]])))))
 
 (defn transfer-organizations [app owner]
   (om/component
@@ -782,7 +782,7 @@
 (defn organizations [app owner]
   (om/component
    (html
-    [:div
+    [:div.organizations
      (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
                                          :user-orgs (get-in app state/user-organizations-path)})
      (om/build transfer-organizations app)])))
