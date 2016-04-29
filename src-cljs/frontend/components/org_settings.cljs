@@ -651,12 +651,11 @@
     [:div.controls.col-md-4
      [:h4 (str (utils/prettify-vcs_type vcs-type) " Organizations")]
      ;; orgs that this user can add to piggieback orgs and existing piggieback orgs
-     (for [org-name (cons vcs-user-name
-                     (sort-by string/lower-case
-                              (disj (clojure.set/union vcs-org-names
-                                                       vcs-rider-names)
-                                    vcs-user-name)))
-           :when org-name]
+     (for [org-name (cond->> (disj (clojure.set/union vcs-org-names
+                                                      vcs-rider-names)
+                                   vcs-user-name)
+                      true (sort-by string/lower-case)
+                      vcs-user-name (cons vcs-user-name))]
        [:div.checkbox
         [:label
          [:input
