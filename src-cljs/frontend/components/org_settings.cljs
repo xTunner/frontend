@@ -648,7 +648,8 @@
                                (filter #(= vcs-type (:vcs_type %)))
                                (map :name))
                               piggieback-orgs)]
-    [:div.controls.col-md-4
+    ;; width has been set to 20% here
+    [:div.controls.col-md-3
      [:h4 (str (utils/prettify-vcs_type vcs-type) " Organizations")]
      ;; orgs that this user can add to piggieback orgs and existing piggieback orgs
      (for [org-name (cond->> (disj (clojure.set/union vcs-org-names
