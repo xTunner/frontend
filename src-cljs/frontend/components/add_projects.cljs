@@ -48,15 +48,16 @@
      [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
             :height 50}]
      [:div.orgname login]
-     [:div.org-icon
-      [:a {:href (str (case vcs-type
-                        "github" (gh-utils/http-endpoint)
-                        "bitbucket" (bitbucket/http-endpoint))
-                      "/" login)
-           :target "_blank"}
-       (case vcs-type
-         "github" [:i.octicon.octicon-mark-github]
-         "bitbucket" [:i.fa.fa-bitbucket])]]]))
+     (if vcs-type
+       [:div.org-icon
+        [:a {:href (str (case vcs-type
+                          "github" (gh-utils/http-endpoint)
+                          "bitbucket" (bitbucket/http-endpoint))
+                        "/" login)
+             :target "_blank"}
+         (case vcs-type
+           "github" [:i.octicon.octicon-mark-github]
+           "bitbucket" [:i.fa.fa-bitbucket])]])]))
 
 (defn missing-org-info
   "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
