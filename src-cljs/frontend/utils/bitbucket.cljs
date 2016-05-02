@@ -1,14 +1,10 @@
 (ns frontend.utils.bitbucket
   (:require
    [frontend.utils :as utils]
-   [frontend.utils.vcs-url :as vcs-url]
    [cemerick.url :refer [url]]))
 
 (defn http-endpoint []
   "https://bitbucket.org")
-
-(defmethod vcs-url/profile-url :bitbucket [user]
-  (str (http-endpoint) "/" (:login user)))
 
 (defn auth-url []
   (let [auth-host (aget js/window "renderContext" "auth_host")

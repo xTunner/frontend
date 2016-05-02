@@ -1,6 +1,8 @@
 (ns frontend.utils.vcs-url
   (:require [clojure.string :as string]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh]
+            [frontend.utils.bitbucket :as bb]
             [frontend.routes :as routes]))
 
 (def url-project-re #"^https?://([^/]+)/(.*)")
@@ -15,7 +17,19 @@
         "bitbucket.org" "bitbucket"} (second (re-matches url-project-re vcs-url)))
       "github"))
 
-(defmulti profile-url (comp keyword :vcs_type))
+(defmulti profile-url
+  (fn [user]
+    (if (= "none" (:login user))
+      :none
+      (keyword (:vcs_type user)))))
+
+(defmethod profile-url :github [user]
+  (str (gh/http-endpoint) "/" (:login user)))
+
+(defmethod profile-url :bitbucket [user]
+  (str (bb/http-endpoint) "/" (:login user)))
+
+(defmethod profile-url :none [user] "")
 
 ;; slashes aren't allowed in github org/user names or project names
 (defn org-name [vcs-url]
