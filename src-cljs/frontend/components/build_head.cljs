@@ -546,8 +546,9 @@
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
-    [:a {:href (vcs-url/profile-url user)}
-     (build-model/ui-user build)]))
+    (when (not (= "none" (:login user)))
+      [:a {:href (vcs-url/profile-url user)}
+       (build-model/ui-user build)])))
 
 (defn link-to-commit [build]
   [:a {:href (:compare build)}
