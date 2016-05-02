@@ -216,7 +216,7 @@
 (defmethod post-control-event! :selected-add-projects-org
   [target message {:keys [vcs-type login]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (when (user-model/has-org? (get-in current-state state/user-path) login)
+    (when (user-model/has-org? (get-in current-state state/user-path) login vcs-type)
       (api/get-org-settings vcs-type login api-ch)
       (api/get-org-plan login api-ch)))
   (utils/scroll-to-id! "project-listing"))
