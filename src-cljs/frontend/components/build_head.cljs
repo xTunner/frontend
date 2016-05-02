@@ -546,7 +546,8 @@
 
 (defn link-to-user [build]
   (when-let [user (:user build)]
-    (when (not (= "none" (:login user)))
+    (if (= "none" (:login user))
+      [:em "Unknown"]
       [:a {:href (vcs-url/profile-url user)}
        (build-model/ui-user build)])))
 
