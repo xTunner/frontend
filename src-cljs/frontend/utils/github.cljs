@@ -47,9 +47,6 @@
        "/settings/connections/applications/"
        (aget js/window "renderContext" "githubClientId")))
 
-(defn login-url [login]
-  (str (http-endpoint) "/" login))
-
 (defn make-avatar-url [{:keys [avatar_url gravatar_id login]} & {:keys [size] :or {size 200}}]
   "Takes a map of user/org data and returns a url for the desired size of the user's avatar
 
