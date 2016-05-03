@@ -636,10 +636,11 @@
                                        :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
 (defn piggieback-org-list [piggieback-orgs selected-orgs [{vcs-type :vcs_type} :as vcs-users-and-orgs] owner]
-  (let [{[{vcs-user-name :login}] nil
-         vcs-orgs true} (group-by :org vcs-users-and-orgs)
-        ;; split user orgs from real ones so we can later cons the
+  (let [;; split user orgs from real ones so we can later cons the
         ;; user org onto the list of orgs
+        {[{vcs-user-name :login}] nil
+         vcs-orgs true}
+        (group-by :org vcs-users-and-orgs)
         vcs-org-names (->> vcs-orgs
                            (map :login)
                            set)
@@ -681,10 +682,11 @@
     (render [_]
       (html
        (let [{gh-users-and-orgs "github"
-              bb-users-and-orgs "bitbucket"} (->> user-orgs
-                                                  (remove #(and (= (:login %) org-name)
-                                                                (= (:vcs_type %) org-vcs_type)))
-                                                  (group-by :vcs_type))]
+              bb-users-and-orgs "bitbucket"}
+             (->> user-orgs
+                  (remove #(and (= (:login %) org-name)
+                                (= (:vcs_type %) org-vcs_type)))
+                  (group-by :vcs_type))]
          [:div
           [:fieldset
            [:legend "Extra organizations"]

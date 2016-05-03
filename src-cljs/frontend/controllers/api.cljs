@@ -647,7 +647,8 @@
     (if-not (org-selectable? state org-name)
       state
       (let [{piggieback-orgs :piggieback_org_maps
-             :as plan} resp]
+             :as plan}
+            resp]
         (-> state
             (assoc-in state/org-plan-path plan)
             (assoc-in state/selected-piggieback-orgs-path (set piggieback-orgs)))))))

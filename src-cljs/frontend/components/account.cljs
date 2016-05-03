@@ -32,7 +32,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [user-and-orgs (sort-by (comp not :foo)
+      (let [user-and-orgs (sort-by (complement :org)
                                    (get-in app state/user-organizations-path))]
         (html/html
          [:div#settings-plans
