@@ -155,18 +155,17 @@
             ;; organizations route is much faster than the repos route. We show them
             ;; in this order (rather than e.g. putting the whole thing into a set)
             ;; so that new ones don't jump up in the middle as they're loaded.
-            (let [org-names (->> user
+            (let [user-org-keys (->> user
                                  :organizations
-                                 (map :login)
+                                 (map (juxt :vcs_type :login))
                                  set)
-                  in-orgs? (comp org-names :login)]
-              (->> repos
-                   (reduce (fn [accum {:keys [owner vcs_type]}]
-                             (if (in-orgs? owner)
-                               accum
-                               (conj accum (assoc owner :vcs_type vcs_type))))
-                           #{})
-                   (concat (sort-by :org (:organizations user)))
+                  user-org? (comp user-org-keys (juxt :vcs_type :login))
+                  all-orgs (concat (sort-by :org (:organizations user))
+                                   (->> repos
+                                        (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs-type)))
+                                        (remove user-org?)
+                                        distinct))]
+              (->> all-orgs
                    (filter (partial select-vcs-type vcs-type))
                    (map (fn [org] (organization org settings owner)))))]
            (when (get-in user [:repos-loading (keyword vcs-type)])
