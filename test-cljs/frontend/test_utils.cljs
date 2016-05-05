@@ -114,7 +114,9 @@
                                 :type :osx}}}}
         %
         (map % keys)
-        (conj % {:org_name "circleci"})
+        (conj % {:org_name "circleci"
+                 :org {:name "circleci"
+                       :vcs_type "github"}})
         (apply merge %)))
 
 (def example-piggieback-plan
