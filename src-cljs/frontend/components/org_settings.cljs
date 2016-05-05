@@ -1237,7 +1237,7 @@
    (html
     (let [org-name (get-in app state/org-name-path)
           vcs_type (get-in app state/org-vcs_type-path)
-          plan (get-in app state/org-plan-path)
+          {plan-org :org :as plan} (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
           linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
@@ -1248,9 +1248,9 @@
        [:div.explanation
         (when piggiebacked?
           [:p "This organization's projects will build under "
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :vcs_type vcs_type})}
-            (:org_name plan) "'s plan."]])
+           [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                    :vcs_type (:vcs_type plan-org)})}
+            (:name plan-org) "'s plan."]])
         [:h2 "Linux"]
         (cond (> containers 1)
               [:p (str "All Linux builds will be distributed across " containers " containers.")]
