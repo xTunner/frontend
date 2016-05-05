@@ -266,7 +266,7 @@
   (println "making api requests.")
   (let [api-ch (get-in current-state [:comms :api])]
     ;; load orgs, collaborators, and repos.
-    (api/get-orgs api-ch)
+    (api/get-orgs api-ch :include-user? true)
     (api/get-github-repos api-ch)
     (when (feature/enabled? :bitbucket)
       (api/get-bitbucket-repos api-ch)))
@@ -327,9 +327,8 @@
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         org (:org args)]
-    ; get the list of orgs
-    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
-      (put! api-ch [:organizations (:status api-result) api-result])))
+    ;; get the list of orgs
+    (api/get-orgs api-ch :include-user? true)
     (when org
       (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/members" org)))]
             (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))
@@ -452,7 +451,7 @@
       (mlog "organization details already loaded for" org)
       (api/get-org-settings vcs_type org api-ch))
     (condp = subpage
-      :organizations (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+      :organizations (api/get-orgs api-ch :include-user? true)
       :billing (do
                  (ajax/ajax :get
                             (gstring/format "/api/v1/organization/%s/card" org)
@@ -516,7 +515,7 @@
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects (get-in current-state [:comms :api])))
     (ajax/ajax :get "/api/v1/sync-github" :me api-ch)
-    (ajax/ajax :get "/api/v1/user/organizations" :organizations api-ch)
+    (api/get-orgs api-ch :include-user? true)
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
     (set-page-title! "Account")))
 

@@ -635,69 +635,89 @@
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
                                        :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
-(defn piggyback-organizations [app owner]
-  (om/component
-   (html
-    (let [org-name (get-in app state/org-name-path)
-          user-login (:login (get-in app state/user-path))
-          user-orgs (get-in app state/user-organizations-path)
-          plan (get-in app state/org-plan-path)
-          ;; orgs that this user can add to piggyback orgs
-          eligible-piggyback-orgs (-> (into #{}
-                                            (comp
-                                             ;; Only GitHub orgs are allowed to piggieback (for now).
-                                             (filter #(= "github" (:vcs_type %)))
-                                             (map :login))
-                                            user-orgs)
-                                      (conj user-login)
-                                      (disj org-name))
-          ;; This lets users toggle selected piggyback orgs that are already in the plan. Merges:
-          ;; (:piggieback_orgs plan): ["org-a" "org-b"] with
-          ;; selected-orgs:           {"org-a" false "org-c" true}
-          ;; to return #{"org-b" "org-c"}
-          selected-piggyback-orgs (set (keys (filter last
-                                                     (merge (zipmap (:piggieback_orgs plan) (repeat true))
-                                                            (get-in app state/selected-piggyback-orgs-path)))))]
-      [:div.row-fluid
-       [:div.span8
-        [:fieldset
-         [:legend "Extra organizations"]
-         [:p
-          "Your plan covers all repositories (including forks) in the "
-          [:strong org-name]
-          " organization by default."]
-         [:p "You can let any GitHub organization you belong to, including personal accounts, piggyback on your plan. Projects in your piggyback organizations will be able to run builds on your plan."]
-         [:p
-          [:span.label.label-info "Note:"]
-          " Members of the piggyback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
-         (if-not user-orgs
-           [:div "Loading organization list..."]
-           [:div.row-fluid
-            [:div.span12
+(defn piggieback-org-list [piggieback-orgs selected-orgs [{vcs-type :vcs_type} :as vcs-users-and-orgs] owner]
+  (let [;; split user orgs from real ones so we can later cons the
+        ;; user org onto the list of orgs
+        {[{vcs-user-name :login}] nil
+         vcs-orgs true}
+        (group-by :org vcs-users-and-orgs)
+        vcs-org-names (->> vcs-orgs
+                           (map :login)
+                           set)
+        vcs-rider-names (into #{}
+                              (comp
+                               (filter #(= vcs-type (:vcs_type %)))
+                               (map :name))
+                              piggieback-orgs)]
+    ;; width has been set to 20% here
+    [:div.controls.col-md-3
+     [:h4 (str (utils/prettify-vcs_type vcs-type) " Organizations")]
+     ;; orgs that this user can add to piggieback orgs and existing piggieback orgs
+     (for [org-name (cond->> (disj (clojure.set/union vcs-org-names
+                                                      vcs-rider-names)
+                                   vcs-user-name)
+                      true (sort-by string/lower-case)
+                      vcs-user-name (cons vcs-user-name))]
+       [:div.checkbox
+        [:label
+         [:input
+          (let [checked? (contains? selected-orgs {:name org-name
+                                                   :vcs_type vcs-type})]
+            {:value org-name
+             :checked checked?
+             :on-change (fn [event]
+                          (raise! owner [:selected-piggieback-orgs-updated {:org {:name org-name
+                                                                                  :vcs_type vcs-type}
+                                                                            :selected? (not checked?)}]))
+             :type "checkbox"})]
+         org-name]])]))
+
+(defn piggieback-organizations [{{org-name :name
+                                  org-vcs_type :vcs_type
+                                  {piggieback-orgs :piggieback-org-maps} :plan
+                                  :keys [selected-piggieback-orgs]} :current-org
+                                 :keys [user-orgs]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       (let [{gh-users-and-orgs "github"
+              bb-users-and-orgs "bitbucket"}
+             (->> user-orgs
+                  (remove #(and (= (:login %) org-name)
+                                (= (:vcs_type %) org-vcs_type)))
+                  (group-by :vcs_type))]
+         [:div
+          [:fieldset
+           [:legend "Extra organizations"]
+           [:p
+            "Your plan covers all repositories (including forks) in the "
+            [:strong org-name]
+            " organization by default."]
+           [:p "You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
+           [:p
+            [:span.label.label-info "Note:"]
+            " Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
+           (if-not (or gh-users-and-orgs bb-users-and-orgs)
+             [:div "Loading organization list..."]
              [:form
-              [:div.controls
-               ;; orgs that this user can add to piggyback orgs and existing piggyback orgs
-               (for [org (sort (clojure.set/union eligible-piggyback-orgs
-                                                  (set (:piggieback_orgs plan))))]
-                 [:div.checkbox
-                  [:label
-                   [:input
-                    (let [checked? (contains? selected-piggyback-orgs org)]
-                      {:value org
-                       :checked checked?
-                       :on-change #(utils/edit-input owner (conj state/selected-piggyback-orgs-path org) % :value (not checked?))
-                       :type "checkbox"})]
-                   org]])]
-              [:div.form-actions.span7
-               (forms/managed-button
-                [:button.btn.btn-large.btn-primary
-                 {:data-success-text "Saved",
-                  :data-loading-text "Saving...",
-                  :type "submit",
-                  :on-click #(do (raise! owner [:save-piggyback-orgs-clicked {:org-name org-name
-                                                                              :selected-piggyback-orgs selected-piggyback-orgs}])
-                                 false)}
-                 "Also pay for these organizations"])]]]])]]]))))
+              [:div.container-fluid
+               [:div.row
+                (when (seq gh-users-and-orgs)
+                  (piggieback-org-list piggieback-orgs selected-piggieback-orgs gh-users-and-orgs owner))
+                (when (seq bb-users-and-orgs)
+                  (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
+               [:div.row
+                [:div.form-actions.span7
+                 (forms/managed-button
+                  [:button.btn.btn-large.btn-primary
+                   {:data-success-text "Saved",
+                    :data-loading-text "Saving...",
+                    :type "submit",
+                    :on-click #(do (raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
+                                                                                 :selected-piggieback-orgs selected-piggieback-orgs}])
+                                   false)}
+                   "Also pay for these organizations"])]]]])]])))))
 
 (defn transfer-organizations [app owner]
   (om/component
@@ -764,8 +784,9 @@
 (defn organizations [app owner]
   (om/component
    (html
-    [:div
-     (om/build piggyback-organizations app)
+    [:div.organizations
+     (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
+                                         :user-orgs (get-in app state/user-organizations-path)})
      (om/build transfer-organizations app)])))
 
 (defn- billing-card [app owner]
@@ -1216,7 +1237,7 @@
    (html
     (let [org-name (get-in app state/org-name-path)
           vcs_type (get-in app state/org-vcs_type-path)
-          plan (get-in app state/org-plan-path)
+          {plan-org :org :as plan} (get-in app state/org-plan-path)
           plan-total (pm/stripe-cost plan)
           linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
@@ -1227,9 +1248,9 @@
        [:div.explanation
         (when piggiebacked?
           [:p "This organization's projects will build under "
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :vcs_type vcs_type})}
-            (:org_name plan) "'s plan."]])
+           [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                    :vcs_type (:vcs_type plan-org)})}
+            (:name plan-org) "'s plan."]])
         [:h2 "Linux"]
         (cond (> containers 1)
               [:p (str "All Linux builds will be distributed across " containers " containers.")]

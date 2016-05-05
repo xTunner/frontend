@@ -1,6 +1,7 @@
 (ns frontend.controllers.controls
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs.reader :as reader]
+            [clojure.set :as set]
             [frontend.analytics.core :as analytics]
             [frontend.analytics.track :as analytics-track]
             [frontend.api :as api]
@@ -215,15 +216,14 @@
 (defmethod post-control-event! :selected-add-projects-org
   [target message {:keys [vcs-type login]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (when (user-model/has-org? (get-in current-state state/user-path) login)
+    (when (user-model/has-org? (get-in current-state state/user-path) login vcs-type)
       (api/get-org-settings vcs-type login api-ch)
       (api/get-org-plan login api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
-    (go (let [api-result (<! (ajax/managed-ajax :get "/api/v1/user/organizations"))]
-          (put! api-ch [:organizations (:status api-result) api-result])))))
+    (api/get-orgs api-ch :include-user? true)))
 
 (defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state]
@@ -688,6 +688,13 @@
           (put! (:errors comms) [:api-error api-result]))
         api-result))))
 
+(defmethod control-event :selected-piggieback-orgs-updated
+  [_ _ {:keys [org selected?]} state]
+  (update-in state
+             state/selected-piggieback-orgs-path
+             (if selected? conj disj)
+             org))
+
 (defmethod post-control-event! :saved-project-settings
   [target message {:keys [project-id merge-paths]} previous-state current-state]
   (let [uuid frontend.async/*uuid*]
@@ -983,15 +990,17 @@
         (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
         (release-button! uuid (:status api-result))))))
 
-(defmethod post-control-event! :save-piggyback-orgs-clicked
-  [target message {:keys [selected-piggyback-orgs org-name]} previous-state current-state]
+(defmethod post-control-event! :save-piggieback-orgs-clicked
+  [target message {:keys [selected-piggieback-orgs org-name]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
-        api-ch (get-in current-state [:comms :api])]
+        api-ch (get-in current-state [:comms :api])
+        piggieback-org-maps (map #(set/rename-keys % {:vcs_type :vcs-type})
+                                 selected-piggieback-orgs)]
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
-                           :params {:piggieback-orgs selected-piggyback-orgs}))]
+                           :params {:piggieback-org-maps piggieback-org-maps}))]
        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
        (release-button! uuid (:status api-result))))))
 

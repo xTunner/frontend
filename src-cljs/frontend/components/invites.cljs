@@ -121,7 +121,7 @@
           [:div#invite-teammates
            ; org bar on the left, borrowed from add projects
            [:ul.side-list
-            (om/build-all side-item (get-in data state/user-organizations-path))]
+            (om/build-all side-item (filter :org (get-in data state/user-organizations-path)))]
            ; invites box on the right
            (if (:org invite-data)
              [:div.first-green.invite-form
