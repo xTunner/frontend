@@ -1230,7 +1230,9 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :delete
-                           (gstring/format "/api/v1/organization/%s/plan" org-name)
+                           (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                           vcs_type
+                                           org-name)
                            :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
