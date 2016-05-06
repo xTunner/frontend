@@ -764,19 +764,20 @@
 
 (defmethod api-event [:create-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
-    state
-    (assoc-in state state/org-plan-path resp)))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (assoc-in state state/org-plan-path resp))))
 
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
-  (when (= (:org-name context) (get-in current-state state/org-settings-org-name-path))
-    (let [nav-ch (get-in current-state [:comms :nav])
-          vcs_type (get-in current-state state/org-settings-vcs-type-path)]
-      (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
-                                                                    :vcs_type vcs_type
-                                                                    :_fragment (name (get-in current-state state/org-settings-subpage-path))})
-                                :replace-token? true}]))))
+  (let [{:keys [org-name vcs-type]} context]
+    (when (org-selectable? current-state org-name vcs-type)
+      (let [nav-ch (get-in current-state [:comms :nav])]
+        (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
+                                                                      :vcs_type vcs-type
+                                                                      :_fragment (name (get-in current-state state/org-settings-subpage-path))})
+                                  :replace-token? true}])))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]

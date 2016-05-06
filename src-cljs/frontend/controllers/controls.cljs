@@ -870,7 +870,7 @@
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
     (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
@@ -882,13 +882,19 @@
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
                                     :post
-                                    (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
+                                    (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                                    vcs-type
+                                                    org-name
+                                                    "plan")
                                     :params {:token data
                                              :containers containers
                                              :billing-name org-name
                                              :billing-email (get-in current-state (conj state/user-path :selected_email))
                                              :paid linux}))]
-                (put! api-ch [:create-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+                (put! api-ch [:create-plan
+                              (:status api-result)
+                              (assoc api-result :context {:org-name org-name
+                                                          :vcs-type vcs-type})])
                 (release-button! uuid (:status api-result))))
             nil)))))
 
@@ -897,7 +903,7 @@
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
 
     (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
@@ -910,12 +916,17 @@
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
                                      :post
-                                     (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
+                                     (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                                     vcs-type
+                                                     org-name)
                                      :params {:token data
                                               :billing-name org-name
                                               :billing-email (get-in current-state (conj state/user-path :selected_email))
                                               :osx plan-type}))]
-                (put! api-ch [:create-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+                (put! api-ch [:create-plan
+                              (:status api-result)
+                              (assoc api-result :context {:org-name org-name
+                                                          :vcs-type vcs-type})])
                 (release-button! uuid (:status api-result))))
             nil)))))
 
