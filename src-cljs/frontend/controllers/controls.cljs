@@ -1046,7 +1046,9 @@
                            :params {:org-name to}))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
-         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
+         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                                                           vcs_type
+                                                                           org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
                                                                          :vcs_type vcs_type})}])))
@@ -1236,7 +1238,11 @@
                            :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
-         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
+         (let [plan-api-result (<! (ajax/managed-ajax
+                                    :get
+                                    (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                                    vcs_type
+                                                    org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name
                                                                     :vcs_type vcs_type})
