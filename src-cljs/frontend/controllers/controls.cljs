@@ -870,7 +870,7 @@
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
@@ -903,7 +903,7 @@
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
 
     (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
@@ -965,7 +965,7 @@
   [target message {:keys [containers]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)
         login (get-in current-state state/user-login-path)]
     (go
      (let [api-result (<! (ajax/managed-ajax
@@ -984,7 +984,7 @@
   [target message {:keys [plan-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :put
@@ -1002,7 +1002,7 @@
   [target message plan-template previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :post
@@ -1190,7 +1190,7 @@
   [target message _ previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)
         settings (state-utils/merge-inputs (get-in current-state state/org-plan-path)
                                            (get-in current-state state/inputs-path)
                                            [:billing_email :billing_name :extra_billing_data])]
