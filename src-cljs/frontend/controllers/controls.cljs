@@ -695,6 +695,10 @@
              (if selected? conj disj)
              org))
 
+(defmethod control-event :selected-transfer-org-updated
+  [_ _ {:keys [org]} state]
+  (assoc-in state state/selected-transfer-org-path org))
+
 (defmethod post-control-event! :saved-project-settings
   [target message {:keys [project-id merge-paths]} previous-state current-state]
   (let [uuid frontend.async/*uuid*]
@@ -1005,7 +1009,7 @@
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :transfer-plan-clicked
-  [target message {:keys [to org-name vcs_type]} previous-state current-state]
+  [target message {{:keys [org-name vcs-type]} :from-org :keys [to-org]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         errors-ch (get-in current-state [:comms :errors])
@@ -1013,14 +1017,21 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
-                           (gstring/format "/api/v1/organization/%s/%s" org-name "transfer-plan")
-                           :params {:org-name to}))]
+                           (gstring/format "/api/dangerzone/organization/%s/%s/transfer-plan"
+                                           vcs-type
+                                           org-name)
+                           :params to-org))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/plan" org-name)))]
-           (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
+           (put! api-ch [:org-plan
+                         (:status plan-api-result)
+                         (assoc plan-api-result
+                                :context
+                                {:org-name org-name
+                                 :vcs-type vcs-type})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
-                                                                         :vcs_type vcs_type})}])))
+                                                                         :vcs_type vcs-type})}])))
        (release-button! uuid (:status api-result))))))
 
 (defn- maybe-add-message-for-beta
