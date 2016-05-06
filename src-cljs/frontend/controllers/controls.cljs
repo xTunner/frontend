@@ -970,7 +970,9 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
-                           (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
+                           (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                           vcs-type
+                                           org-name)
                            :params {:containers containers}))]
        (put! api-ch [:update-plan
                      (:status api-result)
@@ -986,7 +988,9 @@
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :put
-                             (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
+                             (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                             vcs-type
+                                             org-name)
                              :params {:osx plan-type}))]
         (put! api-ch [:update-plan
                       (:status api-result)
@@ -1189,7 +1193,9 @@
     (go
       (let [api-result (<! (ajax/managed-ajax
                               :put
-                              (gstring/format "/api/v1/organization/%s/plan" org-name)
+                              (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                              vcs-type
+                                              org-name)
                               :params {:billing-email (:billing_email settings)
                                        :billing-name (:billing_name settings)
                                        :extra-billing-data (:extra_billing_data settings)}))]
