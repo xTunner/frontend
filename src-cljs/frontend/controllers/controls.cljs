@@ -954,44 +954,53 @@
   [target message {:keys [containers]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)
+        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)
         login (get-in current-state state/user-login-path)]
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                            :params {:containers containers}))]
-       (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+       (put! api-ch [:update-plan
+                     (:status api-result)
+                     (assoc api-result :context {:org-name org-name
+                                                 :vcs-type vcs-type})])
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :update-osx-plan-clicked
   [target message {:keys [plan-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :put
                              (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                              :params {:osx plan-type}))]
-        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (put! api-ch [:update-plan
+                      (:status api-result)
+                      (assoc api-result :context {:org-name org-name
+                                                  :vcs-type vcs-type})])
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :activate-plan-trial
   [target message plan-template previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)]
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :post
                              (gstring/format "/api/v1/organization/%s/plan/trial" org-name)
                              :params plan-template))]
-        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (put! api-ch [:update-plan
+                      (:status api-result)
+                      (assoc api-result :context {:org-name org-name
+                                                  :vcs-type vcs-type})])
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :save-piggieback-orgs-clicked
-  [target message {:keys [selected-piggieback-orgs org-name]} previous-state current-state]
+  [target message {:keys [selected-piggieback-orgs org-name vcs-type]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         piggieback-org-maps (map #(set/rename-keys % {:vcs_type :vcs-type})
@@ -1001,7 +1010,10 @@
                            :put
                            (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
                            :params {:piggieback-org-maps piggieback-org-maps}))]
-       (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+       (put! api-ch [:update-plan
+                     (:status api-result)
+                     (assoc api-result :context {:org-name org-name
+                                                 :vcs-type vcs-type})])
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :transfer-plan-clicked
@@ -1157,7 +1169,7 @@
   [target message _ previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)
+        {org-name :name, vcs-type :vcs-type} (get-in current-state state/org-data-path)
         settings (state-utils/merge-inputs (get-in current-state state/org-plan-path)
                                            (get-in current-state state/inputs-path)
                                            [:billing_email :billing_name :extra_billing_data])]
@@ -1170,7 +1182,10 @@
                                        :extra-billing-data (:extra_billing_data settings)}))]
         (when (= :success (:status api-result))
           (put! (get-in current-state [:comms :controls]) [:clear-inputs (map vector (keys settings))]))
-        (put! api-ch [:update-plan (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (put! api-ch [:update-plan
+                      (:status api-result)
+                      (assoc api-result :context {:org-name org-name
+                                                  :vcs-type vcs-type})])
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :resend-invoice-clicked

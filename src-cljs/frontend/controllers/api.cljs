@@ -637,9 +637,14 @@
     (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-dashboard)}])
     updated-state))
 
-(defn org-selectable? [state org-name]
-  (or (= org-name (get-in state state/org-settings-org-name-path))
-      (= org-name (get-in state state/add-projects-selected-org-login-path))))
+(defn org-selectable?
+  [state org-name vcs-type]
+  (let [org-settings (get-in state state/org-settings-path)
+        add-projects-selected-org (get-in state state/add-projects-selected-org-path)]
+    (or (and (= org-name (:org-name org-settings))
+             (= vcs-type (:vcs_type org-settings)))
+        (and (= org-name (:login add-projects-selected-org))
+             (= vcs-type (:vcs-type add-projects-selected-org))))))
 
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
@@ -655,20 +660,22 @@
 
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
-  (if-not (org-selectable? state (:org-name context))
-    state
-    (-> state
-        (update-in state/org-data-path merge resp)
-        (assoc-in state/org-loaded-path true)
-        (assoc-in state/org-authorized?-path true))))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (-> state
+          (update-in state/org-data-path merge resp)
+          (assoc-in state/org-loaded-path true)
+          (assoc-in state/org-authorized?-path true)))))
 
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
-  (if-not (org-selectable? state (:org-name context))
-    state
-    (-> state
-        (assoc-in state/org-loaded-path true)
-        (assoc-in state/org-authorized?-path false))))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (-> state
+          (assoc-in state/org-loaded-path true)
+          (assoc-in state/org-authorized?-path false)))))
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
@@ -773,9 +780,10 @@
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (org-selectable? state (:org-name context))
-    state
-    (update-in state state/org-plan-path merge resp)))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (update-in state state/org-plan-path merge resp))))
 
 (defmethod api-event [:update-heroku-key :success]
   [target message status {:keys [resp context]} state]
