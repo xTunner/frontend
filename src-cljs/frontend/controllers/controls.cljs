@@ -218,7 +218,7 @@
   (let [api-ch (get-in current-state [:comms :api])]
     (when (user-model/has-org? (get-in current-state state/user-path) login vcs-type)
       (api/get-org-settings vcs-type login api-ch)
-      (api/get-org-plan login api-ch)))
+      (api/get-org-plan login vcs-type api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state]

@@ -47,12 +47,15 @@
              :organizations
              api-ch))
 
-(defn get-org-plan [org-name api-ch]
+(defn get-org-plan [org-name vcs-type api-ch]
   (ajax/ajax :get
-             (gstring/format "/api/v1/organization/%s/plan" org-name)
+             (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                             vcs-type
+                             org-name)
              :org-plan
              api-ch
-             :context {:org-name org-name}))
+             :context {:org-name org-name
+                       :vcs-type vcs-type}))
 
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
@@ -176,7 +179,8 @@
                "github" (gstring/format "/api/v1/organization/%s/settings" org-name))
              :org-settings
              api-ch
-             :context {:org-name org-name}))
+             :context {:org-name org-name
+                       :vcs-type vcs-type}))
 
 (defn get-project-settings [project-name api-ch]
   (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)

@@ -648,8 +648,8 @@
 
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
-  (let [org-name (:org-name context)]
-    (if-not (org-selectable? state org-name)
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
       state
       (let [{piggieback-orgs :piggieback_org_maps
              :as plan}
