@@ -449,7 +449,7 @@
         (api/get-org-plan org vcs_type api-ch)))
     (if (= org (get-in current-state state/org-name-path))
       (mlog "organization details already loaded for" org)
-      (api/get-org-settings vcs_type org api-ch))
+      (api/get-org-settings org vcs_type api-ch))
     (condp = subpage
       :organizations (api/get-orgs api-ch :include-user? true)
       :billing (do

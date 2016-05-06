@@ -172,7 +172,7 @@
                                        build-num))]
     (ajax/ajax :get url :action-steps api-ch :context args)))
 
-(defn get-org-settings [vcs-type org-name api-ch]
+(defn get-org-settings [org-name vcs-type api-ch]
   (ajax/ajax :get
              (case vcs-type
                "bitbucket" (gstring/format "/api/dangerzone/organization/%s/%s/settings" vcs-type org-name)

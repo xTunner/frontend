@@ -217,7 +217,7 @@
   [target message {:keys [vcs-type login]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])]
     (when (user-model/has-org? (get-in current-state state/user-path) login vcs-type)
-      (api/get-org-settings vcs-type login api-ch)
+      (api/get-org-settings login vcs-type api-ch)
       (api/get-org-plan login vcs-type api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
