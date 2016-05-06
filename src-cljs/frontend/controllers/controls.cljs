@@ -1006,7 +1006,9 @@
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :post
-                             (gstring/format "/api/v1/organization/%s/plan/trial" org-name)
+                             (gstring/format "/api/dangerzone/organization/%s/%s/plan/trial"
+                                             vcs-type
+                                             org-name)
                              :params plan-template))]
         (put! api-ch [:update-plan
                       (:status api-result)
