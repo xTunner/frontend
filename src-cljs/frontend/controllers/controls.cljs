@@ -1008,7 +1008,9 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
-                           (gstring/format "/api/v1/organization/%s/%s" org-name "plan")
+                           (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                           vcs-type
+                                           org-name)
                            :params {:piggieback-org-maps piggieback-org-maps}))]
        (put! api-ch [:update-plan
                      (:status api-result)

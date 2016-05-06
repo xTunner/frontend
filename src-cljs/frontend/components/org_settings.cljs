@@ -715,6 +715,7 @@
                     :data-loading-text "Saving...",
                     :type "submit",
                     :on-click #(do (raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
+                                                                                 :vcs-type org-vcs_type
                                                                                  :selected-piggieback-orgs selected-piggieback-orgs}])
                                    false)}
                    "Also pay for these organizations"])]]]])]])))))
