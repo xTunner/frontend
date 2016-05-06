@@ -674,7 +674,7 @@
 
 (defn piggieback-organizations [{{org-name :name
                                   org-vcs_type :vcs_type
-                                  {piggieback-orgs :piggieback-org-maps} :plan
+                                  {piggieback-orgs :piggieback_org_maps} :plan
                                   :keys [selected-piggieback-orgs]} :current-org
                                  :keys [user-orgs]} owner]
   (reify
