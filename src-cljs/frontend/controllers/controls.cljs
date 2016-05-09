@@ -1219,14 +1219,20 @@
   [target message {:keys [invoice-id]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        {org-name :name
+         vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (go
       (let [api-result (<! (ajax/managed-ajax
                               :post
-                              (gstring/format "/api/v1/organization/%s/invoice/resend" org-name)
+                              (gstring/format "/api/dangerzone/organization/%s/%s/invoice/resend"
+                                              vcs-type
+                                              org-name)
                               :params {:id invoice-id}))]
         ;; TODO Handle this message in the API channel
-        (put! api-ch [:resend-invoice (:status api-result) (assoc api-result :context {:org-name org-name})])
+        (put! api-ch [:resend-invoice
+                      (:status api-result)
+                      (assoc api-result :context {:org-name org-name
+                                                  :vcs-type vcs-type})])
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :cancel-plan-clicked
