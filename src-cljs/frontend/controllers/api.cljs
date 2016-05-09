@@ -805,9 +805,10 @@
 (defmethod api-event [:plan-invoices :success]
   [target message status {:keys [resp context]} state]
   (utils/mlog ":plan-invoices API event: " resp)
-  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
-    state
-    (assoc-in state state/org-invoices-path resp)))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (assoc-in state state/org-invoices-path resp))))
 
 (defmethod api-event [:build-state :success]
   [target message status {:keys [resp]} state]

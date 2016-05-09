@@ -463,10 +463,13 @@
                             :context {:org-name org
                                       :vcs-type vcs_type})
                  (ajax/ajax :get
-                            (gstring/format "/api/v1/organization/%s/invoices" org)
+                            (gstring/format "/api/dangerzone/organization/%s/%s/invoices"
+                                            vcs_type
+                                            org)
                             :plan-invoices
                             api-ch
-                            :context {:org-name org}))
+                            :context {:org-name org
+                                      :vcs-type vcs_type}))
       nil))
   (set-page-title! (str "Org settings - " org)))
 
