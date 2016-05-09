@@ -445,8 +445,7 @@
     (if (get-in current-state state/org-plan-path)
       (mlog "plan details already loaded for" org)
       ;; Only GitHub orgs support paid plans currently.
-      (when (= "github" vcs_type)
-        (api/get-org-plan org vcs_type api-ch)))
+      (api/get-org-plan org vcs_type api-ch))
     (if (and (= org (get-in current-state state/org-name-path))
              (= vcs_type (get-in current-state state/org-vcs_type-path)))
       (mlog "organization details already loaded for" org)
