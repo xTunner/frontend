@@ -567,22 +567,29 @@
   (reify
     om/IRender
     (render[_]
-      (html [:div {:data-component `pricing-tabs}
-             [:ul.nav.nav-tabs
-              [:li {:class (when (= selected-tab :linux) "active")}
-               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan) :_fragment "linux-pricing"})}
-                [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
-              [:li {:class (when (= selected-tab :osx) "active")}
-               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan) :_fragment "osx-pricing"})}
-                [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
-             (condp = selected-tab
-               :linux [:div.card
-                       (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                       (om/build faq linux-faq-items)]
+      (let [{{org-name :name
+              vcs-type :vcs_type} :org} plan]
+        (html
+         [:div {:data-component `pricing-tabs}
+          [:ul.nav.nav-tabs
+           [:li {:class (when (= selected-tab :linux) "active")}
+            [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                     :vcs_type vcs-type
+                                                     :_fragment "linux-pricing"})}
+             [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
+           [:li {:class (when (= selected-tab :osx) "active")}
+            [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                     :vcs_type vcs-type
+                                                     :_fragment "osx-pricing"})}
+             [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
+          (condp = selected-tab
+            :linux [:div.card
+                    (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                    (om/build faq linux-faq-items)]
 
-               :osx [:div.card
-                     (om/build osx-plans-list plan)
-                     (om/build faq osx-faq-items)])]))))
+            :osx [:div.card
+                  (om/build osx-plans-list plan)
+                  (om/build faq osx-faq-items)])])))))
 
 (defn pricing-starting-tab [subpage]
   (get {:osx-pricing :osx
