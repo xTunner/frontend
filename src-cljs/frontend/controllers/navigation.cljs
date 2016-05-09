@@ -447,17 +447,21 @@
       ;; Only GitHub orgs support paid plans currently.
       (when (= "github" vcs_type)
         (api/get-org-plan org vcs_type api-ch)))
-    (if (= org (get-in current-state state/org-name-path))
+    (if (and (= org (get-in current-state state/org-name-path))
+             (= vcs_type (get-in current-state state/org-vcs_type-path)))
       (mlog "organization details already loaded for" org)
       (api/get-org-settings org vcs_type api-ch))
     (condp = subpage
       :organizations (api/get-orgs api-ch :include-user? true)
       :billing (do
                  (ajax/ajax :get
-                            (gstring/format "/api/v1/organization/%s/card" org)
+                            (gstring/format "/api/dangerzone/organization/%s/%s/card"
+                                            vcs_type
+                                            org)
                             :plan-card
                             api-ch
-                            :context {:org-name org})
+                            :context {:org-name org
+                                      :vcs-type vcs_type})
                  (ajax/ajax :get
                             (gstring/format "/api/v1/organization/%s/invoices" org)
                             :plan-invoices

@@ -1171,7 +1171,8 @@
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        org-name (get-in current-state state/org-name-path)]
+        {org-name :name
+         vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (stripe/open-checkout {:panelLabel "Update card"} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
           (condp = message
@@ -1180,9 +1181,12 @@
             (let [token-id (:id data)]
               (let [api-result (<! (ajax/managed-ajax
                                     :put
-                                    (gstring/format "/api/v1/organization/%s/card" org-name)
+                                    (gstring/format "/api/dangerzone/organization/%s/%s/card"
+                                                    vcs-type
+                                                    org-name)
                                     :params {:token token-id}))]
-                (put! api-ch [:plan-card (:status api-result) (assoc api-result :context {:org-name org-name})])
+                (put! api-ch [:plan-card (:status api-result) (assoc api-result :context {:vcs-type vcs-type
+                                                                                          :org-name org-name})])
                 (release-button! uuid (:status api-result))))
             nil)))))
 

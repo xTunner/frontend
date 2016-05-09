@@ -756,10 +756,11 @@
 
 (defmethod api-event [:plan-card :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
-    state
-    (let [card (or resp {})] ; special case in case card gets deleted
-      (assoc-in state state/stripe-card-path card))))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (let [card (or resp {})] ; special case in case card gets deleted
+        (assoc-in state state/stripe-card-path card)))))
 
 
 (defmethod api-event [:create-plan :success]
