@@ -122,10 +122,13 @@
     om/IRender
     (render [_]
       (let [{:keys [user settings repos tab]} data
-            vcs-type (or tab "github")
-            github-active? (= "github" vcs-type)
             github-authorized? (user-model/github-authorized? user)
             bitbucket-authorized? (user-model/bitbucket-authorized? user)
+            vcs-type (cond
+                       tab tab
+                       github-authorized? "github"
+                       true "bitbucket")
+            github-active? (= "github" vcs-type)
             bitbucket-active? (= "bitbucket" vcs-type)]
         (html
          [:div
