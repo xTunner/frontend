@@ -32,6 +32,6 @@
   "Takes an org id of the form [:vcs_type :username] and returns a
   pretty org id (e.g. \"GitHub/circleci\""
   [[vcs_type username]]
-  (str (util/prettify-vcs_type (str vcs_type))
+  (str (util/prettify-vcs_type vcs_type)
        "/"
        (name username)))

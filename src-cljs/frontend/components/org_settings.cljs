@@ -727,20 +727,43 @@
                                    false)}
                    "Also pay for these organizations"])]]]])]])))))
 
-(defn transfer-organizations [app owner]
+(defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
+  ;; split user-orgs from orgs and grab the first (and only) user-org
+  ;; Note that user-login will be nil if the current org is the user-org
+  (let [{[{user-login :login}] nil
+         orgs true} (group-by :org users-and-orgs)
+        sorted-org-names (cond->> orgs
+                              true (map :login)
+                              true (sort-by string/lower-case)
+                              user-login (cons user-login))]
+    [:div.controls.col-md-3
+     [:h4 (str (utils/prettify-vcs_type vcs_type) " Organizations")]
+     (for [org-name sorted-org-names
+           :let [org-map {:org-name org-name
+                          :vcs-type vcs_type}]]
+       [:div.radio
+        [:label {:name org-name}
+         [:input {:value org-name
+                  :checked (= selected-transfer-org
+                              org-map)
+                  :on-change #(raise! owner
+                                      [:selected-transfer-org-updated
+                                       {:org org-map}])
+                  :type "radio"}]
+         org-name]])]))
+
+(defn transfer-organizations [{user-orgs :user-orgs
+                               {org-name :name
+                                :keys [vcs_type selected-transfer-org]} :current-org}
+                              owner]
   (om/component
    (html
-    (let [org-name (get-in app state/org-name-path)
-          vcs_type (get-in app state/org-vcs_type-path)
-          user-login (:login (get-in app state/user-path))
-          user-orgs (get-in app state/user-organizations-path)
-          elligible-transfer-orgs (-> (map :login user-orgs)
-                                      (set)
-                                      (conj user-login)
-                                      (disj org-name)
-                                      (sort))
-          plan (get-in app state/org-plan-path)
-          selected-transfer-org (get-in app state/selected-transfer-org-path)]
+    (let [{gh-user-orgs "github"
+           bb-user-orgs "bitbucket"} (->> user-orgs
+                                          (remove #(and (= (:login %) org-name)
+                                                        (= (:vcs_type %) vcs_type)))
+                                          (group-by :vcs_type))
+          selected-transfer-org-name (:org-name selected-transfer-org)]
       [:div.row-fluid
        [:div.span8
         [:fieldset
@@ -748,46 +771,43 @@
          [:div.alert.alert-warning
           [:strong "Warning!"]
           [:p "If you're not an admin on the "
-           (if (seq selected-transfer-org)
-             (str selected-transfer-org " organization,")
+           (if selected-transfer-org-name
+             (str selected-transfer-org-name " organization,")
              "organization you transfer to,")
            " then you won't be able to transfer the plan back or edit the plan."]
           [:p
            "The transferred plan will be extended to include the "
            org-name " organization, so your builds will continue to run. Only admins of the "
-           (if (seq selected-transfer-org)
-             (str selected-transfer-org " org")
+           (if selected-transfer-org-name
+             (str selected-transfer-org-name " org")
              "organization you transfer to")
            " will be able to edit the plan."]]
          (if-not user-orgs
            [:div "Loading organization list..."]
-           [:div.row-fluid
-            [:div.span12
-             [:div
-              [:form
-               [:div.controls
-                (for [org elligible-transfer-orgs]
-                  [:div.radio
-                   [:label {:name org}
-                    [:input {:value org
-                             :checked (= org selected-transfer-org)
-                             :on-change #(utils/edit-input owner state/selected-transfer-org-path %)
-                             :type "radio"}]
-                    org]])]
-               [:div.form-actions.span6
-                (forms/managed-button
-                 [:button.btn.btn-danger.btn-large
-                  {:data-success-text "Transferred",
-                   :data-loading-text "Tranferring...",
-                   :type "submit",
-                   :class (when (empty? selected-transfer-org) "disabled")
-                   :on-click #(do (raise! owner [:transfer-plan-clicked {:org-name org-name
-                                                                         :vcs_type vcs_type
-                                                                         :to selected-transfer-org}])
-                                  false)
-                   :data-bind
-                   "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
-                  "Transfer plan" (when (seq selected-transfer-org) (str " to " selected-transfer-org))])]]]]])]]]))))
+           [:div.container-fluid
+            [:form
+             [:div.row
+              (when gh-user-orgs
+                (transfer-organizations-list gh-user-orgs selected-transfer-org owner))
+              (when bb-user-orgs
+                (transfer-organizations-list bb-user-orgs selected-transfer-org owner))]
+             [:div.row
+              [:div.form-actions.span6
+               (forms/managed-button
+                [:button.btn.btn-danger.btn-large
+                 {:data-success-text "Transferred",
+                  :data-loading-text "Tranferring...",
+                  :type "submit",
+                  :class (when-not selected-transfer-org "disabled")
+                  :on-click #(do (raise! owner
+                                         [:transfer-plan-clicked
+                                          {:from-org {:org-name org-name
+                                                      :vcs-type vcs_type}
+                                           :to-org selected-transfer-org}])
+                                 false)
+                  :data-bind
+                  "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
+                 "Transfer plan" (when selected-transfer-org-name (str " to " selected-transfer-org-name))])]]]])]]]))))
 
 (defn organizations [app owner]
   (om/component
@@ -795,7 +815,8 @@
     [:div.organizations
      (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
                                          :user-orgs (get-in app state/user-organizations-path)})
-     (om/build transfer-organizations app)])))
+     (om/build transfer-organizations {:current-org (get-in app state/org-data-path)
+                                       :user-orgs (get-in app state/user-organizations-path)})])))
 
 (defn- billing-card [app owner]
   (reify
