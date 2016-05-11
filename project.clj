@@ -134,10 +134,11 @@
                                          :output-dir "resources/public/cljs/test"
                                          :optimizations :advanced
                                          :main frontend.test-runner
-                                         :foreign-libs [{:provides ["cljsjs.react"]
-                                                         ;; Unminified React necessary for TestUtils addon.
-                                                         :file "resources/components/react/react-with-addons.js"
-                                                         :file-min "resources/components/react/react-with-addons.js"}]
+                                         ;; :advanced uses the minified versions of libraries (:file-min), but the
+                                         ;; minified React doesn't include React.addons.TestUtils.
+                                         :foreign-libs [{:provides ["cljs.react"]
+                                                         :file "cljsjs/development/react-with-addons.inc.js"
+                                                         :file-min "cljsjs/development/react-with-addons.inc.js"}]
                                          :externs ["test-js/externs.js"
                                                    "src-cljs/js/pusher-externs.js"
                                                    "src-cljs/js/ci-externs.js"
