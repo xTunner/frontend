@@ -124,6 +124,8 @@
       (let [{:keys [user settings repos tab]} data
             vcs-type (or tab "github")
             github-active? (= "github" vcs-type)
+            github-authorized? (user-model/github-authorized? user)
+            bitbucket-authorized? (user-model/bitbucket-authorized? user)
             bitbucket-active? (= "bitbucket" vcs-type)]
         (html
          [:div
@@ -141,8 +143,16 @@
              " Bitbucket"]]]
           [:div.organizations.card
            (when github-active?
-             (missing-org-info owner))
-           (when (and bitbucket-active? (-> user :bitbucket_authorized not))
+             (if github-authorized?
+               (missing-org-info owner)
+               [:div
+                [:p "Github is not connected to your account yet. To connect it, click the button below:"]
+                [:a.btn.btn-primary {:href (gh-utils/auth-url)
+                                     :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                     :properties {:vcs-type vcs-type}})}
+                 "Authorize with Github"]]))
+           (when (and bitbucket-active?
+                      (not bitbucket-authorized?))
              [:div
               [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
               [:a.btn.btn-primary {:href (bitbucket/auth-url)
