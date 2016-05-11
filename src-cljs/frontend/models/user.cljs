@@ -35,3 +35,9 @@
   (boolean (some #(and (= org-name (:login %))
                        (= vcs-type (:vcs_type %)))
                  organizations)))
+
+(defn github-authorized? [user]
+  (-> user :github_oauth_scopes empty? not))
+
+(defn bitbucket-authorized? [user]
+  (-> user :bitbucket_authorized boolean))

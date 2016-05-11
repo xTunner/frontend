@@ -7,6 +7,7 @@
             [frontend.api.path :as api-path]
             [frontend.favicon]
             [frontend.models.feature :as feature]
+            [frontend.models.user :as user]
             [frontend.models.build :as build-model]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
@@ -249,26 +250,31 @@
 
 (defmethod navigated-to :add-projects
   [history-imp navigation-point args state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc state/current-view navigation-point
-             state/navigation-data (assoc args :show-aside-menu? false))
-      ;; force a reload of repos.
-      (assoc-in state/repos-path [])
-      (assoc-in state/github-repos-loading-path true)
-      (assoc-in state/bitbucket-repos-loading-path true)
-      (assoc-in state/crumbs-path [{:type :add-projects}])
-      (assoc-in state/add-projects-selected-org-path nil)
-      (state-utils/reset-current-org)))
+  (let [current-user (get-in state state/user-path)]
+    (-> state
+        state-utils/clear-page-state
+        (assoc state/current-view navigation-point
+               state/navigation-data (assoc args :show-aside-menu? false))
+        ;; force a reload of repos.
+        (assoc-in state/repos-path [])
+        (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
+        (assoc-in state/bitbucket-repos-loading-path (and (user/bitbucket-authorized? current-user)
+                                                          (feature/enabled? :bitbucket)))
+        (assoc-in state/crumbs-path [{:type :add-projects}])
+        (assoc-in state/add-projects-selected-org-path nil)
+        (state-utils/reset-current-org))))
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
   (println "making api requests.")
-  (let [api-ch (get-in current-state [:comms :api])]
+  (let [api-ch (get-in current-state [:comms :api])
+        load-gh-repos? (get-in current-state state/github-repos-loading-path)
+        load-bb-repos? (get-in current-state state/bitbucket-repos-loading-path)]
     ;; load orgs, collaborators, and repos.
     (api/get-orgs api-ch :include-user? true)
-    (api/get-github-repos api-ch)
-    (when (feature/enabled? :bitbucket)
+    (when load-gh-repos?
+      (api/get-github-repos api-ch))
+    (when load-bb-repos?
       (api/get-bitbucket-repos api-ch)))
   (set-page-title! "Add projects"))
 
