@@ -16,6 +16,7 @@
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.vcs :as vcs-utils]
             [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
             [frontend.routes :as routes]
             [goog.dom]
@@ -258,8 +259,7 @@
         ;; force a reload of repos.
         (assoc-in state/repos-path [])
         (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
-        (assoc-in state/bitbucket-repos-loading-path (and (user/bitbucket-authorized? current-user)
-                                                          (feature/enabled? :bitbucket)))
+        (assoc-in state/bitbucket-repos-loading-path (vcs-utils/bitbucket-enabled?))
         (assoc-in state/crumbs-path [{:type :add-projects}])
         (assoc-in state/add-projects-selected-org-path nil)
         (state-utils/reset-current-org))))
