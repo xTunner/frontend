@@ -253,7 +253,7 @@
   (concat
    [{:type :heading :title "Plan"}
     {:type :subpage :title "Overview" :href "#" :subpage :overview}]
-   (if-not (pm/can-edit-plan? plan org-name)
+   (if-not (pm/can-edit-plan? plan org-name org-vcs-type)
      [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
      (concat
       [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
@@ -297,17 +297,17 @@
   "Piggiebacked plans can't go to :containers, :organizations, :billing, or :cancel.
   Un-piggiebacked plans shouldn't be able to go to the old 'add plan' page. This function
   selects a different page for these cases."
-  [subpage plan org-name]
+  [subpage plan org-name vcs-type]
   (cond ;; Redirect :plan to :containers for paid plans that aren't piggiebacked.
         (and plan
-             (pm/can-edit-plan? plan org-name)
+             (pm/can-edit-plan? plan org-name vcs-type)
              (= subpage :plan))
         :containers
 
         ;; Redirect :organizations, :billing, and :cancel to the overview page
         ;; for piggiebacked plans.
         (and plan
-             (not (pm/can-edit-plan? plan org-name))
+             (not (pm/can-edit-plan? plan org-name vcs-type))
              (#{:organizations :billing :cancel} subpage))
         :overview
 
@@ -319,7 +319,7 @@
     (render [_]
       (let [plan (get-in app state/org-plan-path)
             org-data (get-in app state/org-data-path)
-            subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan (:name org-data))
+            subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan (:name org-data) (:vcs_type org-data))
             items (org-settings-nav-items plan org-data)]
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}

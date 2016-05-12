@@ -23,8 +23,12 @@
   [plan]
   (:max_parallelism plan))
 
-(defn piggieback? [plan org-name]
-  (not= (:org_name plan) org-name))
+(defn piggieback? [{{plan-org-name :name
+                     plan-vcs-type :vcs_type} :org}
+                   org-name
+                   vcs-type]
+  (or (not= plan-org-name org-name)
+      (not= plan-vcs-type vcs-type)))
 
 (defn freemium? [plan]
   (boolean (:free plan)))
@@ -95,10 +99,10 @@
      (trial-containers plan)
      (paid-linux-containers plan)))
 
-(defn can-edit-plan? [plan org-name]
+(defn can-edit-plan? [plan org-name vcs-type]
   ;; kill plan pricing page for trial plans by making
   ;; can-edit-plan?' return true for them
-  (not (piggieback? plan org-name)))
+  (not (piggieback? plan org-name vcs-type)))
 
 (defn transferrable-or-piggiebackable-plan? [plan]
   (or (linux? plan)

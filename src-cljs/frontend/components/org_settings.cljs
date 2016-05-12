@@ -462,6 +462,7 @@
     om/IRender
     (render [_]
       (let [org-name (get-in app state/org-name-path)
+            vcs-type (get-in app state/org-vcs_type-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
                                      (pm/paid-linux-containers plan))
@@ -474,7 +475,7 @@
             old-total (- (pm/stripe-cost plan) osx-total)
             new-total (pm/linux-cost plan (+ selected-containers (pm/freemium-containers plan)))
             linux-container-cost (pm/linux-per-container-cost plan)
-            piggiebacked? (pm/piggieback? plan org-name)
+            piggiebacked? (pm/piggieback? plan org-name vcs-type)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)]
       (html
@@ -498,7 +499,7 @@
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
-             (if (and (pm/can-edit-plan? plan org-name)
+             (if (and (pm/can-edit-plan? plan org-name vcs-type)
                       (or (config/enterprise?)
                           (pm/stripe-customer? plan)))
                (forms/managed-button
@@ -636,8 +637,8 @@
               :else
                 [:h3 "Something is wrong! Please submit a bug report."])
 
-            (if (pm/piggieback? plan org-name)
-              (plans-piggieback-plan-notification plan org-name org-vcs-type)
+            (if (pm/piggieback? plan org-name org-vcs-type)
+              (plans-piggieback-plan-notification plan org-name)
               [:div
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
                                        :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
@@ -1271,7 +1272,7 @@
           linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
           containers (pm/linux-containers plan)
-          piggiebacked? (pm/piggieback? plan org-name)]
+          piggiebacked? (pm/piggieback? plan org-name vcs_type)]
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
        [:div.explanation
