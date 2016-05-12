@@ -211,23 +211,23 @@
       (when (pm/osx? plan)
         (-> plan :osx :template :name)))))
 
-(defn parent-plan-name [plan]
-  [:em (:org_name plan)])
-
-(defn plans-piggieback-plan-notification [plan current-org-name current-org-vcs-type]
+(defn plans-piggieback-plan-notification [{{parent-name :name
+                                            parent-vcs-type :vcs_type} :org
+                                           :as plan}
+                                          current-org-name]
   [:div.row-fluid
    [:div.offset1.span10
     [:div.alert.alert-success
      [:p
-      "This organization is covered under " (parent-plan-name plan) "'s plan which has " (piggieback-plan-wording plan)]
+      "This organization is covered under " [:em parent-name] "'s plan which has " (piggieback-plan-wording plan)]
      [:p
-      "If you're an admin in the " (parent-plan-name plan)
+      "If you're an admin in the " parent-name
       " organization, then you can change plan settings from the "
-      [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                               :vcs_type current-org-vcs-type})}
-       (:org_name plan) " plan page"] "."]
+      [:a {:href (routes/v1-org-settings-path {:org parent-name
+                                               :vcs_type parent-vcs-type})}
+       parent-name " plan page"] "."]
      [:p
-      "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " (parent-plan-name plan) "."]]]])
+      "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " [:em parent-name] "."]]]])
 
 (defn plural-multiples [num word]
   (if (> num 1)
