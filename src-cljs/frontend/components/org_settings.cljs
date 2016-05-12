@@ -1346,11 +1346,7 @@
       (let [org-data (get-in app state/org-data-path)
             vcs_type (:vcs_type org-data)
             subpage (or (get-in app state/org-settings-subpage-path)
-                        ;; Only GitHub orgs support paid plans currently, so
-                        ;; only they get to see the :overview subpage.
-                        (if (= "github" vcs_type)
-                          :overview
-                          :projects))
+                        :overview)
             plan (get-in app state/org-plan-path)]
         (html [:div.org-page
                (if-not (:loaded org-data)
