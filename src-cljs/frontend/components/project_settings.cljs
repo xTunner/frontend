@@ -1195,7 +1195,7 @@
       [:h2
        "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
       [:div.doc
-       [:p "Circle supports deploying to any server, using custom commands. See "
+       [:p "CircleCI supports deploying to any server, using custom commands. See "
         [:a (open-ext {:target "_blank",
                        :href "https://circleci.com/docs/configuration#deployment"})
          "our deployment documentation"]
