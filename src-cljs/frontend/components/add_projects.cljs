@@ -290,20 +290,23 @@
        (str "No matching repos for organization " selected-org-login)
        (str "No repos found for organization " selected-org-login))]))
 
-(defn select-plan-button [{:keys [selected-org-login]} owner]
+(defn select-plan-button [{{:keys [login vcs-type]} :selected-org} owner]
   (reify
     om/IRender
     (render [_]
       (html
-        [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org selected-org-login
-                                                                      :_fragment "osx-pricing"})
-                                  :on-click #((om/get-shared owner :track-event) {:event-type :select-plan-clicked
-                                                                                  :properties {:org selected-org-login
-                                                                                               :plan-type (pm/osx-plan-type)}})}
+       [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org login
+                                                                     :vcs_type vcs-type
+                                                                     :_fragment "osx-pricing"})
+                                 :on-click #((om/get-shared owner :track-event)
+                                             {:event-type :select-plan-clicked
+                                              :properties {:org login
+                                                           :vcs-type vcs-type
+                                                           :plan-type (pm/osx-plan-type)}})}
 
          "Select Plan"]))))
 
-(defn free-trial-button [{:keys [selected-org-login]} owner]
+(defn free-trial-button [{{:keys [login vcs-type]} :selected-org} owner]
   (reify
     om/IRender
     (render [_]
@@ -312,20 +315,24 @@
           (let [plan-type :osx
                 template "osx-trial"]
             [:a.btn.trial {:on-click #(do
-                                        (raise! owner [:activate-plan-trial {plan-type {:template template}}])
-                                        ((om/get-shared owner :track-event) {:event-type :start-trial-clicked
-                                                                             :properties {:org selected-org-login
-                                                                                          :plan-type plan-type
-                                                                                          :template template}}))
+                                        (raise! owner [:activate-plan-trial
+                                                       {plan-type {:template template}}])
+                                        ((om/get-shared owner :track-event)
+                                         {:event-type :start-trial-clicked
+                                          :properties {:org login
+                                                       :vcs-type vcs-type
+                                                       :plan-type plan-type
+                                                       :template template}}))
                            :data-spinner true}
              "Start 2 Week Trial"]))))))
 
-(defn no-plan-empty-state [{:keys [selected-org-login]} owner]
+(defn no-plan-empty-state [{{:keys [login vcs-type] :as selected-org} :selected-org} owner]
   (reify
     om/IDidMount
     (did-mount [_]
       ((om/get-shared owner :track-event) {:event-type :no-plan-banner-impression
-                                           :properties {:org selected-org-login
+                                           :properties {:org login
+                                                        :vcs-type vcs-type
                                                         :plan-type (pm/osx-plan-type)}}))
     om/IRender
     (render [_]
@@ -333,38 +340,38 @@
         [:div.no-plan-empty-state
          [:i.fa.fa-apple.apple-logo]
          [:div.title
-          [:span.bold selected-org-login] " has no " [:span.bold "OS X plan"] " on CircleCI."]
+          [:span.bold login] " has no " [:span.bold "OS X plan"] " on CircleCI."]
          [:div.info
           "Select a plan to build your OS X projects now."]
          [:div.buttons
-          (om/build select-plan-button {:selected-org-login selected-org-login})
-          (om/build free-trial-button {:selected-org-login selected-org-login})]]))))
+          (om/build select-plan-button {:selected-org selected-org})
+          (om/build free-trial-button {:selected-org selected-org})]]))))
 
 (defmulti repo-list (fn [{:keys [type]}] type))
 
-(defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
+(defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org selected-plan settings]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         (if (empty? repos)
-          (empty-repo-list loading-repos? repo-filter-string selected-org-login)
+          (empty-repo-list loading-repos? repo-filter-string (:login selected-org))
           [:ul.proj-list.list-unstyled
            (for [repo repos]
              (om/build repo-item {:repo repo :settings settings}))])))))
 
-(defmethod repo-list :osx [{:keys [repos loading-repos? repo-filter-string selected-org-login selected-plan settings]} owner]
+(defmethod repo-list :osx [{:keys [repos loading-repos? repo-filter-string selected-org selected-plan settings]} owner]
   (reify
     om/IRender
     (render [_]
       (html
-        (if (empty? repos)
-          (empty-repo-list loading-repos? repo-filter-string selected-org-login)
-          [:ul.proj-list.list-unstyled
-           (if-not (pm/osx? selected-plan)
-             (om/build no-plan-empty-state {:selected-org-login selected-org-login})
-             (for [repo repos]
-               (om/build repo-item {:repo repo :settings settings})))])))))
+       (if (empty? repos)
+         (empty-repo-list loading-repos? repo-filter-string (:login selected-org))
+         [:ul.proj-list.list-unstyled
+          (if-not (pm/osx? selected-plan)
+            (om/build no-plan-empty-state {:selected-org selected-org})
+            (for [repo repos]
+              (om/build repo-item {:repo repo :settings settings})))])))))
 
 (defn repo-lists [{:keys [user repos selected-org selected-plan settings] :as data} owner]
   (reify
@@ -415,7 +422,7 @@
                                                   filtered-repos)
                                          :loading-repos? loading-repos?
                                          :repo-filter-string repo-filter-string
-                                         :selected-org-login selected-org-login
+                                         :selected-org selected-org
                                          :selected-plan selected-plan
                                          :type selected-tab
                                          :settings settings})
@@ -424,7 +431,7 @@
                     (om/build repo-list {:repos osx-repos
                                          :loading-repos? loading-repos?
                                          :repo-filter-string repo-filter-string
-                                         :selected-org-login selected-org-login
+                                         :selected-org selected-org
                                          :selected-plan selected-plan
                                          :type selected-tab
                                          :settings settings}))]])

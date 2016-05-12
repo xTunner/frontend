@@ -1239,28 +1239,33 @@
   (reify
     om/IRender
     (render [_]
-      (html
-        [:div
-         [:h2 "OS X"]
+      (let [{{plan-org-name :name
+              plan-vcs-type :vcs_type} :org}
+            plan]
+        (html
          [:div
-          [:p "Choose an OS X plan "
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :_fragment "osx-pricing"})} "here"] "."]
-          (when (pm/osx? plan)
-            (let [plan-name (some-> plan :osx :template :name)]
-              [:p
-               (cond
-                 (pm/osx-trial-active? plan)
-                 (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
+          [:h2 "OS X"]
+          [:div
+           [:p "Choose an OS X plan "
+            [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                     :vcs_type plan-vcs-type
+                                                     :_fragment "osx-pricing"})} "here"] "."]
+           (when (pm/osx? plan)
+             (let [plan-name (some-> plan :osx :template :name)]
+               [:p
+                (cond
+                  (pm/osx-trial-active? plan)
+                  (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
 
-                 (and (pm/osx-trial-plan? plan)
-                      (not (pm/osx-trial-active? plan)))
-                 [:span "Your free trial of CircleCI for OS X has expired. Please "
-                  [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                           :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
+                  (and (pm/osx-trial-plan? plan)
+                       (not (pm/osx-trial-active? plan)))
+                  [:span "Your free trial of CircleCI for OS X has expired. Please "
+                   [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                            :vcs_type plan-vcs-type
+                                                            :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
-                 :else
-                 (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]]))))
+                  :else
+                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]])))))
 
 (defn overview [app owner]
   (om/component
@@ -1287,8 +1292,8 @@
               (= containers 1)
               [:div
                [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
-               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                                  :vcs_type vcs_type
+               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                  :vcs_type (:vcs_type plan-org)
                                                                   :_fragment "linux-pricing"})}
                     "upgrading"]
                 (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
@@ -1312,8 +1317,8 @@
               "You can "
               ;; make sure to link to the add-containers page of the plan's org,
               ;; in case of piggiebacking.
-              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                       :vcs_type vcs_type
+              [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                       :vcs_type (:vcs_type plan-org)
                                                        :_fragment "linux-pricing"})}
                "add more"]
               (when-not piggiebacked?

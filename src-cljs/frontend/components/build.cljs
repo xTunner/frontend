@@ -298,7 +298,7 @@
             previous-container-count (max 0 (- paging-offset 1))
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
             project (get-in data [:project-data :project])
-            plan (get-in data [:project-data :plan])
+            {{plan-org-name :name, plan-vcs-type :vcs_type} :org, :as plan} (get-in data [:project-data :plan])
             show-upsell? (project-model/show-upsell? project plan)
             div (html
                  [:div.container-list {:class (when (and (> previous-container-count 0)
@@ -334,9 +334,9 @@
 
                     (project-model/parallel-available? project)
                     [:a.container-selector.add-containers
-                     {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                          :_fragment "linux-pricing"
-                                                          :vcs_type (:vcs_type build)})
+                     {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                          :vcs_type plan-vcs-type
+                                                          :_fragment "linux-pricing"})
                       :title "Adjust containers"
                       :class (when show-upsell? "upsell")}
                      (if show-upsell?

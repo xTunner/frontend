@@ -45,7 +45,10 @@
       ;; less than 10 seconds waiting for additional containers (our fault)
       (< run-queued-ms 10000 usage-queued-ms))))
 
-(defn new-additional-containers-offer [plan build]
+(defn new-additional-containers-offer [{{plan-org-name :name
+                                         plan-vcs-type :vcs_type} :org
+                                        :as plan}
+                                       build]
   (let [run-phrase (if (build-model/finished? build)
                      "ran"
                      "is running")]
@@ -54,12 +57,12 @@
       "This build "
       run-phrase
       " under "
-      (:org_name plan)
+      plan-org-name
       "'s plan which provides "
       (plan-model/linux-containers plan)
       " containers, plus 3 additional containers available for free and open source projects. "
-      [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                               :vcs_type (:vcs_type build)
+      [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                               :vcs_type plan-vcs-type
                                                :_fragment "linux-pricing"})}
        "Add Containers"]
       " to run more builds concurrently."]]))

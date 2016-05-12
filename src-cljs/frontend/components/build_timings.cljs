@@ -227,14 +227,18 @@
         ((om/get-shared owner :track-event) {:event-type :build-timing-upsell-impression})))
     om/IRenderState
     (render-state [_ {:keys [loading?]}]
-      (html
-        [:div.build-timings
-         (if (project-model/show-build-timing? project plan)
-           [:div
-            (when loading?
-              [:div.loading-spinner common/spinner])
-            [:svg#build-timings]]
-           [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
-            [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (:org_name plan) :vcs_type (:vcs_type project)})
-                              :on-click #((om/get-shared owner :track-event) {:event-type :build-timing-upsell-click})}
-             "upgrade here."]])]))))
+      (let [{{plan-org-name :name
+              plan-vcs-type :vcs_type} :org} plan]
+        (html
+         [:div.build-timings
+          (if (project-model/show-build-timing? project plan)
+            [:div
+             (when loading?
+               [:div.loading-spinner common/spinner])
+             [:svg#build-timings]]
+            [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
+             [:a.upgrade-link
+              {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                   :vcs_type plan-vcs-type})
+               :on-click #((om/get-shared owner :track-event) {:event-type :build-timing-upsell-click})}
+              "upgrade here."]])])))))
