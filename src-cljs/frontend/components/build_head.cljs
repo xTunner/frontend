@@ -98,7 +98,7 @@
             [:div.queue-message
              (when (and (:queued_at build) (not usage-queued?))
                (list
-                 "Circle " (when run-queued? "has") " spent "
+                 "CircleCI " (when run-queued? "has") " spent "
                  [:strong
                   (om/build common/updating-duration {:start (:queued_at build)
                                                       :stop (or (:start_time build) (:stop_time build))})]

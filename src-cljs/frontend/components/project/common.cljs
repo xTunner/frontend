@@ -211,7 +211,7 @@
       [:h3 "What do others think?"]
       [:blockquote
        [:i
-        "The thing that sold us on Circle was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that Circle will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service."]]
+        "The thing that sold us on CircleCI was the speed. Their tests run really really fast. We've never seen that before. One of our developers just pushes to branches so that CircleCI will run his tests, instead of testing on his laptop. The parallelization just works - we didn't have to tweak anything. Amazing service."]]
       [:ul
        [:li [:a {:href "http://zencoder.com/company/"} "Brandon Arbini"]]
        [:li [:a {:href "http://zencoder.com/"} "Zencoder.com"]]]])])

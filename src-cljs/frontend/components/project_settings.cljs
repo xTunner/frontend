@@ -97,7 +97,7 @@
                                                                                                :project-id project-id}])
                                           :data-loading-text "Stopping Builds..."
                                           :data-success-text "Builds Stopped"}
-                  "Stop Building on Circle"]))
+                  "Stop Building on CircleCI"]))
              (list
               [:h2 "You're not following this repo"]
               [:p
@@ -118,7 +118,7 @@
         [:article
          [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
          [:h4 "Option 1"]
-         [:p "Do nothing! Circle infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
+         [:p "Do nothing! CircleCI infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
          [:h4 "Option 2"]
          [:p
           "Override inferred settings and add new test commands "
@@ -679,7 +679,7 @@
       [:h2 "Webhooks"]
       [:div.doc
        [:p
-        "Circle also support webhooks, which run at the end of a build. They can be configured in your "
+        "CircleCI also supports webhooks, which run at the end of a build. They can be configured in your "
         [:a (open-ext {:href "https://circleci.com/docs/configuration#notify" :target "_blank"})
          "circle.yml file"]
         "."]]]])))
@@ -767,13 +767,13 @@
   {"image" {:label "Image URL"
             :template :image}
    "markdown" {:label "Markdown"
-               :template #(str "[![Circle CI](" (:image %) ")](" (:target %) ")")}
+               :template #(str "[![CircleCI](" (:image %) ")](" (:target %) ")")}
    "textile" {:label "Textile"
               :template #(str "!" (:image %) "!:" (:target %))}
    "rdoc" {:label "Rdoc"
-           :template #(str "{<img src=\"" (:image %) "\" alt=\"Circle CI\" />}[" (:target %) "]")}
+           :template #(str "{<img src=\"" (:image %) "\" alt=\"CircleCI\" />}[" (:target %) "]")}
    "asciidoc" {:label "AsciiDoc"
-               :template #(str "image:" (:image %) "[\"Circle CI\", link=\"" (:target %) "\"]")}
+               :template #(str "image:" (:image %) "[\"CircleCI\", link=\"" (:target %) "\"]")}
    "rst" {:label "reStructuredText"
           :template #(str ".. image:: " (:image %) "\n    :target: " (:target %))}
    "pod" {:label "pod"
@@ -1028,7 +1028,7 @@
                 [:p]
                 [:p "That's why a deploy key isn't sufficiently powerful for projects with additional private dependencies!"]
                 [:h4 "What about security?"]
-                [:p "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to GitHub), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in Circle can read them. You shouldn't push untrusted code to Circle!"]
+                [:p "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to GitHub), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in CircleCI can read them. You shouldn't push untrusted code to CircleCI!"]
                 [:h4 "Isn't there a middle ground between deploy keys and user keys?"]
                 [:p "Not really :("]
                 [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]

@@ -28,10 +28,10 @@
 
 (defn source-title [source]
   (condp = source
-    "template" "Circle generated this command automatically"
-    "cache" "Circle caches some subdirectories to significantly speed up your tests"
+    "template" "CircleCI generated this command automatically"
+    "cache" "CircleCI caches some subdirectories to significantly speed up your tests"
     "config" "You specified this command in your circle.yml file"
-    "inference" "Circle inferred this command from your source code and directory layout"
+    "inference" "CircleCI inferred this command from your source code and directory layout"
     "db" "You specified this command on the project settings page"
     "Unknown source"))
 

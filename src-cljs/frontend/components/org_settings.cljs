@@ -1102,7 +1102,7 @@
           [:div.row-fluid
            [:h1
             {:data-bind "attr: {alt: cancelFormErrorText}"}
-            "Please tell us why you're canceling. This helps us make Circle better!"]
+            "Please tell us why you're canceling. This helps us make CircleCI better!"]
            [:form
             (for [reason [{:value "project-ended", :text "Project Ended"},
                           {:value "slow-performance", :text "Slow Performance"},

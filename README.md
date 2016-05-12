@@ -1,6 +1,6 @@
 # CircleCI's frontend
 
-[![Circle CI](https://circleci.com/gh/circleci/frontend.svg?style=svg)](https://circleci.com/gh/circleci/frontend)
+[![CircleCI](https://circleci.com/gh/circleci/frontend.svg?style=svg)](https://circleci.com/gh/circleci/frontend)
 
 This is an open-source mirror of the code that is running
 [CircleCI's](https://circleci.com) frontend. CircleCI provides powerful
