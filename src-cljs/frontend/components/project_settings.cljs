@@ -908,14 +908,111 @@
           "github" (str (gh-utils/http-endpoint) "/" (vcs-url/project-name (:vcs_url project)) "/settings/keys"))
         (and (= "github-user-key" (:type key)) (= (:login key) (:login user)))
         (str (gh-utils/http-endpoint) "/settings/ssh")
-
+        (and (= "bitbucket-user-key" (:type key))
+             (= (:login key) (-> user :bitbucket :login)))
+        (str (bb-utils/http-endpoint) "/account/user/" (:login key)
+             "/ssh-keys/")
         :else nil))
 
 (defn checkout-key-description [key project]
   (condp = (:type key)
     "deploy-key" (str (vcs-url/project-name (:vcs_url project)) " deploy key")
     "github-user-key" (str (:login key) " user key")
+    "bitbucket-user-key" (str (:login key) " user key")
     nil))
+
+(defmulti add-user-key-section (fn [data owner] (-> data :project-data :project :vcs-type keyword)))
+
+(defmethod add-user-key-section :github [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [user (:user data)
+            project-data (:project-data data)
+            project (:project project-data)
+            checkout-keys (:checkout-keys project-data)
+            project-id (project-model/id project)
+            project-name (vcs-url/project-name (:vcs_url project))]
+        (html
+         [:div.add-key
+          [:h4 "Add user key"]
+          [:p
+           "If a deploy key can't access all of your project's private dependencies, we can configure it to use an SSH key with the same level of access to GitHub repositories that you have."]
+          [:div.authorization
+           (if-not (user-model/public-key-scope? user)
+             (list
+              [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account."]
+              [:a.btn.ghu-authorize
+               {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
+                :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
+               "Authorize w/ GitHub " [:i.fa.fa-github]])
+
+             [:div.request-user
+              (forms/managed-button
+               [:input.btn
+                {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false }"
+                 :type "submit"
+                 :on-click #(do (raise! owner [:new-checkout-key-clicked {:project-id project-id
+                                                                          :project-name project-name
+                                                                          :key-type "github-user-key"}])
+                                false)
+                 :value (str "Create and add " (:login user) " user key" )
+                 :data-loading-text "Saving..."
+                 :data-success-text "Saved"}])])]])))))
+
+(defmethod add-user-key-section :bitbucket [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [user (:user data)
+            project-data (:project-data data)
+            project (:project project-data)
+            checkout-keys (:checkout-keys project-data)
+            project-id (project-model/id project)
+            project-name (vcs-url/project-name (:vcs_url project))]
+        (html
+         [:div.add-key
+          [:h4 "Create user key"]
+          [:p
+           "If a deploy key can't access all of your project's private dependencies, we can help you setup an SSH key with the same level of access to Bitbucket repositories that you have."]
+          [:div.authorization
+           [:div.request-user
+            (forms/managed-button
+             [:input.btn
+              {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your Bitbucket account.', animation: false }"
+               :type "submit"
+               :on-click #(do (raise! owner [:new-checkout-key-clicked {:project-id project-id
+                                                                        :project-name project-name
+                                                                        :key-type "bitbucket-user-key"}])
+                              false)
+               :value (str "Create " (:login user) " user key" )
+               :data-loading-text "Creating..."
+               :data-success-text "Created"}])]]])))))
+
+(defn bitbucket-add-user-key-instructions [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [user key]} data]
+        (html
+         [:div.add-key
+          [:h4 "Add user key to Bitbucket"]
+          [:p "You now need to add this key to your "
+           [:a {:href
+                (str "https://bitbucket.org/account/user/"
+                     (-> user :bitbucket :login)
+                     "/ssh-keys/")}
+            "Bitbucket account SSH keys"]]
+          [:p
+           [:ol
+            [:li "Navigate to your " [:a {:href (checkout-key-link key nil user)}
+                                      "Bitbucket account SSH keys"]]
+            [:li "Click \"Add key\""]
+            [:li
+             "Copy this public key and paste it into the new key on Bitbucket"
+             [:pre.wrap-words
+              (:public_key key)]]
+            [:li "Save the new key"]]]])))))
 
 (defn checkout-ssh-keys [data owner]
   (reify
@@ -926,6 +1023,7 @@
             project (:project project-data)
             project-id (project-model/id project)
             project-name (vcs-url/project-name (:vcs_url project))
+            vcs-name (-> project :vcs-type utils/prettify-vcs_type)
             checkout-keys (:checkout-keys project-data)]
         (html
          [:section.checkout-page
@@ -941,7 +1039,7 @@
                  [:div
                   [:p
                    "Here are the keys we can currently use to check out your project, submodules, "
-                   "and private GitHub dependencies. The currently preferred key is highlighted, but "
+                   "and private " vcs-name " dependencies. The currently preferred key is highlighted, but "
                    "we will automatically fall back to the other keys if the preferred key is revoked."]
                   [:table.table
                    [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
@@ -970,7 +1068,7 @@
                  [:div.add-key
                   [:h4 "Add deploy key"]
                   [:p
-                   "Deploy keys are the best option for most projects: they only have access to a single GitHub repository."]
+                   "Deploy keys are the best option for most projects: they only have access to a single " vcs-name " repository."]
                   [:div.request-user
                    (forms/managed-button
                     [:input.btn
@@ -984,57 +1082,43 @@
                       :value (str "Create and add " project-name " deploy key")
                       :data-loading-text "Saving..."
                       :data-success-text "Saved"}])]])
-               (when-not (some #{"github-user-key"} (map :type checkout-keys))
-                 [:div.add-key
-                  [:h4 "Add user key"]
-                  [:p
-                   "If a deploy key can't access all of your project's private dependencies, we can configure it to use an SSH key with the same level of access to GitHub repositories that you have."]
-                  [:div.authorization
-                   (if-not (user-model/public-key-scope? user)
-                     (list
-                      [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account."]
-                      [:a.btn.ghu-authorize
-                       {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
-                        :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
-                       "Authorize w/ GitHub " [:i.fa.fa-github]])
+               (when-not (some #{"github-user-key" "bitbucket-user-key"} (map :type checkout-keys))
+                 (om/build add-user-key-section data))
+               (when-let [bb-user-key (first (filter (fn [key] (and
+                                                                (= (:type key)
+                                                                   "bitbucket-user-key")
+                                                                (= (:login key)
+                                                                   (-> user :bitbucket :login))))
+                                                     checkout-keys))]
+                 (om/build bitbucket-add-user-key-instructions {:user user :key bb-user-key}))
 
-                     [:div.request-user
-                      (forms/managed-button
-                       [:input.btn
-                        {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false }"
-                         :type "submit"
-                         :on-click #(do (raise! owner [:new-checkout-key-clicked {:project-id project-id
-                                                                                  :project-name project-name
-                                                                                  :key-type "github-user-key"}])
-                                        false)
-                         :value (str "Create and add " (:login user) " user key" )
-                         :data-loading-text "Saving..."
-                         :data-success-text "Saved"}])])]])
 
                [:div.help-block
                 [:h2 "About checkout keys"]
                 [:h4 "What is a deploy key?"]
-                [:p "A deploy key is a repo-specific SSH key. GitHub has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
+                [:p "A deploy key is a repo-specific SSH key. " vcs-name " has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
                 [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a (open-ext {:href "/docs/adding-read-write-deployment-key"}) "read-write deployment key"]"."]
                 [:h4 "What is a user key?"]
-                [:p "A user key is a user-specific SSH key. GitHub has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
+                [:p "A user key is a user-specific SSH key. " vcs-name " has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
                 [:h4 "How are these keys used?"]
-                [:p "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with 'github.com'. Therefore, it gets used for:"]
+                [:p "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with your version control provider. Therefore, it gets used for:"]
                 [:ul
                  [:li "checking out the main project"]
-                 [:li "checking out any GitHub-hosted submodules"]
-                 [:li "checking out any GitHub-hosted private dependencies"]
+                 [:li "checking out any " vcs-name "-hosted submodules"]
+                 [:li "checking out any " vcs-name "-hosted private dependencies"]
                  [:li "automatic git merging/tagging/etc."]]
                 [:p]
                 [:p "That's why a deploy key isn't sufficiently powerful for projects with additional private dependencies!"]
                 [:h4 "What about security?"]
-                [:p "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to GitHub), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in CircleCI can read them. You shouldn't push untrusted code to CircleCI!"]
+                [:p "The private keys of the checkout keypairs we generate never leave our systems (only the public key is transmitted to" vcs-name "), and are safely encrypted in storage. However, since they are installed into your build containers, any code that you run in CircleCI can read them. You shouldn't push untrusted code to CircleCI!"]
                 [:h4 "Isn't there a middle ground between deploy keys and user keys?"]
                 [:p "Not really :("]
-                [:p "Deploy keys and user keys are the only key types that GitHub supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
+                [:p "Deploy keys and user keys are the only key types that " vcs-name " supports. Deploy keys are globally unique (i.e. there's no way to make a deploy key with access to multiple repositories) and user keys have no notion of \\scope\\ separate from the user they're associated with."]
                 [:p "Your best bet, for fine-grained access to more than one repo, is to create what GitHub calls a "
                  [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
-                 ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."]]])]]])))))
+                 ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."
+                 (when (= "bitbucket" (:vcs-type project))
+                   "The same technique can be applied for Bitbucket projects.")]]])]]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
