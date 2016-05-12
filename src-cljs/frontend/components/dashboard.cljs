@@ -100,7 +100,8 @@
                      (om/build project-common/trial-notice current-project)]]])
 
                 (when (plan-model/suspended? plan)
-                  (om/build project-common/suspended-notice plan (:vcs_type project)))
+                  (om/build project-common/suspended-notice {:plan plan
+                                                             :vcs_type (:vcs_type project)}))
 
                 (om/build builds-table/builds-table builds {:opts {:show-actions? true
                                                                    :show-branch? (not (:branch nav-data))
