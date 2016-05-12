@@ -1182,8 +1182,7 @@
   (let [stripe-ch (chan)
         uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name
-         vcs-type :vcs_type} (get-in current-state state/org-data-path)]
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (stripe/open-checkout {:panelLabel "Update card"} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
           (condp = message
@@ -1230,8 +1229,7 @@
   [target message {:keys [invoice-id]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name
-         vcs-type :vcs_type} (get-in current-state state/org-data-path)]
+        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (go
       (let [api-result (<! (ajax/managed-ajax
                               :post

@@ -583,7 +583,7 @@
                                                      :vcs_type vcs-type
                                                      :_fragment "osx-pricing"})}
              [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
-          (condp = selected-tab
+          (case selected-tab
             :linux [:div.card
                     (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
                     (om/build faq linux-faq-items)]
