@@ -1,9 +1,7 @@
 (ns frontend.utils.vcs
   (:require [frontend.models.feature :as feature]
-            [frontend.state :as state]
             [frontend.models.user :as user]))
 
-(defn bitbucket-enabled? []
+(defn bitbucket-enabled? [user]
   (or (feature/enabled? :bitbucket)
-      (when state/debug-state
-        (user/bitbucket-authorized? (get-in @state/debug-state state/user-path)))))
+      (user/bitbucket-authorized? user)))

@@ -259,7 +259,7 @@
         ;; force a reload of repos.
         (assoc-in state/repos-path [])
         (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
-        (assoc-in state/bitbucket-repos-loading-path (vcs-utils/bitbucket-enabled?))
+        (assoc-in state/bitbucket-repos-loading-path (vcs-utils/bitbucket-enabled? current-user))
         (assoc-in state/crumbs-path [{:type :add-projects}])
         (assoc-in state/add-projects-selected-org-path nil)
         (state-utils/reset-current-org))))
