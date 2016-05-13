@@ -16,6 +16,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.vcs :as vcs-utils]
             [goog.string :as gstring]
             [goog.string.format]
             [om.core :as om :include-macros true]
@@ -190,7 +191,7 @@
    [:ul
     [:li
      "Get started by selecting your GitHub "
-     (when (feature/enabled? :bitbucket)
+     (when (vcs-utils/bitbucket-enabled?)
        "or Bitbucket ")
      "username or organization."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
@@ -534,7 +535,7 @@
       [:hr]
       [:div.org-repo-container
        [:div.app-aside.org-listing
-        (om/build (if (feature/enabled? :bitbucket)
+        (om/build (if (vcs-utils/bitbucket-enabled?)
                     organization-listing-with-bitbucket
                     organization-listing)
                   {:user user
