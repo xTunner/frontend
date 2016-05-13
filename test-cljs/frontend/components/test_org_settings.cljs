@@ -59,8 +59,9 @@
             (format sweety-high)))))
 
 (deftest overview-page-works
-  (let [overview #(test-utils/render-to-string (om/build org-settings/overview
-                                                           {:current-org-data {:plan %1 :name %2}}))]
+  (let [overview #(test-utils/component->content
+                   org-settings/overview
+                   {:current-org-data {:plan %1 :name %2}})]
     (testing "free plans mention the free containers"
       (is-re #"Builds will run in a single, free container." (overview (example-plan :free) "circleci"))
       (is-re #"1 container is free" (overview (example-plan :free :paid) "circleci"))
