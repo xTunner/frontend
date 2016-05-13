@@ -186,12 +186,12 @@
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])]])))))
 
-(def repos-explanation
+(defn repos-explanation [user]
   [:div.add-repos
    [:ul
     [:li
      "Get started by selecting your GitHub "
-     (when (vcs-utils/bitbucket-enabled?)
+     (when (vcs-utils/bitbucket-enabled? user)
        "or Bitbucket ")
      "username or organization."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
@@ -442,7 +442,7 @@
                                          :selected-plan selected-plan
                                          :type selected-tab
                                          :settings settings}))]])
-              repos-explanation)]])))))
+              (repos-explanation user))]])))))
 
 (defn inaccessible-follows
   "Any repo we follow where the org isn't in our set of orgs is either: an org
@@ -535,7 +535,7 @@
       [:hr]
       [:div.org-repo-container
        [:div.app-aside.org-listing
-        (om/build (if (vcs-utils/bitbucket-enabled?)
+        (om/build (if (vcs-utils/bitbucket-enabled? user)
                     organization-listing-with-bitbucket
                     organization-listing)
                   {:user user
