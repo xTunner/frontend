@@ -201,14 +201,16 @@
 
 (defn project-settings-nav-items [data owner]
   (let [navigation-data (:navigation-data data)
-        project (get-in data state/project-path)]
+        project (get-in data state/project-path)
+        feature-flags (project-model/feature-flags project)]
     (remove nil?
       [{:type :heading :title "Project Settings"}
        {:type :subpage :href "edit" :title "Overview" :subpage :overview}
        {:type :subpage :href (routes/v1-org-settings-path navigation-data) :title "Org Settings"
         :class "project-settings-to-org-settings"}
        {:type :heading :title "Build Settings"}
-       {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build}
+       (when (contains? feature-flags :osx)
+         {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build})
        (when (project-model/parallel-available? project)
          {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds})
        {:type :subpage :href "#env-vars" :title "Environment Variables" :subpage :env-vars}

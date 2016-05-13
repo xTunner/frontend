@@ -131,7 +131,7 @@
           " in your repo. Very powerful."]]
         (om/build follow-sidebar (:project project-data))]))))
 
-(defn build [project-data owner]
+(defn build-environment [project-data owner]
   (reify
     om/IRender
     (render [_]
@@ -177,31 +177,32 @@
                                      "against Linux-based hardware or OS X-based hardware. Please use this "
                                      "setting as an override if we have incorrectly inferred where this build should run."
                                      ]})
-             [:li
-              [:h4 "OS to use for builds"]
-              [:p [:p
-                   "Select the operating system in which to run your Linux builds."
-                   [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]]
-              [:form
-               [:ul
-                [:li.radio
-                 [:label
-                  [:input
-                   {:type "radio"
-                    :checked (not (get feature-flags :trusty-beta))
-                    :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
-                                                                              :flag :trusty-beta
-                                                                              :value false}])}]
-                  " Ubuntu 12.04 (Precise)"]]
-                [:li.radio
-                 [:label
-                  [:input
-                   {:type "radio"
-                    :checked (get feature-flags :trusty-beta)
-                    :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
-                                                                              :flag :trusty-beta
-                                                                              :value true}])}]
-                  " Ubuntu 14.04 (Trusty)"]]]]]]]])))))
+             (when-not (config/enterprise?)
+               [:li
+                [:h4 "OS to use for builds"]
+                [:p [:p
+                     "Select the operating system in which to run your Linux builds."
+                     [:p [:strong "Please note that you need to trigger a build by pushing commits to GitHub (instead of rebuilding) to apply the new setting."]]]]
+                [:form
+                 [:ul
+                  [:li.radio
+                   [:label
+                    [:input
+                     {:type "radio"
+                      :checked (not (get feature-flags :trusty-beta))
+                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                :flag :trusty-beta
+                                                                                :value false}])}]
+                    " Ubuntu 12.04 (Precise)"]]
+                  [:li.radio
+                   [:label
+                    [:input
+                     {:type "radio"
+                      :checked (get feature-flags :trusty-beta)
+                      :on-change #(raise! owner [:project-feature-flag-checked {:project-id project-id
+                                                                                :flag :trusty-beta
+                                                                                :value true}])}]
+                    " Ubuntu 14.04 (Trusty)"]]]]])]]])))))
 
 (defn parallel-label-classes [{:keys [plan project] :as project-data} parallelism]
   (concat
@@ -1715,7 +1716,7 @@
               (om/build common/flashes error-message))
             [:div#subpage
              (condp = subpage
-               :build-environment (om/build build project-data)
+               :build-environment (om/build build-environment project-data)
                :parallel-builds (om/build parallel-builds project-data)
                :env-vars (om/build env-vars project-data)
                :advanced-settings (om/build advance project-data)
