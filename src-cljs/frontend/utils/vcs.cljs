@@ -5,4 +5,5 @@
 
 (defn bitbucket-enabled? []
   (or (feature/enabled? :bitbucket)
-      (user/bitbucket-authorized? (get-in @state/debug-state state/user-path))))
+      (when state/debug-state
+        (user/bitbucket-authorized? (get-in @state/debug-state state/user-path)))))
