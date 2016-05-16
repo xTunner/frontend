@@ -316,9 +316,8 @@
                                              {:event-type :select-plan-clicked
                                               :properties {:org login
                                                            :vcs-type vcs-type
-                                                           :plan-type (pm/osx-plan-type)}})}
-
-         "Select Plan"]))))
+                                                           :plan-type pm/osx-plan-type}})}
+        "Select Plan"]))))
 
 (defn free-trial-button [{{:keys [login vcs-type]} :selected-org} owner]
   (reify
@@ -347,7 +346,7 @@
       ((om/get-shared owner :track-event) {:event-type :no-plan-banner-impression
                                            :properties {:org login
                                                         :vcs-type vcs-type
-                                                        :plan-type (pm/osx-plan-type)}}))
+                                                        :plan-type pm/osx-plan-type}}))
     om/IRender
     (render [_]
       (html
