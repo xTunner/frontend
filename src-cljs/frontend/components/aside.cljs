@@ -480,7 +480,7 @@
            [:a.aside-item (open-ext {:title "Documentation"
                                      :data-placement "right"
                                      :data-trigger "hover"
-                                     :href "/docs"})
+                                     :href "https://circleci.com/docs/"})
               [:i.material-icons "description"]
               [:div.nav-label "Docs"]]
 
