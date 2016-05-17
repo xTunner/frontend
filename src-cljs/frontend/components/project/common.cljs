@@ -82,18 +82,20 @@
   (reify
     om/IRender
     (render [_]
-      (let [plan (:plan data)
+      (let [{{plan-org-name :name
+              plan-vcs-type :vcs_type} :org
+             :as plan}
+            (:plan data)
             project (:project data)
             project-name (gstring/format "%s/%s" (:username project) (:reponame project))
             days (plan-model/days-left-in-trial plan)
-            org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-path {:org org-name
-                                                    :vcs_type (:vcs_type project)
+            plan-path (routes/v1-org-settings-path {:org plan-org-name
+                                                    :vcs_type plan-vcs-type
                                                     :_fragment "containers"})
             trial-notice-fn (if (plan-model/freemium? plan)
-                                freemium-trial-html
+                              freemium-trial-html
                               non-freemium-trial-html)]
-        (trial-notice-fn plan project project-name days org-name plan-path)))))
+        (trial-notice-fn plan project project-name days plan-org-name plan-path)))))
 
 (defn show-enable-notice [project]
   (not (:has_usable_key project)))
@@ -148,13 +150,14 @@
   (reify
     om/IRender
     (render [_]
-      (let [org-name (:org_name plan)
-            plan-path (routes/v1-org-settings-path {:org org-name
-                                                    :vcs_type vcs_type
+      (let [{{plan-org-name :name
+              plan-vcs-type :vcs_type} :org} plan
+            plan-path (routes/v1-org-settings-path {:org plan-org-name
+                                                    :vcs_type plan-vcs-type
                                                     :_fragment "billing"})]
         (html
          [:div.alert.alert-danger.suspended-notice
-          (list org-name
+          (list plan-org-name
                 "'s plan hasn't been paid for! "
                 (if (plan-model/admin? plan)
                   (list "Please " [:a {:href plan-path} "update its billing info "]

@@ -637,14 +637,19 @@
     (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-dashboard)}])
     updated-state))
 
-(defn org-selectable? [state org-name]
-  (or (= org-name (get-in state state/org-settings-org-name-path))
-      (= org-name (get-in state state/add-projects-selected-org-login-path))))
+(defn org-selectable?
+  [state org-name vcs-type]
+  (let [org-settings (get-in state state/org-settings-path)
+        add-projects-selected-org (get-in state state/add-projects-selected-org-path)]
+    (or (and (= org-name (:org-name org-settings))
+             (= vcs-type (:vcs_type org-settings)))
+        (and (= org-name (:login add-projects-selected-org))
+             (= vcs-type (:vcs-type add-projects-selected-org))))))
 
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
-  (let [org-name (:org-name context)]
-    (if-not (org-selectable? state org-name)
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
       state
       (let [{piggieback-orgs :piggieback_org_maps
              :as plan}
@@ -655,20 +660,22 @@
 
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
-  (if-not (org-selectable? state (:org-name context))
-    state
-    (-> state
-        (update-in state/org-data-path merge resp)
-        (assoc-in state/org-loaded-path true)
-        (assoc-in state/org-authorized?-path true))))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (-> state
+          (update-in state/org-data-path merge resp)
+          (assoc-in state/org-loaded-path true)
+          (assoc-in state/org-authorized?-path true)))))
 
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
-  (if-not (org-selectable? state (:org-name context))
-    state
-    (-> state
-        (assoc-in state/org-loaded-path true)
-        (assoc-in state/org-authorized?-path false))))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (-> state
+          (assoc-in state/org-loaded-path true)
+          (assoc-in state/org-authorized?-path false)))))
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
@@ -749,33 +756,36 @@
 
 (defmethod api-event [:plan-card :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
-    state
-    (let [card (or resp {})] ; special case in case card gets deleted
-      (assoc-in state state/stripe-card-path card))))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (let [card (or resp {})] ; special case in case card gets deleted
+        (assoc-in state state/stripe-card-path card)))))
 
 
 (defmethod api-event [:create-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
-    state
-    (assoc-in state state/org-plan-path resp)))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (assoc-in state state/org-plan-path resp))))
 
 (defmethod post-api-event! [:create-plan :success]
   [target message status {:keys [resp context]} previous-state current-state]
-  (when (= (:org-name context) (get-in current-state state/org-settings-org-name-path))
-    (let [nav-ch (get-in current-state [:comms :nav])
-          vcs_type (get-in current-state state/org-settings-vcs-type-path)]
-      (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org (:org-name context)
-                                                                    :vcs_type vcs_type
-                                                                    :_fragment (name (get-in current-state state/org-settings-subpage-path))})
-                                :replace-token? true}]))))
+  (let [{:keys [org-name vcs-type]} context]
+    (when (org-selectable? current-state org-name vcs-type)
+      (let [nav-ch (get-in current-state [:comms :nav])]
+        (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
+                                                                      :vcs_type vcs-type
+                                                                      :_fragment (name (get-in current-state state/org-settings-subpage-path))})
+                                  :replace-token? true}])))))
 
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
-  (if-not (org-selectable? state (:org-name context))
-    state
-    (update-in state state/org-plan-path merge resp)))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (update-in state state/org-plan-path merge resp))))
 
 (defmethod api-event [:update-heroku-key :success]
   [target message status {:keys [resp context]} state]
@@ -795,9 +805,10 @@
 (defmethod api-event [:plan-invoices :success]
   [target message status {:keys [resp context]} state]
   (utils/mlog ":plan-invoices API event: " resp)
-  (if-not (= (:org-name context) (get-in state state/org-settings-org-name-path))
-    state
-    (assoc-in state state/org-invoices-path resp)))
+  (let [{:keys [org-name vcs-type]} context]
+    (if-not (org-selectable? state org-name vcs-type)
+      state
+      (assoc-in state state/org-invoices-path resp))))
 
 (defmethod api-event [:build-state :success]
   [target message status {:keys [resp]} state]

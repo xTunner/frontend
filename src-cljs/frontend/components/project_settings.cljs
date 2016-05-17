@@ -216,7 +216,10 @@
   "Determines what we show when they hover over the parallelism option"
   [project-data owner parallelism]
   (let [project (:project project-data)
-        plan (:plan project-data)
+        {{plan-org-name :name
+          plan-vcs-type :vcs_type} :org
+         :as plan}
+        (:plan project-data)
         project-id (project-model/id project)]
     (list
      [:div.parallelism-upgrades
@@ -240,16 +243,16 @@
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers for " parallelism "x."
-               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                        :vcs_type (:vcs_type project)
+               [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                        :vcs_type plan-vcs-type
                                                         :_fragment "linux-pricing"})
                     :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked})}
                 "Add More"]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :vcs_type (:vcs_type project)
+           [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                    :vcs_type plan-vcs-type
                                                     :_fragment "linux-pricing"})}
             "Add a plan"]]))]
 
@@ -262,8 +265,8 @@
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
                                                parallelism "x parallelism.")}]
-        [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                 :vcs_type (:vcs_type project)
+        [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                 :vcs_type plan-vcs-type
                                                  :_fragment "linux-pricing"})}
          "Upgrade"]]))))
 

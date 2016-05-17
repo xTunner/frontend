@@ -211,23 +211,23 @@
       (when (pm/osx? plan)
         (-> plan :osx :template :name)))))
 
-(defn parent-plan-name [plan]
-  [:em (:org_name plan)])
-
-(defn plans-piggieback-plan-notification [plan current-org-name current-org-vcs-type]
+(defn plans-piggieback-plan-notification [{{parent-name :name
+                                            parent-vcs-type :vcs_type} :org
+                                           :as plan}
+                                          current-org-name]
   [:div.row-fluid
    [:div.offset1.span10
     [:div.alert.alert-success
      [:p
-      "This organization is covered under " (parent-plan-name plan) "'s plan which has " (piggieback-plan-wording plan)]
+      "This organization is covered under " [:em parent-name] "'s plan which has " (piggieback-plan-wording plan)]
      [:p
-      "If you're an admin in the " (parent-plan-name plan)
+      "If you're an admin in the " parent-name
       " organization, then you can change plan settings from the "
-      [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                               :vcs_type current-org-vcs-type})}
-       (:org_name plan) " plan page"] "."]
+      [:a {:href (routes/v1-org-settings-path {:org parent-name
+                                               :vcs_type parent-vcs-type})}
+       parent-name " plan page"] "."]
      [:p
-      "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " (parent-plan-name plan) "."]]]])
+      "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " [:em parent-name] "."]]]])
 
 (defn plural-multiples [num word]
   (if (> num 1)
@@ -462,6 +462,7 @@
     om/IRender
     (render [_]
       (let [org-name (get-in app state/org-name-path)
+            vcs-type (get-in app state/org-vcs_type-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
                                      (pm/paid-linux-containers plan))
@@ -474,7 +475,7 @@
             old-total (- (pm/stripe-cost plan) osx-total)
             new-total (pm/linux-cost plan (+ selected-containers (pm/freemium-containers plan)))
             linux-container-cost (pm/linux-per-container-cost plan)
-            piggiebacked? (pm/piggieback? plan org-name)
+            piggiebacked? (pm/piggieback? plan org-name vcs-type)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)]
       (html
@@ -498,7 +499,7 @@
              (om/build shared/styled-range-slider
                        (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
             [:fieldset
-             (if (and (pm/can-edit-plan? plan org-name)
+             (if (and (pm/can-edit-plan? plan org-name vcs-type)
                       (or (config/enterprise?)
                           (pm/stripe-customer? plan)))
                (forms/managed-button
@@ -567,22 +568,29 @@
   (reify
     om/IRender
     (render[_]
-      (html [:div {:data-component `pricing-tabs}
-             [:ul.nav.nav-tabs
-              [:li {:class (when (= selected-tab :linux) "active")}
-               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan) :_fragment "linux-pricing"})}
-                [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
-              [:li {:class (when (= selected-tab :osx) "active")}
-               [:a {:href (routes/v1-org-settings-path {:org (:org_name plan) :_fragment "osx-pricing"})}
-                [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
-             (condp = selected-tab
-               :linux [:div.card
-                       (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                       (om/build faq linux-faq-items)]
+      (let [{{org-name :name
+              vcs-type :vcs_type} :org} plan]
+        (html
+         [:div {:data-component `pricing-tabs}
+          [:ul.nav.nav-tabs
+           [:li {:class (when (= selected-tab :linux) "active")}
+            [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                     :vcs_type vcs-type
+                                                     :_fragment "linux-pricing"})}
+             [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
+           [:li {:class (when (= selected-tab :osx) "active")}
+            [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                     :vcs_type vcs-type
+                                                     :_fragment "osx-pricing"})}
+             [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
+          (case selected-tab
+            :linux [:div.card
+                    (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                    (om/build faq linux-faq-items)]
 
-               :osx [:div.card
-                     (om/build osx-plans-list plan)
-                     (om/build faq osx-faq-items)])]))))
+            :osx [:div.card
+                  (om/build osx-plans-list plan)
+                  (om/build faq osx-faq-items)])])))))
 
 (defn pricing-starting-tab [subpage]
   (get {:osx-pricing :osx
@@ -629,8 +637,8 @@
               :else
                 [:h3 "Something is wrong! Please submit a bug report."])
 
-            (if (pm/piggieback? plan org-name)
-              (plans-piggieback-plan-notification plan org-name org-vcs-type)
+            (if (pm/piggieback? plan org-name org-vcs-type)
+              (plans-piggieback-plan-notification plan org-name)
               [:div
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
                                        :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
@@ -715,6 +723,7 @@
                     :data-loading-text "Saving...",
                     :type "submit",
                     :on-click #(do (raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
+                                                                                 :vcs-type org-vcs_type
                                                                                  :selected-piggieback-orgs selected-piggieback-orgs}])
                                    false)}
                    "Also pay for these organizations"])]]]])]])))))
@@ -1230,28 +1239,33 @@
   (reify
     om/IRender
     (render [_]
-      (html
-        [:div
-         [:h2 "OS X"]
+      (let [{{plan-org-name :name
+              plan-vcs-type :vcs_type} :org}
+            plan]
+        (html
          [:div
-          [:p "Choose an OS X plan "
-           [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                    :_fragment "osx-pricing"})} "here"] "."]
-          (when (pm/osx? plan)
-            (let [plan-name (some-> plan :osx :template :name)]
-              [:p
-               (cond
-                 (pm/osx-trial-active? plan)
-                 (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
+          [:h2 "OS X"]
+          [:div
+           [:p "Choose an OS X plan "
+            [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                     :vcs_type plan-vcs-type
+                                                     :_fragment "osx-pricing"})} "here"] "."]
+           (when (pm/osx? plan)
+             (let [plan-name (some-> plan :osx :template :name)]
+               [:p
+                (cond
+                  (pm/osx-trial-active? plan)
+                  (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
 
-                 (and (pm/osx-trial-plan? plan)
-                      (not (pm/osx-trial-active? plan)))
-                 [:span "Your free trial of CircleCI for OS X has expired. Please "
-                  [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                           :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
+                  (and (pm/osx-trial-plan? plan)
+                       (not (pm/osx-trial-active? plan)))
+                  [:span "Your free trial of CircleCI for OS X has expired. Please "
+                   [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                            :vcs_type plan-vcs-type
+                                                            :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
-                 :else
-                 (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]]))))
+                  :else
+                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]])))))
 
 (defn overview [app owner]
   (om/component
@@ -1263,7 +1277,7 @@
           linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
           containers (pm/linux-containers plan)
-          piggiebacked? (pm/piggieback? plan org-name)]
+          piggiebacked? (pm/piggieback? plan org-name vcs_type)]
       [:div
        [:fieldset [:legend (str org-name "'s plan")]]
        [:div.explanation
@@ -1278,8 +1292,8 @@
               (= containers 1)
               [:div
                [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
-               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                                  :vcs_type vcs_type
+               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                  :vcs_type (:vcs_type plan-org)
                                                                   :_fragment "linux-pricing"})}
                     "upgrading"]
                 (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
@@ -1303,8 +1317,8 @@
               "You can "
               ;; make sure to link to the add-containers page of the plan's org,
               ;; in case of piggiebacking.
-              [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                       :vcs_type vcs_type
+              [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                       :vcs_type (:vcs_type plan-org)
                                                        :_fragment "linux-pricing"})}
                "add more"]
               (when-not piggiebacked?
@@ -1337,11 +1351,7 @@
       (let [org-data (get-in app state/org-data-path)
             vcs_type (:vcs_type org-data)
             subpage (or (get-in app state/org-settings-subpage-path)
-                        ;; Only GitHub orgs support paid plans currently, so
-                        ;; only they get to see the :overview subpage.
-                        (if (= "github" vcs_type)
-                          :overview
-                          :projects))
+                        :overview)
             plan (get-in app state/org-plan-path)]
         (html [:div.org-page
                (if-not (:loaded org-data)

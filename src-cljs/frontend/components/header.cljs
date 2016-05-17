@@ -289,26 +289,32 @@
   (reify
     om/IRender
     (render [_]
-      (html
-        [:div.alert.alert-warning {:data-component `osx-usage-warning-banner}
-         [:div.usage-message
-          [:div.icon (om/build svg/svg {:src (common/icon-path "Info-Warning")})]
-          [:div.text
-           [:span "Your current usage represents "]
-           [:span.usage (plan/current-months-osx-usage-% plan)]
-           [:span "% of your "]
-           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)})} "current OS X plan"]
-           [:span ". Please "]
-           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                              :_fragment "osx-pricing"})}
-            "upgrade"]
-           [:span " or reach out to your account manager if you have questions about billing."]
-           [:span " See overage rates "]
-           [:a.plan-link {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                              :_fragment "osx-pricing"})}
-            "here."]]]
-         [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
-          [:i.material-icons "clear"]]]))))
+      (let [{{plan-org-name :name
+              plan-vcs-type :vcs_type} :org} plan]
+        (html
+         [:div.alert.alert-warning {:data-component `osx-usage-warning-banner}
+          [:div.usage-message
+           [:div.icon (om/build svg/svg {:src (common/icon-path "Info-Warning")})]
+           [:div.text
+            [:span "Your current usage represents "]
+            [:span.usage (plan/current-months-osx-usage-% plan)]
+            [:span "% of your "]
+            [:a.plan-link
+             {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                  :vcs_type plan-vcs-type})} "current OS X plan"]
+            [:span ". Please "]
+            [:a.plan-link {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                               :vcs_type plan-vcs-type
+                                                               :_fragment "osx-pricing"})}
+             "upgrade"]
+            [:span " or reach out to your account manager if you have questions about billing."]
+            [:span " See overage rates "]
+            [:a.plan-link {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                               :vcs_type plan-vcs-type
+                                                               :_fragment "osx-pricing"})}
+             "here."]]]
+          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
+           [:i.material-icons "clear"]]])))))
 
 (defn osx-command-change-banner [_ owner]
   (reify
