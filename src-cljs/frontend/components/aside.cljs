@@ -209,7 +209,9 @@
        {:type :subpage :href (routes/v1-org-settings-path navigation-data) :title "Org Settings"
         :class "project-settings-to-org-settings"}
        {:type :heading :title "Build Settings"}
-       (when (contains? feature-flags :osx)
+       ;; Both conditions are needed to handle special cases like non-enterprise stanging
+       ;; instances that don't have OS X beta enabled.
+       (when (or (not (config/enterprise?)) (contains? feature-flags :osx))
          {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build})
        (when (project-model/parallel-available? project)
          {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds})
