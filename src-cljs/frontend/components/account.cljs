@@ -103,7 +103,10 @@
                :data-success-text "Saved",
                :type "submit"
                :value "Save Heroku key"
-               :on-click #(do (submit-form!) false)}])]]])))))
+               :on-click #(do
+                            (.preventDefault %)
+                            (.stopPropagation %)
+                            (submit-form!))}])]]])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -134,8 +137,10 @@
               {:data-loading-text "Creating...",
                :data-failed-text  "Failed to add token",
                :data-success-text "Created",
-               :on-click          #(do (create-token! new-user-token)
-                                       false)
+               :on-click          #(do
+                                     (.preventDefault %)
+                                     (.stopPropagation %)
+                                     (create-token! new-user-token))
                :type "submit"
                :value "Create new token"}])]
 
@@ -193,8 +198,7 @@
                                    :src (common/icon-path "Status-Passed")}))]
                  [:p (:description program)]
                  [:input.btn.btn-info
-                  {:on-click #(do
-                                (set-beta-preference! owner betas (:id program) (not participating?)))
+                  {:on-click #(set-beta-preference! owner betas (:id program) (not participating?))
                    :type "submit"
                    :value (if participating?
                             (str "Leave " (:name program) " Beta")
@@ -218,9 +222,10 @@
          (if (not clicked-join?)
            [:input.btn
             {:on-click #(do
+                          (.preventDefault %)
+                          (.stopPropagation %)
                           (om/set-state! owner :clicked-join? true)
-                          ((om/get-shared owner :track-event) {:event-type :beta-join-clicked})
-                          false)
+                          ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
              :type "submit"
              :value "Join Beta Program"}]
            [:div
@@ -241,9 +246,10 @@
             [:p]
             [:input.btn
             {:on-click #(do
+                          (.preventDefault %)
+                          (.stopPropagation %)
                           (set-beta-program-preference! owner true)
-                          ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked })
-                          false)
+                          ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked}))
              :type "submit"
              :value "Accept"}]])]]))))
 
@@ -259,9 +265,10 @@
          [:form
           [:input.btn.btn-danger
            {:on-click #(do
+                         (.preventDefault %)
+                         (.stopPropagation %)
                          (set-beta-program-preference! owner false)
-                         ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked})
-                         false)
+                         ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
             :type "submit"
             :value "Leave Beta Program"}]]]
         (comment
