@@ -419,7 +419,8 @@
                        :data-loading-text "Starting..."
                        :data-failed-text "Failed"
                        :on-click #(do
-                                    (raise! owner [:activate-plan-trial {plan-type {:template template}}])
+                                    (raise! owner [:activate-plan-trial {:plan-fields {plan-type {:template template}}
+                                                                         :org (:org plan)}])
                                     ((om/get-shared owner :track-event) {:event-type :start-trial-clicked
                                                                          :properties {:plan-type plan-type
                                                                                       :template template}}))}

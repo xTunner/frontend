@@ -334,6 +334,20 @@
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-command-change-banner])}
           [:i.material-icons "clear"]]]))))
 
+(defn offer-trial-banner [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.alert.offer
+         [:div.offer-message
+          [:div.text
+           [:div "Thanks for building on CircleCI. Your [build/queues] are higher than an average user - interested in more containers but unsure if it will help?"]
+           [:div "For a limited time, we are offering select customers a free, two-week trial of three extra linux containers. "
+            [:a {:on-click #(raise! owner [:activate-plan-trial {:plan-fields {:paid {:template :t3}}
+                                                                 :org (get-in app state/project-plan-org-path)}])}
+             "Get a Free Trial."]]]]]))))
+
 (defn inner-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Inner Header")
@@ -365,6 +379,12 @@
                           (plan/over-usage-threshold? plan plan/first-warning-threshold)
                           (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
                  (om/build osx-usage-warning-banner plan))))
+           (when (and (not (plan/trial? plan))
+                      (= :build (:navigation-point app))
+                      (not (project-model/oss? project))
+                      (plan/admin? plan)
+                      (feature/enabled? :offer-linux-trial))
+             (om/build offer-trial-banner app))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user app))])))))
 

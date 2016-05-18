@@ -783,9 +783,13 @@
 (defmethod api-event [:update-plan :success]
   [target message status {:keys [resp context]} state]
   (let [{:keys [org-name vcs-type]} context]
-    (if-not (org-selectable? state org-name vcs-type)
-      state
-      (update-in state state/org-plan-path merge resp))))
+    (cond-> state
+      (and (= org-name (get-in state state/project-plan-org-name-path))
+           (= vcs-type (get-in state state/project-plan-vcs-type-path)))
+      (assoc-in state/project-plan-path resp)
+
+      (org-selectable? state org-name vcs-type)
+      (update-in state/org-plan-path merge resp))))
 
 (defmethod api-event [:update-heroku-key :success]
   [target message status {:keys [resp context]} state]

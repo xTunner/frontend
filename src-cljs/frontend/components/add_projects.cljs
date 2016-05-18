@@ -328,8 +328,9 @@
           (let [plan-type :osx
                 template "osx-trial"]
             [:a.btn.trial {:on-click #(do
-                                        (raise! owner [:activate-plan-trial
-                                                       {plan-type {:template template}}])
+                                        (raise! owner [:activate-plan-trial {:plan-fields {plan-type {:template template}}
+                                                                             :org {:name login
+                                                                                   :vcs_type vcs-type}}])
                                         ((om/get-shared owner :track-event)
                                          {:event-type :start-trial-clicked
                                           :properties {:org login

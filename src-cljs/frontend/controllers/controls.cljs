@@ -1003,21 +1003,29 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :activate-plan-trial
-  [target message plan-template previous-state current-state]
+  [target message {:keys [plan-fields org]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
+        {org-name :name
+         vcs-type :vcs_type} org
+        nav-ch (get-in current-state [:comms :nav])]
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :post
                              (gstring/format "/api/dangerzone/organization/%s/%s/plan/trial"
                                              vcs-type
                                              org-name)
-                             :params plan-template))]
+                             :params plan-fields))]
         (put! api-ch [:update-plan
                       (:status api-result)
                       (assoc api-result :context {:org-name org-name
                                                   :vcs-type vcs-type})])
+        (if (and (= :build (get-in current-state state/current-view-path))
+                 (= :success (:status api-result)))
+         (put! nav-ch [:navigate! {:path (routes/v1-project-settings-path {:vcs_type "github"
+                                                                           :org org-name
+                                                                           :repo (get-in current-state state/project-repo-path)
+                                                                           :_fragment "parallel-builds"})}]))
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :save-piggieback-orgs-clicked
