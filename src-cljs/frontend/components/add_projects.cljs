@@ -328,15 +328,10 @@
           (let [plan-type :osx
                 template "osx-trial"]
             [:a.btn.trial {:on-click #(do
-                                        (raise! owner [:activate-plan-trial {:plan-fields {plan-type {:template template}}
+                                        (raise! owner [:activate-plan-trial {:plan-type plan-type
+                                                                             :template template
                                                                              :org {:name login
-                                                                                   :vcs_type vcs-type}}])
-                                        ((om/get-shared owner :track-event)
-                                         {:event-type :start-trial-clicked
-                                          :properties {:org login
-                                                       :vcs-type vcs-type
-                                                       :plan-type plan-type
-                                                       :template template}}))
+                                                                                   :vcs_type vcs-type}}]))
                            :data-spinner true}
              "Start 2 Week Trial"]))))))
 

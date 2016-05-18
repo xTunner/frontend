@@ -344,7 +344,8 @@
           [:div.text
            [:div "Thanks for building on CircleCI. Your [build/queues] are higher than an average user - interested in more containers but unsure if it will help?"]
            [:div "For a limited time, we are offering select customers a free, two-week trial of three extra linux containers. "
-            [:a {:on-click #(raise! owner [:activate-plan-trial {:plan-fields {:paid {:template :t3}}
+            [:a {:on-click #(raise! owner [:activate-plan-trial {:plan-type :paid
+                                                                 :template :t3
                                                                  :org (get-in app state/project-plan-org-path)}])}
              "Get a Free Trial."]]]]]))))
 

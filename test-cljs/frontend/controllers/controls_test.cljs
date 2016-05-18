@@ -2,6 +2,7 @@
   (:require [cljs.core.async :refer [chan <! >!]]
             [cljs.test :as test]
             [frontend.utils.ajax :as ajax]
+            [frontend.analytics.core :as analytics]
             [frontend.controllers.controls :as controls]
             [bond.james :as bond :include-macros true])
   (:require-macros [cljs.test :refer [is deftest testing async]]
@@ -98,3 +99,27 @@
     (check-button-ajax {:status :foobar
                         :success-count 0
                         :failed-count 0})))
+
+(deftest post-control-event-activate-plan-trial-works
+  (let [analytics-calls (atom [])
+        org-name "foo"
+        vcs-type "github"
+        plan-type :paid
+        template :t3
+        controller-data {:plan-type plan-type
+                         :template template
+                         :org {:name org-name :vcs_type vcs-type}}
+        current-state {:zippity "doo-da"}]
+    (with-redefs [analytics/track (fn [event-data]
+                                    (swap! analytics-calls conj {:args (list event-data)}))]
+      (controls/post-control-event! {} :activate-plan-trial controller-data {} current-state)
+
+      (testing "the post-control-event activate-plan-trial sends a :start-trial-clicked event with the correct properties"
+        (is (= (count @analytics-calls) 1))
+        (let [args (-> @analytics-calls first :args first)]
+          (is (= (:event-type args) :start-trial-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:org org-name
+                                     :vcs-type vcs-type
+                                     :plan-type :linux
+                                     :template template})))))))

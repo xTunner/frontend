@@ -3,6 +3,7 @@
             [cljs.reader :as reader]
             [clojure.set :as set]
             [frontend.analytics.core :as analytics]
+            [frontend.analytics.utils :as analytics-utils]
             [frontend.analytics.track :as analytics-track]
             [frontend.api :as api]
             [frontend.async :refer [put!]]
@@ -1003,19 +1004,24 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :activate-plan-trial
-  [target message {:keys [plan-fields org]} previous-state current-state]
+  [target message {:keys [plan-type template org]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
+        {org-name :name vcs-type :vcs_type} org
         api-ch (get-in current-state [:comms :api])
-        {org-name :name
-         vcs-type :vcs_type} org
         nav-ch (get-in current-state [:comms :nav])]
+    (analytics/track {:event-type :start-trial-clicked
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :vcs-type vcs-type
+                                   :plan-type (analytics-utils/canonical-plan-type plan-type)
+                                   :template template}})
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :post
                              (gstring/format "/api/dangerzone/organization/%s/%s/plan/trial"
                                              vcs-type
                                              org-name)
-                             :params plan-fields))]
+                             :params {plan-type {:template template}}))]
         (put! api-ch [:update-plan
                       (:status api-result)
                       (assoc api-result :context {:org-name org-name
