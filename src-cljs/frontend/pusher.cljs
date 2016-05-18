@@ -41,16 +41,8 @@
   (let [pusher-config (pusher-object-config config)]
     (js/Pusher. (:key config) (clj->js pusher-config))))
 
-(defn user-channels [user]
-  (cond-> #{}
-    ;; This will be removed once the entire fleet is using the pusher-id-based
-    ;; channel name.
-    true (conj (str "private-" (:login user)))
-    (:pusher_id user) (conj (str "private-" (:pusher_id user))
-                            ;; This will be removed once the entire fleet is
-                            ;; clear of the bug that appends "@all" to channel
-                            ;; names even if they don't need it.
-                            (str "private-" (:pusher_id user) "@all"))))
+(defn user-channel [user]
+  (str "private-" (:pusher_id user)))
 
 (defn build-parts-from-channel [channel-name]
   (let [[_ username project build-num vcs-type]

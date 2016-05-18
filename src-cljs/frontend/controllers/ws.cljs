@@ -27,7 +27,7 @@
         build (get-in state state/build-path)
         container-index (or (get-in state state/current-container-path) 0)]
     (cond-> #{}
-      user (into (pusher/user-channels user))
+      user (conj (pusher/user-channel user))
       build (into (pusher/build-channels build container-index)))))
 
 (defn ignore-build-channel?

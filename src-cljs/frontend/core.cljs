@@ -240,9 +240,8 @@
            (async/timeout 10000) (do #_(print "TODO: print out history: ")))))))
 
 (defn subscribe-to-user-channel [user ws-ch]
-  (doseq [c (pusher/user-channels user)]
-    (put! ws-ch [:subscribe {:channel-name c
-                             :messages [:refresh]}])))
+  (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
+                           :messages [:refresh]}]))
 
 (defn apply-app-id-hack
   "Hack to make the top-level id of the app the same as the
