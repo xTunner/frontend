@@ -335,24 +335,24 @@
           [:i.material-icons "clear"]]]))))
 
 (defn trial-offer-banner [app owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :trial-offer-banner-impression}))
-    om/IRender
-    (render [_]
-      (html
-        [:div.alert.offer
-         [:div.text
-          [:div "Projects utilizing more containers generally have faster builds and less queueing. "
-           [:a {:on-click #(raise! owner [:activate-plan-trial {:plan-type :paid
-                                                                :template :t3
-                                                                :org (get-in app state/project-plan-org-path)}])}
-            "Click here "]
-           "to activate a free two-week trial of 3 additional containers."]]
-         [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner])}
-          [:i.material-icons "clear"]]]))))
-
+  (let [event-data {:plan-type :paid
+                    :template :t3
+                    :org (get-in app state/project-plan-org-path)}]
+    (reify
+      om/IDidMount
+      (did-mount [_]
+        ((om/get-shared owner :track-event) {:event-type :trial-offer-banner-impression}))
+      om/IRender
+      (render [_]
+        (html
+          [:div.alert.offer
+           [:div.text
+            [:div "Projects utilizing more containers generally have faster builds and less queueing. "
+             [:a {:on-click #(raise! owner [:activate-plan-trial event-data])}
+              "Click here "]
+             "to activate a free two-week trial of 3 additional containers."]]
+           [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner event-data])}
+            [:i.material-icons "clear"]]])))))
 
 (defn inner-header [app owner]
   (reify

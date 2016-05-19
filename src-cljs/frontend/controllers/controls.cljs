@@ -1472,3 +1472,13 @@
 (defmethod control-event :dismiss-trial-offer-banner
   [_ _ _ state]
   (assoc-in state state/dismissed-trial-offer-banner true))
+
+(defmethod post-control-event! :dismiss-trial-offer-banner
+  [_ _ {:keys [org plan-type template]} _ current-state]
+  (let [{org-name :name vcs-type :vcs_type} org]
+    (analytics/track {:event-type :dismiss-trial-offer-banner-clicked
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :vcs-type vcs-type
+                                   :plan-type (analytics-utils/canonical-plan-type plan-type)
+                                   :template template}})))

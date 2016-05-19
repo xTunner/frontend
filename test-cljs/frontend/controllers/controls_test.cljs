@@ -100,9 +100,16 @@
                         :success-count 0
                         :failed-count 0})))
 
+;; TODO: make this a macro in a test.analytics.utils ns
+(defn analytics-track-call-args [func]
+  (let [calls (atom [])]
+    (with-redefs [analytics/track (fn [event-data]
+                                    (swap! calls conj {:args (list event-data)}))]
+      (func)
+      @calls)))
+
 (deftest post-control-event-activate-plan-trial-works
-  (let [analytics-calls (atom [])
-        org-name "foo"
+  (let [org-name "foo"
         vcs-type "github"
         plan-type :paid
         template :t3
@@ -110,14 +117,32 @@
                          :template template
                          :org {:name org-name :vcs_type vcs-type}}
         current-state {:zippity "doo-da"}]
-    (with-redefs [analytics/track (fn [event-data]
-                                    (swap! analytics-calls conj {:args (list event-data)}))]
-      (controls/post-control-event! {} :activate-plan-trial controller-data {} current-state)
-
-      (testing "the post-control-event activate-plan-trial sends a :start-trial-clicked event with the correct properties"
-        (is (= (count @analytics-calls) 1))
-        (let [args (-> @analytics-calls first :args first)]
+    (testing "the post-control-event activate-plan-trial sends a :start-trial-clicked event with the correct properties"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :activate-plan-trial controller-data {} current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
           (is (= (:event-type args) :start-trial-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:org org-name
+                                     :vcs-type vcs-type
+                                     :plan-type :linux
+                                     :template template})))))))
+
+(deftest post-control-event-dismiss-trial-offer-banner-works
+  (let [org-name "bar"
+        vcs-type "bitbucket"
+        org {:name org-name :vcs_type vcs-type}
+        plan-type :paid
+        template :t3
+        controller-data {:plan-type plan-type
+                         :template template
+                         :org {:name org-name :vcs_type vcs-type}}
+        current-state {:zippity "doo-da"}]
+    (testing "the post-control-event dismiss-trial-offer-banner sends a :dismiss-trial-offer-banner-clicked event with the correct properties"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :dismiss-trial-offer-banner controller-data {} current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :dismiss-trial-offer-banner-clicked))
           (is (= (:current-state args) current-state))
           (is (= (:properties args) {:org org-name
                                      :vcs-type vcs-type

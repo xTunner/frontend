@@ -34,6 +34,7 @@
     :build-link-clicked
     :change-image-clicked
     :cancel-plan-clicked
+    :dismiss-trial-offer-banner-clicked
     :insights-bar-clicked
     :login-clicked
     :new-plan-clicked
