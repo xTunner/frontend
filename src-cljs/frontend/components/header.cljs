@@ -343,14 +343,16 @@
     (render [_]
       (html
         [:div.alert.offer
-         [:div.offer-message
-          [:div.text
-           [:div "Thanks for building on CircleCI. Your [build/queues] are higher than an average user - interested in more containers but unsure if it will help?"]
-           [:div "For a limited time, we are offering select customers a free, two-week trial of three extra linux containers. "
-            [:a {:on-click #(raise! owner [:activate-plan-trial {:plan-type :paid
-                                                                 :template :t3
-                                                                 :org (get-in app state/project-plan-org-path)}])}
-             "Get a Free Trial."]]]]]))))
+         [:div.text
+          [:div "Projects utilizing more containers generally have faster builds and less queueing. "
+           [:a {:on-click #(raise! owner [:activate-plan-trial {:plan-type :paid
+                                                                :template :t3
+                                                                :org (get-in app state/project-plan-org-path)}])}
+            "Click here "]
+           "to activate a free two-week trial of 3 additional containers."]]
+         [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner])}
+          [:i.material-icons "clear"]]]))))
+
 
 (defn inner-header [app owner]
   (reify
@@ -387,7 +389,8 @@
                       (= :build (:navigation-point app))
                       (not (project-model/oss? project))
                       (plan/admin? plan)
-                      (feature/enabled? :offer-linux-trial))
+                      (feature/enabled? :offer-linux-trial)
+                      (not (get-in app state/dismissed-trial-offer-banner)))
              (om/build trial-offer-banner app))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user app))])))))

@@ -85,7 +85,17 @@
   }
 
   &.offer {
+    position: relative;
     background-color: @greenLightest;
+
+    a {
+      cursor: pointer;
+    }
+    .dismiss {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
   }
 
   &.iconified {

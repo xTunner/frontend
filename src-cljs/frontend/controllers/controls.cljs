@@ -1469,3 +1469,6 @@
   [_ _ _ state]
   (assoc-in state state/dismissed-osx-command-change-banner-path true))
 
+(defmethod control-event :dismiss-trial-offer-banner
+  [_ _ _ state]
+  (assoc-in state state/dismissed-trial-offer-banner true))
