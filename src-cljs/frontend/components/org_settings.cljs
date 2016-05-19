@@ -520,8 +520,6 @@
                       :disabled (when-not button-clickable? "disabled")
                       :on-click (when button-clickable?
                                   #(do
-                                     (.preventDefault %)
-                                     (.stopPropagation %)
                                      (raise! owner [:update-containers-clicked
                                                     {:containers selected-paid-containers}])
                                      (analytics-track/track-update-plan-clicked {:owner owner
@@ -541,15 +539,12 @@
                     :data-failed-text "Failed!",
                     :disabled (when-not button-clickable? "disabled")
                     :on-click (when button-clickable?
-                                #(do
-                                   (.preventDefault %)
-                                   (.stopPropagation %)
-                                   (raise! owner [:new-plan-clicked
-                                                  {:containers selected-paid-containers
-                                                   :linux {:template (:id pm/default-template-properties)}
-                                                   :price new-total
-                                                   :description (str "$" new-total "/month, includes "
-                                                                     (pluralize selected-containers "container"))}])))}
+                                #(raise! owner [:new-plan-clicked
+                                                {:containers selected-paid-containers
+                                                 :linux {:template (:id pm/default-template-properties)}
+                                                 :price new-total
+                                                 :description (str "$" new-total "/month, includes "
+                                                                   (pluralize selected-containers "container"))}]))}
                    "Pay Now"])))
 
              (when-not (config/enterprise?)
@@ -725,12 +720,9 @@
                    {:data-success-text "Saved",
                     :data-loading-text "Saving...",
                     :type "submit",
-                    :on-click #(do
-                                 (.preventDefault %)
-                                 (.stopPropagation %)
-                                 (raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
-                                                                               :vcs-type org-vcs_type
-                                                                               :selected-piggieback-orgs selected-piggieback-orgs}]))}
+                    :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
+                                                                             :vcs-type org-vcs_type
+                                                                             :selected-piggieback-orgs selected-piggieback-orgs}])}
                    "Also pay for these organizations"])]]]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
@@ -805,14 +797,11 @@
                   :data-loading-text "Tranferring...",
                   :type "submit",
                   :class (when-not selected-transfer-org "disabled")
-                  :on-click #(do
-                               (.preventDefault %)
-                               (.stopPropagation %)
-                               (raise! owner
-                                       [:transfer-plan-clicked
-                                        {:from-org {:org-name org-name
-                                                    :vcs-type vcs_type}
-                                         :to-org selected-transfer-org}]))
+                  :on-click #(raise! owner
+                                     [:transfer-plan-clicked
+                                      {:from-org {:org-name org-name
+                                                  :vcs-type vcs_type}
+                                       :to-org selected-transfer-org}])
                   :data-bind
                   "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
                  "Transfer plan" (when selected-transfer-org-name (str " to " selected-transfer-org-name))])]]]])]]]))))
@@ -886,10 +875,7 @@
                       {:data-success-text "Success",
                        :data-failed-text "Failed",
                        :data-loading-text "Updating",
-                       :on-click #(do
-                                    (.preventDefault %)
-                                    (.stopPropagation %)
-                                    (raise! owner [:update-card-clicked]))
+                       :on-click #(raise! owner [:update-card-clicked])
                        :type "submit"}
                       "Change credit card"])]]]]]]))))))
 
@@ -987,10 +973,7 @@
                    [:button.btn.btn-primary
                     {:data-success-text "Saved invoice data",
                      :data-loading-text "Saving invoice data...",
-                     :on-click #(do
-                                  (.preventDefault %)
-                                  (.stopPropagation %)
-                                  (raise! owner [:save-invoice-data-clicked]))
+                     :on-click #(raise! owner [:save-invoice-data-clicked])
                      :type "submit",}
                     "Save invoice data"])]]]]]))))))
 
@@ -1034,11 +1017,8 @@
                     {:data-failed-text "Failed",
                      :data-success-text "Sent",
                      :data-loading-text "Sending...",
-                     :on-click #(do
-                                  (.preventDefault %)
-                                  (.stopPropagation %)
-                                  (raise! owner [:resend-invoice-clicked
-                                                 {:invoice-id invoice-id}]))}
+                     :on-click #(raise! owner [:resend-invoice-clicked
+                                               {:invoice-id invoice-id}])}
                     "Resend"])]]])))))
 
 (defn- ->balance-string [balance]
@@ -1163,20 +1143,14 @@
                 (list
                  (when (om/get-state owner [:show-errors?])
                    [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
-                 [:button {:on-click #(do
-                                        (.preventDefault %)
-                                        (.stopPropagation %)
-                                        (om/set-state! owner [:show-errors?] true))}
+                 [:button {:on-click #(om/set-state! owner [:show-errors?] true)}
                   "Cancel Plan"])
                 (forms/managed-button
                  [:button {:data-spinner "true"
-                           :on-click #(do
-                                        (.preventDefault %)
-                                        (.stopPropagation %)
-                                        (raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                             :vcs_type vcs_type
-                                                                             :cancel-reasons reasons
-                                                                             :cancel-notes notes}]))}
+                           :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
+                                                                           :vcs_type vcs_type
+                                                                           :cancel-reasons reasons
+                                                                           :cancel-notes notes}])}
                   "Cancel Plan"])))]]])))))
 
 (defn progress-bar [{:keys [max value class]} owner]

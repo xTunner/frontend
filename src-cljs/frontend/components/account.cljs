@@ -103,10 +103,7 @@
                :data-success-text "Saved",
                :type "submit"
                :value "Save Heroku key"
-               :on-click #(do
-                            (.preventDefault %)
-                            (.stopPropagation %)
-                            (submit-form!))}])]]])))))
+               :on-click submit-form!}])]]])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -137,10 +134,7 @@
               {:data-loading-text "Creating...",
                :data-failed-text  "Failed to add token",
                :data-success-text "Created",
-               :on-click          #(do
-                                     (.preventDefault %)
-                                     (.stopPropagation %)
-                                     (create-token! new-user-token))
+               :on-click          #(create-token! new-user-token)
                :type "submit"
                :value "Create new token"}])]
 
@@ -222,8 +216,6 @@
          (if (not clicked-join?)
            [:input.btn
             {:on-click #(do
-                          (.preventDefault %)
-                          (.stopPropagation %)
                           (om/set-state! owner :clicked-join? true)
                           ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
              :type "submit"
@@ -246,8 +238,6 @@
             [:p]
             [:input.btn
             {:on-click #(do
-                          (.preventDefault %)
-                          (.stopPropagation %)
                           (set-beta-program-preference! owner true)
                           ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked}))
              :type "submit"
@@ -265,8 +255,6 @@
          [:form
           [:input.btn.btn-danger
            {:on-click #(do
-                         (.preventDefault %)
-                         (.stopPropagation %)
                          (set-beta-program-preference! owner false)
                          ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
             :type "submit"
