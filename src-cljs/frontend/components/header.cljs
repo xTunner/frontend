@@ -334,8 +334,11 @@
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-command-change-banner])}
           [:i.material-icons "clear"]]]))))
 
-(defn offer-trial-banner [app owner]
+(defn trial-offer-banner [app owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :trial-offer-banner-impression}))
     om/IRender
     (render [_]
       (html
@@ -385,7 +388,7 @@
                       (not (project-model/oss? project))
                       (plan/admin? plan)
                       (feature/enabled? :offer-linux-trial))
-             (om/build offer-trial-banner app))
+             (om/build trial-offer-banner app))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user app))])))))
 

@@ -48,6 +48,7 @@
     :signup-clicked
     :signup-impression
     :start-trial-clicked
+    :trial-offer-banner-impression
     :update-plan-clicked})
 
 (def supported-controller-events
