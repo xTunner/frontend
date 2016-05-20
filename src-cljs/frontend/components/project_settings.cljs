@@ -1,5 +1,7 @@
 (ns frontend.components.project-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [cljs-time.core :as time]
+            [cljs-time.format :as time-format]
             [frontend.async :refer [raise!]]
             [clojure.string :as string]
             [frontend.models.build :as build-model]
@@ -297,18 +299,41 @@
                      :disabled (> parallelism (project-model/buildable-parallelism plan project))
                      :checked (= parallelism (:parallel project))}]])])))])
 
-(defn parallel-builds [project-data owner]
+(defn trial-activation-banner [data owner]
   (reify
     om/IRender
     (render [_]
-      (html
-       [:section
-        [:article
-         [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
-         (if-not (:plan project-data)
-           [:div.loading-spinner common/spinner]
-           (list (parallelism-picker project-data owner)
-                 (project-common/mini-parallelism-faq project-data)))]]))))
+      (let [org (get-in data state/project-plan-org-name-path)
+            days-left (-> (get-in data state/project-plan-path)
+                          :trial_end
+                          (time-format/parse)
+                          (->> (time/interval (time/now)))
+                          (time/in-days)
+                          (+ 1))
+            days-left-str (str days-left (if (> days-left 1)
+                                           " days"
+                                           " day"))]
+        (html
+          [:div.alert.offer
+           [:div.text
+            [:span org"'s plan has "days-left-str" left on its trial. You may want to try increasing parallelism below to get the most value out of your containers."]]])))))
+
+(defn parallel-builds [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project-data (get-in data state/project-data-path)
+            plan (get-in data state/project-plan-path)]
+        (html
+          [:section
+           (when (plan-model/in-trial? plan)
+             (om/build trial-activation-banner data))
+           [:article
+            [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
+            (if-not (:plan project-data)
+              [:div.loading-spinner common/spinner]
+              (list (parallelism-picker project-data owner)
+                    (project-common/mini-parallelism-faq project-data)))]])))))
 
 (defn result-box
   [{:keys [success? message result-path]} owner]
@@ -1720,7 +1745,7 @@
             [:div#subpage
              (condp = subpage
                :build-environment (om/build build-environment project-data)
-               :parallel-builds (om/build parallel-builds project-data)
+               :parallel-builds (om/build parallel-builds data)
                :env-vars (om/build env-vars project-data)
                :advanced-settings (om/build advance project-data)
                :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)

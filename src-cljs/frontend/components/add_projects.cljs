@@ -316,9 +316,8 @@
                                              {:event-type :select-plan-clicked
                                               :properties {:org login
                                                            :vcs-type vcs-type
-                                                           :plan-type (pm/osx-plan-type)}})}
-
-         "Select Plan"]))))
+                                                           :plan-type pm/osx-plan-type}})}
+        "Select Plan"]))))
 
 (defn free-trial-button [{{:keys [login vcs-type]} :selected-org} owner]
   (reify
@@ -329,14 +328,10 @@
           (let [plan-type :osx
                 template "osx-trial"]
             [:a.btn.trial {:on-click #(do
-                                        (raise! owner [:activate-plan-trial
-                                                       {plan-type {:template template}}])
-                                        ((om/get-shared owner :track-event)
-                                         {:event-type :start-trial-clicked
-                                          :properties {:org login
-                                                       :vcs-type vcs-type
-                                                       :plan-type plan-type
-                                                       :template template}}))
+                                        (raise! owner [:activate-plan-trial {:plan-type plan-type
+                                                                             :template template
+                                                                             :org {:name login
+                                                                                   :vcs_type vcs-type}}]))
                            :data-spinner true}
              "Start 2 Week Trial"]))))))
 
@@ -347,7 +342,7 @@
       ((om/get-shared owner :track-event) {:event-type :no-plan-banner-impression
                                            :properties {:org login
                                                         :vcs-type vcs-type
-                                                        :plan-type (pm/osx-plan-type)}}))
+                                                        :plan-type pm/osx-plan-type}}))
     om/IRender
     (render [_]
       (html

@@ -193,3 +193,6 @@
   "Are parallel builds available for this project type?"
   [project]
   (not (osx? project)))
+
+(defn parallelism [project]
+  (:parallel project))
