@@ -278,9 +278,9 @@
             num-active-users (get-in app (conj state/license-path :seat_usage))
             table-header [:thead.head
                           [:tr
-                           [:th "GitHub ID"]
-                           [:th "Name"]
-                           [:th "Permissions"]]]]
+                           [:th.github-id "GitHub ID"]
+                           [:th.name "Name"]
+                           [:th.permissions "Permissions"]]]]
         (html
           [:div#users {:style {:padding-left "10px"}}
            [:h1 "Users"]
