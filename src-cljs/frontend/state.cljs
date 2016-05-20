@@ -123,6 +123,7 @@
 (def project-path (conj project-data-path :project))
 (def project-parallelism-path (conj project-path :parallel))
 (def project-repo-path (conj project-path :reponame))
+(def project-default-branch-path (conj project-path :default_branch))
 (def project-scopes-path (conj project-data-path :project-scopes))
 (def page-scopes-path [:page-scopes])
 (def project-osx-keys-path (conj project-data-path :osx-keys))
@@ -242,6 +243,7 @@
 (def general-message-path [:general-message])
 
 (def inputs-path [:inputs])
+(def input-settings-branch-path (conj inputs-path :settings-branch))
 
 (def docs-data-path [:docs-data])
 (def docs-search-path [:docs-query])

@@ -8,10 +8,15 @@
                   vcs-type)
     "github" "/api/v1/project"))
 
-(defn project-settings [vcs-type org repo]
+(defn branch-path [vcs-type org-name repo-name branch]
+  (gstring/format
+   "%s/%s/%s/tree/%s"
+   (base-project-url-path vcs-type) org-name repo-name (gstring/urlEncode branch)))
+
+(defn project-settings [vcs-type org-name repo-name]
   (gstring/format
    "%s/%s/%s/settings"
-   (base-project-url-path vcs-type) org repo))
+   (base-project-url-path vcs-type) org-name repo-name))
 
 (defn project-checkout-keys [vcs-type repo-name]
   (gstring/format
@@ -29,10 +34,10 @@
    "%s/%s/ssh-key"
    (base-project-url-path vcs-type) repo-name))
 
-(defn project-plan [vcs-type org repo]
+(defn project-plan [vcs-type org-name repo-name]
   (gstring/format
    "%s/%s/%s/plan"
-   (base-project-url-path vcs-type) org repo))
+   (base-project-url-path vcs-type) org-name repo-name))
 
 (defn project-tokens  [vcs-type project-name]
   (gstring/format
