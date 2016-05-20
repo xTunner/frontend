@@ -46,13 +46,13 @@
            [:button.btn.btn-primary {:value "Switch user", :type "submit"}
             "Switch user"]]]]]))))
 
-(defn current-seat-usage-p [active-users total-seats]
-  (list
+(defn current-seat-usage [active-users total-seats]
+  [:span
    "There " (if (= 1 active-users) "is" "are") " currently "
    [:b (pluralize active-users "active user")]
    " out of "
    [:b (pluralize total-seats "licensed user")]
-   "."))
+   "."])
 
 (defn overview [app owner]
   (reify
@@ -75,10 +75,10 @@
               (:environment app)))]
           "."]
 
-         (conj (current-seat-usage-p (get-in app (conj state/license-path :seat_usage))
-                                     (get-in app (conj state/license-path :seats)))
-               " You can deactivate users in "
-               [:a {:href "/admin/users"} "user settings."])]))))
+         [:p (current-seat-usage (get-in app (conj state/license-path :seat_usage))
+                                 (get-in app (conj state/license-path :seats)))
+          " You can deactivate users in "
+          [:a {:href "/admin/users"} "user settings."]]]))))
 
 (defn builders [builders owner]
   (reify
@@ -209,50 +209,43 @@
   (or (some (set admin-scopes) ["write-settings" "read-settings"])
       "none"))
 
-(defn admin-in-words
-  [admin-scopes]
-  (case (relevant-scope admin-scopes)
-    "write-settings" "Admin"
-    "read-settings" "Read-only Admin"
-    "none" "Normal"))
-
 (defn user [{:keys [user current-user]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [show-suspend-unsuspend? (and (#{"all" "write-settings"} (:admin current-user))
-                                         (not= (:login current-user) (:login user)))]
-        (html
-          [:tr
-           [:td (:login user)]
-           [:td (:name user)]
-           [:td
-            [:div.form-inline
-             ;; Admin toggles
-             (let [relevant-scope (-> user :admin_scopes relevant-scope)]
+  (let [scope-labels {"write-settings" "Admin"
+                      "read-settings" "Read-only Admin"
+                      "none" "Normal"}]
+    (reify
+      om/IRender
+      (render [_]
+        (let [show-suspend-unsuspend? (and (#{"all" "write-settings"} (:admin current-user))
+                                           (not= (:login current-user) (:login user)))
+              scope (-> user :admin_scopes relevant-scope)
+              dropdown-options (cond->> (keys scope-labels)
+                                        (not= "read-settings" relevant-scope) (remove #{"read-settings"}))]
+          (html
+            [:tr
+             [:td (:login user)]
+             [:td (:name user)]
+             [:td
+              [:div.form-inline
+               ;; Admin toggles
                (if show-suspend-unsuspend?
                  [:select.form-control
-                  {:on-change #(let [scope (-> % .-target .-value keyword)]
-                                (raise! owner [:set-admin-scope
-                                               {:login (:login user)
-                                                :scope scope}]))
-                   :value relevant-scope}
-                  [:option {:value "write-settings"} "Admin"]
-                  ;; read-settings generally hidden for until we sort out what we
-                  ;; really want the scope precision to be
-                  (when (= "read-settings" relevant-scope)
-                    [:option {:value "read-settings"} "Read-only Admin"])
-                  [:option {:value "none"} "Normal"]]
-                 (-> user :admin_scopes admin-in-words)))
-             ;; Suspend/unsuspend toggles
-             (when show-suspend-unsuspend?
-               (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
-                 [:button.secondary
-                  {:style {:margin-left "1em"}
-                   :on-click #(raise! owner [action (select-keys user [:login])])}
-                  (case action
-                    :suspend-user "Suspend"
-                    :unsuspend-user "Activate")]))]]])))))
+                  {:on-change #(raise! owner [:set-admin-scope
+                                              {:login (:login user)
+                                               :scope (-> % .-target .-value keyword)}])
+                   :value scope}
+                  (for [opt dropdown-options]
+                    [:option {:value opt} (scope-labels opt)])]
+                 (-> user :admin_scopes relevant-scope scope-labels))
+               ;; Suspend/unsuspend toggles
+               (when show-suspend-unsuspend?
+                 (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
+                   [:button.secondary
+                    {:style {:margin-left "1em"}
+                     :on-click #(raise! owner [action (select-keys user [:login])])}
+                    (case action
+                      :suspend-user "Suspend"
+                      :unsuspend-user "Activate")]))]]]))))))
 
 (defn users [app owner]
   (reify
@@ -282,12 +275,12 @@
                            [:th.name "Name"]
                            [:th.permissions "Permissions"]]]]
         (html
-          [:div#users {:style {:padding-left "10px"}}
+          [:div.users {:style {:padding-left "10px"}}
            [:h1 "Users"]
 
            [:div.card.detailed
             [:h3 "Active"]
-            [:div.details (current-seat-usage-p num-active-users num-licensed-users)]
+            [:div.details (current-seat-usage num-active-users num-licensed-users)]
             (when (not-empty active-users)
               [:table
                table-header
@@ -309,7 +302,7 @@
            (when (not-empty suspended-new-users)
              [:div.card.detailed
               [:h3 "Suspended New Users"]
-              [:div.details "Suspended new users require an admin to unsuspend them before they can log on and do not count towrads the number your license allows."]
+              [:div.details "Suspended new users require an admin to unsuspend them before they can log on and do not count towards the number your license allows."]
               [:table
                table-header
                [:tbody.body (om/build-all user (mapv (fn [u] {:user u
