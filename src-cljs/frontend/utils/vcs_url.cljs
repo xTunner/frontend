@@ -21,7 +21,7 @@
   (fn [user]
     (if (= "none" (:login user))
       :none
-      (keyword (or (:vcs_type user) :github)))))
+      (keyword (:vcs_type user)))))
 
 (defmethod profile-url :github [user]
   (str (gh/http-endpoint) "/" (:login user)))
