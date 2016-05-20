@@ -121,6 +121,7 @@
 (def project-envvars-path (conj project-data-path :envvars))
 (def project-settings-branch-path (conj project-data-path :settings-branch))
 (def project-path (conj project-data-path :project))
+(def project-parallelism-path (conj project-path :parallel))
 (def project-repo-path (conj project-path :reponame))
 (def project-scopes-path (conj project-data-path :project-scopes))
 (def page-scopes-path [:page-scopes])

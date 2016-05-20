@@ -459,7 +459,6 @@
     state
     (assoc-in state (conj state/project-data-path :parallelism-edited) true)))
 
-
 (defn update-cache-clear-state
   [state {:keys [resp context]} k success?]
   (if-not (= (:project-id context)

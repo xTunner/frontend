@@ -345,7 +345,9 @@
   [target message {:keys [project-id parallelism]} previous-state current-state]
   (when (not= (get-in previous-state state/project-path)
               (get-in current-state state/project-path))
-    (let [api-ch (get-in current-state [:comms :api])
+    (let [previous-project (get-in previous-state state/project-path)
+          new-project (get-in current-state state/project-path)
+          api-ch (get-in current-state [:comms :api])
           project-name (vcs-url/project-name project-id)
           org-name (vcs-url/org-name project-id)
           repo-name (vcs-url/repo-name project-id)
@@ -356,7 +358,13 @@
                  :update-project-parallelism
                  api-ch
                  :params {:parallel parallelism}
-                 :context {:project-id project-id}))))
+                 :context {:project-id project-id})
+    (analytics/track {:event-type :update-parallelism-clicked
+                      :current-state current-state
+                      :properties {:previous-parallelism (project-model/parallelism previous-project)
+                                   :new-parallelism (project-model/parallelism new-project)
+                                   :plan-type (analytics-utils/canonical-plan-type :paid)
+                                   :vcs-type vcs-type}}))))
 
 (defmethod post-control-event! :clear-cache
   [target message {:keys [type project-id]} previous-state current-state]

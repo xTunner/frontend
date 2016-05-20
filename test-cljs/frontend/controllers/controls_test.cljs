@@ -1,6 +1,7 @@
 (ns frontend.controllers.controls-test
   (:require [cljs.core.async :refer [chan <! >!]]
             [cljs.test :as test]
+            [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
             [frontend.analytics.core :as analytics]
             [frontend.controllers.controls :as controls]
@@ -148,3 +149,24 @@
                                      :vcs-type vcs-type
                                      :plan-type :linux
                                      :template template})))))))
+
+(deftest post-control-event-selected-project-parallelism-works
+  (let [org-name ""
+        vcs-type "bitbucket"
+        org {:name org-name :vcs_type vcs-type}
+        previous-parallelism 1
+        previous-state (assoc-in {} state/project-parallelism-path previous-parallelism)
+        new-parallelism 10
+        current-state (assoc-in {} state/project-parallelism-path new-parallelism)
+        controller-data {:project-id "https://github.com/circleci/circle"}]
+    (with-redefs [ajax/ajax (fn [& args] nil)]
+      (testing "the post-control-event dismiss-trial-offer-banner sends a :selected-project-parallelism event with the correct properties"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :selected-project-parallelism controller-data previous-state current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :update-parallelism-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:plan-type :linux
+                                     :previous-parallelism previous-parallelism
+                                     :new-parallelism new-parallelism
+                                     :vcs-type "github"}))))))))

@@ -50,9 +50,11 @@
     :signup-impression
     :start-trial-clicked
     :trial-offer-banner-impression
+    :update-parallelism-clicked
     :update-plan-clicked})
 
 (def supported-controller-events
+  ;; TODO: All these events should be server side
   ;; These are the api response events.
   ;; They are in the format of <object>-<action take in the past tense>
   #{:project-branch-changed
