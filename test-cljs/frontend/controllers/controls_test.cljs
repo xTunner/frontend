@@ -1,7 +1,9 @@
 (ns frontend.controllers.controls-test
   (:require [cljs.core.async :refer [chan <! >!]]
             [cljs.test :as test]
+            [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
+            [frontend.analytics.core :as analytics]
             [frontend.controllers.controls :as controls]
             [bond.james :as bond :include-macros true])
   (:require-macros [cljs.test :refer [is deftest testing async]]
@@ -98,3 +100,73 @@
     (check-button-ajax {:status :foobar
                         :success-count 0
                         :failed-count 0})))
+
+;; TODO: make this a macro in a test.analytics.utils ns
+(defn analytics-track-call-args [func]
+  (let [calls (atom [])]
+    (with-redefs [analytics/track (fn [event-data]
+                                    (swap! calls conj {:args (list event-data)}))]
+      (func)
+      @calls)))
+
+(deftest post-control-event-activate-plan-trial-works
+  (let [org-name "foo"
+        vcs-type "github"
+        plan-type :paid
+        template :t3
+        controller-data {:plan-type plan-type
+                         :template template
+                         :org {:name org-name :vcs_type vcs-type}}
+        current-state {:zippity "doo-da"}]
+    (testing "the post-control-event activate-plan-trial sends a :start-trial-clicked event with the correct properties"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :activate-plan-trial controller-data {} current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :start-trial-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:org org-name
+                                     :vcs-type vcs-type
+                                     :plan-type :linux
+                                     :template template})))))))
+
+(deftest post-control-event-dismiss-trial-offer-banner-works
+  (let [org-name "bar"
+        vcs-type "bitbucket"
+        org {:name org-name :vcs_type vcs-type}
+        plan-type :paid
+        template :t3
+        controller-data {:plan-type plan-type
+                         :template template
+                         :org {:name org-name :vcs_type vcs-type}}
+        current-state {:zippity "doo-da"}]
+    (testing "the post-control-event dismiss-trial-offer-banner sends a :dismiss-trial-offer-banner-clicked event with the correct properties"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :dismiss-trial-offer-banner controller-data {} current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :dismiss-trial-offer-banner-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:org org-name
+                                     :vcs-type vcs-type
+                                     :plan-type :linux
+                                     :template template})))))))
+
+(deftest post-control-event-selected-project-parallelism-works
+  (let [org-name ""
+        vcs-type "bitbucket"
+        org {:name org-name :vcs_type vcs-type}
+        previous-parallelism 1
+        previous-state (assoc-in {} state/project-parallelism-path previous-parallelism)
+        new-parallelism 10
+        current-state (assoc-in {} state/project-parallelism-path new-parallelism)
+        controller-data {:project-id "https://github.com/circleci/circle"}]
+    (with-redefs [ajax/ajax (fn [& args] nil)]
+      (testing "the post-control-event dismiss-trial-offer-banner sends a :selected-project-parallelism event with the correct properties"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :selected-project-parallelism controller-data previous-state current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :update-parallelism-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:plan-type :linux
+                                     :previous-parallelism previous-parallelism
+                                     :new-parallelism new-parallelism
+                                     :vcs-type "github"}))))))))

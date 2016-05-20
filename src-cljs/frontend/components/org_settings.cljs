@@ -395,7 +395,7 @@
                                                                (analytics-track/track-update-plan-clicked {:owner owner
                                                                                                            :new-plan plan-id
                                                                                                            :previous-plan (pm/osx-plan-id plan)
-                                                                                                           :plan-type (pm/osx-plan-type)
+                                                                                                           :plan-type pm/osx-plan-type
                                                                                                            :upgrade? (> (:price plan-data) (pm/osx-cost plan))}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
@@ -406,7 +406,7 @@
                                                                                                                                   (clojure.string/capitalize (name plan-id))
                                                                                                                                   (:price plan-data))}])
                                                                ((om/get-shared owner :track-event) {:event-type :new-plan-clicked
-                                                                                                    :properties {:plan-type (pm/osx-plan-type)
+                                                                                                    :properties {:plan-type pm/osx-plan-type
                                                                                                                  :plan plan-id}}))}))
 
               (when (and trial-starts-here? (not (pm/osx? plan)))
@@ -418,11 +418,9 @@
                       {:data-success-text "Success!"
                        :data-loading-text "Starting..."
                        :data-failed-text "Failed"
-                       :on-click #(do
-                                    (raise! owner [:activate-plan-trial {plan-type {:template template}}])
-                                    ((om/get-shared owner :track-event) {:event-type :start-trial-clicked
-                                                                         :properties {:plan-type plan-type
-                                                                                      :template template}}))}
+                       :on-click (raise! owner [:activate-plan-trial {:plan-type plan-type
+                                                                      :template template
+                                                                      :org (:org plan)}])}
                       "start a 2 week free trial"])]))]]
             (cond
               trial-starts-here?
@@ -503,33 +501,33 @@
                       (or (config/enterprise?)
                           (pm/stripe-customer? plan)))
                (forms/managed-button
-                (let [enterprise-text "Save changes"]
-                  (if (and (zero? new-total)
-                           (not (config/enterprise?))
-                           (not (zero? (pm/paid-linux-containers plan))))
-                    [:a.btn.btn-large.btn-primary.cancel
-                     {:href "#cancel"
-                      :disabled (when-not button-clickable? "disabled")
-                      :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
-                                                                      :properties {:repo nil}})}
-                     "Cancel plan"]
-                    [:button.btn.btn-large.btn-primary.upgrade
-                     {:data-success-text "Saved",
-                      :data-loading-text "Saving...",
-                      :type "submit"
-                      :disabled (when-not button-clickable? "disabled")
-                      :on-click (when button-clickable?
-                                  #(do
-                                     (raise! owner [:update-containers-clicked
-                                                    {:containers selected-paid-containers}])
-                                     (analytics-track/track-update-plan-clicked {:owner owner
-                                                                                 :new-plan selected-paid-containers
-                                                                                 :previous-plan (pm/paid-linux-containers plan)
-                                                                                 :plan-type (pm/linux-plan-type)
-                                                                                 :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))}
-                     (if (config/enterprise?)
-                       enterprise-text
-                       "Update plan")])))
+                 (let [enterprise-text "Save changes"]
+                   (if (and (zero? new-total)
+                            (not (config/enterprise?))
+                            (not (zero? (pm/paid-linux-containers plan))))
+                     [:a.btn.btn-large.btn-primary.cancel
+                      {:href "#cancel"
+                       :disabled (when-not button-clickable? "disabled")
+                       :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
+                                                                       :properties {:repo nil}})}
+                      "Cancel plan"]
+                     [:button.btn.btn-large.btn-primary.upgrade
+                      {:data-success-text "Saved",
+                       :data-loading-text "Saving...",
+                       :type "submit"
+                       :disabled (when-not button-clickable? "disabled")
+                       :on-click (when button-clickable?
+                                   #(do
+                                      (raise! owner [:update-containers-clicked
+                                                     {:containers selected-paid-containers}])
+                                      (analytics-track/track-update-plan-clicked {:owner owner
+                                                                                  :new-plan selected-paid-containers
+                                                                                  :previous-plan (pm/paid-linux-containers plan)
+                                                                                  :plan-type pm/linux-plan-type
+                                                                                  :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))}
+                      (if (config/enterprise?)
+                        enterprise-text
+                        "Update plan")])))
                (if-not checkout-loaded?
                  [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
                  (forms/managed-button
