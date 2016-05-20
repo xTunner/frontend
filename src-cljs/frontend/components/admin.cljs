@@ -46,13 +46,13 @@
            [:button.btn.btn-primary {:value "Switch user", :type "submit"}
             "Switch user"]]]]]))))
 
-(defn current-seat-usage-p
-  [active-users total-seats]
-  [:p "There " (if (= 1 active-users) "is" "are") " currently "
+(defn current-seat-usage-p [active-users total-seats]
+  (list
+   "There " (if (= 1 active-users) "is" "are") " currently "
    [:b (pluralize active-users "active user")]
    " out of "
    [:b (pluralize total-seats "licensed user")]
-   "."])
+   "."))
 
 (defn overview [app owner]
   (reify
@@ -282,7 +282,7 @@
             current-user (:current-user app)
             num-licensed-users (get-in app (conj state/license-path :seats))
             num-active-users (get-in app (conj state/license-path :seat_usage))
-            table-header [:thead
+            table-header [:thead.head
                           [:tr
                            [:th "GitHub ID"]
                            [:th "Name"]
@@ -291,47 +291,46 @@
           [:div#users {:style {:padding-left "10px"}}
            [:h1 "Users"]
 
-           (current-seat-usage-p num-active-users num-licensed-users)
-
            [:div.card.detailed
-            [:h4 "Active"]
+            [:h3 "Active"]
+            [:div.details (current-seat-usage-p num-active-users num-licensed-users)]
             (when (not-empty active-users)
-              [:table.table.table-condensed
+              [:table
                table-header
-               [:tbody (om/build-all user (mapv (fn [u] {:user u
-                                                         :current-user current-user})
-                                                active-users))]])]
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     active-users))]])]
 
            [:div.card.detailed
-            [:h4 "Suspended"]
+            [:h3 "Suspended"]
             [:div.details "Suspended users are prevented from logging in and do not count towards the number your license allows."]
             (when (not-empty suspended-users)
-              [:table.table.table-condensed
+              [:table
                table-header
-               [:tbody (om/build-all user (mapv (fn [u] {:user u
-                                                         :current-user current-user})
-                                                suspended-users))]])]
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     suspended-users))]])]
 
            ;;Don't show this section if there are no suspended new users to show
            (when (not-empty suspended-new-users)
              [:div.card.detailed
-              [:h4 "Suspended New Users"]
+              [:h3 "Suspended New Users"]
               [:div.details "Suspended new users require an admin to unsuspend them before they can log on and do not count towrads the number your license allows."]
-              [:table.table.table-condensed
+              [:table
                table-header
-               [:tbody (om/build-all user (mapv (fn [u] {:user u
-                                                         :current-user current-user})
-                                                suspended-new-users))]]])
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     suspended-new-users))]]])
 
            [:div.card.detailed
-            [:h4 "Inactive Users"]
+            [:h3 "Inactive Users"]
             [:div.details "Inactive users have never logged on and also do not count towards your license limits."]
             (when (not-empty inactive-users)
-              [:table.table.table-condensed
+              [:table
                table-header
-               [:tbody (om/build-all user (mapv (fn [u] {:user u
-                                                         :current-user current-user})
-                                                inactive-users))]])]])))))
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     inactive-users))]])]])))))
 
 (defn boolean-setting-entry [item owner]
   (reify
