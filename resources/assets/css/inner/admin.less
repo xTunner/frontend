@@ -30,7 +30,7 @@
 
     .body {
       tr {
-        height: 30px;
+        height: 55px;
         font-size: @fontSizeSmall;
         color: @gray;
         border-top: 1px solid @grayLighter;
@@ -38,6 +38,25 @@
 
         td {
           padding-left: 10px;
+
+          select.form-control {
+            .fancy-select(@arrow-margin: 6px; @color: inherit);
+            border: 1px solid @input-border;
+
+            .flex(0 0 auto);
+            width: @selectWidth;
+            font-size: inherit;
+          }
+
+          .secondary {
+            height: 35px;
+            border-radius: 3px;
+            background-color: @grayLightest;
+            border: solid 1px rgba(0, 0, 0, 0.1);
+          }
+          .secondary:hover {
+            background-color: @whiten;
+          }
         }
 
         &:hover {

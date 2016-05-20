@@ -212,9 +212,9 @@
 (defn admin-in-words
   [admin-scopes]
   (case (relevant-scope admin-scopes)
-    "write-settings" "admin"
-    "read-settings" "read-only admin"
-    "none" "normal"))
+    "write-settings" "Admin"
+    "read-settings" "Read-only Admin"
+    "none" "Normal"))
 
 (defn user [{:keys [user current-user]} owner]
   (reify
@@ -227,38 +227,32 @@
            [:td (:login user)]
            [:td (:name user)]
            [:td
-            ;; Admin toggles
-            (let [relevant-scope (-> user :admin_scopes relevant-scope)]
-              (if show-suspend-unsuspend?
-                [:div.btn-group.btn-group-xs
-                 [:button.btn.btn-default
-                  (if (= "write-settings" relevant-scope)
-                    {:class "active"}
-                    {:on-click #(raise! owner [:set-admin-scope
+            [:div.form-inline
+             ;; Admin toggles
+             (let [relevant-scope (-> user :admin_scopes relevant-scope)]
+               (if show-suspend-unsuspend?
+                 [:select.form-control
+                  {:on-change #(let [scope (-> % .-target .-value keyword)]
+                                (raise! owner [:set-admin-scope
                                                {:login (:login user)
-                                                :scope :write-settings}])})
-                  "admin"]
-                 ;; read-settings generally hidden for until we sort out what we
-                 ;; really want the scope precision to be
-                 (when (= "read-settings" relevant-scope)
-                   [:button.btn.btn-default.active "read-only admin"])
-                 [:button.btn.btn-default
-                  (if (= "none" relevant-scope)
-                    {:class "active"}
-                    {:on-click #(raise! owner [:set-admin-scope
-                                               {:login (:login user)
-                                                :scope :none}])})
-                  "normal"]]
-                (-> user :admin_scopes admin-in-words)))
-            ;; Suspend/unsuspend toggles
-            (when show-suspend-unsuspend?
-              (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
-                [:button.btn.btn-xs.btn-default
-                 {:style {:margin-left "1em"}
-                  :on-click #(raise! owner [action (select-keys user [:login])])}
-                 (case action
-                   :suspend-user "suspend"
-                   :unsuspend-user "activate")]))]])))))
+                                                :scope scope}]))
+                   :value relevant-scope}
+                  [:option {:value "write-settings"} "Admin"]
+                  ;; read-settings generally hidden for until we sort out what we
+                  ;; really want the scope precision to be
+                  (when (= "read-settings" relevant-scope)
+                    [:option {:value "read-settings"} "Read-only Admin"])
+                  [:option {:value "none"} "Normal"]]
+                 (-> user :admin_scopes admin-in-words)))
+             ;; Suspend/unsuspend toggles
+             (when show-suspend-unsuspend?
+               (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
+                 [:button.secondary
+                  {:style {:margin-left "1em"}
+                   :on-click #(raise! owner [action (select-keys user [:login])])}
+                  (case action
+                    :suspend-user "Suspend"
+                    :unsuspend-user "Activate")]))]]])))))
 
 (defn users [app owner]
   (reify
