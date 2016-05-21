@@ -212,9 +212,10 @@
 
 (defn current-months-osx-usage-% [plan]
   (let [usage-ms (current-months-osx-usage-ms plan)
-        usage-min (/ usage-ms 1000 60)
-        max-min (-> plan :osx :template :max_minutes)]
-    (.round js/Math (* (/ usage-min max-min) 100))))
+        usage-min (/ usage-ms 1000 60)]
+    (if-let [max-min (-> plan :osx :template :max_minutes) ]
+      (.round js/Math (* (/ usage-min max-min) 100))
+      0)))
 
 (def first-warning-threshold 75)
 (def second-warning-threshold 95)
