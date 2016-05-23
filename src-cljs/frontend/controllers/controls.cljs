@@ -861,14 +861,14 @@
 (defmethod post-control-event! :cancel-build-clicked
   [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
+        vcs-type (vcs-url/vcs-type vcs-url)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
+                 (api-path/build-cancel vcs-type org-name repo-name build-num)
                  :cancel-build
                  api-ch
                  :context {:build-id build-id})))
-
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [project-name project-id]} previous-state current-state]

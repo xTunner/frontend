@@ -64,6 +64,11 @@
    "%s/%s/%s/%s/retry"
    (base-project-url-path vcs-type) org-name repo-name build-num))
 
+(defn build-cancel [vcs-type org-name repo-name build-num]
+  (gstring/format
+   "%s/%s/%s/%s/cancel"
+   (base-project-url-path vcs-type) org-name repo-name build-num))
+
 (defn heroku-deploy-user [vcs-type repo-name]
   (gstring/format
    "%s/%s/heroku-deploy-user"
