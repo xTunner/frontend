@@ -549,7 +549,11 @@
          [:span.big-number "2"]
          [:div.instruction
           [:p "Choose a repo to add to CircleCI. We'll start a new build for you each time someone pushes a new commit."]
-          [:p "You can also follow a repo that's already been added to CircleCI. You'll see your followed projects in Builds and Insights."]]]
+          [:p "You can also follow a repo that's already been added to CircleCI. You'll see your followed projects in "
+           [:a {:href (routes/v1-dashboard-path {})} "Builds"]
+           " and "
+           [:a {:href (routes/v1-insights)} "Insights"]
+           "."]]]
          (om/build repo-lists {:user user
                                :repos repos
                                :selected-org selected-org
