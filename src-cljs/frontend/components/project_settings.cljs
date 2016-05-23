@@ -64,8 +64,7 @@
           (forms/managed-button
            [:input
             {:value button-text
-             :on-click #(do (raise! owner [channel-message (merge {:project-id project-id} channel-args)])
-                            false)
+             :on-click #(raise! owner [channel-message (merge {:project-id project-id} channel-args)])
              :data-loading-text "Starting..."
              :data-success-text "Started..."
              :type "submit"}])])))))
@@ -444,9 +443,7 @@
                                           :data-loading-text "Adding...",
                                           :value "Save variables",
                                           :type "submit"
-                                          :on-click #(do
-                                                       (raise! owner [:created-env-var {:project-id project-id}])
-                                                       false)}])]]
+                                          :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]]
              (when-let [env-vars (seq (:envvars project-data))]
                [:table.table
                 [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
@@ -593,8 +590,7 @@
                [:input.btn.btn-primary {:value "Next, set up your tests",
                                         :type "submit"
                                         :data-loading-text "Saving..."
-                                        :on-click #(do (raise! owner [:saved-dependencies-commands {:project-id project-id}])
-                                                       false)}])]]]]])))))
+                                        :on-click #(raise! owner [:saved-dependencies-commands {:project-id project-id}])}])]]]]])))))
 
 (defn tests [project-data owner]
   (reify
@@ -637,8 +633,7 @@
                                        :data-loading-text "Saving...",
                                        :value "Save commands",
                                        :type "submit"
-                                       :on-click #(do (raise! owner [:saved-test-commands {:project-id project-id}])
-                                                      false)}])
+                                       :on-click #(raise! owner [:saved-test-commands {:project-id project-id}])}])
              [:div.try-out-build
               (om/build branch-picker
                         project-data
@@ -911,10 +906,9 @@
                 :data-loading-text "Saving..",
                 :value "Submit",
                 :type "submit"
-                :on-click #(do (raise! owner [:saved-ssh-key {:project-id project-id
-                                                              :ssh-key {:hostname hostname
-                                                                        :private_key private-key}}])
-                               false)}])]
+                :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
+                                                          :ssh-key {:hostname hostname
+                                                                    :private_key private-key}}])}])]
             (when-let [ssh-keys (seq (:ssh_keys project))]
               [:table.table
                [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
@@ -981,10 +975,9 @@
                [:input.btn
                 {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your GitHub account.', animation: false }"
                  :type "submit"
-                 :on-click #(do (raise! owner [:new-checkout-key-clicked {:project-id project-id
-                                                                          :project-name project-name
-                                                                          :key-type "github-user-key"}])
-                                false)
+                 :on-click #(raise! owner [:new-checkout-key-clicked {:project-id project-id
+                                                                      :project-name project-name
+                                                                      :key-type "github-user-key"}])
                  :value (str "Create and add " (:login user) " user key" )
                  :data-loading-text "Saving..."
                  :data-success-text "Saved"}])])]])))))
@@ -1010,10 +1003,9 @@
              [:input.btn
               {:tooltip "{ title: 'Create a new user key for this project, with access to all of the projects of your Bitbucket account.', animation: false }"
                :type "submit"
-               :on-click #(do (raise! owner [:new-checkout-key-clicked {:project-id project-id
-                                                                        :project-name project-name
-                                                                        :key-type "bitbucket-user-key"}])
-                              false)
+               :on-click #(raise! owner [:new-checkout-key-clicked {:project-id project-id
+                                                                    :project-name project-name
+                                                                    :key-type "bitbucket-user-key"}])
                :value (str "Create " (:login user) " user key" )
                :data-loading-text "Creating..."
                :data-success-text "Created"}])]]])))))
@@ -1102,11 +1094,10 @@
                    (forms/managed-button
                     [:input.btn
                      {:type "submit"
-                      :on-click #(do (raise! owner
-                                             [:new-checkout-key-clicked {:project-id project-id
-                                                                         :project-name project-name
-                                                                         :key-type "deploy-key"}])
-                                     false)
+                      :on-click #(raise! owner
+                                         [:new-checkout-key-clicked {:project-id project-id
+                                                                     :project-name project-name
+                                                                     :key-type "deploy-key"}])
                       :title "Create a new deploy key, with access only to this project."
                       :value (str "Create and add " project-name " deploy key")
                       :data-loading-text "Saving..."
@@ -1208,10 +1199,9 @@
                {:data-failed-text "Failed",
                 :data-success-text "Created",
                 :data-loading-text "Creating...",
-                :on-click #(do (raise! owner [:saved-project-api-token {:project-id project-id
-                                                                        :api-token {:scope scope
-                                                                                    :label label}}])
-                               false)
+                :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
+                                                                    :api-token {:scope scope
+                                                                                :label label}}])
                 :value "Create token",
                 :type "submit"}])]
             (when-let [tokens (seq (:tokens project-data))]
@@ -1274,8 +1264,7 @@
                 [:input.btn.btn-danger.remove-user
                  {:data-success-text "Saved",
                   :data-loading-text "Saving...",
-                  :on-click #(do (raise! owner [:removed-heroku-deploy-user {:project-id project-id}])
-                                 false)
+                  :on-click #(raise! owner [:removed-heroku-deploy-user {:project-id project-id}])
                   :value "Remove Heroku Deploy User",
                   :type "submit"}])
 
@@ -1283,9 +1272,8 @@
                 [:input.btn.btn-primary.set-user
                  {:data-success-text "Saved",
                   :data-loading-text "Saving...",
-                  :on-click #(do (raise! owner [:set-heroku-deploy-user {:project-id project-id
-                                                                         :login login}])
-                                 false)
+                  :on-click #(raise! owner [:set-heroku-deploy-user {:project-id project-id
+                                                                     :login login}])
                   :value (str "Set user to " (:login user)),
                   :type "submit"}]))]]
            [:div.heroku-step
@@ -1360,9 +1348,7 @@
                :data-loading-text "Saving..."
                :value "Save AWS keys"
                :type "submit"
-               :on-click #(do
-                            (raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])
-                            false)}])
+               :on-click #(raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:aws :keypair]]}])}])
             (when (and access_key_id secret_access_key)
               (forms/managed-button
                [:input.remove {:data-failed-text "Failed"
@@ -1372,8 +1358,7 @@
                                :type "submit"
                                :on-click #(do
                                             (raise! owner [:edited-input {:path (input-path) :value nil}])
-                                            (raise! owner [:saved-project-settings {:project-id project-id}])
-                                            false)}]))]]])))))
+                                            (raise! owner [:saved-project-settings {:project-id project-id}]))}]))]]])))))
 
 (defn aws [project-data owner]
   (reify
@@ -1400,9 +1385,7 @@
          [:label {:placeholder "Application Name"}]
          [:input {:value "Add app settings",
                   :type "submit"
-                  :on-click #(do
-                               (raise! owner [:new-codedeploy-app-name-entered])
-                               false)}]]]))))
+                  :on-click #(raise! owner [:new-codedeploy-app-name-entered])}]]]))))
 
 (defn aws-codedeploy-app-details [project-data owner]
   (reify
@@ -1489,8 +1472,7 @@
                           :on-click #(do
                                        (raise! owner [:edited-input {:path (input-path app-name :revision_location :revision_type) :value "S3"}])
                                        (raise! owner [:saved-project-settings {:project-id project-id
-                                                                               :merge-paths [[:aws :services :codedeploy]]}])
-                                       false)}])
+                                                                               :merge-paths [[:aws :services :codedeploy]]}]))}])
            (forms/managed-button
             [:input.remove {:data-failed-text "Failed",
                             :data-success-text "Removed",
@@ -1499,8 +1481,7 @@
                             :type "submit"
                             :on-click #(do
                                          (raise! owner [:edited-input {:path (input-path) :value nil}])
-                                         (raise! owner [:saved-project-settings {:project-id project-id}])
-                                         false)}])]])))))
+                                         (raise! owner [:saved-project-settings {:project-id project-id}]))}])]])))))
 
 (defn aws-codedeploy [project-data owner]
   (reify
@@ -1639,13 +1620,13 @@
                             :value "Upload",
                             :type "submit"
                             :disabled (not (and file-content description))
-                            :on-click #(do (raise! owner [:upload-p12 {:project-name project-name
-                                                                       :vcs-type vcs-type
-                                                                       :description description
-                                                                       :password (or password "")
-                                                                       :file-content (base64/encodeString file-content)
-                                                                       :file-name file-name
-                                                                       :on-success (comp clear-form-fn close-modal-fn)}]))}])]])))))
+                            :on-click #(raise! owner [:upload-p12 {:project-name project-name
+                                                                  :vcs-type vcs-type
+                                                                  :description description
+                                                                  :password (or password "")
+                                                                  :file-content (base64/encodeString file-content)
+                                                                  :file-name file-name
+                                                                  :on-success (comp clear-form-fn close-modal-fn)}])}])]])))))
 
 
 (defn p12-key-row [{:keys [project-name vcs-type id filename description uploaded_at]} owner]

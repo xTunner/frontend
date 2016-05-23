@@ -22,11 +22,12 @@
 (defn render-into-document [component]
   (. test-utils (renderIntoDocument component)))
 
-(defn component->content [component args]
-  (-> (om/build component args)
-      (om.dom/render-to-str)
-      (goog.dom/htmlToDocumentFragment)
-      (.-innerText)))
+(defn render-to-string
+  "Much like ReactDOMServer.renderToString, but without needing ReactDOMServer."
+  [component]
+  (let [div (goog.dom/createElement "div")]
+    (om.dom/render component div)
+    (.-innerText div)))
 
 (def ^:dynamic *nav-ch*)
 
