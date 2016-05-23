@@ -31,6 +31,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
+            [goog.dom :as gdom]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [ankha.core :as ankha])
@@ -107,13 +108,20 @@
                         ;; event and call .stopPropagation on the event. That will stop the
                         ;; event from bubbling to here and having its default behavior
                         ;; prevented.
-                        :on-click #(let [target (.-target %)]
-                                     ;; Things that would submit a form are <button>s and
-                                     ;; <input type=submit>s which belong to a form.
-                                     (when (and (or (= (.-tagName target) "BUTTON")
-                                                    (and (= (.-tagName target) "INPUT")
-                                                         (= (.-type target) "submit")))
-                                                (.-form target))
+                        :on-click #(let [target (.-target %)
+                                         button (if (or (= (.-tagName target) "BUTTON")
+                                                        (and (= (.-tagName target) "INPUT")
+                                                             (= (.-type target) "submit")))
+                                                  ;; If the clicked element was a button or an
+                                                  ;; input.submit, that's the button.
+                                                  target
+                                                  ;; Otherwise, it's the button (if any) that
+                                                  ;; contains the clicked element.
+                                                  (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
+                                     ;; Finally, if we found an applicable button and that
+                                     ;; button is associated with a form which it would submit,
+                                     ;; prevent that submission.
+                                     (when (and button (.-form button))
                                        (.preventDefault %)))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
