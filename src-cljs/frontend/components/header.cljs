@@ -124,7 +124,8 @@
               [:a {:on-click #(raise! owner [:show-inspector-toggled])}
                (if inspector? "inspector off " "inspector on ")]
               [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]
-              [:a {:on-click #(raise! owner [:logging-enabled-clicked])}
+              [:a {:on-click #(do (raise! owner [:logging-enabled-clicked])
+                                  nil)}
                (str (if local-storage-logging-enabled?
                       "turn OFF "
                       "turn ON ")

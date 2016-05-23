@@ -165,7 +165,9 @@
                           "selected")
                  :title (project-model/project-name project)}
                 [:i.fa.rotating-chevron {:class (when (expanded-repos repo) "expanded")
-                                         :on-click #(raise! owner [:expand-repo-toggled {:repo repo}])}]
+                                         :on-click #(do
+                                                      (raise! owner [:expand-repo-toggled {:repo repo}])
+                                                      nil)}]
                 [:a.project-name {:href (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
                                                                            :org (:username project)
                                                                            :repo (:reponame project)})
