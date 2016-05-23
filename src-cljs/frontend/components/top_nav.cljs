@@ -27,7 +27,7 @@
       [:a {:class (when selected "selected")
            :role "menuitem"
            :tabIndex "-1"
-           :on-click #(raise! owner [:top-nav-changed {:org org}])}
+           :on-click #(do (raise! owner [:top-nav-changed {:org org}]))}
        login]])))
 
 (defn top-nav [app owner]

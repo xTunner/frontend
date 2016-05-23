@@ -99,22 +99,7 @@
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
                                        ;; The following is meant for the landing ab test to hide old header/footer
-                                       (when (= :pricing (:navigation-point app)) ["pricing"]))
-                        ;; Disable natural form submission. This keeps us from having to
-                        ;; .preventDefault every submit button on every form.
-                        ;;
-                        ;; To let a button actually submit a form naturally, handle its click
-                        ;; event and call .stopPropagation on the event. That will stop the
-                        ;; event from bubbling to here and having its default behavior
-                        ;; prevented.
-                        :on-click #(let [target (.-target %)]
-                                     ;; Things that would submit a form are <button>s and
-                                     ;; <input type=submit>s which belong to a form.
-                                     (when (and (or (= (.-tagName target) "BUTTON")
-                                                    (and (= (.-tagName target) "INPUT")
-                                                         (= (.-type target) "submit")))
-                                                (.-form target))
-                                       (.preventDefault %)))}
+                                       (when (= :pricing (:navigation-point app)) ["pricing"]))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
