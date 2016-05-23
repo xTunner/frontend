@@ -243,7 +243,7 @@
                                     "This project has never been built by CircleCI before. Clicking will cause CircleCI to start building the project."
                                     "This project has been built by CircleCI before. Clicking will cause builds for this project to show up for you in the UI.")
                            :data-spinner true}
-                  (if should-build? "Build project" "Watch project")])]
+                  (if should-build? "Build project" "Follow project")])]
 
                (:following repo)
                [:li.repo-unfollow
@@ -265,7 +265,7 @@
                                                                              :login login
                                                                              :type type)])
                            :data-spinner true}
-                  [:span "Stop watching project"]])]
+                  [:span "Unfollow project"]])]
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
@@ -479,7 +479,7 @@
                                                                   :login login
                                                                   :type type)])
                      :data-spinner true}
-            [:span "Stop watching project"]])])))))
+            [:span "Unfollow project"]])])))))
 
 (defn inaccessible-org-item [data owner]
   (reify
@@ -547,7 +547,9 @@
        [:div#project-listing.project-listing
         [:div.overview
          [:span.big-number "2"]
-         [:div.instruction "Choose a repo below, and we will watch the repository for activity like commits and pull requests. We'll kick off the first build immediately, and new builds will be initiated each time someone pushes commits."]]
+         [:div.instruction
+          [:p "Choose a repo to add to CircleCI. We'll start a new build for you each time someone pushes a new commit."]
+          [:p "You can also follow a repo that's already been added to CircleCI. You'll see your followed projects in Builds and Insights."]]]
          (om/build repo-lists {:user user
                                :repos repos
                                :selected-org selected-org
