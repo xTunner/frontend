@@ -234,11 +234,12 @@
                 (when building?
                   [:div.building "Starting first build..."])
                 (managed-button
-                 [:button {:on-click #(do (raise! owner [:followed-repo (assoc @repo
-                                                                               :login login
-                                                                               :type type)])
-                                          (when should-build?
-                                            (om/set-state! owner :building? true)))
+                 [:button {:on-click #(do
+                                        (raise! owner [:followed-repo (assoc @repo
+                                                                             :login login
+                                                                             :type type)])
+                                        (when should-build?
+                                          (om/set-state! owner :building? true)))
                            :title (if should-build?
                                     "This project has never been built by CircleCI before. Clicking will cause CircleCI to start building the project."
                                     "This project has been built by CircleCI before. Clicking will cause builds for this project to show up for you in the UI.")
