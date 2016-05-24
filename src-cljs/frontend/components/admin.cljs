@@ -220,7 +220,7 @@
                                            (not= (:login current-user) (:login user)))
               scope (-> user :admin_scopes relevant-scope)
               dropdown-options (cond->> (keys scope-labels)
-                                        (not= "read-settings" relevant-scope) (remove #{"read-settings"}))]
+                                        (not= "read-settings" scope) (remove #{"read-settings"}))]
           (html
             [:tr
              [:td (:login user)]
