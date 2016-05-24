@@ -46,9 +46,9 @@
            [:button.btn.btn-primary {:value "Switch user", :type "submit"}
             "Switch user"]]]]]))))
 
-(defn current-seat-usage-p
-  [active-users total-seats]
-  [:p "There " (if (= 1 active-users) "is" "are" ) " currently "
+(defn current-seat-usage [active-users total-seats]
+  [:span
+   "There " (if (= 1 active-users) "is" "are") " currently "
    [:b (pluralize active-users "active user")]
    " out of "
    [:b (pluralize total-seats "licensed user")]
@@ -68,17 +68,17 @@
            "CircleCI "
            (if-let [enterprise-version (get-in app [:render-context :enterprise_version])]
              (list
-               "Enterprise "
-               enterprise-version)
+              "Enterprise "
+              enterprise-version)
              (list
-               "in "
-               (:environment app)))]
+              "in "
+              (:environment app)))]
           "."]
 
-         (conj (current-seat-usage-p (get-in app (conj state/license-path :seat_usage))
-                                     (get-in app (conj state/license-path :seats)))
-               " You can deactivate users in "
-               [:a {:href "/admin/users"} "user settings."])]))))
+         [:p (current-seat-usage (get-in app (conj state/license-path :seat_usage))
+                                 (get-in app (conj state/license-path :seats)))
+          " You can deactivate users in "
+          [:a {:href "/admin/users"} "user settings."]]]))))
 
 (defn builders [builders owner]
   (reify
@@ -207,55 +207,45 @@
 (defn relevant-scope
   [admin-scopes]
   (or (some (set admin-scopes) ["write-settings" "read-settings"])
-    "none"))
-
-(defn admin-in-words
-  [admin-scopes]
-  (case (relevant-scope admin-scopes)
-    "write-settings" "admin"
-    "read-settings" "read-only admin"
-    "none"))
+      "none"))
 
 (defn user [{:keys [user current-user]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [show-suspend-unsuspend? (and (#{"all" "write-settings"} (:admin current-user))
-                                         (not= (:login current-user) (:login user)))]
-        (html
-          [:li
-           (:login user)
-           " "
-           (when show-suspend-unsuspend?
-             (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
-               [:button.btn.btn-xs.btn-default
-                {:on-click #(raise! owner [action (select-keys user [:login])])}
-                (case action
-                  :suspend-user "suspend"
-                  :unsuspend-user "activate")]))
-           " "
-           (let [relevant-scope (-> user :admin_scopes relevant-scope)]
-             (if show-suspend-unsuspend?
-               [:div.btn-group.btn-group-xs
-                [:button.btn.btn-default
-                 (if (= "write-settings" relevant-scope)
-                   {:class "active"}
-                   {:on-click #(raise! owner [:set-admin-scope
+  (let [scope-labels {"write-settings" "Admin"
+                      "read-settings" "Read-only Admin"
+                      "none" "Normal"}]
+    (reify
+      om/IRender
+      (render [_]
+        (let [show-suspend-unsuspend? (and (#{"all" "write-settings"} (:admin current-user))
+                                           (not= (:login current-user) (:login user)))
+              scope (-> user :admin_scopes relevant-scope)
+              dropdown-options (cond->> (keys scope-labels)
+                                        (not= "read-settings" scope) (remove #{"read-settings"}))]
+          (html
+            [:tr
+             [:td (:login user)]
+             [:td (:name user)]
+             [:td
+              [:div.form-inline
+               ;; Admin toggles
+               (if show-suspend-unsuspend?
+                 [:select.form-control
+                  {:on-change #(raise! owner [:set-admin-scope
                                               {:login (:login user)
-                                               :scope :write-settings}])})
-                 "admin"]
-                ;; read-settings generally hidden for until we sort out what we
-                ;; really want the scope precision to be
-                (when (= "read-settings" relevant-scope)
-                  [:button.btn.btn-default.active "read-only admin"])
-                [:button.btn.btn-default
-                 (if (= "none" relevant-scope)
-                   {:class "active"}
-                   {:on-click #(raise! owner [:set-admin-scope
-                                              {:login (:login user)
-                                               :scope :none}])})
-                 "none"]]
-               (-> user :admin_scopes admin-in-words)))])))))
+                                               :scope (-> % .-target .-value keyword)}])
+                   :value scope}
+                  (for [opt dropdown-options]
+                    [:option {:value opt} (scope-labels opt)])]
+                 (-> user :admin_scopes relevant-scope scope-labels))
+               ;; Suspend/unsuspend toggles
+               (when show-suspend-unsuspend?
+                 (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
+                   [:button.secondary
+                    {:style {:margin-left "1em"}
+                     :on-click #(raise! owner [action (select-keys user [:login])])}
+                    (case action
+                      :suspend-user "Suspend"
+                      :unsuspend-user "Activate")]))]]]))))))
 
 (defn users [app owner]
   (reify
@@ -270,42 +260,64 @@
             suspended-users (filter #(and (pos? (:sign_in_count %))
                                           (:suspended %))
                                     all-users)
-            suspended-new-users (filter #(and  (zero? (:sign_in_count %))
-                                               (:suspended %))
+            suspended-new-users (filter #(and (zero? (:sign_in_count %))
+                                              (:suspended %))
                                         all-users)
             inactive-users (filter #(and (zero? (:sign_in_count %))
                                          (not (:suspended %)))
                                    all-users)
             current-user (:current-user app)
             num-licensed-users (get-in app (conj state/license-path :seats))
-            num-active-users (get-in app (conj state/license-path :seat_usage))]
+            num-active-users (get-in app (conj state/license-path :seat_usage))
+            table-header [:thead.head
+                          [:tr
+                           [:th.github-id "GitHub ID"]
+                           [:th.name "Name"]
+                           [:th.permissions "Permissions"]]]]
         (html
-         [:section {:style {:padding-left "10px"}}
-          [:h1 "Users"]
+          [:div.users {:style {:padding-left "10px"}}
+           [:h1 "Users"]
 
-          (current-seat-usage-p num-active-users num-licensed-users)
+           [:div.card.detailed
+            [:h3 "Active"]
+            [:div.details (current-seat-usage num-active-users num-licensed-users)]
+            (when (not-empty active-users)
+              [:table
+               table-header
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     active-users))]])]
 
-          [:p "Suspended users are prevented from logging in and do not count towards the number your license allows.  Inactive users have never logged on and also do not count towards your license limits."]
+           [:div.card.detailed
+            [:h3 "Suspended"]
+            [:div.details "Suspended users are prevented from logging in and do not count towards the number your license allows."]
+            (when (not-empty suspended-users)
+              [:table
+               table-header
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     suspended-users))]])]
 
-          [:h2 "active"]
-          [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :current-user current-user})
-                                        active-users))]
+           ;;Don't show this section if there are no suspended new users to show
+           (when (not-empty suspended-new-users)
+             [:div.card.detailed
+              [:h3 "Suspended New Users"]
+              [:div.details "Suspended new users require an admin to unsuspend them before they can log on and do not count towards the number your license allows."]
+              [:table
+               table-header
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     suspended-new-users))]]])
 
-          [:h2 "suspended"]
-          [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :current-user current-user})
-                                        suspended-users))]
-
-          [:h2 "suspended new users"]
-          [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :current-user current-user})
-                                        suspended-new-users))]
-
-          [:h2 "inactive users"]
-          [:ul (om/build-all user (mapv (fn [u] {:user u
-                                                 :current-user current-user})
-                                        inactive-users))]])))))
+           [:div.card.detailed
+            [:h3 "Inactive Users"]
+            [:div.details "Inactive users have never logged on and also do not count towards your license limits."]
+            (when (not-empty inactive-users)
+              [:table
+               table-header
+               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
+                                                              :current-user current-user})
+                                                     inactive-users))]])]])))))
 
 (defn boolean-setting-entry [item owner]
   (reify
@@ -326,7 +338,7 @@
                  {:class "active"})
                "false"]]
              (when (:updating item)
-                   [:div.loading-spinner common/spinner])]))))
+               [:div.loading-spinner common/spinner])]))))
 
 (defn number-setting-entry [item owner]
   (reify
