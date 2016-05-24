@@ -3,6 +3,7 @@
             [cljs.reader :as reader]
             [clojure.set :as set]
             [frontend.analytics.core :as analytics]
+            [frontend.analytics.utils :as analytics-utils]
             [frontend.analytics.track :as analytics-track]
             [frontend.api :as api]
             [frontend.async :refer [put!]]
@@ -344,7 +345,9 @@
   [target message {:keys [project-id parallelism]} previous-state current-state]
   (when (not= (get-in previous-state state/project-path)
               (get-in current-state state/project-path))
-    (let [api-ch (get-in current-state [:comms :api])
+    (let [previous-project (get-in previous-state state/project-path)
+          new-project (get-in current-state state/project-path)
+          api-ch (get-in current-state [:comms :api])
           project-name (vcs-url/project-name project-id)
           org-name (vcs-url/org-name project-id)
           repo-name (vcs-url/repo-name project-id)
@@ -355,7 +358,13 @@
                  :update-project-parallelism
                  api-ch
                  :params {:parallel parallelism}
-                 :context {:project-id project-id}))))
+                 :context {:project-id project-id})
+    (analytics/track {:event-type :update-parallelism-clicked
+                      :current-state current-state
+                      :properties {:previous-parallelism (project-model/parallelism previous-project)
+                                   :new-parallelism (project-model/parallelism new-project)
+                                   :plan-type (analytics-utils/canonical-plan-type :paid)
+                                   :vcs-type vcs-type}}))))
 
 (defmethod post-control-event! :clear-cache
   [target message {:keys [type project-id]} previous-state current-state]
@@ -552,14 +561,17 @@
 
 
 (defmethod post-control-event! :started-edit-settings-build
-  [target message {:keys [project-id]} previous-state current-state]
-  (let [project-name (vcs-url/project-name project-id)
+  [target message {:keys [vcs-url]} previous-state current-state]
+  (let [project-name (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)
         uuid frontend.async/*uuid*
         comms (get-in current-state [:comms])
-        branch (get-in current-state (conj state/inputs-path :settings-branch) (get-in current-state (conj state/project-path :default_branch)))]
+        default-branch (get-in current-state state/project-default-branch-path)
+        branch (get-in current-state state/input-settings-branch-path default-branch)]
     ;; TODO: edit project settings api call should respond with updated project settings
     (go
-     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+     (let [api-result (<! (ajax/managed-ajax :post (api-path/branch-path vcs-type org-name project-name branch)))]
        (put! (:api comms) [:start-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))))))
 
@@ -637,11 +649,10 @@
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
            (when start-build?
-             (let [build-api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+             (let [build-api-result (<! (ajax/managed-ajax :post (api-path/branch-path vcs-type org repo branch)))]
                (put! (:api comms) [:start-build (:status build-api-result) build-api-result]))))
          (put! (:errors comms) [:api-error api-result]))
        (release-button! uuid (:status api-result))))))
-
 
 (defn save-project-settings
   "Takes the state of project settings inputs and PUTs the new settings to
@@ -850,14 +861,14 @@
 (defmethod post-control-event! :cancel-build-clicked
   [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
+        vcs-type (vcs-url/vcs-type vcs-url)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
+                 (api-path/build-cancel vcs-type org-name repo-name build-num)
                  :cancel-build
                  api-ch
                  :context {:build-id build-id})))
-
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [project-name project-id]} previous-state current-state]
@@ -1003,21 +1014,34 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :activate-plan-trial
-  [target message plan-template previous-state current-state]
+  [target message {:keys [plan-type template org]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
+        {org-name :name vcs-type :vcs_type} org
         api-ch (get-in current-state [:comms :api])
-        {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
+        nav-ch (get-in current-state [:comms :nav])]
+    (analytics/track {:event-type :start-trial-clicked
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :vcs-type vcs-type
+                                   :plan-type (analytics-utils/canonical-plan-type plan-type)
+                                   :template template}})
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :post
                              (gstring/format "/api/dangerzone/organization/%s/%s/plan/trial"
                                              vcs-type
                                              org-name)
-                             :params plan-template))]
+                             :params {plan-type {:template template}}))]
         (put! api-ch [:update-plan
                       (:status api-result)
                       (assoc api-result :context {:org-name org-name
                                                   :vcs-type vcs-type})])
+        (if (and (= :build (get-in current-state state/current-view-path))
+                 (= :success (:status api-result)))
+         (put! nav-ch [:navigate! {:path (routes/v1-project-settings-path {:vcs_type "github"
+                                                                           :org org-name
+                                                                           :repo (get-in current-state state/project-repo-path)
+                                                                           :_fragment "parallel-builds"})}]))
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :save-piggieback-orgs-clicked
@@ -1455,3 +1479,16 @@
   [_ _ _ state]
   (assoc-in state state/dismissed-osx-command-change-banner-path true))
 
+(defmethod control-event :dismiss-trial-offer-banner
+  [_ _ _ state]
+  (assoc-in state state/dismissed-trial-offer-banner true))
+
+(defmethod post-control-event! :dismiss-trial-offer-banner
+  [_ _ {:keys [org plan-type template]} _ current-state]
+  (let [{org-name :name vcs-type :vcs_type} org]
+    (analytics/track {:event-type :dismiss-trial-offer-banner-clicked
+                      :current-state current-state
+                      :properties {:org org-name
+                                   :vcs-type vcs-type
+                                   :plan-type (analytics-utils/canonical-plan-type plan-type)
+                                   :template template}})))

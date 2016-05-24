@@ -334,6 +334,26 @@
          [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-command-change-banner])}
           [:i.material-icons "clear"]]]))))
 
+(defn trial-offer-banner [app owner]
+  (let [event-data {:plan-type :paid
+                    :template :t3
+                    :org (get-in app state/project-plan-org-path)}]
+    (reify
+      om/IDidMount
+      (did-mount [_]
+        ((om/get-shared owner :track-event) {:event-type :trial-offer-banner-impression}))
+      om/IRender
+      (render [_]
+        (html
+          [:div.alert.offer
+           [:div.text
+            [:div "Projects utilizing more containers generally have faster builds and less queueing. "
+             [:a {:on-click #(raise! owner [:activate-plan-trial event-data])}
+              "Click here "]
+             "to activate a free two-week trial of 3 additional containers."]]
+           [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner event-data])}
+            [:i.material-icons "clear"]]])))))
+
 (defn inner-header [app owner]
   (reify
     om/IDisplayName (display-name [_] "Inner Header")
@@ -365,6 +385,13 @@
                           (plan/over-usage-threshold? plan plan/first-warning-threshold)
                           (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
                  (om/build osx-usage-warning-banner plan))))
+           (when (and (not (plan/trial? plan))
+                      (= :build (:navigation-point app))
+                      (not (project-model/oss? project))
+                      (plan/admin? plan)
+                      (feature/enabled? :offer-linux-trial)
+                      (not (get-in app state/dismissed-trial-offer-banner)))
+             (om/build trial-offer-banner app))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user app))])))))
 

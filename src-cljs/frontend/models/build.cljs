@@ -15,7 +15,11 @@
   (str "/" (-> project proj/vcs-type routes/->short-vcs) "/" (proj/project-name project) "/" (:build_num build)))
 
 (defn path-for-parallelism [build]
-  (str "/gh/" (:username build) "/" (:reponame build) "/edit#parallel-builds"))
+  (let [vcs-url (:vcs_url build)]
+    (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type routes/->short-vcs)
+                                      :org (vcs-url/org-name vcs-url)
+                                      :repo (vcs-url/repo-name vcs-url)
+                                      :_fragment "parallel-builds"})))
 
 (defn github-revision [build]
   (when (:vcs_revision build)

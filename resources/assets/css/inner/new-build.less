@@ -46,49 +46,6 @@
 
 // V2 from here on !!!!
 
-.alert {
-  margin-bottom: 15px;
-
-  .alert-icon {
-    padding-right: ((2 / 3) * 15px);
-  }
-
-  &.expanded {
-    padding: 0;
-    border: none;
-
-    &.alert-danger {
-      .alert-header {
-        .flexy();
-        background: lighten(@red, @brand-lighten-ratio-v2 * 0.66);
-        border-bottom: 1px solid @red;
-      }
-
-      .source-name:after {
-        content: "—";
-        padding: 0 4px;
-      }
-
-      hr {
-        border-top-color: @red;
-      }
-    }
-
-    .alert-header {
-      padding: ((2 / 3) * 15px) 15px;
-      text-transform: uppercase;
-    }
-
-    .alert-body {
-      padding: 15px;
-    }
-  }
-
-  &.iconified {
-    .flexy(row);
-  }
-}
-
 @status-badge-height: 25px;
 
 .small-emphasis {

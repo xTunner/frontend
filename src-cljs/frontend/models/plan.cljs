@@ -12,11 +12,8 @@
 
 (def oss-containers 3)
 
-(defn osx-plan-type []
-  "osx")
-
-(defn linux-plan-type []
-  "linux")
+(def osx-plan-type "osx")
+(def linux-plan-type "linux")
 
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
@@ -215,9 +212,10 @@
 
 (defn current-months-osx-usage-% [plan]
   (let [usage-ms (current-months-osx-usage-ms plan)
-        usage-min (/ usage-ms 1000 60)
-        max-min (-> plan :osx :template :max_minutes)]
-    (.round js/Math (* (/ usage-min max-min) 100))))
+        usage-min (/ usage-ms 1000 60)]
+    (if-let [max-min (-> plan :osx :template :max_minutes) ]
+      (.round js/Math (* (/ usage-min max-min) 100))
+      0)))
 
 (def first-warning-threshold 75)
 (def second-warning-threshold 95)
