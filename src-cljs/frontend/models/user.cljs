@@ -41,3 +41,12 @@
 
 (defn bitbucket-authorized? [user]
   (-> user :bitbucket_authorized boolean))
+
+
+(defn deauthorize-github [user]
+  (-> user
+      (assoc :github_oauth_scopes nil)))
+
+(defn deauthorize-bitbucket [user]
+  (-> user
+      (assoc :bitbucket_authorized nil)))

@@ -9,6 +9,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
+            [frontend.models.user :as user-model]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -286,7 +287,8 @@
 (defmethod api-event [:github-repos :failed]
   [target message status {:keys [status-code]} state]
   (cond-> state
-    (= 401 status-code) (assoc-in state/github-authorized-path nil)
+    (= 401 status-code) (update-in state/user-path (fn [user]
+                                                     (user-model/deauthorize-github user)))
     true (assoc-in state/github-repos-loading-path false)))
 
 (defmethod api-event [:bitbucket-repos :success]
@@ -298,7 +300,8 @@
 (defmethod api-event [:bitbucket-repos :failed]
   [target message status {:keys [status-code]} state]
   (cond-> state
-    (= 401 status-code) (assoc-in state/bitbucket-authorized-path false)
+    (= 401 status-code) (update-in state/user-path (fn [user]
+                                                     (user-model/deauthorize-bitbucket user)))
     true (assoc-in state/bitbucket-repos-loading-path false)))
 
 (defn filter-piggieback [orgs]

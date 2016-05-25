@@ -70,8 +70,6 @@
               :selected-sorting :alphabetical}})
 
 (def user-path [:current-user])
-(def bitbucket-authorized-path (conj user-path :bitbucket_authorized))
-(def github-authorized-path (conj user-path :github_oauth_scopes))
 
 (def build-data-path [:current-build-data])
 (def build-path [:current-build-data :build])
