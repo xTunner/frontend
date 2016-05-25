@@ -23,9 +23,16 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [cljs-ajax "0.3.13"]
-                 [cljsjs/react-with-addons "0.13.3-0"]
+                 [cljsjs/react-with-addons "0.14.5-0"]
+                 [cljsjs/react-dom "0.14.5-0"]
                  [cljsjs/c3 "0.4.10-0"]
-                 [org.omcljs/om "0.9.0"]
+
+                 ;; The Om team assures us that the alpha label refers only to
+                 ;; om.next. The old Om (om.core) is production-ready in the
+                 ;; 1.0.0 alphas. We need 1.0 for React 0.14, which in turn is
+                 ;; required for devcards.
+                 [org.omcljs/om "1.0.0-alpha34"]
+
                  [hiccups "0.3.0"]
                  [sablono "0.3.6"]
                  [secretary "1.2.2"]
@@ -81,14 +88,24 @@
         :paths {:karma "./node_modules/karma/bin/karma"}}
 
   :cljsbuild {:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
-                             :figwheel {:websocket-host "prod.circlehost"
-                                        :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
+                             ;; Port 4444 is proxied (with SSL) to 3449 (the Figwheel server port).
+                             :figwheel {:websocket-url "wss://prod.circlehost:4444/figwheel-ws"
                                         :on-jsload "frontend.core/reinstall-om!"}
                              :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                         :output-dir "resources/public/cljs/out"
                                         :optimizations :none
                                         ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
                                         :recompile-dependents false}}
+
+                       :devcards {:source-paths ["src-cljs" "test-cljs"]
+                                   :figwheel {:devcards true
+                                              :websocket-url "wss://prod.circlehost:4444/figwheel-ws"}
+                                   :compiler {:main "frontend.core"
+                                              :asset-path "cljs/devcards-out"
+                                              :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
+                                              :output-dir "resources/public/cljs/devcards-out"
+                                              :optimizations :none
+                                              :recompile-dependents false}}
 
                        ;; This is the build normally used for testing on
                        ;; development machines. Use it by running lein doo.
@@ -117,10 +134,11 @@
                                          :output-dir "resources/public/cljs/test"
                                          :optimizations :advanced
                                          :main frontend.test-runner
-                                         :foreign-libs [{:provides ["cljsjs.react"]
-                                                         ;; Unminified React necessary for TestUtils addon.
-                                                         :file "resources/components/react/react-with-addons.js"
-                                                         :file-min "resources/components/react/react-with-addons.js"}]
+                                         ;; :advanced uses the minified versions of libraries (:file-min), but the
+                                         ;; minified React doesn't include React.addons.TestUtils.
+                                         :foreign-libs [{:provides ["cljs.react"]
+                                                         :file "cljsjs/development/react-with-addons.inc.js"
+                                                         :file-min "cljsjs/development/react-with-addons.inc.js"}]
                                          :externs ["test-js/externs.js"
                                                    "src-cljs/js/pusher-externs.js"
                                                    "src-cljs/js/ci-externs.js"
@@ -158,23 +176,4 @@
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
                    :dependencies [[figwheel-sidecar "0.5.0-2"]
                                   [com.cemerick/piggieback "0.2.1"]
-                                  [org.clojure/tools.nrepl "0.2.12"]]}
-
-             ;; Devcards require React 0.14, and therefore Om 1.0. Until that's
-             ;; production-ready and released, we can use the alpha in a
-             ;; separate profile.
-             :devcards {:dependencies [[org.omcljs/om "1.0.0-alpha30"]
-                                       [cljsjs/react-with-addons "0.14.3-0"]
-                                       [cljsjs/react-dom "0.14.3-1"]]
-                        :figwheel ^:replace {:server-port 3450
-                                             :css-dirs ["resources/assets/css"]}
-                        :cljsbuild {:builds {:devcards {:source-paths ["src-cljs" "test-cljs"]
-                                                        :figwheel {:devcards true
-                                                                   :websocket-host "prod.circlehost"
-                                                                   :websocket-url "wss://prod.circlehost:4445/figwheel-ws"}
-                                                        :compiler {:main "frontend.core"
-                                                                   :asset-path "cljs/devcards-out"
-                                                                   :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
-                                                                   :output-dir "resources/public/cljs/devcards-out"
-                                                                   :optimizations :none
-                                                                   :recompile-dependents false}}}}}})
+                                  [org.clojure/tools.nrepl "0.2.12"]]}})

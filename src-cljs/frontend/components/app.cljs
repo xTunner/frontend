@@ -31,6 +31,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
+            [goog.dom :as gdom]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [ankha.core :as ankha])
@@ -99,7 +100,29 @@
              [:div#app {:class (concat [(if inner? "inner" "outer")]
                                        (when-not logged-in? ["aside-nil"])
                                        ;; The following is meant for the landing ab test to hide old header/footer
-                                       (when (= :pricing (:navigation-point app)) ["pricing"]))}
+                                       (when (= :pricing (:navigation-point app)) ["pricing"]))
+                        ;; Disable natural form submission. This keeps us from having to
+                        ;; .preventDefault every submit button on every form.
+                        ;;
+                        ;; To let a button actually submit a form naturally, handle its click
+                        ;; event and call .stopPropagation on the event. That will stop the
+                        ;; event from bubbling to here and having its default behavior
+                        ;; prevented.
+                        :on-click #(let [target (.-target %)
+                                         button (if (or (= (.-tagName target) "BUTTON")
+                                                        (and (= (.-tagName target) "INPUT")
+                                                             (= (.-type target) "submit")))
+                                                  ;; If the clicked element was a button or an
+                                                  ;; input.submit, that's the button.
+                                                  target
+                                                  ;; Otherwise, it's the button (if any) that
+                                                  ;; contains the clicked element.
+                                                  (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
+                                     ;; Finally, if we found an applicable button and that
+                                     ;; button is associated with a form which it would submit,
+                                     ;; prevent that submission.
+                                     (when (and button (.-form button))
+                                       (.preventDefault %)))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
