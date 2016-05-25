@@ -727,6 +727,7 @@
             project-id (project-model/id project)
             inputs (inputs/get-inputs-from-app-state owner)
             settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
+        (js/console.log "SETTINGS: " (clj->js settings))
         (html
          [:section
           [:article
@@ -739,7 +740,8 @@
                                     [:a {:href "https://my.slack.com/services/new/circleci"}
                                      "CircleCI Integration"]
                                     " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
-                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
+                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}
+                                       {:field :slack_channel_override :placeholder "Room Override"}]
                               :show-fixed-failed? true
                               :settings-keys project-model/slack-keys}
 
