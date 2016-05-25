@@ -562,10 +562,11 @@
 
 (defn link-to-retry-source [build]
   (when-let [retry-id (:retry_of build)]
-    [:a {:href (gstring/format "/gh/%s/%s/%d"
-                               (:username build)
-                               (:reponame build)
-                               retry-id)}
+    [:a {:href (routes/v1-build-path
+                 (vcs-url/vcs-type (:vcs_url build))
+                 (:username build)
+                 (:reponame build)
+                 retry-id)}
      retry-id]))
 
 (defn trigger-html [build]

@@ -4,14 +4,11 @@ dependencies:
   post:
     - node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
     - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
-    - set -o pipefail; case $CIRCLE_NODE_INDEX in 0) lein cljsbuild once test;; 1) lein cljsbuild once production;; esac |& tee cljsbuild.log:
-        parallel: true
+    - set -o pipefail; lein cljsbuild once test production |& tee cljsbuild.log:
         timeout: 600
     # Fail if there are any warnings in the cljsbuild output that *aren't* cljs-time.format/constructor.
     # See: https://github.com/andrewmcveigh/cljs-time/issues/57
     - "! grep WARNING < cljsbuild.log | grep -v 'WARNING: Use of undeclared Var cljs-time.format/constructor'"
-    - rsync -avz --ignore-existing node1:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/production ./resources/public/cljs/: {parallel: true}
-    - rsync -avz --ignore-existing node0:./$CIRCLE_PROJECT_REPONAME/resources/public/cljs/test ./resources/public/cljs/: {parallel: true}
     - lein run -m frontend.tasks.http/precompile-assets
 
 

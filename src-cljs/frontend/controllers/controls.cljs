@@ -561,14 +561,17 @@
 
 
 (defmethod post-control-event! :started-edit-settings-build
-  [target message {:keys [project-id]} previous-state current-state]
-  (let [project-name (vcs-url/project-name project-id)
+  [target message {:keys [vcs-url]} previous-state current-state]
+  (let [project-name (vcs-url/project-name vcs-url)
+        org-name (vcs-url/org-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)
         uuid frontend.async/*uuid*
         comms (get-in current-state [:comms])
-        branch (get-in current-state (conj state/inputs-path :settings-branch) (get-in current-state (conj state/project-path :default_branch)))]
+        default-branch (get-in current-state state/project-default-branch-path)
+        branch (get-in current-state state/input-settings-branch-path default-branch)]
     ;; TODO: edit project settings api call should respond with updated project settings
     (go
-     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+     (let [api-result (<! (ajax/managed-ajax :post (api-path/branch-path vcs-type org-name project-name branch)))]
        (put! (:api comms) [:start-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))))))
 
@@ -646,11 +649,10 @@
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
            (when start-build?
-             (let [build-api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/tree/%s" project-name (gstring/urlEncode branch))))]
+             (let [build-api-result (<! (ajax/managed-ajax :post (api-path/branch-path vcs-type org repo branch)))]
                (put! (:api comms) [:start-build (:status build-api-result) build-api-result]))))
          (put! (:errors comms) [:api-error api-result]))
        (release-button! uuid (:status api-result))))))
-
 
 (defn save-project-settings
   "Takes the state of project settings inputs and PUTs the new settings to
@@ -859,14 +861,14 @@
 (defmethod post-control-event! :cancel-build-clicked
   [target message {:keys [vcs-url build-num build-id]} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)
+        vcs-type (vcs-url/vcs-type vcs-url)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :post
-                 (gstring/format "/api/v1/project/%s/%s/%s/cancel" org-name repo-name build-num)
+                 (api-path/build-cancel vcs-type org-name repo-name build-num)
                  :cancel-build
                  api-ch
                  :context {:build-id build-id})))
-
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [project-name project-id]} previous-state current-state]
