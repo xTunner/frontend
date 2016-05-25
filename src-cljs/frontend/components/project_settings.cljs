@@ -721,7 +721,8 @@
       {:show-slack-channel-override (-> project-data :project :slack_channel_override seq nil? not)})
     om/IDidMount
     (did-mount [_]
-      (utils/equalize-size (om/get-node owner) "chat-room-item"))
+      (utils/equalize-size (om/get-node owner) "chat-room-item")
+      (utils/tooltip "#slack-channel-override"))
     om/IDidUpdate
     (did-update [_ _ _]
       (utils/equalize-size (om/get-node owner) "chat-room-item"))
@@ -747,14 +748,15 @@
                                           " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
                                          [:div
                                           [:label
-                                           {:for "slack-channel-override"}
-                                           [:input#slack-channel-override
+                                           [:input
                                             {:type "checkbox"
                                              :checked (:show-slack-channel-override state)
                                              :on-change #(do (om/update-state! owner :show-slack-channel-override not)
                                                              (utils/edit-input owner (conj state/project-path :slack_channel_override) %
                                                                                :value ""))}
-                                            [:span "Override room"]]]])
+                                            [:span "Override room"]
+                                            [:i.fa.fa-question-circle {:id "slack-channel-override"
+                                                                       :title "If you want to send notifications to a different channel than the webhook URL was created for, enter the channel ID or channel name below."}]]]])
                               :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}
                                        (when (:show-slack-channel-override state)
                                          {:field :slack_channel_override :placeholder "Room"})]
