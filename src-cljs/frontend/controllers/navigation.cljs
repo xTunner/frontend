@@ -378,7 +378,7 @@
                  api-ch
                  :context {:project-name project-name}))
 
-    (cond (and (= subpage :parallel-builds)
+    (cond (and (or (= subpage :parallel-builds) (= subpage :build-environment))
                (not (get-in current-state state/project-plan-path)))
           (ajax/ajax :get
                      (api-path/project-plan vcs-type org repo)
