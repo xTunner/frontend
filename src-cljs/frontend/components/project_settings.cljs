@@ -727,8 +727,6 @@
             project-id (project-model/id project)
             inputs (inputs/get-inputs-from-app-state owner)
             settings (state-utils/merge-inputs project inputs project-model/notification-keys)]
-        (js/console.log "STATE: " (clj->js state))
-        (js/console.log "SETTINGS: " (clj->js settings))
         (html
          [:section
           [:article
