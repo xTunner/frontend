@@ -287,8 +287,7 @@
 (defmethod api-event [:github-repos :failed]
   [target message status {:keys [status-code]} state]
   (cond-> state
-    (= 401 status-code) (update-in state/user-path (fn [user]
-                                                     (user-model/deauthorize-github user)))
+    (= 401 status-code) (update-in state/user-path user-model/deauthorize-github)
     true (assoc-in state/github-repos-loading-path false)))
 
 (defmethod api-event [:bitbucket-repos :success]
@@ -300,8 +299,7 @@
 (defmethod api-event [:bitbucket-repos :failed]
   [target message status {:keys [status-code]} state]
   (cond-> state
-    (= 401 status-code) (update-in state/user-path (fn [user]
-                                                     (user-model/deauthorize-bitbucket user)))
+    (= 401 status-code) (update-in state/user-path user-model/deauthorize-bitbucket)
     true (assoc-in state/bitbucket-repos-loading-path false)))
 
 (defn filter-piggieback [orgs]
