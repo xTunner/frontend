@@ -78,7 +78,7 @@
             controls-ch (om/get-shared owner [:comms :controls])]
         (html
          [:article
-          [:div.project-setting-watch {:class (when-not (:followed project) "unwatched")}
+          [:div
            (if (:followed project)
              (list
               [:h2 "You're following " (vcs-url/project-name vcs-url)]
