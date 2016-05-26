@@ -9,6 +9,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
+            [frontend.models.user :as user-model]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -283,11 +284,23 @@
       (api/get-github-repos (get-in state [:comms :api]) :page (inc page))
       (update-in state state/repos-path #(into % (:resp args))))))
 
+(defmethod api-event [:github-repos :failed]
+  [target message status {:keys [status-code]} state]
+  (cond-> state
+    (= 401 status-code) (update-in state/user-path user-model/deauthorize-github)
+    true (assoc-in state/github-repos-loading-path false)))
+
 (defmethod api-event [:bitbucket-repos :success]
   [target message status args state]
   (-> state
-      (assoc-in state/bitbucket-repos-loading-path false)
+      (assoc-in state/bitbucket-repos-loading-path nil)
       (update-in state/repos-path #(into % (:resp args)))))
+
+(defmethod api-event [:bitbucket-repos :failed]
+  [target message status {:keys [status-code]} state]
+  (cond-> state
+    (= 401 status-code) (update-in state/user-path user-model/deauthorize-bitbucket)
+    true (assoc-in state/bitbucket-repos-loading-path false)))
 
 (defn filter-piggieback [orgs]
   "Return subset of orgs that aren't covered by piggyback plans."
