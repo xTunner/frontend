@@ -73,6 +73,11 @@
   (crumb-node {:name "Add Projects"
                :path (routes/v1-add-projects)}))
 
+(defmethod render-crumb :projects
+  [attrs]
+  (crumb-node {:name "All Projects"
+               :path (routes/v1-projects)}))
+
 (defmethod render-crumb :invite-teammates
   [attrs]
   (crumb-node {:name "Invite Teammates"

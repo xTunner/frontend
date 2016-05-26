@@ -23,6 +23,7 @@
             [frontend.components.org-settings :as org-settings]
             [frontend.components.common :as common]
             [frontend.components.top-nav :as top-nav]
+            [frontend.components.pages.projects :as projects-page]
             [frontend.api :as api]
             [frontend.config :as config]
             [frontend.instrumentation :as instrumentation]
@@ -56,6 +57,7 @@
     :project-settings project-settings/project-settings
     :org-settings org-settings/org-settings
     :account account/account
+    :projects projects-page/page
 
     :admin-settings admin/admin-settings
     :build-state admin/build-state

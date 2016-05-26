@@ -278,6 +278,15 @@
       (api/get-bitbucket-repos api-ch)))
   (set-page-title! "Add projects"))
 
+(defmethod navigated-to :projects
+  [history-imp navigation-point args state]
+  (let [current-user (get-in state state/user-path)]
+    (-> state
+        (assoc state/current-view navigation-point
+               state/navigation-data (assoc args :show-aside-menu? false))
+        (assoc-in state/crumbs-path [{:type :projects}])
+        )))
+
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
   (-> state
