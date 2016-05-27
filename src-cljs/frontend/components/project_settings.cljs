@@ -676,7 +676,8 @@
        (when show-fixed-failed?
          (om/build fixed-failed-input {:settings settings :field (keyword (str service-id "_notify_prefs"))}))]
       [:section
-       (for [{:keys [field placeholder]} inputs]
+       (for [{:keys [field placeholder] :as input} inputs
+             :when input]
          (list
           [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
                    :value (str (get settings field))
@@ -710,14 +711,18 @@
 
 (defn notifications [project-data owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:show-slack-channel-override (-> project-data :project :slack_channel_override seq nil? not)})
     om/IDidMount
     (did-mount [_]
-      (utils/equalize-size (om/get-node owner) "chat-room-item"))
+      (utils/equalize-size (om/get-node owner) "chat-room-item")
+      (utils/tooltip "#slack-channel-override"))
     om/IDidUpdate
     (did-update [_ _ _]
       (utils/equalize-size (om/get-node owner) "chat-room-item"))
-    om/IRender
-    (render [_]
+    om/IRenderState
+    (render-state [_ state]
       (let [project (:project project-data)
             project-id (project-model/id project)
             inputs (inputs/get-inputs-from-app-state owner)
@@ -730,11 +735,24 @@
             [:a (open-ext {:href "https://circleci.com/docs/configuration#per-branch-notifications"}) "see our documentation"] "."]
            [:div.chat-rooms
             (for [chat-spec [{:service "Slack"
-                              :doc [:p "To get your Webhook URL, visit Slack's "
-                                    [:a {:href "https://my.slack.com/services/new/circleci"}
-                                     "CircleCI Integration"]
-                                    " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
-                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}]
+                              :doc (list [:p "To get your Webhook URL, visit Slack's "
+                                          [:a {:href "https://my.slack.com/services/new/circleci"}
+                                           "CircleCI Integration"]
+                                          " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
+                                         [:div
+                                          [:label
+                                           [:input
+                                            {:type "checkbox"
+                                             :checked (:show-slack-channel-override state)
+                                             :on-change #(do (om/update-state! owner :show-slack-channel-override not)
+                                                             (utils/edit-input owner (conj state/project-path :slack_channel_override) %
+                                                                               :value ""))}
+                                            [:span "Override room"]
+                                            [:i.fa.fa-question-circle {:id "slack-channel-override"
+                                                                       :title "If you want to send notifications to a different channel than the webhook URL was created for, enter the channel ID or channel name below."}]]]])
+                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}
+                                       (when (:show-slack-channel-override state)
+                                         {:field :slack_channel_override :placeholder "Room"})]
                               :show-fixed-failed? true
                               :settings-keys project-model/slack-keys}
 
