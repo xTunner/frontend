@@ -57,7 +57,7 @@
          (infrastructure-fail-message owner)
          [:div.alert-wrap
           "If you continue to get stuck, we suggest checking out our "
-          [:a (open-ext {:href "/docs/troubleshooting"})
+          [:a (open-ext {:href "https://circleci.com/docs/troubleshooting/"})
            "docs"]
           " and/or our "
           [:a {:href "https://discuss.circleci.com/"}
