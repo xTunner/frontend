@@ -118,11 +118,11 @@
              (if github-authorized?
                (missing-org-info owner)
                [:div
-                [:p "Github is not connected to your account yet. To connect it, click the button below:"]
+                [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
                 [:a.btn.btn-primary {:href (gh-utils/auth-url)
                                      :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
                                                                                      :properties {:vcs-type vcs-type}})}
-                 "Authorize with Github"]]))
+                 "Authorize with GitHub"]]))
            (when (and bitbucket-active?
                       (not bitbucket-authorized?))
              [:div
