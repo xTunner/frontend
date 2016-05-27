@@ -53,53 +53,40 @@
            "github" [:i.octicon.octicon-mark-github]
            "bitbucket" [:i.fa.fa-bitbucket])]])]))
 
-(defn org-picker-without-bitbucket [params owner]
+(defn org-picker-without-bitbucket [{:keys [orgs user selected-org]} owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
     om/IRender
     (render [_]
-      (let [{:keys [user selected-org repos]} params]
-        (html
-         [:div
-          [:div.overview
-           [:span.big-number "1"]
-           [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-          [:div.organizations
-           [:h4 "Your accounts"]
-           [:ul.organizations
-            ;; here we display you, then all of your organizations, then all of the owners of
-            ;; repos that aren't organizations and aren't you. We do it this way because the
-            ;; organizations route is much faster than the repos route. We show them
-            ;; in this order (rather than e.g. putting the whole thing into a set)
-            ;; so that new ones don't jump up in the middle as they're loaded.
-            (let [org-names (->> user :organizations (map :login) set)
-                  in-orgs? (comp org-names :login)]
-              (->> repos
-                   (map :owner)
-                   (remove in-orgs?)
-                   set
-                   (concat (->> user :organizations (sort-by :org)))
-                   (filter vcs-github?)
-                   (map (fn [org] (organization org selected-org owner)))))]
-           (when (get-in user [:repos-loading :github])
-             [:div.orgs-loading
-              [:div.loading-spinner common/spinner]])
-           (missing-org-info owner)]])))))
+      (html
+       [:div
+        [:div.overview
+         [:span.big-number "1"]
+         [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
+        [:div.organizations
+         [:h4 "Your accounts"]
+         [:ul.organizations
+          (->> orgs
+               (filter vcs-github?)
+               (map (fn [org] (organization org selected-org owner))))]
+         (when (get-in user [:repos-loading :github])
+           [:div.orgs-loading
+            [:div.loading-spinner common/spinner]])
+         (missing-org-info owner)]]))))
 
-(defn org-picker-with-bitbucket [params owner]
+(defn org-picker-with-bitbucket [{:keys [orgs user selected-org tab]} owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
     om/IRender
     (render [_]
-      (let [{:keys [user selected-org repos tab]} params
-            github-authorized? (user-model/github-authorized? user)
+      (let [github-authorized? (user-model/github-authorized? user)
             bitbucket-authorized? (user-model/bitbucket-authorized? user)
-            vcs-type (cond
-                       tab tab
-                       github-authorized? "github"
-                       :else "bitbucket")
-            github-active? (= "github" vcs-type)
-            bitbucket-active? (= "bitbucket" vcs-type)]
+            selected-vcs-type (cond
+                                tab tab
+                                github-authorized? "github"
+                                :else "bitbucket")
+            github-active? (= "github" selected-vcs-type)
+            bitbucket-active? (= "bitbucket" selected-vcs-type)]
         (html
          [:div
           [:div.overview
@@ -111,7 +98,7 @@
                                          {:name "bitbucket"
                                           :icon (html [:i.fa.fa-bitbucket])
                                           :label "Bitbucket"}]
-                                  :selected-tab-name vcs-type
+                                  :selected-tab-name selected-vcs-type
                                   :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})
           [:div.organizations.card
            (when github-active?
@@ -121,7 +108,7 @@
                 [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
                 [:a.btn.btn-primary {:href (gh-utils/auth-url)
                                      :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                     :properties {:vcs-type vcs-type}})}
+                                                                                     :properties {:vcs-type selected-vcs-type}})}
                  "Authorize with GitHub"]]))
            (when (and bitbucket-active?
                       (not bitbucket-authorized?))
@@ -129,28 +116,13 @@
               [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
               [:a.btn.btn-primary {:href (bitbucket/auth-url)
                                    :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                   :properties {:vcs-type vcs-type}})}
+                                                                                   :properties {:vcs-type selected-vcs-type}})}
                "Authorize with Bitbucket"]])
            [:ul.organizations
-            ;; here we display you, then all of your organizations, then all of the owners of
-            ;; repos that aren't organizations and aren't you. We do it this way because the
-            ;; organizations route is much faster than the repos route. We show them
-            ;; in this order (rather than e.g. putting the whole thing into a set)
-            ;; so that new ones don't jump up in the middle as they're loaded.
-            (let [user-org-keys (->> user
-                                     :organizations
-                                     (map (juxt :vcs_type :login))
-                                     set)
-                  user-org? (comp user-org-keys (juxt :vcs_type :login))
-                  all-orgs (concat (sort-by :org (:organizations user))
-                                   (->> repos
-                                        (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs-type)))
-                                        (remove user-org?)
-                                        distinct))]
-              (->> all-orgs
-                   (filter (partial select-vcs-type vcs-type))
-                   (map (fn [org] (organization org selected-org owner)))))]
-           (when (get-in user [:repos-loading (keyword vcs-type)])
+            (->> orgs
+                 (filter (partial select-vcs-type selected-vcs-type))
+                 (map (fn [org] (organization org selected-org owner))))]
+           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])]])))))
 
@@ -167,11 +139,30 @@
   :selected-org - The currently selected org.
   :tab          - (optional) The VCS tab to display (\"github\" or \"bitbucket\").
                   Defaults to \"github\"."
-  [{:keys [user] :as params} owner]
+  [{:keys [user selected-org repos tab] :as params} owner]
   (reify
     om/IRender
     (render [_]
-      (om/build (if (vcs-utils/bitbucket-enabled? user)
-                  org-picker-with-bitbucket
-                  org-picker-without-bitbucket)
-                params))))
+      ;; We display you, then all of your organizations, then all of the owners of
+      ;; repos that aren't organizations and aren't you. We do it this way because the
+      ;; organizations route is much faster than the repos route. We show them
+      ;; in this order (rather than e.g. putting the whole thing into a set)
+      ;; so that new ones don't jump up in the middle as they're loaded.
+      (let [user-org-keys (->> user
+                               :organizations
+                               (map (juxt :vcs_type :login))
+                               set)
+            user-org? (comp user-org-keys (juxt :vcs_type :login))
+            orgs (concat (sort-by :org (:organizations user))
+                         (->> repos
+                              (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs_type)))
+                              (remove user-org?)
+                              distinct))]
+        (if (vcs-utils/bitbucket-enabled? user)
+          (om/build org-picker-with-bitbucket {:orgs orgs
+                                               :user user
+                                               :selected-org selected-org
+                                               :tab tab})
+          (om/build org-picker-without-bitbucket {:orgs orgs
+                                                  :user user
+                                                  :selected-org selected-org}))))))
