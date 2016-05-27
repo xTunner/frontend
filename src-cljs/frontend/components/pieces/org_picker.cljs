@@ -56,9 +56,6 @@
 (defn org-picker-without-bitbucket [params owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
       (let [{:keys [user selected-org repos]} params]
@@ -92,9 +89,6 @@
 (defn org-picker-with-bitbucket [params owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
       (let [{:keys [user selected-org repos tab]} params
