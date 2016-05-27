@@ -393,8 +393,8 @@
        [:div.app-aside.org-listing
         (om/build org-picker/picker
                   {:user user
-                   :settings settings
                    :repos repos
+                   :selected-org selected-org
                    :tab tab})]
        [:div#project-listing.project-listing
         [:div.overview

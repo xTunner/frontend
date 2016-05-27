@@ -32,13 +32,13 @@
     "Refresh this list"]
    " after you have updated permissions."])
 
-(defn organization [org settings owner]
+(defn organization [org selected-org owner]
   (let [login (:login org)
         type (if (:org org) :org :user)
         vcs-type (:vcs_type org)
         selected-org-view {:login login :type type :vcs-type vcs-type}]
     [:li.organization {:on-click #(raise! owner [:selected-add-projects-org selected-org-view])
-                       :class (when (= selected-org-view (get-in settings [:add-projects :selected-org])) "active")}
+                       :class (when (= selected-org-view selected-org) "active")}
      [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
             :height 50}]
      [:div.orgname login]
@@ -61,7 +61,7 @@
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
-      (let [{:keys [user settings repos]} params]
+      (let [{:keys [user selected-org repos]} params]
         (html
          [:div
           [:div.overview
@@ -83,7 +83,7 @@
                    set
                    (concat (->> user :organizations (sort-by :org)))
                    (filter vcs-github?)
-                   (map (fn [org] (organization org settings owner)))))]
+                   (map (fn [org] (organization org selected-org owner)))))]
            (when (get-in user [:repos-loading :github])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])
@@ -97,7 +97,7 @@
       (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
     om/IRender
     (render [_]
-      (let [{:keys [user settings repos tab]} params
+      (let [{:keys [user selected-org repos tab]} params
             github-authorized? (user-model/github-authorized? user)
             bitbucket-authorized? (user-model/bitbucket-authorized? user)
             vcs-type (cond
@@ -155,7 +155,7 @@
                                         distinct))]
               (->> all-orgs
                    (filter (partial select-vcs-type vcs-type))
-                   (map (fn [org] (organization org settings owner)))))]
+                   (map (fn [org] (organization org selected-org owner)))))]
            (when (get-in user [:repos-loading (keyword vcs-type)])
              [:div.orgs-loading
               [:div.loading-spinner common/spinner]])]])))))
@@ -164,13 +164,15 @@
   "Shows an org picker. The picker will include a Bitbucket tab if Bitbucket is
   enabled for the given user. Accepts the following params:
 
-  :user     - The user whose orgs we're showing. We'll display that user's :organizations.
-              We'll also decide whether to show a Bitbucket tab based on this user.
-  :settings - The page settings. Used to find the currently selected org.
-  :repos    - The repos the user has access to on the VCS provider. We'll also display the
-              orgs of these repos, even if they're not in the user's :organizations.
-  :tab      - (optional) The VCS tab to display (\"github\" or \"bitbucket\"). Defaults to
-              \"github\"."
+  :user         - The user whose orgs we're showing. We'll display that user's
+                  :organizations. We'll also decide whether to show a Bitbucket tab based
+                  on this user.
+  :repos        - The repos the user has access to on the VCS provider. We'll also display
+                  the orgs of these repos, even if they're not in the user's
+                  :organizations.
+  :selected-org - The currently selected org.
+  :tab          - (optional) The VCS tab to display (\"github\" or \"bitbucket\").
+                  Defaults to \"github\"."
   [{:keys [user] :as params} owner]
   (reify
     om/IRender

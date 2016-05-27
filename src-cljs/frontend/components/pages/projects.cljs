@@ -14,5 +14,5 @@
         (html
          [:div (om/build org-picker/picker
                          {:user user
-                          :settings settings
-                          :repos repos})])))))
+                          :repos repos
+                          :selected-org selected-org})])))))
