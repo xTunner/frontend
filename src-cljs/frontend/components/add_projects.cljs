@@ -391,11 +391,25 @@
       [:hr]
       [:div.org-repo-container
        [:div.app-aside.org-listing
-        (om/build org-picker/picker
-                  {:user user
-                   :repos repos
-                   :selected-org selected-org
-                   :tab tab})]
+        ;; We display you, then all of your organizations, then all of the owners of
+        ;; repos that aren't organizations and aren't you. We do it this way because the
+        ;; organizations route is much faster than the repos route. We show them
+        ;; in this order (rather than e.g. putting the whole thing into a set)
+        ;; so that new ones don't jump up in the middle as they're loaded.
+        (let [user-org-keys (->> user
+                                 :organizations
+                                 (map (juxt :vcs_type :login))
+                                 set)
+              user-org? (comp user-org-keys (juxt :vcs_type :login))
+              orgs (concat (sort-by :org (:organizations user))
+                           (->> repos
+                                (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs_type)))
+                                (remove user-org?)
+                                distinct))]
+          (om/build org-picker/picker {:orgs orgs
+                                       :selected-org selected-org
+                                       :user user
+                                       :tab tab}))]
        [:div#project-listing.project-listing
         [:div.overview
          [:span.big-number "2"]

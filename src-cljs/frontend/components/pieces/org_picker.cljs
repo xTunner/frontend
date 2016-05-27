@@ -127,42 +127,25 @@
               [:div.loading-spinner common/spinner]])]])))))
 
 (defn picker
-  "Shows an org picker. The picker will include a Bitbucket tab if Bitbucket is
-  enabled for the given user. Accepts the following params:
+  "Shows an org picker. The picker will include a Bitbucket tab if Bitbucket is enabled
+  for the given user. Accepts the following params:
 
-  :user         - The user whose orgs we're showing. We'll display that user's
-                  :organizations. We'll also decide whether to show a Bitbucket tab based
-                  on this user.
-  :repos        - The repos the user has access to on the VCS provider. We'll also display
-                  the orgs of these repos, even if they're not in the user's
-                  :organizations.
+  :orgs         - The orgs to display.
   :selected-org - The currently selected org.
+  :user         - The user whose orgs we're showing, which is to say, the current user. We
+                  use the user data to decide whether  Bitbucket is enabled and whether
+                  the orgs are still loading and need a spinner.
   :tab          - (optional) The VCS tab to display (\"github\" or \"bitbucket\").
                   Defaults to \"github\"."
-  [{:keys [user selected-org repos tab] :as params} owner]
+  [{:keys [orgs user selected-org tab]} owner]
   (reify
     om/IRender
     (render [_]
-      ;; We display you, then all of your organizations, then all of the owners of
-      ;; repos that aren't organizations and aren't you. We do it this way because the
-      ;; organizations route is much faster than the repos route. We show them
-      ;; in this order (rather than e.g. putting the whole thing into a set)
-      ;; so that new ones don't jump up in the middle as they're loaded.
-      (let [user-org-keys (->> user
-                               :organizations
-                               (map (juxt :vcs_type :login))
-                               set)
-            user-org? (comp user-org-keys (juxt :vcs_type :login))
-            orgs (concat (sort-by :org (:organizations user))
-                         (->> repos
-                              (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs_type)))
-                              (remove user-org?)
-                              distinct))]
-        (if (vcs-utils/bitbucket-enabled? user)
-          (om/build org-picker-with-bitbucket {:orgs orgs
-                                               :user user
-                                               :selected-org selected-org
-                                               :tab tab})
-          (om/build org-picker-without-bitbucket {:orgs orgs
-                                                  :user user
-                                                  :selected-org selected-org}))))))
+      (if (vcs-utils/bitbucket-enabled? user)
+        (om/build org-picker-with-bitbucket {:orgs orgs
+                                             :selected-org selected-org
+                                             :user user
+                                             :tab tab})
+        (om/build org-picker-without-bitbucket {:orgs orgs
+                                                :selected-org selected-org
+                                                :user user})))))

@@ -8,11 +8,10 @@
     om/IRender
     (render [_]
       (let [user (:current-user data)
-            repos (:repos user)
             settings (:settings data)
             selected-org (get-in settings [:add-projects :selected-org])]
         (html
          [:div (om/build org-picker/picker
-                         {:user user
-                          :repos repos
+                         {:orgs (:organizations user)
+                          :user user
                           :selected-org selected-org})])))))
