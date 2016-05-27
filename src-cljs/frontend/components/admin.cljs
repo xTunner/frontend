@@ -43,7 +43,13 @@
            [:input {:value (utils/csrf-token)
                     :name "CSRFToken",
                     :type "hidden"}]
-           [:button.btn.btn-primary {:value "Switch user", :type "submit"}
+           [:button.btn.btn-primary {:value "Switch user"
+                                     :type "submit"
+                                     :on-click (fn [event]
+                                                 ;; a higher level handler will stop all form submissions
+                                                 ;;
+                                                 ;; see frontend.components.app/app*
+                                                 (.stopPropagation event))}
             "Switch user"]]]]]))))
 
 (defn current-seat-usage [active-users total-seats]
