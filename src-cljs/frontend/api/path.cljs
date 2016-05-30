@@ -59,6 +59,11 @@
    "%s/%s/unfollow"
    (base-project-url-path vcs-type) project))
 
+(defn project-enable [vcs-type project]
+  (gstring/format
+   "%s/%s/enable"
+   (base-project-url-path vcs-type) project))
+
 (defn build-retry [vcs-type org-name repo-name build-num]
   (gstring/format
    "%s/%s/%s/%s/retry"

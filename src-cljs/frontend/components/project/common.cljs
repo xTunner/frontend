@@ -103,7 +103,8 @@
   (reify
     om/IRender
     (render [_]
-      (let [project-name (vcs-url/project-name (:vcs_url project))
+      (let [vcs-url (:vcs_url project)
+            project-name (vcs-url/project-name vcs-url)
             project-id (project-model/id project)]
         (html
          [:div.row-fluid
@@ -116,6 +117,7 @@
              [:button.btn.btn-primary
               {:data-loading-text "Adding...",
                :on-click #(raise! owner [:enabled-project {:project-id project-id
+                                                           :vcs-url vcs-url
                                                            :project-name project-name}])}
               "Add SSH key"])]]])))))
 

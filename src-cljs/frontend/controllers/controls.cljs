@@ -498,13 +498,13 @@
 
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
-  (toggle-project current-state vcs-url {:project-id project-id} 
+  (toggle-project current-state vcs-url {:project-id project-id}
                   :follow-project api-path/project-follow))
 
 
 (defmethod post-control-event! :unfollowed-repo
   [target message repo previous-state current-state]
-  (toggle-project current-state (:vcs_url repo) repo 
+  (toggle-project current-state (:vcs_url repo) repo
                   :unfollow-repo api-path/project-unfollow))
 
 
@@ -517,11 +517,12 @@
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
         login (get-in current-state state/user-login-path)
+        vcs-type (vcs-url/vcs-type vcs-url)
         project (vcs-url/project-name vcs-url)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)]
     (button-ajax :delete
-                 (gstring/format "/api/v1/project/%s/enable" project)
+                 (api-path/project-enable vcs-type project)
                  :stop-building-project
                  api-ch
                  :context {:project-id project-id})
@@ -871,9 +872,9 @@
                  :context {:build-id build-id})))
 
 (defmethod post-control-event! :enabled-project
-  [target message {:keys [project-name project-id]} previous-state current-state]
+  [target message {:keys [vcs-url project-name project-id]} previous-state current-state]
   (button-ajax :post
-               (gstring/format "/api/v1/project/%s/enable" project-name)
+               (api-path/project-enable (vcs-url/vcs-type vcs-url) project-name)
                :enable-project
                (get-in current-state [:comms :api])
                :context {:project-name project-name
