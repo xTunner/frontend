@@ -137,6 +137,7 @@
     om/IRender
     (render [_]
       (let [project (:project project-data)
+            plan (:plan project-data)
             project-id (project-model/id project)
             project-name (vcs-url/project-name (:vcs_url project))
             ;; This project's feature flags
@@ -173,11 +174,19 @@
             [:ul
              (describe-flag {:flag :osx
                              :title "Build OS X project"
-                             :blurb [:p
-                                     "This option reflects whether CircleCI will run builds for this project "
-                                     "against Linux-based hardware or OS X-based hardware. Please use this "
-                                     "setting as an override if we have incorrectly inferred where this build should run."
-                                     ]})
+                             :blurb [:div
+                                     [:p
+                                      [:strong
+                                       "Note: this option only works if the project builds under an OS X plan. "
+                                       "Configure that option "
+                                       [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
+                                                                                :vcs_type (:vcs_type plan)
+                                                                                :_fragment "osx-pricing"})} "here"]
+                                       "."]]
+                                     [:p
+                                      "This option reflects whether CircleCI will run builds for this project "
+                                      "against Linux-based hardware or OS X-based hardware. Please use this "
+                                      "setting as an override if we have incorrectly inferred where this build should run."]]})
              (when-not (config/enterprise?)
                [:li
                 [:h4 "OS to use for builds"]
