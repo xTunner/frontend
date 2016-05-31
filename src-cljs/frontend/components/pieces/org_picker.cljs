@@ -59,20 +59,16 @@
     om/IRender
     (render [_]
       (html
-       [:div
-        [:div.overview
-         [:span.big-number "1"]
-         [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-        [:div.organizations
-         [:h4 "Your accounts"]
-         [:ul.organizations
-          (->> orgs
-               (filter vcs-github?)
-               (map (fn [org] (organization org selected-org owner))))]
-         (when (get-in user [:repos-loading :github])
-           [:div.orgs-loading
-            [:div.loading-spinner common/spinner]])
-         (missing-org-info owner)]]))))
+       [:div.organizations
+        [:h4 "Your accounts"]
+        [:ul.organizations
+         (->> orgs
+              (filter vcs-github?)
+              (map (fn [org] (organization org selected-org owner))))]
+        (when (get-in user [:repos-loading :github])
+          [:div.orgs-loading
+           [:div.loading-spinner common/spinner]])
+        (missing-org-info owner)]))))
 
 (defn org-picker-with-bitbucket [{:keys [orgs user selected-org tab]} owner]
   (reify
@@ -89,9 +85,6 @@
             bitbucket-active? (= "bitbucket" selected-vcs-type)]
         (html
          [:div
-          [:div.overview
-           [:span.big-number "1"]
-           [:div.instruction "Choose an organization that you are a member of."]]
           (om/build tabs/tab-row {:tabs [{:name "github"
                                           :icon (html [:i.octicon.octicon-mark-github])
                                           :label "GitHub"}

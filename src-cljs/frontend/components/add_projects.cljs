@@ -406,10 +406,14 @@
                                 (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs_type)))
                                 (remove user-org?)
                                 distinct))]
-          (om/build org-picker/picker {:orgs orgs
-                                       :selected-org selected-org
-                                       :user user
-                                       :tab tab}))]
+          [:div
+           [:div.overview
+            [:span.big-number "1"]
+            [:div.instruction "Choose an organization that you are a member of."]]
+           (om/build org-picker/picker {:orgs orgs
+                                        :selected-org selected-org
+                                        :user user
+                                        :tab tab})])]
        [:div#project-listing.project-listing
         [:div.overview
          [:span.big-number "2"]
