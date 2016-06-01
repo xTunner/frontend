@@ -1,9 +1,10 @@
 (ns frontend.components.add-projects
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
-            [frontend.async :refer [raise!]]
+            [frontend.async :refer [raise! navigate!]]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.components.pieces.tabs :as tabs]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.feature :as feature]
@@ -136,15 +137,10 @@
           [:div.overview
            [:span.big-number "1"]
            [:div.instruction "Choose an organization that you are a member of."]]
-          [:ul.nav.nav-tabs
-           [:li {:class (when github-active? "active")}
-            [:a {:href "#github"}
-             [:i.octicon.octicon-mark-github]
-             " GitHub"]]
-           [:li {:class (when bitbucket-active? "active")}
-            [:a {:href "#bitbucket"}
-             [:i.fa.fa-bitbucket]
-             " Bitbucket"]]]
+          (om/build tabs/tab-row {:tabs [["github" (html (list [:i.octicon.octicon-mark-github] "GitHub"))]
+                                         ["bitbucket" (html (list [:i.fa.fa-bitbucket] "Bitbucket"))]]
+                                  :selected-tab vcs-type
+                                  :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})
           [:div.organizations.card
            (when github-active?
              (if github-authorized?
@@ -396,56 +392,54 @@
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])
             show-forks (true? (get-in settings [:add-projects :show-forks]))]
         (html
-          [:div.proj-wrapper
-           [:div.tabbed-wrapper
-            [:ul.nav.nav-tabs
-             [:li {:class (when (= selected-tab :linux) "active")}
-              [:a {:on-click #(om/set-state! owner [:selected-tab] :linux)}
-               [:i.fa.fa-linux.fa-lg] "Linux"]]
-             [:li {:class (when (= selected-tab :osx) "active")}
-              [:a {:on-click #(om/set-state! owner [:selected-tab] :osx)}
-               [:i.fa.fa-apple.fa-lg] " OS X"]]]
-            (if selected-org-login
-              (let [;; we display a repo if it belongs to this org, matches the filter string,
-                    ;; and matches the fork settings.
-                    display? (fn [repo]
-                               (and
-                                 (or show-forks (not (:fork repo)))
-                                 (select-vcs-type (or (:vcs-type selected-org)
-                                                      "github") repo)
-                                 (= (:username repo) selected-org-login)
-                                 (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
-                    filtered-repos (->> repos
-                                        (filter display?)
-                                        (sort-by :pushed_at)
-                                        (reverse))
-                    osx-repos (->> filtered-repos (filter repo-model/likely-osx-repo?))
-                    linux-repos (->> filtered-repos (remove repo-model/likely-osx-repo?))]
-                [:div
-                 [:div
-                  (om/build repo-filter settings)]
-                 [:div
-                  (condp = selected-tab
-                    :linux
-                    (om/build repo-list {:repos (if (pm/osx? selected-plan) ; Allows mistaken OS X repos to still be built.
-                                                  linux-repos
-                                                  filtered-repos)
-                                         :loading-repos? loading-repos?
-                                         :repo-filter-string repo-filter-string
-                                         :selected-org selected-org
-                                         :selected-plan selected-plan
-                                         :type selected-tab
-                                         :settings settings})
+         [:div.proj-wrapper
+          (if-not selected-org-login
+            (repos-explanation user)
+            (list
+             (om/build tabs/tab-row {:tabs [[:linux (html (list [:i.fa.fa-linux.fa-lg] "Linux"))]
+                                            [:osx (html (list [:i.fa.fa-apple.fa-lg] "OS X"))]]
+                                     :selected-tab selected-tab
+                                     :on-tab-click #(om/set-state! owner [:selected-tab] %)})
 
-                    :osx
-                    (om/build repo-list {:repos osx-repos
-                                         :loading-repos? loading-repos?
-                                         :repo-filter-string repo-filter-string
-                                         :selected-org selected-org
-                                         :selected-plan selected-plan
-                                         :type selected-tab
-                                         :settings settings}))]])
-              (repos-explanation user))]])))))
+             (let [;; we display a repo if it belongs to this org, matches the filter string,
+                   ;; and matches the fork settings.
+                   display? (fn [repo]
+                              (and
+                               (or show-forks (not (:fork repo)))
+                               (select-vcs-type (or (:vcs-type selected-org)
+                                                    "github") repo)
+                               (= (:username repo) selected-org-login)
+                               (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
+                   filtered-repos (->> repos
+                                       (filter display?)
+                                       (sort-by :pushed_at)
+                                       (reverse))
+                   osx-repos (->> filtered-repos (filter repo-model/likely-osx-repo?))
+                   linux-repos (->> filtered-repos (remove repo-model/likely-osx-repo?))]
+               [:div
+                [:div
+                 (om/build repo-filter settings)]
+                [:div
+                 (condp = selected-tab
+                   :linux
+                   (om/build repo-list {:repos (if (pm/osx? selected-plan) ; Allows mistaken OS X repos to still be built.
+                                                 linux-repos
+                                                 filtered-repos)
+                                        :loading-repos? loading-repos?
+                                        :repo-filter-string repo-filter-string
+                                        :selected-org selected-org
+                                        :selected-plan selected-plan
+                                        :type selected-tab
+                                        :settings settings})
+
+                   :osx
+                   (om/build repo-list {:repos osx-repos
+                                        :loading-repos? loading-repos?
+                                        :repo-filter-string repo-filter-string
+                                        :selected-org selected-org
+                                        :selected-plan selected-plan
+                                        :type selected-tab
+                                        :settings settings}))]])))])))))
 
 (defn inaccessible-follows
   "Any repo we follow where the org isn't in our set of orgs is either: an org
