@@ -421,7 +421,7 @@
                        :on-click #(raise! owner [:activate-plan-trial {:plan-type plan-type
                                                                        :template template
                                                                        :org (:org plan)}])}
-                      "start a 2 week free trial"])]))]]
+                      "start a 2-week, free trial"])]))]]
             (cond
               trial-starts-here?
               [:div.bottom "Free Trial Starts Here"]
