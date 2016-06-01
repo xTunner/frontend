@@ -29,3 +29,26 @@
                  {:class "active"}
                  {:on-click #(on-tab-click tab-name)})
            [:a tab-contents]])]))))
+
+(when config/client-dev?
+  (defn tab-row-parent [{:keys [selected-tab] :as data} owner]
+    (om/component
+        (html
+         [:div
+          (om/build tab-row {:tabs [[:tab-one "Tab One"]
+                                    [:tab-two "Tab Two"]]
+                             :selected-tab selected-tab
+                             :on-tab-click #(om/update! data :selected-tab %)})
+          "Selected: " (str selected-tab)])))
+
+  (defcard tab-row
+    "Here, a parent renders a `tab-row`. Note that the `tab-row` itself does not
+    track which tab is selected as state. Instead, the parent tells the tab row
+    which tab is selected. It's the parent's responsibility to listen to the
+    `:on-tab-clicked` event and track which tab should be selected, by holding
+    it in its own component state, storing it in the app state (as demonstrated
+    here), or some other means. (Often, in our app, we accomplish this by
+    navigating to a different URL, which specifies the tab which should be
+    selected.)"
+    (om-root tab-row-parent)
+    {:selected-tab :tab-two}))
