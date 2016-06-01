@@ -23,7 +23,7 @@
     om/IRender
     (render [_]
       (html
-       [:ul.nav.nav-tabs
+       [:ul {:data-component `tab-row}
         (for [[tab-name tab-contents] tabs]
           [:li (if (= selected-tab tab-name)
                  {:class "active"}
