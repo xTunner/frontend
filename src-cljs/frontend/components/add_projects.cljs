@@ -364,7 +364,7 @@
      [:h2 "Warning: Access Problems"]
      [:p.missing-org-info
       "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
-      [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+      [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
        "GitHub's application permissions"]
       "."]
      [:div.inaccessible-org-wrapper

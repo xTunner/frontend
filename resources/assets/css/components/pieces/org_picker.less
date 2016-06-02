@@ -1,0 +1,61 @@
+.ns("frontend.components.pieces.org-picker", {
+  .ui("organization-list", {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  });
+
+  .ui("organization", {
+    @avatar-size: 48px;
+    @avatar-margin-right: 8px;
+
+    .flexy(row);
+    .align-items(center);
+
+    margin: 5px 0;
+    padding: 5px;
+
+    border: 1px @grayBorder solid;
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    @media only screen and (max-width: 960px) {
+      width: 100%;
+    }
+
+    &.active {
+      color: @blueDark;
+      border-color: @blueLight;
+    }
+
+    > .avatar {
+      display: inline-block;
+      width: @avatar-size;
+      height: @avatar-size;
+      margin-right: @avatar-margin-right;
+      border-radius: 50%;
+    }
+
+    > .org-name {
+      .text-overflow();
+      font-weight: 600;
+    }
+
+    > .vcs-icon {
+      .flex(1, 0, auto);
+      position: relative;
+
+      > a {
+        float: right;
+        padding: 0 10px 20px 0;
+
+        > i {
+          width: 13.9px;
+          height: 16px;
+          font-size: @fontSizeLarge;
+        }
+      }
+    }
+  });
+});
