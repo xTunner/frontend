@@ -28,10 +28,9 @@
           [:li (if (= selected-tab name)
                  {:class "active"}
                  {:on-click #(on-tab-click name)})
-           [:a
-            (when icon
-              [:span.tab-icon icon])
-            [:span.tab-label label]]])]))))
+           (when icon
+             [:span.tab-icon icon])
+           [:span.tab-label label]])]))))
 
 (when config/client-dev?
   (defn tab-row-parent [{:keys [selected-tab] :as data} owner]

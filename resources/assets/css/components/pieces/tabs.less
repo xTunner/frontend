@@ -6,12 +6,12 @@
     padding-left: 0; // Override default ul/ol
 
     > li {
-      position: relative;
       display: block;
-
-      float: left;
-
       flex-grow: 1;
+      padding: 10px 15px;
+
+      color: @grayDark;
+
       background: @grayLightest;
       border-right: 1px solid @grayLighter;
 
@@ -19,40 +19,28 @@
         border-right: none;
       }
 
+      &:hover {
+        color: @grayDarker;
+        cursor: pointer;
+      }
+
       &.active {
         background: @white;
-      }
-
-      > a {
-        position: relative;
-        display: block;
-        line-height: @line-height-base;
-
-        padding: 10px 15px;
-        color: @grayDark;
-
-        &:hover,
-        &:focus {
-          text-decoration: none;
-        }
+        font-weight: 500;
 
         &:hover {
-          color: @grayDarker;
-        }
-
-        > .tab-icon {
-          vertical-align: initial;
-          margin-right: 1ex;
-          margin-left: 0;
-        }
-
-        i.fa.fa-bitbucket {
-          font-size: @fontSizeLarge;
+          cursor: default;
         }
       }
 
-      &.active > a {
-        font-weight: 500;
+      > .tab-icon {
+        vertical-align: initial;
+        margin-right: 1ex;
+        margin-left: 0;
+      }
+
+      i.fa.fa-bitbucket {
+        font-size: @fontSizeLarge;
       }
     }
   });
