@@ -706,49 +706,48 @@
            (let [tabs (cond-> []
                         ;; tests don't get saved until the end of the build (TODO: stream the tests!)
                         (build-model/finished? build)
-                        (conj [:tests
-                               (html
-                                (list
-                                 "Test Summary "
-                                 (when-let [fail-count (some->> build-data
-                                                                :tests-data
-                                                                :tests
-                                                                (filter #(contains? #{"failure" "error"} (:result %)))
-                                                                count)]
-                                   (when (not= 0 fail-count)
-                                     [:span "(" fail-count ")"]))))])
+                        (conj {:name :tests
+                               :label (str
+                                       "Test Summary"
+                                       (when-let [fail-count (some->> build-data
+                                                                      :tests-data
+                                                                      :tests
+                                                                      (filter #(contains? #{"failure" "error"} (:result %)))
+                                                                      count)]
+                                         (when (not= 0 fail-count)
+                                           (str " (" fail-count ")"))))})
 
                         (has-scope :read-settings data)
-                        (conj [:usage-queue
-                               (html
-                                (list
-                                 "Queue"
-                                 (when (:usage_queued_at build)
-                                   [:span " ("
-                                    (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                        :stop (or (:start_time build) (:stop_time build))})
-                                    ")"])))])
+                        (conj {:name :usage-queue
+                               :label (html
+                                       (list
+                                        "Queue"
+                                        (when (:usage_queued_at build)
+                                          [:span " ("
+                                           (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                                               :stop (or (:start_time build) (:stop_time build))})
+                                           ")"])))})
 
                         (and (has-scope :trigger-builds data)
                              (show-ssh-button? project)
                              (not (:ssh_disabled build)))
-                        (conj [:ssh-info "Debug via SSH"])
+                        (conj {:name :ssh-info :label "Debug via SSH"})
 
                         ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
                         (and logged-in? (build-model/finished? build))
-                        (conj [:artifacts "Artifacts"])
+                        (conj {:name :artifacts :label "Artifacts"})
 
                         true
-                        (conj [:config
-                               (str "circle.yml"
-                                    (when-let [errors (-> build build-model/config-errors)]
-                                      (gstring/format " (%s)" (count errors))))])
+                        (conj {:name :config
+                               :label (str "circle.yml"
+                                           (when-let [errors (-> build build-model/config-errors)]
+                                             (gstring/format " (%s)" (count errors))))})
 
                         (build-model/finished? build)
-                        (conj [:build-timing "Build Timing"])
+                        (conj {:name :build-timing :label "Build Timing"})
 
                         (seq build-params)
-                        (conj [:build-parameters "Build Parameters"]))]
+                        (conj {:name :build-parameters :label "Build Parameters"}))]
              (om/build tabs/tab-row {:tabs tabs
                                      :selected-tab selected-tab
                                      :on-tab-click #(navigate! owner (routes/v1-build-path

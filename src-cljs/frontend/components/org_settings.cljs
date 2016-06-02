@@ -569,8 +569,12 @@
               vcs-type :vcs_type} :org} plan]
         (html
          [:div {:data-component `pricing-tabs}
-          (om/build tabs/tab-row {:tabs [[:linux (html (list [:i.fa.fa-linux.fa-lg] "Build on Linux"))]
-                                         [:osx (html (list [:i.fa.fa-apple.fa-lg] "Build on OS X"))]]
+          (om/build tabs/tab-row {:tabs [{:name :linux
+                                          :icon (html [:i.fa.fa-linux.fa-lg])
+                                          :label "Build on Linux"}
+                                         {:name :osx
+                                          :icon (html [:i.fa.fa-apple.fa-lg])
+                                          :label "Build on OS X"}]
                                   :selected-tab selected-tab
                                   :on-tab-click #(navigate! owner (routes/v1-org-settings-path {:org org-name
                                                                                                 :vcs_type vcs-type

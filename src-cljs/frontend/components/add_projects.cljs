@@ -137,8 +137,12 @@
           [:div.overview
            [:span.big-number "1"]
            [:div.instruction "Choose an organization that you are a member of."]]
-          (om/build tabs/tab-row {:tabs [["github" (html (list [:i.octicon.octicon-mark-github] "GitHub"))]
-                                         ["bitbucket" (html (list [:i.fa.fa-bitbucket] "Bitbucket"))]]
+          (om/build tabs/tab-row {:tabs [{:name "github"
+                                          :icon (html [:i.octicon.octicon-mark-github])
+                                          :label "GitHub"}
+                                         {:name "bitbucket"
+                                          :icon (html [:i.fa.fa-bitbucket])
+                                          :label "Bitbucket"}]
                                   :selected-tab vcs-type
                                   :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})
           [:div.organizations.card
@@ -396,8 +400,12 @@
           (if-not selected-org-login
             (repos-explanation user)
             (list
-             (om/build tabs/tab-row {:tabs [[:linux (html (list [:i.fa.fa-linux.fa-lg] "Linux"))]
-                                            [:osx (html (list [:i.fa.fa-apple.fa-lg] "OS X"))]]
+             (om/build tabs/tab-row {:tabs [{:name :linux
+                                             :icon (html [:i.fa.fa-linux.fa-lg])
+                                             :label "Linux"}
+                                            {:name :osx
+                                             :icon (html [:i.fa.fa-apple.fa-lg])
+                                             :label "OS X"}]
                                      :selected-tab selected-tab
                                      :on-tab-click #(om/set-state! owner [:selected-tab] %)})
 

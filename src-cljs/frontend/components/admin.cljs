@@ -181,9 +181,12 @@
                   [:ul
                    [:li "queued builds: " queued-builds]
                    [:li "containers requested by queued builds: " queue-container-count]]]]))
-            (om/build tabs/tab-row {:tabs [[:builders "Builders"]
-                                           [:running-builds "Running Builds"]
-                                           [:queued-builds "Queued Builds"]]
+            (om/build tabs/tab-row {:tabs [{:name :builders
+                                            :label "Builders"}
+                                           {:name :running-builds
+                                            :label "Running Builds"}
+                                           {:name :queued-builds
+                                            :label "Queued Builds"}]
                                     :selected-tab current-tab
                                     :on-tab-click #(navigate! owner (routes/v1-admin-fleet-state-path {:_fragment (name %)}))})
             (if (#{:running-builds :queued-builds} current-tab)
