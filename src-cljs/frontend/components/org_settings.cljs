@@ -413,7 +413,7 @@
               (when (and trial-starts-here? (not (pm/osx? plan)))
                 (let [template "osx-trial"
                       plan-type :osx]
-                  [:div.start-trial "or "
+                  [:div.start-trial
                    (forms/managed-button
                      [:a
                       {:data-success-text "Success!"
@@ -422,7 +422,7 @@
                        :on-click #(raise! owner [:activate-plan-trial {:plan-type plan-type
                                                                        :template template
                                                                        :org (:org plan)}])}
-                      "start a 2-week, free trial"])]))]]
+                      "Start a 2-week, free trial."])]))]]
             (cond
               trial-starts-here?
               [:div.bottom "Free Trial Starts Here"]
