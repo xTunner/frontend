@@ -143,7 +143,7 @@
                                          {:name "bitbucket"
                                           :icon (html [:i.fa.fa-bitbucket])
                                           :label "Bitbucket"}]
-                                  :selected-tab vcs-type
+                                  :selected-tab-name vcs-type
                                   :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})
           [:div.organizations.card
            (when github-active?
@@ -387,10 +387,10 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:selected-tab :linux})
+      {:selected-tab-name :linux})
 
     om/IRenderState
-    (render-state [_ {:keys [selected-tab]}]
+    (render-state [_ {:keys [selected-tab-name]}]
       (let [selected-org-login (:login selected-org)
             loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])
@@ -406,8 +406,8 @@
                                             {:name :osx
                                              :icon (html [:i.fa.fa-apple.fa-lg])
                                              :label "OS X"}]
-                                     :selected-tab selected-tab
-                                     :on-tab-click #(om/set-state! owner [:selected-tab] %)})
+                                     :selected-tab-name selected-tab-name
+                                     :on-tab-click #(om/set-state! owner [:selected-tab-name] %)})
 
              (let [;; we display a repo if it belongs to this org, matches the filter string,
                    ;; and matches the fork settings.
@@ -428,7 +428,7 @@
                 [:div
                  (om/build repo-filter settings)]
                 [:div
-                 (condp = selected-tab
+                 (condp = selected-tab-name
                    :linux
                    (om/build repo-list {:repos (if (pm/osx? selected-plan) ; Allows mistaken OS X repos to still be built.
                                                  linux-repos
@@ -437,7 +437,7 @@
                                         :repo-filter-string repo-filter-string
                                         :selected-org selected-org
                                         :selected-plan selected-plan
-                                        :type selected-tab
+                                        :type selected-tab-name
                                         :settings settings})
 
                    :osx
@@ -446,7 +446,7 @@
                                         :repo-filter-string repo-filter-string
                                         :selected-org selected-org
                                         :selected-plan selected-plan
-                                        :type selected-tab
+                                        :type selected-tab-name
                                         :settings settings}))]])))])))))
 
 (defn inaccessible-follows

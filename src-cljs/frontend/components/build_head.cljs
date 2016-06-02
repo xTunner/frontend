@@ -688,8 +688,8 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            selected-tab (or (:current-tab data)
-                             (build-util/default-tab build scopes))
+            selected-tab-name (or (:current-tab data)
+                                  (build-util/default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -749,7 +749,7 @@
                         (seq build-params)
                         (conj {:name :build-parameters :label "Build Parameters"}))]
              (om/build tabs/tab-row {:tabs tabs
-                                     :selected-tab selected-tab
+                                     :selected-tab-name selected-tab-name
                                      :on-tab-click #(navigate! owner (routes/v1-build-path
                                                                       (vcs-url/vcs-type (:vcs_url build))
                                                                       (:username build)
@@ -757,8 +757,8 @@
                                                                       (:build_num build)
                                                                       (name %)))}))]
 
-          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
-           (case selected-tab
+          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
+           (case selected-tab-name
 
              :tests (om/build build-tests-list {:build-data build-data
                                                 :project project})

@@ -7,16 +7,16 @@
 (defn tab-row
   "A row of tabs, suitable for the top of a card.
 
-  :tabs         - A sequence of tabs, in display order. Each tab is a map:
-                  :name  - A unique identifier for the tab, not displayed to the user.
-                  :icon  - An icon which appears next to the tab label, often an <i>
-                           element of some sort.
-                  :label - The text which labels the tab. This may also be a component or
-                           a list of components.
-  :selected-tab - The name of the selected tab.
-  :on-tab-click - A handler called when a tab is clicked. The handler will receive the
-                  name of the clicked tab."
-  [{:keys [tabs selected-tab on-tab-click] :as data} owner]
+  :tabs              - A sequence of tabs, in display order. Each tab is a map:
+                      :name  - A unique identifier for the tab, not displayed to the user.
+                      :icon  - An icon which appears next to the tab label, often an <i>
+                               element of some sort.
+                      :label - The text which labels the tab. This may also be a component
+                               or a list of components.
+  :selected-tab-name - The name of the selected tab.
+  :on-tab-click      - A handler called when a tab is clicked. The handler will receive
+                       the name of the clicked tab."
+  [{:keys [tabs selected-tab-name on-tab-click] :as data} owner]
   (reify
     om/IDisplayName (display-name [_] "Tab Row")
 
@@ -25,7 +25,7 @@
       (html
        [:ul {:data-component `tab-row}
         (for [{:keys [name icon label]} tabs]
-          [:li (if (= selected-tab name)
+          [:li (if (= selected-tab-name name)
                  {:class "active"}
                  {:on-click #(on-tab-click name)})
            (when icon
@@ -33,7 +33,7 @@
            [:span.tab-label label]])]))))
 
 (when config/client-dev?
-  (defn tab-row-parent [{:keys [selected-tab] :as data} owner]
+  (defn tab-row-parent [{:keys [selected-tab-name] :as data} owner]
     (om/component
         (html
          [:div
@@ -41,9 +41,9 @@
                                      :label "Tab One"}
                                     {:name :tab-two
                                      :label "Tab Two"}]
-                             :selected-tab selected-tab
-                             :on-tab-click #(om/update! data :selected-tab %)})
-          "Selected: " (str selected-tab)])))
+                             :selected-tab-name selected-tab-name
+                             :on-tab-click #(om/update! data :selected-tab-name %)})
+          "Selected: " (str selected-tab-name)])))
 
   (defcard tab-row
     "Here, a parent renders a `tab-row`. Note that the `tab-row` itself does not
@@ -55,9 +55,9 @@
     navigating to a different URL, which specifies the tab which should be
     selected.)"
     (om-root tab-row-parent)
-    {:selected-tab :tab-one})
+    {:selected-tab-name :tab-one})
 
-  (defn tab-row-with-icon-parent [{:keys [selected-tab] :as data} owner]
+  (defn tab-row-with-icon-parent [{:keys [selected-tab-name] :as data} owner]
     (om/component
         (html
          [:div
@@ -67,11 +67,11 @@
                                     {:name :tab-two
                                      :icon (html [:i.fa.fa-apple.fa-lg])
                                      :label "Tab Two"}]
-                             :selected-tab selected-tab
-                             :on-tab-click #(om/update! data :selected-tab %)})
-          "Selected: " (str selected-tab)])))
+                             :selected-tab-name selected-tab-name
+                             :on-tab-click #(om/update! data :selected-tab-name %)})
+          "Selected: " (str selected-tab-name)])))
 
   (defcard tab-row-with-icon
     "This `tab-row` features icons on the tab labels."
     (om-root tab-row-with-icon-parent)
-    {:selected-tab :tab-one}))
+    {:selected-tab-name :tab-one}))

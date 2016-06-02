@@ -187,7 +187,7 @@
                                             :label "Running Builds"}
                                            {:name :queued-builds
                                             :label "Queued Builds"}]
-                                    :selected-tab current-tab
+                                    :selected-tab-name current-tab
                                     :on-tab-click #(navigate! owner (routes/v1-admin-fleet-state-path {:_fragment (name %)}))})
             (if (#{:running-builds :queued-builds} current-tab)
               (om/build admin-builds-table

@@ -561,7 +561,7 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab]} owner]
+(defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
   (reify
     om/IRender
     (render [_]
@@ -575,11 +575,11 @@
                                          {:name :osx
                                           :icon (html [:i.fa.fa-apple.fa-lg])
                                           :label "Build on OS X"}]
-                                  :selected-tab selected-tab
+                                  :selected-tab-name selected-tab-name
                                   :on-tab-click #(navigate! owner (routes/v1-org-settings-path {:org org-name
                                                                                                 :vcs_type vcs-type
                                                                                                 :_fragment (str (name %) "-pricing")}))})
-          (case selected-tab
+          (case selected-tab-name
             :linux [:div.card
                     (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
                     (om/build faq linux-faq-items)]
@@ -637,7 +637,7 @@
               (plans-piggieback-plan-notification plan org-name)
               [:div
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
-                                       :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
+                                       :selected-tab-name (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
 (defn piggieback-org-list [piggieback-orgs selected-orgs [{vcs-type :vcs_type} :as vcs-users-and-orgs] owner]
   (let [;; split user orgs from real ones so we can later cons the
