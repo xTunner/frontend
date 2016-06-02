@@ -676,6 +676,55 @@ table.code {
   }
 }
 
+.nav-tabs {
+  .flexy();
+
+  > li {
+    flex-grow: 1;
+    background: @tab-background;
+    border-right: 1px solid @tab-separator-border;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.active {
+      background: @white;
+    }
+
+    &.active a,
+    &.active a:hover,
+    &.active a:focus {
+      border: none; // BS RESET
+      font-weight: 500;
+    }
+
+    a {
+      padding: 10px 15px; // BS RESET
+      color: @grayDark; // BS RESET
+      border: none; // BS RESET
+      margin: 0; // BS RESET
+      border-radius: 0;
+
+      i.octicon, i.material-icons, i.fa {
+        vertical-align: initial;
+        margin-right: 1ex;
+        margin-left: 0;
+      }
+
+      i.fa.fa-bitbucket {
+        font-size: @fontSizeLarge;
+      }
+
+      &:hover {
+        background: none; // BS RESET
+        color: @grayDarker; // BS RESET
+        border: none; // BS RESET
+      }
+    }
+  }
+}
+
 .build-head {
   .sub-head-top {
     padding: 0;
