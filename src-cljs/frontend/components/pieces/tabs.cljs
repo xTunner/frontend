@@ -8,11 +8,12 @@
   "A row of tabs, suitable for the top of a card.
 
   :tabs              - A sequence of tabs, in display order. Each tab is a map:
-                      :name  - A unique identifier for the tab, not displayed to the user.
-                      :icon  - An icon which appears next to the tab label, often an <i>
-                               element of some sort.
-                      :label - The text which labels the tab. This may also be a component
-                               or a list of components.
+                       :name  - A unique identifier for the tab, not displayed to the
+                                user.
+                       :icon  - An icon which appears next to the tab label, often an <i>
+                                element of some sort.
+                       :label - The text which labels the tab. This may also be a
+                                component or a list of components.
   :selected-tab-name - The name of the selected tab.
   :on-tab-click      - A handler called when a tab is clicked. The handler will receive
                        the name of the clicked tab."
