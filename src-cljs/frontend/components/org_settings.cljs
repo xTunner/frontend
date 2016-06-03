@@ -1,7 +1,7 @@
 (ns frontend.components.org-settings
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.set]
-            [frontend.async :refer [raise! navigate!]]
+            [frontend.async :refer [raise!]]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [cljs-time.core :as time]
@@ -15,7 +15,6 @@
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
             [frontend.components.shared :as shared]
-            [frontend.components.pieces.tabs :as tabs]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
@@ -561,25 +560,26 @@
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
                     " ago. Pay now to enable builds of private repositories."])))]]]]])))))
 
-(defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
+(defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab]}]
   (reify
     om/IRender
-    (render [_]
+    (render[_]
       (let [{{org-name :name
               vcs-type :vcs_type} :org} plan]
         (html
          [:div {:data-component `pricing-tabs}
-          (om/build tabs/tab-row {:tabs [{:name :linux
-                                          :icon (html [:i.fa.fa-linux.fa-lg])
-                                          :label "Build on Linux"}
-                                         {:name :osx
-                                          :icon (html [:i.fa.fa-apple.fa-lg])
-                                          :label "Build on OS X"}]
-                                  :selected-tab-name selected-tab-name
-                                  :on-tab-click #(navigate! owner (routes/v1-org-settings-path {:org org-name
-                                                                                                :vcs_type vcs-type
-                                                                                                :_fragment (str (name %) "-pricing")}))})
-          (case selected-tab-name
+          [:ul.nav.nav-tabs
+           [:li {:class (when (= selected-tab :linux) "active")}
+            [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                     :vcs_type vcs-type
+                                                     :_fragment "linux-pricing"})}
+             [:i.fa.fa-linux.fa-lg] "Build on Linux"]]
+           [:li {:class (when (= selected-tab :osx) "active")}
+            [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                     :vcs_type vcs-type
+                                                     :_fragment "osx-pricing"})}
+             [:i.fa.fa-apple.fa-lg] "Build on OS X"]]]
+          (case selected-tab
             :linux [:div.card
                     (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
                     (om/build faq linux-faq-items)]
@@ -637,7 +637,7 @@
               (plans-piggieback-plan-notification plan org-name)
               [:div
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
-                                       :selected-tab-name (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
+                                       :selected-tab (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
 (defn piggieback-org-list [piggieback-orgs selected-orgs [{vcs-type :vcs_type} :as vcs-users-and-orgs] owner]
   (let [;; split user orgs from real ones so we can later cons the
