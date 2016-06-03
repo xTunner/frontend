@@ -36,6 +36,11 @@
     :cancel-plan-clicked
     :dismiss-trial-offer-banner-clicked
     :insights-bar-clicked
+    :invite-teammates-impression
+    :invite-teammates-clicked
+    :invite-teammates-dismiss-clicked
+    :invite-teammates-selected-all-clicked
+    :invite-teammates-selected-none-clicked
     :login-clicked
     :new-plan-clicked
     :no-plan-banner-impression

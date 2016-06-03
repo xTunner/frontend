@@ -388,18 +388,30 @@
   [target message _ state]
   (assoc-in state state/dismiss-invite-form-path true))
 
+(defmethod post-control-event! :dismiss-invite-form
+  [target message _ previous-state current-state]
+  (analytics/track {:event-type :invite-teammates-dismiss-clicked
+                    :current-state current-state}))
 
 (defmethod control-event :invite-selected-all
   [target message _ state]
   (update-in state state/invite-github-users-path (fn [users]
                                                     (vec (map #(assoc % :checked true) users)))))
 
+(defmethod post-control-event! :invite-selected-all
+  [target message _ previous-state current-state]
+  (analytics/track {:event-type :invite-teammates-selected-all-clicked
+                    :current-state current-state}))
 
 (defmethod control-event :invite-selected-none
   [target message _ state]
   (update-in state state/invite-github-users-path (fn [users]
                                                     (vec (map #(assoc % :checked false) users)))))
 
+(defmethod post-control-event! :invite-selected-none
+  [target message _ previous-state current-state]
+  (analytics/track {:event-type :invite-teammates-selected-none-clicked
+                    :current-state current-state}))
 
 (defmethod control-event :dismiss-config-errors
   [target message _ state]
@@ -846,6 +858,9 @@
                   ;; TODO: non-hackish way to indicate the type of invite
                   {:project project-name :first_green_build true}
                   {:org org-name})]
+    (analytics/track {:event-type :invite-teammates-clicked
+                      :current-state current-state
+                      :properties {:email-count (count invitees)}})
     (button-ajax :post
                  (if project-name
                    (gstring/format "/api/v1/project/%s/users/invite" project-name)
