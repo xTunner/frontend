@@ -425,7 +425,7 @@
         (html
          [:div#account-settings
           [:div.account-top
-           [:ul.nav.nav-tabs
+           [:ul.nav.nav-tabs.account-settings-tabs
             [:li#notifications (active-class-if-active subpage :notifications)
              [:a {:href (routes/v1-account-subpage {:subpage "notifications"})}
               "Notifications"]]
