@@ -37,10 +37,9 @@
     :dismiss-trial-offer-banner-clicked
     :insights-bar-clicked
     :invite-teammates-impression
-    :invite-teammates-clicked
-    :invite-teammates-dismiss-clicked
-    :invite-teammates-selected-all-clicked
-    :invite-teammates-selected-none-clicked
+    :invite-teammates-dismissed
+    :invite-teammates-select-all-clicked
+    :invite-teammates-select-none-clicked
     :login-clicked
     :new-plan-clicked
     :no-plan-banner-impression
@@ -54,6 +53,7 @@
     :signup-clicked
     :signup-impression
     :start-trial-clicked
+    :teammates-invited
     :trial-offer-banner-impression
     :update-parallelism-clicked
     :update-plan-clicked})

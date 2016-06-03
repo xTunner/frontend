@@ -5,7 +5,8 @@
             [frontend.utils.ajax :as ajax]
             [frontend.analytics.core :as analytics]
             [frontend.controllers.controls :as controls]
-            [bond.james :as bond :include-macros true])
+            [bond.james :as bond :include-macros true]
+            [goog.string :as gstring])
   (:require-macros [cljs.test :refer [is deftest testing async]]
                    [cljs.core.async.macros :refer [go]]))
 
@@ -170,3 +171,59 @@
                                      :previous-parallelism previous-parallelism
                                      :new-parallelism new-parallelism
                                      :vcs-type "github"}))))))))
+
+(deftest post-control-event-dismiss-invite-form-works
+  (let [current-state {:zippity "doo-da"}]
+    (testing "the post-control-event dismiss-invite-form sends a :invite-teammates-dismissed event"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :dismiss-invite-form {} {} current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :invite-teammates-dismissed))
+          (is (= (:current-state args) current-state)))))))
+
+(deftest post-control-event-invite-selected-all-works
+  (let [users ["user1" "user2"]
+        current-state (assoc-in {} state/invite-github-users-path users)]
+    (println current-state)
+    (testing "the post-control-event invite-selected-all sends a :invite-teammates-select-all-clicked event"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :invite-selected-all {} {} current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :invite-teammates-select-all-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:teammate-count (count users)})))))))
+
+(deftest post-control-event-invite-selected-none-works
+  (let [users ["user1" "user2"]
+        current-state (assoc-in {} state/invite-github-users-path users)]
+    (testing "the post-control-event invite-selected-none sends a :invite-teammates-select-none-clicked event"
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :invite-selected-none {} {} current-state))]
+        (is (= (count calls) 1))
+        (let [args (-> calls first :args first)]
+          (is (= (:event-type args) :invite-teammates-select-none-clicked))
+          (is (= (:current-state args) current-state))
+          (is (= (:properties args) {:teammate-count (count users)})))))))
+
+(deftest post-control-event-invited-github-users-works
+  (let [calls (atom [])
+        project-name "proj"
+        invitees ["me@foo.com", "you@bar.co"]
+        control-data {:project-name project-name
+                      :org-name "org"
+                      :invitees ["me@foo.com", "you@bar.co"]}
+        api-ch "api-ch"
+        current-state {:comms {:api api-ch}}]
+    (testing "the post-control-event invite-github-users calls button-ajax with the correct parameters"
+      (with-redefs [controls/button-ajax (fn [method url message channel & opts]
+                                           (swap! calls conj {:args (list method url message channel opts)}))]
+        (controls/post-control-event! {} :invited-github-users control-data {} current-state)
+        (let [calls @calls
+              args (-> calls first :args)]
+          (is (= (count calls) 1))
+          (is (= (nth args 0) :post))
+          (is (= (nth args 1) (gstring/format "/api/v1/project/%s/users/invite" project-name)))
+          (is (= (nth args 2) :invite-github-users))
+          (is (= (nth args 3) api-ch))
+          (is (= (->> (nth args 4) (apply hash-map) :context) {:project project-name
+                                                              :first_green_build true}))
+          (is (= (->> (nth args 4) (apply hash-map) :params) invitees)))))))
