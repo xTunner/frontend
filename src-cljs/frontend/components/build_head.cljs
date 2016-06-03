@@ -1,7 +1,7 @@
 (ns frontend.components.build-head
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as string]
-            [frontend.async :refer [raise!]]
+            [frontend.async :refer [raise! navigate!]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
@@ -12,6 +12,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.build-config :as build-cfg]
+            [frontend.components.pieces.tabs :as tabs]
             [frontend.config :refer [intercom-enabled? github-endpoint env enterprise?]]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -677,9 +678,6 @@
            (feature/enabled? :ios-ssh-builds))
        (not (project-model/feature-enabled? project :disable-ssh))))
 
-(def tab-tag :li.build-info-tab)
-(def tab-link :a.tab-link)
-
 (defn build-sub-head [data owner]
   (reify
     om/IRender
@@ -690,8 +688,8 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
-            selected-tab (or (:current-tab data)
-                             (build-util/default-tab build scopes))
+            selected-tab-name (or (:current-tab data)
+                                  (build-util/default-tab build scopes))
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
@@ -705,58 +703,62 @@
         (html
          [:div.sub-head
           [:div.sub-head-top
-           [:ul.nav.nav-tabs
-            ;; tests don't get saved until the end of the build (TODO: stream the tests!)
-            (when (build-model/finished? build)
-              [tab-tag {:class (when (= :tests selected-tab) "active")}
-               [tab-link {:href "#tests"} "Test Summary "
-                (when-let [fail-count (some->> build-data
-                                               :tests-data
-                                               :tests
-                                               (filter #(contains? #{"failure" "error"} (:result %)))
-                                               count)]
-                  (when (not= 0 fail-count)
-                    [:span "(" fail-count ")"]))]])
+           (let [tabs (cond-> []
+                        ;; tests don't get saved until the end of the build (TODO: stream the tests!)
+                        (build-model/finished? build)
+                        (conj {:name :tests
+                               :label (str
+                                       "Test Summary"
+                                       (when-let [fail-count (some->> build-data
+                                                                      :tests-data
+                                                                      :tests
+                                                                      (filter #(contains? #{"failure" "error"} (:result %)))
+                                                                      count)]
+                                         (when (not= 0 fail-count)
+                                           (str " (" fail-count ")"))))})
 
-            (when (has-scope :read-settings data)
-              [tab-tag {:class (when (= :usage-queue selected-tab) "active")}
-               [tab-link {:id "queued_explanation"
-                          :href "#usage-queue"} "Queue"
-                (when (:usage_queued_at build)
-                  [:span " ("
-                   (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                       :stop (or (:start_time build) (:stop_time build))})
-                   ")"])]])
+                        (has-scope :read-settings data)
+                        (conj {:name :usage-queue
+                               :label (html
+                                       (list
+                                        "Queue"
+                                        (when (:usage_queued_at build)
+                                          [:span " ("
+                                           (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                                               :stop (or (:start_time build) (:stop_time build))})
+                                           ")"])))})
 
-            (when (and (has-scope :trigger-builds data)
-                       (show-ssh-button? project)
-                       (not (:ssh_disabled build)))
-              [tab-tag {:class (when (= :ssh-info selected-tab) "active")}
-               [tab-link {:href "#ssh-info"}
-                "Debug via SSH"]])
+                        (and (has-scope :trigger-builds data)
+                             (show-ssh-button? project)
+                             (not (:ssh_disabled build)))
+                        (conj {:name :ssh-info :label "Debug via SSH"})
 
-            ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
-            (when (and logged-in? (build-model/finished? build))
-              [tab-tag {:class (when (= :artifacts selected-tab) "active")}
-               [tab-link {:href "#artifacts"}
-                "Artifacts"]])
+                        ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
+                        (and logged-in? (build-model/finished? build))
+                        (conj {:name :artifacts :label "Artifacts"})
 
-            [tab-tag {:class (when (= :config selected-tab) "active")}
-             [tab-link {:href "#config"} (str "circle.yml"
-                                              (when-let [errors (-> build build-model/config-errors)]
-                                                (gstring/format " (%s)" (count errors))))]]
+                        true
+                        (conj {:name :config
+                               :label (str "circle.yml"
+                                           (when-let [errors (-> build build-model/config-errors)]
+                                             (gstring/format " (%s)" (count errors))))})
 
-            (when (build-model/finished? build)
-              [tab-tag {:class (when (= :build-timing selected-tab) "active")}
-               [tab-link {:href "#build-timing"}
-                "Build Timing"]])
+                        (build-model/finished? build)
+                        (conj {:name :build-timing :label "Build Timing"})
 
-            (when (seq build-params)
-              [tab-tag {:class (when (= :build-parameters selected-tab) "active")}
-               [tab-link {:href "#build-parameters"} "Build Parameters"]])]]
+                        (seq build-params)
+                        (conj {:name :build-parameters :label "Build Parameters"}))]
+             (om/build tabs/tab-row {:tabs tabs
+                                     :selected-tab-name selected-tab-name
+                                     :on-tab-click #(navigate! owner (routes/v1-build-path
+                                                                      (vcs-url/vcs-type (:vcs_url build))
+                                                                      (:username build)
+                                                                      (:reponame build)
+                                                                      (:build_num build)
+                                                                      (name %)))}))]
 
-          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab))}
-           (case selected-tab
+          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
+           (case selected-tab-name
 
              :tests (om/build build-tests-list {:build-data build-data
                                                 :project project})

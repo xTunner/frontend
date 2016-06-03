@@ -49,8 +49,10 @@
 (defn v1-build-path
   "Temporary helper method for v1-build until we figure out how to make
    secretary's render-route work for regexes"
-  [vcs_type org repo build-num]
-  (str "/" (->short-vcs vcs_type) "/" org "/" repo "/" build-num))
+  ([vcs_type org repo build-num]
+   (v1-build-path vcs_type org repo build-num nil))
+  ([vcs_type org repo build-num tab]
+   (str "/" (->short-vcs vcs_type) "/" org "/" repo "/" build-num (when tab (str "#" tab)))))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to
@@ -93,6 +95,14 @@
   "Generate URL string from params."
   [params]
   (generate-url-str "/build-insights/:vcs_type/:org/:repo/:branch" params))
+
+(defn v1-add-projects-path
+  [params]
+  (generate-url-str "/add-projects" params))
+
+(defn v1-admin-fleet-state-path
+  [params]
+  (generate-url-str "/admin/fleet-state" params))
 
 (defn define-admin-routes! [nav-ch]
   (defroute v1-admin-switch "/admin/switch" []

@@ -3,11 +3,13 @@
             [inflections.core :refer [pluralize]]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [clojure.string :as str]
-            [frontend.async :refer [raise!]]
+            [frontend.async :refer [raise! navigate!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
+            [frontend.components.pieces.tabs :as tabs]
             [frontend.components.shared :as shared]
             [frontend.datetime :as datetime]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
@@ -179,12 +181,14 @@
                   [:ul
                    [:li "queued builds: " queued-builds]
                    [:li "containers requested by queued builds: " queue-container-count]]]]))
-            [:ul.nav.nav-tabs
-             (for [[tab-key tab-name] {:builders "Builders"
-                                       :running-builds "Running Builds"
-                                       :queued-builds "Queued Builds"}]
-               [:li (when (= current-tab tab-key) {:class "active"})
-                [:a {:href (str "#" (name tab-key))} tab-name]])]
+            (om/build tabs/tab-row {:tabs [{:name :builders
+                                            :label "Builders"}
+                                           {:name :running-builds
+                                            :label "Running Builds"}
+                                           {:name :queued-builds
+                                            :label "Queued Builds"}]
+                                    :selected-tab-name current-tab
+                                    :on-tab-click #(navigate! owner (routes/v1-admin-fleet-state-path {:_fragment (name %)}))})
             (if (#{:running-builds :queued-builds} current-tab)
               (om/build admin-builds-table
                         (:recent-builds app)
