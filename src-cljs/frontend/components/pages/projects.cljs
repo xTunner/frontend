@@ -5,13 +5,17 @@
 
 (defn page [data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:selected-org nil})
+    om/IRenderState
+    (render-state [_ {:keys [selected-org]}]
       (let [user (:current-user data)
             settings (:settings data)
-            selected-org (get-in settings [:add-projects :selected-org])]
+            selected-org selected-org]
         (html
-         [:div (om/build org-picker/picker
-                         {:orgs (:organizations user)
-                          :user user
-                          :selected-org selected-org})])))))
+         [:div.card
+          (om/build org-picker/picker
+                    {:orgs (:organizations user)
+                     :selected-org selected-org
+                     :on-org-click #(om/set-state! owner :selected-org %)})])))))

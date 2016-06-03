@@ -1,5 +1,5 @@
 .ns("frontend.components.pieces.org-picker", {
-  .ui("organization-list", {
+  .ui("picker", {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -43,16 +43,14 @@
     }
 
     > .vcs-icon {
-      .flex(1, 0, auto);
-      position: relative;
+      align-self: stretch;
+      margin-left: auto;
 
       > a {
-        float: right;
-        padding: 0 10px 20px 0;
+        padding: 5px 0 0 0;
+        color: @grayLight;
 
         > i {
-          width: 13.9px;
-          height: 16px;
           font-size: @fontSizeLarge;
         }
       }
