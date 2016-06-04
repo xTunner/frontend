@@ -3,6 +3,12 @@
 
   .alert-icon {
     padding-right: ((2 / 3) * 15px);
+    margin-left: 0;
+    margin-right: 10px;
+
+    &.warning {
+        color: @yellow;
+    }
   }
 
   &.expanded {
@@ -36,10 +42,17 @@
     }
   }
 
+  // TODO: Make a mixin for all of this in a rewerite to Sass
   &.alert-success {
     background-color: @greenLightest;
     border-color: @greenLightest;
   }
+
+  &.alert-warning {
+    background-color: @yellowLightest;
+    border-color: @yellowLightest;
+  }
+
 
   &.offer {
     position: relative;
@@ -48,12 +61,14 @@
     a {
       cursor: pointer;
     }
-    .dismiss {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-    }
   }
+
+    .dismiss {
+        cursor: pointer;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
 
   &.iconified {
     .flexy(row);
