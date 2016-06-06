@@ -41,6 +41,10 @@
     text-decoration: none;
     cursor: pointer;
 
+    &:hover, &:active {
+        color: @white;
+    }
+
     &:not(:hover) {
       color: @grayLightest;
     }
@@ -401,10 +405,16 @@
     padding: 0;
     align-items: flex-start;
 
-    &:hover,
-    &:focus {
-      color: @grayDarker;
+    color: @grayDarker;
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
       background: @grayLightest;
+    }
+
+    &:focus {
+      background: @grayLighter;
     }
 
     &a:active {
@@ -424,9 +434,13 @@
       align-items: flex-start;
       padding-top: 2em;
       padding-bottom: 1em;
-      font-weight: 600;
+      font-weight: 400;
       color: @gray;
       background: @white;
+
+      &:hover {
+          font-weight: inherit;
+      }
     }
 
     &:last-child {
@@ -447,13 +461,11 @@
 
   &:hover,
   &:focus {
-    color: @white;
     transition-duration: 0;
   }
 
   &:active,
   &.open {
-    color: white;
     background: fade(@black, 8%);
     transition-duration: 0;
   }
