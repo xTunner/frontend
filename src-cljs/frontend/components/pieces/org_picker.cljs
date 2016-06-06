@@ -1,5 +1,6 @@
 (ns frontend.components.pieces.org-picker
-  (:require [frontend.async :refer [raise!]]
+  (:require [devcards.core :as dc :refer-macros [defcard-om]]
+            [frontend.async :refer [raise!]]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true])
@@ -42,3 +43,30 @@
         (for [org orgs]
           (let [selected? (= selected-org org)]
             (organization org selected? #(on-org-click org))))]))))
+
+(dc/do
+  (defn picker-parent [{:keys [selected-tab-name selected-org] :as data} owner]
+    (om/component
+        (html
+         [:div
+          (om/build picker {:orgs [{:login "pgibbs"
+                                    :org false
+                                    :vcs_type "github"}
+                                   {:login "GibbonsP"
+                                    :org false
+                                    :vcs_type "bitbucket"}
+                                   {:login "Facebook"
+                                    :org true
+                                    :vcs_type "github"}
+                                   {:login "Initech"
+                                    :org true
+                                    :vcs_type "bitbucket"}]
+                            :selected-org selected-org
+                            :on-org-click #(om/update! data :selected-org %)})
+          "Selected: " (if selected-org
+                         (:login selected-org)
+                         "(Nothing)")])))
+
+  (defcard-om picker
+    picker-parent
+    {:selected-org nil}))
