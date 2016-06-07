@@ -53,10 +53,10 @@
         (html
           [:div.alert {:class "warning alert-warning"}
            [:i.material-icons.alert-icon.warning "warning"]
-           (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
-                                 plan-org-name (plan-model/trial-containers plan) (pluralize days "day"))
-                 [:a.pay-now-plain-text {:href plan-path} "Update your plan"]
-                 " before the trial expires to continue using these containers.")
+           (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
+                                plan-org-name (plan-model/trial-containers plan) (pluralize days "day"))
+           [:a.pay-now-plain-text {:href plan-path} "Update your plan"]
+           " before the trial expires to continue using these containers."
            [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-update-banner])}
             [:i.material-icons "clear"]]])))))
 
