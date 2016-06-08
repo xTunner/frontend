@@ -58,11 +58,19 @@
             selected-org (when selected-org-ident (get-in app selected-org-ident))]
         (html
          [:div {:data-component `page}
-          [:div.card
-           (om/build org-picker/picker
-                     {:orgs (:organizations user)
-                      :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
-                      :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})]
-          (when selected-org
-            [:div.card
-             (om/build table (:projects selected-org))])])))))
+          [:.sidebar
+           [:.card
+            (om/build org-picker/picker
+                      {:orgs (:organizations user)
+                       :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
+                       :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})]]
+          [:.main
+           [:.card
+            [:h1
+             (:name selected-org)
+             (case (:vcs_type selected-org)
+               "github" [:i.octicon.octicon-mark-github]
+               "bitbucket" [:i.fa.fa-bitbucket]
+               nil)]
+            (when selected-org
+              (om/build table (:projects selected-org)))]]])))))
