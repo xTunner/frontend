@@ -182,6 +182,15 @@
              :context {:org-name org-name
                        :vcs-type vcs-type}))
 
+(defn get-org-settings-normalized
+  "Issues an API call for the org's settings. The settings will be stored in a
+  normalized table at the root of the app state."
+  [org-name vcs-type api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/dangerzone/organization/%s/%s/settings" vcs-type org-name)
+             :org-settings-normalized
+             api-ch))
+
 (defn get-project-settings [project-name api-ch]
   (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)
              :project-settings api-ch
