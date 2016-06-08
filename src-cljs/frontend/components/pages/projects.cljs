@@ -6,6 +6,28 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
+(defn- table [projects owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:table {:data-component `table}
+        [:thead
+         [:tr
+          [:th "Project"]
+          [:th.right "Team Members"]
+          [:th.right "Settings"]]]
+        [:tbody
+         (for [project projects
+               :when (< 0 (count (:followers project)))]
+           [:tr
+            [:td (vcs-url/repo-name (:vcs_url project))]
+            [:td.right (count (:followers project))]
+            [:td.right [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type (:vcs_url project))
+                                                                    :org (vcs-url/org-name (:vcs_url project))
+                                                                    :repo (vcs-url/repo-name (:vcs_url project))})}
+                        [:i.material-icons "settings"]]]])]]))))
+
 (defn- organization-ident
   "Builds an Om Next-like ident for an organization."
   [org]
@@ -41,20 +63,6 @@
                      {:orgs (:organizations user)
                       :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
                       :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})]
-          [:div
-           [:table
-            [:thead
-             [:tr
-              [:th "Name"]
-              [:th "Team Members"]
-              [:th "Settings"]]]
-            [:tbody
-             (for [project (:projects selected-org)
-                   :when (< 0 (count (:followers project)))]
-               [:tr
-                [:td (vcs-url/repo-name (:vcs_url project))]
-                [:td (count (:followers project))]
-                [:td [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type (:vcs_url project))
-                                                                  :org (vcs-url/org-name (:vcs_url project))
-                                                                  :repo (vcs-url/repo-name (:vcs_url project))})}
-                      [:i.material-icons "settings"]]]])]]]])))))
+          (when selected-org
+            [:div.card
+             (om/build table (:projects selected-org))])])))))
