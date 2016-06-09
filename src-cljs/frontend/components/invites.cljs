@@ -114,6 +114,9 @@
 
 (defn teammates-invites [data owner opts]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :invite-teammates-impression}))
     om/IRender
     (render [_]
       (let [invite-data (:invite-data data)]
