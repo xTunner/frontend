@@ -65,13 +65,13 @@
                        :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
                        :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})]]
           [:.main
-           [:.card
-            [:.header
-             [:.title
-              (:name selected-org)
-              (case (:vcs_type selected-org)
-                "github" [:i.octicon.octicon-mark-github]
-                "bitbucket" [:i.fa.fa-bitbucket]
-                nil)]]
-            (when selected-org
-              (om/build table (:projects selected-org)))]]])))))
+           (when selected-org
+             [:.card
+              [:.header
+               [:.title
+                (:name selected-org)
+                (case (:vcs_type selected-org)
+                  "github" [:i.octicon.octicon-mark-github]
+                  "bitbucket" [:i.fa.fa-bitbucket]
+                  nil)]]
+              (om/build table (:projects selected-org))])]])))))
