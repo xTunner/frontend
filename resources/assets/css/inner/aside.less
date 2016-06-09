@@ -353,7 +353,8 @@
     }
 
     .aside-item {
-      padding: 0 (@grid-gutter-width / 2);
+        @aside-item-padding: (@grid-gutter-width / 2);
+        padding: @aside-item-padding @aside-item-padding;
     }
   }
   header {
@@ -402,13 +403,12 @@
 
   .aside-item {
     max-height: 3em;
-    padding: 0;
     align-items: flex-start;
 
     color: @grayDarker;
     text-decoration: none;
 
-    &:hover {
+    &:not(.aside-heading):hover {
       background: @grayLightest;
     }
 
@@ -427,22 +427,6 @@
       color: @grayDark;
       background: @grayLightest;
       cursor: default;
-    }
-
-    &.aside-heading {
-      align-items: flex-start;
-      background: @white;
-      font-size: @fontSizeSmallest;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      line-height: 3.2;
-      padding-bottom: 1em;
-      padding-top: 2em;
-      text-transform: uppercase;
-    }
-
-    &:last-child {
-      margin-bottom: 1em;
     }
   }
 }
@@ -466,6 +450,30 @@
   &.open {
     background: fade(@black, 8%);
     transition-duration: 0;
+  }
+
+  &.aside-heading {
+      align-items: flex-start;
+      background: @white;
+      font-size: @fontSizeSmallest;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      line-height: 3.2;
+      padding-bottom: 1em;
+      text-transform: uppercase;
+
+      &:first-child {
+          margin-top: 0.75em;
+      }
+
+      &:not(:first-child) {
+          margin-top: 1.5em;
+      }
+  }
+
+
+  &:last-child {
+      margin-bottom: 1em;
   }
 
   &.logo {
