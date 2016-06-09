@@ -66,11 +66,12 @@
                        :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})]]
           [:.main
            [:.card
-            [:h1
-             (:name selected-org)
-             (case (:vcs_type selected-org)
-               "github" [:i.octicon.octicon-mark-github]
-               "bitbucket" [:i.fa.fa-bitbucket]
-               nil)]
+            [:.header
+             [:.title
+              (:name selected-org)
+              (case (:vcs_type selected-org)
+                "github" [:i.octicon.octicon-mark-github]
+                "bitbucket" [:i.fa.fa-bitbucket]
+                nil)]]
             (when selected-org
               (om/build table (:projects selected-org)))]]])))))

@@ -10,6 +10,21 @@
 
     > .main {
       flex-grow: 1;
+
+      > .card {
+        > .header {
+          // Hack to get header border to reach across entire card. Needed until
+          // we have a real card component.
+          margin: 0 -15px 15px;
+          padding: 0 15px 15px 15px;
+          border-bottom: 1px solid @grayLighter;
+
+          > .title {
+            font-size: @fontSizeLarge;
+            line-height: 24px;
+          }
+        }
+      }
     }
   });
 
