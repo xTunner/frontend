@@ -37,7 +37,7 @@
 
 (defn get-bitbucket-repos [api-ch & {:keys [page]
                                   :or {page 1}}]
-  (ajax/ajax :get (str "/api/dangerzone/user/repos/bitbucket?page=" page)
+  (ajax/ajax :get (str "/api/v1.1/user/repos/bitbucket?page=" page)
              :bitbucket-repos
              api-ch
              :context {:page page}))
@@ -49,7 +49,7 @@
 
 (defn get-org-plan [org-name vcs-type api-ch]
   (ajax/ajax :get
-             (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+             (gstring/format "/api/v1.1/organization/%s/%s/plan"
                              vcs-type
                              org-name)
              :org-plan
@@ -69,7 +69,7 @@
                                                    (vcs-url/org-name (:vcs_url build))
                                                    (vcs-url/repo-name (:vcs_url build))
                                                    (:build_num build))
-                          "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/%s/usage-queue"
+                          "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/%s/usage-queue"
                                                       vcs-type
                                                       (vcs-url/org-name (:vcs_url build))
                                                       (vcs-url/repo-name (:vcs_url build))
@@ -92,13 +92,13 @@
                   deployments "/api/v1/admin/deployments"
                   branch (case vcs-type
                            "github" (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
-                           "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/tree/%s" vcs-type org repo branch))
+                           "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/tree/%s" vcs-type org repo branch))
                   repo (case vcs-type
                          "github" (gstring/format "/api/v1/project/%s/%s" org repo)
-                         "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s" vcs-type org repo))
+                         "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s" vcs-type org repo))
                   org (case vcs-type
                         "github" (gstring/format "/api/v1/organization/%s" org)
-                        "bitbucket" (gstring/format "/api/dangerzone/organization/%s/%s" vcs-type org))
+                        "bitbucket" (gstring/format "/api/v1.1/organization/%s/%s" vcs-type org))
                   :else "/api/v1/recent-builds")]
     (str url "?" (sec/encode-query-params (merge {:shallow true
                                                   :offset offset
@@ -163,7 +163,7 @@
 (defn get-action-steps [{:keys [vcs-url build-num] :as args} api-ch]
   (let [vcs-type (vcs-url/vcs-type vcs-url)
         url (case vcs-type
-              "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/action-steps"
+              "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/action-steps"
                                           vcs-type
                                           (vcs-url/project-name vcs-url)
                                           build-num)
@@ -175,7 +175,7 @@
 (defn get-org-settings [org-name vcs-type api-ch]
   (ajax/ajax :get
              (case vcs-type
-               "bitbucket" (gstring/format "/api/dangerzone/organization/%s/%s/settings" vcs-type org-name)
+               "bitbucket" (gstring/format "/api/v1.1/organization/%s/%s/settings" vcs-type org-name)
                "github" (gstring/format "/api/v1/organization/%s/settings" org-name))
              :org-settings
              api-ch
@@ -202,7 +202,7 @@
                     "github" (gstring/format "/api/v1/project/%s/%s/tests"
                                              (vcs-url/project-name (:vcs_url build))
                                              (:build_num build))
-                    "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/tests"
+                    "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/tests"
                                                 vcs-type
                                                 (vcs-url/project-name (:vcs_url build))
                                                 (:build_num build)))]
@@ -216,7 +216,7 @@
   (let [url (case (name vcs-type)
               "github" (gstring/format "/api/v1/project/%s/%s/%d/observables"
                                        username project build-num)
-              "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/%s/%d/observables"
+              "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/%d/observables"
                                           vcs-type username project build-num))]
     (ajax/ajax :get url :build-observables api-ch :context {:build-parts parts})))
 

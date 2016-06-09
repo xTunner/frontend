@@ -709,7 +709,7 @@
                    "github"
                    (gstring/format "/api/v1/project/%s" (vcs-url/project-name (:vcs_url (:context args))))
                    "bitbucket"
-                   (gstring/format "/api/dangerzone/project/bitbucket/%s" (vcs-url/project-name (:vcs_url (:context args)))))
+                   (gstring/format "/api/v1.1/project/bitbucket/%s" (vcs-url/project-name (:vcs_url (:context args)))))
                  :start-build
                  (get-in current-state [:comms :api])))))
 

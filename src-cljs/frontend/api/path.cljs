@@ -4,7 +4,7 @@
 (defn- base-project-url-path [vcs-type]
   (case vcs-type
     "bitbucket" (gstring/format
-                  "/api/dangerzone/project/%s"
+                  "/api/v1.1/project/%s"
                   vcs-type)
     "github" "/api/v1/project"))
 
