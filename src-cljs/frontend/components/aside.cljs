@@ -272,8 +272,7 @@
    {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
    {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
    {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans}
-   {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta}
-   ])
+   {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta}])
 
 (defn account-settings-menu [app owner]
   (reify

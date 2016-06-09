@@ -425,7 +425,7 @@
                          :beta          beta-program}
             subpage-com (get coms subpage)]
         (html
+          [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div#account-settings
            [:div#subpage
-             (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))] ])))))
-
+             (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]])))))
