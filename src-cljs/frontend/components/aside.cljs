@@ -267,6 +267,27 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
+(defn account-settings-nav-items []
+  [{:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notifications" :subpage :notifications}
+   {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
+   {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
+   {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans}
+   {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta}])
+
+(defn account-settings-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [subpage (:project-settings-subpage app :overview)]
+        (html
+          [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
+           [:header
+            [:h4 "Account Settings"]
+            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+             (common/ico :fail-light)]]
+           [:div.aside-user-options
+            (expand-menu-items (account-settings-nav-items) subpage)]])))))
+
 (defn admin-settings-nav-items []
   (filter
     identity
@@ -416,6 +437,7 @@
         (om/build project-settings-menu app)
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
+        (om/build account-settings-menu app)
         (om/build branch-activity-list app {:opts {:login (:login opts)
                                                    :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
 

@@ -36,7 +36,7 @@
                                    (get-in app state/user-organizations-path))]
         (html/html
          [:div#settings-plans
-          [:div.plans-item [:h1 "Org Settings"]]
+          [:legend "Org Settings"]
           [:div.plans-item
            [:h3 "Set up a plan for one of your Organizations:"]
            [:p "You can set up plans for any organization that you admin."]
@@ -74,7 +74,7 @@
         (html/html
          [:div#settings-heroku.settings
           [:div.heroku-item
-           [:h1 "Heroku API key"]
+           [:legend "Heroku API key"]
            [:p
             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
             " to set up deployment with Heroku."
@@ -114,8 +114,8 @@
             new-user-token (get-in app state/new-user-token-path)]
         (html/html
          [:div#settings-api.settings
+          [:legend "API Tokens"]
           [:div.api-item
-           [:h1 "API Tokens"]
            [:p
             "Create and revoke API tokens to access this account's details using our API."
             [:br]
@@ -275,7 +275,7 @@
            (let [message (get-in app state/general-message-path)
                  enrolled? (get-in app state/user-in-beta-path)]
              (list
-              [:h1 "Beta Program"
+              [:legend "Beta Program"
                (when (and enrolled? (not message))
                  (om/build svg {:class "badge-enrolled"
                                 :src (common/icon-path "Status-Passed")}))]
@@ -311,35 +311,36 @@
 
 (defn default-email-pref [owner email-pref]
   [:div.card
-   [:div.header
-    [:h2 "Default Email Notifications"]]
-   [:div.body
-    [:div.section
-     [:form
-      [:div.radio
-       [:label
-        [:input
-         {:name "email_pref",
-          :type "radio"
-          :checked (= email-pref "all")
-          :on-change (partial handle-email-notification-change owner "all")}]
-        "Send me a personalized email for every build in my projects."]]
-      [:div.radio
-       [:label
-        [:input
-         {:name "email_pref",
-          :type "radio"
-          :checked (= email-pref "smart")
-          :on-change (partial handle-email-notification-change owner "smart")}]
-        "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
-      [:div.radio
-       [:label
-        [:input
-         {:name "email_pref",
-          :type "radio"
-          :checked (= email-pref "none")
-          :on-change (partial handle-email-notification-change owner "none")}]
-        "Don't send me emails."]]]]]])
+  [:div.header
+   [:h2
+    "Default Email Notifications"]]
+  [:div.body
+   [:div.section
+    [:form
+     [:div.radio
+      [:label
+       [:input
+        {:name "email_pref",
+         :type "radio"
+         :checked (= email-pref "all")
+         :on-change (partial handle-email-notification-change owner "all")}]
+       "Send me a personalized email for every build in my projects."]]
+     [:div.radio
+      [:label
+       [:input
+        {:name "email_pref",
+         :type "radio"
+         :checked (= email-pref "smart")
+         :on-change (partial handle-email-notification-change owner "smart")}]
+       "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
+     [:div.radio
+      [:label
+       [:input
+        {:name "email_pref",
+         :type "radio"
+         :checked (= email-pref "none")
+         :on-change (partial handle-email-notification-change owner "none")}]
+       "Don't send me emails."]]]]]])
 
 (defn granular-email-prefs [{:keys [projects user] :as x} owner]
   (let [followed-orgs (into (sorted-set-by (fn [[x-vcs-type x-name]
@@ -407,6 +408,7 @@
             projects (get-in app state/projects-path)]
         (html/html
          [:div#settings-notification
+          [:legend "Notification Settings"]
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})])))))
@@ -423,23 +425,7 @@
                          :beta          beta-program}
             subpage-com (get coms subpage)]
         (html
-         [:div#account-settings
-          [:div.account-top
-           [:ul.nav.nav-tabs.account-settings-tabs
-            [:li#notifications (active-class-if-active subpage :notifications)
-             [:a {:href (routes/v1-account-subpage {:subpage "notifications"})}
-              "Notifications"]]
-            [:li#api (active-class-if-active subpage :api)
-             [:a {:href (routes/v1-account-subpage {:subpage "api"})} "API Tokens"]]
-            [:li#heroku (active-class-if-active subpage :heroku)
-             [:a {:href (routes/v1-account-subpage {:subpage "heroku"})} "Heroku Key"]]
-            [:li#plans (active-class-if-active subpage :plans)
-             [:a {:href (routes/v1-account-subpage {:subpage "plans"})} "Plan Pricing"]]
-            [:li#beta (active-class-if-active subpage :beta)
-             [:a {:href (routes/v1-account-subpage {:subpage "beta"})} "Beta Program"]]]]
-
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
-          [:div.settings-item
-           [:div.settings-item-inner
-            [:div#subpage
-             (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]]]])))))
+          [:div#account-settings
+           [:div#subpage
+             (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]])))))

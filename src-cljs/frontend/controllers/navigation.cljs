@@ -514,7 +514,7 @@
        (-> state
            state-utils/clear-page-state
            (assoc state/current-view navigation-point
-                  state/navigation-data (assoc args :show-aside-menu? false))
+                  state/navigation-data (assoc args :show-aside-menu? true))
            (assoc-in state/crumbs-path [{:type :account}]))
        (do
          (routes/open-to-outer! nav-ch :error {:status 401})
