@@ -1,5 +1,6 @@
 (ns frontend.components.pages.projects
   (:require [frontend.api :as api]
+            [frontend.components.common :as common]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
@@ -64,18 +65,31 @@
          [:div {:data-component `page}
           [:.sidebar
            [:.card
-            (om/build org-picker/picker
-                      {:orgs (:organizations user)
-                       :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
-                       :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})]]
+            (if (:organizations user)
+              (om/build org-picker/picker
+                        {:orgs (:organizations user)
+                         :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
+                         :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})
+              [:div.loading-spinner common/spinner])]]
           [:.main
-           (when selected-org
+           ;; TODO: Pulling these out of the ident is a bit of a hack. Instead,
+           ;; we should pull them out of the selected-org itself. We can do that
+           ;; once the selected-org and the orgs in org list are backed by the
+           ;; same normalized data.
+           ;;
+           ;; Once they are, we'll have a value for selected-org here, but it
+           ;; will only have the keys the org list uses (which includes the
+           ;; vcs-type and the name). The list of projects will still be missing
+           ;; until it's loaded by an additional API call.
+           (when-let [[_ [vcs-type name]] selected-org-ident]
              [:.card
               [:.header
                [:.title
-                (:name selected-org)
-                (case (:vcs_type selected-org)
+                name
+                (case vcs-type
                   "github" [:i.octicon.octicon-mark-github]
                   "bitbucket" [:i.fa.fa-bitbucket]
                   nil)]]
-              (om/build table (:projects selected-org))])]])))))
+              (if (:projects selected-org)
+                (om/build table (:projects selected-org))
+                [:div.loading-spinner common/spinner])])]])))))
