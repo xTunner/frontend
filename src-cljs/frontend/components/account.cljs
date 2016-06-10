@@ -311,36 +311,36 @@
 
 (defn default-email-pref [owner email-pref]
   [:div.card
-  [:div.header
-   [:h2
-    "Default Email Notifications"]]
-  [:div.body
-   [:div.section
-    [:form
-     [:div.radio
-      [:label
-       [:input
-        {:name "email_pref",
-         :type "radio"
-         :checked (= email-pref "all")
-         :on-change (partial handle-email-notification-change owner "all")}]
-       "Send me a personalized email for every build in my projects."]]
-     [:div.radio
-      [:label
-       [:input
-        {:name "email_pref",
-         :type "radio"
-         :checked (= email-pref "smart")
-         :on-change (partial handle-email-notification-change owner "smart")}]
-       "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
-     [:div.radio
-      [:label
-       [:input
-        {:name "email_pref",
-         :type "radio"
-         :checked (= email-pref "none")
-         :on-change (partial handle-email-notification-change owner "none")}]
-       "Don't send me emails."]]]]]])
+   [:div.header
+    [:h2
+     "Default Email Notifications"]]
+   [:div.body
+    [:div.section
+     [:form
+      [:div.radio
+       [:label
+        [:input
+         {:name "email_pref" ,
+          :type "radio"
+          :checked (= email-pref "all")
+          :on-change (partial handle-email-notification-change owner "all")}]
+        "Send me a personalized email for every build in my projects."]]
+      [:div.radio
+       [:label
+        [:input
+         {:name "email_pref" ,
+          :type "radio"
+          :checked (= email-pref "smart")
+          :on-change (partial handle-email-notification-change owner "smart")}]
+        "Send me a personalized email every time a build on a branch I've pushed to fails; also once they're fixed."]]
+      [:div.radio
+       [:label
+        [:input
+         {:name "email_pref" ,
+          :type "radio"
+          :checked (= email-pref "none")
+          :on-change (partial handle-email-notification-change owner "none")}]
+        "Don't send me emails."]]]]]])
 
 (defn granular-email-prefs [{:keys [projects user] :as x} owner]
   (let [followed-orgs (into (sorted-set-by (fn [[x-vcs-type x-name]
@@ -425,7 +425,7 @@
                          :beta          beta-program}
             subpage-com (get coms subpage)]
         (html
+         [:div#account-settings
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
-          [:div#account-settings
-           [:div#subpage
-             (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]])))))
+          [:div#subpage
+           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]])))))
