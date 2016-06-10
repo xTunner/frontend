@@ -848,24 +848,25 @@
 
 
 (defmethod post-control-event! :load-first-green-build-github-users
-  [target message {:keys [project-name]} previous-state current-state]
-  (ajax/ajax :get
-             (gstring/format "/api/v1/project/%s/users" project-name)
-             :first-green-build-github-users
-             (get-in current-state [:comms :api])
-             :context {:project-name project-name}))
-
+  [target message {:keys [project-id project-name]} previous-state current-state]
+  (let [vcs-type (vcs-url/vcs-type project-id)]
+    (ajax/ajax :get
+               (api-path/project-users vcs-type project-name)
+               :first-green-build-github-users
+               (get-in current-state [:comms :api])
+               :context {:project-name project-name})))
 
 (defmethod post-control-event! :invited-github-users
-  [target message {:keys [project-name org-name invitees]} previous-state current-state]
-  (let [context (if project-name
+  [target message {:keys [project-id project-name org-name invitees]} previous-state current-state]
+  (let [org-vcs-type "github"
+        context (if project-name
                   ;; TODO: non-hackish way to indicate the type of invite
                   {:project project-name :first_green_build true}
                   {:org org-name})]
     (button-ajax :post
                  (if project-name
-                   (gstring/format "/api/v1/project/%s/users/invite" project-name)
-                   (gstring/format "/api/v1/organization/%s/invite" org-name))
+                   (api-path/project-users-invite (vcs-url/vcs-type project-id) project-name)
+                   (api-path/organization-invite org-vcs-type org-name))
                  :invite-github-users
                  (get-in current-state [:comms :api])
                  :context context

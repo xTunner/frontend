@@ -8,6 +8,10 @@
                   vcs-type)
     "github" "/api/v1/project"))
 
+(defn organization [vcs-type org-name]
+  (gstring/format "/api/v1.1/%s/%s"
+                  (or vcs-type "github")))
+
 (defn branch-path [vcs-type org-name repo-name branch]
   (gstring/format
    "%s/%s/%s/tree/%s"
@@ -63,6 +67,20 @@
   (gstring/format
    "%s/%s/enable"
    (base-project-url-path vcs-type) project))
+
+(defn project-users [vcs-type project-name]
+  (gstring/format "%s/%s/users"
+                  (base-project-url-path vcs-type)
+                  project-name))
+
+(defn project-users-invite [vcs-type project-name]
+  (gstring/format "%s/%s/users/invite"
+                  (base-project-url-path vcs-type)
+                  project-name))
+
+(defn organization-invite [vcs-type org-name]
+  (gstring/format "%s/invite"
+                  (organization vcs-type org-name)))
 
 (defn build-retry [vcs-type org-name repo-name build-num]
   (gstring/format
