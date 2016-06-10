@@ -1514,3 +1514,7 @@
                                    :vcs-type vcs-type
                                    :plan-type (analytics-utils/canonical-plan-type plan-type)
                                    :template template}})))
+
+(defmethod control-event :dismiss-trial-update-banner
+  [_ _ _ state]
+  (assoc-in state state/dismissed-trial-update-banner true))

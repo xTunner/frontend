@@ -36,47 +36,6 @@
                                 conditions (plan-model/days-left-in-trial plan)))
     (every? identity conditions)))
 
-(defn non-freemium-trial-html [plan project project-name days org-name plan-path]
-  (html
-   [:div.alert {:class (when (plan-model/trial-over? plan) "alert-error")}
-    (cond (plan-model/trial-over? plan)
-          (list (gstring/format "The %s project is covered by %s's plan, whose trial ended %s ago. "
-                                project-name org-name (pluralize (Math/abs days) "day"))
-                [:a {:href plan-path} "Add a plan to continue running builds of private repositories"]
-                ".")
-
-          (> days 10)
-          (list (gstring/format "The %s project is covered by %s's trial, enjoy! (or check out "
-                                project-name org-name)
-                [:a {:href plan-path} "our plans"]
-                ").")
-
-          (> days 7)
-          (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
-                                project-name org-name (pluralize days "day"))
-                [:a {:href plan-path} "Check out our plans"]
-                ".")
-
-          (> days 4)
-          (list (gstring/format "The %s project is covered by %s's trial which has %s left. "
-                                project-name org-name (pluralize days "day"))
-                [:a {:href plan-path} "Add a plan"]
-                " to keep running builds.")
-
-          :else
-          (list (gstring/format "The %s project is covered by %s's trial which expires in %s! "
-                                project-name org-name (plan-model/pretty-trial-time plan))
-                [:a {:href plan-path} "Add a plan"]
-                " to keep running builds."))]))
-
-(defn freemium-trial-html [plan project project-name days org-name plan-path]
-  (html
-    [:div.alert {:class "alert-success"}
-       (list (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
-                             org-name (plan-model/trial-containers plan) (pluralize days "day"))
-             [:a.pay-now-plain-text {:href plan-path} "Update your plan"]
-             " before the trial expires to continue using these containers.")]))
-
 (defn trial-notice [data owner]
   (reify
     om/IRender
@@ -90,11 +49,16 @@
             days (plan-model/days-left-in-trial plan)
             plan-path (routes/v1-org-settings-path {:org plan-org-name
                                                     :vcs_type plan-vcs-type
-                                                    :_fragment "containers"})
-            trial-notice-fn (if (plan-model/freemium? plan)
-                              freemium-trial-html
-                              non-freemium-trial-html)]
-        (trial-notice-fn plan project project-name days plan-org-name plan-path)))))
+                                                    :_fragment "containers"})]
+        (html
+          [:div.alert {:class "warning alert-warning"}
+           [:i.material-icons.alert-icon.warning "warning"]
+           (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
+                                plan-org-name (plan-model/trial-containers plan) (pluralize days "day"))
+           [:a.pay-now-plain-text {:href plan-path} "Update your plan"]
+           " before the trial expires to continue using these containers."
+           [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-update-banner])}
+            [:i.material-icons "clear"]]])))))
 
 (defn show-enable-notice [project]
   (not (:has_usable_key project)))
