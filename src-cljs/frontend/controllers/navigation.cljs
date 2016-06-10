@@ -281,16 +281,13 @@
   [history-imp navigation-point args state]
   (let [current-user (get-in state state/user-path)]
     (-> state
+        state-utils/clear-page-state
         (assoc state/current-view navigation-point
                state/navigation-data (assoc args :show-aside-menu? false))
-        (assoc-in state/crumbs-path [{:type :projects}])
-        )))
+        (assoc-in state/crumbs-path [{:type :projects}]))))
 
 (defmethod post-navigated-to! :projects
   [history-imp navigation-point _ previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
-    (api/get-orgs api-ch :include-user? true)
-    )
   (set-page-title! "All projects"))
 
 (defmethod navigated-to :build-insights

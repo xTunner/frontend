@@ -42,6 +42,10 @@
     (init-state [_]
       {:selected-org-ident nil})
 
+    om/IWillMount
+    (will-mount [_]
+      (api/get-orgs (om/get-shared owner [:comms :api]) :include-user? true))
+
     ;; Emulate Om Next queries: Treat :selected-org-ident like a query param,
     ;; and when it changes, re-read the query. That is, in this case, fetch from
     ;; the API.
