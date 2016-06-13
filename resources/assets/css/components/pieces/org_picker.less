@@ -6,17 +6,17 @@
   });
 
   .ui("organization", {
-    @avatar-size: 48px;
-    @avatar-margin-right: 8px;
+    @avatar-size: 40px;
+    @avatar-margin-right: 10px;
 
     .flexy(row);
     .align-items(center);
 
     margin: 5px 0;
-    padding: 5px;
+    padding: 10px;
 
     border: 1px @grayBorder solid;
-    border-radius: 4px;
+    border-radius: 3px;
 
     cursor: pointer;
 
@@ -25,8 +25,10 @@
     }
 
     &.active {
+      box-shadow: 0 0 3px 0 rgba(102, 211, 227, 0.5), inset 0 0 3px 0 @blue;
+      border: solid 1px @blueLightest;
       color: @blueDark;
-      border-color: @blueLight;
+      transition: 0.5s;
     }
 
     > .avatar {
@@ -50,6 +52,10 @@
 
       > a {
         color: @grayLight;
+
+        &:hover {
+          text-decoration: none;
+        }
 
         > i {
           display: block;
