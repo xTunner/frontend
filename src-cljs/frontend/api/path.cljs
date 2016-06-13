@@ -95,3 +95,9 @@
                   build-num
                   step
                   index))
+
+(defn artifacts [vcs-type project-name build-num]
+  (gstring/format "%s/%s/%s/artifacts"
+                  (base-project-url-path vcs-type)
+                  project-name
+                  build-num))

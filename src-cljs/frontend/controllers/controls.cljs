@@ -229,15 +229,15 @@
 (defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        build (get-in current-state state/build-path)]
+        build (get-in current-state state/build-path)
+        vcs-type (vcs-url/vcs-type (:vcs_url build))
+        project-name (vcs-url/project-name (:vcs_url build))
+        build-num (:build_num build)]
     (ajax/ajax :get
-               (gstring/format "/api/v1/project/%s/%s/artifacts"
-                               (vcs-url/project-name (:vcs_url build))
-                               (:build_num build))
+               (api-path/artifacts vcs-type project-name build-num)
                :build-artifacts
                api-ch
                :context (build-model/id build))))
-
 
 (defmethod post-control-event! :tests-showed
   [target message _ previous-state current-state]
@@ -246,11 +246,9 @@
     (when (empty? (get-in current-state state/tests-path))
       (api/get-build-tests build api-ch))))
 
-
 (defmethod control-event :show-config-toggled
   [target message build-id state]
   (update-in state state/show-config-path not))
-
 
 (defmethod control-event :container-selected
   [target message {:keys [container-id]} state]
