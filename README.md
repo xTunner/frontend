@@ -102,13 +102,13 @@ one of the existing documents it should show up with just a page refresh.
 There are two main ways for running tests using the plugin `lein doo`. If you wish to run the tests only once, you can do that with
 
 ```
-lein doo chrome dev once
+lein doo chrome dev-test once
 ```
 
 To have a process watch for changes and run the tests every time you make changes, you can run
 
 ```
-lein doo chrome dev auto
+lein doo chrome dev-test auto
 ```
 
 The default option is `auto`, so it will run in that state if you ommit that argument. You can also use `phantom `, `firefox`, and a variety of our js enviornments to run the tests on. For full documentation read [lein doo's README](https://github.com/bensu/doo/)
