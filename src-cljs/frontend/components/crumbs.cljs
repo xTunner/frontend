@@ -75,7 +75,7 @@
 
 (defmethod render-crumb :projects
   [attrs]
-  (crumb-node {:name "All Projects"
+  (crumb-node {:name "Projects"
                :path (routes/v1-projects)}))
 
 (defmethod render-crumb :invite-teammates

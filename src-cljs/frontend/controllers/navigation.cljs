@@ -288,7 +288,7 @@
 
 (defmethod post-navigated-to! :projects
   [history-imp navigation-point _ previous-state current-state]
-  (set-page-title! "All projects"))
+  (set-page-title! "Projects"))
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
