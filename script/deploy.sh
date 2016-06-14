@@ -37,7 +37,7 @@ if ! grep -e "refs/heads/${CIRCLE_BRANCH}$" $heads_file ; then
   backend_branch="zfe%2F$CIRCLE_BRANCH"
   backend_sha=$(grep -e "refs/heads/production" $heads_file | awk '{print $1}')
 else
-  backend_sha=$(grep -e "refs/heads/${CIRCLE_BRANCH}$" | awk '{print $1}')
+  backend_sha=$(grep -e "refs/heads/${CIRCLE_BRANCH}$" $heads_file | awk '{print $1}')
 fi
 
 # Trigger a backend build of this sha1.
