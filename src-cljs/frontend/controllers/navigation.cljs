@@ -266,7 +266,6 @@
 
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state]
-  (println "making api requests.")
   (let [api-ch (get-in current-state [:comms :api])
         load-gh-repos? (get-in current-state state/github-repos-loading-path)
         load-bb-repos? (get-in current-state state/bitbucket-repos-loading-path)]
@@ -277,6 +276,19 @@
     (when load-bb-repos?
       (api/get-bitbucket-repos api-ch)))
   (set-page-title! "Add projects"))
+
+(defmethod navigated-to :projects
+  [history-imp navigation-point args state]
+  (let [current-user (get-in state state/user-path)]
+    (-> state
+        state-utils/clear-page-state
+        (assoc state/current-view navigation-point
+               state/navigation-data (assoc args :show-aside-menu? false))
+        (assoc-in state/crumbs-path [{:type :projects}]))))
+
+(defmethod post-navigated-to! :projects
+  [history-imp navigation-point _ previous-state current-state]
+  (set-page-title! "Projects"))
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]

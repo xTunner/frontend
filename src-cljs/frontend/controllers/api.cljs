@@ -921,3 +921,7 @@
   [target message status {:keys [context] :as args} previous-state current-state]
   (put! (get-in current-state [:comms :errors]) [:api-error args])
   (forms/release-button! (:uuid context) status))
+
+(defmethod api-event [:org-settings-normalized :success]
+  [target message status {:keys [resp]} state]
+  (update-in state [:organization/by-vcs-type-and-name [(:vcs_type resp) (:name resp)]] merge resp))

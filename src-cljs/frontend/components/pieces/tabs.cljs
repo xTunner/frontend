@@ -1,5 +1,5 @@
 (ns frontend.components.pieces.tabs
-  (:require [devcards.core :as dc :refer-macros [defcard defcard-om defcard-doc om-root]]
+  (:require [devcards.core :as dc :refer-macros [defcard-om]]
             [frontend.config :as config]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
@@ -33,7 +33,7 @@
              [:span.tab-icon icon])
            [:span.tab-label label]])]))))
 
-(when config/client-dev?
+(dc/do
   (defn tab-row-parent [{:keys [selected-tab-name] :as data} owner]
     (om/component
         (html
@@ -46,7 +46,7 @@
                              :on-tab-click #(om/update! data :selected-tab-name %)})
           "Selected: " (str selected-tab-name)])))
 
-  (defcard tab-row
+  (defcard-om tab-row
     "Here, a parent renders a `tab-row`. Note that the `tab-row` itself does not
     track which tab is selected as state. Instead, the parent tells the tab row
     which tab is selected. It's the parent's responsibility to listen to the
@@ -55,7 +55,7 @@
     here), or some other means. (Often, in our app, we accomplish this by
     navigating to a different URL, which specifies the tab which should be
     selected.)"
-    (om-root tab-row-parent)
+    tab-row-parent
     {:selected-tab-name :tab-one})
 
   (defn tab-row-with-icon-parent [{:keys [selected-tab-name] :as data} owner]
@@ -72,7 +72,7 @@
                              :on-tab-click #(om/update! data :selected-tab-name %)})
           "Selected: " (str selected-tab-name)])))
 
-  (defcard tab-row-with-icon
+  (defcard-om tab-row-with-icon
     "This `tab-row` features icons on the tab labels."
-    (om-root tab-row-with-icon-parent)
+    tab-row-with-icon-parent
     {:selected-tab-name :tab-one}))

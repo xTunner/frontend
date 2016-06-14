@@ -1,30 +1,23 @@
 (ns frontend.components.add-projects
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [frontend.async :refer [raise! navigate!]]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
-            [frontend.config :as config]
-            [frontend.datetime :as datetime]
-            [frontend.models.feature :as feature]
-            [frontend.models.organization :as organization]
+            [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :refer-macros [inspect]]
-            [frontend.utils.github :as gh-utils]
+            [frontend.utils :as utils]
             [frontend.utils.bitbucket :as bitbucket]
-            [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs :as vcs-utils]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
-            [goog.string.format]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [frontend.models.plan :as pm])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [html defrender]]))
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [defrender html]]))
 
 (def view "add-projects")
 
@@ -40,151 +33,10 @@
                      (string/join "and " missing-scopes)
                      (if (< 1 (count missing-scopes)) "scope" "scopes"))]]])
 
-(defn organization [org settings owner]
-  (let [login (:login org)
-        type (if (:org org) :org :user)
-        vcs-type (:vcs_type org)
-        selected-org-view {:login login :type type :vcs-type vcs-type}]
-    [:li.organization {:on-click #(raise! owner [:selected-add-projects-org selected-org-view])
-                       :class (when (= selected-org-view (get-in settings [:add-projects :selected-org])) "active")}
-     [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
-            :height 50}]
-     [:div.orgname login]
-     (if vcs-type
-       [:div.org-icon
-        [:a {:href (str (case vcs-type
-                          "github" (gh-utils/http-endpoint)
-                          "bitbucket" (bitbucket/http-endpoint))
-                        "/" login)
-             :target "_blank"}
-         (case vcs-type
-           "github" [:i.octicon.octicon-mark-github]
-           "bitbucket" [:i.fa.fa-bitbucket])]])]))
-
-(defn missing-org-info
-  "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
-  [owner]
-  [:p
-   "Are you missing an organization? You or an admin may need to enable CircleCI for your organization in "
-   [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
-    "GitHub's application permissions"]
-   ". "
-   [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
-                      :class "active"}
-    "Refresh this list"]
-   " after you have updated permissions."])
-
-(defn organization-listing [data owner]
-  (reify
-    om/IDisplayName (display-name [_] "Organization Listing")
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
-    om/IRender
-    (render [_]
-      (let [{:keys [user settings repos]} data]
-        (html
-         [:div
-          [:div.overview
-           [:span.big-number "1"]
-           [:div.instruction "Choose a GitHub account that you are a member of or have access to."]]
-          [:div.organizations
-           [:h4 "Your accounts"]
-           [:ul.organizations
-            ;; here we display you, then all of your organizations, then all of the owners of
-            ;; repos that aren't organizations and aren't you. We do it this way because the
-            ;; organizations route is much faster than the repos route. We show them
-            ;; in this order (rather than e.g. putting the whole thing into a set)
-            ;; so that new ones don't jump up in the middle as they're loaded.
-            (let [org-names (->> user :organizations (map :login) set)
-                  in-orgs? (comp org-names :login)]
-              (->> repos
-                   (map :owner)
-                   (remove in-orgs?)
-                   set
-                   (concat (->> user :organizations (sort-by :org)))
-                   (filter vcs-github?)
-                   (map (fn [org] (organization org settings owner)))))]
-           (when (get-in user [:repos-loading :github])
-             [:div.orgs-loading
-              [:div.loading-spinner common/spinner]])
-           (missing-org-info owner)]])))))
-
 (defn select-vcs-type [vcs-type item]
   (case vcs-type
     "bitbucket" (vcs-bitbucket? item)
     "github"    (vcs-github?    item)))
-
-(defn organization-listing-with-bitbucket [data owner]
-  (reify
-    om/IDisplayName (display-name [_] "Organization Listing")
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip "#collaborators-tooltip-hack" {:placement "right"}))
-    om/IRender
-    (render [_]
-      (let [{:keys [user settings repos tab]} data
-            github-authorized? (user-model/github-authorized? user)
-            bitbucket-authorized? (user-model/bitbucket-authorized? user)
-            vcs-type (cond
-                       tab tab
-                       github-authorized? "github"
-                       true "bitbucket")
-            github-active? (= "github" vcs-type)
-            bitbucket-active? (= "bitbucket" vcs-type)]
-        (html
-         [:div
-          [:div.overview
-           [:span.big-number "1"]
-           [:div.instruction "Choose an organization that you are a member of."]]
-          (om/build tabs/tab-row {:tabs [{:name "github"
-                                          :icon (html [:i.octicon.octicon-mark-github])
-                                          :label "GitHub"}
-                                         {:name "bitbucket"
-                                          :icon (html [:i.fa.fa-bitbucket])
-                                          :label "Bitbucket"}]
-                                  :selected-tab-name vcs-type
-                                  :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})
-          [:div.organizations.card
-           (when github-active?
-             (if github-authorized?
-               (missing-org-info owner)
-               [:div
-                [:p "Github is not connected to your account yet. To connect it, click the button below:"]
-                [:a.btn.btn-primary {:href (gh-utils/auth-url)
-                                     :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                     :properties {:vcs-type vcs-type}})}
-                 "Authorize with Github"]]))
-           (when (and bitbucket-active?
-                      (not bitbucket-authorized?))
-             [:div
-              [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
-              [:a.btn.btn-primary {:href (bitbucket/auth-url)
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                   :properties {:vcs-type vcs-type}})}
-               "Authorize with Bitbucket"]])
-           [:ul.organizations
-            ;; here we display you, then all of your organizations, then all of the owners of
-            ;; repos that aren't organizations and aren't you. We do it this way because the
-            ;; organizations route is much faster than the repos route. We show them
-            ;; in this order (rather than e.g. putting the whole thing into a set)
-            ;; so that new ones don't jump up in the middle as they're loaded.
-            (let [user-org-keys (->> user
-                                 :organizations
-                                 (map (juxt :vcs_type :login))
-                                 set)
-                  user-org? (comp user-org-keys (juxt :vcs_type :login))
-                  all-orgs (concat (sort-by :org (:organizations user))
-                                   (->> repos
-                                        (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs-type)))
-                                        (remove user-org?)
-                                        distinct))]
-              (->> all-orgs
-                   (filter (partial select-vcs-type vcs-type))
-                   (map (fn [org] (organization org settings owner)))))]
-           (when (get-in user [:repos-loading (keyword vcs-type)])
-             [:div.orgs-loading
-              [:div.loading-spinner common/spinner]])]])))))
 
 (defn repos-explanation [user]
   [:div.add-repos
@@ -513,13 +365,91 @@
      [:h2 "Warning: Access Problems"]
      [:p.missing-org-info
       "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
-      [:a.gh_app_permissions {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+      [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
        "GitHub's application permissions"]
       "."]
      [:div.inaccessible-org-wrapper
       (map (fn [org-follows] (om/build inaccessible-org-item
                                        {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
            (vals follows-by-orgs))]]))
+
+(defn- missing-org-info
+  "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
+  [owner]
+  (html
+   [:p
+    "Are you missing an organization? You or an admin may need to enable CircleCI for your organization in "
+    [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+     "GitHub's application permissions"]
+    ". "
+    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
+         :class "active"}
+     "Refresh this list"]
+    " after you have updated permissions."]))
+
+(defn- org-picker-without-bitbucket [{:keys [orgs user selected-org]} owner]
+  (reify
+    om/IDisplayName (display-name [_] "Organization Listing")
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        [:h4 "Your accounts"]
+        (om/build org-picker/picker {:orgs (filter vcs-github? orgs)
+                                     :selected-org selected-org
+                                     :on-org-click #(raise! owner [:selected-add-projects-org %])})
+        (when (get-in user [:repos-loading :github])
+          [:div.orgs-loading
+           [:div.loading-spinner common/spinner]])
+        (missing-org-info owner)]))))
+
+(defn- org-picker-with-bitbucket [{:keys [orgs user selected-org tab]} owner]
+  (reify
+    om/IDisplayName (display-name [_] "Organization Listing")
+    om/IRender
+    (render [_]
+      (let [github-authorized? (user-model/github-authorized? user)
+            bitbucket-authorized? (user-model/bitbucket-authorized? user)
+            selected-vcs-type (cond
+                                tab tab
+                                github-authorized? "github"
+                                :else "bitbucket")
+            github-active? (= "github" selected-vcs-type)
+            bitbucket-active? (= "bitbucket" selected-vcs-type)]
+        (html
+         [:div
+          (om/build tabs/tab-row {:tabs [{:name "github"
+                                          :icon (html [:i.octicon.octicon-mark-github])
+                                          :label "GitHub"}
+                                         {:name "bitbucket"
+                                          :icon (html [:i.fa.fa-bitbucket])
+                                          :label "Bitbucket"}]
+                                  :selected-tab-name selected-vcs-type
+                                  :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})
+          [:div.organizations.card
+           (when github-active?
+             (if github-authorized?
+               (missing-org-info owner)
+               [:div
+                [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
+                [:a.btn.btn-primary {:href (gh-utils/auth-url)
+                                     :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                     :properties {:vcs-type selected-vcs-type}})}
+                 "Authorize with GitHub"]]))
+           (when (and bitbucket-active?
+                      (not bitbucket-authorized?))
+             [:div
+              [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
+              [:a.btn.btn-primary {:href (bitbucket/auth-url)
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                   :properties {:vcs-type selected-vcs-type}})}
+               "Authorize with Bitbucket"]])
+           (om/build org-picker/picker {:orgs (filter (partial select-vcs-type selected-vcs-type) orgs)
+                                        :selected-org selected-org
+                                        :on-org-click #(raise! owner [:selected-add-projects-org %])})
+           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
+             [:div.orgs-loading
+              [:div.loading-spinner common/spinner]])]])))))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
@@ -540,13 +470,33 @@
       [:hr]
       [:div.org-repo-container
        [:div.app-aside.org-listing
-        (om/build (if (vcs-utils/bitbucket-enabled? user)
-                    organization-listing-with-bitbucket
-                    organization-listing)
-                  {:user user
-                   :settings settings
-                   :repos repos
-                   :tab tab})]
+        ;; We display you, then all of your organizations, then all of the owners of
+        ;; repos that aren't organizations and aren't you. We do it this way because the
+        ;; organizations route is much faster than the repos route. We show them
+        ;; in this order (rather than e.g. putting the whole thing into a set)
+        ;; so that new ones don't jump up in the middle as they're loaded.
+        (let [user-org-keys (->> user
+                                 :organizations
+                                 (map (juxt :vcs_type :login))
+                                 set)
+              user-org? (comp user-org-keys (juxt :vcs_type :login))
+              orgs (concat (sort-by :org (:organizations user))
+                           (->> repos
+                                (map (fn [{:keys [owner vcs_type]}] (assoc owner :vcs_type vcs_type)))
+                                (remove user-org?)
+                                distinct))]
+          [:div
+           [:div.overview
+            [:span.big-number "1"]
+            [:div.instruction "Choose an organization that you are a member of."]]
+           (if (vcs-utils/bitbucket-enabled? user)
+             (om/build org-picker-with-bitbucket {:orgs orgs
+                                                  :selected-org selected-org
+                                                  :user user
+                                                  :tab tab})
+             (om/build org-picker-without-bitbucket {:orgs orgs
+                                                     :selected-org selected-org
+                                                     :user user}))])]
        [:div#project-listing.project-listing
         [:div.overview
          [:span.big-number "2"]
@@ -557,8 +507,8 @@
            " and "
            [:a {:href (routes/v1-insights)} "Insights"]
            "."]]]
-         (om/build repo-lists {:user user
-                               :repos repos
-                               :selected-org selected-org
-                               :selected-plan (get-in data state/org-plan-path)
-                               :settings settings})]]])))
+        (om/build repo-lists {:user user
+                              :repos repos
+                              :selected-org selected-org
+                              :selected-plan (get-in data state/org-plan-path)
+                              :settings settings})]]])))
