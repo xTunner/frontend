@@ -1,73 +1,70 @@
 (ns frontend.components.app
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [frontend.api :as api]
             [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
+            [frontend.components.add-projects :as add-projects]
             [frontend.components.admin :as admin]
             [frontend.components.aside :as aside]
-            [frontend.components.build :as build-com]
             [frontend.components.dashboard :as dashboard]
-            [frontend.components.add-projects :as add-projects]
+            [frontend.components.enterprise-landing :as enterprise-landing]
+            [frontend.components.errors :as errors]
             [frontend.components.insights :as insights]
             [frontend.components.insights.project :as project-insights]
             [frontend.components.invites :as invites]
-            [frontend.components.enterprise-landing :as enterprise-landing]
-            [frontend.components.errors :as errors]
-            [frontend.components.footer :as footer]
-            [frontend.components.header :as header]
-            [frontend.components.inspector :as inspector]
             [frontend.components.key-queue :as keyq]
-            [frontend.components.placeholder :as placeholder]
-            [frontend.components.project-settings :as project-settings]
-            [frontend.components.shared :as shared]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
-            [frontend.components.common :as common]
-            [frontend.components.top-nav :as top-nav]
-            [frontend.components.pages.projects :as projects-page]
-            [frontend.api :as api]
+            [frontend.components.pages.build :as build]
+            [frontend.components.pages.projects :as projects]
+            [frontend.components.project-settings :as project-settings]
+            [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
-            [frontend.instrumentation :as instrumentation]
             [frontend.models.feature :as feature]
-            [frontend.models.project :as project]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
             [frontend.utils.seq :refer [dissoc-in]]
             [goog.dom :as gdom]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [ankha.core :as ankha])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def keymap
   (atom nil))
 
-(defn loading [app owner]
-  (reify
-    om/IRender
-    (render [_] (html [:div.loading-spinner common/spinner]))))
+(defn templated
+  "Takes an old-world \"dominant component\" function and returns a new-world
+  page function, which builds a page using the main page template."
+  [old-world-dominant-component-f]
+  (fn [app owner]
+    (reify
+      om/IRender
+      (render [_]
+        (om/build main-template/template {:app app
+                                          :main-content (om/build old-world-dominant-component-f app)})))))
 
-(defn dominant-component [app-state owner]
-  (case (:navigation-point app-state)
-    :build build-com/build
-    :dashboard dashboard/dashboard
-    :add-projects add-projects/add-projects
-    :build-insights insights/build-insights
-    :project-insights project-insights/project-insights
-    :invite-teammates invites/teammates-invites
-    :project-settings project-settings/project-settings
-    :org-settings org-settings/org-settings
-    :account account/account
-    :projects projects-page/page
+(def nav-point->page
+  (merge
+   ;; Page components, which are good as they are.
+   {:build build/page}
+   ;; Old-World dominant components which need to be wrapped in the `main` template. As we
+   ;; migrate these, we'll move them into the map above.
+   (into {}
+         (map #(vector (key %) (templated (val %))))
+         {:dashboard dashboard/dashboard
+          :add-projects add-projects/add-projects
+          :build-insights insights/build-insights
+          :project-insights project-insights/project-insights
+          :invite-teammates invites/teammates-invites
+          :project-settings project-settings/project-settings
+          :org-settings org-settings/org-settings
+          :account account/account
+          :projects projects/page
 
-    :admin-settings admin/admin-settings
-    :build-state admin/build-state
-    :switch admin/switch
+          :admin-settings admin/admin-settings
+          :build-state admin/build-state
+          :switch admin/switch
 
-    :loading loading
+          :landing (if (config/enterprise?) enterprise-landing/home landing/home)
 
-    :landing (if (config/enterprise?) enterprise-landing/home landing/home)
-
-    :error errors/error-page))
+          :error errors/error-page})))
 
 (defn app* [app owner {:keys [reinstall-om!]}]
   (reify
@@ -87,20 +84,16 @@
               restore-state! #(do (raise! owner [:state-restored])
                                   ;; Components are not aware of external state changes.
                                   (reinstall-om!))
-              show-inspector? (get-in app state/show-inspector-path)
               logged-in? (get-in app state/user-path)
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
-              dom-com (dominant-component app owner)
-              show-footer? (not= :signup (:navigation-point app))
-              project (get-in app state/project-path)]
+              page (nav-point->page (:navigation-point app))]
           (reset! keymap {["ctrl+s"] persist-state!
                           ["ctrl+r"] restore-state!})
           (html
            (let [inner? (get-in app state/inner?-path)]
 
              [:div#app {:class (concat [(if inner? "inner" "outer")]
-                                       (when-not logged-in? ["aside-nil"])
                                        ;; The following is meant for the landing ab test to hide old header/footer
                                        (when (= :pricing (:navigation-point app)) ["pricing"]))
                         ;; Disable natural form submission. This keeps us from having to
@@ -131,28 +124,7 @@
               (when (and inner? logged-in?)
                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
-              [:main.app-main.new-app-main-margin {:ref "app-main"}
-               (when (and inner? logged-in? (feature/enabled? :ui-fp-top-bar))
-                 (om/build top-nav/top-nav app-without-container-data))
-
-               (when show-inspector?
-                 ;; TODO inspector still needs lots of work. It's slow and it defaults to
-                 ;;     expanding all datastructures.
-                 (om/build inspector/inspector app))
-
-               (om/build header/header app-without-container-data)
-
-               [:div.app-dominant
-                (when (and inner? logged-in?)
-                  (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
-
-
-                [:div.main-body
-                 (om/build dom-com app)
-
-                 (when (and (not inner?) show-footer? (config/footer-enabled?))
-                   [:footer.main-foot
-                    (footer/footer)])]]]])))))))
+              (om/build page app)])))))))
 
 
 (defn app [app owner opts]

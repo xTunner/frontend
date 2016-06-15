@@ -2,7 +2,6 @@
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
             [frontend.config :as config]
-            [frontend.components.build-head :as build-head]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
@@ -52,7 +51,7 @@
                  "Organization Settings"]
             :else nil))))
 
-(defn head-user [app owner]
+(defn head-user [{:keys [app actions]} owner]
   (reify
     om/IDisplayName (display-name [_] "User Header")
     om/IRender
@@ -69,16 +68,15 @@
            [:ol.breadcrumb (crumbs/crumbs crumbs-data)]
            (when (show-follow-project-button? app)
              (forms/managed-button
-               [:button#follow-project-button
-                {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
-                 :data-spinner true}
-                "follow the " (vcs-url/repo-name vcs-url) " project"]))
+              [:button#follow-project-button
+               {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                :data-spinner true}
+               "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app owner)
+           actions
            (when (= :project-settings (:navigation-point app))
              [:a.settings {:href (routes/v1-dashboard-path {:org project-user :repo project-name :vcs_type vcs-type})}
               (str "View " project-name " »")])
-           (when (= :build (:navigation-point app))
-             (om/build build-head/build-head-actions app))
            (when (= :project-insights (:navigation-point app))
              (om/build insights-project/header app))
            (when (= :add-projects (:navigation-point app))
@@ -353,7 +351,7 @@
            [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner event-data])}
             [:i.material-icons "clear"]]])))))
 
-(defn inner-header [app owner]
+(defn inner-header [{:keys [app actions] :as params} owner]
   (reify
     om/IDisplayName (display-name [_] "Inner Header")
     om/IRender
@@ -392,9 +390,9 @@
                       (not (get-in app state/dismissed-trial-offer-banner)))
              (om/build trial-offer-banner app))
            (when (seq (get-in app state/crumbs-path))
-             (om/build head-user app))])))))
+             (om/build head-user params))])))))
 
-(defn header [app owner]
+(defn header [{:keys [app actions] :as params} owner]
   (reify
     om/IDisplayName (display-name [_] "Header")
     om/IRender
@@ -404,5 +402,5 @@
             _ (utils/mlog "header render inner? " inner? " logged-in? " logged-in?)]
         (html
           (if inner?
-            (om/build inner-header app)
+            (om/build inner-header params)
             (om/build outer-header app)))))))
