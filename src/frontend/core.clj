@@ -114,9 +114,6 @@
       :else {:proto "http" :host "dev.circlehost:8080"})))
 
 (def proxy-config
-  ;; Incomplete lists of routes to proxy. Unfortunately duplicated knowledge between
-  ;; here and various places in the backend. Ultimately, this will get cleaned up
-  ;; once we have production web servers separate from backend API servers.
   {:backend-lookup-fn backend-lookup})
 
 (defn start-server []
