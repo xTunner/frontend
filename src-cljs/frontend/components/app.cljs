@@ -15,8 +15,8 @@
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.pages.build :as build]
+            [frontend.components.pages.project-settings :as project-settings]
             [frontend.components.pages.projects :as projects]
-            [frontend.components.project-settings :as project-settings]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
@@ -43,7 +43,8 @@
 (def nav-point->page
   (merge
    ;; Page components, which are good as they are.
-   {:build build/page}
+   {:build build/page
+    :project-settings project-settings/page}
    ;; Old-World dominant components which need to be wrapped in the `main` template. As we
    ;; migrate these, we'll move them into the map above.
    (into {}
@@ -53,7 +54,6 @@
           :build-insights insights/build-insights
           :project-insights project-insights/project-insights
           :invite-teammates invites/teammates-invites
-          :project-settings project-settings/project-settings
           :org-settings org-settings/org-settings
           :account account/account
           :projects projects/page
