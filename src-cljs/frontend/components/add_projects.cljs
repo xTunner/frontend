@@ -244,7 +244,7 @@
     om/IRenderState
     (render-state [_ {:keys [selected-tab-name]}]
       (let [selected-org-login (:login selected-org)
-            loading-repos? (get-in user [:repos-loading (keyword (:vcs-type selected-org))])
+            loading-repos? (get-in user [:repos-loading (keyword (:vcs_type selected-org))])
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])
             show-forks (true? (get-in settings [:add-projects :show-forks]))]
         (html
@@ -266,7 +266,7 @@
                    display? (fn [repo]
                               (and
                                (or show-forks (not (:fork repo)))
-                               (select-vcs-type (or (:vcs-type selected-org)
+                               (select-vcs-type (or (:vcs_type selected-org)
                                                     "github") repo)
                                (= (:username repo) selected-org-login)
                                (gstring/caseInsensitiveContains (:name repo) repo-filter-string)))
