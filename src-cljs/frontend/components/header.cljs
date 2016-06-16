@@ -1,7 +1,6 @@
 (ns frontend.components.header
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [raise!]]
-            [frontend.config :as config]
+  (:require [frontend.async :refer [raise!]]
+            [frontend.components.add-projects :as add-projects]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
@@ -9,19 +8,17 @@
             [frontend.components.license :as license]
             [frontend.components.statuspage :as statuspage]
             [frontend.components.svg :as svg]
-            [frontend.models.project :as project-model]
+            [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan]
+            [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :refer-macros [inspect]]
+            [frontend.utils :as utils]
             [frontend.utils.github :refer [auth-url]]
-            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.html :refer [open-ext]]
-            [frontend.components.insights.project :as insights-project]
-            [frontend.components.add-projects :as add-projects]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [frontend.utils.vcs-url :as vcs-url]
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-follow-project-button? [app]
@@ -71,8 +68,6 @@
                "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app owner)
            actions
-           (when (= :project-insights (:navigation-point app))
-             (om/build insights-project/header app))
            (when (= :add-projects (:navigation-point app))
              (om/build add-projects/add-projects-head-actions app))])))))
 

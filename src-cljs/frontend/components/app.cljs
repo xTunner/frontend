@@ -9,12 +9,12 @@
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
             [frontend.components.insights :as insights]
-            [frontend.components.insights.project :as project-insights]
             [frontend.components.invites :as invites]
             [frontend.components.key-queue :as keyq]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.pages.build :as build]
+            [frontend.components.pages.project-insights :as project-insights]
             [frontend.components.pages.project-settings :as project-settings]
             [frontend.components.pages.projects :as projects]
             [frontend.components.templates.main :as main-template]
@@ -44,7 +44,8 @@
   (merge
    ;; Page components, which are good as they are.
    {:build build/page
-    :project-settings project-settings/page}
+    :project-settings project-settings/page
+    :project-insights project-insights/page}
    ;; Old-World dominant components which need to be wrapped in the `main` template. As we
    ;; migrate these, we'll move them into the map above.
    (into {}
@@ -52,7 +53,6 @@
          {:dashboard dashboard/dashboard
           :add-projects add-projects/add-projects
           :build-insights insights/build-insights
-          :project-insights project-insights/project-insights
           :invite-teammates invites/teammates-invites
           :org-settings org-settings/org-settings
           :account account/account
