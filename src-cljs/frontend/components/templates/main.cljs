@@ -12,7 +12,15 @@
             clojure.data)
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn template [{:keys [app main-content header-actions]} owner]
+(defn template
+  "The template for building a page in the app.
+
+  app            - The entire app state.
+  main-content   - A component which forms the main content of the page, which
+                   is everything below the header.
+  header-actions - A component which will be placed on the right in the header.
+                   This is used for page-wide actions."
+  [{:keys [app main-content header-actions]} owner]
   (reify
     om/IRender
     (render [_]

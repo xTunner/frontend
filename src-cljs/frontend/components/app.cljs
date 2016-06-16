@@ -42,13 +42,13 @@
 
 (def nav-point->page
   (merge
-   ;; Page components, which are good as they are.
+   ;; Page component functions, which are good as they are.
    {:build build/page
     :project-settings project-settings/page
     :project-insights project-insights/page
     :add-projects add-projects/page}
-   ;; Old-World dominant components which need to be wrapped in the `main` template. As we
-   ;; migrate these, we'll move them into the map above.
+   ;; Old-World dominant component functions which need to be wrapped in the `main` template.
+   ;; As we migrate these, we'll move them into the map above.
    (into {}
          (map #(vector (key %) (templated (val %))))
          {:dashboard dashboard/dashboard

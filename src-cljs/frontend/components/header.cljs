@@ -47,7 +47,11 @@
                  "Organization Settings"]
             :else nil))))
 
-(defn head-user [{:keys [app actions]} owner]
+(defn head-user
+  "Builds the header section which contains, among other things, the breadcrumb.
+  actions is an optional component which will be placed on the right of the
+  header; this is where page-wide actions are placed."
+  [{:keys [app actions]} owner]
   (reify
     om/IDisplayName (display-name [_] "User Header")
     om/IRender
