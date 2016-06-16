@@ -1,36 +1,29 @@
 (ns frontend.components.build-head
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :as string]
-            [frontend.async :refer [raise! navigate!]]
+  (:require [clojure.string :as string]
+            [frontend.async :refer [navigate! raise!]]
+            [frontend.components.build-config :as build-cfg]
+            [frontend.components.build-timings :as build-timings]
+            [frontend.components.builds-table :as builds-table]
+            [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
+            [frontend.components.pieces.tabs :as tabs]
+            [frontend.components.svg :refer [svg]]
+            [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.models.feature :as feature]
             [frontend.models.test :as test-model]
-            [frontend.components.builds-table :as builds-table]
-            [frontend.components.common :as common]
-            [frontend.components.forms :as forms]
-            [frontend.components.build-config :as build-cfg]
-            [frontend.components.pieces.tabs :as tabs]
-            [frontend.config :refer [intercom-enabled? github-endpoint env enterprise?]]
             [frontend.routes :as routes]
-            [frontend.state :as state]
-            [frontend.timer :as timer]
-            [frontend.utils.build :as build-util]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.build :as build-util]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.html :refer [open-ext]]
-            [frontend.components.build-timings :as build-timings]
-            [frontend.components.svg :refer [svg]]
-            [goog.dom]
-            [goog.dom.DomHelper]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
-            [inflections.core :refer (pluralize)]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html defrender inspect]]))
+            [inflections.core :refer [pluralize]]
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [defrender html]]))
 
 ;; This is awful, can't we just pass build-head the whole app state?
 ;; splitting it up this way means special purpose paths to find stuff
@@ -668,16 +661,6 @@
                  (when show-all-commits?
                    (om/build-all commit-line bottom-commits))))])])))))
 
-(defn- show-ssh-button?
-  "Always show the SSH button on Linux builds.
-  Only show the SSH button on OSX builds if the Launch Darkly flag is enabled.
-  https://en.wikipedia.org/wiki/Truth_table#Logical_implication
-  osx -> launch-darkly"
-  [project]
-  (and (or (not (project-model/feature-enabled? project :osx))
-           (feature/enabled? :ios-ssh-builds))
-       (not (project-model/feature-enabled? project :disable-ssh))))
-
 (defn build-sub-head [data owner]
   (reify
     om/IRender
@@ -729,7 +712,7 @@
                                            ")"])))})
 
                         (and (has-scope :trigger-builds data)
-                             (show-ssh-button? project)
+                             (:ssh-available? data)
                              (not (:ssh_disabled build)))
                         (conj {:name :ssh-info :label "Debug via SSH"})
 
@@ -956,90 +939,3 @@
           [:div.build-head-wrapper
            [:div.build-head
             (om/build build-sub-head data)]]])))))
-
-(defn rebuild-actions [{:keys [build project]} owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:rebuild-status "Rebuild"})
-
-    om/IWillUpdate
-    (will-update [_ {:keys [build]} _]
-      (when (build-model/running? build)
-        (om/set-state! owner [:rebuild-status] "Rebuild")))
-
-    om/IRenderState
-    (render-state [_ {:keys [rebuild-status]}]
-      (let [rebuild-args    {:build-id  (build-model/id build)
-                             :vcs-url   (:vcs_url build)
-                             :build-num (:build_num build)}
-            update-status!  #(om/set-state! owner [:rebuild-status] %)
-            rebuild!        #(raise! owner %)
-            actions         {:rebuild
-                             {:text  "Rebuild"
-                              :title "Retry the same tests"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                                           (update-status! "Rebuilding..."))}
-
-                             :without_cache
-                             {:text  "Rebuild without cache"
-                              :title "Retry without cache"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
-                                           (update-status! "Rebuilding..."))}
-
-                             :with_ssh
-                             {:text  "Rebuild with SSH"
-                              :title "Retry with SSH in VM",
-                              :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
-                                           (update-status! "Rebuilding..."))}}
-            text-for    #(-> actions % :text)
-            action-for  #(-> actions % :action)]
-        (html
-         [:div.rebuild-container
-          [:button.rebuild {:on-click (action-for :rebuild)}
-           [:img.rebuild-icon {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
-           rebuild-status]
-          [:span.dropdown.rebuild
-           [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
-           [:ul.dropdown-menu.pull-right
-            [:li
-             [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            (when (show-ssh-button? project)
-              [:li
-               [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
-
-(defn build-head-actions
-  [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
-            build (get-in data state/build-path)
-            build-id (build-model/id build)
-            build-num (:build_num build)
-            vcs-url (:vcs_url build)
-            project (get-in data state/project-path)
-            plan (get-in data state/project-plan-path)
-            user (get-in data state/user-path)
-            logged-in? (not (empty? user))
-            can-trigger-builds? (project-model/can-trigger-builds? project)
-            can-write-settings? (project-model/can-write-settings? project)]
-        (html
-          [:div.build-actions-v2
-           (when (and (build-model/can-cancel? build) can-trigger-builds?)
-             (forms/managed-button
-               [:a.cancel-build
-                {:data-loading-text "canceling"
-                 :title             "cancel this build"
-                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
-                "cancel build"]))
-           (when can-trigger-builds?
-             (om/build rebuild-actions {:build build :project project}))
-           (when can-write-settings?
-             [:div.build-settings
-              [:a.build-action
-               {:href (routes/v1-project-settings-path (:navigation-data data))}
-               [:i.material-icons "settings"]
-               "Project Settings"]])])))))

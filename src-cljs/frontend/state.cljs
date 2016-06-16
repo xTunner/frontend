@@ -257,8 +257,6 @@
 
 (def pricing-parallelism-path [:pricing-parallelism])
 
-(def top-nav-orgs-path [:top-nav :orgs])
-(def top-nav-selected-org-path [:top-nav :selected-org])
 (def hamburger-menu-path [:hamburger-menu])
 
 (def insights-filter-path [:insights :selected-filter])

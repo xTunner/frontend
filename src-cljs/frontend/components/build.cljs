@@ -401,7 +401,7 @@
 (defn selected-container-index [data]
   (get-in data [:current-build-data :container-data :current-container-id]))
 
-(defn build [data owner]
+(defn build [{:keys [app ssh-available?]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -417,28 +417,29 @@
                          "steps-rtl"))))
     om/IRender
     (render [_]
-      (let [build (get-in data state/build-path)
-            build-data (get-in data state/build-data-path)
-            container-data (get-in data state/container-data-path)
-            invite-data (:invite-data data)
-            project-data (get-in data state/project-data-path)
-            user (get-in data state/user-path)]
+      (let [build (get-in app state/build-path)
+            build-data (get-in app state/build-data-path)
+            container-data (get-in app state/container-data-path)
+            invite-data (:invite-data app)
+            project-data (get-in app state/project-data-path)
+            user (get-in app state/user-path)]
         (html
          [:div.build-info-v2
           (if-not build
            [:div
-             (om/build common/flashes (get-in data state/error-message-path))
+             (om/build common/flashes (get-in app state/error-message-path))
              [:div.loading-spinner-big common/spinner]]
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :current-tab (get-in data state/navigation-tab-path)
+                                              :current-tab (get-in app state/navigation-tab-path)
                                               :project-data project-data
                                               :user user
-                                              :scopes (get-in data state/project-scopes-path)})
+                                              :scopes (get-in app state/project-scopes-path)
+                                              :ssh-available? ssh-available?})
              [:div.card.col-sm-12
 
-              (om/build common/flashes (get-in data state/error-message-path))
+              (om/build common/flashes (get-in app state/error-message-path))
 
               (om/build notices {:build-data (dissoc build-data :container-data)
                                  :project-data project-data

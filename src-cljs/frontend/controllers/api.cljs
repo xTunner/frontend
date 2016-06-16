@@ -309,12 +309,7 @@
 
 (defmethod api-event [:organizations :success]
   [target message status {orgs :resp} state]
-  (let [selectable-orgs (filter-piggieback orgs)
-        selected (get-in state state/top-nav-selected-org-path)]
-    (cond-> state
-        true (assoc-in state/user-organizations-path orgs)
-        true (assoc-in state/top-nav-orgs-path selectable-orgs)
-        (not selected) (assoc-in state/top-nav-selected-org-path (first selectable-orgs)))))
+  (assoc-in state state/user-organizations-path orgs))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]
