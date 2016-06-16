@@ -66,8 +66,23 @@
           (let [local-response (handler req)]
             (when (not= 404 (:status local-response))
               local-response)))
-        (with-channel req channel
-          (request (proxy-request req options)
-                   (fn [response]
-                     (let [rewrite (if (:error response) rewrite-error rewrite-success)]
-                       (send! channel (rewrite response)))))))))
+        (letfn [(do-proxy-request [req channel]
+                  (request (proxy-request req options)
+                           (fn [response]
+                             (let [rewrite (if (:error response) rewrite-error rewrite-success)]
+                               (if (and (#{404 301} (:status response))
+                                        (not= "/dashboard" (:uri req)))
+
+                                 ;; If the backend returns a 404, try returning /dashboard instead,
+                                 ;; which is known to render the app page. This makes it easier to
+                                 ;; add new URLs in development, because we add see the new page on
+                                 ;; prod.circlehost without deploying the new route to the
+                                 ;; production backend. Just remember to deploy that route when
+                                 ;; shipping the feature, or the page will be unavailable in the
+                                 ;; production app.
+                                 (do-proxy-request (assoc req :uri "/dashboard") channel)
+
+                                 ;; Otherwise, proxy as normal.
+                                 (send! channel (rewrite response)))))))]
+          (with-channel req channel
+            (do-proxy-request req channel))))))
