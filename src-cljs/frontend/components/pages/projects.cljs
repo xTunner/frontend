@@ -4,7 +4,8 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            [frontend.components.templates.main :as main-template])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn- table [projects owner]
@@ -37,7 +38,7 @@
   [:organization/by-vcs-type-and-name
    [(:vcs_type org) (:login org)]])
 
-(defn page [app owner]
+(defn- main-content [app owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -93,3 +94,15 @@
               (if (:projects selected-org)
                 (om/build table (:projects selected-org))
                 [:div.loading-spinner common/spinner])])]])))))
+
+(defn page [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (om/build main-template/template
+                {:app app
+                 :main-content (om/build main-content app)
+                 :header-actions (html
+                                  [:a.btn.btn-primary
+                                   {:href (routes/v1-add-projects)}
+                                   "Add Project"])}))))
