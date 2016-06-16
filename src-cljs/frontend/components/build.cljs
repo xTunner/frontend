@@ -22,11 +22,10 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.html :refer [open-ext]]
+            [frontend.utils.seq :refer [find-index]]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html defrender]]))
-
-(def view "build")
 
 (defn infrastructure-fail-message [owner]
   (if-not (enterprise?)
@@ -279,6 +278,20 @@
           [:label {:for id}
            (gstring/format "%s (%s)" label cnt)]))]])))
 
+(defn- paging-offset-to-display-container
+  "Given the id of a container and a vector of containers which will be
+  displayed, calculate the paging offset which will cause that container to be
+  part of the displayed page. If the container is not found in containers,
+  returns nil."
+  [container-id containers]
+  ;; NB: :index here gets the container's id, or number, also called its "index"
+  ;; in our domain. index-into-containers is the index within the given
+  ;; containers vector of the container with the given id. Not the same
+  ;; meaning of "index".
+  (let [index-into-containers (find-index #(= container-id (:index %)) containers)]
+    (when index-into-containers
+      (* paging-width (js/Math.floor (/ index-into-containers paging-width))))))
+
 (defn container-pills [data owner]
   (reify
     om/IDisplayName
@@ -291,9 +304,17 @@
             build (:build data)
             {:keys [containers current-container-id current-filter paging-offset]} container-data
             categorized-containers (group-by #(container-model/status % build-running?) containers)
+
             filtered-containers (condp some [current-filter]
                                   #{:all} containers
                                   #{:success :failed} :>> categorized-containers)
+
+            paging-offset (or paging-offset
+                              ;; A nil paging-offset means "display whatever page the selected container is on".
+                              (paging-offset-to-display-container current-container-id filtered-containers)
+                              ;; If the selected container isn't in filtered-containers, show the first page.
+                              0)
+
             container-count (count filtered-containers)
             previous-container-count (max 0 (- paging-offset 1))
             subsequent-container-count (min paging-width (- container-count (+ paging-offset paging-width)))
