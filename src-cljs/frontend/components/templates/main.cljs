@@ -3,7 +3,6 @@
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
-            [frontend.components.top-nav :as top-nav]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.state :as state]
@@ -25,9 +24,6 @@
              ;; simple optimzation for real-time updates when the build is running
              app-without-container-data (dissoc-in app state/container-data-path)]
          [:main.app-main
-          (when (and inner? logged-in? (feature/enabled? :ui-fp-top-bar))
-            (om/build top-nav/top-nav app-without-container-data))
-
           (when show-inspector?
             ;; TODO inspector still needs lots of work. It's slow and it defaults to
             ;;     expanding all datastructures.
