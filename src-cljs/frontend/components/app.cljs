@@ -93,9 +93,7 @@
           (html
            (let [inner? (get-in app state/inner?-path)]
 
-             [:div#app {:class (concat [(if inner? "inner" "outer")]
-                                       ;; The following is meant for the landing ab test to hide old header/footer
-                                       (when (= :pricing (:navigation-point app)) ["pricing"]))
+             [:div#app {:class (if inner? "inner" "outer")
                         ;; Disable natural form submission. This keeps us from having to
                         ;; .preventDefault every submit button on every form.
                         ;;
