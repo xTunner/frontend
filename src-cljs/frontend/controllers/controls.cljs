@@ -9,7 +9,6 @@
             [frontend.async :refer [put!]]
             [frontend.api.path :as api-path]
             [frontend.components.forms :refer [release-button!]]
-            [frontend.components.build :as build-component]
             [frontend.models.action :as action-model]
             [frontend.models.project :as project-model]
             [frontend.models.build :as build-model]
@@ -24,7 +23,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.launchdarkly :as launchdarkly]
-            [frontend.utils.seq :refer [dissoc-in find-index]]
+            [frontend.utils.seq :refer [dissoc-in]]
             [frontend.utils.state :as state-utils]
             [goog.dom]
             [goog.string :as gstring]
@@ -300,22 +299,20 @@
 
 (defmethod control-event :container-filter-changed
   [target message {:keys [new-filter containers]} state]
-  (let [indexes (map :index containers)
-        offset (get-in state state/container-paging-offset-path)
-        selected-container (get-in state state/current-container-path)
-        selected-index (find-index (partial = selected-container) indexes)
-        controls-ch (get-in state [:comms :controls])]
-    (if-not (and selected-index
+  (-> state
+      (assoc-in state/current-container-filter-path new-filter)
+      ;; A nil paging-offset means "display whatever page the selected container is on".
+      (assoc-in state/container-paging-offset-path nil)))
+
+(defmethod post-control-event! :container-filter-changed
+  [target message {:keys [new-filter containers]} previous-state current-state]
+  (let [selected-container-id (get-in current-state state/current-container-path)
+        selected-container-in-containers? (some #(= selected-container-id (:index %)) containers)
+        controls-ch (get-in current-state [:comms :controls])]
+    (if-not (and selected-container-in-containers?
                  (seq containers))
       (put! controls-ch [:container-selected {:container-id (:index (first containers))
-                                              :animate? true}]))
-    (-> state
-        (assoc-in state/current-container-filter-path new-filter)
-        (assoc-in state/container-paging-offset-path
-                  (if selected-index
-                    (* build-component/paging-width
-                       (js/Math.floor (/ selected-index build-component/paging-width)))
-                    0)))))
+                                              :animate? true}]))))
 
 (defmethod control-event :action-log-output-toggled
   [target message {:keys [index step value]} state]
