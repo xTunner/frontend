@@ -1,6 +1,5 @@
 (ns frontend.components.header
   (:require [frontend.async :refer [raise!]]
-            [frontend.components.add-projects :as add-projects]
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
@@ -67,9 +66,7 @@
                 :data-spinner true}
                "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app owner)
-           actions
-           (when (= :add-projects (:navigation-point app))
-             (om/build add-projects/add-projects-head-actions app))])))))
+           actions])))))
 
 (defn head-admin [app owner]
   (reify

@@ -2,7 +2,6 @@
   (:require [frontend.api :as api]
             [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
-            [frontend.components.add-projects :as add-projects]
             [frontend.components.admin :as admin]
             [frontend.components.aside :as aside]
             [frontend.components.dashboard :as dashboard]
@@ -13,6 +12,7 @@
             [frontend.components.key-queue :as keyq]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
+            [frontend.components.pages.add-projects :as add-projects]
             [frontend.components.pages.build :as build]
             [frontend.components.pages.project-insights :as project-insights]
             [frontend.components.pages.project-settings :as project-settings]
@@ -45,13 +45,13 @@
    ;; Page components, which are good as they are.
    {:build build/page
     :project-settings project-settings/page
-    :project-insights project-insights/page}
+    :project-insights project-insights/page
+    :add-projects add-projects/page}
    ;; Old-World dominant components which need to be wrapped in the `main` template. As we
    ;; migrate these, we'll move them into the map above.
    (into {}
          (map #(vector (key %) (templated (val %))))
          {:dashboard dashboard/dashboard
-          :add-projects add-projects/add-projects
           :build-insights insights/build-insights
           :invite-teammates invites/teammates-invites
           :org-settings org-settings/org-settings
