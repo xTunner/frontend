@@ -2,33 +2,35 @@
   (:require [frontend.api :as api]
             [frontend.components.common :as common]
             [frontend.components.pieces.org-picker :as org-picker]
+            [frontend.components.pieces.table :as table]
+            [frontend.components.templates.main :as main-template]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [frontend.components.templates.main :as main-template])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn- table [projects owner]
   (reify
     om/IRender
     (render [_]
-      (html
-       [:table {:data-component `table}
-        [:thead
-         [:tr
-          [:th "Project"]
-          [:th.right "Team Members"]
-          [:th.right "Settings"]]]
-        [:tbody
-         (for [project projects
-               :when (< 0 (count (:followers project)))]
-           [:tr
-            [:td (vcs-url/repo-name (:vcs_url project))]
-            [:td.right (count (:followers project))]
-            [:td.right [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type (:vcs_url project))
-                                                                    :org (vcs-url/org-name (:vcs_url project))
-                                                                    :repo (vcs-url/repo-name (:vcs_url project))})}
-                        [:i.material-icons "settings"]]]])]]))))
+      (om/build table/table
+                {:rows (filter #(< 0 (count (:followers %))) projects)
+                 :columns [{:header "Project"
+                            :cell-fn #(vcs-url/repo-name (:vcs_url %))}
+
+                           {:header "Team Members"
+                            :type :right
+                            :cell-fn #(count (:followers %))}
+
+                           {:header "Settings"
+                            :type :right
+                            :cell-fn
+                            #(html
+                              (let [vcs-url (:vcs_url %)]
+                                [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                                             :org (vcs-url/org-name vcs-url)
+                                                                             :repo (vcs-url/repo-name vcs-url)})}
+                                 [:i.material-icons "settings"]]))}]}))))
 
 (defn- organization-ident
   "Builds an Om Next-like ident for an organization."
