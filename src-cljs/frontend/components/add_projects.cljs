@@ -53,10 +53,9 @@
     om/IRender
     (render [_]
       (html
-       [:div.refresh-repos
-       [:button.btn.btn-primary.set-user
+       [:button.btn.btn-primary
         {:on-click #(raise! owner [:refreshed-user-orgs {}])} ;; TODO: spinner while working?
-        "Reload repositories"]]))))
+        "Reload Organizations"]))))
 
 (defn repo-item [data owner]
   (reify

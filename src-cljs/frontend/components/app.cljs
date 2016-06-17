@@ -46,7 +46,8 @@
    {:build build/page
     :project-settings project-settings/page
     :project-insights project-insights/page
-    :add-projects add-projects/page}
+    :add-projects add-projects/page
+    :projects projects/page}
    ;; Old-World dominant component functions which need to be wrapped in the `main` template.
    ;; As we migrate these, we'll move them into the map above.
    (into {}
@@ -56,7 +57,6 @@
           :invite-teammates invites/teammates-invites
           :org-settings org-settings/org-settings
           :account account/account
-          :projects projects/page
 
           :admin-settings admin/admin-settings
           :build-state admin/build-state
