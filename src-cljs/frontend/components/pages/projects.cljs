@@ -18,8 +18,8 @@
                  :columns [{:header "Project"
                             :cell-fn #(vcs-url/repo-name (:vcs_url %))}
 
-                           {:header "Team Members"
                             :type :right
+                           {:header "Team"
                             :cell-fn #(count (:followers %))}
 
                            {:header "Settings"
