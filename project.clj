@@ -34,7 +34,7 @@
                  [org.omcljs/om "1.0.0-alpha34"]
 
                  [hiccups "0.3.0"]
-                 [sablono "0.3.6"]
+                 [sablono "0.7.2"]
                  [secretary "1.2.2"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [prismatic/schema "1.0.4"]
