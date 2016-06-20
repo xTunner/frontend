@@ -1,24 +1,19 @@
 (ns frontend.components.account
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.set :as set]
-            [clojure.string :as string]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.icons :as icons]
+            [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project]
             [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
+            [frontend.models.organization :as org-model]
             [frontend.routes :as routes]
-            [frontend.models.feature :as feature]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
-            [frontend.utils.vcs-url :as vcs-url]
-            [frontend.models.project :as project-model]
-            [frontend.models.organization :as org-model]
             [om.core :as om :include-macros true]
-            [om.dom :as dom]
             [sablono.core :as html :refer-macros [html]]))
 
 (defn active-class-if-active [current-subpage subpage-link]
@@ -140,24 +135,25 @@
 
           [:div.api-item
            (when (seq tokens)
-             [:table.table
-              [:thead [:th "Label"] [:th "Token"] [:th "Created"] [:th]]
-              [:tbody
-               (for [token tokens]
-                 (let [token (om/value token)]
-                   [:tr
-                    [:td {:data-bind "text: label"} (:label token)]
-                    [:td [:span.code {:data-bind "text: token"} (:token token)]]
-                    [:td {:data-bind "text: time"} (datetime/medium-datetime (js/Date.parse (:time token)))]
-                    [:td
-                     [:span
-                      [:a.revoke-token
-                       {:data-loading-text "Revoking...",
-                        :data-failed-text  "Failed to revoke token",
-                        :data-success-text "Revoked",
-                        :on-click          #(raise! owner [:api-token-revocation-attempted {:token token}])}
-                       [:i.material-icons "remove_circle"]
-                       "Revoke"]]]]))]])]]])))))
+             (om/build table/table
+                       {:rows tokens
+                        :columns [{:header "Label"
+                                   :cell-fn :label}
+
+                                  {:header "Token"
+                                   :type :shrink
+                                   :cell-fn :token}
+
+                                  {:header "Created"
+                                   :type :shrink
+                                   :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
+
+                                  {:type :shrink
+                                   :cell-fn
+                                   (fn [token]
+                                     (table/action-button
+                                      #(raise! owner [:api-token-revocation-attempted {:token token}])
+                                      (icons/delete)))}]}))]]])))))
 
 
 (def available-betas
