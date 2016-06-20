@@ -233,7 +233,7 @@
                                         (not= "read-settings" scope) (remove #{"read-settings"}))]
           (html
             [:tr
-             [:td (:login user)]
+             [:td [:a {:href (routes/v1-dashboard-path {:vcs_type "github" :org (:login user) })} (:login user)]]
              [:td (:name user)]
              [:td
               [:div.form-inline
