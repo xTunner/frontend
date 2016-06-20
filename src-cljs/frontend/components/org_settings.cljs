@@ -1,38 +1,31 @@
 (ns frontend.components.org-settings
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.set]
-            [frontend.async :refer [raise! navigate!]]
-            [frontend.routes :as routes]
-            [frontend.datetime :as datetime]
-            [cljs-time.core :as time]
-            [cljs-time.format :as time-format]
+  (:require [cljs.core.async :as async :refer [<! chan close!]]
+            clojure.set
+            [clojure.string :as string]
             [frontend.analytics.track :as analytics-track]
-            [frontend.models.organization :as org-model]
-            [frontend.models.plan :as pm]
-            [frontend.models.repo :as repo-model]
-            [frontend.models.user :as user-model]
+            [frontend.async :refer [navigate! raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
-            [frontend.components.shared :as shared]
+            [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.project.common :as project-common]
-            [frontend.components.svg :refer [svg]]
+            [frontend.components.shared :as shared]
             [frontend.config :as config]
+            [frontend.datetime :as datetime]
+            [frontend.models.organization :as org-model]
+            [frontend.models.plan :as pm]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [clojure.string :as string]
             [goog.string :as gstring]
-            [goog.string.format]
             [inflections.core :as infl :refer [pluralize]]
-            [frontend.models.feature :as feature])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
+            [om.core :as om :include-macros true])
+  (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [frontend.utils :refer [html]]))
 
 (defn non-admin-plan [{:keys [org-name login vcs_type]} owner]
@@ -841,28 +834,22 @@
              [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
             [:div
               [:div.row-fluid [:legend.span8 "Card on file"]]
-              [:div.row-fluid
+              [:div.row-fluid.space-below
                [:div.offset1.span6
-                [:table.table.table-condensed
-                 {:data-bind "with: cardInfo"}
-                 [:thead
-                  [:th "Name"]
-                  [:th "Card type"]
-                  [:th "Card Number"]
-                  [:th "Expiry"]]
-                 (if (not (empty? card))
-                   [:tbody
-                    [:tr
-                     [:td (:name card)]
-                     [:td (:type card)]
-                     [:td "xxxx-xxxx-xxxx-" (:last4 card)]
-                     [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]
-                   [:tbody
-                    [:tr
-                     [:td "N/A"]
-                     [:td "N/A"]
-                     [:td "N/A"]
-                     [:td "N/A"]]])]]]
+                (om/build table/table
+                          {:rows [card]
+                           :columns [{:header "Name"
+                                      :cell-fn #(:name % "N/A")}
+                                     {:header "Card type"
+                                      :cell-fn #(:type % "N/A")}
+                                     {:header "Card Number"
+                                      :cell-fn #(if (contains? % :last4)
+                                                  (str "xxxx-xxxx-xxxx-" (:last4 %))
+                                                  "N/A")}
+                                     {:header "Expiry"
+                                      :cell-fn #(if (contains? % :exp_month)
+                                                  (gstring/format "%02d/%s" (:exp_month %) (:exp_year %))
+                                                  "N/A")}]})]]
               [:div.row-fluid
                [:div.offset1.span7
                 [:form.form-horizontal
