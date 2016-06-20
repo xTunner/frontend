@@ -651,7 +651,7 @@
     (or (and (= org-name (:org-name org-settings))
              (= vcs-type (:vcs_type org-settings)))
         (and (= org-name (:login add-projects-selected-org))
-             (= vcs-type (:vcs-type add-projects-selected-org))))))
+             (= vcs-type (:vcs_type add-projects-selected-org))))))
 
 (defmethod api-event [:org-plan :success]
   [target message status {:keys [resp context]} state]
