@@ -1,14 +1,14 @@
 (ns frontend.api.path
   (:require [goog.string :as gstring]))
 
-(defn base-project-url-path [vcs-type]
+(defn- base-project-url-path [vcs-type]
   (case vcs-type
     "bitbucket" (gstring/format
                   "/api/dangerzone/project/%s"
                   vcs-type)
     "github" "/api/v1/project"))
 
-(defn organization [vcs-type org-name]
+(defn- base-organization-url-path [vcs-type org-name]
   (gstring/format "/api/v1.1/%s/%s"
                   (or vcs-type "github")))
 
@@ -80,7 +80,7 @@
 
 (defn organization-invite [vcs-type org-name]
   (gstring/format "%s/invite"
-                  (organization vcs-type org-name)))
+                  (base-organization-url-path vcs-type org-name)))
 
 (defn build-retry [vcs-type org-name repo-name build-num]
   (gstring/format
