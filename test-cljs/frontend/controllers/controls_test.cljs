@@ -4,7 +4,6 @@
             [frontend.state :as state]
             [frontend.utils.ajax :as ajax]
             [frontend.analytics.core :as analytics]
-            [frontend.api.path :as api-path]
             [frontend.controllers.controls :as controls]
             [bond.james :as bond :include-macros true]
             [goog.string :as gstring])
@@ -208,7 +207,6 @@
 (deftest post-control-event-invited-github-users-works
   (let [calls (atom [])
         project-name "proj"
-        vcs-type "github"
         invitees ["me@foo.com", "you@bar.co"]
         control-data {:project-name project-name
                       :org-name "org"
@@ -223,28 +221,9 @@
               args (-> calls first :args)]
           (is (= (count calls) 1))
           (is (= (nth args 0) :post))
-          (is (= (nth args 1) (api-path/project-users-invite vcs-type project-name)))
+          (is (= (nth args 1) (gstring/format "/api/v1/project/%s/users/invite" project-name)))
           (is (= (nth args 2) :invite-github-users))
           (is (= (nth args 3) api-ch))
           (is (= (->> (nth args 4) (apply hash-map) :context) {:project project-name
                                                               :first_green_build true}))
           (is (= (->> (nth args 4) (apply hash-map) :params) invitees)))))))
-
-(deftest post-control-event-invited-github-users-does-nothing-for-bb-projects
-  (let [calls (atom [])
-        project-name "proj"
-        vcs-type "bitbucket"
-        invitees ["me@foo.com", "you@bar.co"]
-        control-data {:project-name project-name
-                      :vcs-type vcs-type
-                      :org-name "org"
-                      :invitees ["me@foo.com", "you@bar.co"]}
-        api-ch "api-ch"
-        current-state {:comms {:api api-ch}}]
-    (testing "the post-control-event invite-github-users does nothing for bitbucket projects"
-      (with-redefs [controls/button-ajax (fn [method url message channel & opts]
-                                           (swap! calls conj {:args (list method url message channel opts)}))]
-        (controls/post-control-event! {} :invited-github-users control-data {} current-state)
-        (let [calls @calls
-              args (-> calls first :args)]
-          (is (= (count calls) 0)))))))
