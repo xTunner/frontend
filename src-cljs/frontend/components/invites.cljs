@@ -71,7 +71,8 @@
                                        :on-click #(raise! owner [:invited-github-users
                                                                  (merge {:invitees users-to-invite}
                                                                         (if (:project-name opts)
-                                                                          {:project-name (:project-name opts)}
+                                                                          {:project-name (:project-name opts)
+                                                                           :vcs-type (:vcs-type opts)}
                                                                           {:org-name (:org-name opts)}))])})
 
             "Send Invites "
@@ -81,8 +82,10 @@
   (reify
     om/IWillMount
     (will-mount [_]
-      (let [project-name (:project-name opts)]
-        (raise! owner [:load-first-green-build-github-users {:project-name project-name}])))
+      (let [project-name (:project-name opts)
+            vcs-type (:vcs-type opts)]
+        (raise! owner [:load-first-green-build-github-users {:vcs-type vcs-type
+                                                             :project-name project-name}])))
     om/IRender
     (render [_]
       (let [project-name (:project-name opts)
