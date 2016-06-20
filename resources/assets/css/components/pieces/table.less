@@ -22,11 +22,14 @@
           padding-left: 10px;
           padding-right: 10px;
 
-          &.right {
+          &.shrink {
             // Does not actually make the column 1px wide, but makes the column the
             // minimal width to contain its contents.
             width: 1px;
             white-space: nowrap;
+          }
+
+          &.right {
             text-align: right;
           }
         }
@@ -36,5 +39,12 @@
     > tbody > tr:hover {
       background-color: rgba(80, 198, 221, 0.04);
     }
+  });
+
+  .ui("action-button", {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
   });
 });

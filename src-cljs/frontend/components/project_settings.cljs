@@ -1,34 +1,36 @@
 (ns frontend.components.project-settings
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [cljs-time.core :as time]
+  (:require [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [frontend.async :refer [raise!]]
+            [cljs.core.async :as async :refer [<! >! alts! chan close! sliding-buffer]]
             [clojure.string :as string]
+            [frontend.async :refer [raise!]]
+            [frontend.components.account :as account]
+            [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
+            [frontend.components.inputs :as inputs]
+            [frontend.components.pieces.icons :as icons]
+            [frontend.components.pieces.table :as table]
+            [frontend.components.project.common :as project-common]
+            [frontend.config :as config]
+            [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
-            [frontend.components.account :as account]
-            [frontend.components.common :as common]
-            [frontend.components.project.common :as project-common]
-            [frontend.components.forms :as forms]
-            [frontend.components.inputs :as inputs]
-            [frontend.config :as config]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.html :refer [hiccup->html-str open-ext]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [goog.crypt.base64 :as base64]
-            [frontend.datetime :as datetime])
+            [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
@@ -1655,33 +1657,29 @@
                                                                   :file-name file-name
                                                                   :on-success (comp clear-form-fn close-modal-fn)}])}])]])))))
 
-
-(defn p12-key-row [{:keys [project-name vcs-type id filename description uploaded_at]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:tr {:data-component `p12-key-row}
-         [:td description]
-         [:td filename]
-         [:td id]
-         [:td (datetime/as-time-since uploaded_at)]
-         [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :vcs-type vcs-type :id id}])} [:i.delete.material-icons "cancel"]]]))))
-
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
     om/IRender
     (render [_]
-      (html
-        [:table {:data-component `p12-key-table}
-         [:thead.head
-          [:tr
-           [:th "Description"]
-           [:th.filename-col "Filename"]
-           [:th.id-col "ID"]
-           [:th.uploaded-col "Uploaded"]
-           [:th.delete-col]]]
-         [:tbody.body (om/build-all p12-key-row rows)]]))))
+      (om/build table/table
+                {:rows rows
+                 :columns [{:header "Description"
+                            :cell-fn :description}
+                           {:header "Filename"
+                            :type :shrink
+                            :cell-fn :filename}
+                           {:header "ID"
+                            :type :shrink
+                            :cell-fn :id}
+                           {:header "Uploaded"
+                            :type :shrink
+                            :cell-fn (comp datetime/as-time-since :uploaded_at)}
+                           {:type :shrink
+                            :cell-fn
+                            (fn [row]
+                              (table/action-button
+                               #(raise! owner [:delete-p12 (select-keys row [:project-name :vcs-type :id])])
+                               (icons/delete)))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name]} owner]
   (reify
