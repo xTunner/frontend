@@ -156,57 +156,57 @@
        (str "No matching repos for organization " selected-org-login)
        (str "No repos found for organization " selected-org-login))]))
 
-(defn select-plan-button [{{:keys [login vcs-type]} :selected-org} owner]
+(defn select-plan-button [{{:keys [login vcs_type]} :selected-org} owner]
   (reify
     om/IRender
     (render [_]
       (html
        [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org login
-                                                                     :vcs_type vcs-type
+                                                                     :vcs_type vcs_type
                                                                      :_fragment "osx-pricing"})
                                  :on-click #((om/get-shared owner :track-event)
                                              {:event-type :select-plan-clicked
                                               :properties {:org login
-                                                           :vcs-type vcs-type
+                                                           :vcs-type vcs_type
                                                            :plan-type pm/osx-plan-type}})}
         "Select Plan"]))))
 
-(defn free-trial-button [{{:keys [login vcs-type]} :selected-org} owner]
+(defn free-trial-button [{{:keys [login vcs_type]} :selected-org} owner]
   (reify
     om/IRender
     (render [_]
       (html
-        (managed-button
-          (let [plan-type :osx
-                template "osx-trial"]
-            [:a.btn.trial {:on-click #(do
-                                        (raise! owner [:activate-plan-trial {:plan-type plan-type
-                                                                             :template template
-                                                                             :org {:name login
-                                                                                   :vcs_type vcs-type}}]))
-                           :data-spinner true}
-             "Start 2 Week Trial"]))))))
+       (managed-button
+        (let [plan-type :osx
+              template "osx-trial"]
+          [:a.btn.trial {:on-click #(do
+                                      (raise! owner [:activate-plan-trial {:plan-type plan-type
+                                                                           :template template
+                                                                           :org {:name login
+                                                                                 :vcs_type vcs_type}}]))
+                         :data-spinner true}
+           "Start 2 Week Trial"]))))))
 
-(defn no-plan-empty-state [{{:keys [login vcs-type] :as selected-org} :selected-org} owner]
+(defn no-plan-empty-state [{{:keys [login vcs_type] :as selected-org} :selected-org} owner]
   (reify
     om/IDidMount
     (did-mount [_]
       ((om/get-shared owner :track-event) {:event-type :no-plan-banner-impression
                                            :properties {:org login
-                                                        :vcs-type vcs-type
+                                                        :vcs-type vcs_type
                                                         :plan-type pm/osx-plan-type}}))
     om/IRender
     (render [_]
       (html
-        [:div.no-plan-empty-state
-         [:i.fa.fa-apple.apple-logo]
-         [:div.title
-          [:span.bold login] " has no " [:span.bold "OS X plan"] " on CircleCI."]
-         [:div.info
-          "Select a plan to build your OS X projects now."]
-         [:div.buttons
-          (om/build select-plan-button {:selected-org selected-org})
-          (om/build free-trial-button {:selected-org selected-org})]]))))
+       [:div.no-plan-empty-state
+        [:i.fa.fa-apple.apple-logo]
+        [:div.title
+         [:span.bold login] " has no " [:span.bold "OS X plan"] " on CircleCI."]
+        [:div.info
+         "Select a plan to build your OS X projects now."]
+        [:div.buttons
+         (om/build select-plan-button {:selected-org selected-org})
+         (om/build free-trial-button {:selected-org selected-org})]]))))
 
 (defmulti repo-list (fn [{:keys [type]}] type))
 
