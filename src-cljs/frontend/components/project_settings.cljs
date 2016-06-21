@@ -422,7 +422,7 @@
           [:section
            [:article
             [:h2 "Environment Variables for " (vcs-url/project-name (:vcs_url project))]
-            [:div.environment-variables-inner
+            [:div
              [:p
               "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
               "The values can be any bash expression and can reference other variables, such as setting "
@@ -456,20 +456,19 @@
                                           :type "submit"
                                           :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]]
              (when-let [env-vars (seq (:envvars project-data))]
-               [:table.table
-                [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
-                [:tbody
-                 (for [{:keys [name value]} env-vars]
-                   [:tr
-                    [:td {:title name} name]
-                    [:td {:title value} value]
-                    [:td
-                     [:a
-                      {:title "Remove this variable?",
-                       :on-click #(raise! owner [:deleted-env-var {:project-id project-id
-                                                                   :env-var-name name}])}
-                      [:i.fa.fa-times-circle]
-                      [:span " Remove"]]]])]])]]])))))
+               (om/build table/table
+                         {:rows env-vars
+                          :columns [{:header "Name"
+                                     :cell-fn :name}
+                                    {:header "Value"
+                                     :cell-fn :value}
+                                    {:type :shrink
+                                     :cell-fn
+                                     (fn [env-var]
+                                       (table/action-button
+                                        #(raise! owner [:deleted-env-var {:project-id project-id
+                                                                          :env-var-name (:name env-var)}])
+                                        (icons/delete)))}]}))]]])))))
 
 (defn advance [project-data owner]
   (reify
