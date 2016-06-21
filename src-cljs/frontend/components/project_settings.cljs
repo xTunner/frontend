@@ -938,19 +938,20 @@
                                                           :ssh-key {:hostname hostname
                                                                     :private_key private-key}}])}])]
             (when-let [ssh-keys (seq (:ssh_keys project))]
-              [:table.table
-               [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
-               [:tbody
-                (for [{:keys [hostname fingerprint]} ssh-keys]
-                  [:tr
-                   [:td hostname]
-                   [:td fingerprint]
-                   [:td [:a {:title "Remove this Key?",
-                             :on-click #(raise! owner [:deleted-ssh-key {:project-id project-id
-                                                                         :hostname hostname
-                                                                         :fingerprint fingerprint}])}
-                         [:i.fa.fa-times-circle]
-                         [:span " Remove"]]]])]])]]])))))
+              (om/build table/table
+                        {:rows ssh-keys
+                         :columns [{:header "Hostname"
+                                    :cell-fn :hostname}
+                                   {:header "Fingerprint"
+                                    :cell-fn :fingerprint}
+                                   {:type :shrink
+                                    :cell-fn
+                                    (fn [key]
+                                      (table/action-button
+                                       #(raise! owner [:deleted-ssh-key (-> key
+                                                                            (select-keys [:hostname :fingerprint])
+                                                                            (assoc :project-id project-id))])
+                                       (icons/delete)))}]}))]]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
