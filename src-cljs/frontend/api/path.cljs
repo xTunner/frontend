@@ -8,6 +8,11 @@
                   vcs-type)
     "github" "/api/v1/project"))
 
+(defn- base-organization-url-path [vcs-type org-name]
+  (gstring/format "/api/v1.1/organization/%s/%s"
+                  (or vcs-type "github")
+                  org-name))
+
 (defn branch-path [vcs-type org-name repo-name branch]
   (gstring/format
    "%s/%s/%s/tree/%s"
