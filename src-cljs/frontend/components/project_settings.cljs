@@ -452,7 +452,7 @@
                  [:input.btn.btn-primary {:data-failed-text "Failed",
                                           :data-success-text "Added",
                                           :data-loading-text "Adding...",
-                                          :value "Save variables",
+                                          :value "Add Variable",
                                           :type "submit"
                                           :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]]
              (when-let [env-vars (seq (:envvars project-data))]
