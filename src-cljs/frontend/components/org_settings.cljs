@@ -1113,32 +1113,14 @@
                                                                            :cancel-notes notes}])}
                   "Cancel Plan"])))]]])))))
 
-(defn progress-bar [{:keys [max value class]} owner]
+(defn progress-bar [{:keys [max value]} owner]
   (reify
     om/IRender
     (render [_]
-      (html [:progress {:class class :value value :max max} (str value "%")]))))
-
-(defn osx-usage-row [{:keys [usage max]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [{:keys [amount from to]} usage
-            amount (.round js/Math (/ amount 1000 60))
-            percent (.round js/Math (* 100 (/ amount max)))]
-        (html
-         [:tr {:data-component `osx-usage-row}
-          [:td.billing-period
-           [:div
-            [:em (datetime/month-name-day-date from)]
-            [:span " - "]
-            [:em (datetime/month-name-day-date to)]]]
-          [:td.usage-bar
-           (om/build progress-bar {:class "monthly-usage-bar" :max max :value amount})]
-          [:td.usage-percent (when (>= percent 100) {:class "over-usage"})
-           (str percent "%")]
-          [:td.usage-minutes (when (>= percent 100) {:class "over-usage"})
-           (str (.toLocaleString amount) "/" (.toLocaleString max) " minutes")]])))))
+      (html
+       [:progress {:data-component `progress-bar
+                   :value value
+                   :max max}]))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1175,15 +1157,35 @@
                                         :max osx-max-minutes})))]
              (if (and (not-empty osx-usage) osx-max-minutes)
                [:div
-                [:table
-                 [:thead
-                  [:tr
-                   [:th."Billing Period"]
-                   [:th "Usage"]
-                   [:th ""]
-                   [:th ""]]]
-                 [:tbody
-                  (om/build-all osx-usage-row osx-usage)]]]
+                (let [rows (for [{:keys [usage max]} osx-usage
+                                 :let [{:keys [amount from to]} usage
+                                       amount (.round js/Math (/ amount 1000 60))
+                                       percent (.round js/Math (* 100 (/ amount max)))]]
+                             {:from from
+                              :to to
+                              :max max
+                              :amount amount
+                              :percent percent
+                              :over-usage? (> amount max)})]
+                  (om/build table/table
+                            {:rows rows
+                             :columns [{:header "Billing Period"
+                                        :type :shrink
+                                        :cell-fn #(html
+                                                   [:span.billing-period
+                                                    (datetime/month-name-day-date (:from %))
+                                                    " - "
+                                                    (datetime/month-name-day-date (:to %))])}
+                                       {:header "Usage"
+                                        :cell-fn #(om/build progress-bar {:max (:max %) :value (:amount %)})}
+                                       {:type #{:right :shrink}
+                                        :cell-fn #(html
+                                                   [:span (when (:over-usage? %) {:class "over-usage"})
+                                                    (:percent %) "%"])}
+                                       {:type #{:right :shrink}
+                                        :cell-fn #(html
+                                                   [:span (when (:over-usage? %) {:class "over-usage"})
+                                                    (.toLocaleString (:amount %)) "/" (.toLocaleString (:max %)) " minutes"])}]}))]
                [:div.explanation
                 [:p "Looks like you haven't run any builds yet."]]))])))))
 
