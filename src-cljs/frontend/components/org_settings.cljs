@@ -970,42 +970,6 @@
   [ts]
   (datetime/year-month-day-date (* 1000 ts)))
 
-(defn invoice-view
-  "Render an invoice table row.
-  Invoices fetched from the API look like:
-
-  ;; Invoice API Format
-  ;; ------------------
-  ;; amount_due: 3206
-  ;; currency: \"usd\"
-  ;; date: 1403535350
-  ;; id: \"in_2398vhs098AHYoi\"
-  ;; paid: true
-  ;; period_end: 1403535350
-  ;; period_start: 1402665929"
-  [invoice owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        (let [invoice-id (:id invoice)]
-          [:tr
-            [:td (stripe-ts->date (:date invoice))]
-            [:td (str (stripe-ts->date (:period_start invoice)))
-                      " - "
-                      (stripe-ts->date (:period_end invoice))]
-            [:td.numeric (gstring/format "$%.2f" (invoice-total invoice))]
-            [:td
-              [:span
-                (forms/managed-button
-                  [:button.btn.btn-mini.btn-primary
-                    {:data-failed-text "Failed",
-                     :data-success-text "Sent",
-                     :data-loading-text "Sending...",
-                     :on-click #(raise! owner [:resend-invoice-clicked
-                                               {:invoice-id invoice-id}])}
-                    "Resend"])]]])))))
-
 (defn- ->balance-string [balance]
   (let [suffix (cond
                 (< balance 0) " in credit."
@@ -1036,29 +1000,40 @@
               [:div.loading-spinner common/spinner]]]
             [:div.row-fluid
              [:div.span8
-               [:legend "Invoices"]
-               [:dl.dl-horizontal
-                [:dt
-                 "Account balance"
-                 [:i.fa.fa-question-circle#invoice-popover-hack
-                  {:title "Account balance"
-                   :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
-                                      "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
-                                      "<p>This amount may take a few hours to refresh.</p>")}]]
-                [:dd
-                 [:span (->balance-string account-balance)]]]
-               [:table.table.table-bordered.table-striped
-                [:thead
-                 [:tr
-                  [:th "Invoice date"]
-                  [:th "Time period covered"]
-                  [:th "Total"]
-                  [:th
-                   [:i.fa.fa-question-circle#resend-invoice-tooltip-hack
-                    {:title "Resend an invoice to the billing email above."}]
-                   "Actions"]]]
-                [:tbody
-                 (om/build-all invoice-view invoices)]]]]))))))
+              [:legend "Invoices"]
+              [:dl.dl-horizontal
+               [:dt
+                "Account balance"
+                [:i.fa.fa-question-circle#invoice-popover-hack
+                 {:title "Account balance"
+                  :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
+                                     "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
+                                     "<p>This amount may take a few hours to refresh.</p>")}]]
+               [:dd
+                [:span (->balance-string account-balance)]]]
+              (om/build table/table
+                        {:rows invoices
+                         :columns [{:header "Invoice date"
+                                    :cell-fn (comp stripe-ts->date :date)}
+
+                                   {:header "Time period covered"
+                                    :cell-fn (comp str stripe-ts->date :period_start)}
+
+                                   {:header "Total"
+                                    :type :right
+                                    :cell-fn #(gstring/format "$%.2f" (invoice-total %))}
+
+                                   {:type :shrink
+                                    :cell-fn
+                                    (fn [invoice]
+                                      (forms/managed-button
+                                       [:button.btn.btn-mini.btn-primary
+                                        {:data-failed-text "Failed" ,
+                                         :data-success-text "Sent" ,
+                                         :data-loading-text "Sending..." ,
+                                         :on-click #(raise! owner [:resend-invoice-clicked
+                                                                   {:invoice-id (:id invoice)}])}
+                                        "Resend"]))}]})]]))))))
 
 (defn billing [app owner]
   (reify
