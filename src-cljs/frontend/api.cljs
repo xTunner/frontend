@@ -62,24 +62,16 @@
              :user-plans
              api-ch))
 
-(defn get-usage-queue [build api-ch]
-  (let [vcs-type (:vcs_type build)
-        usage-queue-url (case vcs-type
-                          "github" (gstring/format "/api/v1/project/%s/%s/%s/usage-queue"
-                                                   (vcs-url/org-name (:vcs_url build))
-                                                   (vcs-url/repo-name (:vcs_url build))
-                                                   (:build_num build))
-                          "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/%s/usage-queue"
-                                                      vcs-type
-                                                      (vcs-url/org-name (:vcs_url build))
-                                                      (vcs-url/repo-name (:vcs_url build))
-                                                      (:build_num build))
-                          (print "got default handler"))]
-    (ajax/ajax :get
-               usage-queue-url
-               :usage-queue
-               api-ch
-               :context (build-model/id build))))
+(defn get-usage-queue [{:keys [vcs_url vcs_type build_num] :as build} api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1.1/project/%s/%s/%s/%s/usage-queue"
+                             vcs_type
+                             (vcs-url/org-name vcs_url)
+                             (vcs-url/repo-name vcs_url)
+                             build_num)
+             :usage-queue
+             api-ch
+             :context (build-model/id build)))
 
 ;; Note that dashboard-builds-url can take a :page (within :query-params)
 ;; and :builds-per-page, or :limit and :offset directly.
@@ -90,15 +82,9 @@
         limit (or limit builds-per-page)
         url (cond admin "/api/v1/admin/recent-builds"
                   deployments "/api/v1/admin/deployments"
-                  branch (case vcs-type
-                           "github" (gstring/format "/api/v1/project/%s/%s/tree/%s" org repo branch)
-                           "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/tree/%s" vcs-type org repo branch))
-                  repo (case vcs-type
-                         "github" (gstring/format "/api/v1/project/%s/%s" org repo)
-                         "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s" vcs-type org repo))
-                  org (case vcs-type
-                        "github" (gstring/format "/api/v1/organization/%s" org)
-                        "bitbucket" (gstring/format "/api/v1.1/organization/%s/%s" vcs-type org))
+                  branch (gstring/format "/api/v1.1/project/%s/%s/%s/tree/%s" vcs-type org repo branch)
+                  repo (gstring/format "/api/v1.1/project/%s/%s/%s" vcs-type org repo)
+                  org (gstring/format "/api/v1.1/organization/%s/%s" vcs-type org)
                   :else "/api/v1/recent-builds")]
     (str url "?" (sec/encode-query-params (merge {:shallow true
                                                   :offset offset
@@ -162,21 +148,15 @@
 
 (defn get-action-steps [{:keys [vcs-url build-num] :as args} api-ch]
   (let [vcs-type (vcs-url/vcs-type vcs-url)
-        url (case vcs-type
-              "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/action-steps"
-                                          vcs-type
-                                          (vcs-url/project-name vcs-url)
-                                          build-num)
-              "github" (gstring/format "/api/v1/project/%s/%s/action-steps"
-                                       (vcs-url/project-name vcs-url)
-                                       build-num))]
+        url (gstring/format "/api/v1.1/project/%s/%s/%s/action-steps"
+                            vcs-type
+                            (vcs-url/project-name vcs-url)
+                            build-num)]
     (ajax/ajax :get url :action-steps api-ch :context args)))
 
 (defn get-org-settings [org-name vcs-type api-ch]
   (ajax/ajax :get
-             (case vcs-type
-               "bitbucket" (gstring/format "/api/v1.1/organization/%s/%s/settings" vcs-type org-name)
-               "github" (gstring/format "/api/v1/organization/%s/settings" org-name))
+             (gstring/format "/api/v1.1/organization/%s/%s/settings" vcs-type org-name)
              :org-settings
              api-ch
              :context {:org-name org-name
@@ -198,14 +178,10 @@
 
 (defn get-build-tests [build api-ch]
   (let [vcs-type (:vcs_type build)
-        tests-url (case vcs-type
-                    "github" (gstring/format "/api/v1/project/%s/%s/tests"
-                                             (vcs-url/project-name (:vcs_url build))
-                                             (:build_num build))
-                    "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/tests"
-                                                vcs-type
-                                                (vcs-url/project-name (:vcs_url build))
-                                                (:build_num build)))]
+        tests-url (gstring/format "/api/v1.1/project/%s/%s/%s/tests"
+                                  vcs-type
+                                  (vcs-url/project-name (:vcs_url build))
+                                  (:build_num build))]
     (ajax/ajax :get
                tests-url
                :build-tests
@@ -213,11 +189,8 @@
                :context (build-model/id build))))
 
 (defn get-build-observables [{:keys [username project build-num vcs-type] :as parts} api-ch]
-  (let [url (case (name vcs-type)
-              "github" (gstring/format "/api/v1/project/%s/%s/%d/observables"
-                                       username project build-num)
-              "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/%s/%d/observables"
-                                          vcs-type username project build-num))]
+  (let [url (gstring/format "/api/v1.1/project/%s/%s/%s/%d/observables"
+                            vcs-type username project build-num)]
     (ajax/ajax :get url :build-observables api-ch :context {:build-parts parts})))
 
 (defn get-build-state [api-ch]

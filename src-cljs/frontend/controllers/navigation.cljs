@@ -203,9 +203,7 @@
               vcs-type (:vcs_type navigation-data)
               org (:org navigation-data)
               repo (:repo navigation-data)
-              plan-url (case vcs_type
-                         "github" (gstring/format "/api/v1/project/%s/plan" project-name)
-                         "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/plan" vcs_type project-name))]
+              plan-url (gstring/format "/api/v1.1/project/%s/%s/plan" vcs_type project-name)]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           ;; Start 404'ing on non-existent builds, as well as when you
           ;; try to go to a build page of a project which doesn't
@@ -417,9 +415,7 @@
           (and (= subpage :env-vars)
                (not (get-in current-state state/project-envvars-path)))
           (ajax/ajax :get
-                     (case vcs_type
-                       "github" (gstring/format "/api/v1/project/%s/envvar" project-name)
-                       "bitbucket" (gstring/format "/api/v1.1/project/%s/%s/envvar" vcs_type project-name))
+                     (gstring/format "/api/v1.1/project/%s/%s/envvar" vcs_type project-name)
                      :project-envvar
                      api-ch
                      :context {:project-name project-name})

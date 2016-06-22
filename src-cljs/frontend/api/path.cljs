@@ -2,11 +2,9 @@
   (:require [goog.string :as gstring]))
 
 (defn- base-project-url-path [vcs-type]
-  (case vcs-type
-    "bitbucket" (gstring/format
-                  "/api/v1.1/project/%s"
-                  vcs-type)
-    "github" "/api/v1/project"))
+  (gstring/format
+   "/api/v1.1/project/%s"
+   vcs-type))
 
 (defn- base-organization-url-path [vcs-type org-name]
   (gstring/format "/api/v1.1/organization/%s/%s"
