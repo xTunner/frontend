@@ -13,8 +13,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
-            [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros [html]]))
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn active-class-if-active [current-subpage subpage-link]
   (if (= current-subpage subpage-link)
@@ -29,7 +29,7 @@
     (render [_]
       (let [user-and-orgs (sort-by (complement :org)
                                    (get-in app state/user-organizations-path))]
-        (html/html
+        (html
          [:div#settings-plans
           [:legend "Org Settings"]
           [:div.plans-item
@@ -66,7 +66,7 @@
             heroku-api-key-input (get-in app (conj state/user-path :heroku-api-key-input))
             submit-form! #(raise! owner [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
             project-page? (:project-page? opts)]
-        (html/html
+        (html
          [:div#settings-heroku.settings
           [:div.heroku-item
            [:legend "Heroku API key"]
@@ -107,7 +107,7 @@
       (let [tokens        (get-in app state/user-tokens-path)
             create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
             new-user-token (get-in app state/new-user-token-path)]
-        (html/html
+        (html
          [:div#settings-api.settings
           [:legend "API Tokens"]
           [:div.api-item
@@ -202,7 +202,7 @@
   (reify
     om/IRenderState
     (render-state [_ {:keys [clicked-join?]}]
-      (html/html
+      (html
        [:div
         [:p
          "We invite you to join Inner Circle, our new beta program. As a
@@ -265,7 +265,7 @@
     om/IRender
     (render [_]
       (let []
-        (html/html
+        (html
          [:div#settings-beta-program
           [:div
            (let [message (get-in app state/general-message-path)
@@ -402,7 +402,7 @@
     (render [_]
       (let [user (get-in app state/user-path)
             projects (get-in app state/projects-path)]
-        (html/html
+        (html
          [:div#settings-notification
           [:legend "Notification Settings"]
           (preferred-email-address owner user)
