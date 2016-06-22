@@ -1,5 +1,6 @@
 (ns frontend.components.pieces.table
-  (:require [om.core :as om :include-macros true])
+  (:require [devcards.core :as dc :refer-macros [defcard-om]]
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn- cell-classes
@@ -53,3 +54,30 @@
    [:button {:data-component `action-button
              :on-click on-click}
     icon]))
+
+(dc/do
+  (defn format-date [date]
+    (.toDateString date))
+
+  (defn table-parent [data owner]
+    (om/component
+        (om/build table {:rows [{:name "John"
+                                 :birthday (js/Date. "1940-10-09")}
+                                {:name "Paul"
+                                 :birthday (js/Date. "1942-06-18")}
+                                {:name "George"
+                                 :birthday (js/Date. "1943-02-25")}
+                                {:name "Ringo"
+                                 :birthday (js/Date. "1940-07-07")}]
+                         :columns [{:header "Name"
+                                    :cell-fn :name}
+                                   {:header "Birthday"
+                                    :cell-fn (comp format-date :birthday)}
+                                   {:type :shrink
+                                    :cell-fn (fn [beatle]
+                                               (action-button
+                                                #(js/alert (str "You may not remove " (:name beatle) " from the band."))
+                                                "X"))}]})))
+
+  (defcard-om table
+    table-parent))
