@@ -167,7 +167,7 @@
   normalized table at the root of the app state."
   [org-name vcs-type api-ch]
   (ajax/ajax :get
-             (gstring/format "/api/dangerzone/organization/%s/%s/settings" vcs-type org-name)
+             (gstring/format "/api/v1.1/organization/%s/%s/settings" vcs-type org-name)
              :org-settings-normalized
              api-ch))
 
