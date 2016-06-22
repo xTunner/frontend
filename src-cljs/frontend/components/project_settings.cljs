@@ -1235,27 +1235,23 @@
                 :value "Create token",
                 :type "submit"}])]
             (when-let [tokens (seq (:tokens project-data))]
-              [:table.table
-               [:thead
-                [:th "Scope"]
-                [:th "Label"]
-                [:th "Token"]
-                [:th "Created"]
-                [:th]]
-               [:tbody
-                (for [{:keys [scope label token time]} tokens]
-                  [:tr
-                   [:td scope]
-                   [:td label]
-                   [:td [:span.code token]]
-                   [:td time]
-                   [:td
-                    [:a.slideBtn
-                     {:title "Remove this Key?",
-                      :on-click #(raise! owner [:deleted-project-api-token {:project-id project-id
-                                                                            :token token}])}
-                     [:i.fa.fa-times-circle]
-                     [:span " Remove"]]]])]])]]])))))
+              (om/build table/table
+                        {:rows tokens
+                         :columns [{:header "Scope"
+                                    :cell-fn :scope}
+                                   {:header "Label"
+                                    :cell-fn :label}
+                                   {:header "Token"
+                                    :cell-fn :token}
+                                   {:header "Created"
+                                    :cell-fn :time}
+                                   {:type :shrink
+                                    :cell-fn
+                                    (fn [token]
+                                      (table/action-button
+                                       #(raise! owner [:deleted-project-api-token {:project-id project-id
+                                                                                   :token (:token token)}])
+                                       (icons/delete)))}]}))]]])))))
 
 (defn heroku [data owner]
   (reify
