@@ -967,7 +967,7 @@
         :else nil))
 
 (defn checkout-key-description [key project]
-  (condp = (:type key)
+  (case (:type key)
     "deploy-key" (str (vcs-url/project-name (:vcs_url project)) " deploy key")
     "github-user-key" (str (:login key) " user key")
     "bitbucket-user-key" (str (:login key) " user key")
