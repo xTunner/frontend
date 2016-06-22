@@ -1089,31 +1089,32 @@
                  [:div
                   [:p
                    "Here are the keys we can currently use to check out your project, submodules, "
-                   "and private " vcs-name " dependencies. The currently preferred key is highlighted, but "
+                   "and private " vcs-name " dependencies. The currently preferred key is marked, but "
                    "we will automatically fall back to the other keys if the preferred key is revoked."]
-                  [:table.table
-                   [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
-                   [:tbody
-                    (for [checkout-key checkout-keys
-                          :let [fingerprint (:fingerprint checkout-key)
-                                vcs-link (checkout-key-link checkout-key project user)]]
-                      [:tr {:class (when (:preferred checkout-key) "preferred")}
-                       [:td
-                        (if vcs-link
-                          [:a.slideBtn {:href vcs-link :target "_blank"}
-                           (checkout-key-description checkout-key project) " "
-                           (case (vcs-url/vcs-type project-id)
-                             "bitbucket" [:i.fa.fa-bitbucket]
-                             "github" [:i.fa.fa-github])]
-                          (checkout-key-description checkout-key project))]
-                       [:td fingerprint]
-                       [:td
-                        [:a.slideBtn
-                         {:title "Remove this key?",
-                          :on-click #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
-                                                                                  :project-name project-name
-                                                                                  :fingerprint fingerprint}])}
-                         [:i.fa.fa-times-circle] " Remove"]]])]]])
+                  (om/build table/table
+                            {:rows checkout-keys
+                             :columns [{:header "Description"
+                                        :cell-fn #(if-let [vcs-link (checkout-key-link % project user)]
+                                                    [:a {:href vcs-link :target "_blank"}
+                                                     (checkout-key-description % project) " "
+                                                     (case (vcs-url/vcs-type project-id)
+                                                       "bitbucket" [:i.fa.fa-bitbucket]
+                                                       "github" [:i.fa.fa-github])]
+                                                    (checkout-key-description % project))}
+                                       {:header "Fingerprint"
+                                        :cell-fn :fingerprint}
+                                       {:header "Preferred"
+                                        :type #{:right :shrink}
+                                        :cell-fn #(when (:preferred %)
+                                                    (html [:i.material-icons "done"]))}
+                                       {:type :shrink
+                                        :cell-fn
+                                        (fn [key]
+                                          (table/action-button
+                                           #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
+                                                                                         :project-name project-name
+                                                                                         :fingerprint (:fingerprint key)}])
+                                           (icons/delete)))}]})])
                (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
                  [:div.add-key
                   [:h4 "Add deploy key"]
