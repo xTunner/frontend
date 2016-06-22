@@ -83,6 +83,13 @@
   (gstring/format "%s/invite"
                   (base-organization-url-path vcs-type org-name)))
 
+(defn project-hook-test [vcs-type project-name service-name]
+  (gstring/format
+   "%s/%s/hooks/%s/test"
+   (base-project-url-path vcs-type)
+    project-name
+    service-name))
+
 (defn build-retry [vcs-type org-name repo-name build-num]
   (gstring/format
    "%s/%s/%s/%s/retry"

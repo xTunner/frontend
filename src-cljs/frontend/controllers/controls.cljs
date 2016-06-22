@@ -773,12 +773,15 @@
   [target message {:keys [project-id merge-paths service]} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         project-name (vcs-url/project-name project-id)
+        vcs-type (vcs-url/vcs-type project-id)
         comms (get-in current-state [:comms])]
     (go
       (let [save-result (<! (save-project-settings project-id merge-paths current-state))
             test-result (if (= (:status save-result) :success)
-                          (let [test-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/hooks/%s/test" project-name service)
-                                                                   :params {:project-id project-id}))]
+                          (let [test-result
+                                (<! (ajax/managed-ajax
+                                      :post (api-path/project-hook-test vcs-type project-name service)
+                                      :params {:project-id project-id}))]
                             (when (not= (:status test-result) :success)
                               (put! (:errors comms) [:api-error test-result]))
                             test-result)
