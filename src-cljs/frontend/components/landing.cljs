@@ -167,7 +167,7 @@
             [:h2 "Devs rely on us to just work; we support the right tools."]
             [:p
              (for [toolset ["Languages" "databases" "queues" "browsers" "deployment"]]
-               (html
+               (list
                 [:a {:on-mouse-enter #(raise! owner [:toolset-clicked {:toolset (keyword (str/lower-case toolset))}])} toolset] ", "))
              "we support all of your tools.
               If it runs on Linux, then it will work on CircleCI.
