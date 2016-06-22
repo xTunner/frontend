@@ -779,9 +779,9 @@
       (let [save-result (<! (save-project-settings project-id merge-paths current-state))
             test-result (if (= (:status save-result) :success)
                           (let [test-result
-                                (<! (ajax/managed-ajax :post
-                                                       (api-path/project-hook-test vcs-type project-name service)
-                                                       :params {:project-id project-id}))]
+                                (<! (ajax/managed-ajax
+                                      :post (api-path/project-hook-test vcs-type project-name service)
+                                      :params {:project-id project-id}))]
                             (when (not= (:status test-result) :success)
                               (put! (:errors comms) [:api-error test-result]))
                             test-result)
