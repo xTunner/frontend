@@ -27,33 +27,43 @@
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html defrender]]))
 
-(defn infrastructure-fail-message [owner]
-  (if-not (enterprise?)
-    [:div
-     "Looks like we had a bug in our infrastructure, or that of our providers (generally "
-     [:a {:href "https://status.github.com/"} "GitHub"]
-     " or "
-     [:a {:href "https://status.aws.amazon.com/"} "AWS"]
-     ") We should have automatically retried this build. We've been alerted of"
-     " the issue and are almost certainly looking into it, please "
-     (common/contact-us-inner owner)
-     " if you're interested in the cause of the problem."]
-
+(defn infrastructure-fail-message [owner fail-reason]
+  (if (enterprise?)
     [:div
      "Looks like you may have encountered a bug in the build infrastructure. "
      "Your build should have been automatically retried.  If the problem persists, please "
      (common/contact-us-inner owner)
-     ", so CircleCI can investigate."]))
+     ", so CircleCI can investigate."]
 
+    (cond
+      (= fail-reason "exit-code-65-bug")
+      [:div "This build failed as an \"Exit Code 65\" bug. "
+       "You will not be charged for this build and it will be retried up to 3 times."
+       "To follow progress regarding the root cause of this error, please follow "
+       [:a {:href "https://discuss.circleci.com/t/xcode-exit-code-65/4284/9"
+            :target "_blank"}
+        "this Discuss post."]]
+
+      :else
+      [:div
+       "Looks like we had a bug in our infrastructure, or that of our providers (generally "
+       [:a {:href "https://status.github.com/"} "GitHub"]
+       " or "
+       [:a {:href "https://status.aws.amazon.com/"} "AWS"]
+       ") We should have automatically retried this build. We've been alerted of"
+       " the issue and are almost certainly looking into it, please "
+       (common/contact-us-inner owner)
+       " if you're interested in the cause of the problem."])))
 
 (defn report-error [{:keys [build show-premium-content?]} owner]
   (let [build-id (build-model/id build)
-        build-url (:build_url build)]
+        build-url (:build_url build)
+        fail-reason (:fail_reason build)]
     (when (:failed build)
       [:div.alert.alert-danger.iconified
        [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
        (if (:infrastructure_fail build)
-         (infrastructure-fail-message owner)
+         (infrastructure-fail-message owner fail-reason)
          [:div.alert-wrap
           "If you continue to get stuck, we suggest checking out our "
           [:a (open-ext {:href "https://circleci.com/docs/troubleshooting/"})
