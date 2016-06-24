@@ -337,7 +337,7 @@
             [:div "Projects utilizing more containers generally have faster builds and less queueing. "
              [:a {:on-click #(raise! owner [:activate-plan-trial event-data])}
               "Click here "]
-             "to activate a free two-week trial of 3 additional containers."]]
+             "to activate a free two-week trial of 3 additional linux containers."]]
            [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner event-data])}
             [:i.material-icons "clear"]]])))))
 
