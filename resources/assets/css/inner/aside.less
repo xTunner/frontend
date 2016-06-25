@@ -560,3 +560,20 @@
     transition: visibility 0ms (@aside-transition-speed / 2), opacity (@aside-transition-speed * 2) 0ms;
   }
 }
+
+@media (max-width: 500px) {
+    .app-dominant {
+        // TODO Using !important this much isn't good.
+        // We should really get a handle on our CSS layers
+        display: inline !important;
+        overflow-y: scroll !important;
+    }
+    .app-aside:not(.menuless) {
+        width: 95%;
+        height: 30vh;
+    }
+
+    .app-aside:not(.menuless) .aside-left-menu {
+        width: 100%;
+    }
+}
