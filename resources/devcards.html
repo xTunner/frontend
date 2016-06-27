@@ -4,6 +4,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <link href="/assets/css/app.css" rel="stylesheet" type="text/css">
+
+    <!--
+         Devcards provides several stylesheets which apply default styles to the page. You
+         override these styles by supplying your own <style> or <link> with the same id.
+         Here we override the default styles Devcards applies to the insides of cards. The
+         original default has been reproduced here and modified.
+       -->
+    <style id="com-rigsomelight-devcards-addons-css">
+     body {
+         overflow-x: hidden;
+     }
+
+     @media (max-width: 1000px) {
+         .com-rigsomelight-devcards-card-hide-border
+         .com-rigsomelight-devcards_rendered-card
+         .com-rigsomelight-devcards-markdown pre {
+             margin-right: -3000px;
+             margin-left: -3000px;
+             padding-right: 3000px;
+             padding-left: 3000px;
+         }
+     }
+
+     /* default typography */
+     /* Disabled to let our own top-level typography through.
+     .com-rigsomelight-devcards_rendered-card {
+         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+         font-size: 16px;
+         line-height: 1.42857143;
+     }
+      */
+
+     .com-rigsomelight-devcards_rendered-card code {
+         font-size: 90%;
+     }
+
+     .com-rigsomelight-devcards_rendered-card h1,
+     .com-rigsomelight-devcards_rendered-card h2,
+     .com-rigsomelight-devcards_rendered-card h3,
+     .com-rigsomelight-devcards_rendered-card h4,
+     .com-rigsomelight-devcards_rendered-card h5 {
+         font-weight: 500;
+     }
+
+     .com-rigsomelight-devcards_rendered-card a {
+         color: #428bca;
+         text-decoration: none;
+     }
+    </style>
   </head>
   <body>
     <script>

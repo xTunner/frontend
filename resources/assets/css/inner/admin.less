@@ -1,76 +1,13 @@
-.admin-recent-builds {
-  .builds-table {
-    .table;
-    .table-striped;
-    .table-condensed;
-    .well;
-  }
-}
-
 .users {
-  table {
+  .user-table {
     margin: 0 15px 15px 15px;
-    width: calc(~'100% - 30px');
-    table-layout: fixed;
+  }
 
-    .github-id {
-      width: 25%;
-    }
+  .permissions-editor {
+    margin: 10px 0;
 
-    .name {
-      width: 30%;
-    }
-
-    .permissions {
-      width: 45%;
-    }
-
-    .head {
-      font-size: @fontSizeSmall;
-      color: @gray;
-      border-bottom: 1px solid @grayLighter;
-
-      tr {
-        height: 30px;
-      }
-
-      th {
-        padding-left: 10px;
-      }
-    }
-
-    .body {
-      tr {
-        height: 55px;
-        font-size: @fontSizeSmall;
-        color: @gray;
-        border-top: 1px solid @grayLighter;
-        border-bottom: 1px solid @grayLighter;
-
-        td {
-          padding-left: 10px;
-
-          select.form-control {
-            .fancy-select(@arrow-margin: 6px; @color: inherit);
-            border: 1px solid @input-border;
-
-            .flex(0 0 auto);
-            width: @selectWidth;
-            font-size: inherit;
-          }
-
-          .secondary {
-            height: 35px;
-            width: 155px;
-            border-radius: 3px;
-            background-color: @grayLightest;
-            border: solid 1px rgba(0, 0, 0, 0.1);
-          }
-          .secondary:hover {
-            background-color: @whiten;
-          }
-        }
-      }
+    > .suspend-button {
+      margin-left: 10px;
     }
   }
 }
