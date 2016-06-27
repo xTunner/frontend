@@ -1172,7 +1172,7 @@
                              :columns [{:header "Billing Period"
                                         :type :shrink
                                         :cell-fn #(html
-                                                   [:span.billing-period
+                                                   [:span
                                                     (datetime/month-name-day-date (:from %))
                                                     " - "
                                                     (datetime/month-name-day-date (:to %))])}
