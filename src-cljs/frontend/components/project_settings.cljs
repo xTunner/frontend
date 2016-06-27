@@ -462,7 +462,8 @@
                                      :cell-fn :name}
                                     {:header "Value"
                                      :cell-fn :value}
-                                    {:type :shrink
+                                    {:header "Remove"
+                                     :type #{:shrink :right}
                                      :cell-fn
                                      (fn [env-var]
                                        (table/action-button
@@ -944,7 +945,8 @@
                                     :cell-fn :hostname}
                                    {:header "Fingerprint"
                                     :cell-fn :fingerprint}
-                                   {:type :shrink
+                                   {:header "Remove"
+                                    :type #{:shrink :right}
                                     :cell-fn
                                     (fn [key]
                                       (table/action-button
@@ -1107,7 +1109,8 @@
                                         :type #{:right :shrink}
                                         :cell-fn #(when (:preferred %)
                                                     (html [:i.material-icons "done"]))}
-                                       {:type :shrink
+                                       {:header "Remove"
+                                        :type #{:shrink :right}
                                         :cell-fn
                                         (fn [key]
                                           (table/action-button
@@ -1245,7 +1248,8 @@
                                     :cell-fn :token}
                                    {:header "Created"
                                     :cell-fn :time}
-                                   {:type :shrink
+                                   {:header "Remove"
+                                    :type #{:shrink :right}
                                     :cell-fn
                                     (fn [token]
                                       (table/action-button
@@ -1671,7 +1675,8 @@
                            {:header "Uploaded"
                             :type :shrink
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
-                           {:type :shrink
+                           {:header "Remove"
+                            :type #{:shrink :right}
                             :cell-fn
                             (fn [row]
                               (table/action-button
