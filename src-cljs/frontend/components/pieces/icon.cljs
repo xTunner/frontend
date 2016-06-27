@@ -1,4 +1,4 @@
-(ns frontend.components.pieces.icons
+(ns frontend.components.pieces.icon
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn delete

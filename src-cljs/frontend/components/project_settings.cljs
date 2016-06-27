@@ -8,7 +8,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
-            [frontend.components.pieces.icons :as icons]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project-common]
             [frontend.config :as config]
@@ -468,7 +468,7 @@
                                        (table/action-button
                                         #(raise! owner [:deleted-env-var {:project-id project-id
                                                                           :env-var-name (:name env-var)}])
-                                        (icons/delete)))}]}))]]])))))
+                                        (icon/delete)))}]}))]]])))))
 
 (defn advance [project-data owner]
   (reify
@@ -951,7 +951,7 @@
                                        #(raise! owner [:deleted-ssh-key (-> key
                                                                             (select-keys [:hostname :fingerprint])
                                                                             (assoc :project-id project-id))])
-                                       (icons/delete)))}]}))]]])))))
+                                       (icon/delete)))}]}))]]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
@@ -1114,7 +1114,7 @@
                                            #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
                                                                                          :project-name project-name
                                                                                          :fingerprint (:fingerprint key)}])
-                                           (icons/delete)))}]})])
+                                           (icon/delete)))}]})])
                (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
                  [:div.add-key
                   [:h4 "Add deploy key"]
@@ -1251,7 +1251,7 @@
                                       (table/action-button
                                        #(raise! owner [:deleted-project-api-token {:project-id project-id
                                                                                    :token (:token token)}])
-                                       (icons/delete)))}]}))]]])))))
+                                       (icon/delete)))}]}))]]])))))
 
 (defn heroku [data owner]
   (reify
@@ -1676,7 +1676,7 @@
                             (fn [row]
                               (table/action-button
                                #(raise! owner [:delete-p12 (select-keys row [:project-name :vcs-type :id])])
-                               (icons/delete)))}]}))))
+                               (icon/delete)))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name]} owner]
   (reify

@@ -2,7 +2,7 @@
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
-            [frontend.components.pieces.icons :as icons]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project]
             [frontend.components.svg :refer [svg]]
@@ -153,7 +153,7 @@
                                    (fn [token]
                                      (table/action-button
                                       #(raise! owner [:api-token-revocation-attempted {:token token}])
-                                      (icons/delete)))}]}))]]])))))
+                                      (icon/delete)))}]}))]]])))))
 
 
 (def available-betas
