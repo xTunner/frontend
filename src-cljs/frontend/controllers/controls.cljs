@@ -476,9 +476,10 @@
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)
         uuid frontend.async/*uuid*]
     (go
-     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/ssh" org-name repo-name build-num)))]
+     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1.1/project/%s/%s/%s/%s/ssh" vcs-type org-name repo-name build-num)))]
        (put! api-ch [:retry-build (:status api-result) api-result])
        (release-button! uuid (:status api-result))
        (when (= :success (:status api-result))
@@ -492,9 +493,10 @@
   (let [api-ch (-> current-state :comms :api)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)
+        vcs-type (vcs-url/vcs-type vcs-url)
         uuid frontend.async/*uuid*]
     (go
-      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1/project/%s/%s/%s/ssh-users" org-name repo-name build-num)))]
+      (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1.1/project/%s/%s/%s/%s/ssh-users" vcs-type org-name repo-name build-num)))]
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :followed-repo
