@@ -1,11 +1,13 @@
 (ns frontend.components.admin
   (:require [ankha.core :as ankha]
-            [inflections.core :refer [pluralize]]
-            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [cljs.core.async :as async :refer [<! >! alts! chan close! sliding-buffer]]
             [clojure.string :as str]
-            [frontend.async :refer [raise! navigate!]]
+            [frontend.async :refer [navigate! raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
+            [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.dropdown :as dropdown]
+            [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.shared :as shared]
             [frontend.datetime :as datetime]
@@ -13,6 +15,7 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
+            [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -101,29 +104,24 @@
           [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
          (if-not builders
            [:div.loading-spinner common/spinner]
-           ;; FIXME: This table shouldn't really be .recent-builds-table; it's
-           ;; a hack to steal a bit of styling from the builds table until we
-           ;; properly address the styling for this table and admin tools in
-           ;; general.
-           [:table.recent-builds-table
-            [:thead
-             [:tr
-              [:th "Instance ID"]
-              [:th "Instance Type"]
-              [:th "Boot Time"]
-              [:th "Busy Containers"]
-              [:th "State"]]]
-            [:tbody
-             (if (seq builders)
-               (for [instance builders]
-                 [:tr
-                  [:td (:instance_id instance)]
-                  [:td (:ec2_instance_type instance)]
-                  [:td (datetime/long-datetime (:boot_time instance))]
-                  [:td (:busy instance) " / " (:total instance)]
-                  [:td (:state instance)]])
-               [:tr
-                [:td "No available masters"]])]])]))))
+           (if-not (seq builders)
+             "No available masters."
+             (om/build table/table
+                       {:rows builders
+                        :columns [{:header "Instance ID"
+                                   :cell-fn :instance_id}
+
+                                  {:header "Instance Type"
+                                   :cell-fn :ec2_instance_type}
+
+                                  {:header "Boot Time"
+                                   :cell-fn (comp datetime/long-datetime :boot_time)}
+
+                                  {:header "Busy Containers"
+                                   :cell-fn :busy}
+
+                                  {:header "State"
+                                   :cell-fn :state}]})))]))))
 
 (defn admin-builds-table [builds owner {:keys [tab]}]
   (reify
@@ -219,43 +217,54 @@
   (or (some (set admin-scopes) ["write-settings" "read-settings"])
       "none"))
 
-(defn user [{:keys [user current-user]} owner]
+(defn user-table [{:keys [users current-user]} owner]
   (let [scope-labels {"write-settings" "Admin"
                       "read-settings" "Read-only Admin"
                       "none" "Normal"}]
     (reify
+      om/IDisplayName (display-name [_] "License Info")
       om/IRender
       (render [_]
-        (let [show-suspend-unsuspend? (and (#{"all" "write-settings"} (:admin current-user))
-                                           (not= (:login current-user) (:login user)))
-              scope (-> user :admin_scopes relevant-scope)
-              dropdown-options (cond->> (keys scope-labels)
-                                        (not= "read-settings" scope) (remove #{"read-settings"}))]
-          (html
-            [:tr
-             [:td [:a {:href (routes/v1-dashboard-path {:vcs_type "github" :org (:login user) })} (:login user)]]
-             [:td (:name user)]
-             [:td
-              [:div.form-inline
-               ;; Admin toggles
-               (if show-suspend-unsuspend?
-                 [:select.form-control
-                  {:on-change #(raise! owner [:set-admin-scope
-                                              {:login (:login user)
-                                               :scope (-> % .-target .-value keyword)}])
-                   :value scope}
-                  (for [opt dropdown-options]
-                    [:option {:value opt} (scope-labels opt)])]
-                 (-> user :admin_scopes relevant-scope scope-labels))
-               ;; Suspend/unsuspend toggles
-               (when show-suspend-unsuspend?
-                 (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
-                   [:button.secondary
-                    {:style {:margin-left "1em"}
-                     :on-click #(raise! owner [action (select-keys user [:login])])}
-                    (case action
-                      :suspend-user "Suspend"
-                      :unsuspend-user "Activate")]))]]]))))))
+        (html
+         [:div.user-table
+          (om/build table/table
+                    {:rows users
+                     :columns [{:header "GitHub ID"
+                                :cell-fn
+                                #(html
+                                  [:a {:href (routes/v1-dashboard-path {:vcs_type "github" :org (:login %) })} (:login %)])}
+
+                               {:header "Name"
+                                :cell-fn :name}
+
+                               {:header "Permissions"
+                                :type :shrink
+                                :cell-fn
+                                (fn [user]
+                                  (let [show-suspend-unsuspend? (and (#{"all" "write-settings"} (:admin current-user))
+                                                                     (not= (:login current-user) (:login user)))
+                                        scope (-> user :admin_scopes relevant-scope)
+                                        dropdown-options (cond->> (keys scope-labels)
+                                                           (not= "read-settings" scope) (remove #{"read-settings"}))]
+                                    (html
+                                     (if-not show-suspend-unsuspend?
+                                       (-> user :admin_scopes relevant-scope scope-labels)
+
+                                       [:div.permissions-editor
+                                        (dropdown/dropdown
+                                         {:on-change #(raise! owner [:set-admin-scope
+                                                                     {:login (:login user)
+                                                                      :scope %}])
+                                          :value scope
+                                          :options (for [opt dropdown-options]
+                                                     [opt (scope-labels opt)])})
+
+                                        (let [action (if (:suspended user) :unsuspend-user :suspend-user)]
+                                          [:span.suspend-button
+                                           (button/button {:on-click #(raise! owner [action (select-keys user [:login])])}
+                                                          (case action
+                                                            :suspend-user "Suspend"
+                                                            :unsuspend-user "Activate"))])]))))}]})])))))
 
 (defn users [app owner]
   (reify
@@ -278,56 +287,35 @@
                                    all-users)
             current-user (:current-user app)
             num-licensed-users (get-in app (conj state/license-path :seats))
-            num-active-users (get-in app (conj state/license-path :seat_usage))
-            table-header [:thead.head
-                          [:tr
-                           [:th.github-id "GitHub ID"]
-                           [:th.name "Name"]
-                           [:th.permissions "Permissions"]]]]
+            num-active-users (get-in app (conj state/license-path :seat_usage))]
         (html
-          [:div.users {:style {:padding-left "10px"}}
-           [:h1 "Users"]
+         [:div.users {:style {:padding-left "10px"}}
+          [:h1 "Users"]
 
-           [:div.card.detailed
-            [:h3 "Active"]
-            [:div.details (current-seat-usage num-active-users num-licensed-users)]
-            (when (not-empty active-users)
-              [:table
-               table-header
-               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
-                                                              :current-user current-user})
-                                                     active-users))]])]
+          [:div.card.detailed
+           [:h3 "Active"]
+           [:div.details (current-seat-usage num-active-users num-licensed-users)]
+           (when (not-empty active-users)
+             (om/build user-table {:users active-users :current-user current-user}))]
 
-           [:div.card.detailed
-            [:h3 "Suspended"]
-            [:div.details "Suspended users are prevented from logging in and do not count towards the number your license allows."]
-            (when (not-empty suspended-users)
-              [:table
-               table-header
-               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
-                                                              :current-user current-user})
-                                                     suspended-users))]])]
+          [:div.card.detailed
+           [:h3 "Suspended"]
+           [:div.details "Suspended users are prevented from logging in and do not count towards the number your license allows."]
+           (when (not-empty suspended-users)
+             (om/build user-table {:users suspended-users :current-user current-user}))]
 
-           ;;Don't show this section if there are no suspended new users to show
-           (when (not-empty suspended-new-users)
-             [:div.card.detailed
-              [:h3 "Suspended New Users"]
-              [:div.details "Suspended new users require an admin to unsuspend them before they can log on and do not count towards the number your license allows."]
-              [:table
-               table-header
-               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
-                                                              :current-user current-user})
-                                                     suspended-new-users))]]])
+          ;;Don't show this section if there are no suspended new users to show
+          (when (not-empty suspended-new-users)
+            [:div.card.detailed
+             [:h3 "Suspended New Users"]
+             [:div.details "Suspended new users require an admin to unsuspend them before they can log on and do not count towards the number your license allows."]
+             (om/build user-table {:users suspended-new-users :current-user current-user})])
 
-           [:div.card.detailed
-            [:h3 "Inactive Users"]
-            [:div.details "Inactive users have never logged on and also do not count towards your license limits."]
-            (when (not-empty inactive-users)
-              [:table
-               table-header
-               [:tbody.body (om/build-all user (mapv (fn [u] {:user u
-                                                              :current-user current-user})
-                                                     inactive-users))]])]])))))
+          [:div.card.detailed
+           [:h3 "Inactive Users"]
+           [:div.details "Inactive users have never logged on and also do not count towards your license limits."]
+           (when (not-empty inactive-users)
+             (om/build user-table {:users inactive-users :current-user current-user}))]])))))
 
 (defn boolean-setting-entry [item owner]
   (reify
