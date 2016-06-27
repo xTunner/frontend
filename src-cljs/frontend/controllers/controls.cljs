@@ -593,9 +593,7 @@
         vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (button-ajax :post
-                 (case vcs-type
-                   "github" (gstring/format "/api/v1/project/%s/envvar" project-name)
-                   "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/envvar" vcs-type project-name))
+                 (gstring/format "/api/v1.1/project/%s/%s/envvar" vcs-type project-name)
                  :create-env-var
                  api-ch
                  :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
@@ -609,9 +607,7 @@
         vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
     (ajax/ajax :delete
-               (case vcs-type
-                 "github" (gstring/format "/api/v1/project/%s/envvar/%s" project-name env-var-name)
-                 "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/envvar/%s" vcs-type project-name env-var-name))
+               (gstring/format "/api/v1.1/project/%s/%s/envvar/%s" vcs-type project-name env-var-name)
                :delete-env-var
                api-ch
                :context {:project-id project-id
@@ -920,7 +916,7 @@
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
                                     :post
-                                    (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                    (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                                     vcs-type
                                                     org-name
                                                     "plan")
@@ -954,7 +950,7 @@
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
                                      :post
-                                     (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                     (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                                      vcs-type
                                                      org-name)
                                      :params {:token data
@@ -1008,7 +1004,7 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
-                           (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                           (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                            vcs-type
                                            org-name)
                            :params {:containers containers}))]
@@ -1026,7 +1022,7 @@
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :put
-                             (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                             (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                              vcs-type
                                              org-name)
                              :params {:osx plan-type}))]
@@ -1051,7 +1047,7 @@
     (go
       (let [api-result (<! (ajax/managed-ajax
                              :post
-                             (gstring/format "/api/dangerzone/organization/%s/%s/plan/trial"
+                             (gstring/format "/api/v1.1/organization/%s/%s/plan/trial"
                                              vcs-type
                                              org-name)
                              :params {plan-type {:template template}}))]
@@ -1076,7 +1072,7 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
-                           (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                           (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                            vcs-type
                                            org-name)
                            :params {:piggieback-org-maps piggieback-org-maps}))]
@@ -1095,13 +1091,13 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :put
-                           (gstring/format "/api/dangerzone/organization/%s/%s/transfer-plan"
+                           (gstring/format "/api/v1.1/organization/%s/%s/transfer-plan"
                                            vcs-type
                                            org-name)
                            :params to-org))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
-         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+         (let [plan-api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                                                            vcs-type
                                                                            org-name)))]
            (put! api-ch [:org-plan
@@ -1238,7 +1234,7 @@
             (let [token-id (:id data)]
               (let [api-result (<! (ajax/managed-ajax
                                     :put
-                                    (gstring/format "/api/dangerzone/organization/%s/%s/card"
+                                    (gstring/format "/api/v1.1/organization/%s/%s/card"
                                                     vcs-type
                                                     org-name)
                                     :params {:token token-id}))]
@@ -1258,7 +1254,7 @@
     (go
       (let [api-result (<! (ajax/managed-ajax
                               :put
-                              (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                              (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                               vcs-type
                                               org-name)
                               :params {:billing-email (:billing_email settings)
@@ -1280,7 +1276,7 @@
     (go
       (let [api-result (<! (ajax/managed-ajax
                               :post
-                              (gstring/format "/api/dangerzone/organization/%s/%s/invoice/resend"
+                              (gstring/format "/api/v1.1/organization/%s/%s/invoice/resend"
                                               vcs-type
                                               org-name)
                               :params {:id invoice-id}))]
@@ -1300,7 +1296,7 @@
     (go
      (let [api-result (<! (ajax/managed-ajax
                            :delete
-                           (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                           (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                            vcs_type
                                            org-name)
                            :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
@@ -1308,7 +1304,7 @@
          (put! errors-ch [:api-error api-result])
          (let [plan-api-result (<! (ajax/managed-ajax
                                     :get
-                                    (gstring/format "/api/dangerzone/organization/%s/%s/plan"
+                                    (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                                     vcs_type
                                                     org-name)))]
            (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])

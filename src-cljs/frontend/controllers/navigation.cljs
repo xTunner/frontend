@@ -195,7 +195,7 @@
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (go (let [build-url (gstring/format "/api/dangerzone/project/%s/%s/%s" vcs_type project-name build-num)
+    (go (let [build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)
               api-result (<! (ajax/managed-ajax :get build-url))
               build (:resp api-result)
               scopes (:scopes api-result)
@@ -203,9 +203,7 @@
               vcs-type (:vcs_type navigation-data)
               org (:org navigation-data)
               repo (:repo navigation-data)
-              plan-url (case vcs_type
-                         "github" (gstring/format "/api/v1/project/%s/plan" project-name)
-                         "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/plan" vcs_type project-name))]
+              plan-url (gstring/format "/api/v1.1/project/%s/%s/plan" vcs_type project-name)]
           (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
           ;; Start 404'ing on non-existent builds, as well as when you
           ;; try to go to a build page of a project which doesn't
@@ -417,9 +415,7 @@
           (and (= subpage :env-vars)
                (not (get-in current-state state/project-envvars-path)))
           (ajax/ajax :get
-                     (case vcs_type
-                       "github" (gstring/format "/api/v1/project/%s/envvar" project-name)
-                       "bitbucket" (gstring/format "/api/dangerzone/project/%s/%s/envvar" vcs_type project-name))
+                     (gstring/format "/api/v1.1/project/%s/%s/envvar" vcs_type project-name)
                      :project-envvar
                      api-ch
                      :context {:project-name project-name})
@@ -471,7 +467,7 @@
       :organizations (api/get-orgs api-ch :include-user? true)
       :billing (do
                  (ajax/ajax :get
-                            (gstring/format "/api/dangerzone/organization/%s/%s/card"
+                            (gstring/format "/api/v1.1/organization/%s/%s/card"
                                             vcs_type
                                             org)
                             :plan-card
@@ -479,7 +475,7 @@
                             :context {:org-name org
                                       :vcs-type vcs_type})
                  (ajax/ajax :get
-                            (gstring/format "/api/dangerzone/organization/%s/%s/invoices"
+                            (gstring/format "/api/v1.1/organization/%s/%s/invoices"
                                             vcs_type
                                             org)
                             :plan-invoices
