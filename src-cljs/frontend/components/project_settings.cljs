@@ -1,7 +1,6 @@
 (ns frontend.components.project-settings
   (:require [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [cljs.core.async :as async :refer [<! >! alts! chan close! sliding-buffer]]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
             [frontend.components.account :as account]
@@ -13,14 +12,12 @@
             [frontend.components.project.common :as project-common]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
-            [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
@@ -29,8 +26,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
