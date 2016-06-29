@@ -45,7 +45,7 @@
             (organization org selected? #(on-org-click org))))]))))
 
 (dc/do
-  (defn picker-parent [{:keys [selected-tab-name selected-org] :as data} owner]
+  (defn picker-parent [{:keys [selected-org] :as data} owner]
     (om/component
         (html
          [:div
