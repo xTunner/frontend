@@ -49,9 +49,16 @@
               [:td {:class (cell-classes type)}
                (cell-fn row)])])]]))))
 
-(defn action-button [on-click icon]
+(defn action-button
+  "A button suitable for the action button cell of a table row.
+
+  label    - The textual label. Not visible; used as an aria-label.
+  icon     - The icon rendered visually as the button.
+  on-click - Handler called when the button is clicked."
+  [label icon on-click]
   (html
    [:button {:data-component `action-button
+             :aria-label label
              :on-click on-click}
     icon]))
 

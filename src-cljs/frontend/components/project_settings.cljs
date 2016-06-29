@@ -463,9 +463,10 @@
                                      :cell-fn
                                      (fn [env-var]
                                        (table/action-button
+                                        "Remove"
+                                        (icon/delete)
                                         #(raise! owner [:deleted-env-var {:project-id project-id
-                                                                          :env-var-name (:name env-var)}])
-                                        (icon/delete)))}]}))]]])))))
+                                                                          :env-var-name (:name env-var)}])))}]}))]]])))))
 
 (defn advance [project-data owner]
   (reify
@@ -946,10 +947,11 @@
                                     :cell-fn
                                     (fn [key]
                                       (table/action-button
+                                       "Remove"
+                                       (icon/delete)
                                        #(raise! owner [:deleted-ssh-key (-> key
                                                                             (select-keys [:hostname :fingerprint])
-                                                                            (assoc :project-id project-id))])
-                                       (icon/delete)))}]}))]]])))))
+                                                                            (assoc :project-id project-id))])))}]}))]]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
@@ -1110,10 +1112,11 @@
                                         :cell-fn
                                         (fn [key]
                                           (table/action-button
+                                           "Remove"
+                                           (icon/delete)
                                            #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
                                                                                          :project-name project-name
-                                                                                         :fingerprint (:fingerprint key)}])
-                                           (icon/delete)))}]})])
+                                                                                         :fingerprint (:fingerprint key)}])))}]})])
                (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
                  [:div.add-key
                   [:h4 "Add deploy key"]
@@ -1249,9 +1252,10 @@
                                     :cell-fn
                                     (fn [token]
                                       (table/action-button
+                                       "Remove"
+                                       (icon/delete)
                                        #(raise! owner [:deleted-project-api-token {:project-id project-id
-                                                                                   :token (:token token)}])
-                                       (icon/delete)))}]}))]]])))))
+                                                                                   :token (:token token)}])))}]}))]]])))))
 
 (defn heroku [data owner]
   (reify
@@ -1676,8 +1680,9 @@
                             :cell-fn
                             (fn [row]
                               (table/action-button
-                               #(raise! owner [:delete-p12 (select-keys row [:project-name :vcs-type :id])])
-                               (icon/delete)))}]}))))
+                               "Remove"
+                               (icon/delete)
+                               #(raise! owner [:delete-p12 (select-keys row [:project-name :vcs-type :id])])))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name]} owner]
   (reify

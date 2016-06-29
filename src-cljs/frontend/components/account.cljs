@@ -153,8 +153,9 @@
                                    :cell-fn
                                    (fn [token]
                                      (table/action-button
-                                      #(raise! owner [:api-token-revocation-attempted {:token token}])
-                                      (icon/delete)))}]}))]]])))))
+                                      "Remove"
+                                      (icon/delete)
+                                      #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
 
 
 (def available-betas
