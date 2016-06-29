@@ -315,27 +315,6 @@
     }
   }
 
-  // Environment Variables Page
-  .environment-variables-inner{
-
-    table {
-      .tableLight();
-      td {
-        &:not(:last-child) {
-          max-width: 150px;
-          overflow-x: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          padding: 1em;
-        }
-      }
-    }
-
-    a {
-      .tableDrawerBtn();
-    }
-  }
-
   // Dependencies Page
   .dependencies-page {
     fieldset {
@@ -548,14 +527,6 @@
 
   .sshkeys-inner {
     margin: 2em 0;
-    a {
-      .tableDrawerBtn();
-      line-height: 1em;
-      > i {
-        padding: 0;
-        padding-left: 7.5em;
-      }
-    }
   }
 
   // Checkout keys page
@@ -574,22 +545,6 @@
       list-style: disc inside;
     }
 
-    table {
-      margin-bottom: 1em;
-      tr.preferred {
-        td {
-          background: @blueDark;
-          color: @whiten;
-        }
-        a {
-          color: @whiten;
-        }
-      }
-    }
-
-    .tooltip {
-      font-size: @baseFontSize;
-    }
     .ghu-authorize {
       .circleButton(@green);
       text-shadow: none;
@@ -600,9 +555,6 @@
       .outlineFlat();
       margin: 0 1em 1em 0;
       padding: 1em;
-    }
-    a {
-      white-space: nowrap;
     }
   }
 
@@ -618,14 +570,6 @@
       }
       td {
         vertical-align: middle;
-      }
-      .slideBtn {
-        .tableDrawerBtn();
-        line-height: 1em;
-        > i {
-          padding: 0;
-          padding-left: 7.5em;
-        }
       }
     }
   }
@@ -767,66 +711,6 @@
     }
   }
 
-  [data-component="frontend.components.project-settings/p12-key-table"] {
-    margin-top: 10px;
-    width: 100%;
-
-    .head {
-      font-size: @fontSizeSmall;
-      color: @gray;
-      border-bottom: 1px solid @grayLighter;
-
-      tr {
-        height: 30px;
-      }
-
-      th {
-        padding-left: 10px;
-      }
-
-      .id-col {
-        width: 350px;
-      }
-
-      .filename-col {
-        width: 250px;
-      }
-
-      .uploaded-col {
-        width: 100px;
-      }
-
-      .delete-col {
-        width: 50px;
-      }
-    }
-  }
-
-  [data-component="frontend.components.project-settings/p12-key-row"] {
-    height: 30px;
-    font-size: @fontSizeSmall;
-    color: @gray;
-    border-top: 1px solid @grayLighter;
-    border-bottom: 1px solid @grayLighter;
-
-    td {
-      padding-left: 10px;
-    }
-
-    &:hover {
-      background: @whiten;
-    }
-
-    .delete {
-      cursor: pointer;
-      color: @grayLighter;
-
-      &:hover {
-        color: @gray;
-      }
-    }
-  }
-
   [data-component="frontend.components.project-settings/code-signing"] {
     background: @white;
     padding: 15px;
@@ -849,6 +733,7 @@
 
     .info {
       font-size: @fontSizeSmall;
+      margin-bottom: 10px;
     }
 
     .upload-key-button {

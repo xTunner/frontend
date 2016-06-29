@@ -1,38 +1,31 @@
 (ns frontend.components.org-settings
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.set]
-            [frontend.async :refer [raise! navigate!]]
-            [frontend.routes :as routes]
-            [frontend.datetime :as datetime]
-            [cljs-time.core :as time]
-            [cljs-time.format :as time-format]
+  (:require [cljs.core.async :as async :refer [<! chan close!]]
+            clojure.set
+            [clojure.string :as string]
             [frontend.analytics.track :as analytics-track]
-            [frontend.models.organization :as org-model]
-            [frontend.models.plan :as pm]
-            [frontend.models.repo :as repo-model]
-            [frontend.models.user :as user-model]
+            [frontend.async :refer [navigate! raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
-            [frontend.components.shared :as shared]
+            [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.project.common :as project-common]
-            [frontend.components.svg :refer [svg]]
+            [frontend.components.shared :as shared]
             [frontend.config :as config]
+            [frontend.datetime :as datetime]
+            [frontend.models.organization :as org-model]
+            [frontend.models.plan :as pm]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [clojure.string :as string]
             [goog.string :as gstring]
-            [goog.string.format]
             [inflections.core :as infl :refer [pluralize]]
-            [frontend.models.feature :as feature])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
+            [om.core :as om :include-macros true])
+  (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [frontend.utils :refer [html]]))
 
 (defn non-admin-plan [{:keys [org-name login vcs_type]} owner]
@@ -841,28 +834,22 @@
              [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
             [:div
               [:div.row-fluid [:legend.span8 "Card on file"]]
-              [:div.row-fluid
+              [:div.row-fluid.space-below
                [:div.offset1.span6
-                [:table.table.table-condensed
-                 {:data-bind "with: cardInfo"}
-                 [:thead
-                  [:th "Name"]
-                  [:th "Card type"]
-                  [:th "Card Number"]
-                  [:th "Expiry"]]
-                 (if (not (empty? card))
-                   [:tbody
-                    [:tr
-                     [:td (:name card)]
-                     [:td (:type card)]
-                     [:td "xxxx-xxxx-xxxx-" (:last4 card)]
-                     [:td (gstring/format "%02d" (:exp_month card)) \/ (:exp_year card)]]]
-                   [:tbody
-                    [:tr
-                     [:td "N/A"]
-                     [:td "N/A"]
-                     [:td "N/A"]
-                     [:td "N/A"]]])]]]
+                (om/build table/table
+                          {:rows [card]
+                           :columns [{:header "Name"
+                                      :cell-fn #(:name % "N/A")}
+                                     {:header "Card type"
+                                      :cell-fn #(:type % "N/A")}
+                                     {:header "Card Number"
+                                      :cell-fn #(if (contains? % :last4)
+                                                  (str "xxxx-xxxx-xxxx-" (:last4 %))
+                                                  "N/A")}
+                                     {:header "Expiry"
+                                      :cell-fn #(if (contains? % :exp_month)
+                                                  (gstring/format "%02d/%s" (:exp_month %) (:exp_year %))
+                                                  "N/A")}]})]]
               [:div.row-fluid
                [:div.offset1.span7
                 [:form.form-horizontal
@@ -983,42 +970,6 @@
   [ts]
   (datetime/year-month-day-date (* 1000 ts)))
 
-(defn invoice-view
-  "Render an invoice table row.
-  Invoices fetched from the API look like:
-
-  ;; Invoice API Format
-  ;; ------------------
-  ;; amount_due: 3206
-  ;; currency: \"usd\"
-  ;; date: 1403535350
-  ;; id: \"in_2398vhs098AHYoi\"
-  ;; paid: true
-  ;; period_end: 1403535350
-  ;; period_start: 1402665929"
-  [invoice owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        (let [invoice-id (:id invoice)]
-          [:tr
-            [:td (stripe-ts->date (:date invoice))]
-            [:td (str (stripe-ts->date (:period_start invoice)))
-                      " - "
-                      (stripe-ts->date (:period_end invoice))]
-            [:td.numeric (gstring/format "$%.2f" (invoice-total invoice))]
-            [:td
-              [:span
-                (forms/managed-button
-                  [:button.btn.btn-mini.btn-primary
-                    {:data-failed-text "Failed",
-                     :data-success-text "Sent",
-                     :data-loading-text "Sending...",
-                     :on-click #(raise! owner [:resend-invoice-clicked
-                                               {:invoice-id invoice-id}])}
-                    "Resend"])]]])))))
-
 (defn- ->balance-string [balance]
   (let [suffix (cond
                 (< balance 0) " in credit."
@@ -1049,29 +1000,40 @@
               [:div.loading-spinner common/spinner]]]
             [:div.row-fluid
              [:div.span8
-               [:legend "Invoices"]
-               [:dl.dl-horizontal
-                [:dt
-                 "Account balance"
-                 [:i.fa.fa-question-circle#invoice-popover-hack
-                  {:title "Account balance"
-                   :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
-                                      "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
-                                      "<p>This amount may take a few hours to refresh.</p>")}]]
-                [:dd
-                 [:span (->balance-string account-balance)]]]
-               [:table.table.table-bordered.table-striped
-                [:thead
-                 [:tr
-                  [:th "Invoice date"]
-                  [:th "Time period covered"]
-                  [:th "Total"]
-                  [:th
-                   [:i.fa.fa-question-circle#resend-invoice-tooltip-hack
-                    {:title "Resend an invoice to the billing email above."}]
-                   "Actions"]]]
-                [:tbody
-                 (om/build-all invoice-view invoices)]]]]))))))
+              [:legend "Invoices"]
+              [:dl.dl-horizontal
+               [:dt
+                "Account balance"
+                [:i.fa.fa-question-circle#invoice-popover-hack
+                 {:title "Account balance"
+                  :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
+                                     "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
+                                     "<p>This amount may take a few hours to refresh.</p>")}]]
+               [:dd
+                [:span (->balance-string account-balance)]]]
+              (om/build table/table
+                        {:rows invoices
+                         :columns [{:header "Invoice date"
+                                    :cell-fn (comp stripe-ts->date :date)}
+
+                                   {:header "Time period covered"
+                                    :cell-fn (comp str stripe-ts->date :period_start)}
+
+                                   {:header "Total"
+                                    :type :right
+                                    :cell-fn #(gstring/format "$%.2f" (invoice-total %))}
+
+                                   {:type :shrink
+                                    :cell-fn
+                                    (fn [invoice]
+                                      (forms/managed-button
+                                       [:button.btn.btn-mini.btn-primary
+                                        {:data-failed-text "Failed" ,
+                                         :data-success-text "Sent" ,
+                                         :data-loading-text "Sending..." ,
+                                         :on-click #(raise! owner [:resend-invoice-clicked
+                                                                   {:invoice-id (:id invoice)}])}
+                                        "Resend"]))}]})]]))))))
 
 (defn billing [app owner]
   (reify
@@ -1151,32 +1113,14 @@
                                                                            :cancel-notes notes}])}
                   "Cancel Plan"])))]]])))))
 
-(defn progress-bar [{:keys [max value class]} owner]
+(defn progress-bar [{:keys [max value]} owner]
   (reify
     om/IRender
     (render [_]
-      (html [:progress {:class class :value value :max max} (str value "%")]))))
-
-(defn osx-usage-row [{:keys [usage max]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [{:keys [amount from to]} usage
-            amount (.round js/Math (/ amount 1000 60))
-            percent (.round js/Math (* 100 (/ amount max)))]
-        (html
-         [:tr {:data-component `osx-usage-row}
-          [:td.billing-period
-           [:div
-            [:em (datetime/month-name-day-date from)]
-            [:span " - "]
-            [:em (datetime/month-name-day-date to)]]]
-          [:td.usage-bar
-           (om/build progress-bar {:class "monthly-usage-bar" :max max :value amount})]
-          [:td.usage-percent (when (>= percent 100) {:class "over-usage"})
-           (str percent "%")]
-          [:td.usage-minutes (when (>= percent 100) {:class "over-usage"})
-           (str (.toLocaleString amount) "/" (.toLocaleString max) " minutes")]])))))
+      (html
+       [:progress {:data-component `progress-bar
+                   :value value
+                   :max max}]))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1213,15 +1157,35 @@
                                         :max osx-max-minutes})))]
              (if (and (not-empty osx-usage) osx-max-minutes)
                [:div
-                [:table
-                 [:thead
-                  [:tr
-                   [:th."Billing Period"]
-                   [:th "Usage"]
-                   [:th ""]
-                   [:th ""]]]
-                 [:tbody
-                  (om/build-all osx-usage-row osx-usage)]]]
+                (let [rows (for [{:keys [usage max]} osx-usage
+                                 :let [{:keys [amount from to]} usage
+                                       amount (.round js/Math (/ amount 1000 60))
+                                       percent (.round js/Math (* 100 (/ amount max)))]]
+                             {:from from
+                              :to to
+                              :max max
+                              :amount amount
+                              :percent percent
+                              :over-usage? (> amount max)})]
+                  (om/build table/table
+                            {:rows rows
+                             :columns [{:header "Billing Period"
+                                        :type :shrink
+                                        :cell-fn #(html
+                                                   [:span
+                                                    (datetime/month-name-day-date (:from %))
+                                                    " - "
+                                                    (datetime/month-name-day-date (:to %))])}
+                                       {:header "Usage"
+                                        :cell-fn #(om/build progress-bar {:max (:max %) :value (:amount %)})}
+                                       {:type #{:right :shrink}
+                                        :cell-fn #(html
+                                                   [:span (when (:over-usage? %) {:class "over-usage"})
+                                                    (:percent %) "%"])}
+                                       {:type #{:right :shrink}
+                                        :cell-fn #(html
+                                                   [:span (when (:over-usage? %) {:class "over-usage"})
+                                                    (.toLocaleString (:amount %)) "/" (.toLocaleString (:max %)) " minutes"])}]}))]
                [:div.explanation
                 [:p "Looks like you haven't run any builds yet."]]))])))))
 

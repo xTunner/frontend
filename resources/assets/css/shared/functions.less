@@ -18,38 +18,6 @@
 // Misc.
 // odds and ends
 
-.tableDrawerBtn {
-  line-height: 3em;
-  color: @grayLight;
-  width: 8.5em;
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  margin-left: auto;
-  > i {
-    padding: 1em;
-    padding-left: 6.5em;
-    transition: .2s padding ease-in-out;
-  }
-  > span {
-    display: inline-block;
-    margin-left: -3px;
-    opacity: 0;
-    transition: .2s opacity ease-in-out;
-  }
-  &:hover {
-    color: @redLight;
-    > i {
-      padding-left: 2em;
-      padding-right: .25em;
-      transition-duration: .1s;
-    }
-    > span {
-      opacity: 1;
-      transition-duration: .3s;
-    }
-  }
-}
 .roundedOff {
   border-radius: 100em; // big enough to ensure btn rounds completely
 }
@@ -163,68 +131,6 @@
         url('../../webfonts/@{font-filename}.svg#icon') format('svg');
     font-weight: @font-weight;
     font-style: @font-style;
-  }
-}
-
-.tableLight {
-  @padding: 5px;
-  border-collapse: separate;
-  color: lighten(@grayLight,13%);
-  overflow: hidden;
-  border: 1px solid darken(@grayLightest, 5.7);
-  border-radius: 4px;
-  width: 100%;
-  th {
-    .box-sizing(border-box);
-    padding: 0 @padding;
-    font-weight: normal;
-    line-height: 2em;
-    font-size: 12px;
-    text-align: left;
-    white-space: nowrap;
-    &:first-child {
-      padding-left: 1em;
-    }
-    &.condense {
-      width: 70px;
-      text-align: center;
-    }
-  }
-  tr {
-    border-top: 1px solid @grayBorder;
-    &:hover td {
-      background-color: lighten(@grayBorder,8%);
-      box-shadow: 0 1px lighten(@grayBorder,3%) inset;
-      transition-duration: .1s;
-    }
-    &:active td {
-      background-color: lighten(@grayBorder,5%);
-      box-shadow: 0 1px 1px lighten(@grayBorder,1%) inset;
-      transition-duration: .1s;
-    }
-    &:first-child {
-      border: none;
-    }
-  }
-  td {
-    vertical-align: middle;
-    border-top: 1px solid lighten(@grayBorder,5%);
-    box-shadow: 0 1px @white inset;
-    text-align: left;
-    padding: 0;
-    transition-duration: .2s;
-    transition-property: background-color, box-shadow;
-    position: relative;
-    .box-sizing(border-box);
-    &:first-child a {
-      padding-left: 1em;
-    }
-  }
-  a {
-    display: block;
-    line-height: 1em;
-    min-height: 1em;
-    padding: @padding;
   }
 }
 

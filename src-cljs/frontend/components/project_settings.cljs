@@ -1,34 +1,32 @@
 (ns frontend.components.project-settings
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [cljs-time.core :as time]
+  (:require [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [frontend.async :refer [raise!]]
             [clojure.string :as string]
-            [frontend.models.build :as build-model]
+            [frontend.async :refer [raise!]]
+            [frontend.components.account :as account]
+            [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
+            [frontend.components.inputs :as inputs]
+            [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.table :as table]
+            [frontend.components.project.common :as project-common]
+            [frontend.config :as config]
+            [frontend.datetime :as datetime]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user-model]
-            [frontend.components.account :as account]
-            [frontend.components.common :as common]
-            [frontend.components.project.common :as project-common]
-            [frontend.components.forms :as forms]
-            [frontend.components.inputs :as inputs]
-            [frontend.config :as config]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.html :refer [hiccup->html-str open-ext]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.string :as gstring]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
             [goog.crypt.base64 :as base64]
-            [frontend.datetime :as datetime])
+            [goog.string :as gstring]
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
@@ -420,7 +418,7 @@
           [:section
            [:article
             [:h2 "Environment Variables for " (vcs-url/project-name (:vcs_url project))]
-            [:div.environment-variables-inner
+            [:div
              [:p
               "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
               "The values can be any bash expression and can reference other variables, such as setting "
@@ -450,24 +448,25 @@
                  [:input.btn.btn-primary {:data-failed-text "Failed",
                                           :data-success-text "Added",
                                           :data-loading-text "Adding...",
-                                          :value "Save variables",
+                                          :value "Add Variable",
                                           :type "submit"
                                           :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]]
              (when-let [env-vars (seq (:envvars project-data))]
-               [:table.table
-                [:thead [:tr [:th "Name"] [:th "Value"] [:th]]]
-                [:tbody
-                 (for [{:keys [name value]} env-vars]
-                   [:tr
-                    [:td {:title name} name]
-                    [:td {:title value} value]
-                    [:td
-                     [:a
-                      {:title "Remove this variable?",
-                       :on-click #(raise! owner [:deleted-env-var {:project-id project-id
-                                                                   :env-var-name name}])}
-                      [:i.fa.fa-times-circle]
-                      [:span " Remove"]]]])]])]]])))))
+               (om/build table/table
+                         {:rows env-vars
+                          :columns [{:header "Name"
+                                     :cell-fn :name}
+                                    {:header "Value"
+                                     :cell-fn :value}
+                                    {:header "Remove"
+                                     :type #{:shrink :right}
+                                     :cell-fn
+                                     (fn [env-var]
+                                       (table/action-button
+                                        "Remove"
+                                        (icon/delete)
+                                        #(raise! owner [:deleted-env-var {:project-id project-id
+                                                                          :env-var-name (:name env-var)}])))}]}))]]])))))
 
 (defn advance [project-data owner]
   (reify
@@ -937,19 +936,22 @@
                                                           :ssh-key {:hostname hostname
                                                                     :private_key private-key}}])}])]
             (when-let [ssh-keys (seq (:ssh_keys project))]
-              [:table.table
-               [:thead [:tr [:th "Hostname"] [:th "Fingerprint"] [:th]]]
-               [:tbody
-                (for [{:keys [hostname fingerprint]} ssh-keys]
-                  [:tr
-                   [:td hostname]
-                   [:td fingerprint]
-                   [:td [:a {:title "Remove this Key?",
-                             :on-click #(raise! owner [:deleted-ssh-key {:project-id project-id
-                                                                         :hostname hostname
-                                                                         :fingerprint fingerprint}])}
-                         [:i.fa.fa-times-circle]
-                         [:span " Remove"]]]])]])]]])))))
+              (om/build table/table
+                        {:rows ssh-keys
+                         :columns [{:header "Hostname"
+                                    :cell-fn :hostname}
+                                   {:header "Fingerprint"
+                                    :cell-fn :fingerprint}
+                                   {:header "Remove"
+                                    :type #{:shrink :right}
+                                    :cell-fn
+                                    (fn [key]
+                                      (table/action-button
+                                       "Remove"
+                                       (icon/delete)
+                                       #(raise! owner [:deleted-ssh-key (-> key
+                                                                            (select-keys [:hostname :fingerprint])
+                                                                            (assoc :project-id project-id))])))}]}))]]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
@@ -965,7 +967,7 @@
         :else nil))
 
 (defn checkout-key-description [key project]
-  (condp = (:type key)
+  (case (:type key)
     "deploy-key" (str (vcs-url/project-name (:vcs_url project)) " deploy key")
     "github-user-key" (str (:login key) " user key")
     "bitbucket-user-key" (str (:login key) " user key")
@@ -1087,31 +1089,34 @@
                  [:div
                   [:p
                    "Here are the keys we can currently use to check out your project, submodules, "
-                   "and private " vcs-name " dependencies. The currently preferred key is highlighted, but "
+                   "and private " vcs-name " dependencies. The currently preferred key is marked, but "
                    "we will automatically fall back to the other keys if the preferred key is revoked."]
-                  [:table.table
-                   [:thead [:th "Description"] [:th "Fingerprint"] [:th]]
-                   [:tbody
-                    (for [checkout-key checkout-keys
-                          :let [fingerprint (:fingerprint checkout-key)
-                                vcs-link (checkout-key-link checkout-key project user)]]
-                      [:tr {:class (when (:preferred checkout-key) "preferred")}
-                       [:td
-                        (if vcs-link
-                          [:a.slideBtn {:href vcs-link :target "_blank"}
-                           (checkout-key-description checkout-key project) " "
-                           (case (vcs-url/vcs-type project-id)
-                             "bitbucket" [:i.fa.fa-bitbucket]
-                             "github" [:i.fa.fa-github])]
-                          (checkout-key-description checkout-key project))]
-                       [:td fingerprint]
-                       [:td
-                        [:a.slideBtn
-                         {:title "Remove this key?",
-                          :on-click #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
-                                                                                  :project-name project-name
-                                                                                  :fingerprint fingerprint}])}
-                         [:i.fa.fa-times-circle] " Remove"]]])]]])
+                  (om/build table/table
+                            {:rows checkout-keys
+                             :columns [{:header "Description"
+                                        :cell-fn #(if-let [vcs-link (checkout-key-link % project user)]
+                                                    [:a {:href vcs-link :target "_blank"}
+                                                     (checkout-key-description % project) " "
+                                                     (case (vcs-url/vcs-type project-id)
+                                                       "bitbucket" [:i.fa.fa-bitbucket]
+                                                       "github" [:i.fa.fa-github])]
+                                                    (checkout-key-description % project))}
+                                       {:header "Fingerprint"
+                                        :cell-fn :fingerprint}
+                                       {:header "Preferred"
+                                        :type #{:right :shrink}
+                                        :cell-fn #(when (:preferred %)
+                                                    (html [:i.material-icons "done"]))}
+                                       {:header "Remove"
+                                        :type #{:shrink :right}
+                                        :cell-fn
+                                        (fn [key]
+                                          (table/action-button
+                                           "Remove"
+                                           (icon/delete)
+                                           #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
+                                                                                         :project-name project-name
+                                                                                         :fingerprint (:fingerprint key)}])))}]})])
                (when-not (seq (filter #(= "deploy-key" (:type %)) checkout-keys))
                  [:div.add-key
                   [:h4 "Add deploy key"]
@@ -1232,27 +1237,25 @@
                 :value "Create token",
                 :type "submit"}])]
             (when-let [tokens (seq (:tokens project-data))]
-              [:table.table
-               [:thead
-                [:th "Scope"]
-                [:th "Label"]
-                [:th "Token"]
-                [:th "Created"]
-                [:th]]
-               [:tbody
-                (for [{:keys [scope label token time]} tokens]
-                  [:tr
-                   [:td scope]
-                   [:td label]
-                   [:td [:span.code token]]
-                   [:td time]
-                   [:td
-                    [:a.slideBtn
-                     {:title "Remove this Key?",
-                      :on-click #(raise! owner [:deleted-project-api-token {:project-id project-id
-                                                                            :token token}])}
-                     [:i.fa.fa-times-circle]
-                     [:span " Remove"]]]])]])]]])))))
+              (om/build table/table
+                        {:rows tokens
+                         :columns [{:header "Scope"
+                                    :cell-fn :scope}
+                                   {:header "Label"
+                                    :cell-fn :label}
+                                   {:header "Token"
+                                    :cell-fn :token}
+                                   {:header "Created"
+                                    :cell-fn :time}
+                                   {:header "Remove"
+                                    :type #{:shrink :right}
+                                    :cell-fn
+                                    (fn [token]
+                                      (table/action-button
+                                       "Remove"
+                                       (icon/delete)
+                                       #(raise! owner [:deleted-project-api-token {:project-id project-id
+                                                                                   :token (:token token)}])))}]}))]]])))))
 
 (defn heroku [data owner]
   (reify
@@ -1655,33 +1658,31 @@
                                                                   :file-name file-name
                                                                   :on-success (comp clear-form-fn close-modal-fn)}])}])]])))))
 
-
-(defn p12-key-row [{:keys [project-name vcs-type id filename description uploaded_at]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:tr {:data-component `p12-key-row}
-         [:td description]
-         [:td filename]
-         [:td id]
-         [:td (datetime/as-time-since uploaded_at)]
-         [:td {:on-click #(raise! owner [:delete-p12 {:project-name project-name :vcs-type vcs-type :id id}])} [:i.delete.material-icons "cancel"]]]))))
-
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
     om/IRender
     (render [_]
-      (html
-        [:table {:data-component `p12-key-table}
-         [:thead.head
-          [:tr
-           [:th "Description"]
-           [:th.filename-col "Filename"]
-           [:th.id-col "ID"]
-           [:th.uploaded-col "Uploaded"]
-           [:th.delete-col]]]
-         [:tbody.body (om/build-all p12-key-row rows)]]))))
+      (om/build table/table
+                {:rows rows
+                 :columns [{:header "Description"
+                            :cell-fn :description}
+                           {:header "Filename"
+                            :type :shrink
+                            :cell-fn :filename}
+                           {:header "ID"
+                            :type :shrink
+                            :cell-fn :id}
+                           {:header "Uploaded"
+                            :type :shrink
+                            :cell-fn (comp datetime/as-time-since :uploaded_at)}
+                           {:header "Remove"
+                            :type #{:shrink :right}
+                            :cell-fn
+                            (fn [row]
+                              (table/action-button
+                               "Remove"
+                               (icon/delete)
+                               #(raise! owner [:delete-p12 (select-keys row [:project-name :vcs-type :id])])))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name]} owner]
   (reify

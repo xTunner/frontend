@@ -103,63 +103,6 @@
   word-break: break-all;
 }
 
-.recent-builds-table {
-  width: 100%;
-
-  tbody {
-    tr {
-      border-bottom-style: dotted;
-      cursor: pointer;
-      &:hover {
-        a {
-          color: @blueLight;
-        }
-
-        .recent-status-badge a {
-          color: @white;
-        }
-      }
-    }
-  }
-
-  tr {
-    border-bottom: 1px solid @grayBoxBorder;
-  }
-
-  th {
-    font-weight: normal;
-    color: @blacken;
-    white-space: nowrap;
-    text-align: left;
-    padding: 2em .5em 2em;
-    height: (@baseFontSize - 1);
-    line-height: (@baseFontSize - 1); // minus 1px to compensate for border height
-
-    &:first-child {
-      padding-left: @baseFontSize;
-    }
-
-    &.condense {
-      .box-sizing(border-box);
-      width: 70px;
-      text-align: center;
-    }
-  }
-
-  td {
-    &:first-child {
-        padding-left: @baseFontSize;
-    }
-  }
-
-  a {
-    .box-sizing(content-box);
-    display: inline-block;
-    width: 100%;
-    color: @gray;
-  }
-}
-
 .recent-builds-pager {
   .flexy();
   .justify-content(space-between);

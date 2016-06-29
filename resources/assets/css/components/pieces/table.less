@@ -1,0 +1,58 @@
+.ns("frontend.components.pieces.table", {
+  .ui("table", {
+    width: 100%;
+
+    // OVERRIDE--ICON-MARGIN
+    .octicon, .material-icons {
+      margin-left: 0;
+    }
+
+    > thead > tr > th {
+      font-size: @fontSizeSmall;
+      font-weight: bold;
+      color: @gray;
+    }
+
+    > thead, > tbody {
+      > tr {
+        border-bottom: 1px solid @grayLighter;
+        height: 30px;
+
+        > th, > td {
+          padding-left: 20px;
+          padding-right: 20px;
+
+          &:first-child {
+            padding-left: 10px;
+          }
+
+          &:last-child {
+            padding-right: 10px;
+          }
+
+          &.shrink {
+            // Does not actually make the column 1px wide, but makes the column the
+            // minimal width to contain its contents.
+            width: 1px;
+            white-space: nowrap;
+          }
+
+          &.right {
+            text-align: right;
+          }
+        }
+      }
+    }
+
+    > tbody > tr:hover {
+      background-color: rgba(80, 198, 221, 0.04);
+    }
+  });
+
+  .ui("action-button", {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+  });
+});

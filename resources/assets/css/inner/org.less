@@ -118,6 +118,13 @@
           }
         }
       }
+
+      // An intentionally terrible class name representing the fact that this
+      // margin is arbitrary. This is design debt, and will be cleaned up when
+      // this page is rebuilt.
+      .space-below {
+        margin-bottom: 21px;
+      }
     }
 
     #edit-plan {
@@ -244,94 +251,42 @@
     }
   }
 
-  .ui("osx-usage-row", {
+  .ui("progress-bar", {
     @progress-bar-color: @blueLight;
     @progress-background-color: @grayLightest;
 
-    height: 30px;
-    font-size: @fontSizeSmall;
-    color: @gray;
-    border-top: 1px solid @grayLighter;
-    border-bottom: 1px solid @grayLighter;
+    margin-top: 5px;
+    border: 0;
+    height: 13px;
+    width: 100%;
+    background-color: @progress-background-color;
+    padding: 2px;
 
-    td {
-      padding-left: 10px;
-    }
-
-    &:hover {
-      background: @whiten;
-    }
-
-    .billing-period {
-      min-width: 110px;
-      padding-right: 10px;
-    }
-
-    .usage-bar {
-      width: 70%;
-      padding-right: 10px;
-    }
-
-    .usage-percent{
-      padding-right: 10px;
-    }
-
-    .usage-minutes {
-      text-align: right;
-    }
-
-    .monthly-usage-bar {
-      margin-top: 5px;
-      border: 0;
-      height: 13px;
-      width: 100%;
-      background-color: @progress-background-color;
-      padding: 2px;
-    }
-
-    .monthly-usage-bar::-webkit-progress-bar {
+    &::-webkit-progress-bar {
       background-color: @progress-background-color;
     }
 
-    .monthly-usage-bar::-webkit-progress-value {
+    &::-webkit-progress-value {
       background-color: @progress-bar-color;
     }
 
-    progress::-moz-progress-bar {
+    &::-moz-progress-bar {
       background-color: @progress-bar-color;
-    }
-
-    .over-usage {
-      color: @red;
     }
   });
 
   .ui("osx-usage-table", {
-
-    .header {
+    > .header {
       font-size: @fontSizeLarge;
     }
 
-    .divider {
+    > .divider {
       margin-left: -15px;
       margin-right: -15px;
     }
 
-    table {
-      width: 100%;
-    }
-
-    thead {
-      font-size: @fontSizeSmall;
-      color: @gray;
-
-      tr {
-        height: 30px;
-      }
-
-      th {
-        padding-left: 10px;
-      }
+    .over-usage {
+      color: @red;
     }
   });
 
