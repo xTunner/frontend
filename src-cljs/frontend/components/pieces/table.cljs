@@ -83,8 +83,9 @@
                                    {:type :shrink
                                     :cell-fn (fn [beatle]
                                                (action-button
-                                                #(js/alert (str "You may not remove " (:name beatle) " from the band."))
-                                                "X"))}]})))
+                                                "Remove"
+                                                "X"
+                                                #(js/alert (str "You may not remove " (:name beatle) " from the band."))))}]})))
 
   (defcard-om table
     table-parent))
