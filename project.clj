@@ -169,8 +169,8 @@
                                                (dirac.agent/boot!))}
                         :env {:devtools "true"}
                         :cljsbuild {:builds {:dev {:source-paths ["devtools"]}}}
-                        :dependencies [[binaryage/devtools "0.5.2"]
-                                       [binaryage/dirac "0.1.3"]]}
+                        :dependencies [[binaryage/devtools "0.7.2"]
+                                       [binaryage/dirac "0.6.1"]]}
              :dev {:source-paths ["src-cljs" "test-cljs"]
                    :repl-options {:port 8230
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
