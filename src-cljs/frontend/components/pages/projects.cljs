@@ -1,6 +1,7 @@
 (ns frontend.components.pages.projects
   (:require [frontend.api :as api]
             [frontend.components.common :as common]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
@@ -67,13 +68,13 @@
         (html
          [:div {:data-component `page}
           [:.sidebar
-           [:.card
+           (card/basic
             (if (:organizations user)
               (om/build org-picker/picker
                         {:orgs (:organizations user)
                          :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
                          :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})
-              [:div.loading-spinner common/spinner])]]
+              (html [:div.loading-spinner common/spinner])))]
           [:.main
            ;; TODO: Pulling these out of the ident is a bit of a hack. Instead,
            ;; we should pull them out of the selected-org itself. We can do that
@@ -85,17 +86,17 @@
            ;; vcs-type and the name). The list of projects will still be missing
            ;; until it's loaded by an additional API call.
            (when-let [[_ [vcs-type name]] selected-org-ident]
-             [:.card
-              [:.header
-               [:.title
+             (card/titled
+              (html
+               [:span
                 name
                 (case vcs-type
                   "github" [:i.octicon.octicon-mark-github]
                   "bitbucket" [:i.fa.fa-bitbucket]
-                  nil)]]
+                  nil)])
               (if (:projects selected-org)
                 (om/build table (:projects selected-org))
-                [:div.loading-spinner common/spinner])])]])))))
+                (html [:div.loading-spinner common/spinner]))))]])))))
 
 (defn page [app owner]
   (reify
