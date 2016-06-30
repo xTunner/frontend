@@ -1,5 +1,6 @@
 (ns frontend.components.templates.main
   (:require [frontend.components.aside :as aside]
+            [frontend.components.common :as common]
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
@@ -32,6 +33,23 @@
              ;; simple optimzation for real-time updates when the build is running
              app-without-container-data (dissoc-in app state/container-data-path)]
          [:main.app-main
+          [:div.top-bar
+           [:div.bar
+            [:ul.header-nav.left
+              [:li.header-nav-item [:a.header-nav-link "Projects"]]
+              [:li.header-nav-item [:a.header-nav-link "Builds"]]
+              [:li.header-nav-item [:a.header-nav-link "Insights"]]]
+            [:a.logo
+              [:div.logomark
+               (common/ico :logo)]]
+            [:ul.header-nav.right
+              [:li.header-nav-item [:a.header-nav-link "Changelog"]]
+              [:li.header-nav-item [:a.header-nav-link "Documentation"]]
+              [:li.header-nav-item.border-right [:a.header-nav-link "Support"]]
+              [:li.header-nav-item.dropdown [:a.header-nav-link.name.tooltipped
+                [:img.gravatar {:src "https://avatars.githubusercontent.com/u/490421?s=60&amp;v=3"}]
+                [:i.material-icons "keyboard_arrow_down"]]]
+              ]]]
           (when show-inspector?
             ;; TODO inspector still needs lots of work. It's slow and it defaults to
             ;;     expanding all datastructures.
