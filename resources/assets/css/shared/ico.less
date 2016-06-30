@@ -6,8 +6,7 @@ i {
       height: @baseFontSize;
       // &.busy-light,
       &.spinner {
-        .animation(clockwise 450ms infinite cubic-bezier(.5,.42,.41,1.7));
-        .animation-bezier(0.42, 0, 0.58, 1);
+        .animation(clockwise 450ms infinite cubic-bezier(0.42, 0, 0.58, 1));
         fill: @grayLighter;
       }
       &.repo {
