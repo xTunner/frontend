@@ -412,3 +412,19 @@ top.  The remaining keys/values goes into the bottom."
   (-> vcs_type-pretty
       clojure.string/lower-case
       keyword))
+
+(defn component*
+  "Gives a React element a data-component value of name, unless the element
+  already has a data-component value. (Use the macro `component` instead; it
+  validates that the name is a Var at compile time.)"
+  [name element]
+  (let [existing-data-component (aget (.-props element) "data-component")]
+    (cond-> element
+      (not existing-data-component) (js/React.cloneElement #js {:data-component name}))))
+
+(defn element*
+  "Gives a React element a data-element value of element-name \"namespaced\" to
+  component-name. (Use the macro `element` instead; it uses the component-name
+  of the nearest `component` macro form."
+  [element-name component-name element]
+  (js/React.cloneElement element #js {:data-element (str component-name "/" element-name)}))
