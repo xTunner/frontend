@@ -7,31 +7,51 @@
             [frontend.components.templates.main :as main-template]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]
+            [frontend.utils.vcs :as vcs-utils]
+            [frontend.utils.github :as gh-utils])
+  (:require-macros [frontend.utils :refer [html component element]]))
 
-(defn- table [projects owner]
-  (reify
-    om/IRender
-    (render [_]
-      (om/build table/table
-                {:rows (filter #(< 0 (count (:followers %))) projects)
-                 :columns [{:header "Project"
-                            :cell-fn #(vcs-url/repo-name (:vcs_url %))}
+(defn- table [projects]
+  (om/build table/table
+            {:rows (filter #(< 0 (count (:followers %))) projects)
+             :columns [{:header "Project"
+                        :cell-fn #(vcs-url/repo-name (:vcs_url %))}
 
-                           {:header "Team"
-                            :type #{:right :shrink}
-                            :cell-fn #(count (:followers %))}
+                       {:header "Team"
+                        :type #{:right :shrink}
+                        :cell-fn #(count (:followers %))}
 
-                           {:header "Settings"
-                            :type #{:right :shrink}
-                            :cell-fn
-                            #(html
-                              (let [vcs-url (:vcs_url %)]
-                                [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                                                             :org (vcs-url/org-name vcs-url)
-                                                                             :repo (vcs-url/repo-name vcs-url)})}
-                                 [:i.material-icons "settings"]]))}]}))))
+                       {:header "Settings"
+                        :type #{:right :shrink}
+                        :cell-fn
+                        #(html
+                          (let [vcs-url (:vcs_url %)]
+                            [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                                         :org (vcs-url/org-name vcs-url)
+                                                                         :repo (vcs-url/repo-name vcs-url)})}
+                             [:i.material-icons "settings"]]))}]}))
+
+
+
+(defn- no-org-selected [available-orgs bitbucket-enabled?]
+  (component no-org-selected
+    (card/basic
+     (element :contents
+       (html
+        [:div
+         [:.avatars
+          (if-let [orgs (seq (take 3 available-orgs))]
+            (for [org orgs]
+              [:img {:src (gh-utils/make-avatar-url org :size 60)}])
+            [:i.material-icons.generic-org-icon "group"])]
+         [:.heading
+          "Get started by selecting your"
+          [:b " organization"]]
+         [:.subheading
+          "Select your GitHub "
+          (when bitbucket-enabled? "or Bitbucket ")
+          "organization (or username) to view your projects."]])))))
 
 (defn- organization-ident
   "Builds an Om Next-like ident for an organization."
@@ -64,15 +84,16 @@
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident]}]
       (let [user (:current-user app)
-            selected-org (when selected-org-ident (get-in app selected-org-ident))]
+            selected-org (when selected-org-ident (get-in app selected-org-ident))
+            available-orgs (:organizations user)]
         (html
          [:div {:data-component `page}
           [:.sidebar
            (card/basic
-            (if (:organizations user)
+            (if available-orgs
               (om/build org-picker/picker
-                        {:orgs (:organizations user)
-                         :selected-org (first (filter #(= selected-org-ident (organization-ident %)) (:organizations user)))
+                        {:orgs available-orgs
+                         :selected-org (first (filter #(= selected-org-ident (organization-ident %)) available-orgs))
                          :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})
               (html [:div.loading-spinner common/spinner])))]
           [:.main
@@ -85,7 +106,7 @@
            ;; will only have the keys the org list uses (which includes the
            ;; vcs-type and the name). The list of projects will still be missing
            ;; until it's loaded by an additional API call.
-           (when-let [[_ [vcs-type name]] selected-org-ident]
+           (if-let [[_ [vcs-type name]] selected-org-ident]
              (card/titled
               (html
                [:span
@@ -95,8 +116,9 @@
                   "bitbucket" [:i.fa.fa-bitbucket]
                   nil)])
               (if (:projects selected-org)
-                (om/build table (:projects selected-org))
-                (html [:div.loading-spinner common/spinner]))))]])))))
+                (table (:projects selected-org))
+                (html [:div.loading-spinner common/spinner])))
+             (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
 
 (defn page [app owner]
   (reify

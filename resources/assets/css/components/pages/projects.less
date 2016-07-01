@@ -12,4 +12,47 @@
       flex-grow: 1;
     }
   });
+
+  .ui("no-org-selected", {}, {
+    .el("contents", {
+      padding: 15px;
+      text-align: center;
+
+      > .avatars {
+        @avatar-size: 60px;
+
+        margin-bottom: 20px;
+
+        > img {
+          width: @avatar-size;
+          height: @avatar-size;
+          margin-right: @avatar-size * -1.5;
+
+          border-radius: 50%;
+          border: 3px solid @white;
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+
+        > .generic-org-icon {
+          font-size: @avatar-size;
+
+          // OVERRIDE--ICON-MARGIN
+          margin-left: 0;
+        }
+      }
+
+      > .heading {
+        font-size: @fontSizeLargest;
+        line-height: 1.2;
+        margin-bottom: 10px;
+      }
+
+      > .subheading {
+        font-size: @fontSizeMedium;
+      }
+    })
+  })
 });
