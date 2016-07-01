@@ -7,7 +7,8 @@
             [frontend.routes :as routes]
             [frontend.components.common :as common]
             [goog.events :as gevents]
-            [frontend.disposable :as disposable])
+            [frontend.disposable :as disposable]
+            [frontend.state :as state])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def padding-right 20)
@@ -41,8 +42,8 @@
         (.domain #js [start-time stop-time])
         (.range  #js [0 (timings-width)]))))
 
-(defn create-root-svg [number-of-containers]
-  (let [root (.select js/d3 "#build-timings")]
+(defn create-root-svg [dom-root number-of-containers]
+  (let [root (.select js/d3 dom-root)]
     (-> root
         (.attr "width" (+ (timings-width)
                          left-axis-width
@@ -192,9 +193,9 @@
         (.attr "class" class-name)
         (.call axis)))
 
-(defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
+(defn draw-chart! [root {:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
-        chart   (create-root-svg parallel)
+        chart   (create-root-svg root parallel)
         x-axis  (create-x-axis (duration start_time stop_time))
         y-axis  (create-y-axis parallel)]
     (draw-axis!  chart x-axis "x-axis")
@@ -207,10 +208,12 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:loading? true
-       :drawn? false
-       :resize-key (disposable/register
-                     (gevents/listen js/window "resize" #(om/set-state! owner [:drawn?] false))
+      {:resize-key (disposable/register
+                     (gevents/listen js/window
+                                     "resize"
+                                     #(if (project-model/show-build-timing? project plan)
+                                        (draw-chart! (om/get-node owner "build-timings-svg")
+                                                     build)))
                      gevents/unlistenByKey)})
 
     om/IWillUnmount
@@ -220,11 +223,9 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (if (project-model/show-build-timing? project plan)
-        (when-not (om/get-state owner [:drawn?])
-          (draw-chart! build)
-          (om/set-state! owner [:loading?] false)
-          (om/set-state! owner [:drawn?] true))
+        (draw-chart! (om/get-node owner "build-timings-svg") build)
         ((om/get-shared owner :track-event) {:event-type :build-timing-upsell-impression})))
+
     om/IRenderState
     (render-state [_ {:keys [loading?]}]
       (let [{{plan-org-name :name
@@ -233,10 +234,10 @@
          [:div.build-timings
           (if (project-model/show-build-timing? project plan)
             [:div
-             (when loading?
+             (when (not (and build project plan))
                [:div.loading-spinner common/spinner])
-             [:svg#build-timings]]
-            [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
+             [:svg {:ref "build-timings-svg"}]]
+            [:span.message "This release of Build Timing is only available for repos belonging to paid plans. Please "
              [:a.upgrade-link
               {:href (routes/v1-org-settings-path {:org plan-org-name
                                                    :vcs_type plan-vcs-type})

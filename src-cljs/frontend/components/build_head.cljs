@@ -746,7 +746,7 @@
              :tests (om/build build-tests-list {:build-data build-data
                                                 :project project})
 
-             :build-timing (om/build build-timings/build-timings {:build build
+             :build-timing (om/build build-timings/build-timings {:build (select-keys build [:parallel :steps :start_time :stop_time])
                                                                   :project project
                                                                   :plan plan})
 
