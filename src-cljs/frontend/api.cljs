@@ -171,6 +171,11 @@
              :org-settings-normalized
              api-ch))
 
+(defn get-project-settings [project-name api-ch]
+  (ajax/ajax :get (gstring/format "/api/v1/project/%s/settings" project-name)
+             :project-settings api-ch
+             :context {:project-name project-name}))
+
 (defn get-build-tests [build api-ch]
   (let [vcs-type (:vcs_type build)
         tests-url (gstring/format "/api/v1.1/project/%s/%s/%s/tests"
