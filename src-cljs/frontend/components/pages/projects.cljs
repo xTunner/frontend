@@ -15,7 +15,7 @@
 
 (defn- table [projects]
   (om/build table/table
-            {:rows (filter #(< 0 (count (:followers %))) projects)
+            {:rows projects
              :columns [{:header "Project"
                         :cell-fn #(vcs-url/repo-name (:vcs_url %))}
 
@@ -51,6 +51,19 @@
                                             "Select your GitHub "
                                             (when bitbucket-enabled? "or Bitbucket ")
                                             "organization (or username) to view your projects.")}))))
+
+(defn- no-projects-available [org]
+  (component no-projects-available
+    (empty-state/empty-state {:icon (html [:i.material-icons "book"])
+                              :heading (html
+                                        [:span
+                                         [:b (:name org)]
+                                         " has no projects building on CircleCI"])
+                              :subheading "Let's fix that by adding a new project."
+                              :action (html
+                                       [:a.btn.btn-primary
+                                        {:href (routes/v1-add-projects)}
+                                        "Add Project"])})))
 
 (defn- organization-ident
   "Builds an Om Next-like ident for an organization."
@@ -114,8 +127,11 @@
                   "github" [:i.octicon.octicon-mark-github]
                   "bitbucket" [:i.fa.fa-bitbucket]
                   nil)])
-              (if (:projects selected-org)
-                (table (:projects selected-org))
+              (if-let [projects (:projects selected-org)]
+                (if-let [projects-with-followers
+                         (seq (filter #(< 0 (count (:followers %))) projects))]
+                  (table projects-with-followers)
+                  (no-projects-available selected-org))
                 (html [:div.loading-spinner common/spinner])))
              (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
 
