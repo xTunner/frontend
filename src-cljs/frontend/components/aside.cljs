@@ -469,6 +469,14 @@
              [:i.material-icons "storage"]
              [:div.nav-label "Builds"]]
 
+           (when (feature/enabled? :projects-page)
+             [:a.aside-item {:title "Projects"
+                             :data-placement "right"
+                             :data-trigger "hover"
+                             :href "/projects"}
+              [:i.material-icons "book"]
+              [:div.nav-label "Projects"]])
+
             [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
                             :title "Insights"
