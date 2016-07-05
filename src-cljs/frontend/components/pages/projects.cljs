@@ -149,5 +149,8 @@
                  :main-content (om/build main-content app)
                  :header-actions (html
                                   [:a.btn.btn-primary
-                                   {:href (routes/v1-add-projects)}
+                                   {:href (routes/v1-add-projects)
+                                    :on-click (fn []
+                                                ((om/get-shared owner :track-event) {:event-type :add-project-clicked
+                                                                                     :properties {:view :projects}}))}
                                    "Add Project"])}))))
