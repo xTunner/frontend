@@ -2,15 +2,16 @@
   (:require [frontend.api :as api]
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.routes :as routes]
-            [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs :as vcs-utils]
-            [frontend.utils.github :as gh-utils])
-  (:require-macros [frontend.utils :refer [html component element]]))
+            [frontend.utils.vcs-url :as vcs-url]
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn- table [projects]
   (om/build table/table
@@ -32,26 +33,24 @@
                                                                          :repo (vcs-url/repo-name vcs-url)})}
                              [:i.material-icons "settings"]]))}]}))
 
-
-
 (defn- no-org-selected [available-orgs bitbucket-enabled?]
   (component no-org-selected
     (card/basic
-     (element :contents
-       (html
-        [:div
-         [:.avatars
-          (if-let [orgs (seq (take 3 available-orgs))]
-            (for [org orgs]
-              [:img {:src (gh-utils/make-avatar-url org :size 60)}])
-            [:i.material-icons.generic-org-icon "group"])]
-         [:.heading
-          "Get started by selecting your"
-          [:b " organization"]]
-         [:.subheading
-          "Select your GitHub "
-          (when bitbucket-enabled? "or Bitbucket ")
-          "organization (or username) to view your projects."]])))))
+     (empty-state/empty-state {:icon (if-let [orgs (seq (take 3 available-orgs))]
+                                       (element :avatars
+                                         (html
+                                          [:div
+                                           (for [org orgs]
+                                             [:img {:src (gh-utils/make-avatar-url org :size 60)}])]))
+                                       (html [:i.material-icons "group"]))
+                               :heading (html
+                                         [:span
+                                          "Get started by selecting your"
+                                          [:b " organization"]])
+                               :subheading (str
+                                            "Select your GitHub "
+                                            (when bitbucket-enabled? "or Bitbucket ")
+                                            "organization (or username) to view your projects.")}))))
 
 (defn- organization-ident
   "Builds an Om Next-like ident for an organization."
