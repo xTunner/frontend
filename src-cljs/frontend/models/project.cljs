@@ -33,12 +33,13 @@
 (defn default-branch? [branch-name project]
   (= (name branch-name) (:default_branch project)))
 
-(defn- personal-branch-helper [project login branch pushers]
-  (or (default-branch? branch project)
-      (some #{login} pushers)))
+(defn- personal-branch-helper [project identities branch pushers]
+  (let [{:keys [handle]} (get identities (-> project :vcs_type keyword))]
+    (or (default-branch? branch project)
+        (some #{handle} pushers))))
 
-(defn personal-branch? [login branch]
-  (personal-branch-helper (:project branch) login (:identifier branch) (:pusher_logins branch)))
+(defn personal-branch? [identities branch]
+  (personal-branch-helper (:project branch) identities (:identifier branch) (:pusher_logins branch)))
 
 (defn branch-builds [project branch-name-kw]
   (let [build-data (get-in project [:branches branch-name-kw])]
@@ -117,9 +118,9 @@
                 (comp - compare))))
 
 
-(defn personal-recent-project? [login recent-project]
+(defn personal-recent-project? [identities recent-project]
   (personal-branch-helper recent-project
-                          login
+                          identities
                           (:current-branch recent-project)
                           (:pusher_logins recent-project)))
 

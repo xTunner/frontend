@@ -92,63 +92,63 @@
                                                                                               :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
-(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [login show-project?]}]
+(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [identities show-project?]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Branch List")
     om/IRender
-      (render [_]
-        (let [branches-filter (if show-all-branches?
-                                (constantly true)
-                                (partial project-model/personal-branch? login))]
-          (html
-           [:ul.branches
-            (for [branch (filter branches-filter branches)]
-              (let [project (:project branch)
-                    latest-build (last (sort-by :build_num (concat (:running_builds branch)
-                                                                   (:recent_builds branch))))
-                    vcs-url (:vcs_url project)
-                    org-name (project-model/org-name project)
-                    repo-name (project-model/repo-name project)]
-                [:li {:class (when (and (= org-name (:org navigation-data))
-                                        (= repo-name (:repo navigation-data))
-                                        (= (name (:identifier branch))
-                                           (:branch navigation-data)))
-                               "selected")}
-                 [:a {:href (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
-                                                       :org (:username project)
-                                                       :repo (:reponame project)
-                                                       :branch (name (:identifier branch))})
-                      :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
-                                                                      :properties {:repo repo-name
-                                                                                   :org org-name
-                                                                                   :branch (name (:identifier branch))}})}
-                  [:.branch
-                   [:.last-build-status
-                    (om/build svg {:class "badge-icon"
-                                   :src (-> latest-build build-model/status-icon common/icon-path)})]
-                   [:.branch-info
-                    (when show-project?
-                      [:.project-name
-                       {:title (project-model/project-name project)}
-                       (project-model/project-name project)])
-                    [:.branch-name
-                     {:title (utils/display-branch (:identifier branch))}
-                     (utils/display-branch (:identifier branch))]
-                    (let [last-activity-time (project-model/most-recent-activity-time branch)]
-                      [:.last-build-info
-                       {:title (when last-activity-time
-                                 (datetime/full-datetime (js/Date.parse last-activity-time)))}
-                       (if last-activity-time
-                         (list
-                          (om/build common/updating-duration
-                                    {:start last-activity-time}
-                                    {:opts {:formatter datetime/time-ago}})
-                          " ago")
-                         "never")])]]]
-                 (when show-project?
-                   (project-settings-link {:project project} owner))]))])))))
+    (render [_]
+      (let [branches-filter (if show-all-branches?
+                              (constantly true)
+                              (partial project-model/personal-branch? identities))]
+        (html
+         [:ul.branches
+          (for [branch (filter branches-filter branches)]
+            (let [project (:project branch)
+                  latest-build (last (sort-by :build_num (concat (:running_builds branch)
+                                                                 (:recent_builds branch))))
+                  vcs-url (:vcs_url project)
+                  org-name (project-model/org-name project)
+                  repo-name (project-model/repo-name project)]
+              [:li {:class (when (and (= org-name (:org navigation-data))
+                                      (= repo-name (:repo navigation-data))
+                                      (= (name (:identifier branch))
+                                         (:branch navigation-data)))
+                             "selected")}
+               [:a {:href (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
+                                                     :org (:username project)
+                                                     :repo (:reponame project)
+                                                     :branch (name (:identifier branch))})
+                    :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
+                                                                    :properties {:repo repo-name
+                                                                                 :org org-name
+                                                                                 :branch (name (:identifier branch))}})}
+                [:.branch
+                 [:.last-build-status
+                  (om/build svg {:class "badge-icon"
+                                 :src (-> latest-build build-model/status-icon common/icon-path)})]
+                 [:.branch-info
+                  (when show-project?
+                    [:.project-name
+                     {:title (project-model/project-name project)}
+                     (project-model/project-name project)])
+                  [:.branch-name
+                   {:title (utils/display-branch (:identifier branch))}
+                   (utils/display-branch (:identifier branch))]
+                  (let [last-activity-time (project-model/most-recent-activity-time branch)]
+                    [:.last-build-info
+                     {:title (when last-activity-time
+                               (datetime/full-datetime (js/Date.parse last-activity-time)))}
+                     (if last-activity-time
+                       (list
+                        (om/build common/updating-duration
+                                  {:start last-activity-time}
+                                  {:opts {:formatter datetime/time-ago}})
+                        " ago")
+                       "never")])]]]
+               (when show-project?
+                 (project-settings-link {:project project} owner))]))])))))
 
-(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [login]}]
+(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [identities]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
@@ -182,7 +182,7 @@
                                            (sort-by (comp lower-case name :identifier)))
                             :show-all-branches? show-all-branches?
                             :navigation-data navigation-data}
-                           {:opts {:login login}}))])))))
+                           {:opts {:identities identities}}))])))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -372,7 +372,7 @@
             settings (get-in app state/settings-path)
             recent-projects-filter (if (and sort-branches-by-recency?
                                             (not show-all-branches?))
-                                     (partial project-model/personal-recent-project? (:login opts))
+                                     (partial project-model/personal-recent-project? (:identities opts))
                                      identity)]
         (html
          [:div.aside-activity.open
@@ -413,7 +413,7 @@
                                       (take 100))
                        :show-all-branches? show-all-branches?
                        :navigation-data (:navigation-data app)}
-                      {:opts {:login (:login opts)
+                      {:opts {:identities (:identities opts)
                               :show-project? true}})
             [:ul.projects
              (for [project (sort project-model/sidebar-sort projects)]
@@ -423,7 +423,7 @@
                           :expanded-repos expanded-repos
                           :navigation-data (:navigation-data app)}
                          {:react-key (project-model/id project)
-                          :opts {:login (:login opts)}}))])])))))
+                          :opts {:identities (:identities opts)}}))])])))))
 
 (defn aside-menu [app owner opts]
   (reify
@@ -438,7 +438,7 @@
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
         (om/build account-settings-menu app)
-        (om/build branch-activity-list app {:opts {:login (:login opts)
+        (om/build branch-activity-list app {:opts {:identities (:identities opts)
                                                    :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
 
 (defn aside-nav [app owner]
@@ -561,7 +561,7 @@
     om/IRender
     (render [_]
       (let [user (get-in app state/user-path)
-            login (:login user)
+            identities (:identities user)
             avatar-url (gh-utils/make-avatar-url user)
             show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)
             license (get-in app state/license-path)]
@@ -569,4 +569,4 @@
          [:aside.app-aside {:class (cond-> []
                                      (not show-aside-menu?) (conj "menuless"))}
           (when show-aside-menu?
-            (om/build aside-menu app {:opts {:login login}}))])))))
+            (om/build aside-menu app {:opts {:identities identities}}))])))))
