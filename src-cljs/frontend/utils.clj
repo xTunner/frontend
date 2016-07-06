@@ -128,13 +128,13 @@
       [:title :author :content])
     Object
     (render [this]
-      (let [{:keys [title author content]} (om/props)])
-      (component Post
-        (html
-         [:article
-          [:h1 title]
-          [:h2 \"by \" author]
-          [:div.body content]]))))"
+      (let [{:keys [title author content]} (om/props)]
+        (component Post
+          (html
+           [:article
+            [:h1 title]
+            [:h2 \"by \" author]
+            [:div.body content]])))))"
   [name body]
   (assert (and (symbol? name)
                (nil? (namespace name)))
