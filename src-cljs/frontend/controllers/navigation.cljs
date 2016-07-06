@@ -286,10 +286,7 @@
 
 (defmethod post-navigated-to! :projects
   [history-imp navigation-point _ previous-state current-state]
-  (set-page-title! "Projects")
-  (when-not (feature/enabled? :projects-page)
-    (let [nav-ch (get-in current-state [:comms :nav])]
-      (routes/open-to-outer! nav-ch :error {:status 401}))))
+  (set-page-title! "Projects"))
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
