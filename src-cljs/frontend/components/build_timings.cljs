@@ -7,8 +7,7 @@
             [frontend.routes :as routes]
             [frontend.components.common :as common]
             [goog.events :as gevents]
-            [frontend.disposable :as disposable]
-            [frontend.state :as state])
+            [frontend.disposable :as disposable])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def padding-right 20)
@@ -206,15 +205,16 @@
 ;;;; Main component
 (defn build-timings [{:keys [build project plan]} owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:resize-key (disposable/register
-                     (gevents/listen js/window
-                                     "resize"
-                                     #(if (project-model/show-build-timing? project plan)
-                                        (draw-chart! (om/get-node owner "build-timings-svg")
-                                                     build)))
-                     gevents/unlistenByKey)})
+    om/IWillMount
+    (will-mount [_]
+      (om/set-state!
+        owner [:resize-key]
+        (disposable/register
+          (gevents/listen js/window "resize"
+                          #(draw-chart!
+                                 (om/get-node owner "build-timings-svg")
+                                 build))
+          gevents/unlistenByKey)))
 
     om/IWillUnmount
     (will-unmount [_]
