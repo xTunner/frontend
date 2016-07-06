@@ -403,8 +403,8 @@ top.  The remaining keys/values goes into the bottom."
   "Takes a keyword vcs_type and converts it to a pretty string (e.g. :github becomes \"GitHub\")"
   [vcs_type]
   (case (keyword vcs_type)
-    :github "GitHub"
-    :bitbucket "Bitbucket"))
+    (:github "github") "GitHub"
+    (:bitbucket "bitbucket") "Bitbucket"))
 
 (defn keywordize-pretty-vcs_type
   "Takes a pretty vcs_type and converts it to a keyword. (e.g. \"GitHub\" becomes :github)"

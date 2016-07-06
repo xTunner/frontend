@@ -211,12 +211,13 @@
 
 (defn ssh-instructions
   "Instructions for SSHing into a build that you can SSH into"
-  [build owner]
+  [{:keys [vcs_type] :as build} owner]
   (let [nodes (:node build)]
     (html
      [:div.ssh-info-container
       [:div.build-ssh-title
-       [:p "You can SSH into this build. Use the same SSH public key that you use for GitHub. SSH boxes will stay up for 30 minutes."]
+       [:p (gstring/format "You can SSH into this build using a key associated with your %s account. Hosts will stay up for 30 minutes."
+                           (utils/prettify-vcs_type vcs_type))]
        [:div
         "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
         [:a (open-ext {:href "https://circleci.com/docs/browser-debugging#interact-with-the-browser-over-vnc/"}) "our docs"]
