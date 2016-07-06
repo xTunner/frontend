@@ -206,16 +206,15 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (let [dom-root (om/get-node owner "build-timings-svg")]
-        (when build
-          (draw-chart! dom-root build))
-        (om/set-state! owner [:resize-key]
-                       (disposable/register
-                        (gevents/listen js/window "resize"
-                                        #(draw-chart!
-                                          dom-root
-                                          build))
-                        gevents/unlistenByKey))))
+      (when build
+        (draw-chart! (om/get-node owner "build-timings-svg") build))
+      (om/set-state! owner [:resize-key]
+                     (disposable/register
+                      (gevents/listen js/window "resize"
+                                      #(draw-chart!
+                                        (om/get-node owner "build-timings-svg")
+                                        (om/get-props owner)))
+                      gevents/unlistenByKey)))
 
     om/IWillUnmount
     (will-unmount [_]
