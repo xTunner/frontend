@@ -339,6 +339,15 @@
       (assoc-in [:invite-data :org] (:org args))
       (assoc-in state/crumbs-path [{:type :invite-teammates}])))
 
+(defmethod navigated-to :team
+  [history-imp navigation-point args state]
+  (let [current-user (get-in state state/user-path)]
+    (-> state
+        state-utils/clear-page-state
+        (assoc state/current-view navigation-point
+               state/navigation-data (assoc args :show-aside-menu? false))
+        (assoc-in state/crumbs-path [{:type :team}]))))
+
 (defmethod post-navigated-to! :invite-teammates
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
