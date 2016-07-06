@@ -45,8 +45,8 @@
                                        (html [:i.material-icons "group"]))
                                :heading (html
                                          [:span
-                                          "Get started by selecting your"
-                                          [:b " organization"]])
+                                          "Get started by selecting your "
+                                          (empty-state/important "organization")])
                                :subheading (str
                                             "Select your GitHub "
                                             (when bitbucket-enabled? "or Bitbucket ")
@@ -57,7 +57,7 @@
     (empty-state/empty-state {:icon (html [:i.material-icons "book"])
                               :heading (html
                                         [:span
-                                         [:b (:name org)]
+                                         (empty-state/important (:name org))
                                          " has no projects building on CircleCI"])
                               :subheading "Let's fix that by adding a new project."
                               :action (html

@@ -3,6 +3,13 @@
             [frontend.components.pieces.button :as button])
   (:require-macros [frontend.utils :refer [component html]]))
 
+(defn important
+  "An Empty State heading should contain (generally) one important term (often a
+  single word), which helps the user understand the context of the Empty State."
+  [term]
+  (component important
+    (html [:span term])))
+
 (defn empty-state
   "An Empty State appears in place of a list or other content when that content
   does not exist. For instance, on the Projects page, when there are no projects
@@ -46,7 +53,7 @@
                    :heading (html
                              [:span
                               "The "
-                              [:b "cake"]
+                              (important "cake")
                               " is a lie"])
                    :subheading "Let's add some."
                    :action (button/button {:primary? true}
