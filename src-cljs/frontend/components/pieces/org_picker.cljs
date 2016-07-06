@@ -13,8 +13,7 @@
      [:li {:data-component `organization
            :class (when selected? "active")
            :on-click on-click}
-      [:img.avatar {:src (gh-utils/make-avatar-url org :size 50)
-                    :height 50}]
+      [:img.avatar {:src (gh-utils/make-avatar-url org :size 40)}]
       [:.org-name login]
       (if vcs-type
         [:.vcs-icon

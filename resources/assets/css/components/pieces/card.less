@@ -1,0 +1,22 @@
+.ns("frontend.components.pieces.card", {
+  @card-padding: 15px;
+
+  .ui("body", {
+    padding: @card-padding;
+  });
+
+  .ui("exterior", {
+    background: @white;
+    box-shadow: 0 1px rgba(0, 0, 0, 0.1);
+  });
+
+  .ui("header", {
+    padding: @card-padding;
+    border-bottom: 1px solid @grayLighter;
+
+    > .title {
+      font-size: @fontSizeLarge;
+      line-height: 24px;
+    }
+  });
+});

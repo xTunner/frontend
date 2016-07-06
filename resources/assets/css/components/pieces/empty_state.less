@@ -1,0 +1,40 @@
+.ns("frontend.components.pieces.empty-state", {
+  .ui("important", {
+    font-weight: 600;
+  });
+
+  .ui("empty-state", {
+    padding: 15px;
+    text-align: center;
+
+    > .icon {
+      margin-bottom: 20px;
+
+      font-size: 60px;
+      line-height: 1;
+      color: @grayLighter;
+
+      .octicon,
+      .material-icons {
+        // OVERRIDE--ICON-STYLE
+        font-size: inherit;
+        color: inherit;
+        margin-left: 0;
+      }
+    }
+
+    > .heading {
+      font-size: @fontSizeLargest;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    > .subheading {
+      font-size: @fontSizeMedium;
+    }
+
+    > .action {
+      margin-top: 30px;
+    }
+  });
+});

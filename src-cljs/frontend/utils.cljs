@@ -1,21 +1,22 @@
 (ns frontend.utils
   (:refer-clojure :exclude [uuid])
   (:require [ajax.core :as ajax]
-            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
+            [cljs.core.async :as async :refer [<! >! alts! chan close! sliding-buffer]]
             [clojure.string :as string]
-            [frontend.async :refer [raise! put!]]
+            [frontend.async :refer [put! raise!]]
             [frontend.config :as config]
             [frontend.state :as state]
-            [goog.Uri]
-            [goog.async.AnimationDelay]
-            [goog.crypt.Md5 :as md5]
+            goog.async.AnimationDelay
             [goog.crypt :as crypt]
+            [goog.crypt.Md5 :as md5]
             [goog.dom :as dom]
             [goog.events :as ge]
             [goog.net.EventType :as gevt]
+            [goog.object :as gobject]
             [goog.string :as gstring]
             [goog.style :as style]
+            goog.Uri
             [om.core :as om :include-macros true]
             [sablono.core :as html :include-macros true])
   (:require-macros [frontend.utils :refer [inspect timing defrender html]])
@@ -412,3 +413,33 @@ top.  The remaining keys/values goes into the bottom."
   (-> vcs_type-pretty
       clojure.string/lower-case
       keyword))
+
+
+(defn- has-prop?
+  "True if the React element has a value specified for the prop name."
+  [element prop-name]
+  (gobject/containsKey (.-props element) prop-name))
+
+(defn component*
+  "Gives a React element a data-component value of name, unless the element
+  already has a data-component value. (Use the macro `component` instead; it
+  validates that the name is a Var at compile time.)"
+  [name element]
+  (cond-> element
+    (not (has-prop? element "data-component")) (js/React.cloneElement #js {:data-component name})))
+
+(defn element*
+  "Gives a React element a data-element value of element-name \"namespaced\" to
+  component-name. (Use the macro `element` instead; it uses the component-name
+  of the nearest `component` macro form."
+  [element-name component-name element]
+  (let [full-name (str component-name "/" element-name)]
+    (assert (not (has-prop? element "data-component"))
+            (str "Tried to assign data-element "
+                 full-name
+                 " to a React element which already has data-component."))
+    (assert (not (has-prop? element "data-element"))
+            (str "Tried to assign data-element "
+                 full-name
+                 " to a React element which already has data-element."))
+    (js/React.cloneElement element #js {:data-element full-name})))

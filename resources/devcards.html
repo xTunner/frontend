@@ -4,53 +4,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <link href="/assets/css/app.css" rel="stylesheet" type="text/css">
+    <style>
 
-    <!--
-         Devcards provides several stylesheets which apply default styles to the page. You
-         override these styles by supplying your own <style> or <link> with the same id.
-         Here we override the default styles Devcards applies to the insides of cards. The
-         original default has been reproduced here and modified.
-       -->
-    <style id="com-rigsomelight-devcards-addons-css">
-     body {
-         overflow-x: hidden;
-     }
+     /* We use !important here because Devcards adds its own stylesheets after
+        this one. The "correct" way to override one of Devcards' default
+        stylesheets is to supply a <style> with the same id. Devcards will detect
+        this and not inject its own. We're not doing that here because we're only
+        nudging a few values around. We'll do that if/when we more thoroughly
+        redesign the Devcards pages. */
 
-     @media (max-width: 1000px) {
-         .com-rigsomelight-devcards-card-hide-border
-         .com-rigsomelight-devcards_rendered-card
-         .com-rigsomelight-devcards-markdown pre {
-             margin-right: -3000px;
-             margin-left: -3000px;
-             padding-right: 3000px;
-             padding-left: 3000px;
-         }
-     }
-
-     /* default typography */
-     /* Disabled to let our own top-level typography through.
      .com-rigsomelight-devcards_rendered-card {
-         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-         font-size: 16px;
-         line-height: 1.42857143;
-     }
-      */
+         /* Let our own top-level typography through. */
+         font: inherit !important;
 
-     .com-rigsomelight-devcards_rendered-card code {
-         font-size: 90%;
+         margin: 0 !important;
+         padding: 30px !important;
      }
 
-     .com-rigsomelight-devcards_rendered-card h1,
-     .com-rigsomelight-devcards_rendered-card h2,
-     .com-rigsomelight-devcards_rendered-card h3,
-     .com-rigsomelight-devcards_rendered-card h4,
-     .com-rigsomelight-devcards_rendered-card h5 {
-         font-weight: 500;
-     }
 
-     .com-rigsomelight-devcards_rendered-card a {
-         color: #428bca;
-         text-decoration: none;
+     /* Gives a devcard the backmost background color we use in the app. Most
+        components are designed to be rendered on a card component, which is
+        white, so we leave that as the default. Some components, such as the
+        card component itself, are designed to be rendered on the gray
+        background of the app. Devcards demonstrating these components use the
+        `background-gray` class. */
+
+     .com-rigsomelight-devcards_rendered-card.background-gray {
+         background-color: #f5f5f5;
      }
     </style>
   </head>

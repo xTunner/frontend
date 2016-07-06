@@ -10,21 +10,23 @@
 
     > .main {
       flex-grow: 1;
+    }
+  });
 
-      > .card {
-        > .header {
-          // Hack to get header border to reach across entire card. Needed until
-          // we have a real card component.
-          margin: 0 -15px 15px;
-          padding: 0 15px 15px 15px;
-          border-bottom: 1px solid @grayLighter;
+  .ui("no-org-selected", {}, {
+    .el("avatars", {
+      > img {
+        width: 1em;
+        height: 1em;
+        margin-right: -1.5em;
 
-          > .title {
-            font-size: @fontSizeLarge;
-            line-height: 24px;
-          }
+        border-radius: 50%;
+        border: 3px solid @white;
+
+        &:last-child {
+          margin-right: 0;
         }
       }
-    }
+    });
   });
 });
