@@ -544,11 +544,12 @@
                                      "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                      "untrusted forks can make pull requests against your repo, then this option "
                                      "isn't for you!"])})
-            (describe-flag {:flag :build-prs-only
-                             :title "Only build pull requests"
-                             :blurb [:p
-                                     "By default, we will build all the commits for this project. Once turned on, we will only build branches "
-                                     "that have associated pull requests open. Note: This feature is always turned off for your default branch."]})
+            (when (feature/enabled? :build-prs-only)
+              (describe-flag {:flag :build-prs-only
+                              :title "Only build pull requests"
+                              :blurb [:p
+                                      "By default, we will build all the commits for this project. Once turned on, we will only build branches "
+                                      "that have associated pull requests open. Note: For your default branch, we will always build all commits."]}))
             (describe-flag {:flag :osx-code-signing-enabled
                             :title "Code Signing Support"
                             :blurb [:p
