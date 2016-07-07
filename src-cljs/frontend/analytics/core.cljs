@@ -58,7 +58,8 @@
     :update-parallelism-clicked
     :update-plan-clicked
     :org-clicked
-    :add-project-clicked})
+    :add-project-clicked
+    :invite-teammates-clicked})
 
 (def supported-controller-events
   ;; TODO: All these events should be server side

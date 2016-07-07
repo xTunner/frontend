@@ -123,5 +123,8 @@
                  :main-content (om/build main-content app)
                  :header-actions (html
                                   [:a.btn.btn-primary
-                                   {:href (routes/v1-invite-teammates)}
+                                   {:href (routes/v1-invite-teammates)
+                                    :on-click #((om/get-shared owner :track-event)
+                                                {:event-type :invite-teammates-clicked
+                                                 :properties {:view :team}})}
                                    "Invite Teammates"])}))))
