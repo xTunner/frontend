@@ -106,7 +106,12 @@
               (om/build org-picker/picker
                         {:orgs available-orgs
                          :selected-org (first (filter #(= selected-org-ident (organization-ident %)) available-orgs))
-                         :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})
+                         :on-org-click (fn [{:keys [login vcs_type] :as org}]
+                                         (om/set-state! owner :selected-org-ident (organization-ident org))
+                                         ((om/get-shared owner :track-event) {:event-type :org-clicked
+                                                                              :properties {:view :projects
+                                                                                           :login login
+                                                                                           :vcs_type vcs_type}}))})
               (html [:div.loading-spinner common/spinner])))]
           [:.main
            ;; TODO: Pulling these out of the ident is a bit of a hack. Instead,
@@ -144,5 +149,8 @@
                  :main-content (om/build main-content app)
                  :header-actions (html
                                   [:a.btn.btn-primary
-                                   {:href (routes/v1-add-projects)}
+                                   {:href (routes/v1-add-projects)
+                                    :on-click (fn []
+                                                ((om/get-shared owner :track-event) {:event-type :add-project-clicked
+                                                                                     :properties {:view :projects}}))}
                                    "Add Project"])}))))

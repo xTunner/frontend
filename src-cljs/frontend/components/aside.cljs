@@ -469,19 +469,27 @@
              [:i.material-icons "storage"]
              [:div.nav-label "Builds"]]
 
-            [:a.aside-item {:data-placement "right"
+           [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
                             :title "Insights"
                             :href "/build-insights"}
              [:i.material-icons "assessment"]
              [:div.nav-label "Insights"]]
 
-            [:a.aside-item {:href "/add-projects",
-                            :data-placement "right"
-                            :data-trigger "hover"
-                            :title "Add Projects"}
-             [:i.material-icons "library_add"]
-             [:div.nav-label "Add Projects"]]
+           (if (feature/enabled? :projects-page)
+             [:a.aside-item {:title "Projects"
+                             :data-placement "right"
+                             :data-trigger "hover"
+                             :href "/projects"}
+              [:i.material-icons "book"]
+              [:div.nav-label "Projects"]]
+
+             [:a.aside-item {:href "/add-projects",
+                             :data-placement "right"
+                             :data-trigger "hover"
+                             :title "Add Projects"}
+              [:i.material-icons "library_add"]
+              [:div.nav-label "Add Projects"]])
 
             [:a.aside-item {:href "/invite-teammates",
                             :data-placement "right"
