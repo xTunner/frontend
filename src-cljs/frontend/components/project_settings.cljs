@@ -845,8 +845,9 @@
         token (str (if (or oss (some? token)) token (-> tokens first :token)))
         ;; Generate the status badge with current settings.
         project-name (vcs-url/project-name (:vcs_url project))
-        gh-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
-        target (str (.. js/window -location -origin) "/gh/" gh-path)
+        vcs-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
+        short-vcs-type (routes/->short-vcs (vcs-url/vcs-type (:vcs_url project)))
+        target (str (.. js/window -location -origin) "/" short-vcs-type "/" vcs-path)
         style (get-in project-data [:status-badges :style] "svg")
         image (str target (get-in status-styles [style :string]))
         image (if (seq token) (str image "&circle-token=" token) image)
