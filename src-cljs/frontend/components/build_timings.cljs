@@ -41,8 +41,8 @@
         (.domain #js [start-time stop-time])
         (.range  #js [0 (timings-width)]))))
 
-(defn create-root-svg [number-of-containers]
-  (let [root (.select js/d3 "#build-timings")]
+(defn create-root-svg [dom-root number-of-containers]
+  (let [root (.select js/d3 dom-root)]
     (-> root
         (.attr "width" (+ (timings-width)
                          left-axis-width
@@ -192,9 +192,9 @@
         (.attr "class" class-name)
         (.call axis)))
 
-(defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
+(defn draw-chart! [root {:keys [parallel steps start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
-        chart   (create-root-svg parallel)
+        chart   (create-root-svg root parallel)
         x-axis  (create-x-axis (duration start_time stop_time))
         y-axis  (create-y-axis parallel)]
     (draw-axis!  chart x-axis "x-axis")
@@ -202,16 +202,19 @@
     (draw-label! chart parallel)
     (draw-steps! x-scale chart steps)))
 
-;;;; Main component
-(defn build-timings [{:keys [build project plan]} owner]
+(defn build-timings-chart [build owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:loading? true
-       :drawn? false
-       :resize-key (disposable/register
-                     (gevents/listen js/window "resize" #(om/set-state! owner [:drawn?] false))
-                     gevents/unlistenByKey)})
+    om/IDidMount
+    (did-mount [_]
+      (when build
+        (draw-chart! (om/get-node owner "build-timings-svg") build))
+      (om/set-state! owner [:resize-key]
+                     (disposable/register
+                      (gevents/listen js/window "resize"
+                                      #(draw-chart!
+                                        (om/get-node owner "build-timings-svg")
+                                        (om/get-props owner)))
+                      gevents/unlistenByKey)))
 
     om/IWillUnmount
     (will-unmount [_]
@@ -219,26 +222,42 @@
 
     om/IDidUpdate
     (did-update [_ _ _]
-      (if (project-model/show-build-timing? project plan)
-        (when-not (om/get-state owner [:drawn?])
-          (draw-chart! build)
-          (om/set-state! owner [:loading?] false)
-          (om/set-state! owner [:drawn?] true))
-        ((om/get-shared owner :track-event) {:event-type :build-timing-upsell-impression})))
+      (when build
+        (draw-chart! (om/get-node owner "build-timings-svg") build)))
+
     om/IRenderState
-    (render-state [_ {:keys [loading?]}]
+    (render-state [_ _]
+      (html
+       [:div
+        (when-not build
+          [:div.loading-spinner common/spinner])
+        [:svg {:ref "build-timings-svg"}]]))))
+
+(defn upsell-message [plan owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :build-timing-upsell-impression}))
+
+    om/IRenderState
+    (render-state [_ _]
       (let [{{plan-org-name :name
               plan-vcs-type :vcs_type} :org} plan]
         (html
-         [:div.build-timings
-          (if (project-model/show-build-timing? project plan)
-            [:div
-             (when loading?
-               [:div.loading-spinner common/spinner])
-             [:svg#build-timings]]
-            [:span.message "This release of Build Timing is only available for repos belonging to paid plans "
-             [:a.upgrade-link
-              {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                   :vcs_type plan-vcs-type})
-               :on-click #((om/get-shared owner :track-event) {:event-type :build-timing-upsell-click})}
-              "upgrade here."]])])))))
+         [:span.message "This release of Build Timing is only available for repos belonging to paid plans. Please "
+          [:a.upgrade-link
+           {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                :vcs_type plan-vcs-type})
+            :on-click #((om/get-shared owner :track-event) {:event-type :build-timing-upsell-click})}
+           "upgrade here."]])))))
+
+;;;; Main component
+(defn build-timings [{:keys [build project plan]} owner]
+  (reify
+    om/IRenderState
+    (render-state [_ _]
+      (html
+       [:div.build-timings
+        (if (project-model/show-build-timing? project plan)
+          (om/build build-timings-chart build)
+          (om/build upsell-message plan))]))))
