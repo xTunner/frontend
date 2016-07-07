@@ -29,7 +29,7 @@
          [:section {:style {:padding-left "10px"}}
           [:a {:href "/api/v1/admin/build-state" :target "_blank"} "View raw"]
           " / "
-          [:a {:on-click #(raise! owner [:refresh-admin-build-state-clicked])} "Refresh"]
+          [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-build-state-clicked])} "Refresh"]
           (if-not build-state
             [:div.loading-spinner common/spinner]
             [:code (om/build ankha/inspector build-state)])])))))
@@ -101,7 +101,7 @@
          [:header {:style {:padding-top "10px"}}
           [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
           " / "
-          [:a {:on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
+          [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
          (if-not builders
            [:div.loading-spinner common/spinner]
            (if-not (seq builders)
