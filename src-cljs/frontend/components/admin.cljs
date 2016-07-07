@@ -338,7 +338,7 @@
              (when (:updating item)
                [:div.loading-spinner common/spinner])]))))
 
-(defn number-setting-entry [item owner]
+(defn- setting-entry [item owner type]
   (reify
     om/IRender
     (render [_]
@@ -346,7 +346,7 @@
             get-field-value #(some->> field-ref
                                       (om/get-node owner)
                                       .-value
-                                      js/Number)]
+                                      type)]
         (html
          [:div.form-group.details
           [:input.form-control
@@ -363,6 +363,12 @@
                    "Save"
                    common/spinner)]])))))
 
+(defn number-setting-entry [item owner]
+  (setting-entry item owner js/Number))
+
+(defn text-setting-entry [item owner]
+  (setting-entry item owner js/String))
+
 (defn system-setting [item owner]
   (reify
     om/IRender
@@ -372,7 +378,8 @@
              [:div.details (:description item)]
              (om/build (case (:value_type item)
                          "Boolean" boolean-setting-entry
-                         "Number" number-setting-entry)
+                         "Number" number-setting-entry
+                         "String" text-setting-entry)
                        item)]))))
 
 (defn system-settings [app owner]
