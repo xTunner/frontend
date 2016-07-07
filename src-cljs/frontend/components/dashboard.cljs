@@ -90,9 +90,6 @@
 
                :else
                [:div.dashboard
-                (when (and (feature/enabled? :build-diagnostics)
-                           project)
-                  (om/build build-diagnostics {:data data :project project}))
                 (when (and plan (project-common/show-trial-notice? project plan) (not (get-in data state/dismissed-trial-update-banner) ))
                   [:div.container-fluid
                    [:div.row

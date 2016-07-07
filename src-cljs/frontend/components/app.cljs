@@ -69,12 +69,6 @@
 (defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
-    om/IWillMount
-    (will-mount [_]
-      (let [logged-in? (boolean (get-in app state/user-path))
-            api-ch (get-in app [:comms :api])]
-        (if (and logged-in? (feature/enabled? :ui-fp-top-bar))
-          (api/get-orgs api-ch :include-user? true))))
     om/IRender
     (render [_]
       (if-not (:navigation-point app)
