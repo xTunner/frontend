@@ -99,11 +99,11 @@
                "Download the first 4MB as a file."
                "Download the full output as a file.")])])))))
 
-(defn action [action owner {:keys [uses-parallelism?] :as opts}]
+(defn action [action owner {:keys [current-container-id uses-parallelism?] :as opts}]
   (reify
     om/IRender
     (render [_]
-      (let [visible? (action-model/visible? action)
+      (let [visible? (action-model/visible? action current-container-id)
             header-classes  (concat [(:status action)]
                                     (when visible?
                                       ["open"])
@@ -217,4 +217,5 @@
            (om/build container-view
                      {:container (containers current-container-id)
                       :non-parallel-actions non-parallel-actions}
-                     {:opts {:uses-parallelism? (< 1 (count containers))}})])))))
+                     {:opts {:uses-parallelism? (< 1 (count containers))
+                             :current-container-id current-container-id}})])))))

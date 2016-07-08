@@ -10,14 +10,28 @@
 (defn failed? [action]
   (#{"failed" "timedout" "canceled" "infrastructure_fail"} (:status action)))
 
+(defn ubiquitous-action?
+  "An action that is shown on every container in the UI.
+
+  These actions only 'happen' on container 0, but are shown on every container. So the index
+  (always 0) of the action may be mismatched with the container-id it is grouped under."
+  [action]
+  (#{"checkout" "database" "deployment"} (:type action)))
+
 (defn has-content? [action]
   (or (:has_output action)
       (:bash_command action)
       (:output action)))
 
-(defn visible? [action]
-  (get action :show-output (or (not= "success" (:status action))
-                               (seq (:messages action)))))
+(defn visible?
+  "Is this action 'visible' ie: is it currently being viewed with the output being displayed."
+  [action current-container-index]
+  (and (or (:show-output action)
+           (not= "success" (:status action))
+           (seq (:messages action)))
+       (or (= (:index action) current-container-index)
+           (ubiquitous-action? action))
+       (:has_output action)))
 
 (defn running? [action]
   (and (:start_time action)

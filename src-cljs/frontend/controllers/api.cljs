@@ -248,6 +248,24 @@
       (put! controls-ch [:container-filter-changed {:new-filter :failed
                                                     :containers failed-containers}]))))
 
+(defn get-visible-output
+  "Only fetch the output that is shown by default and is shown in this container."
+  [current-state build-num vcs-url]
+  (let [visible-actions-with-output (->> (get-in current-state state/containers-path)
+                                         (mapcat :actions)
+                                         (filter (fn [action] (action-model/visible? action (get-in current-state state/current-container-path))))
+                                         ;; Since certain steps (ie: deployment) are under every container with an index of 0, they will always
+                                         ;; return `visible? true`. So, if we have a 20 parallelism build, it will return the deployment step 20 times
+                                         ;; if the other conditions of visible? are met. So, to keep us from calling get-action-output 20 times,
+                                         ;; run the seq returned through (set) so we only call it once.
+                                         (set))]
+    (doseq [action visible-actions-with-output]
+      (api/get-action-output {:vcs-url vcs-url
+                              :build-num build-num
+                              :step (:step action)
+                              :index (:index action)}
+                             (get-in current-state [:comms :api])))))
+
 (defmethod post-api-event! [:build :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name]} (:context args)]
@@ -255,14 +273,7 @@
     ;; convert the build from steps to containers again.
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
-      (doseq [action (mapcat :actions (get-in current-state state/containers-path))
-              :when (and (:has_output action)
-                         (action-model/visible? action))]
-        (api/get-action-output {:vcs-url (get-in args [:resp :vcs_url])
-                                :build-num build-num
-                                :step (:step action)
-                                :index (:index action)}
-                               (get-in current-state [:comms :api])))
+      (get-visible-output current-state build-num (get-in args [:resp :vcs_url]))
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
       (maybe-set-containers-filter! current-state))))
 
@@ -383,17 +394,11 @@
 (defmethod post-api-event! [:action-steps :success]
   [target message status args previous-state current-state]
   (let [{:keys [build-num project-name old-container-id new-container-id]} (:context args)
-        build (get-in current-state state/build-path)]
+        build (get-in current-state state/build-path)
+        vcs-url (:vcs_url build)]
     (when (and (= build-num (:build_num build))
-               (= project-name (vcs-url/project-name (:vcs_url build))))
-      (doseq [action (mapcat :actions (get-in current-state state/containers-path))
-              :when (and (:has_output action)
-                         (action-model/visible? action))]
-        (api/get-action-output {:vcs-url (:vcs_url build)
-                                :build-num build-num
-                                :step (:step action)
-                                :index (:index action)}
-                               (get-in current-state [:comms :api])))
+               (= project-name (vcs-url/project-name vcs-url)))
+      (get-visible-output current-state build-num vcs-url)
       (update-pusher-subscriptions current-state old-container-id new-container-id)
       (frontend.favicon/set-color! (build-model/favicon-color build)))))
 
