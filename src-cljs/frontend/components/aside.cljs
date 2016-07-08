@@ -491,12 +491,20 @@
               [:i.material-icons "library_add"]
               [:div.nav-label "Add Projects"]])
 
-            [:a.aside-item {:href "/invite-teammates",
-                            :data-placement "right"
-                            :data-trigger "hover"
-                            :title "Add Teammates"}
-              [:i.material-icons "group_add"]
+           (if (feature/enabled? :team-page)
+             [:a.aside-item {:href "/team",
+                             :data-placement "right"
+                             :data-trigger "hover"
+                             :title "Team"}
+              [:i.material-icons "group"]
               [:div.nav-label "Team"]]
+
+             [:a.aside-item {:href "/invite-teammates",
+                             :data-placement "right"
+                             :data-trigger "hover"
+                             :title "Add Teammates"}
+              [:i.material-icons "group_add"]
+              [:div.nav-label "Team"]])
 
             [:a.aside-item {:data-placement "right"
                                    :data-trigger "hover"

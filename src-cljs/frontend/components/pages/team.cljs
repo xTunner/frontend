@@ -92,7 +92,12 @@
               (om/build org-picker/picker
                         {:orgs available-orgs
                          :selected-org (first (filter #(= selected-org-ident (organization-ident %)) available-orgs))
-                         :on-org-click #(om/set-state! owner :selected-org-ident (organization-ident %))})
+                         :on-org-click (fn [{:keys [login vcs_type] :as org}]
+                                         (om/set-state! owner :selected-org-ident (organization-ident org))
+                                         ((om/get-shared owner :track-event) {:event-type :org-clicked
+                                                                              :properties {:view :team
+                                                                                           :login login
+                                                                                           :vcs_type vcs_type}}))})
               (html [:div.loading-spinner common/spinner])))]
           [:.main
            (if-let [[_ [vcs-type name]] selected-org-ident]
@@ -118,5 +123,8 @@
                  :main-content (om/build main-content app)
                  :header-actions (html
                                   [:a.btn.btn-primary
-                                   {:href (routes/v1-invite-teammates)}
+                                   {:href (routes/v1-invite-teammates)
+                                    :on-click #((om/get-shared owner :track-event)
+                                                {:event-type :invite-teammates-clicked
+                                                 :properties {:view :team}})}
                                    "Invite Teammates"])}))))
