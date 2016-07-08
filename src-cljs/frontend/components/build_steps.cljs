@@ -99,11 +99,14 @@
                "Download the first 4MB as a file."
                "Download the full output as a file.")])])))))
 
-(defn action [action owner {:keys [uses-parallelism?] :as opts}]
+(defn action [action owner {:keys [current-container-id uses-parallelism?] :as opts}]
   (reify
     om/IRender
     (render [_]
-      (let [visible? (action-model/visible? action)
+      ;; TODO: the action should not be deciding if it is visible, the parent component
+      ;; should decide which actions are visible and pass that information in.
+      ;; See discussion here - https://github.com/circleci/frontend-private/pull/1269/files
+      (let [visible? (action-model/visible? action current-container-id)
             header-classes  (concat [(:status action)]
                                     (when visible?
                                       ["open"])
@@ -181,7 +184,7 @@
         (html
          [:div.container-view {:id (str "container_" (:index container))}
           (om/build-all action actions {:key :step
-                                        :opts opts})])))))
+                                        :opts (merge opts {:current-container-id container-id})})])))))
 
 (defn container-build-steps [{:keys [containers current-container-id]} owner]
   (reify

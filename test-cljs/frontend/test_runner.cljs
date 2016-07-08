@@ -15,6 +15,7 @@
             [frontend.models.test-plan]
             [frontend.models.test-project]
             [frontend.models.test-feature]
+            [frontend.models.test-action]
             [frontend.test-datetime]
             [frontend.test-routes]
             [frontend.test-pusher]
@@ -38,6 +39,8 @@
            'frontend.controllers.test-api
            'frontend.models.test-plan
            'frontend.models.test-feature
+           'frontend.models.test-action
+           'frontend.models.test-build
            'frontend.test-datetime
            'frontend.test-routes
            'frontend.analytics.test-track
