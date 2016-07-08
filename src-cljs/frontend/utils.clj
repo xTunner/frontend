@@ -1,6 +1,5 @@
 (ns frontend.utils
-  (:require [cljs.analyzer :as cljs-ana]
-            [cljs.analyzer.api :as cljs-ana-api]
+  (:require [cljs.core :refer [this-as]]
             [sablono.core :as html]))
 
 (defmacro inspect
@@ -94,21 +93,22 @@
   (gensym "component-name"))
 
 (defmacro component
-  "Assigns a component name (a data-component attribute) to a React element.
-  body should be an expression which returns a React element (such as a call to
-  sablono.core/html) and name should be the name of the function or React class
-  that's rendering it. There's no way to programmatically find that name, so it
-  needs to be passed to `component`, but `component` will verify at compile time
-  that it refers to an actual Var, to ward against typos.
+  "Assigns the current component's name as the data-component attribute of a
+  React element. `body` is wrapped in an implicit `do`, and should evaluate to a
+  React element (such as a call to `sablono.core/html`). In an Om Next
+  component, the component name is the fully-qualified name of the component
+  class; in an Om Previous component or a pure functional component, it's the
+  fully-qualified name of the (outermost) function generating the component
+  contents.
 
-  It also sets the component name that `element` will use to build an element
-  name.
+  `component` also sets the component name that `element` will use to build an
+  element name.
 
   Examples:
 
   ;; Functional stateless component
   (defn fancy-button [on-click title]
-    (component fancy-button
+    (component
       (html [:button {:on-click on-click} title])))
 
   ;; Om Previous component
@@ -116,10 +116,11 @@
     (reify
       om/IRender
       (render [_]
-        (component person
-          [:div
-           [:.name (:name person-data)]
-           [:.hair-color (:hair-color person-data)]]))))
+        (component
+          (html
+            [:div
+             [:.name (:name person-data)]
+             [:.hair-color (:hair-color person-data)]]))))
 
   ;; Om Next component
   (defui Post
@@ -129,22 +130,33 @@
     Object
     (render [this]
       (let [{:keys [title author content]} (om/props)]
-        (component Post
+        (component
           (html
            [:article
             [:h1 title]
             [:h2 \"by \" author]
             [:div.body content]])))))"
-  [name body]
-  (assert (and (symbol? name)
-               (nil? (namespace name)))
-          (str "Component name should be given as an unqualified symbol, but was given as " (prn-str name)))
-  (let [ns cljs-ana/*cljs-ns*
-        full-name (str ns "/" name)]
-    (assert (cljs-ana-api/ns-resolve ns name)
-            (str "No such Var " full-name ". The component macro must be given the name of an existing Var (generally the Var within whose definition it is called)."))
-    `(let [~component-name-symbol ~full-name]
-       (component* ~full-name ~body))))
+  [& body]
+  (let [call-component* `(frontend.utils/component* ~component-name-symbol ~@body)]
+    (if-let [fn-scope (first (:fn-scope &env))]
+      ;; Om Previous or pure functional component
+      (let [name (:name fn-scope)
+            ns (-> fn-scope :info :ns)
+            full-name (str ns "/" name)]
+        `(let [~component-name-symbol ~full-name]
+           ~call-component*))
+
+      ;; Om Next class
+      `(this-as this#
+         (if (goog.object/containsKey (.-constructor this#) "displayName")
+           (let [~component-name-symbol (.-displayName (.-constructor this#))]
+             ~call-component*)
+           (do
+             (js/console.warn
+              "Couldn't find a name for this component. Make sure the"
+              "component macro is at the top of the component's render"
+              "method.")
+             ~@body))))))
 
 (defmacro element
   "Assigns an element name (a data-element attribute) to a React element.
@@ -162,14 +174,14 @@
   (ns example.core)
 
   (defn card [title content]
-    (component card
+    (component
       (html
        [:div
         [:.title title]
         [:.body content]])))
 
   (defn library-info-card [books]
-    (component library-info-card
+    (component
       (card
        \"Library Info\"
        (element :card-content

@@ -34,7 +34,7 @@
                              [:i.material-icons "settings"]]))}]}))
 
 (defn- no-org-selected [available-orgs bitbucket-enabled?]
-  (component no-org-selected
+  (component
     (card/basic
      (empty-state/empty-state {:icon (if-let [orgs (seq (take 3 available-orgs))]
                                        (element :avatars
@@ -53,7 +53,7 @@
                                             "organization (or username) to view your projects.")}))))
 
 (defn- no-projects-available [org]
-  (component no-projects-available
+  (component
     (empty-state/empty-state {:icon (html [:i.material-icons "book"])
                               :heading (html
                                         [:span
