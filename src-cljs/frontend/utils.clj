@@ -160,9 +160,10 @@
 
 (defmacro element
   "Assigns an element name (a data-element attribute) to a React element.
-  body should be an expression which returns a React element (such as a call to
-  sablono.core/html) and element-name should be an unqualified keyword which is
-  unique within the component.
+  `body` is wrapped in an implicit `do`, and should evaluate to a React
+  element (such as a call to `sablono.core/html`).`name` is an unqualified
+  keyword. The full element name will take the form
+  `component-namespace/component-name/element-name`
 
   The element macro is used to give a component-namespaced identifier to a DOM
   node which is passed to another component as a param. Without this, the
@@ -219,8 +220,10 @@
         > .books > li > .title
 
   That will always match exactly the node we mean."
-  [element-name body]
+  [element-name & body]
   (assert (and (keyword? element-name)
                (nil? (namespace element-name)))
           (str "Element name should be given as an unqualified keyword, but was given as " (prn-str element-name)))
-  `(element* ~(name element-name) ~component-name-symbol ~body))
+  (assert (contains? (:locals &env) component-name-symbol)
+          "element form must appear within a component form.")
+  `(element* ~(name element-name) ~component-name-symbol (do ~@body)))
