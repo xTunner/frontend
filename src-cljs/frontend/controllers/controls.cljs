@@ -322,7 +322,8 @@
   [target message {:keys [index step] :as args} previous-state current-state]
   (let [action (get-in current-state (state/action-path index step))
         build (get-in current-state state/build-path)]
-    (when (and (action-model/visible? action (get-in current-state state/current-container-path))
+    (when (and (action-model/visible? action)
+               (:has_output action)
                (not (:output action)))
       (api/get-action-output {:vcs-url (:vcs_url build)
                               :build-num (:build_num build)
