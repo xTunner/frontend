@@ -7,7 +7,7 @@
   "An Empty State heading should contain (generally) one important term (often a
   single word), which helps the user understand the context of the Empty State."
   [term]
-  (component important
+  (component
     (html [:span term])))
 
 (defn empty-state
@@ -37,7 +37,7 @@
                 make the Empty State go away. This is typically a single,
                 primary button, if present. It may also be multiple buttons."
   [{:keys [icon heading subheading action]}]
-  (component empty-state
+  (component
     (html
      [:div
       [:.icon icon]

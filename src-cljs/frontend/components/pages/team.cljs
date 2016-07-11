@@ -23,7 +23,7 @@
                         :cell-fn ::follow-count}]}))
 
 (defn- no-org-selected [available-orgs bitbucket-enabled?]
-  (component no-org-selected
+  (component
     (card/basic
      (empty-state/empty-state {:icon (if-let [orgs (seq (take 3 available-orgs))]
                                        (element :avatars
