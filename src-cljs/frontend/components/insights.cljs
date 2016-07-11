@@ -418,9 +418,11 @@
                                                             :vcs_type (:vcs_type project)})}
                 (formatted-project-name project)]
                (formatted-project-name project))]
-            [:div.github-icon
+            [:div.vcs-icon
              [:a {:href (:vcs_url project)}
-              [:i.octicon.octicon-mark-github]]]
+              (if (= vcs_type "bitbucket")
+                [:i.fa.fa-bitbucket]
+                [:i.octicon.octicon-mark-github])]]
             (when (project-model/can-write-settings? project)
              [:div.settings-icon
               [:a {:href (routes/v1-project-settings-path {:org username
