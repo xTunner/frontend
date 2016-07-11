@@ -148,15 +148,13 @@
 
       ;; Om Next class
       `(this-as this#
-         (if (goog.object/containsKey (.-constructor this#) "displayName")
-           (let [~component-name-symbol (.-displayName (.-constructor this#))]
-             ~call-component*)
-           (do
-             (js/console.warn
-              "Couldn't find a name for this component. Make sure the"
-              "component macro is at the top of the component's render"
-              "method.")
-             ~@body))))))
+         (assert (goog.object/containsKey (.-constructor this#) "displayName")
+                 (str
+                  "Couldn't find a name for this component. Make sure the"
+                  "component macro is at the top of the component's render"
+                  "method."))
+         (let [~component-name-symbol (.-displayName (.-constructor this#))]
+           ~call-component*)))))
 
 (defmacro element
   "Assigns an element name (a data-element attribute) to a React element.
