@@ -1,4 +1,4 @@
-(ns frontend.controllers.api-test
+(ns frontend.controllers.test-api
   (:require [frontend.controllers.ws :as ws]
             [frontend.state :as state]
             [frontend.controllers.api :as api]

@@ -10,14 +10,49 @@
 (defn failed? [action]
   (#{"failed" "timedout" "canceled" "infrastructure_fail"} (:status action)))
 
+(defn ubiquitous-action?
+  "An action that is shown on every container in the UI.
+
+  These actions only 'happen' on container 0, but are shown on every container. So the index
+  (always 0) of the action may be mismatched with the container-id it is grouped under."
+  [action]
+  (#{"checkout" "database" "deployment"} (:type action)))
+
 (defn has-content? [action]
   (or (:has_output action)
       (:bash_command action)
       (:output action)))
 
-(defn visible? [action]
-  (get action :show-output (or (not= "success" (:status action))
-                               (seq (:messages action)))))
+(defn show-by-default?
+  "Should this action be shown if the user has not explicitly opened or closed it."
+  [action]
+  (or (not= "success" (:status action))
+      ;; We're not entirely sure what this case signifies, if you know, please leave a
+      ;; comment or make it more obvious.
+      (seq (:messages action))))
+
+(defn show-output?
+  "Should we show the output for this action."
+  [action]
+  (get action :show-output (show-by-default? action)))
+
+(defn visible-on-container-index?
+  "Is this action displayed on this container index."
+  [action container-index]
+  (or (= (:index action) container-index)
+      (ubiquitous-action? action)))
+
+(defn visible?
+  "Is this action 'visible' ie: is it currently being viewed with the output being displayed."
+  [action current-container-index]
+  (and (show-output? action)
+       (visible-on-container-index? action current-container-index)))
+
+(defn visible-with-output?
+  "Is this action visible, and does it have output."
+  [action current-container-index]
+  (and (:has_output action)
+       (visible? action current-container-index)))
 
 (defn running? [action]
   (and (:start_time action)

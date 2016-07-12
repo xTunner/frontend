@@ -1,4 +1,4 @@
-(ns frontend.controllers.controls-test
+(ns frontend.controllers.test-controls
   (:require [cljs.core.async :refer [chan <! >!]]
             [cljs.test :as test]
             [frontend.state :as state]

@@ -8,11 +8,14 @@
             [frontend.components.test-statuspage]
             [frontend.components.test-insights]
             [frontend.utils-test]
-            [frontend.controllers.controls-test]
-            [frontend.controllers.ws-test]
+            [frontend.controllers.test-controls]
+            [frontend.controllers.test-ws]
+            [frontend.controllers.test-api]
+            [frontend.models.test-build]
             [frontend.models.test-plan]
+            [frontend.models.test-project]
             [frontend.models.test-feature]
-            [frontend.controllers.api-test]
+            [frontend.models.test-action]
             [frontend.test-datetime]
             [frontend.test-routes]
             [frontend.test-pusher]
@@ -31,11 +34,13 @@
            'frontend.components.test-statuspage
            'frontend.components.test-insights
            'frontend.utils-test
-           'frontend.controllers.controls-test
-           'frontend.controllers.ws-test
+           'frontend.controllers.test-controls
+           'frontend.controllers.test-ws
+           'frontend.controllers.test-api
            'frontend.models.test-plan
            'frontend.models.test-feature
-           'frontend.controllers.api-test
+           'frontend.models.test-action
+           'frontend.models.test-build
            'frontend.test-datetime
            'frontend.test-routes
            'frontend.analytics.test-track

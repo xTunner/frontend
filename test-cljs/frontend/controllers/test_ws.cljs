@@ -1,4 +1,4 @@
-(ns frontend.controllers.ws-test
+(ns frontend.controllers.test-ws
   (:require [frontend.controllers.ws :as ws]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
