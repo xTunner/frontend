@@ -25,19 +25,20 @@
     (fn [status]
       (notify title properties))))
 
-(defn email-path [text]
-  (utils/cdn-path (str "/img/email/"text"/icon@3x.png")))
+(defn email-path [status-name]
+  (utils/cdn-path (str "/img/email/"status-name"/icon@3x.png")))
 
-(def failed-email-img (email-path "failed"))
-(def passed-email-img (email-path "passed"))
-
-(defn notify-build-done [build project build-num]
+(defn notify-build-done [build]
   (let [status (:status build)
+        project (:reponame build)
+        build-num (:build_num build)
         properties (case status
-                     "no_tests" {:icon passed-email-img :body "Looks like there were no tests to run."}
-                     "success" {:icon passed-email-img :body "Yay, your tests passed!"}
-                     "fixed" {:icon passed-email-img :body "Yay, all your tests are fixed!"}
-                     "failed" {:icon failed-email-img :body "Looks like some tests failed."}
-                     "infrastructure_fail" {:icon failed-email-img :body "Darn, something went wrong."}
-                     {:icon failed-email-img :body "Whoops, no status inforamtion."})]
-    (notify (str project " #" build-num) properties)))
+                     "no_tests" {:icon (email-path "passed") :body "Looks like there were no tests to run."}
+                     "success" {:icon (email-path "passed") :body "Yay, your tests passed!"}
+                     "fixed" {:icon (email-path "passed") :body "Yay, all your tests are fixed!"}
+                     "failed" {:icon (email-path "failed") :body "Looks like some tests failed."}
+                     "infrastructure_fail" {:icon (email-path "failed") :body "Darn, something went wrong."}
+                     {:icon (email-path "failed") :body "Whoops, no status inforamtion."})]
+    (notify (str project " #"build-num) (merge properties {:data build}))
+    (.log js/console (str build))
+    ))

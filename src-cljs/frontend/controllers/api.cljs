@@ -10,7 +10,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
-            [frontend.notifs :as n]
+            [frontend.notifs :as notifs]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -227,12 +227,11 @@
 
 (defmethod post-api-event! [:build-observables :success]
   [target message status args previous-state current-state]
-  (let [{:keys [build-num project]} (get-in args [:context :build-parts])
-        build (get-in current-state state/build-path)]
+  (let [build (get-in current-state state/build-path)]
     (frontend.favicon/set-color! (build-model/favicon-color build))
     (when (and (build-model/finished? build)
                (empty? (get-in current-state state/tests-path)))
-      (n/notify-build-done build project build-num)
+      (notifs/notify-build-done build)
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 
 (defn maybe-set-containers-filter!
