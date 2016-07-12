@@ -340,6 +340,33 @@
           :on-change (partial handle-email-notification-change owner "none")}]
         "Don't send me emails."]]]]]])
 
+(defn web-notifications [web-notif-pref]
+  [:div.card
+   [:div.header
+    [:h2
+     "Web Notifications"]]
+    [:div.body
+    [:div.section
+     [:form
+      [:div.radio
+       [:label
+        [:input
+         {:name "web_notif_pref" ,
+          :type "radio"
+          :checked (= web-notif-pref "on")
+          ;; :on-change (partial handle-email-notification-change owner "all")
+          }]
+        "Show me notifications when a build finishes"]]
+      [:div.radio
+       [:label
+        [:input
+         {:name "web_notif_pref" ,
+          :type "radio"
+          :checked (= web-notif-pref "off")
+          ;; :on-change (partial handle-email-notification-change owner "smart")
+          }]
+        "Don't show me notifications when a build finishes"]]]]]])
+
 (defn granular-email-prefs [{:keys [projects user] :as x} owner]
   (let [followed-orgs (into (sorted-set-by (fn [[x-vcs-type x-name]
                                                 [y-vcs-type y-name]]
@@ -409,7 +436,9 @@
           [:legend "Notification Settings"]
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
-          (om/build granular-email-prefs {:projects projects :user user})])))))
+          (om/build granular-email-prefs {:projects projects :user user})
+          ;; TODO Replace "on" with a read from local storage!
+          (web-notifications "on")])))))
 
 (defn account [app owner]
   (reify
