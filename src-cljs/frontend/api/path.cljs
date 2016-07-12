@@ -13,19 +13,13 @@
 
 (defn branch-path [vcs-type org-name repo-name branch]
   (gstring/format
-    "%s/%s/%s/tree/%s"
-    (base-project-url-path vcs-type) org-name repo-name (gstring/urlEncode branch)))
+   "%s/%s/%s/tree/%s"
+   (base-project-url-path vcs-type) org-name repo-name (gstring/urlEncode branch)))
 
 (defn project-settings [vcs-type org-name repo-name]
   (gstring/format
-    "%s/%s/%s/settings"
-    (base-project-url-path vcs-type) org-name repo-name))
-
-(defn project-info
-  [vcs-type org-name repo-name]
-  (gstring/format
-    "%s/%s/%s/info"
-    (base-project-url-path vcs-type) org-name repo-name))
+   "%s/%s/%s/settings"
+   (base-project-url-path vcs-type) org-name repo-name))
 
 (defn project-checkout-keys [vcs-type repo-name]
   (gstring/format
