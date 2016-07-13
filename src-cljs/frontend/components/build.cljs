@@ -145,7 +145,8 @@
               (om/build project-common/trial-notice project-data))
 
             (when (plan-model/suspended? plan)
-              (om/build project-common/suspended-notice plan (:vcs_type project)))
+              (om/build project-common/suspended-notice {:plan plan
+                                                         :vcs_type (:vcs_type project)}))
 
             (when (and project (project-common/show-enable-notice project))
               (om/build project-common/enable-notice project))
