@@ -126,31 +126,25 @@
       (assoc :piggieback-orgs ["circleci"]
              :org_name "test-org")))
 
+(defn- make-example-user-plans [plans]
+  (-> {:org_name "circleci"
+       :vcs_type "github"}
+      (assoc :plans plans)
+      (vector)))
+
 ;; The three functions below are to mimic the /api/v1/user/organizations/plans
 ;; payload for different possible cases.
-(def example-user-plans-free
-  [(-> {:org_name "circleci"}
-       (assoc :plans [(example-plan :free)]))])
+(def example-user-plans-free (make-example-user-plans [(example-plan :free)]))
 
-(def example-user-plans-paid
-  [(-> {:org_name "circleci"}
-       (assoc :plans [(example-plan :paid)]))])
+(def example-user-plans-paid (make-example-user-plans [(example-plan :paid)]))
 
-(def example-user-plans-osx
-  [(-> {:org_name "circleci"}
-       (assoc :plans [(example-plan :osx)]))])
+(def example-user-plans-osx (make-example-user-plans [(example-plan :osx)]))
 
-(def example-user-plans-trial
-  [(-> {:org_name "circleci"}
-       (assoc :plans [(example-plan :trial)]))])
+(def example-user-plans-trial (make-example-user-plans [(example-plan :trial)]))
 
-(def example-user-plans-expired-trial
-  [(-> {:org_name "circleci"}
-       (assoc :plans [(example-plan :expired-trial)]))])
+(def example-user-plans-expired-trial (make-example-user-plans [(example-plan :expired-trial)]))
 
-(def example-user-plans-piggieback
-  [(-> {:org_name "circleci"}
-       (assoc :plans [example-piggieback-plan (example-plan :free)]))])
+(def example-user-plans-piggieback (make-example-user-plans [example-piggieback-plan (example-plan :free)]))
 
 (defn state [{:keys [view user repo org state]}]
   (merge {:current-user {:login (or user "test-user")}
