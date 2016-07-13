@@ -113,7 +113,7 @@
                        :context {:project-name (str (:org args) "/" (:repo args))})
             (when (:read-settings scopes)
               (ajax/ajax :get
-                         (api-path/project-settings (:vcs_type args) (:org args) (:repo args))
+                         (api-path/project-info (:vcs_type args) (:org args) (:repo args))
                          :project-settings
                          api-ch
                          :context {:project-name (str (:org args) "/" (:repo args))})
@@ -225,7 +225,7 @@
           (when (and (not (get-in current-state state/project-path))
                      (:repo args) (:read-settings scopes))
             (ajax/ajax :get
-                       (api-path/project-settings vcs-type org repo)
+                       (api-path/project-info vcs-type org repo)
                        :project-settings
                        api-ch
                        :context {:project-name project-name
