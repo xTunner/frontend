@@ -123,7 +123,7 @@
 (def example-piggieback-plan
   (-> (example-plan :paid)
       (dissoc :org_name)
-      (assoc :piggieback-orgs ["circleci"]
+      (assoc :piggieback_orgs ["circleci"]
              :org_name "test-org")))
 
 (defn- make-example-user-plans [plans]
