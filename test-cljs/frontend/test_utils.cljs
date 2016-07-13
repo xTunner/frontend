@@ -124,6 +124,8 @@
   (-> (example-plan :paid)
       (dissoc :org_name)
       (assoc :piggieback_orgs ["circleci"]
+             :piggieback_org_maps [{:org_name "circleci"
+                                    :vcs_type "github"}]
              :org_name "test-org")))
 
 (defn- make-example-user-plans [plans]
