@@ -161,7 +161,14 @@
       
       label {
         font-weight: inherit;
-      }      
+
+        input[disabled] ~ span {
+            color: @grayLight;
+            &::before {
+                content: '🔒';
+            }
+        }
+      }
     }
   }
 
