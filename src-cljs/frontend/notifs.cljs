@@ -1,14 +1,21 @@
 (ns frontend.notifs
   (:require [frontend.utils :as utils :include-macros true]
-            [frontend.localstorage :as localstorage]))
+            [frontend.state :as state]
+            [frontend.localstorage :as lost]))
 
+(defn notifiable-browser [] (= (type (.-Notification js/window)) js/Function))
+
+(defn notifications-granted?  [] (= (.-permission js/Notification) "default"))
 
 ;; Gotta edit this to only happen when a user first toggles that switch
 ;; This should actually be a little function called n/notify  that simply constructs a notification out of optional keyword arguments! (should have multiple signatures so if you just pass 1 arg it become the title)
-(defn request-permissions [promise-fn]
-  (-> js/Notification
-      (.requestPermission)
-      (.then promise-fn)))
+(defn request-permission
+  ([]
+   (request-permission (fn [result] (.log js/console "Notifications are now: " result))))
+  ([promise-fn]
+     (-> js/Notification
+               (.requestPermission)
+               (.then promise-fn))))
 
 ;; Some notes about properties
 ;; The title should be 32 characters MAX, note that if using system default, only 22 chars are visible on hover (because of resulting UI), so keep critical information 22 chars
@@ -21,7 +28,7 @@
                                  {:lang "en"})))))
 
 (defn ask-then-notify [title properties]
-  (request-permissions
+  (request-permission
     (fn [status]
       (notify title properties))))
 

@@ -8,6 +8,7 @@
             [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
+            [frontend.notifs :as notifs]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -340,32 +341,49 @@
           :on-change (partial handle-email-notification-change owner "none")}]
         "Don't send me emails."]]]]]])
 
-(defn web-notifications [web-notif-pref]
-  [:div.card
-   [:div.header
-    [:h2
-     "Web Notifications"]]
-    [:div.body
-    [:div.section
-     [:form
-      [:div.radio
-       [:label
-        [:input
-         {:name "web_notif_pref" ,
-          :type "radio"
-          :checked (= web-notif-pref "on")
-          ;; :on-change (partial handle-email-notification-change owner "all")
-          }]
-        "Show me notifications when a build finishes"]]
-      [:div.radio
-       [:label
-        [:input
-         {:name "web_notif_pref" ,
-          :type "radio"
-          :checked (= web-notif-pref "off")
-          ;; :on-change (partial handle-email-notification-change owner "smart")
-          }]
-        "Don't show me notifications when a build finishes"]]]]]])
+(defn web-notifications [owner web-notif-pref granted]
+  (let [granted-is (fn [something] (= granted something))
+        granted (granted-is "granted")]
+    [:div.card
+     [:div.header
+      [:h2
+       "Web Notifications"]]
+     (if (notifs/notifiable-browser)
+       [:div.body
+        (when (granted-is "denied")
+          [:div.section
+           "It looks like you've denied CircleCI access to send you web notifications. Before you can change your web notification preferences please "
+           ;; TODO make this a real link with consequences lol
+           [:a {:href "#link-to-turning-on-permissions"} "turn on permissions for your browser."]])
+        (when (granted-is "default")
+          [:div.section
+           "You haven't given CircleCI access to notify you through the browser — "
+           [:a {:href "javascript:void(0)", :on-click #(notifs/request-permission)} "click here to turn permissions on."]])
+        [:div.section
+         [:form
+          [:div.radio
+           [:label
+            [:input
+             {:name "web_notif_pref" ,
+              :type "radio"
+              :checked (if (nil? web-notif-pref) false web-notif-pref)
+              ;; :on-change #(raise! owner [:turn-notifs-on])
+              :disabled (not granted)
+              }]
+            "Show me notifications when a build finishes"]]
+          [:div.radio
+           [:label
+            [:input
+             {:name "web_notif_pref" ,
+              :type "radio"
+              :checked (if (nil? web-notif-pref) true web-notif-pref)
+              ;; :on-change #(raise! owner [:turn-notifs-off])
+              :disabled (not granted)
+              }]
+            "Don't show me notifications when a build finishes"]]]]]
+       ;; -- If browser doesn't support the Web Notifications API:
+       [:div.body
+        [:div.section "You browser doesn't support web notifications."]])]))
 
 (defn granular-email-prefs [{:keys [projects user] :as x} owner]
   (let [followed-orgs (into (sorted-set-by (fn [[x-vcs-type x-name]
@@ -430,7 +448,8 @@
     om/IRender
     (render [_]
       (let [user (get-in app state/user-path)
-            projects (get-in app state/projects-path)]
+            projects (get-in app state/projects-path)
+            notifs-on (get-in app state/web-notifs-on)]
         (html
          [:div#settings-notification
           [:legend "Notification Settings"]
@@ -438,7 +457,8 @@
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
           ;; TODO Replace "on" with a read from local storage!
-          (web-notifications "on")])))))
+          (web-notifications owner notifs-on (.-permission js/Notification))
+          (.log js/console notifs-on (= "granted" (.-permission js/Notification)))])))))
 
 (defn account [app owner]
   (reify
