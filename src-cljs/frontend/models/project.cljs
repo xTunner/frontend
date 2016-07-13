@@ -173,14 +173,12 @@
 (defn show-build-timing? [project plan]
   (show-premium-content? project plan))
 
-(defn show-insights? [plans project]
-  (let [org-name (-> project
-                     (:vcs_url)
-                     (vcs-url/org-name))
+(defn show-insights? [plans {:keys [vcs_url] :as project}]
+  (let [org-name (vcs-url/org-name vcs_url)
+        vcs-type (vcs-url/vcs-type vcs_url)
         org-best-plan (->> plans
-                           (filter #(-> %
-                                        :org_name
-                                        (= org-name)))
+                           (filter #(and (= org-name (:org_name %))
+                                         (= vcs-type (:vcs_type %))))
                            (first)
                            (:plans)
                            (apply max-key plan-model/paid-linux-containers))]
