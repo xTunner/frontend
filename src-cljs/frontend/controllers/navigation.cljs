@@ -389,13 +389,11 @@
         repo (:repo navigation-data)]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (if (get-in current-state state/project-path)
-      (mlog "project settings already loaded for" project-name)
-      (ajax/ajax :get
-                 (api-path/project-settings vcs-type org repo)
-                 :project-settings
-                 api-ch
-                 :context {:project-name project-name}))
+    (ajax/ajax :get
+               (api-path/project-settings vcs-type org repo)
+               :project-settings
+               api-ch
+               :context {:project-name project-name})
 
     (cond (and (or (= subpage :parallel-builds) (= subpage :build-environment))
                (not (get-in current-state state/project-plan-path)))
