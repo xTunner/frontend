@@ -3,7 +3,7 @@
             [frontend.state :as state]
             [frontend.localstorage :as lost]))
 
-(defn notifiable-browser [] (= (type (.-Notification js/window)) js/Function))
+(defn notifiable-browser [] (exists? (.-Notification js/window)))
 (defn notifications-permission [] (.-permission js/Notification))
 (defn notifications-granted  [] (=  notifications-permission "granted"))
 
