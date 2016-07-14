@@ -341,9 +341,15 @@
           :on-change (partial handle-email-notification-change owner "none")}]
         "Don't send me emails."]]]]]])
 
-(defn web-notifications [owner web-notif-pref granted]
+(defn web-notifications [owner web-notifs-on granted]
   (let [granted-is (fn [something] (= granted something))
-        granted (granted-is "granted")]
+        granted (granted-is "granted")
+        disabled (not granted)
+        checked-on (cond
+                     disabled false
+                     (nil? web-notifs-on) false
+                     :else web-notifs-on)
+        checked-off (not checked-on)]
     [:div.card
      [:div.header
       [:h2
@@ -353,12 +359,12 @@
         (when (granted-is "denied")
           [:div.section
            "It looks like you've denied CircleCI access to send you web notifications. Before you can change your web notification preferences please "
-           ;; TODO make this a real link with consequences lol
+           ;; TODO make this a real link with an actual modal or links popping up about how to do this.
            [:a {:href "#link-to-turning-on-permissions"} "turn on permissions for your browser."]])
         (when (granted-is "default")
           [:div.section
            "You haven't given CircleCI access to notify you through the browser — "
-           [:a {:href "javascript:void(0)", :on-click #(notifs/request-permission)} "click here to turn permissions on."]])
+           [:a {:href "javascript:void(0)", :on-click #(notifs/request-permission (fn [response] (raise! owner [:turn-notifs-on])))} "click here to turn permissions on."]])
         [:div.section
          [:form
           [:div.radio
@@ -366,20 +372,18 @@
             [:input
              {:name "web_notif_pref" ,
               :type "radio"
-              :checked (if (nil? web-notif-pref) false web-notif-pref)
-              ;; :on-change #(raise! owner [:turn-notifs-on])
-              :disabled (not granted)
-              }]
+              :checked checked-on
+              :on-change #(raise! owner [:turn-notifs-on])
+              :disabled disabled}]
             "Show me notifications when a build finishes"]]
           [:div.radio
            [:label
             [:input
              {:name "web_notif_pref" ,
               :type "radio"
-              :checked (if (nil? web-notif-pref) true web-notif-pref)
-              ;; :on-change #(raise! owner [:turn-notifs-off])
-              :disabled (not granted)
-              }]
+              :checked checked-off
+              :on-change #(raise! owner [:turn-notifs-off])
+              :disabled disabled}]
             "Don't show me notifications when a build finishes"]]]]]
        ;; -- If browser doesn't support the Web Notifications API:
        [:div.body
@@ -457,8 +461,7 @@
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
           ;; TODO Replace "on" with a read from local storage!
-          (web-notifications owner notifs-on (.-permission js/Notification))
-          (.log js/console notifs-on (= "granted" (.-permission js/Notification)))])))))
+          (web-notifications owner notifs-on (notifs/notifications-permission)) ])))))
 
 (defn account [app owner]
   (reify
@@ -475,4 +478,4 @@
          [:div#account-settings
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]])))))
+           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifs-on]))]])))))

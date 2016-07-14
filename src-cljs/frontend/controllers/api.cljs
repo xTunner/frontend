@@ -231,7 +231,8 @@
     (frontend.favicon/set-color! (build-model/favicon-color build))
     (when (and (build-model/finished? build)
                (empty? (get-in current-state state/tests-path)))
-      (notifs/notify-build-done build)
+      (when (and (notifs/notifications-granted) (get-in current-state state/web-notifs-on))
+        (notifs/notify-build-done build))
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 
 (defn maybe-set-containers-filter!

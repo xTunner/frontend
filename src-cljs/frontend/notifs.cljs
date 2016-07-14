@@ -4,11 +4,9 @@
             [frontend.localstorage :as lost]))
 
 (defn notifiable-browser [] (= (type (.-Notification js/window)) js/Function))
+(defn notifications-permission [] (.-permission js/Notification))
+(defn notifications-granted  [] (=  notifications-permission "granted"))
 
-(defn notifications-granted  [] (= (.-permission js/Notification) "granted"))
-
-;; Gotta edit this to only happen when a user first toggles that switch
-;; This should actually be a little function called n/notify  that simply constructs a notification out of optional keyword arguments! (should have multiple signatures so if you just pass 1 arg it become the title)
 (defn request-permission
   ([]
    (request-permission (fn [result] (utils/mlog "Notifications are now: " result))))
