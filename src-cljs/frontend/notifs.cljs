@@ -5,7 +5,7 @@
 
 (defn notifiable-browser [] (exists? (.-Notification js/window)))
 (defn notifications-permission [] (.-permission js/Notification))
-(defn notifications-granted  [] (=  notifications-permission "granted"))
+(defn notifications-granted  [] (= (notifications-permission) "granted"))
 
 (defn request-permission
   ([]

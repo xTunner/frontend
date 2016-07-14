@@ -364,7 +364,7 @@
         (when (granted-is "default")
           [:div.section
            "You haven't given CircleCI access to notify you through the browser — "
-           [:a {:href "javascript:void(0)", :on-click #(notifs/request-permission (fn [response] (raise! owner [:turn-notifs-on])))} "click here to turn permissions on."]])
+           [:a {:href "javascript:void(0)", :on-click #(notifs/request-permission (fn [response] (when (notifs/notifications-granted) (raise! owner [:turn-notifs-on]))))} "click here to turn permissions on."]])
         [:div.section
          [:form
           [:div.radio
