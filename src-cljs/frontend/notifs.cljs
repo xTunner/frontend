@@ -5,13 +5,13 @@
 
 (defn notifiable-browser [] (= (type (.-Notification js/window)) js/Function))
 
-(defn notifications-granted?  [] (= (.-permission js/Notification) "default"))
+(defn notifications-granted  [] (= (.-permission js/Notification) "granted"))
 
 ;; Gotta edit this to only happen when a user first toggles that switch
 ;; This should actually be a little function called n/notify  that simply constructs a notification out of optional keyword arguments! (should have multiple signatures so if you just pass 1 arg it become the title)
 (defn request-permission
   ([]
-   (request-permission (fn [result] (.log js/console "Notifications are now: " result))))
+   (request-permission (fn [result] (utils/mlog "Notifications are now: " result))))
   ([promise-fn]
      (-> js/Notification
                (.requestPermission)
@@ -46,6 +46,4 @@
                      "failed" {:icon (email-path "failed") :body "Looks like some tests failed."}
                      "infrastructure_fail" {:icon (email-path "failed") :body "Darn, something went wrong."}
                      {:icon (email-path "failed") :body "Whoops, no status inforamtion."})]
-    (notify (str project " #"build-num) (merge properties {:data build}))
-    (.log js/console (str build))
-    ))
+    (notify (str project " #"build-num) (merge properties {:data build}))))
