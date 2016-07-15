@@ -4,6 +4,7 @@
             [frontend.api.path :as api-path]
             [frontend.async :refer [put! raise!]]
             [frontend.components.forms :refer [release-button!]]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
@@ -231,7 +232,7 @@
     (frontend.favicon/set-color! (build-model/favicon-color build))
     (when (and (build-model/finished? build)
                (empty? (get-in current-state state/tests-path)))
-      (when (and (notifs/notifications-granted) (get-in current-state state/web-notifs-on))
+      (when (and (ld/feature-on? "web-notifications") (notifs/notifications-granted) (get-in current-state state/web-notifs-on))
         (notifs/notify-build-done build))
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 

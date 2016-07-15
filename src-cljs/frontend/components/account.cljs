@@ -13,6 +13,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -459,7 +460,7 @@
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
-          (web-notifications owner notifs-on (notifs/notifications-permission)) ])))))
+          (when (ld/feature-on? "web-notifications") (web-notifications owner notifs-on (notifs/notifications-permission)))])))))
 
 (defn account [app owner]
   (reify
