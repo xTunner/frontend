@@ -375,6 +375,7 @@
               :checked checked-on
               :on-change #(raise! owner [:turn-notifs-on])
               :disabled disabled}]
+            (when disabled [:span [:i.material-icons.lock "lock" ] " "])
             "Show me notifications when a build finishes"]]
           [:div.radio
            [:label
@@ -384,7 +385,8 @@
               :checked checked-off
               :on-change #(raise! owner [:turn-notifs-off])
               :disabled disabled}]
-            "Don't show me notifications when a build finishes"]]]]]
+            (when disabled [:span [:i.material-icons.lock "lock" ] " "])
+            " Don't show me notifications when a build finishes"]]]]]
        ;; -- If browser doesn't support the Web Notifications API:
        [:div.body
         [:div.section "You browser doesn't support web notifications."]])]))
