@@ -1,7 +1,6 @@
 (ns frontend.notifs
   (:require [frontend.utils :as utils :include-macros true]
-            [frontend.state :as state]
-            [frontend.localstorage :as lost]))
+            [frontend.state :as state]))
 
 (defn notifiable-browser [] (exists? (.-Notification js/window)))
 (defn notifications-permission [] (.-permission js/Notification))

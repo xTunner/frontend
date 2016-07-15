@@ -359,8 +359,7 @@
         (when (granted-is "denied")
           [:div.section
            "It looks like you've denied CircleCI access to send you web notifications. Before you can change your web notification preferences please "
-           ;; TODO make this a real link with an actual modal or links popping up about how to do this.
-           [:a {:href "#link-to-turning-on-permissions"} "turn on permissions for your browser."]])
+           [:a {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"} "turn on permissions for your browser."]])
         (when (granted-is "default")
           [:div.section
            "You haven't given CircleCI access to notify you through the browser — "
@@ -460,7 +459,6 @@
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
-          ;; TODO Replace "on" with a read from local storage!
           (web-notifications owner notifs-on (notifs/notifications-permission)) ])))))
 
 (defn account [app owner]
