@@ -8,7 +8,7 @@
             [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
-            [frontend.notifs :as notifs]
+            [frontend.notifications :as notifications]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -342,20 +342,20 @@
           :on-change (partial handle-email-notification-change owner "none")}]
         "Don't send me emails."]]]]]])
 
-(defn web-notifications [owner web-notifs-on granted]
+(defn web-notifications [owner web-notifications-on granted]
   (let [granted-is (fn [something] (= granted something))
         granted (granted-is "granted")
         disabled (not granted)
         checked-on (cond
                      disabled false
-                     (nil? web-notifs-on) false
-                     :else web-notifs-on)
+                     (nil? web-notifications-on) false
+                     :else web-notifications-on)
         checked-off (not checked-on)]
     [:div.card
      [:div.header
       [:h2
        "Web Notifications"]]
-     (if (notifs/notifiable-browser)
+     (if (notifications/notifiable-browser)
        [:div.body
         (when (granted-is "denied")
           [:div.section
@@ -364,7 +364,7 @@
         (when (granted-is "default")
           [:div.section
            "You haven't given CircleCI access to notify you through the browser — "
-           [:a {:href "javascript:void(0)", :on-click #(notifs/request-permission (fn [response] (utils/mlog "Notifications are now: " response) (when (notifs/notifications-granted) (raise! owner [:turn-notifs-on]))))} "click here to turn permissions on."]])
+           [:a {:href "javascript:void(0)", :on-click #(notifications/request-permission (fn [response] (utils/mlog "Notifications are now: " response) (when (notifications/notifications-granted) (raise! owner [:turn-notifications-on]))))} "click here to turn permissions on."]])
         [:div.section
          [:form
           [:div.radio
@@ -373,7 +373,7 @@
              {:name "web_notif_pref" ,
               :type "radio"
               :checked checked-on
-              :on-change #(raise! owner [:turn-notifs-on])
+              :on-change #(raise! owner [:turn-notifications-on])
               :disabled disabled}]
             (when disabled [:span [:i.material-icons.lock "lock" ] " "])
             "Show me notifications when a build finishes"]]
@@ -383,7 +383,7 @@
              {:name "web_notif_pref" ,
               :type "radio"
               :checked checked-off
-              :on-change #(raise! owner [:turn-notifs-off])
+              :on-change #(raise! owner [:turn-notifications-off])
               :disabled disabled}]
             (when disabled [:span [:i.material-icons.lock "lock" ] " "])
             " Don't show me notifications when a build finishes"]]]]]
@@ -455,14 +455,14 @@
     (render [_]
       (let [user (get-in app state/user-path)
             projects (get-in app state/projects-path)
-            notifs-on (get-in app state/web-notifs-on)]
+            notifications-on (get-in app state/web-notifications-on)]
         (html
          [:div#settings-notification
           [:legend "Notification Settings"]
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
-          (when (ld/feature-on? "web-notifications") (web-notifications owner notifs-on (notifs/notifications-permission)))])))))
+          (when (ld/feature-on? "web-notifications") (web-notifications owner notifications-on (notifications/notifications-permission)))])))))
 
 (defn account [app owner]
   (reify
@@ -479,4 +479,4 @@
          [:div#account-settings
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifs-on]))]])))))
+           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-on]))]])))))

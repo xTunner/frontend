@@ -11,7 +11,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
-            [frontend.notifs :as notifs]
+            [frontend.notifications :as notifications]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -232,8 +232,8 @@
     (frontend.favicon/set-color! (build-model/favicon-color build))
     (when (and (build-model/finished? build)
                (empty? (get-in current-state state/tests-path)))
-      (when (and (ld/feature-on? "web-notifications") (notifs/notifications-granted) (get-in current-state state/web-notifs-on))
-        (notifs/notify-build-done build))
+      (when (and (ld/feature-on? "web-notifications") (notifications/notifications-granted) (get-in current-state state/web-notifications-on))
+        (notifications/notify-build-done build))
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 
 (defn maybe-set-containers-filter!

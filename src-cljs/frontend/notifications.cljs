@@ -1,4 +1,4 @@
-(ns frontend.notifs
+(ns frontend.notifications
   (:require [frontend.utils :as utils :include-macros true]
             [frontend.state :as state]))
 
