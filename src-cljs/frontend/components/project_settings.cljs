@@ -236,7 +236,7 @@
                    (> parallelism 1))
               ;; OS X projects should not use parallelism. We don't have the
               ;; ability to parallelise XCode tests yet and have a limited
-              ;; number of available OSX VMs. Setting parallelism for OS X
+              ;; number of available OS X VMs. Setting parallelism for OS X
               ;; wastes VMs, reducing the number of builds we can run.
               [:div.insufficient-plan
                "OS X projects are currently limited to 1x parallelism."]
@@ -1725,7 +1725,7 @@
               "Upload Key"]]
             [:hr.divider]
             [:div.info "The following code-signing identities will be added to the system keychain when your build
-                        begins, and will be available to sign iOS and OSX apps. For more information about code-signing
+                        begins, and will be available to sign iOS and OS X apps. For more information about code-signing
                         on CircleCI see our "
              [:a
               {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
