@@ -343,28 +343,29 @@
         "Don't send me emails."]]]]]])
 
 (defn web-notifications [owner web-notifications-on granted]
-  (let [granted-is (fn [something] (= granted something))
-        granted (granted-is "granted")
-        disabled (not granted)
-        checked-on (cond
-                     disabled false
-                     (nil? web-notifications-on) false
-                     :else web-notifications-on)
-        checked-off (not checked-on)]
+  (let [disabled? (not= granted "granted")]
     [:div.card
      [:div.header
       [:h2
        "Web Notifications"]]
      (if (notifications/notifiable-browser)
        [:div.body
-        (when (granted-is "denied")
-          [:div.section
-           "It looks like you've denied CircleCI access to send you web notifications. Before you can change your web notification preferences please "
-           [:a {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"} "turn on permissions for your browser."]])
-        (when (granted-is "default")
-          [:div.section
-           "You haven't given CircleCI access to notify you through the browser — "
-           [:a {:href "javascript:void(0)", :on-click #(notifications/request-permission (fn [response] (utils/mlog "Notifications are now: " response) (when (notifications/notifications-granted) (raise! owner [:turn-notifications-on]))))} "click here to turn permissions on."]])
+        (case granted
+          "denied" [:div.section
+                    "It looks like you've denied CircleCI access to send you web notifications.
+                    Before you can change your web notification preferences please "
+                    [:a {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"}
+                     "turn on permissions for your browser."]]
+          "default" [:div.section
+                     "You haven't given CircleCI access to notify you through the browser — "
+                     [:a {:href "javascript:void(0)",
+                          :on-click #(notifications/request-permission
+                                       (fn [response]
+                                         (utils/mlog "Notifications are now: " response)
+                                         ;; (when (= response "granted") (raise! owner [:set-web-notifs {:on true}]))))}
+                                         (when (= response "granted") (raise! owner [:set-web-notifs {:on true}]))))}
+                      "click here to turn permissions on."]]
+          nil)
         [:div.section
          [:form
           [:div.radio
@@ -372,20 +373,20 @@
             [:input
              {:name "web_notif_pref" ,
               :type "radio"
-              :checked checked-on
-              :on-change #(raise! owner [:turn-notifications-on])
-              :disabled disabled}]
-            (when disabled [:span [:i.material-icons.lock "lock" ] " "])
+              :checked web-notifications-on
+              :on-change #(raise! owner [:set-web-notifs {:on true}])
+              :disabled disabled?}]
+            (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             "Show me notifications when a build finishes"]]
           [:div.radio
            [:label
             [:input
              {:name "web_notif_pref" ,
               :type "radio"
-              :checked checked-off
-              :on-change #(raise! owner [:turn-notifications-off])
-              :disabled disabled}]
-            (when disabled [:span [:i.material-icons.lock "lock" ] " "])
+              :checked (not web-notifications-on)
+              :on-change #(raise! owner [:set-web-notifs {:on false}])
+              :disabled disabled?}]
+            (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             " Don't show me notifications when a build finishes"]]]]]
        ;; -- If browser doesn't support the Web Notifications API:
        [:div.body

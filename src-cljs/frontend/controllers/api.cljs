@@ -232,7 +232,12 @@
     (frontend.favicon/set-color! (build-model/favicon-color build))
     (when (and (build-model/finished? build)
                (empty? (get-in current-state state/tests-path)))
-      (when (and (ld/feature-on? "web-notifications") (notifications/notifications-granted) (get-in current-state state/web-notifications-on))
+      (when (and (notifications/notifications-granted)
+                 (ld/feature-on? "web-notifications")
+                 ;; TODO for V2 notifications we should consider reading from localstorage directly because
+                 ;; storing it in state gets it out of sync with localstorage — or maybe this is reasonable
+                 ;; behavior for our app?
+                 (get-in current-state state/web-notifications-on))
         (notifications/notify-build-done build))
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 
