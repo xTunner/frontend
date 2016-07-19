@@ -18,7 +18,7 @@
   (->> users
        (filter (fn [u] (and (:email u)
                             (:checked u))))
-       ;; select both login and id (GitHub) and username and uuid (Bitbucket)
+       ;; select all of login and id (GitHub) and username and uuid (Bitbucket)
        (map (fn [u] (select-keys u [:email :login :username :id :uuid])))
        vec))
 
@@ -106,7 +106,7 @@
             [:p "You just got your first green build! Invite some of your collaborators below and never test alone!"]]]
           (om/build invites users {:opts opts})])))))
 
-(defn side-item [org vcs-type owner]
+(defn side-item [org owner]
   (reify
     om/IRender
     (render [_]
@@ -138,7 +138,8 @@
               [:h3 "Invite your " (:org invite-data) " teammates"]
               (om/build invites
                         (remove :circle_member (:github-users invite-data))
-                        {:opts {:org-name (:org invite-data)}}) ]
+                        {:opts {:vcs_type (:vcs_type invite-data)
+                                :org-name (:org invite-data)}}) ]
              [:div.org-invites
               [:h3 "Invite your teammates"]
               [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
