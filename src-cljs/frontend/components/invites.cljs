@@ -7,6 +7,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.routes :as routes]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]])
   (:import [goog Uri]))
@@ -104,13 +105,15 @@
             [:p "You just got your first green build! Invite some of your collaborators below and never test alone!"]]]
           (om/build invites users {:opts opts})])))))
 
-(defn side-item [org owner]
+(defn side-item [org vcs-type owner]
   (reify
     om/IRender
     (render [_]
       (html
         [:li.side-item
-         [:a {:href (str "/invite-teammates/organization/" (:login org))}
+         [:a {:href (str "/invite-teammates/organization/"
+                         (routes/long-to-short-vcs (:vcs_type org))
+                         "/" (:login org))}
           [:img {:src (gh-utils/make-avatar-url org :size 25)
                  :width 25 :height 25}]
           [:div.orgname (:login org)]]]))))
