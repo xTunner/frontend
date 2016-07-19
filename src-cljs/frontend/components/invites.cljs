@@ -18,7 +18,8 @@
   (->> users
        (filter (fn [u] (and (:email u)
                             (:checked u))))
-       (map (fn [u] (select-keys u [:email :login :id])))
+       ;; select both login and id (GitHub) and username and uuid (Bitbucket)
+       (map (fn [u] (select-keys u [:email :login :username :id :uuid])))
        vec))
 
 (defn invite-tile [user owner]
@@ -70,10 +71,10 @@
            [:button.btn.btn-success (let [users-to-invite (invitees users)]
                                       {:data-success-text "Sent"
                                        :on-click #(raise! owner [:invited-github-users
-                                                                 (merge {:invitees users-to-invite}
+                                                                 (merge {:invitees users-to-invite
+                                                                         :vcs_type (:vcs_type opts)}
                                                                         (if (:project-name opts)
-                                                                          {:project-name (:project-name opts)
-                                                                           :vcs-type (:vcs-type opts)}
+                                                                          {:project-name (:project-name opts)}
                                                                           {:org-name (:org-name opts)}))])})
 
             "Send Invites "
@@ -84,8 +85,8 @@
     om/IWillMount
     (will-mount [_]
       (let [project-name (:project-name opts)
-            vcs-type (:vcs-type opts)]
-        (raise! owner [:load-first-green-build-github-users {:vcs-type vcs-type
+            vcs_type (:vcs_type opts)]
+        (raise! owner [:load-first-green-build-github-users {:vcs_type vcs_type
                                                              :project-name project-name}])))
     om/IRender
     (render [_]
