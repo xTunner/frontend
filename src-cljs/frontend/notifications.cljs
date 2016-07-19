@@ -15,8 +15,11 @@
                (.then promise-fn))))
 
 ;; Some notes about properties
-;; The title should be 32 characters MAX, note that if using system default, only 22 chars are visible on hover (because of resulting UI), so keep critical information 22 chars
-;; The body property should be a MAX of 42 characters (this is assuming a default text size with San Francisco, the default system font on macOS)
+;; - The title should be 32 characters MAX, note that if using system default,
+;;   only 22 chars are visible on hover (because of resulting UI), so keep
+;;   critical information 22 chars
+;; - The body property should be a MAX of 42 characters (this is assuming a
+;;   default text size with San Francisco, the default system font on macOS)
 (defn notify [title properties]
   (new js/Notification
        title

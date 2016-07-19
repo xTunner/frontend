@@ -362,7 +362,6 @@
                           :on-click #(notifications/request-permission
                                        (fn [response]
                                          (utils/mlog "Notifications are now: " response)
-                                         ;; (when (= response "granted") (raise! owner [:set-web-notifs {:on true}]))))}
                                          (when (= response "granted") (raise! owner [:set-web-notifs {:on true}]))))}
                       "click here to turn permissions on."]]
           nil)
