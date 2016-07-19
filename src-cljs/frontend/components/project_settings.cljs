@@ -8,6 +8,7 @@
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project-common]
             [frontend.config :as config]
@@ -1592,7 +1593,7 @@
             (om/build common/flashes error-message)
             (om/build body-component body-params)]]]]))))
 
-(defn p12-upload-form [{:keys [project-name vcs-type]} owner]
+(defn p12-upload-form [{:keys [project-name vcs-type after-submit]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -1604,12 +1605,7 @@
 
     om/IRenderState
     (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
-      (let [close-modal-fn #(.modal ((aget js/window "$") "#p12-upload-modal") "hide")
-            clear-form-fn #(om/set-state! owner {:description nil
-                                                 :password nil
-                                                 :file-name nil
-                                                 :file-content nil})
-            file-selected-fn (fn [file]
+      (let [file-selected-fn (fn [file]
                                (om/set-state! owner :file-name (aget file "name"))
                                (doto (js/FileReader.)
                                  (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
@@ -1658,12 +1654,12 @@
                             :type "submit"
                             :disabled (not (and file-content description))
                             :on-click #(raise! owner [:upload-p12 {:project-name project-name
-                                                                  :vcs-type vcs-type
-                                                                  :description description
-                                                                  :password (or password "")
-                                                                  :file-content (base64/encodeString file-content)
-                                                                  :file-name file-name
-                                                                  :on-success (comp clear-form-fn close-modal-fn)}])}])]])))))
+                                                                   :vcs-type vcs-type
+                                                                   :description description
+                                                                   :password (or password "")
+                                                                   :file-content (base64/encodeString file-content)
+                                                                   :file-name file-name
+                                                                   :on-success after-submit}])}])]])))))
 
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
@@ -1691,7 +1687,7 @@
                                (icon/delete)
                                #(raise! owner [:delete-p12 (select-keys row [:project-name :vcs-type :id])])))}]}))))
 
-(defn no-keys-empty-state [{:keys [project-name]} owner]
+(defn no-keys-empty-state [{:keys [project-name add-key]} owner]
   (reify
     om/IRender
     (render [_]
@@ -1703,44 +1699,49 @@
           [:span " has no "]
           [:span.highlight "Apple Code Signing Identities"]
           [:span "  yet"]]
-         [:a.btn.upload-key-button {:data-target "#p12-upload-modal"
-                                    :data-toggle "modal"}
+         [:a.btn.upload-key-button {:on-click add-key}
           "Upload Key"]
          [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [{:keys [project osx-keys]} project-data
             project-name (vcs-url/project-name (:vcs_url project))
             vcs-type (project-model/vcs-type project)]
         (html
-          [:section.code-signing-page {:data-component `code-signing}
-           [:article
-            [:div.header
-             [:div.title "Apple Code Signing Keys"]
-             [:a.btn.upload-key-button {:data-target "#p12-upload-modal"
-                                        :data-toggle "modal"}
-              "Upload Key"]]
-            [:hr.divider]
-            [:div.info "The following code-signing identities will be added to the system keychain when your build
+         [:section.code-signing-page {:data-component `code-signing}
+          [:article
+           [:div.header
+            [:div.title "Apple Code Signing Keys"]
+            [:a.btn.upload-key-button {:on-click #(om/set-state! owner :show-modal? true)}
+             "Upload Key"]]
+           [:hr.divider]
+           [:div.info "The following code-signing identities will be added to the system keychain when your build
                         begins, and will be available to sign iOS and OS X apps. For more information about code-signing
                         on CircleCI see our "
-             [:a
-              {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
-              "code-signing documentation."]]
-            (if-not (empty? osx-keys)
-              (om/build p12-key-table {:rows (->> osx-keys
-                                                  (map (partial merge {:project-name project-name
-                                                                       :vcs-type vcs-type})))})
-              (om/build no-keys-empty-state {:project-name project-name}))
-            (om/build modal {:id "p12-upload-modal"
-                             :title "Upload a New Apple Code Signing Key"
-                             :body-component p12-upload-form
-                             :body-params {:project-name project-name
-                                           :vcs-type vcs-type}
-                             :error-message error-message})]])))))
+            [:a
+             {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
+             "code-signing documentation."]]
+           (if-not (empty? osx-keys)
+             (om/build p12-key-table {:rows (->> osx-keys
+                                                 (map (partial merge {:project-name project-name
+                                                                      :vcs-type vcs-type})))})
+             (om/build no-keys-empty-state {:project-name project-name
+                                            :add-key #(om/set-state! owner :show-modal? true)}))
+           (let [close-fn #(om/set-state! owner :show-modal? false)]
+             (modal/modal {:shown? show-modal?
+                           :title "Upload a New Apple Code Signing Key"
+                           :body (om/build p12-upload-form
+                                           {:project-name project-name
+                                            :vcs-type vcs-type
+                                            :after-submit close-fn})
+                           :close-fn close-fn
+                           :error-message error-message}))]])))))
 
 (defn project-settings [data owner]
   (reify
