@@ -1515,4 +1515,4 @@
 
 (defmethod control-event :set-web-notifications
   [_ _ {:keys [enabled?]} state]
-  (assoc-in state state/web-notifications-enabled? enabled?))
+  (assoc-in state state/web-notifications-enabled?-path enabled?))

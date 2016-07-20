@@ -358,7 +358,8 @@
                      "turn on permissions for your browser."]]
           "default" [:div.section
                      "You haven't given CircleCI access to notify you through the browser — "
-                     [:a {:on-click #(notifications/request-permission
+                     [:a {:href "javascript:void(0)"
+                          :on-click #(notifications/request-permission
                                        (fn [response]
                                          (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true}]))))}
                       "click here to turn permissions on."]]
@@ -453,7 +454,7 @@
     (render [_]
       (let [user (get-in app state/user-path)
             projects (get-in app state/projects-path)
-            notifications-enabled? (get-in app state/web-notifications-enabled?)]
+            notifications-enabled? (get-in app state/web-notifications-enabled?-path)]
         (html
          [:div#settings-notification
           [:legend "Notification Settings"]
@@ -477,4 +478,4 @@
          [:div#account-settings
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled?]))]])))))
+           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled?-path]))]])))))

@@ -237,7 +237,7 @@
                  ;; TODO for V2 notifications we should consider reading from localstorage directly because
                  ;; storing it in state gets it out of sync with localstorage — or maybe this is reasonable
                  ;; behavior for our app?
-                 (get-in current-state state/web-notifications-enabled?))
+                 (get-in current-state state/web-notifications-enabled?-path))
         (notifications/notify-build-done build))
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 
