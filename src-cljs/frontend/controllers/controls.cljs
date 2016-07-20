@@ -1513,6 +1513,6 @@
   [_ _ _ state]
   (assoc-in state state/dismissed-trial-update-banner true))
 
-(defmethod control-event :set-web-notifs
-  [_ _ {:keys [on]} state]
-  (assoc-in state state/web-notifications-on on))
+(defmethod control-event :set-web-notifications
+  [_ _ {:keys [enabled?]} state]
+  (assoc-in state state/web-notifications-enabled? enabled?))

@@ -214,7 +214,7 @@
 (def dismissed-osx-command-change-banner-path (conj browser-settings-path :dismissed-osx-command-change-banner))
 (def dismissed-trial-offer-banner (conj browser-settings-path :dismissed-trial-offer-banner))
 (def dismissed-trial-update-banner (conj browser-settings-path :dismissed-trial-update-banner))
-(def web-notifications-on (conj browser-settings-path :web-notifications-on))
+(def web-notifications-enabled? (conj browser-settings-path :web-notifications-enabled?))
 
 (def add-projects-settings-path (conj settings-path :add-projects))
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))

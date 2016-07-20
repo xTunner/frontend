@@ -2,17 +2,17 @@
   (:require [frontend.utils :as utils :include-macros true]
             [frontend.state :as state]))
 
-(defn notifiable-browser [] (exists? (.-Notification js/window)))
+(defn notifiable-browser? [] (exists? (.-Notification js/window)))
 (defn notifications-permission [] (.-permission js/Notification))
-(defn notifications-granted  [] (= (notifications-permission) "granted"))
+(defn notifications-granted?  [] (= (notifications-permission) "granted"))
 
 (defn request-permission
   ([]
    (request-permission (fn [result] (utils/mlog "Notifications are now: " result))))
-  ([promise-fn]
+  ([callback]
      (-> js/Notification
                (.requestPermission)
-               (.then promise-fn))))
+               (.then callback))))
 
 ;; Some notes about properties
 ;; - The title should be 32 characters MAX, note that if using system default,
@@ -35,9 +35,9 @@
         project (:reponame build)
         build-num (:build_num build)
         properties (case status
-                     "no_tests" {:icon (status-icon-path "passed") :body "Looks like there were no tests to run."}
                      "success" {:icon (status-icon-path "passed") :body "Yay, your tests passed!"}
                      "fixed" {:icon (status-icon-path "passed") :body "Yay, all your tests are fixed!"}
+                     "no_tests" {:icon (status-icon-path "failed") :body "Looks like there were no tests to run."}
                      "failed" {:icon (status-icon-path "failed") :body "Looks like some tests failed."}
                      "infrastructure_fail" {:icon (status-icon-path "failed") :body "Darn, something went wrong."})]
-    (notify (str project " #"build-num) (merge properties {:data build}))))
+    (notify (str project " #" build-num) (merge properties {:data build}))))
