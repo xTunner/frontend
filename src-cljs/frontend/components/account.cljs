@@ -8,10 +8,12 @@
             [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
+            [frontend.notifications :as notifications]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -318,7 +320,7 @@
       [:div.radio
        [:label
         [:input
-         {:name "email_pref" ,
+         {:name "email_pref"
           :type "radio"
           :checked (= email-pref "all")
           :on-change (partial handle-email-notification-change owner "all")}]
@@ -326,7 +328,7 @@
       [:div.radio
        [:label
         [:input
-         {:name "email_pref" ,
+         {:name "email_pref"
           :type "radio"
           :checked (= email-pref "smart")
           :on-change (partial handle-email-notification-change owner "smart")}]
@@ -334,11 +336,59 @@
       [:div.radio
        [:label
         [:input
-         {:name "email_pref" ,
+         {:name "email_pref"
           :type "radio"
           :checked (= email-pref "none")
           :on-change (partial handle-email-notification-change owner "none")}]
         "Don't send me emails."]]]]]])
+
+(defn web-notifications [owner web-notifications-enabled? granted]
+  (let [disabled? (not= granted "granted")]
+    [:div.card
+     [:div.header
+      [:h2
+       "Web Notifications"]]
+     (if (notifications/notifiable-browser?)
+       [:div.body
+        (case granted
+          "denied" [:div.section
+                    "It looks like you've denied CircleCI access to send you web notifications.
+                    Before you can change your web notification preferences please "
+                    [:a {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"}
+                     "turn on permissions for your browser."]]
+          "default" [:div.section
+                     "You haven't given CircleCI access to notify you through the browser — "
+                     [:a {:href "javascript:void(0)"
+                          :on-click #(notifications/request-permission
+                                       (fn [response]
+                                         (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true}]))))}
+                      "click here to turn permissions on."]]
+          nil)
+        [:div.section
+         [:form
+          [:div.radio
+           [:label
+            [:input.radio-circle
+             {:name "web_notif_pref"
+              :type "radio"
+              :checked web-notifications-enabled?
+              :on-change #(raise! owner [:set-web-notifications {:enabled? true}])
+              :disabled disabled?}]
+            (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
+            [:span.label-contents " Show me notifications when a build finishes"]]]
+          [:div.radio
+           [:label
+            [:input.radio-circle
+             {:name "web_notif_pref"
+              :type "radio"
+              :checked (not web-notifications-enabled?)
+              :on-change #(raise! owner [:set-web-notifications {:enabled? false}])
+              :disabled disabled?}]
+            (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
+            [:span.label-contents " Don't show me notifications when a build finishes"]]]]]]
+       ;; -- If browser doesn't support the Web Notifications API:
+       [:div.body
+        [:div.section "You browser doesn't support web notifications."]])]))
 
 (defn granular-email-prefs [{:keys [projects user] :as x} owner]
   (let [followed-orgs (into (sorted-set-by (fn [[x-vcs-type x-name]
@@ -403,13 +453,15 @@
     om/IRender
     (render [_]
       (let [user (get-in app state/user-path)
-            projects (get-in app state/projects-path)]
+            projects (get-in app state/projects-path)
+            notifications-enabled? (get-in app state/web-notifications-enabled?-path)]
         (html
          [:div#settings-notification
           [:legend "Notification Settings"]
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
-          (om/build granular-email-prefs {:projects projects :user user})])))))
+          (om/build granular-email-prefs {:projects projects :user user})
+          (when (ld/feature-on? "web-notifications") (web-notifications owner notifications-enabled? (notifications/notifications-permission)))])))))
 
 (defn account [app owner]
   (reify
@@ -426,4 +478,4 @@
          [:div#account-settings
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path]))]])))))
+           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled?-path]))]])))))

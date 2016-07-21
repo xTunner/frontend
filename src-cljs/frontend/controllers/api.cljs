@@ -4,12 +4,14 @@
             [frontend.api.path :as api-path]
             [frontend.async :refer [put! raise!]]
             [frontend.components.forms :refer [release-button!]]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
+            [frontend.notifications :as notifications]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -230,6 +232,13 @@
     (frontend.favicon/set-color! (build-model/favicon-color build))
     (when (and (build-model/finished? build)
                (empty? (get-in current-state state/tests-path)))
+      (when (and (notifications/notifications-granted?)
+                 (ld/feature-on? "web-notifications")
+                 ;; TODO for V2 notifications we should consider reading from localstorage directly because
+                 ;; storing it in state gets it out of sync with localstorage — or maybe this is reasonable
+                 ;; behavior for our app?
+                 (get-in current-state state/web-notifications-enabled?-path))
+        (notifications/notify-build-done build))
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 
 (defn maybe-set-containers-filter!
