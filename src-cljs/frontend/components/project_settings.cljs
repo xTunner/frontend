@@ -550,6 +550,14 @@
                               :blurb [:p
                                       "By default, we will build all the commits for this project. Once turned on, we will only build branches "
                                       "that have associated pull requests open. Note: For your default branch, we will always build all commits."]}))
+            ;; TODO remove the LD flag once shipped
+            (when (feature/enabled? :autocancel-builds)
+              (describe-flag {:flag :autocancel-builds
+                              :title "Auto-cancel builds"
+                              :blurb [:p
+                                      "With the exception of your default branch, we will automatically cancel any queued or running builds on "
+                                      "a branch when a newer build is triggered on that same branch. This feature will only apply to builds "
+                                      "triggered by pushes to GitHub."]}))
             (describe-flag {:flag :osx-code-signing-enabled
                             :title "Code Signing Support"
                             :blurb [:p
