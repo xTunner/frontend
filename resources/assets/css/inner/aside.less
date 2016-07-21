@@ -27,10 +27,9 @@
 
 .aside-left-nav {
   width: @aside-nav-width;
-  background: @gray;
+  background: @top-bar-color;
   overflow: visible;
-  // TODO -ac Make this into a shared variable @top-bar-height !!!
-  margin-top: 60px;
+  margin-top: @top-bar-height;
 
   // Because this div can include elements which stretch across the top and the
   // side of the page, it tends to cover the page. Therefore, we need to make it
@@ -436,7 +435,6 @@
   .flex(0 1 @tile);
   .flexy(center, center, column);
 
-  opacity: 0.8;
   background: transparent;
   white-space: nowrap;
   transition: (@aside-transition-speed / 2) ease-in-out;
