@@ -1,0 +1,72 @@
+// TODO -ac Removeeee thisssss lol
+// .top-bar {
+//     .flex-wrapper {
+//         display: -webkit-flex;
+//         display: flex;
+//         -webkit-flex-direction: row;
+//         flex-direction: row;
+//     }
+//     color: @whiten;
+//     background-color: @grayDark;
+//     width: 100%;
+//     // height: @tile;
+//     min-height: @tile;
+//     max-height: @tile;
+//     position: flex;
+//     // position: absolute;
+//     .logomark i.ico svg {
+//         height: @tile;
+//         width: (@tile / 2);
+//         // fill: @black;
+//         fill: @white;
+//     }
+// }
+//
+// .not-top-bar {
+//     display: flex;
+// }
+
+/* Dropdown Button */
+.dropbtn {
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    display: block;
+    height: @tile;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+
+    &:hover {
+        .dropdown-content {
+            display: block;
+        }
+    }
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    // min-width: 160px;
+    width: 100%;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    // Make content float above rest of the page
+    z-index: 1;
+
+    a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+
+        &:hover {
+            background-color: #F1F1F1;
+        }
+    }
+}

@@ -122,7 +122,7 @@
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
               (when (and inner? logged-in?)
-                #_(om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
+                (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
               (om/build page app)])))))))
 

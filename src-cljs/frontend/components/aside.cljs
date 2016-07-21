@@ -455,7 +455,7 @@
         (html
           [:nav.aside-left-nav
 
-           [:a.aside-item.logo {:title "Dashboard"
+           #_[:a.aside-item.logo {:title "Dashboard"
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href (routes/v1-dashboard-path {})}
