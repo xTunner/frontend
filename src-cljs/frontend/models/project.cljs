@@ -127,12 +127,11 @@
 (defn id [project]
   (:vcs_url project))
 
-;; I was confused, on the backend, we now default to oss if
-;; github-info shows it to be public and no one sets the flag
-;; explicitly to false. But the read-api always delivers the frontend
-;; a feature_flags oss set to true for those cases.
+;; Sometimes the backend returns a map of feature_flags,
+;; and sometimes it returns :oss directly on the project.
 (defn oss? [project]
-  (get-in project [:feature_flags :oss]))
+  (or (:oss project)
+      (get-in project [:feature_flags :oss])))
 
 (defn osx? [project]
   (get-in project [:feature_flags :osx]))
@@ -194,4 +193,5 @@
   (not (osx? project)))
 
 (defn parallelism [project]
-  (:parallel project))
+  (or (:parallel project)
+      1))

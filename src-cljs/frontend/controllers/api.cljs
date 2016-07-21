@@ -922,3 +922,8 @@
 (defmethod api-event [:org-settings-normalized :success]
   [target message status {:keys [resp]} state]
   (update-in state [:organization/by-vcs-type-and-name [(:vcs_type resp) (:name resp)]] merge resp))
+
+(defmethod api-event [:org-plan-normalized :success]
+  [target message status {:keys [resp]} state]
+  (let [org (:org resp)]
+    (update-in state [:organization/by-vcs-type-and-name [(:vcs_type org) (:name org)]] merge {:plan resp})))

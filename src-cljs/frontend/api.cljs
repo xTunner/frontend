@@ -57,6 +57,19 @@
              :context {:org-name org-name
                        :vcs-type vcs-type}))
 
+(defn get-org-plan-normalized
+  "Issues an API call for the org's plan The plan will be stored in a
+  normalized table at the root of the app state."
+  [org-name vcs-type api-ch]
+  (ajax/ajax :get
+             (gstring/format "/api/v1.1/organization/%s/%s/plan"
+                             vcs-type
+                             org-name)
+             :org-plan-normalized
+             api-ch
+             :context {:org-name org-name
+                       :vcs-type vcs-type}))
+
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
              :user-plans
