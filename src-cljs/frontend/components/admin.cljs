@@ -72,20 +72,7 @@
     (render [_]
       (html
         [:section {:style {:padding-left "10px"}}
-         [:h1 "CircleCI Version Info"]
-         [:p
-          "You are running "
-          [:b
-           "CircleCI "
-           (if-let [enterprise-version (get-in app [:render-context :enterprise_version])]
-             (list
-              "Enterprise "
-              enterprise-version)
-             (list
-              "in "
-              (:environment app)))]
-          "."]
-
+         [:h1 "Active Users"]
          [:p (current-seat-usage (get-in app (conj state/license-path :seat_usage))
                                  (get-in app (conj state/license-path :seats)))
           " You can deactivate users in "
