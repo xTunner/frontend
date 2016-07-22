@@ -1736,12 +1736,13 @@
            (let [close-fn #(om/set-state! owner :show-modal? false)]
              (modal/modal {:shown? show-modal?
                            :title "Upload a New Apple Code Signing Key"
-                           :body (om/build p12-upload-form
-                                           {:project-name project-name
-                                            :vcs-type vcs-type
-                                            :after-submit close-fn})
-                           :close-fn close-fn
-                           :error-message error-message}))]])))))
+                           :body [:div
+                                  (om/build common/flashes error-message)
+                                  (om/build p12-upload-form
+                                            {:project-name project-name
+                                             :vcs-type vcs-type
+                                             :after-submit close-fn})]
+                           :close-fn close-fn}))]])))))
 
 (defn project-settings [data owner]
   (reify
