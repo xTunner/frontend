@@ -852,26 +852,27 @@
                :context {:project-name project-name})))
 
 (defmethod post-control-event! :invited-github-users
-  [target message {:keys [vcs_type project-name org-name invitees]} previous-state current-state]
-  (let [project-vcs-type (or vcs_type "github")
-        org-vcs-type (or vcs_type "github")
-        context (if project-name
-                  ;; TODO: non-hackish way to indicate the type of invite
-                  {:project project-name :first_green_build true}
-                  {:org org-name})]
-    (button-ajax :post
-                 (if project-name
-                   (api-path/project-users-invite project-vcs-type project-name)
-                   (api-path/organization-invite org-vcs-type org-name))
-                 :invite-github-users
-                 (get-in current-state [:comms :api])
-                 :context context
-                 :params invitees
-                 :events {:success #(analytics/track {:event-type :teammates-invited
-                                                      :current-state current-state
-                                                      :properties {:vcs-type vcs_type
-                                                                   :invitees invitees
-                                                                   :invitee-count (count invitees)}})})))
+  [target message {:keys [vcs-type project-name org-name invitees]} previous-state current-state]
+  (if (or (nil? vcs-type) (= "github" vcs-type))
+    (let [project-vcs-type (or vcs-type "github")
+          org-vcs-type "github"
+          context (if project-name
+                    ;; TODO: non-hackish way to indicate the type of invite
+                    {:project project-name :first_green_build true}
+                    {:org org-name})]
+      (button-ajax :post
+                   (if project-name
+                     (api-path/project-users-invite project-vcs-type project-name)
+                     (api-path/organization-invite org-vcs-type org-name))
+                   :invite-github-users
+                   (get-in current-state [:comms :api])
+                   :context context
+                   :params invitees
+                   :events {:success #(analytics/track {:event-type :teammates-invited
+                                                        :current-state current-state
+                                                        :properties {:vcs-type :github
+                                                                     :invitees invitees
+                                                                     :invitee-count (count invitees)}})}))))
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
