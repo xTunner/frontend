@@ -70,8 +70,10 @@
       &.modal-enter {
         @bg-fade-in-duration: 0.2s;
 
+        // When the modal enters, first fade in the dark background...
         transition: background-color @bg-fade-in-duration linear;
 
+        // ...then fly in the modal box.
         > .box {
           transition: transform 0.2s ease-out @bg-fade-in-duration;
         }
@@ -87,8 +89,10 @@
       }
 
       &.modal-leave {
+        // When the modal leaves, fade out the background...
         transition: background-color 0.2s linear;
 
+        // ...and fly out the modal box simultaneously.
         > .box {
           transition: transform 0.2s ease-in;
         }
