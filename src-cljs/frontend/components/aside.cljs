@@ -515,14 +515,16 @@
 
             [:hr]
 
-           [:a.aside-item (open-ext {:title "Documentation"
+           ;; TODO -ac Remove entirely
+            #_[:a.aside-item (open-ext {:title "Documentation"
                                      :data-placement "right"
                                      :data-trigger "hover"
                                      :href "https://circleci.com/docs/"})
               [:i.material-icons "description"]
               [:div.nav-label "Docs"]]
 
-            [:a.aside-item (merge (common/contact-support-a-info owner)
+           ;; TODO -ac Remove entirely
+            #_ [:a.aside-item (merge (common/contact-support-a-info owner)
                                  {:title "Support"
                                   :data-placement "right"
                                   :data-trigger "hover"
@@ -530,7 +532,8 @@
               [:i.material-icons "chat"]
               [:div.nav-label "Support"]]
 
-            (when-not (config/enterprise?)
+           ;; TODO -ac Remove entirely
+            #_(when-not (config/enterprise?)
               [:a.aside-item (open-ext {:data-placement "right"
                                         :data-trigger "hover"
                                         :title "Changelog"
@@ -548,7 +551,8 @@
                 [:i.material-icons "build"]
                 [:div.nav-label "Admin"]])
 
-            [:a.aside-item.push-to-bottom {:data-placement "right"
+           ;; TODO -ac Remove entirely
+            #_ [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
                                            :title "Logout"
                                            :href "/logout"}
