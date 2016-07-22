@@ -7,6 +7,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.routes :as routes]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]])
   (:import [goog Uri]))
@@ -17,7 +18,8 @@
   (->> users
        (filter (fn [u] (and (:email u)
                             (:checked u))))
-       (map (fn [u] (select-keys u [:email :login :id])))
+       ;; select all of login and id (GitHub) and username and uuid (Bitbucket)
+       (map (fn [u] (select-keys u [:email :login :username :id :uuid])))
        vec))
 
 (defn invite-tile [user owner]
@@ -69,10 +71,10 @@
            [:button.btn.btn-success (let [users-to-invite (invitees users)]
                                       {:data-success-text "Sent"
                                        :on-click #(raise! owner [:invited-github-users
-                                                                 (merge {:invitees users-to-invite}
+                                                                 (merge {:invitees users-to-invite
+                                                                         :vcs_type (:vcs_type opts)}
                                                                         (if (:project-name opts)
-                                                                          {:project-name (:project-name opts)
-                                                                           :vcs-type (:vcs-type opts)}
+                                                                          {:project-name (:project-name opts)}
                                                                           {:org-name (:org-name opts)}))])})
 
             "Send Invites "
@@ -83,8 +85,8 @@
     om/IWillMount
     (will-mount [_]
       (let [project-name (:project-name opts)
-            vcs-type (:vcs-type opts)]
-        (raise! owner [:load-first-green-build-github-users {:vcs-type vcs-type
+            vcs_type (:vcs_type opts)]
+        (raise! owner [:load-first-green-build-github-users {:vcs_type vcs_type
                                                              :project-name project-name}])))
     om/IRender
     (render [_]
@@ -110,7 +112,9 @@
     (render [_]
       (html
         [:li.side-item
-         [:a {:href (str "/invite-teammates/organization/" (:login org))}
+         [:a {:href (str "/invite-teammates/organization/"
+                         (routes/long-to-short-vcs (:vcs_type org))
+                         "/" (:login org))}
           [:img {:src (gh-utils/make-avatar-url org :size 25)
                  :width 25 :height 25}]
           [:div.orgname (:login org)]]]))))
@@ -134,7 +138,8 @@
               [:h3 "Invite your " (:org invite-data) " teammates"]
               (om/build invites
                         (remove :circle_member (:github-users invite-data))
-                        {:opts {:org-name (:org invite-data)}}) ]
+                        {:opts {:vcs_type (:vcs_type invite-data)
+                                :org-name (:org invite-data)}}) ]
              [:div.org-invites
               [:h3 "Invite your teammates"]
               [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]

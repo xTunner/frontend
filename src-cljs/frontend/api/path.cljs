@@ -131,3 +131,8 @@
                   (base-project-url-path vcs-type)
                   project-name
                   build-num))
+
+(defn org-members [vcs-type org-name]
+  (gstring/format
+    "%s/members"
+    (base-organization-url-path vcs-type org-name)))
