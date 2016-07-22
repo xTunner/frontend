@@ -230,7 +230,7 @@
                                                               :first_green_build true}))
           (is (= (->> (nth args 4) (apply hash-map) :params) invitees)))))))
 
-(deftest post-control-event-invited-github-users-does-nothing-for-bb-projects
+(deftest post-control-event-invited-github-users-invites-users-for-bb-projects
   (let [calls (atom [])
         project-name "proj"
         vcs-type "bitbucket"
@@ -247,4 +247,5 @@
         (controls/post-control-event! {} :invited-github-users control-data {} current-state)
         (let [calls @calls
               args (-> calls first :args)]
-          (is (= (count calls) 0)))))))
+          (is (= (count calls) 1))
+          (is (= (->> (nth args 4) (apply hash-map) :params) invitees)))))))

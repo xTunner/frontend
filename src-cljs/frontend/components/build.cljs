@@ -154,7 +154,7 @@
             (when (build-model/display-build-invite build)
               (om/build invites/build-invites
                         (:invite-data data)
-                        {:opts {:vcs-type (vcs-url/vcs-type (:vcs_url build))
+                        {:opts {:vcs_type (vcs-url/vcs-type (:vcs_url build))
                                 :project-name (vcs-url/project-name (:vcs_url build))}}))]]])))))
 
 (defn container-result-icon [{:keys [name]} owner]
