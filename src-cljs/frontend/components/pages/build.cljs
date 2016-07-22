@@ -14,7 +14,7 @@
 
 (defn- ssh-available?
   "Always show the SSH button on Linux builds.
-  Only show the SSH button on OSX builds if the Launch Darkly flag is enabled.
+  Only show the SSH button on OS X builds if the Launch Darkly flag is enabled.
   https://en.wikipedia.org/wiki/Truth_table#Logical_implication
   osx -> launch-darkly"
   [project]

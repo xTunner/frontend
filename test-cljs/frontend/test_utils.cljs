@@ -106,7 +106,7 @@
                          :containers 4
                          :amount 200 ;; $2
                          }
-         :osx {:osx {:template {:name "OSX Starter"
+         :osx {:osx {:template {:name "OS X Starter"
                                 :id "osx-starter"
                                 :max-containers 1
                                 :free-containers 0
