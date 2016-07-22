@@ -35,9 +35,7 @@
 
     om/IRenderState
     (render-state [_ {:keys [rebuild-status]}]
-      (let [rebuild-args    {:build-id  (build-model/id build)
-                             :vcs-url   (:vcs_url build)
-                             :build-num (:build_num build)}
+      (let [rebuild-args (build-model/build-args build)
             update-status!  #(om/set-state! owner [:rebuild-status] %)
             rebuild!        #(raise! owner %)
             actions         {:rebuild
@@ -96,9 +94,7 @@
                [:a.cancel-build
                 {:data-loading-text "canceling"
                  :title             "cancel this build"
-                 :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                                  :vcs-url vcs-url
-                                                                  :build-num build-num}])}
+                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                 "cancel build"]))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))

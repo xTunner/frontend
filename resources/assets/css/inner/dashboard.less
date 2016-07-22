@@ -168,12 +168,12 @@
     text-decoration: none !important;
   }
 
-  .build-actions {
+  .build-action {
     .flexy(center);
     margin-top: 5px;
     vertical-align: middle;
 
-    .cancel-build {
+    > button {
       background: none;
       border: none;
       padding: 0;
@@ -181,7 +181,7 @@
 
       color: @grayDark;
 
-      .cancel-icon {
+      > img.button-icon {
         // Specific margins are a firefox hack:
         // Since it doesn't support flexbox properly in buttons,
         // we have to do a bit of manual positioning.
@@ -190,7 +190,7 @@
         width: 17px;
       }
 
-      .cancel-text {
+      > span.button-text {
         .flex(1 0 auto);
         text-align: left;
         font-size: @fontSizeSmaller;
