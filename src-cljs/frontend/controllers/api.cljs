@@ -230,8 +230,7 @@
   [target message status args previous-state current-state]
   (let [build (get-in current-state state/build-path)]
     (frontend.favicon/set-color! (build-model/favicon-color build))
-    (when (and (build-model/finished? build)
-               (empty? (get-in current-state state/tests-path)))
+    (when (build-model/finished? build)
       (when (and (notifications/notifications-granted?)
                  (ld/feature-on? "web-notifications")
                  ;; TODO for V2 notifications we should consider reading from localstorage directly because

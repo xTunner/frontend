@@ -75,7 +75,7 @@
        " ago"))
 
 (defn finished? [build]
-  (or (:stop_time build) (:canceled build)))
+  (= (:lifecycle build) "finished"))
 
 (defn in-usage-queue? [build]
   (and (not (finished? build))
