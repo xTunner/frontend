@@ -1602,74 +1602,6 @@
             (om/build common/flashes error-message)
             (om/build body-component body-params)]]]]))))
 
-(defn p12-upload-form [{:keys [project-name vcs-type after-submit]} owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:description nil
-       :password nil
-       :file-name nil
-       :file-content nil
-       :dragged-over? false})
-
-    om/IRenderState
-    (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
-      (let [file-selected-fn (fn [file]
-                               (om/set-state! owner :file-name (aget file "name"))
-                               (doto (js/FileReader.)
-                                 (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
-                                 (.readAsBinaryString file)))]
-        (html
-          [:div {:data-component `p12-upload-form}
-           [:div
-            [:label.label "Description"]
-            [:input.dumb.text-input
-             {:type "text" :value description
-              :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
-
-           [:div
-            [:label.label "Password (Optional)"]
-            [:input.dumb.text-input
-             {:type "password" :value password
-              :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
-
-           [:div
-            [:label.label "File"]
-            [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
-                                      :on-drag-over #(do (.stopPropagation %)
-                                                         (.preventDefault %)
-                                                         (om/set-state! owner :dragged-over? true))
-                                      :on-drag-leave #(om/set-state! owner :dragged-over? false)
-                                      :on-drop #(do (.stopPropagation %)
-                                                    (.preventDefault %)
-                                                    (om/set-state! owner :dragged-over? false)
-                                                    (file-selected-fn (aget % "dataTransfer" "files" 0)))}
-             (if file-name
-               [:div file-name]
-               [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
-             [:label.p12-file-input
-              [:input.hidden-p12-file-input {:type "file"
-                                             :on-change #(file-selected-fn (aget % "target" "files" 0))}]
-              [:i.material-icons "file_upload"]
-                "Choose file"]]]
-
-           [:hr]
-           [:div.buttons
-            (forms/managed-button
-              [:input.upload {:data-failed-text "Failed",
-                            :data-success-text "Uploaded",
-                            :data-loading-text "Uploading...",
-                            :value "Upload",
-                            :type "submit"
-                            :disabled (not (and file-content description))
-                            :on-click #(raise! owner [:upload-p12 {:project-name project-name
-                                                                   :vcs-type vcs-type
-                                                                   :description description
-                                                                   :password (or password "")
-                                                                   :file-content (base64/encodeString file-content)
-                                                                   :file-name file-name
-                                                                   :on-success after-submit}])}])]])))))
-
 (defn remove-key-button [row owner]
   (reify
     om/IInitState
@@ -1738,6 +1670,86 @@
           "Upload Key"]
          [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
 
+
+(defn p12-upload-modal [{:keys [show-modal? close-fn error-message project-name vcs-type]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:description nil
+       :password nil
+       :file-name nil
+       :file-content nil
+       :dragged-over? false})
+
+    om/IRenderState
+    (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
+      (let [file-selected-fn
+            (fn [file]
+              (om/set-state! owner :file-name (aget file "name"))
+              (doto (js/FileReader.)
+                (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
+                (.readAsBinaryString file)))
+
+            upload-form
+            (html
+             [:div {:data-component `p12-upload-form}
+              [:div
+               [:label.label "Description"]
+               [:input.dumb.text-input
+                {:type "text" :value description
+                 :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
+
+              [:div
+               [:label.label "Password (Optional)"]
+               [:input.dumb.text-input
+                {:type "password" :value password
+                 :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
+
+              [:div
+               [:label.label "File"]
+               [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
+                                         :on-drag-over #(do (.stopPropagation %)
+                                                            (.preventDefault %)
+                                                            (om/set-state! owner :dragged-over? true))
+                                         :on-drag-leave #(om/set-state! owner :dragged-over? false)
+                                         :on-drop #(do (.stopPropagation %)
+                                                       (.preventDefault %)
+                                                       (om/set-state! owner :dragged-over? false)
+                                                       (file-selected-fn (aget % "dataTransfer" "files" 0)))}
+                (if file-name
+                  [:div file-name]
+                  [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
+                [:label.p12-file-input
+                 [:input.hidden-p12-file-input {:type "file"
+                                                :on-change #(file-selected-fn (aget % "target" "files" 0))}]
+                 [:i.material-icons "file_upload"]
+                 "Choose file"]]]])
+
+            upload-button
+            (forms/managed-button
+             [:input.upload-p12-button
+              {:data-failed-text "Failed" ,
+               :data-success-text "Uploaded" ,
+               :data-loading-text "Uploading..." ,
+               :value "Upload" ,
+               :type "submit"
+               :disabled (not (and file-content description))
+               :on-click #(raise! owner [:upload-p12 {:project-name project-name
+                                                      :vcs-type vcs-type
+                                                      :description description
+                                                      :password (or password "")
+                                                      :file-content (base64/encodeString file-content)
+                                                      :file-name file-name
+                                                      :on-success close-fn}])}])]
+
+        (modal/modal-dialog {:shown? show-modal?
+                             :title "Upload a New Apple Code Signing Key"
+                             :body [:div
+                                    (om/build common/flashes error-message)
+                                    upload-form]
+                             :actions [upload-button]
+                             :close-fn close-fn})))))
+
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
     om/IInitState
@@ -1768,16 +1780,11 @@
                                                                       :vcs-type vcs-type})))})
              (om/build no-keys-empty-state {:project-name project-name
                                             :add-key #(om/set-state! owner :show-modal? true)}))
-           (let [close-fn #(om/set-state! owner :show-modal? false)]
-             (modal/modal-dialog {:shown? show-modal?
-                                  :title "Upload a New Apple Code Signing Key"
-                                  :body [:div
-                                         (om/build common/flashes error-message)
-                                         (om/build p12-upload-form
-                                                   {:project-name project-name
-                                                    :vcs-type vcs-type
-                                                    :after-submit close-fn})]
-                                  :close-fn close-fn}))]])))))
+           (om/build p12-upload-modal {:show-modal? show-modal?
+                                       :close-fn #(om/set-state! owner :show-modal? false)
+                                       :error-message error-message
+                                       :project-name project-name
+                                       :vcs-type vcs-type})]])))))
 
 (defn project-settings [data owner]
   (reify
