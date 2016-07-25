@@ -1,6 +1,6 @@
 (ns frontend.notifications
   (:require [frontend.utils :as utils :include-macros true]
-            [frontend.state :as state]))
+            [frontend.utils.launchdarkly :as ld]))
 
 (defn notifiable-browser? [] (exists? (.-Notification js/window)))
 (defn notifications-permission [] (.-permission js/Notification))
@@ -10,9 +10,9 @@
   ([]
    (request-permission (fn [result] (utils/mlog "Notifications are now: " result))))
   ([callback]
-     (-> js/Notification
-               (.requestPermission)
-               (.then callback))))
+   (-> js/Notification
+       (.requestPermission)
+       (.then callback))))
 
 ;; Some notes about properties
 ;; - The title should be 32 characters MAX, note that if using system default,
@@ -21,11 +21,13 @@
 ;; - The body property should be a MAX of 42 characters (this is assuming a
 ;;   default text size with San Francisco, the default system font on macOS)
 (defn notify [title properties]
-  (new js/Notification
-       title
-       (clj->js (merge
-                  properties
-                  {:lang "en"}))))
+  (when (and (notifications-granted?)
+             (ld/feature-on? "web-notifications"))
+    (new js/Notification
+         title
+         (clj->js (merge
+                    properties
+                    {:lang "en"})))))
 
 (defn status-icon-path [status-name]
   (utils/cdn-path (str "/img/email/"status-name"/icon@3x.png")))
