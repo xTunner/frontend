@@ -228,10 +228,13 @@
 
 (defmethod post-api-event! [:build-observables :success]
   [target message status args previous-state current-state]
-  (let [build (get-in current-state state/build-path)]
+  (let [build (get-in current-state state/build-path)
+        previous-build (get-in previous-state state/build-path)]
     (frontend.favicon/set-color! (build-model/favicon-color build))
-    (when (build-model/finished? build)
-      (when (and (notifications/notifications-granted?)
+    (when (and (build-model/finished? build)
+               (empty? (get-in current-state state/tests-path)))
+      (when (and (not (build-model/finished? previous-build))
+                 (notifications/notifications-granted?)
                  (ld/feature-on? "web-notifications")
                  ;; TODO for V2 notifications we should consider reading from localstorage directly because
                  ;; storing it in state gets it out of sync with localstorage — or maybe this is reasonable
