@@ -4,6 +4,7 @@
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
+            [frontend.components.topbar :as topbar]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.state :as state]
@@ -37,70 +38,7 @@
               avatar-url (gh-utils/make-avatar-url user :size 60)]
           [:main.app-main
            ;; TODO -ac Make this into top-bar.cljs
-           [:div.top-bar
-            [:div.bar
-             [:ul.header-nav.left
-              [:a.logo
-               [:div.logomark
-                (common/ico :logo)]]
-              ]
-             [:ul.header-nav.right
-              ;; TODO -ac Hmmm, v2, include the icons? [:i.material-icons "receipt"]
-              [:li.dropdown.header-nav-item
-               [:a.dropbtn.header-nav-link (common/contact-support-a-info owner) "Support"]
-               [:div.dropdown-content
-                [:a {:href "/docs/"}
-                 "Documentation (Self help?)"]
-                [:a {:href "#----idk?"}
-                 "Community Help (Uh, Diqus link?)"]
-                [:a {:href "#-----idk"}
-                 "Engineer Help (Gray this out if not paying??? What link?)"]]]
-
-              [:li.dropdown.header-nav-item
-               [:a.dropbtn.header-nav-link "What's New"]
-               [:div.dropdown-content
-                (when-not (config/enterprise?)
-                  [:a {:href "/changelog/"}
-                   "Changelog"])
-                [:a {:href "https://discuss.circleci.com/c/announcements"}
-                 "Infrastructure Announcements"]]]
-
-              [:li.dropdown.header-nav-item
-               [:a.dropbtn.header-nav-link
-                [:img.gravatar {:src avatar-url}]
-                ;; TODO -ac Ask Jared if this should be a hover or press?
-                [:i.material-icons "keyboard_arrow_down"]]
-               [:div.dropdown-content
-                [:a {:href "/logout/"}
-                 "Logout"]]]]]]
-           ;; TODO -ac REMOVE
-           ;; [:div.top-bar
-           ;;      [:div.flex-wrapper
-           ;;       [:span.logomark
-           ;;       {:style {:height "70px"
-           ;;                :width "35px"
-           ;;                :fill "black"}}
-           ;;       (common/ico :logo)]
-           ;;        [:span.dropdown
-           ;;         ;; [:buttom.dropbtn "(What's new?) | "]
-           ;;         [:span.dropbtn "(What's new?) | "]
-           ;;         [:div.dropdown-content
-           ;;          [:a {:href "#link-1"}
-           ;;           "Sort of long text?"]
-           ;;          [:a {:href "#link-2"}
-           ;;           "Link 2"]
-           ;;          [:a {:href "#link-3"}
-           ;;           "Link 3"]]]
-           ;;        [:div.dropdown
-           ;;         [:span.dropbtn "(Support) | "]
-           ;;         [:div.dropdown-content
-           ;;          [:a {:href "#link-1"}
-           ;;           "Link One"]
-           ;;          [:a {:href "#link-2"}
-           ;;           "Link 2"]
-           ;;          [:a {:href "#link-3"}
-           ;;           "Link 3"]]]
-           ;;         [:img.gravatar {:src avatar-url}]]]
+           (topbar/topbar owner avatar-url)
            (when show-inspector?
              ;; TODO inspector still needs lots of work. It's slow and it defaults to
              ;;     expanding all datastructures.

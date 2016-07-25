@@ -1,0 +1,137 @@
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    .bar {
+        display: flex;
+        display: -webkit-flex;
+        flex-direction: row;
+        background-color: @top-bar-color;
+        height: @top-bar-height;
+        justify-content: space-between;
+
+        .logo {
+            position: absolute;
+            top: 27%;
+            left: 34%;
+            // TOOD -ac Add these 50%'s and transform prop back in and move the
+            // logo out of .left to make it sit in the middle
+            // top: 50%;
+            // left: 50%;
+            // transform: translate(-50%, -50%);
+        }
+
+        .logomark {
+            .flexy(center, center);
+            .icon-style(@white, (@em * 2));
+            width: 60px;
+            height: @top-bar-height;
+            i {
+                opacity: 1;
+            }
+        }
+
+        .header-nav {
+            padding: 0;
+            list-style: none;
+
+            &.left, &.right {
+                position: absolute;
+            }
+
+            &.left {
+                left: 0;
+            }
+            &.right {
+                right: 0;
+                padding-right: 10px;
+            }
+        }
+
+        .header-nav-item {
+            float: left;
+
+            &:hover {
+                background-color: @grayDark;
+            }
+
+            &.border-right {
+                border-right: 1px solid #444;
+            }
+        }
+
+        .header-nav-link {
+            display: block;
+            padding: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 20px;
+            color: @white;
+        }
+
+        .name {
+            padding: 16px;
+        }
+
+        .gravatar {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid @white;
+        }
+    }
+}
+
+
+.dropbtn {
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    display: block;
+    height: @top-bar-height;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+
+    a {
+        text-decoration: none;
+    }
+
+    &:hover {
+        .dropdown-content {
+            display: block;
+            right: 0;
+        }
+    }
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: @whiten;
+    // min-width: 160px;
+
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+
+    a {
+        color: black;
+        padding: 12px 16px;
+        display: block;
+
+        &:hover {
+            background-color: #F1F1F1;
+        }
+    }
+
+    a.disabled {
+        color: @gray;
+        background-color: @grayLighter;
+        cursor: not-allowed;
+    }
+}
