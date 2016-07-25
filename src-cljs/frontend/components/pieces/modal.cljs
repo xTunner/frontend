@@ -6,7 +6,15 @@
             om.next)
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn dialog [{:keys [title body actions close-fn]}]
+(defn dialog
+  "A dialog box suitable for presenting in a modal.
+
+  :title    - Text that appears in the header of the dialog.
+  :body     - The body of the dialog.
+  :actions  - A sequence of action elements, typically buttons, which will appear
+              along the bottom of the dialog.
+  :close-fn - A function to call when the close button is clicked."
+  [{:keys [title body actions close-fn]}]
   (component
     (html
      [:div
@@ -19,7 +27,15 @@
          (for [action actions]
            [:.action action])])])))
 
-(defn modal [{:keys [shown? close-fn]} content]
+(defn modal
+  "A modal presentation. The given content will be displayed centered over a
+  darkened background.
+
+  :shown?   - When true, the modal is displayed. When false, it isn't. When this
+              value changes, the modal will animate in or out.
+  :close-fn - A function to call when the background is clicked. Typically
+              causes :shown? to become false and the modal to disappear."
+  [{:keys [shown? close-fn]} content]
   (component
     (js/React.createElement
      js/React.addons.CSSTransitionGroup
@@ -36,7 +52,10 @@
            [:.box
             content]]))))))
 
-(defn modal-dialog [opts]
+(defn modal-dialog
+  "A dialog displayed in a modal presentation. Takes the props that both
+  components take, in a single map; :close-fn is the same for both."
+  [opts]
   (modal (select-keys opts [:shown? :close-fn])
          (dialog (select-keys opts [:title :body :actions :close-fn]))))
 
