@@ -554,7 +554,7 @@
             ;; TODO remove the LD flag once shipped
             (when (feature/enabled? :autocancel-builds)
               (describe-flag {:flag :autocancel-builds
-                              :title "Auto-cancel builds"
+                              :title "Auto-cancel redundant builds"
                               :blurb [:p
                                       "With the exception of your default branch, we will automatically cancel any queued or running builds on "
                                       "a branch when a newer build is triggered on that same branch. This feature will only apply to builds "
