@@ -6,6 +6,8 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
+            [frontend.models.project :as project-model]
+            [frontend.utils :as utils :include-macros true]
             [frontend.routes :as routes]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs :as vcs-utils]
@@ -13,11 +15,23 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn- table [projects]
+(defn- table [projects plan]
   (om/build table/table
             {:rows projects
              :columns [{:header "Project"
                         :cell-fn #(vcs-url/repo-name (:vcs_url %))}
+
+                       {:header "Parallelism"
+                        :type #{:right :shrink}
+                        :cell-fn #(html
+                                    (let [parallelism (project-model/parallelism %)
+                                          buildable-parallelism (project-model/buildable-parallelism plan %)
+                                          vcs-url (:vcs_url %)]
+                                      [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type routes/->short-vcs)
+                                                                                   :org (vcs-url/org-name vcs-url)
+                                                                                   :repo (vcs-url/repo-name vcs-url)
+                                                                                   :_fragment "parallel-builds"})}
+                                       parallelism "x out of " buildable-parallelism "x"]))}
 
                        {:header "Team"
                         :type #{:right :shrink}
@@ -90,8 +104,10 @@
     (will-update [_ _ next-state]
       (when (not= (:selected-org-ident (om/get-render-state owner))
                   (:selected-org-ident next-state))
-        (let [[_ [vcs-type name]] (:selected-org-ident next-state)]
-          (api/get-org-settings-normalized name vcs-type (om/get-shared owner [:comms :api])))))
+        (let [[_ [vcs-type name]] (:selected-org-ident next-state)
+              api-ch (om/get-shared owner [:comms :api])]
+          (api/get-org-plan-normalized name vcs-type api-ch)
+          (api/get-org-settings-normalized name vcs-type api-ch))))
 
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident]}]
@@ -135,7 +151,7 @@
               (if-let [projects (:projects selected-org)]
                 (if-let [projects-with-followers
                          (seq (filter #(< 0 (count (:followers %))) projects))]
-                  (table projects-with-followers)
+                  (table projects-with-followers (:plan selected-org))
                   (no-projects-available selected-org))
                 (html [:div.loading-spinner common/spinner])))
              (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
