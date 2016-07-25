@@ -27,7 +27,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            [frontend.components.pieces.button :as button])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
@@ -1669,6 +1670,35 @@
                                                                    :file-name file-name
                                                                    :on-success after-submit}])}])]])))))
 
+(defn remove-key-button [row owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (html
+       [:span
+        (table/action-button
+         "Remove"
+         (icon/delete)
+         #(om/set-state! owner :show-modal? true))
+        (let [close-fn #(om/set-state! owner :show-modal? false)]
+          (modal/modal-dialog {:shown? show-modal?
+                               :title "Are you sure?"
+                               :body (html
+                                      [:span
+                                       "Are you sure you want to remove the \""
+                                       (:description row)
+                                       "\" Apple Code Signing Key?"])
+                               :actions [(button/button {:on-click close-fn} "Cancel")
+                                         (button/button {:primary? true
+                                                         :on-click #(raise! owner
+                                                                            [:delete-p12
+                                                                             (select-keys row [:project-name :vcs-type :id])])}
+                                                        "Delete")]
+                               :close-fn close-fn}))]))))
+
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
     om/IRender
@@ -1690,10 +1720,7 @@
                             :type #{:shrink :right}
                             :cell-fn
                             (fn [row]
-                              (table/action-button
-                               "Remove"
-                               (icon/delete)
-                               #(raise! owner [:delete-p12 (select-keys row [:project-name :vcs-type :id])])))}]}))))
+                              (om/build remove-key-button row))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name add-key]} owner]
   (reify
@@ -1742,15 +1769,15 @@
              (om/build no-keys-empty-state {:project-name project-name
                                             :add-key #(om/set-state! owner :show-modal? true)}))
            (let [close-fn #(om/set-state! owner :show-modal? false)]
-             (modal/modal {:shown? show-modal?
-                           :title "Upload a New Apple Code Signing Key"
-                           :body [:div
-                                  (om/build common/flashes error-message)
-                                  (om/build p12-upload-form
-                                            {:project-name project-name
-                                             :vcs-type vcs-type
-                                             :after-submit close-fn})]
-                           :close-fn close-fn}))]])))))
+             (modal/modal-dialog {:shown? show-modal?
+                                  :title "Upload a New Apple Code Signing Key"
+                                  :body [:div
+                                         (om/build common/flashes error-message)
+                                         (om/build p12-upload-form
+                                                   {:project-name project-name
+                                                    :vcs-type vcs-type
+                                                    :after-submit close-fn})]
+                                  :close-fn close-fn}))]])))))
 
 (defn project-settings [data owner]
   (reify

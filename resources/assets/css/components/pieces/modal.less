@@ -1,10 +1,65 @@
 .ns("frontend.components.pieces.modal", {
+  .ui("dialog", {
+    @dialog-padding: 15px;
+
+    background-color: @white;
+
+    > .header {
+      .flexy(row, space-between);
+
+      padding: @dialog-padding;
+
+      border-bottom: 1px solid @grayLighter;
+      background: @grayLightest;
+
+      > .close-button {
+        padding-top: 5px;
+        font-size: @fontSizeLarger;
+        cursor: pointer;
+      }
+
+      // As of this writing, an upstream .title selector bleeds into this
+      // component, so we need a more specific name. This should become
+      // .title when it\'s free again.
+      > .modal-component-title {
+        font-size: @fontSizeLarger;
+        line-height: 1.5;
+      }
+    }
+
+    > .body {
+      padding: @dialog-padding;
+    }
+
+    > .actions {
+      display: flex;
+      padding: @dialog-padding;
+      justify-content: flex-end;
+      border-top: 1px solid @grayLightest;
+
+      > .action {
+        margin-right: @dialog-padding;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  });
+
   .ui("modal", {}, {
     .el("modal", {
       // This element provides the screen behind the modal box (and contains
       // everything).
 
-      @modal-padding: 15px;
+      // This element takes over the entire screen, so visually it lives at a
+      // "top-level" context, but technically it might be the child of any node
+      // in the DOM. Therefore, we have to reset some styles that we may be
+      // inheriting from wherever the modal component is mounted.
+      font-family: @sansSerifFontFamily;
+      font-size: @baseFontSize;
+      line-height: @baseLineHeight;
+      text-align: left;
 
       .flexy();
 
@@ -24,7 +79,7 @@
 
       // The modal box itself.
       > .box {
-        // The modal box is 700px wide, but shrinks ot the width of the
+        // The modal box is 700px wide, but shrinks to the width of the
         // viewport.
         flex: 0 1 700px;
 
@@ -33,34 +88,6 @@
 
         background-color: @white;
         box-shadow: 0 3px 9px fade(@black, 50%);
-
-        > .header {
-          .flexy(row, space-between);
-
-          padding: @modal-padding;
-          margin-bottom: @modal-padding;
-
-          border-bottom: 1px solid @grayLighter;
-          background: @grayLightest;
-
-          > .close-button {
-            padding-top: 5px;
-            font-size: @fontSizeLarger;
-            cursor: pointer;
-          }
-
-          // As of this writing, an upstream .title selector bleeds into this
-          // component, so we need a more specific name. This should become
-          // .title when it\'s free again.
-          > .modal-component-title {
-            font-size: @fontSizeLarger;
-            line-height: 1.5;
-          }
-        }
-
-        > .body {
-          padding: @modal-padding;
-        }
       }
 
 

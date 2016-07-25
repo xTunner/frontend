@@ -6,7 +6,20 @@
             om.next)
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn modal [{:keys [shown? title body close-fn]}]
+(defn dialog [{:keys [title body actions close-fn]}]
+  (component
+    (html
+     [:div
+      [:.header
+       [:.modal-component-title title]
+       [:i.material-icons.close-button {:on-click close-fn} "clear"]]
+      [:.body body]
+      (when (seq actions)
+        [:.actions
+         (for [action actions]
+           [:.action action])])])))
+
+(defn modal [{:keys [shown? close-fn]} content]
   (component
     (js/React.createElement
      js/React.addons.CSSTransitionGroup
@@ -21,10 +34,11 @@
           [:div {:on-click #(when (= (.-target %) ( .-currentTarget %))
                               (close-fn))}
            [:.box
-            [:.header
-             [:.modal-component-title title]
-             [:i.material-icons.close-button {:on-click close-fn} "clear"]]
-            [:.body body]]]))))))
+            content]]))))))
+
+(defn modal-dialog [opts]
+  (modal (select-keys opts [:shown? :close-fn])
+         (dialog (select-keys opts [:title :body :actions :close-fn]))))
 
 
 (dc/do
@@ -86,6 +100,15 @@
   (def iframe (om.next/factory IFrame))
 
 
+  (defcard dialog
+    (dialog {:title "Are you sure?"
+             :body "Are you sure you want to remove the \"Foo\" Apple Code Signing Key?"
+             :actions [(button/button {} "Cancel")
+                       (button/button {:primary? true} "Delete")]
+             :close-fn identity})
+    {}
+    {:classname "background-gray"})
+
   (defcard modal
     (fn [state]
       (iframe {:height "300px"}
@@ -98,11 +121,31 @@
                                 :primary? true}
                                "Show Modal")
                 (modal {:shown? (:shown? @state)
-                        :title "Are you sure?"
-                        :body (html
-                               [:span "Are you sure you want to remove the \"Foo\" Apple Code Signing Key?"])
-                        :buttons [(button/button {} "Cancel")
-                                  (button/button {:primary? true} "Delete")]
-                        :close-fn #(swap! state assoc :shown? false)})]]))
+                        :close-fn #(swap! state assoc :shown? false)}
+                       (html
+                        [:div {:style {:width "300px"
+                                       :height "200px"
+                                       :display "flex"
+                                       :justify-content "center"
+                                       :align-items "center"}}
+                         "Modal Content"]))]]))
     {:shown? false})
+
+  (defcard modal-dialog
+    (fn [state]
+      (iframe {:height "300px"}
+              [:div {:style {:display "flex"
+                             :justify-content "center"
+                             :align-items "center"
+                             :height "100%"}}
+               [:div
+                (button/button {:on-click #(swap! state assoc :shown? true)
+                                :primary? true}
+                               "Show Modal")
+                (modal-dialog {:shown? (:shown? @state)
+                               :title "Are you sure?"
+                               :body "Are you sure you want to remove the \"Foo\" Apple Code Signing Key?"
+                               :actions [(button/button {} "Cancel")
+                                         (button/button {:primary? true} "Delete")]
+                               :close-fn #(swap! state assoc :shown? false)})]]))
     {:shown? false}))
