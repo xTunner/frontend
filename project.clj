@@ -99,7 +99,8 @@
 
                        :devcards {:source-paths ["src-cljs" "test-cljs"]
                                    :figwheel {:devcards true
-                                              :websocket-url "wss://prod.circlehost:4444/figwheel-ws"}
+                                              :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
+                                              :on-cssload "frontend.core/handle-css-reload"}
                                    :compiler {:main "frontend.core"
                                               :asset-path "cljs/devcards-out"
                                               :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
@@ -168,7 +169,8 @@
                                                (require 'dirac.agent)
                                                (dirac.agent/boot!))}
                         :env {:devtools "true"}
-                        :cljsbuild {:builds {:dev {:source-paths ["devtools"]}}}
+                        :cljsbuild {:builds {:dev {:source-paths ["devtools"]}
+                                             :devcards {:source-paths ["devtools"]}}}
                         :dependencies [[binaryage/devtools "0.7.2"]
                                        [binaryage/dirac "0.6.1"]]}
              :dev {:source-paths ["src-cljs" "test-cljs"]

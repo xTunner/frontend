@@ -31,7 +31,8 @@
             [secretary.core :as sec]
             ;; Extends goog.date.* datatypes to IEquiv and IComparable.
             [cljs-time.extend]
-            [cljsjs.react])
+            [cljsjs.react]
+            [figwheel.client.utils])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
                    [frontend.utils :refer [inspect timing swallow-errors]]
                    [frontend.devtools :refer [require-devtools!]]))
@@ -282,6 +283,13 @@
   (clj->js @state/debug-state))
 
 (aset js/window "app_state_to_js" set-ab-test)
+
+
+;; Figwheel offers an event when JS is reloaded, but not when CSS is reloaded. A
+;; PR is waiting to add this; until then, fire that event from here.
+;; See: https://github.com/bhauman/lein-figwheel/pull/463
+(defn handle-css-reload [files]
+  (figwheel.client.utils/dispatch-custom-event "figwheel.css-reload" files))
 
 
 (defn ^:export reinstall-om! []
