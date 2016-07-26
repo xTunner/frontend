@@ -261,3 +261,8 @@
 
 (defn dependency-cache? [build]
   (not (:no_dependency_cache build)))
+
+(defn build-args [build]
+  {:build-id  (id build)
+   :vcs-url   (:vcs_url build)
+   :build-num (:build_num build)})

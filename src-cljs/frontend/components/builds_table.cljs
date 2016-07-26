@@ -42,8 +42,20 @@
       (dashboard-icon "Bot-Icon")
       (dashboard-icon "Default-Avatar"))))
 
+(defn build-action [{:keys [text loading-text icon on-click]}]
+  [:div.build-action
+   (forms/managed-button
+     [:button
+      {:data-loading-text loading-text
+       :on-click on-click}
+      [:img.button-icon {:src (common/icon-path icon)}]
+      [:span.button-text text]])])
+
 (defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
-  (let [url (build-model/path-for (select-keys build [:vcs_url]) build)]
+  (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
+        raise-build-action! (fn [event] (raise! owner [event (build-model/build-args build)]))
+        should-show-rebuild? (and (#{"timedout" "failed"} (:status build))
+                                  (= "finished" (:lifecycle build)))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
@@ -51,19 +63,25 @@
            :title (build-model/status-words build)}
        (build-status-badge build)]
 
-      (when (build-model/can-cancel? build)
-        [:div.build-actions
-         (let [build-id (build-model/id build)
-               vcs-url (:vcs_url build)
-               build-num (:build_num build)]
-           (forms/managed-button
-            [:button.cancel-build
-             {:data-loading-text "Canceling..."
-              :on-click #(raise! owner [:cancel-build-clicked {:build-id build-id
-                                                               :vcs-url vcs-url
-                                                               :build-num build-num}])}
-             [:img.cancel-icon {:src (common/icon-path "Status-Canceled")}]
-             [:span.cancel-text "cancel"]]))])]
+
+      ;; These two cases should be mutually exclusive. Just in case they aren't,
+      ;; use a cond so it doesn't try to render both in the same place
+      (cond
+        should-show-rebuild?
+        (build-action
+          {:text "rebuild"
+           :loading-text "Rebuilding..."
+           :icon "Rebuild"
+           :on-click #(raise-build-action! :retry-build-clicked)})
+
+        (build-model/can-cancel? build)
+        (build-action
+          {:text "cancel"
+           :loading-text "Cancelling..."
+           :icon "Status-Canceled"
+           :on-click #(raise-build-action! :cancel-build-clicked)})
+
+        :else nil)]
 
      [:div.build-info
       [:div.build-info-header
