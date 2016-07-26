@@ -26,7 +26,7 @@ a {
 .main-head {
   .flex(0 0 auto);
   .flexy(column);
-  margin-top: @top-bar-height;
+  // margin-top: @top-bar-height;
 
 
   .head-user {
@@ -81,6 +81,11 @@ a {
       }
     }
   }
+}
+
+// TODO -ac Remove this when you take out the ff, and add it back into .main-head rule
+.top-bar ~ .main-head {
+    margin-top: @top-bar-height;
 }
 
 .main-body {

@@ -21,7 +21,8 @@
             [goog.style]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [frontend.utils.html :refer [open-ext]])
+            [frontend.utils.html :refer [open-ext]]
+            [frontend.utils.launchdarkly :as ld])
   (:require-macros [frontend.utils :refer [html inspect]]))
 
 (defn status-ico-name [build]
@@ -454,13 +455,22 @@
 
         (html
           [:nav.aside-left-nav
+           ;; TODO -ac Remove this class when ff removed
+           {:class (when (ld/feature-on? "top-bar-ui-v-1") "top-bar-ff")}
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+           [:a.aside-item.logo {:title "Dashboard"
+                                :data-placement "right"
+                                :data-trigger "hover"
+                                :href (routes/v1-dashboard-path {})}
+             [:div.logomark
+              (common/ico :logo)]])
 
-            [:a.aside-item {:data-placement "right"
-                            :data-trigger "hover"
-                            :title "Builds"
-                            :href (routes/v1-dashboard-path {})}
-             [:i.material-icons "storage"]
-             [:div.nav-label "Builds"]]
+           [:a.aside-item {:data-placement "right"
+                           :data-trigger "hover"
+                           :title "Builds"
+                           :href (routes/v1-dashboard-path {})}
+            [:i.material-icons "storage"]
+            [:div.nav-label "Builds"]]
 
            [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
@@ -506,13 +516,51 @@
               [:i.material-icons "settings"]
               [:div.nav-label "Account Settings"]]
 
+            [:hr]
+
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+             [:a.aside-item (open-ext {:title "Documentation"
+                                       :data-placement "right"
+                                       :data-trigger "hover"
+                                       :href "https://circleci.com/docs/"})
+              [:i.material-icons "description"]
+              [:div.nav-label "Docs"]])
+
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+             [:a.aside-item (merge (common/contact-support-a-info owner)
+                                   {:title "Support"
+                                    :data-placement "right"
+                                    :data-trigger "hover"
+                                    :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
+              [:i.material-icons "chat"]
+              [:div.nav-label "Support"]])
+
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+             (when-not (config/enterprise?)
+               [:a.aside-item (open-ext {:data-placement "right"
+                                         :data-trigger "hover"
+                                         :title "Changelog"
+                                         :href "/changelog"})
+                [:i.material-icons "receipt"]
+                [:div.nav-label "Changelog"]]))
+
+            [:hr]
+
             (when (:admin user)
               [:a.aside-item {:data-placement "right"
                               :data-trigger "hover"
                               :title "Admin"
                               :href "/admin"}
                 [:i.material-icons "build"]
-                [:div.nav-label "Admin"]])])))))
+                [:div.nav-label "Admin"]])
+
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+            [:a.aside-item.push-to-bottom {:data-placement "right"
+                                           :data-trigger "hover"
+                                           :title "Logout"
+                                           :href "/logout"}
+              [:i.material-icons "power_settings_new"]
+              [:div.nav-label "Logout"]])])))))
 
 (defn aside [app owner]
   (reify

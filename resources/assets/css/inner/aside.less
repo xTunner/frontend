@@ -25,11 +25,17 @@
   margin: auto;
 }
 
+// TODO -ac Remove this when you take out the ff, and add it back into .aside-left-nav rule
+
+.aside-left-nav.top-bar-ff {
+    margin-top: @top-bar-height;
+}
+
 .aside-left-nav {
   width: @aside-nav-width;
   background: @top-bar-color;
   overflow: visible;
-  margin-top: @top-bar-height;
+  // margin-top: @top-bar-height;
 
   // Because this div can include elements which stretch across the top and the
   // side of the page, it tends to cover the page. Therefore, we need to make it
