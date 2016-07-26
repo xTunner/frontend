@@ -57,6 +57,27 @@
         {:on-click #(raise! owner [:refreshed-user-orgs {}])} ;; TODO: spinner while working?
         "Reload Organizations"]))))
 
+(defn- repo-title* [repo link?]
+  (let [repo-name (vcs-url/repo-name (:vcs_url repo))
+        title (str repo-name (when (:fork repo) " (forked)"))]
+    (html
+      [:div.proj-name
+       (if link?
+         [:a {:title (str "View " title " project")
+              :href (vcs-url/project-path (:vcs_url repo))}
+          repo-name]
+         [:span {:title title} repo-name])
+       (when (repo-model/likely-osx-repo? repo)
+         [:i.fa.fa-apple])
+       (when (:fork repo)
+         [:i.octicon.octicon-repo-forked])])))
+
+(defn repo-title [repo]
+  (repo-title* repo false))
+
+(defn repo-title-link [repo]
+  (repo-title* repo true))
+
 (defn repo-item [data owner]
   (reify
     om/IDisplayName (display-name [_] "repo-item")
@@ -76,12 +97,7 @@
         (html
          (cond (repo-model/can-follow? repo)
                [:li.repo-follow
-                [:div.proj-name
-                 [:span {:title (str (vcs-url/project-name (:vcs_url repo))
-                                     (when (:fork repo) " (forked)"))}
-                  (:name repo)]
-                 (when (repo-model/likely-osx-repo? repo)
-                   [:i.fa.fa-apple])]
+                (repo-title repo)
                 (when building?
                   [:div.building "Starting first build..."])
                 (managed-button
@@ -99,19 +115,7 @@
 
                (:following repo)
                [:li.repo-unfollow
-                [:a {:title (str "View " (:name repo) (when (:fork repo) " (forked)") " project")
-                     :href (vcs-url/project-path (:vcs_url repo))}
-                 " "
-                 [:div.proj-name
-                  [:span {:title (str (vcs-url/project-name (:vcs_url repo))
-                                      (when (:fork repo) " (forked)"))}
-                   (:name repo)
-                   (when (repo-model/likely-osx-repo? repo)
-                     [:i.fa.fa-apple])]
-
-                  (when (:fork repo)
-                    [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]]
-
+                (repo-title-link repo)
                 (managed-button
                  [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
                                                                              :login login
@@ -121,12 +125,7 @@
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
-                [:div.proj-name
-                 [:span {:title (str (vcs-url/project-name (:vcs_url repo))
-                                     (when (:fork repo) " (forked)"))}
-                  (:name repo)]
-                 (when (:fork repo)
-                   [:span.forked [:i.octicon.octicon-repo-forked] (str " " (vcs-url/org-name (:vcs_url repo)) "")])]
+                (repo-title repo)
                 [:div.notice {:title "You must be an admin to add a project on CircleCI"}
                  [:i.material-icons.lock "lock"]
                  "Contact repo admin"]]))))))
