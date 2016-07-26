@@ -83,6 +83,12 @@
                   (base-project-url-path vcs-type)
                   project-name))
 
+(defn project-cache [vcs-type project-name cache-type]
+  (gstring/format "%s/%s/%s-cache"
+                  (base-project-url-path vcs-type)
+                  project-name
+                  cache-type))
+
 (defn organization-invite [vcs-type org-name]
   (gstring/format "%s/invite"
                   (base-organization-url-path vcs-type org-name)))
