@@ -1607,21 +1607,21 @@
          "Remove"
          (icon/delete)
          #(om/set-state! owner :show-modal? true))
-        (let [close-fn #(om/set-state! owner :show-modal? false)]
-          (modal/modal-dialog {:shown? show-modal?
-                               :title "Are you sure?"
-                               :body (html
-                                      [:span
-                                       "Are you sure you want to remove the \""
-                                       (:description row)
-                                       "\" Apple Code Signing Key?"])
-                               :actions [(button/button {:on-click close-fn} "Cancel")
-                                         (button/button {:primary? true
-                                                         :on-click #(raise! owner
-                                                                            [:delete-p12
-                                                                             (select-keys row [:project-name :vcs-type :id])])}
-                                                        "Delete")]
-                               :close-fn close-fn}))]))))
+        (when show-modal?
+          (let [close-fn #(om/set-state! owner :show-modal? false)]
+            (modal/modal-dialog {:title "Are you sure?"
+                                 :body (html
+                                        [:span
+                                         "Are you sure you want to remove the \""
+                                         (:description row)
+                                         "\" Apple Code Signing Key?"])
+                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                           (button/button {:primary? true
+                                                           :on-click #(raise! owner
+                                                                              [:delete-p12
+                                                                               (select-keys row [:project-name :vcs-type :id])])}
+                                                          "Delete")]
+                                 :close-fn close-fn})))]))))
 
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
@@ -1734,13 +1734,13 @@
                                                       :file-name file-name
                                                       :on-success close-fn}])}])]
 
-        (modal/modal-dialog {:shown? show-modal?
-                             :title "Upload a New Apple Code Signing Key"
-                             :body [:div
-                                    (om/build common/flashes error-message)
-                                    upload-form]
-                             :actions [upload-button]
-                             :close-fn close-fn})))))
+        (when show-modal?
+          (modal/modal-dialog {:title "Upload a New Apple Code Signing Key"
+                               :body [:div
+                                      (om/build common/flashes error-message)
+                                      upload-form]
+                               :actions [upload-button]
+                               :close-fn close-fn}))))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
