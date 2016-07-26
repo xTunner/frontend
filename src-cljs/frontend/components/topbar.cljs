@@ -14,7 +14,7 @@
          (common/ico :logo)]]]
       [:ul.header-nav.right
        ;; TODO -ac Hmmm, v2, include the icons? [:i.material-icons "receipt"]
-       [:li.dropdown.header-nav-item
+       [:li.top-nav-dropdown.header-nav-item
         [:a.dropbtn.header-nav-link "Support"]
         [:div.dropdown-content
          [:a {:href "https://circleci.com/docs/"}
@@ -24,7 +24,7 @@
          [:a (common/contact-support-a-info owner)
           "Eng. Support"]]]
 
-       [:li.dropdown.header-nav-item
+       [:li.top-nav-dropdown.header-nav-item
         [:a.dropbtn.header-nav-link "What's New"]
         [:div.dropdown-content
          (when-not (config/enterprise?)
@@ -33,7 +33,7 @@
          [:a {:href "https://discuss.circleci.com/c/announcements"}
           "Infrastructure Announcements"]]]
 
-       [:li.dropdown.header-nav-item
+       [:li.top-nav-dropdown.header-nav-item
         [:a.dropbtn.header-nav-link
          [:img.gravatar {:src avatar-url}]
          ;; TODO -ac Ask Jared if this should be a hover or press?
