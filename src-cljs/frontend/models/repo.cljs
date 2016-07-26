@@ -4,20 +4,22 @@
             [goog.string :as gstring]
             goog.string.format))
 
+(defn building-on-circle? [repo]
+  (or (:following repo)
+      (:has_followers repo)))
+
+(defn should-do-first-follower-build? [repo]
+  (and (not (building-on-circle? repo))
+       (:admin repo)))
+
+(defn requires-invite? [repo]
+  (and (not (building-on-circle? repo))
+       (not (:admin repo))))
+
 (defn can-follow? [repo]
   (and (not (:following repo))
        (or (:admin repo)
-           (:has_followers repo))))
-
-(defn should-do-first-follower-build? [repo]
-  (and (not (:following repo))
-       (:admin repo)
-       (not (:has_followers repo))))
-
-(defn requires-invite? [repo]
-  (and (not (:following repo))
-       (not (:admin repo))
-       (not (:has_followers repo))))
+           (building-on-circle? repo))))
 
 (defn likely-osx-repo? [repo]
   (let [osx-languages #{"Swift" "Objective-C"}]

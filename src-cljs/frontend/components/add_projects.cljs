@@ -57,7 +57,7 @@
         {:on-click #(raise! owner [:refreshed-user-orgs {}])} ;; TODO: spinner while working?
         "Reload Organizations"]))))
 
-(defn- repo-title* [repo link?]
+(defn- repo-title [repo link?]
   (let [repo-name (vcs-url/repo-name (:vcs_url repo))
         title (str repo-name (when (:fork repo) " (forked)"))]
     (html
@@ -71,12 +71,6 @@
          [:i.fa.fa-apple])
        (when (:fork repo)
          [:i.octicon.octicon-repo-forked])])))
-
-(defn repo-title [repo]
-  (repo-title* repo false))
-
-(defn repo-title-link [repo]
-  (repo-title* repo true))
 
 (defn repo-item [data owner]
   (reify
@@ -93,11 +87,12 @@
             repo-id (repo-model/id repo)
             tooltip-id (str "view-project-tooltip-" (string/replace repo-id #"[^\w]" ""))
             settings (:settings data)
-            should-build? (repo-model/should-do-first-follower-build? repo)]
+            building-on-circle? (repo-model/building-on-circle? repo)
+            title-el (repo-title repo building-on-circle?)]
         (html
          (cond (repo-model/can-follow? repo)
                [:li.repo-follow
-                (repo-title repo)
+                title-el
                 (when building?
                   [:div.building "Starting first build..."])
                 (managed-button
@@ -105,17 +100,17 @@
                                         (raise! owner [:followed-repo (assoc @repo
                                                                              :login login
                                                                              :type type)])
-                                        (when should-build?
+                                        (when (not building-on-circle?)
                                           (om/set-state! owner :building? true)))
-                           :title (if should-build?
-                                    "This project has never been built by CircleCI before. Clicking will cause CircleCI to start building the project."
-                                    "This project has been built by CircleCI before. Clicking will cause builds for this project to show up for you in the UI.")
+                           :title (if building-on-circle?
+                                    "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
+                                    "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project.")
                            :data-spinner true}
-                  (if should-build? "Build project" "Follow project")])]
+                  (if building-on-circle? "Follow project" "Build project")])]
 
                (:following repo)
                [:li.repo-unfollow
-                (repo-title-link repo)
+                title-el
                 (managed-button
                  [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
                                                                              :login login
@@ -125,7 +120,7 @@
 
                (repo-model/requires-invite? repo)
                [:li.repo-nofollow
-                (repo-title repo)
+                title-el
                 [:div.notice {:title "You must be an admin to add a project on CircleCI"}
                  [:i.material-icons.lock "lock"]
                  "Contact repo admin"]]))))))
