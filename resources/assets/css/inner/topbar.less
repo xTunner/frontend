@@ -95,6 +95,15 @@
     height: @top-bar-height;
 }
 
+
+// But the rebuild button's `position: relative` makes it render above this
+// dropdown? Just remove its positioning, seems unnecessarily strict anyway.
+//
+// And .build-action button lays on top ... unless it's being hovered over????
+// Also, goes away when I comment out "opacity: 0.6;" ?
+// ^ Probably becasue opacity is creating a definitively higher stacking context
+// - solve this by changing color, not opacity here.
+
 .top-nav-dropdown {
     position: relative;
     display: inline-block;

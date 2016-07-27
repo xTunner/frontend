@@ -13,31 +13,36 @@
         [:div.logomark
          (common/ico :logo)]]]
       [:ul.header-nav.right
-       ;; TODO -ac Hmmm, v2, include the icons? [:i.material-icons "receipt"]
-       [:li.top-nav-dropdown.header-nav-item
-        [:a.dropbtn.header-nav-link "Support"]
-        [:div.dropdown-content
-         [:a {:href "https://circleci.com/docs/"}
-          "Self Help"]
-         [:a {:href "https://discuss.circleci.com/"}
-          "Community Help"]
-         [:a (common/contact-support-a-info owner)
-          "Eng. Support"]]]
 
        [:li.top-nav-dropdown.header-nav-item
-        [:a.dropbtn.header-nav-link "What's New"]
-        [:div.dropdown-content
-         (when-not (config/enterprise?)
-           [:a {:href "https://circleci.com/changelog/"}
-            "Changelog"])
-         [:a {:href "https://discuss.circleci.com/c/announcements"}
-          "Infrastructure Announcements"]]]
+        [:a.header-nav-link {:href "https://circleci.com/docs/"}
+         [:i.material-icons "description"]
+         " Docs"]]
+       [:li.top-nav-dropdown.header-nav-item
+        [:a.header-nav-link {:href "https://discuss.circleci.com/"}
+         [:i.material-icons "people"]
+         " Community Help"]]
+       [:li.top-nav-dropdown.header-nav-item
+        [:a.header-nav-link (common/contact-support-a-info owner)
+         [:i.material-icons "chat"]
+         " Eng. Support"]]
+
+       (when-not (config/enterprise?)
+         [:li.top-nav-dropdown.header-nav-item
+          [:a.header-nav-link {:href "https://circleci.com/changelog/"}
+           [:i.material-icons "receipt"]
+           " Changelog"]])
+
+       ;; TODO -ac need to be consistent between header/nav/top-bar lol
+       [:li.top-nav-dropdown.header-nav-item
+        [:a.header-nav-link {:href "https://discuss.circleci.com/c/announcements"}
+         [:i.material-icons "developer_board"]
+         " Infrastructure Announcements"]]
 
        [:li.top-nav-dropdown.header-nav-item
         [:a.dropbtn.header-nav-link
-         [:img.gravatar {:src avatar-url}]
-         ;; TODO -ac Ask Jared if this should be a hover or press?
-         #_[:i.material-icons "keyboard_arrow_down"]]
+         [:img.gravatar {:src avatar-url}]]
         [:div.dropdown-content
          [:a {:href "/logout/"}
-          "Logout"]]]]]]))
+          [:i.material-icons "power_settings_new"]
+          " Logout"]]]]]]))
