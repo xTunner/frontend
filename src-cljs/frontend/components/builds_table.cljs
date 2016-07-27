@@ -54,8 +54,7 @@
 (defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         raise-build-action! (fn [event] (raise! owner [event (build-model/build-args build)]))
-        should-show-rebuild? (and (#{"timedout" "failed"} (:status build))
-                                  (= "finished" (:lifecycle build)))]
+        should-show-rebuild? (#{"timedout" "failed"} (:outcome build))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
@@ -67,19 +66,19 @@
       ;; These two cases should be mutually exclusive. Just in case they aren't,
       ;; use a cond so it doesn't try to render both in the same place
       (cond
-        should-show-rebuild?
-        (build-action
-          {:text "rebuild"
-           :loading-text "Rebuilding..."
-           :icon "Rebuild"
-           :on-click #(raise-build-action! :retry-build-clicked)})
-
         (build-model/can-cancel? build)
         (build-action
           {:text "cancel"
            :loading-text "Cancelling..."
            :icon "Status-Canceled"
            :on-click #(raise-build-action! :cancel-build-clicked)})
+
+        should-show-rebuild?
+        (build-action
+          {:text "rebuild"
+           :loading-text "Rebuilding..."
+           :icon "Rebuild"
+           :on-click #(raise-build-action! :retry-build-clicked)})
 
         :else nil)]
 
