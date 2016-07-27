@@ -20,9 +20,9 @@
 
   app            - The entire app state.
   main-content   - A component which forms the main content of the page, which
-  is everything below the header.
+                   is everything below the header.
   header-actions - A component which will be placed on the right in the header.
-  This is used for page-wide actions."
+                   This is used for page-wide actions."
   [{:keys [app main-content header-actions]} owner]
   (reify
     om/IRender
@@ -37,7 +37,6 @@
               user (get-in app state/user-path)
               avatar-url (gh-utils/make-avatar-url user :size 60)]
           [:main.app-main
-           ;; TODO -ac Make this into top-bar.cljs
            (topbar/topbar owner avatar-url)
            (when show-inspector?
              ;; TODO inspector still needs lots of work. It's slow and it defaults to

@@ -8,41 +8,43 @@
   (when (ld/feature-on? "top-bar-ui-v-1")
     [:div.top-bar
      [:div.bar
-      [:ul.header-nav.left
+      [:div.header-nav.left
        [:a.logo
         [:div.logomark
          (common/ico :logo)]]]
-      [:ul.header-nav.right
+      [:div.header-nav.right
+
+       ;; What's New, Notification dropdown
+       [:li.top-nav-dropdown.header-nav-item.dropdown
+        [:a.header-nav-link.dropdown-toggle
+         {:href "#"
+          :data-toggle "dropdown"
+          :role "button"
+          :aria-haspopup "true"
+          :aria-expanded "false"}
+         "What's New " [:i.material-icons "keyboard_arrow_down"]]
+        [:ul.dropdown-menu
+         (when-not (config/enterprise?)
+           [:li [:a {:href "https://circleci.com/changelog/"} "Changelog"]])
+         [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Inf. Announcements"]]]]
 
        [:li.top-nav-dropdown.header-nav-item
         [:a.header-nav-link {:href "https://circleci.com/docs/"}
-         [:i.material-icons "description"]
-         " Docs"]]
+         "Docs"]]
        [:li.top-nav-dropdown.header-nav-item
         [:a.header-nav-link {:href "https://discuss.circleci.com/"}
-         [:i.material-icons "people"]
-         " Community Help"]]
+         "Discuss"]]
        [:li.top-nav-dropdown.header-nav-item
         [:a.header-nav-link (common/contact-support-a-info owner)
-         [:i.material-icons "chat"]
-         " Eng. Support"]]
+         "Eng. Support"]]
 
-       (when-not (config/enterprise?)
-         [:li.top-nav-dropdown.header-nav-item
-          [:a.header-nav-link {:href "https://circleci.com/changelog/"}
-           [:i.material-icons "receipt"]
-           " Changelog"]])
-
-       ;; TODO -ac need to be consistent between header/nav/top-bar lol
-       [:li.top-nav-dropdown.header-nav-item
-        [:a.header-nav-link {:href "https://discuss.circleci.com/c/announcements"}
-         [:i.material-icons "developer_board"]
-         " Infrastructure Announcements"]]
-
-       [:li.top-nav-dropdown.header-nav-item
-        [:a.dropbtn.header-nav-link
-         [:img.gravatar {:src avatar-url}]]
-        [:div.dropdown-content
-         [:a {:href "/logout/"}
-          [:i.material-icons "power_settings_new"]
-          " Logout"]]]]]]))
+       [:li.top-nav-dropdown.header-nav-item.dropdown
+        [:a.header-nav-link.dropdown-toggle.dropbtn
+         {:href "#"
+          :data-toggle "dropdown"
+          :role "button"
+          :aria-haspopup "true"
+          :aria-expanded "false"}
+         [:img.gravatar {:src avatar-url}] [:i.material-icons "keyboard_arrow_down"]]
+        [:ul.dropdown-menu
+         [:li [:a {:href "/logout/"} "Logout"]]]]]]]))
