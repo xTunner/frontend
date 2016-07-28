@@ -180,7 +180,7 @@
                                        "Note: this option only works if the project builds under an OS X plan. "
                                        "Configure that option "
                                        [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                                                :vcs_type (:vcs_type plan)
+                                                                                :vcs_type (-> plan :org :vcs_type)
                                                                                 :_fragment "osx-pricing"})} "here"]
                                        "."]]
                                      [:p
