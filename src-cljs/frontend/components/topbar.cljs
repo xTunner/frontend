@@ -26,7 +26,26 @@
         [:ul.dropdown-menu
          (when-not (config/enterprise?)
            [:li [:a {:href "https://circleci.com/changelog/"} "Changelog"]])
-         [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Inf. Announcements"]]]]
+         [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Infrastructure Announcements"]]]]
+
+       ;; Support dropdown
+       ;;
+       ;; TODO -ac
+       ;;
+       ;; Eventually, this will be the implementation for
+       ;;
+       ;; [:li.top-nav-dropdown.header-nav-item.dropdown
+       ;;  [:a.header-nav-link.dropdown-toggle
+       ;;   {:href "#"
+       ;;    :data-toggle "dropdown"
+       ;;    :role "button"
+       ;;    :aria-haspopup "true"
+       ;;    :aria-expanded "false"}
+       ;;   "Support" [:i.material-icons "keyboard_arrow_down"]]
+       ;;  [:ul.dropdown-menu
+       ;;   [:li [:a {:href "https://circleci.com/docs/"} "Docs"]]
+       ;;   [:li [:a {:href "https://discuss.circleci.com/"} "Discuss"]]
+       ;;   [:li [:a (common/contact-support-a-info owner) "Eng. Support"]]]]
 
        [:li.top-nav-dropdown.header-nav-item
         [:a.header-nav-link {:href "https://circleci.com/docs/"}

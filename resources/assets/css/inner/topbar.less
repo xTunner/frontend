@@ -119,6 +119,8 @@
     }
 }
 
+// TODO -ac Remove all this, just keep styles to override and customize Bootstrap
+// dropdown styles (like .disabled!)
 .dropdown-content {
     display: none;
     white-space: nowrap;
@@ -149,7 +151,16 @@
 }
 
 // Put this in the hierarchy, not just out here on its own
-
 .dropdown-menu {
+    // TODO -ac Doesn't seem to work?
     width: 100%;
+
+    li > a {
+        white-space: pre-wrap;
+    }
+
+    .disabled {
+        color: @gray;
+        background-color: @grayDarker;
+    }
 }
