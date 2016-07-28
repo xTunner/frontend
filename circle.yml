@@ -6,9 +6,11 @@ dependencies:
     - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
     - set -o pipefail; lein cljsbuild once test production |& tee cljsbuild.log:
         timeout: 600
-    # Fail if there are any warnings in the cljsbuild output that *aren't* cljs-time.format/constructor.
-    # See: https://github.com/andrewmcveigh/cljs-time/issues/57
-    - "! grep WARNING < cljsbuild.log | grep -v 'WARNING: Use of undeclared Var cljs-time.format/constructor'"
+    # Fail if there are any warnings in the cljsbuild output that aren't expected.
+    # See:
+    #   cljs-time.format/constructor: https://github.com/andrewmcveigh/cljs-time/issues/57
+    #   frontend.(something)/x12345: http://dev.clojure.org/jira/browse/CLJS-1607
+    - '! grep WARNING < cljsbuild.log | grep -v "WARNING: Use of undeclared Var \(cljs-time\.format/constructor\|frontend\..\+/x.\+\)"'
     - lein run -m frontend.tasks.http/precompile-assets
 
 
