@@ -4,11 +4,11 @@
             [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.components.inspector :as inspector]
-            [frontend.components.topbar :as topbar]
+            [frontend.components.pieces.topbar :as topbar]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.state :as state]
-            [frontend.utils.github :as gh-utils]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [dissoc-in]]
             [om.core :as om :include-macros true]
             cljs.pprint
@@ -34,10 +34,11 @@
               show-footer? (not= :signup (:navigation-point app))
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
-              user (get-in app state/user-path)
-              avatar-url (gh-utils/make-avatar-url user :size 60)]
+              user (get-in app state/user-path)]
           [:main.app-main
-           (topbar/topbar owner avatar-url)
+           (when (ld/feature-on? "top-bar-ui-v-1")
+             (topbar/topbar {:support-info (common/contact-support-a-info owner)
+                             :user user}))
            (when show-inspector?
              ;; TODO inspector still needs lots of work. It's slow and it defaults to
              ;;     expanding all datastructures.

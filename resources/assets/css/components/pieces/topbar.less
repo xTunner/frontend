@@ -1,0 +1,171 @@
+.ns("frontend.components.pieces.topbar", {
+    .ui("topbar", {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        // TOOD This is a stopgap solution to the stacking context issue.
+        //
+        // Right now we do something like this:
+        // http://codepen.io/peeja/pen/NAzwAg
+        // Ideally, we\'ll move to something like this:
+        // http://codepen.io/peeja/pen/GqGOAq
+        z-index: 1;
+
+        > .bar {
+            display: flex;
+            display: -webkit-flex;
+            flex-direction: row;
+            background-color: @top-bar-color;
+            height: @top-bar-height;
+            justify-content: space-between;
+
+            .logo {
+                // TOOD -ac Add these 50% and transform prop back in and move the
+                // logo out of .left to make it sit in the middle
+                // top: 50%;
+                // left: 50%;
+                // transform: translate(-50%, -50%);
+                position: absolute;
+                top: 27%;
+                left: 34%;
+            }
+            .logomark {
+                .flexy(center, center);
+                .icon-style(@white, (@em * 2));
+                width: 60px;
+                height: @top-bar-height;
+                i {
+                    opacity: 1;
+                }
+            }
+
+            .header-nav {
+                padding: 0;
+                list-style: none;
+
+                &.left, &.right {
+                    position: absolute;
+                }
+
+                &.left {
+                    left: 0;
+                }
+                &.right {
+                    right: 0;
+                }
+            }
+
+            .header-nav-item {
+                float: left;
+
+                &:hover {
+                    background-color: @grayDark;
+                }
+
+                &.border-right {
+                    border-right: 1px solid #444;
+                }
+            }
+
+            .header-nav-link {
+                display: block;
+                padding: 20px;
+                font-size: 13px;
+                font-weight: bold;
+                line-height: 20px;
+                color: @white;
+            }
+
+            .name {
+                padding: 16px;
+            }
+
+            .gravatar {
+                min-width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                border: 1px solid @white;
+            }
+        }
+    });
+});
+
+.dropbtn {
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    display: block;
+    height: @top-bar-height;
+}
+
+
+// But the rebuild button's `position: relative` makes it render above this
+// dropdown? Just remove its positioning, seems unnecessarily strict anyway.
+//
+// And .build-action button lays on top ... unless it's being hovered over????
+// Also, goes away when I comment out "opacity: 0.6;" ?
+// ^ Probably becasue opacity is creating a definitively higher stacking context
+// - solve this by changing color, not opacity here.
+
+.top-nav-dropdown {
+    position: relative;
+    display: inline-block;
+
+    a {
+        text-decoration: none;
+    }
+
+    &:hover {
+        .dropdown-content {
+            display: block;
+            right: 0;
+        }
+    }
+}
+
+// TODO -ac Remove all this, just keep styles to override and customize Bootstrap
+// dropdown styles (like .disabled!)
+.dropdown-content {
+    display: none;
+    white-space: nowrap;
+    // max-width: 160px;
+    position: absolute;
+    background-color: @whiten;
+    // min-width: 160px;
+
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+
+    a {
+        color: black;
+        padding: 12px 16px;
+        display: block;
+
+        &:hover {
+            background-color: #F1F1F1;
+        }
+    }
+
+    a.disabled {
+        color: @gray;
+        background-color: @grayLighter;
+        cursor: not-allowed;
+    }
+}
+
+// Put this in the hierarchy, not just out here on its own
+.dropdown-menu {
+    // TODO -ac Doesn't seem to work?
+    width: 100%;
+
+    li > a {
+        white-space: pre-wrap;
+    }
+
+    .disabled {
+        color: @gray;
+        background-color: @grayDarker;
+    }
+}
