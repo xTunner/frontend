@@ -17,6 +17,7 @@
             display: -webkit-flex;
             flex-direction: row;
             background-color: @top-bar-color;
+            background-color: @grayDark;
             height: @top-bar-height;
             justify-content: space-between;
 
@@ -87,85 +88,43 @@
                 border-radius: 50%;
                 border: 1px solid @white;
             }
+
+            .dropbtn {
+                font-size: 16px;
+                border: none;
+                cursor: pointer;
+                display: block;
+                height: @top-bar-height;
+            }
+
+            .top-nav-dropdown {
+                position: relative;
+                display: inline-block;
+
+                a {
+                    text-decoration: none;
+                }
+
+                &:hover {
+                    .dropdown-content {
+                        display: block;
+                        right: 0;
+                    }
+                }
+            }
+            .dropdown-menu {
+                // TODO -ac Doesn\'t seem to work?
+                width: 100%;
+
+                li > a {
+                    white-space: pre-wrap;
+                }
+
+                .disabled {
+                    color: @gray;
+                    background-color: @grayDarker;
+                }
+            }
         }
     });
 });
-
-.dropbtn {
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    display: block;
-    height: @top-bar-height;
-}
-
-
-// But the rebuild button's `position: relative` makes it render above this
-// dropdown? Just remove its positioning, seems unnecessarily strict anyway.
-//
-// And .build-action button lays on top ... unless it's being hovered over????
-// Also, goes away when I comment out "opacity: 0.6;" ?
-// ^ Probably becasue opacity is creating a definitively higher stacking context
-// - solve this by changing color, not opacity here.
-
-.top-nav-dropdown {
-    position: relative;
-    display: inline-block;
-
-    a {
-        text-decoration: none;
-    }
-
-    &:hover {
-        .dropdown-content {
-            display: block;
-            right: 0;
-        }
-    }
-}
-
-// TODO -ac Remove all this, just keep styles to override and customize Bootstrap
-// dropdown styles (like .disabled!)
-.dropdown-content {
-    display: none;
-    white-space: nowrap;
-    // max-width: 160px;
-    position: absolute;
-    background-color: @whiten;
-    // min-width: 160px;
-
-    overflow: auto;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-
-    a {
-        color: black;
-        padding: 12px 16px;
-        display: block;
-
-        &:hover {
-            background-color: #F1F1F1;
-        }
-    }
-
-    a.disabled {
-        color: @gray;
-        background-color: @grayLighter;
-        cursor: not-allowed;
-    }
-}
-
-// Put this in the hierarchy, not just out here on its own
-.dropdown-menu {
-    // TODO -ac Doesn't seem to work?
-    width: 100%;
-
-    li > a {
-        white-space: pre-wrap;
-    }
-
-    .disabled {
-        color: @gray;
-        background-color: @grayDarker;
-    }
-}
