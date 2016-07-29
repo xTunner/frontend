@@ -791,8 +791,7 @@
        [:a {:href url
             :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
         "#"
-        (let [[_ number] (re-find #"/(\d+)$" url)]
-          (or number "?"))]))]])
+        (gh-utils/pull-request-number url)]))]])
 
 (defn queued-time [build]
   (if (< 0 (build-model/run-queued-time build))
@@ -921,8 +920,8 @@
              [:span.summary-label "Triggered by: "]
              [:span (trigger-html build)]]
 
-            (when-let [urls (seq (:pull_request_urls build))]
-              (pull-requests {:urls urls} owner))]]
+            (when (build-model/has-pull-requests? build)
+              (pull-requests {:urls (:pull_request_urls build)} owner))]]
 
           (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]

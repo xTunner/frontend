@@ -165,6 +165,16 @@
   (and (not= "canceled" (:status build))
        (#{"not_running" "running" "queued" "scheduled"} (:lifecycle build))))
 
+(defn has-pull-requests? [build]
+  (not (empty? (:pull_request_urls build))))
+
+(defn can-merge? [build]
+  (and (= "success" (:outcome build))
+       (has-pull-requests? build)))
+
+(defn pull-request-numbers [build]
+  (map github/pull-request-number (:pull_request_urls build)))
+
 (defn current-user-ssh?
   "Whether the given user has SSH access to the build"
   [build user]
