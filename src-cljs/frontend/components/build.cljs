@@ -450,12 +450,12 @@
         (html
          [:div.build-info-v2
           (when (and (not dismissed-banner-one)
-                   (= (notifications/notifications-permission) "default")
-                   (ld/feature-on? "web-notifications"))
+                     (= (notifications/notifications-permission) "default")
+                     (ld/feature-on? "web-notifications"))
             [:div.alert.alert-warning
              [:div.usage-message
               [:div.text
-               [:b "New: "] "You can now get web notifications when your build is done!"
+               [:b "New: "] "You can now get web notifications when your build is done! "
                [:a
                 {:href "#"
                  :on-click #(notifications/request-permission
@@ -463,30 +463,34 @@
                                 ;; TODO -ac Track this repspnosseee
                                 (.log js/console "Track this response lol:" response)
                                 (raise! owner [:dismiss-web-notif-banner-one])))}
-                " Click here to activate it."]]]
+                "Click here to activate web notifications."]]]
              [:a.dismiss {:on-click #(raise! owner [:dismiss-web-notif-banner-one])}
               [:i.material-icons "clear"]]])
           ;; This is getting ridiculous, make a controller that can dismiss these banners
           ;; based on input lol
+          ;;
+          ;;Change this if to a when, when you're done testing
           (when (and dismissed-banner-one
-                     ;; TODO -ac Remember, for quick implementation's sake, you need to
-                     ;; write dismissed-banner-two controller!!!
-                     (not dismissed-banner-two))
-            [:div.alert
-             {:class ""#_(cond (notifications/notifications-permission)
-                               "default" ".alert-danger"
-                               "denied" ".alert-danger"
-                               "allowed" ".alert-success")}
-             [:div.usage-message
-              [:div.text
-               #_(cond (notifications/notifications-permission)
-                       "default" "If you change your mind you can go to this link to turn web notification on: "
-                       "denied" "Thanks for turning on web notifications! If you want to change settings go to: "
-                       "allowed" "If you change your mind you can go to this link to turn web notification on: ")
-               [:a.dismiss {:href "/account/notifications"}
-                [:i.material-icons "clear"]]]]])
-          ;; (notifications/request-permission #(do (raise! owner [:asked-about-web-notifications])
-          ;;                                        (raise! owner [:set-web-notifications {:enabled? true}])))
+                   ;; TODO -ac Remember, for quick implementation's sake, you need to
+                   ;; write dismissed-banner-two controller!!!
+                   (not dismissed-banner-two))
+
+            (html [:div.alert{:class (condp = (notifications/notifications-permission)
+                                       "default" "alert-danger"
+                                       "denied" "alert-danger"
+                                       "allowed" "alert-success")}
+
+                   (.log js/console (notifications/notifications-permission))
+                   [:div.usage-message
+                    [:div.text
+                     (let [darn "If you change your mind you can go to this link to turn web notifications on: "]
+                       (condp = (notifications/notifications-permission)
+                         "default" darn
+                         "denied"  darn
+                         "allowed" "Thanks for turning on web notifications! If you want to change settings go to: "))
+                     [:a {:href "/account/notifications/"} "Account Notifications"]
+                     [:a.dismiss {:on-click #(raise! owner [:dismiss-web-notif-banner-two])}
+                      [:i.material-icons "clear"]]]]]))
           (if-not build
            [:div
              (om/build common/flashes (get-in app state/error-message-path))
