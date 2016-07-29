@@ -25,13 +25,14 @@
                         :type #{:right :shrink}
                         :cell-fn #(html
                                     (let [parallelism (project-model/parallelism %)
-                                          buildable-parallelism (project-model/buildable-parallelism plan %)
+                                          buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
                                           vcs-url (:vcs_url %)]
                                       [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type routes/->short-vcs)
                                                                                    :org (vcs-url/org-name vcs-url)
                                                                                    :repo (vcs-url/repo-name vcs-url)
                                                                                    :_fragment "parallel-builds"})}
-                                       parallelism "x out of " buildable-parallelism "x"]))}
+                                       parallelism "x"
+                                       (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
 
                        {:header "Team"
                         :type #{:right :shrink}
