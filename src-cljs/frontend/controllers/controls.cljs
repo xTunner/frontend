@@ -1517,3 +1517,15 @@
 (defmethod control-event :set-web-notifications
   [_ _ {:keys [enabled?]} state]
   (assoc-in state state/web-notifications-enabled?-path enabled?))
+
+(defmethod control-event :asked-about-web-notifications
+  [_ _ _ state]
+  (assoc-in state state/asked-about-web-notifications? true))
+
+(defmethod control-event :dismiss-web-notif-banner-one
+  [_ _ _ state]
+  (assoc-in state state/dismissed-web-notif-banner-one? true))
+
+(defmethod control-event :dismiss-web-notif-banner-two
+  [_ _ _ state]
+  (assoc-in state state/dismissed-web-notif-banner-two? true))
