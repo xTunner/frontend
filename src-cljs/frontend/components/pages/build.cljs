@@ -71,6 +71,17 @@
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
 
+(defn- merge-actions [{:keys [build]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [pull-request-number (first (build-model/pull-request-numbers build))]
+        (html
+         [:div.rebuild-container
+          [:button.rebuild {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])}
+           [:i.octicon.octicon-git-merge.rebuild-icon]
+           (str "Merge PR#" pull-request-number)]])))))
+
 (defn- header-actions
   [data owner]
   (reify
@@ -98,6 +109,8 @@
                 "cancel build"]))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
+           (when (build-model/can-merge? build)
+             (om/build merge-actions {:build build}))
            (when can-write-settings?
              [:div.build-settings
               [:a.build-action

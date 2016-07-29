@@ -471,6 +471,10 @@
                             :properties {:no-cache? no-cache?}}))))))
 
 
+(defmethod post-control-event! :merge-pull-request-clicked
+  [target message args previous-state current-state]
+  (.log js/console (str args)))
+
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]
   (let [api-ch (-> current-state :comms :api)

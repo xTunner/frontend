@@ -276,3 +276,8 @@
   {:build-id  (id build)
    :vcs-url   (:vcs_url build)
    :build-num (:build_num build)})
+
+(defn merge-args [build pull-request-number]
+  {:owner (:username build)
+   :repo (:reponame build)
+   :number pull-request-number})
