@@ -1,0 +1,39 @@
+.ns("frontend.components.pieces.top-banner", {
+    .ui("banner", {
+        position: relative;
+        margin-bottom: 15px;
+        height: 70px;
+        padding: 15px;
+
+        &.yellow {
+            background-color: @yellowLightest;
+        }
+
+        &.red {
+            background-color: @redLightest;
+        }
+
+        &.green {
+            background-color: @greenLightest;
+        }
+
+        > .text {
+            .banner-alert-icon {
+                padding-right: ((2 / 3) * 15px);
+                margin-left: 0;
+                margin-right: 10px;
+
+                &.warning {
+                    color: @yellow;
+                }
+            }
+            .banner-dismiss {
+                cursor: pointer;
+                position: absolute;
+                top: 5px;
+                right: 5px;
+            }
+        }
+    });
+});
+

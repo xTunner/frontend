@@ -8,7 +8,6 @@
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
-            [frontend.notifications :as notifications]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
@@ -436,61 +435,9 @@
             container-data (get-in app state/container-data-path)
             invite-data (:invite-data app)
             project-data (get-in app state/project-data-path)
-            user (get-in app state/user-path)
-            ;; asked-about-notifications-on-build-page (get-in app state/asked-about-web-notifications?)
-            dismissed-banner-one (get-in app state/dismissed-web-notif-banner-one?)
-            dismissed-banner-two (get-in app state/dismissed-web-notif-banner-two?)]
-        ;; (when (and (not asked-about-notifications-on-build-page)
-        ;;            (= (notifications/notifications-permission) "default")
-        ;;            (ld/feature-on? "web-notifications"))
-        ;;   ;; Ugh, no, you NEED to show a banner based on the user's input,
-        ;;   ;; done through this callback
-        ;;   (notifications/request-permission #(do (raise! owner [:asked-about-web-notifications])
-        ;;                                          (raise! owner [:set-web-notifications {:enabled? true}]))))
+            user (get-in app state/user-path)]
         (html
          [:div.build-info-v2
-          (when (and (not dismissed-banner-one)
-                     (= (notifications/notifications-permission) "default")
-                     (ld/feature-on? "web-notifications"))
-            [:div.alert.alert-warning
-             [:div.usage-message
-              [:div.text
-               [:b "New: "] "You can now get web notifications when your build is done! "
-               [:a
-                {:href "#"
-                 :on-click #(notifications/request-permission
-                              (fn [response]
-                                ;; TODO -ac Track this repspnosseee
-                                (.log js/console "Track this response lol:" response)
-                                (raise! owner [:dismiss-web-notif-banner-one])))}
-                "Click here to activate web notifications."]]]
-             [:a.dismiss {:on-click #(raise! owner [:dismiss-web-notif-banner-one])}
-              [:i.material-icons "clear"]]])
-          ;; This is getting ridiculous, make a controller that can dismiss these banners
-          ;; based on input lol
-          ;;
-          ;;Change this if to a when, when you're done testing
-          (when (and dismissed-banner-one
-                   ;; TODO -ac Remember, for quick implementation's sake, you need to
-                   ;; write dismissed-banner-two controller!!!
-                   (not dismissed-banner-two))
-
-            (html [:div.alert{:class (condp = (notifications/notifications-permission)
-                                       "default" "alert-danger"
-                                       "denied" "alert-danger"
-                                       "allowed" "alert-success")}
-
-                   (.log js/console (notifications/notifications-permission))
-                   [:div.usage-message
-                    [:div.text
-                     (let [darn "If you change your mind you can go to this link to turn web notifications on: "]
-                       (condp = (notifications/notifications-permission)
-                         "default" darn
-                         "denied"  darn
-                         "allowed" "Thanks for turning on web notifications! If you want to change settings go to: "))
-                     [:a {:href "/account/notifications/"} "Account Notifications"]
-                     [:a.dismiss {:on-click #(raise! owner [:dismiss-web-notif-banner-two])}
-                      [:i.material-icons "clear"]]]]]))
           (if-not build
            [:div
              (om/build common/flashes (get-in app state/error-message-path))
