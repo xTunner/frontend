@@ -1,132 +1,114 @@
 .ns("frontend.components.pieces.topbar", {
-    .ui("topbar", {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        // TOOD This is a stopgap solution to the stacking context issue.
-        //
-        // Right now we do something like this:
-        // http://codepen.io/peeja/pen/NAzwAg
-        // Ideally, we\'ll move to something like this:
-        // http://codepen.io/peeja/pen/GqGOAq
-        z-index: 1;
+  .ui("topbar", {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    // TOOD This is a stopgap solution to the stacking context issue.
+    //
+    // Right now we do something like this:
+    // http://codepen.io/peeja/pen/NAzwAg
+    // Ideally, we\'ll move to something like this:
+    // http://codepen.io/peeja/pen/GqGOAq
+    z-index: 1;
 
-        > .bar {
-            display: flex;
-            display: -webkit-flex;
-            flex-direction: row;
-            background-color: @top-bar-color;
-            background-color: @grayDark;
+    > .bar {
+      .flexy(row, space-between);
+      background-color: @top-bar-color;
+      background-color: @grayDark;
+      height: @top-bar-height;
+
+      > .header-nav {
+        padding: 0;
+        list-style: none;
+
+        &.left, &.right {
+          position: absolute;
+        }
+
+        &.left {
+          left: 0;
+        }
+        &.right {
+          right: 0;
+        }
+
+
+        > .logo {
+          position: absolute;
+          top: 27%;
+          left: 34%;
+
+          > .logomark {
+            .flexy(center, center);
+            .icon-style(@white, (@em * 2));
+            width: 60px;
             height: @top-bar-height;
-            justify-content: space-between;
 
-            .logo {
-                // TOOD -ac Add these 50% and transform prop back in and move the
-                // logo out of .left to make it sit in the middle
-                // top: 50%;
-                // left: 50%;
-                // transform: translate(-50%, -50%);
-                position: absolute;
-                top: 27%;
-                left: 34%;
+            > i {
+              opacity: 1;
             }
-            .logomark {
-                .flexy(center, center);
-                .icon-style(@white, (@em * 2));
-                width: 60px;
-                height: @top-bar-height;
-                i {
-                    opacity: 1;
-                }
-            }
+          }
+        }
 
-            .header-nav {
-                padding: 0;
-                list-style: none;
+        > .header-nav-item {
+          > a {
+            text-decoration: none;
+          }
+          float: left;
 
-                &.left, &.right {
-                    position: absolute;
-                }
+          &:hover {
+            background-color: @grayDark;
+          }
 
-                &.left {
-                    left: 0;
-                }
-                &.right {
-                    right: 0;
-                }
-            }
+          &.border-right {
+            border-right: 1px solid #444;
+          }
 
-            .header-nav-item {
-                float: left;
 
-                &:hover {
-                    background-color: @grayDark;
-                }
+          > .header-nav-link {
+            display: block;
+            padding: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 20px;
+            color: @white;
 
-                &.border-right {
-                    border-right: 1px solid #444;
-                }
-            }
-
-            .header-nav-link {
-                display: block;
-                padding: 20px;
-                font-size: 13px;
-                font-weight: bold;
-                line-height: 20px;
-                color: @white;
-            }
-
-            .name {
-                padding: 16px;
-            }
 
             // TODO -ac Note, this should become its own component, since we
             // reuse it - *a lot*
-            .gravatar {
-                min-width: 28px;
-                height: 28px;
-                border-radius: 50%;
-                border: 1px solid @white;
+            > .gravatar {
+              min-width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              border: 1px solid @white;
             }
+          }
 
-            .dropbtn {
-                font-size: 16px;
-                border: none;
-                cursor: pointer;
-                display: block;
-                height: @top-bar-height;
-            }
 
-            .top-nav-dropdown {
-                position: relative;
-                display: inline-block;
-
-                a {
-                    text-decoration: none;
-                }
-
-                &:hover {
-                    .dropdown-content {
-                        display: block;
-                        right: 0;
-                    }
-                }
-            }
-            .dropdown-menu {
-                // TODO -ac Doesn\'t seem to work?
-                width: 100%;
-
-                li > a {
-                    white-space: pre-wrap;
-                }
-
-                .disabled {
-                    color: @gray;
-                    background-color: @grayDarker;
-                }
-            }
+          > .dropbtn {
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            display: block;
+            height: @top-bar-height;
+          }
         }
-    });
+
+        > .dropdown-menu {
+          // TODO -ac Doesn\'t seem to work?
+          width: 100%;
+
+          > li > a {
+            white-space: pre-wrap;
+          }
+
+          > .disabled {
+            color: @gray;
+            background-color: @grayDarker;
+          }
+        }
+      }
+    }
+  });
 });

@@ -6,13 +6,13 @@
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn topbar
-  ":support-info      This is most likely going to be the output of the function
-                      (common/contact-support-a-info owner), but regardless it
-                      should be a map defining the attributes of the support link
+  ":support-info This is most likely going to be the output of the function
+                 (common/contact-support-a-info owner), but regardless it
+                 should be a map defining the attributes of the support link
 
-   :user              We will eventually extract more from the user, but its
-                      good hygene to be as reusable as possible. For now, we
-                      only extract the avatar-url"
+   :user         We will eventually extract more from the user, but its
+                 good hygene to be as reusable as possible. For now, we
+                 only extract the avatar-url"
   [{:keys [support-info user]}]
   (let [avatar-url (gh-utils/make-avatar-url user :size 60)]
     (component
