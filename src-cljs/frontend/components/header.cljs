@@ -63,14 +63,15 @@
         (html
           [:div.head-user
            [:ol.breadcrumb (crumbs/crumbs crumbs-data)]
-           (when (show-follow-project-button? app)
-             (forms/managed-button
-              [:button#follow-project-button
-               {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
-                :data-spinner true}
-               "follow the " (vcs-url/repo-name vcs-url) " project"]))
            (settings-link app owner)
-           actions])))))
+           [:div.actions
+            actions
+            (when (show-follow-project-button? app)
+              (forms/managed-button
+               [:button#follow-project-button.btn.btn-primary
+                {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                 :data-spinner true}
+                "follow the " (vcs-url/repo-name vcs-url) " project"]))]])))))
 
 (defn head-admin [app owner]
   (reify
