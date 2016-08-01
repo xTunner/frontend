@@ -7,6 +7,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
@@ -28,7 +29,7 @@
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
-            [frontend.components.pieces.button :as button])
+            [frontend.components.pieces.card :as card])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn branch-names [project-data]
@@ -437,63 +438,79 @@
 
 (defn env-vars [project-data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [project (:project project-data)
             inputs (inputs/get-inputs-from-app-state owner)
             new-env-var-name (:new-env-var-name inputs)
             new-env-var-value (:new-env-var-value inputs)
             project-id (project-model/id project)]
         (html
+         ;; The :section and :article here are artifacts of the legacy styling
+         ;; of the settings pages, and should go away as the structure of the
+         ;; settings pages is addressed.
          [:section
           [:article
-           [:h2 "Environment Variables for " (vcs-url/project-name (:vcs_url project))]
-           [:div
-            [:p
-             "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
-             "The values can be any bash expression and can reference other variables, such as setting "
-             [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
+           (card/titled
+            {:action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                     :primary? true
+                                     :size :medium}
+                             "Add Variable")}
+            (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
+            (html
+             [:div
+              [:p
+               "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
+               "The values can be any bash expression and can reference other variables, such as setting "
+               [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
 
-            [:p
-             " To disable string substitution you need to escape the " [:code "$"]
-             " characters by prefixing them with " [:code "\\"] "."
-             " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "." ]
-            [:form
-             [:div.form-group
-              [:label "Name"]
-              [:input.form-control#env-var-name
-               {:required true, :type "text", :value new-env-var-name
-                :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]]
-             [:div.form-group
-              [:label "Value"]
-              [:input.form-control#env-var-value
-               {:required true
-                :type "text"
-                :value new-env-var-value
-                :auto-complete "off"
-                :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]
-
-             [:div.form-group
-              (forms/managed-button
-               [:input.btn.btn-primary {:data-failed-text "Failed",
-                                        :data-success-text "Added",
-                                        :data-loading-text "Adding...",
-                                        :value "Add Variable",
-                                        :type "submit"
-                                        :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]]
-            (when-let [env-vars (seq (:envvars project-data))]
-              (om/build table/table
-                        {:rows env-vars
-                         :columns [{:header "Name"
-                                    :cell-fn :name}
-                                   {:header "Value"
-                                    :cell-fn :value}
-                                   {:header "Remove"
-                                    :type #{:shrink :right}
-                                    :cell-fn
-                                    (fn [env-var]
-                                      (om/build remove-env-var-button {:env-var env-var
-                                                                       :project-id project-id}))}]}))]]])))))
+              [:p
+               " To disable string substitution you need to escape the " [:code "$"]
+               " characters by prefixing them with " [:code "\\"] "."
+               " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
+              (when show-modal?
+                (let [close-fn #(om/set-state! owner :show-modal? false)]
+                  (modal/modal-dialog {:title "Add an Environment Variable"
+                                       :body (html
+                                              [:form
+                                               [:div.form-group
+                                                [:label "Name"]
+                                                [:input.form-control#env-var-name
+                                                 {:required true ,:type "text" ,:value new-env-var-name
+                                                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]]
+                                               [:div.form-group
+                                                [:label "Value"]
+                                                [:input.form-control#env-var-value
+                                                 {:required true
+                                                  :type "text"
+                                                  :value new-env-var-value
+                                                  :auto-complete "off"
+                                                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]])
+                                       :actions [(button/button {:on-click close-fn} "Cancel")
+                                                 (forms/managed-button
+                                                  [:input.btn.btn-primary {:data-failed-text "Failed" ,
+                                                                           :data-success-text "Added" ,
+                                                                           :data-loading-text "Adding..." ,
+                                                                           :value "Add Variable" ,
+                                                                           :type "submit"
+                                                                           :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]
+                                       :close-fn close-fn})))
+              (when-let [env-vars (seq (:envvars project-data))]
+                (om/build table/table
+                          {:rows env-vars
+                           :columns [{:header "Name"
+                                      :cell-fn :name}
+                                     {:header "Value"
+                                      :cell-fn :value}
+                                     {:header "Remove"
+                                      :type #{:shrink :right}
+                                      :cell-fn
+                                      (fn [env-var]
+                                        (om/build remove-env-var-button {:env-var env-var
+                                                                         :project-id project-id}))}]}))]))]])))))
 
 (defn advance [project-data owner]
   (reify
