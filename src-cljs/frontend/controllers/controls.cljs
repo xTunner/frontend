@@ -1518,8 +1518,6 @@
   [_ _ {:keys [enabled? response]} state]
   (assoc-in state state/web-notifications-enabled?-path enabled?))
 
-; Should probably actuall just grab the post-event for set-web-notifs hereeeeee
-
 (defmethod post-control-event! :set-web-notifications
   [_ _ {:keys [enabled? response]} state]
   (when enabled?
@@ -1538,9 +1536,10 @@
     "two"  (assoc-in state state/dismissed-web-notif-banner-two? true)))
 
 (defmethod post-control-event! :dismiss-web-notif-banner
-  [_ _ _ {:keys [banner-number]} current-state]
+  [_ _ {:keys [banner-number response]} current-state]
   (condp = banner-number
     "one" (analytics/track {:event-type :web-notification-banner-one-dismissed
-                            :current-state current-state})
+                            :current-state current-state
+                            :properties {:response response}})
     "two" (analytics/track {:event-type :web-notification-banner-two-dismissed
                             :current-state current-state})))
