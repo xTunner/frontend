@@ -1769,9 +1769,10 @@
 
         (when show-modal?
           (modal/modal-dialog {:title "Upload a New Apple Code Signing Key"
-                               :body [:div
-                                      (om/build common/flashes error-message)
-                                      upload-form]
+                               :body (html
+                                      [:div
+                                       (om/build common/flashes error-message)
+                                       upload-form])
                                :actions [upload-button]
                                :close-fn close-fn}))))))
 
