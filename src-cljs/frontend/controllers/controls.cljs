@@ -1530,7 +1530,7 @@
   (assoc-in state state/asked-about-web-notifications? true))
 
 (defmethod control-event :dismiss-web-notif-banner
-  [_ _ {:keys [banner-number response]} state]
+  [_ _ {:keys [banner-number _]} state]
   (condp = banner-number
     "one"  (assoc-in state state/dismissed-web-notif-banner-one? true)
     "two"  (assoc-in state state/dismissed-web-notif-banner-two? true)))

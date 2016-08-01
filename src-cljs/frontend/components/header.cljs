@@ -420,7 +420,7 @@
                                                                         [:a {:href "/account/notifications/"} "Account Notifications"]]
                                                            :impression nil
                                                            :dismissable-fn #(raise! owner [:dismiss-web-notif-banner {:banner-number "two"}])
-                                                           :owner owner})))
+                                                           :owner nil})))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user params))])))))
 

@@ -6,11 +6,21 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn banner
-  ":html             HTML to go inside the banner
+(defn render-banner [{:keys [color inner-html dismissable-fn]}])
 
-  :dismissable-fn    If you supply this argument, this is the function that will
-                     attached to the dismissal 'x', so it should clear the banner"
+(defn banner
+  ":color            Can be one of green, yellow, or red, the background color
+                     of the banner.
+
+   :impression       When not nil, inserts an impression tracking event
+
+   :inner-html       HTML to go inside the banner
+
+   :dismissable-fn   If you supply this argument, this is the function that will
+                     attached to the dismissal 'x', so it should clear the banner
+
+   :owner            Needed for tracking impressions, can be nil when no tracking
+                     is happening"
   [{:keys [color inner-html impression dismissable-fn owner]}]
   (reify
     om/IDidMount
