@@ -467,15 +467,15 @@
                "The values can be any bash expression and can reference other variables, such as setting "
                [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
 
-              [:p
-               " To disable string substitution you need to escape the " [:code "$"]
-               " characters by prefixing them with " [:code "\\"] "."
-               " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
               (when show-modal?
                 (let [close-fn #(om/set-state! owner :show-modal? false)]
                   (modal/modal-dialog {:title "Add an Environment Variable"
                                        :body (html
                                               [:form
+                                               [:p
+                                                " To disable string substitution you need to escape the " [:code "$"]
+                                                " characters by prefixing them with " [:code "\\"] "."
+                                                " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
                                                [:div.form-group
                                                 [:label "Name"]
                                                 [:input.form-control#env-var-name
