@@ -389,11 +389,11 @@
              (cond
                (and (= (n/notifications-permission) "default")
                     (not dismissed-banner-one)) (om/build top-banner/banner
-                                                          {:color "yellow"
-                                                           :inner-html [:div
+                                                          {:banner-type "warning"
+                                                           :content [:div
                                                                         [:span.banner-alert-icon
                                                                          [:img {:src (common/icon-path "Info-Info")}]]
-                                                                        [:b "New: "] "You can now get web notifications when your build is done! "
+                                                                        [:b "  New: "] "You can now get web notifications when your build is done! "
                                                                         [:a
                                                                          {:href "#"
                                                                           :on-click #(n/request-permission
@@ -403,24 +403,20 @@
                                                                                          (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true
                                                                                                                                                              :response response}]))))}
                                                                          "Click here to activate web notifications."]]
-                                                           :impression  :web-notification-banner-impression
-                                                           :dismissable-fn nil
-                                                           :owner owner})
+                                                           :impression-event-type  :web-notification-banner-impression})
                (and dismissed-banner-one
                     (not dismissed-banner-two)) (om/build top-banner/banner
-                                                          {:color (condp = (n/notifications-permission)
-                                                                    "default" "red"
-                                                                    "denied" "red"
-                                                                    "granted" "green")
-                                                           :inner-html [:div (let [darn "If you change your mind you can go to this link to turn web notifications on: "]
-                                                                               (condp = (n/notifications-permission)
-                                                                                 "default" darn
-                                                                                 "denied"  darn
-                                                                                 "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
-                                                                        [:a {:href "/account/notifications/"} "Account Notifications"]]
-                                                           :impression nil
-                                                           :dismissable-fn #(raise! owner [:dismiss-web-notif-banner {:banner-number "two"}])
-                                                           :owner nil})))
+                                                          {:banner-type (case (n/notifications-permission)
+                                                                          "default" "danger"
+                                                                          "denied" "danger"
+                                                                          "granted" "success")
+                                                           :content [:div (let [not-granted-message "If you change your mind you can go to this link to turn web notifications on: "]
+                                                                            (case (n/notifications-permission)
+                                                                              "default" not-granted-message
+                                                                              "denied"  not-granted-message
+                                                                              "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
+                                                                     [:a {:href "/account/notifications/"} "Account Notifications"]]
+                                                           :dismiss-fn #(raise! owner [:dismiss-web-notif-banner {:banner-number "two"}])})))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user params))])))))
 

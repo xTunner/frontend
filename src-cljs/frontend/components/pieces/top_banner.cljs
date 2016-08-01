@@ -6,62 +6,65 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn render-banner [{:keys [color inner-html dismissable-fn]}])
-
 (defn banner
-  ":color            Can be one of green, yellow, or red, the background color
-                     of the banner.
+  "Banners create a colored section on the screen with content informing the
+  user of an event that has, will, or should take place. Banners should either
+  disappear by themselves, after an event, or be dismissable (have a little (X)
+  at the top right corner), and are *not* meant to be permanent interfaces.
 
-   :impression       When not nil, inserts an impression tracking event
+  :banner-type                  Can be one of :success, :warning, or :danger,
+  determines the background color of the banner.
 
-   :inner-html       HTML to go inside the banner
+  :impression-event-type-event-type (optional) The event banner-type which will be tracked when
+  this banner displays. If not given, no event will be
+  tracked.
 
-   :dismissable-fn   If you supply this argument, this is the function that will
-                     attached to the dismissal 'x', so it should clear the banner
+  :content               Content to go inside the banner.
 
-   :owner            Needed for tracking impressions, can be nil when no tracking
-                     is happening"
-  [{:keys [color inner-html impression dismissable-fn owner]}]
+  :dismiss-fn            (optional) A function which will be called when the
+  banner's dismiss button (X) is clicked. If not given,
+  no dismiss button will be shown."
+
+  [{:keys [banner-type content impression-event-type dismiss-fn]} owner]
   (reify
     om/IDidMount
     (did-mount [_]
-      (when (not (nil? impression))
-                 ((om/get-shared owner :track-event) {:event-type impression})))
+      (when (not (nil? impression-event-type))
+        ((om/get-shared owner :track-event) {:event-type impression-event-type})))
     om/IRender
     (render [_]
       (component
         (html
-          [:div {:class color}
+          [:div {:class banner-type}
            [:div.text
-            inner-html
-            (when (not (nil? dismissable-fn))
+            content
+            (when (not (nil? dismiss-fn))
               [:a.banner-dismiss
-               {:on-click #(dismissable-fn)}
+               {:on-click dismiss-fn}
                [:i.material-icons "clear"]])]])))))
 
 (dc/do
-  (defcard successful-banner
+  (defcard banners
     (html
-     [:div
-      (om/build banner {:color "green"
-              :inner-html [:span "A success banner."]
-              :impression nil
-              :dismissable-fn nil
-              :owner nil})
-     (om/build banner {:color "yellow"
-              :inner-html [:span "A warning banner."]
-              :impression nil
-              :dismissable-fn nil
-              :owner nil})
-     (om/build banner {:color "red"
-              :inner-html [:span "A dangerous banner!"]
-              :impression nil
-              :dismissable-fn nil
-              :owner nil})]))
+      [:div
+     (om/build banner {:banner-type "success"
+                       :content [:span "A success banner."]
+                       :impression-event-type nil
+                       :dismiss-fn nil
+                       :owner nil})
+     (om/build banner {:banner-type "warning"
+                       :content [:span "A warning banner."]
+                       :impression-event-type nil
+                       :dismiss-fn nil
+                       :owner nil})
+     (om/build banner {:banner-type "danger"
+                       :content [:span "A dangerous banner!"]
+                       :impression-event-type nil
+                       :dismiss-fn nil
+                       :owner nil})]))
   (defcard green-banner-dismissable
-    (html
-     (om/build banner {:color "green"
-              :inner-html [:span "Some inner HTML!"]
-              :impression nil
-              :dismissable-fn #(.log js/console "Faux dimissal function.")
-              :owner nil}))))
+    (om/build banner {:banner-type "success"
+                      :content [:span "Some inner content for a card!"]
+                      :impression-event-type nil
+                      :dismiss-fn #(.log js/console "Faux dimissal function.")
+                      :owner nil})))

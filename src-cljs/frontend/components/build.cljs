@@ -21,7 +21,6 @@
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.html :refer [open-ext]]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [find-index]]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
