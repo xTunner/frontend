@@ -432,7 +432,7 @@
                                            (button/button {:primary? true
                                                            :on-click #(raise! owner [:deleted-env-var {:project-id project-id
                                                                                                        :env-var-name (:name env-var)}])}
-                                                          "Delete")]
+                                                          "Remove")]
                                  :close-fn close-fn})))]))))
 
 (defn env-vars [project-data owner]
@@ -1653,7 +1653,7 @@
                                                            :on-click #(raise! owner
                                                                               [:delete-p12
                                                                                (select-keys row [:project-name :vcs-type :id])])}
-                                                          "Delete")]
+                                                          "Remove")]
                                  :close-fn close-fn})))]))))
 
 (defn p12-key-table [{:keys [rows]} owner]
