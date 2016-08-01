@@ -14,9 +14,15 @@
       line-height: 1;
       color: @grayLighter;
 
-      .octicon,
-      .material-icons {
-        // OVERRIDE--ICON-STYLE
+      // WARNING: Non-exemplary code. This styles a node which this component
+      // does not render. The icon is often an .octicon or a .material-icons,
+      // but these are styled across the app (and shouldn\'t be). This block
+      // resets their style, so we don\'t have to do it in every place we pass
+      // one in. When they\'re no longer styled app-wide, this block can go
+      // away.
+      // OVERRIDE--ICON-STYLE
+      > .octicon,
+      > .material-icons {
         font-size: inherit;
         color: inherit;
         margin-left: 0;
