@@ -30,10 +30,9 @@
 (defn titled
   "A card with a title.
 
+  :title - The card title.
   :action - (optional) An action to place on the right of the header."
-  ([title content]
-   (titled {} title content))
-  ([{:keys [action]} title content]
+  ([{:keys [title action]} content]
    (exterior
     (list
      (header title action)
@@ -47,18 +46,17 @@
     {:classname "background-gray"})
 
   (defcard titled-card
-    (titled
-     "Card Title (Generally in Title Case)"
+    (titled {:title "Card Title (Generally in Title Case)"}
      "Some content.")
     {}
     {:classname "background-gray"})
 
   (defcard titled-card-with-action
     (titled
-     {:action (button/button {:primary? true
+     {:title "Card Title (Generally in Title Case)"
+      :action (button/button {:primary? true
                               :size :medium}
                              "Action")}
-     "Card Title (Generally in Title Case)"
      "Some content.")
     {}
     {:classname "background-gray"}))

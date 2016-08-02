@@ -101,14 +101,13 @@
               (html [:div.loading-spinner common/spinner])))]
           [:.main
            (if-let [[_ [vcs-type name]] selected-org-ident]
-             (card/titled
-              (html
-               [:span
-                name
-                (case vcs-type
-                  "github" [:i.octicon.octicon-mark-github]
-                  "bitbucket" [:i.fa.fa-bitbucket]
-                  nil)])
+             (card/titled {:title (html
+                                   [:span
+                                    name
+                                    (case vcs-type
+                                      "github" [:i.octicon.octicon-mark-github]
+                                      "bitbucket" [:i.fa.fa-bitbucket]
+                                      nil)])}
               (if-let [users (:users selected-org)]
                 (table (add-follow-counts users (:projects selected-org)))
                 (html [:div.loading-spinner common/spinner])))

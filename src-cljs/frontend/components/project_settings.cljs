@@ -455,11 +455,11 @@
          [:section
           [:article
            (card/titled
-            {:action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+            {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
+             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                      :primary? true
                                      :size :medium}
-                             "Add Variable")}
-            (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
+                                    "Add Variable")}
             (html
              [:div
               [:p
