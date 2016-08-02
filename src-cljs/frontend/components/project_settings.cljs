@@ -29,6 +29,7 @@
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card])
   (:require-macros [frontend.utils :refer [html]]))
 

@@ -361,7 +361,7 @@
                      [:a {:href "javascript:void(0)"
                           :on-click #(notifications/request-permission
                                        (fn [response]
-                                         (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true}]))))}
+                                         (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true :response response}]))))}
                       "click here to turn permissions on."]]
           nil)
         [:div.section

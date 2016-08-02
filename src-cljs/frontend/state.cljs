@@ -215,6 +215,9 @@
 (def dismissed-trial-offer-banner (conj browser-settings-path :dismissed-trial-offer-banner))
 (def dismissed-trial-update-banner (conj browser-settings-path :dismissed-trial-update-banner))
 (def web-notifications-enabled?-path (conj browser-settings-path :web-notifications-enabled?))
+(def asked-about-web-notifications? (conj browser-settings-path :asked-about-web-notifications?))
+(def dismissed-web-notif-banner-one? (conj browser-settings-path :dismissed-web-notif-banner-one?))
+(def dismissed-web-notif-banner-two? (conj browser-settings-path :dismissed-web-notif-banner-two?))
 
 (def add-projects-settings-path (conj settings-path :add-projects))
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
