@@ -779,7 +779,7 @@
 [data-component="frontend.components.project-settings/p12-upload-form"] {
   .label {
     padding: 0px;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     font-size: @fontSizeSmaller;
     color: @gray;
   }
@@ -788,22 +788,21 @@
     width: 100%;
     height: 30px;
     border: 1px solid @blueLight;
-    font-size: @fontSizeSmaller;
+    font-size: @fontSizeSmall;
     color: @gray;
     margin-bottom: 25px;
     padding-left: 10px;
 
     &:focus {
       border: 1px solid @blueLightest;
-      box-shadow: 0 0 4px @blueLightest;
+      box-shadow: 0 0 4px @blueLight;
       outline: none;
     }
   }
 
   .drag-and-drop-area {
     width: 100%;
-    height: 90px;
-    padding-top: 15px;
+    padding: 15px;
     margin-bottom: 100px;
     border: 1px dashed @blueLight;
     text-align: center;
@@ -811,7 +810,7 @@
 
   .dragged-over {
     border: 1px dashed @blueLightest;
-    box-shadow: 0 0 4px @blueLightest;
+    box-shadow: 0 0 4px @blueLight;
     outline: none;
   }
 
@@ -820,15 +819,15 @@
   }
 
   .p12-file-input {
-    min-width: 160px;
+    min-width: 155px;
     min-height: 30px;
     margin-top: 12px;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 4px;
+    padding-bottom: 4px;
     padding-right: 15px;
     color: @gray;
     background: @grayLightest;
-    border: 1px solid @button-border;
+    border: 1px solid fade(@black, 10%); // or #ccc
     border-radius: 3px;
     font-weight: 300;
     cursor: pointer;
@@ -836,6 +835,11 @@
 
     &:hover {
       background: @whiten;
+    }
+
+    .material-icons {
+      margin-top: -2px;
+      margin-right: 4px;
     }
   }
 
@@ -846,15 +850,17 @@
 }
 
 .upload-p12-button {
-  min-width: 160px;
+  min-width: 155px;
   min-height: 35px;
   color: @white;
   background: @blue;
-  border: 1px solid @button-border;
+  border: 1px solid fade(@black, 10%); // or #27a0b6
   border-radius: 3px;
+  padding-top: 2px;
 
   &:hover {
     background: @blueDark;
+    border: 1px solid fade(@black, 10%); // or #1d8494
   }
 
   &:disabled {
@@ -862,6 +868,7 @@
     color: @grayLight;
     text-shadow: 0 1px 0 @white;
     border: 1px solid @grayLighter;
+    padding-top: 4px;
   }
 }
 
