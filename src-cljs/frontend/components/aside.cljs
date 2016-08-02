@@ -21,7 +21,8 @@
             [goog.style]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [frontend.utils.html :refer [open-ext]])
+            [frontend.utils.html :refer [open-ext]]
+            [frontend.utils.launchdarkly :as ld])
   (:require-macros [frontend.utils :refer [html inspect]]))
 
 (defn status-ico-name [build]
@@ -96,57 +97,57 @@
   (reify
     om/IDisplayName (display-name [_] "Aside Branch List")
     om/IRender
-    (render [_]
-      (let [branches-filter (if show-all-branches?
-                              (constantly true)
+      (render [_]
+        (let [branches-filter (if show-all-branches?
+                                (constantly true)
                               (partial project-model/personal-branch? identities))]
-        (html
-         [:ul.branches
-          (for [branch (filter branches-filter branches)]
-            (let [project (:project branch)
-                  latest-build (last (sort-by :build_num (concat (:running_builds branch)
-                                                                 (:recent_builds branch))))
-                  vcs-url (:vcs_url project)
-                  org-name (project-model/org-name project)
-                  repo-name (project-model/repo-name project)]
-              [:li {:class (when (and (= org-name (:org navigation-data))
-                                      (= repo-name (:repo navigation-data))
-                                      (= (name (:identifier branch))
-                                         (:branch navigation-data)))
-                             "selected")}
-               [:a {:href (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
-                                                     :org (:username project)
-                                                     :repo (:reponame project)
-                                                     :branch (name (:identifier branch))})
-                    :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
-                                                                    :properties {:repo repo-name
-                                                                                 :org org-name
-                                                                                 :branch (name (:identifier branch))}})}
-                [:.branch
-                 [:.last-build-status
-                  (om/build svg {:class "badge-icon"
-                                 :src (-> latest-build build-model/status-icon common/icon-path)})]
-                 [:.branch-info
-                  (when show-project?
-                    [:.project-name
-                     {:title (project-model/project-name project)}
-                     (project-model/project-name project)])
-                  [:.branch-name
-                   {:title (utils/display-branch (:identifier branch))}
-                   (utils/display-branch (:identifier branch))]
-                  (let [last-activity-time (project-model/most-recent-activity-time branch)]
-                    [:.last-build-info
-                     {:title (when last-activity-time
-                               (datetime/full-datetime (js/Date.parse last-activity-time)))}
-                     (if last-activity-time
-                       (list
-                        (om/build common/updating-duration
-                                  {:start last-activity-time}
-                                  {:opts {:formatter datetime/time-ago}})
-                        " ago")
-                       "never")])]]]
-               (when show-project?
-                 (project-settings-link {:project project} owner))]))])))))
+          (html
+           [:ul.branches
+            (for [branch (filter branches-filter branches)]
+              (let [project (:project branch)
+                    latest-build (last (sort-by :build_num (concat (:running_builds branch)
+                                                                   (:recent_builds branch))))
+                    vcs-url (:vcs_url project)
+                    org-name (project-model/org-name project)
+                    repo-name (project-model/repo-name project)]
+                [:li {:class (when (and (= org-name (:org navigation-data))
+                                        (= repo-name (:repo navigation-data))
+                                        (= (name (:identifier branch))
+                                           (:branch navigation-data)))
+                               "selected")}
+                 [:a {:href (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
+                                                       :org (:username project)
+                                                       :repo (:reponame project)
+                                                       :branch (name (:identifier branch))})
+                      :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
+                                                                      :properties {:repo repo-name
+                                                                                   :org org-name
+                                                                                   :branch (name (:identifier branch))}})}
+                  [:.branch
+                   [:.last-build-status
+                    (om/build svg {:class "badge-icon"
+                                   :src (-> latest-build build-model/status-icon common/icon-path)})]
+                   [:.branch-info
+                    (when show-project?
+                      [:.project-name
+                       {:title (project-model/project-name project)}
+                       (project-model/project-name project)])
+                    [:.branch-name
+                     {:title (utils/display-branch (:identifier branch))}
+                     (utils/display-branch (:identifier branch))]
+                    (let [last-activity-time (project-model/most-recent-activity-time branch)]
+                      [:.last-build-info
+                       {:title (when last-activity-time
+                                 (datetime/full-datetime (js/Date.parse last-activity-time)))}
+                       (if last-activity-time
+                         (list
+                          (om/build common/updating-duration
+                                    {:start last-activity-time}
+                                    {:opts {:formatter datetime/time-ago}})
+                          " ago")
+                         "never")])]]]
+                 (when show-project?
+                   (project-settings-link {:project project} owner))]))])))))
 
 (defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [identities]}]
   (reify
@@ -454,20 +455,22 @@
 
         (html
           [:nav.aside-left-nav
-
+           ;; TODO -ac Remove this class when ff removed
+           {:class (when (ld/feature-on? "top-bar-ui-v-1") "top-bar-ff")}
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
            [:a.aside-item.logo {:title "Dashboard"
                                 :data-placement "right"
                                 :data-trigger "hover"
                                 :href (routes/v1-dashboard-path {})}
              [:div.logomark
-              (common/ico :logo)]]
+              (common/ico :logo)]])
 
-            [:a.aside-item {:data-placement "right"
-                            :data-trigger "hover"
-                            :title "Builds"
-                            :href (routes/v1-dashboard-path {})}
-             [:i.material-icons "storage"]
-             [:div.nav-label "Builds"]]
+           [:a.aside-item {:data-placement "right"
+                           :data-trigger "hover"
+                           :title "Builds"
+                           :href (routes/v1-dashboard-path {})}
+            [:i.material-icons "storage"]
+            [:div.nav-label "Builds"]]
 
            [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
@@ -515,28 +518,31 @@
 
             [:hr]
 
-           [:a.aside-item (open-ext {:title "Documentation"
-                                     :data-placement "right"
-                                     :data-trigger "hover"
-                                     :href "https://circleci.com/docs/"})
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+             [:a.aside-item (open-ext {:title "Documentation"
+                                       :data-placement "right"
+                                       :data-trigger "hover"
+                                       :href "https://circleci.com/docs/"})
               [:i.material-icons "description"]
-              [:div.nav-label "Docs"]]
+              [:div.nav-label "Docs"]])
 
-            [:a.aside-item (merge (common/contact-support-a-info owner)
-                                 {:title "Support"
-                                  :data-placement "right"
-                                  :data-trigger "hover"
-                                  :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+             [:a.aside-item (merge (common/contact-support-a-info owner)
+                                   {:title "Support"
+                                    :data-placement "right"
+                                    :data-trigger "hover"
+                                    :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
               [:i.material-icons "chat"]
-              [:div.nav-label "Support"]]
+              [:div.nav-label "Support"]])
 
-            (when-not (config/enterprise?)
-              [:a.aside-item (open-ext {:data-placement "right"
-                                        :data-trigger "hover"
-                                        :title "Changelog"
-                                        :href "/changelog"})
-               [:i.material-icons "receipt"]
-               [:div.nav-label "Changelog"]])
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+             (when-not (config/enterprise?)
+               [:a.aside-item (open-ext {:data-placement "right"
+                                         :data-trigger "hover"
+                                         :title "Changelog"
+                                         :href "/changelog"})
+                [:i.material-icons "receipt"]
+                [:div.nav-label "Changelog"]]))
 
             [:hr]
 
@@ -548,12 +554,13 @@
                 [:i.material-icons "build"]
                 [:div.nav-label "Admin"]])
 
+           (when (not (ld/feature-on? "top-bar-ui-v-1"))
             [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
                                            :title "Logout"
                                            :href "/logout"}
               [:i.material-icons "power_settings_new"]
-              [:div.nav-label "Logout"]]])))))
+              [:div.nav-label "Logout"]])])))))
 
 (defn aside [app owner]
   (reify
