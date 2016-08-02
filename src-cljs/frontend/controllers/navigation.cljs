@@ -369,8 +369,7 @@
     ;; get the list of orgs
     (api/get-orgs api-ch :include-user? true)
     (when org
-      (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format (api-path/org-members vcs_type org))))]
-            (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))
+      (api/get-org-members api-ch org))
     (set-page-title! "Invite teammates")))
 
 (defmethod navigated-to :project-settings

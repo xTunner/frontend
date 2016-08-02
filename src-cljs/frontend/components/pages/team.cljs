@@ -3,9 +3,12 @@
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
+            [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
+            [frontend.components.pieces.checkbox :as checkbox]
+            [frontend.components.pieces.button :as button]
             [frontend.routes :as routes]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs :as vcs-utils]
@@ -64,7 +67,8 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:selected-org-ident nil})
+      {:selected-org-ident nil
+       :invite-teammates? false})
 
     om/IWillMount
     (will-mount [_]
@@ -74,14 +78,20 @@
     ;; and when it changes, re-read the query. That is, in this case, fetch from
     ;; the API.
     om/IWillUpdate
-    (will-update [_ _ next-state]
-      (when (not= (:selected-org-ident (om/get-render-state owner))
-                  (:selected-org-ident next-state))
-        (let [[_ [vcs-type name]] (:selected-org-ident next-state)]
-          (api/get-org-settings-normalized name vcs-type (om/get-shared owner [:comms :api])))))
+    (will-update [_ _ {:keys [selected-org-ident invite-teammates?]}]
+      (let [[_ [vcs-type name]] selected-org-ident
+            api-chan (om/get-shared owner [:comms :api])
+            selected-org (when selected-org-ident (get-in app selected-org-ident))]
+        (when (not= (:selected-org-ident (om/get-render-state owner))
+                    selected-org-ident)
+          (api/get-org-settings-normalized name vcs-type api-chan)
+          (api/get-org-members api-chan (:name selected-org)))
+        (when (and selected-org
+                   invite-teammates?)
+          (.log js/console (str (keys selected-org))))))
 
     om/IRenderState
-    (render-state [_ {:keys [selected-org-ident]}]
+    (render-state [_ {:keys [selected-org-ident invite-teammates?]}]
       (let [user (:current-user app)
             selected-org (when selected-org-ident (get-in app selected-org-ident))
             available-orgs (:organizations user)]
@@ -102,13 +112,53 @@
               (html [:div.loading-spinner common/spinner])))]
           [:.main
            (if-let [[_ [vcs-type name]] selected-org-ident]
-             (card/titled {:title (html
-                                   [:span
-                                    name
-                                    (case vcs-type
-                                      "github" [:i.octicon.octicon-mark-github]
-                                      "bitbucket" [:i.fa.fa-bitbucket]
-                                      nil)])}
+             (card/titled
+              (html
+               [:div
+                name
+                (case vcs-type
+                  "github" [:i.octicon.octicon-mark-github]
+                  "bitbucket" [:i.fa.fa-bitbucket]
+                  nil)
+                (when (:invite-teammates? (om/get-render-state owner))
+                  (component
+                    (modal/modal-dialog {:title "Invite Teammates"
+                                       :body [:div
+                                              "These are the people who are not using CircleCI yet:"
+                                              [:div.constraining-modal
+                                               (om/build table/table {:rows (seq (remove :circle_member (:github-users (:invite-data app))))
+                                                                      :columns [{:header "Username"
+                                                                                 :cell-fn (fn [user-map]
+                                                                                            [:span
+                                                                                             [:img.invite-gravatar {:src (gh-utils/make-avatar-url user-map :size 50)}]
+                                                                                             ;; TODO -ac Uh, these spaces are a hack
+                                                                                             ;; should fix with padding on gravatar
+                                                                                             (str "  " (:login user-map))])}
+                                                                                {:header "Email"
+                                                                                 :cell-fn (fn [user-map]
+                                                                                            (let [login (:login user-map)
+                                                                                                  email (:email user-map)]
+                                                                                              (html
+                                                                                                [:input {:id (str login "-email")
+                                                                                                         :type "email"
+                                                                                                         :value email}])))}
+                                                                                {:type :shrink
+                                                                                 :cell-fn (fn [user-map]
+                                                                                            (om/build checkbox/checkbox {:checked? (:email user-map)}))}]})]]
+                                       :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
+                                                 (button/button {:on-click #(.log js/console "Send the emails in this on-click!")
+                                                                 :primary? true} "Send emails")]
+                                       :close-fn #(om/set-state! owner :invite-teammates? false)})))
+                (button/button
+                  {:disabled? (nil? (:users selected-org))
+                   :primary? true
+                   :on-click (fn []
+                               ;; TODO -ac Add tracking back in
+                               #_((om/get-shared owner :track-event)
+                                  {:event-type :invite-teammates-clicked
+                                   :properties {:view :team}})
+                               (om/set-state! owner :invite-teammates? (not (:invite-teammates? (om/get-render-state owner)))))}
+                  "Invite Teammates")])
               (if-let [users (:users selected-org)]
                 (table (add-follow-counts users (:projects selected-org)))
                 (html [:div.loading-spinner common/spinner])))
@@ -120,11 +170,4 @@
     (render [_]
       (om/build main-template/template
                 {:app app
-                 :main-content (om/build main-content app)
-                 :header-actions (html
-                                  [:a.btn.btn-primary
-                                   {:href (routes/v1-invite-teammates)
-                                    :on-click #((om/get-shared owner :track-event)
-                                                {:event-type :invite-teammates-clicked
-                                                 :properties {:view :team}})}
-                                   "Invite Teammates"])}))))
+                 :main-content (om/build main-content app)}))))

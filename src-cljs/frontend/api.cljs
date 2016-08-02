@@ -47,6 +47,11 @@
              :organizations
              api-ch))
 
+(defn get-org-members [api-ch org-name]
+  (ajax/ajax :get (gstring/format "/api/v1/organization/%s/members" org-name)
+             :org-member-invite-users
+             api-ch))
+
 (defn get-org-plan [org-name vcs-type api-ch]
   (ajax/ajax :get
              (gstring/format "/api/v1.1/organization/%s/%s/plan"
