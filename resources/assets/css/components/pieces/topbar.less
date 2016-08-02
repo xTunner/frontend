@@ -22,17 +22,18 @@
         padding: 0;
         list-style: none;
 
-        &.left, &.right {
+        &.left,
+        &.right {
           position: absolute;
         }
 
         &.left {
           left: 0;
         }
+
         &.right {
           right: 0;
         }
-
 
         > .logo {
           position: absolute;
@@ -52,10 +53,11 @@
         }
 
         > .header-nav-item {
+          float: left;
+
           > a {
             text-decoration: none;
           }
-          float: left;
 
           &:hover {
             background-color: @grayDark;
@@ -65,15 +67,13 @@
             border-right: 1px solid #444;
           }
 
-
           > .header-nav-link {
             display: block;
             padding: 20px;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 400;
             line-height: 20px;
             color: @white;
-
 
             // TODO -ac Note, this should become its own component, since we
             // reuse it - *a lot*
@@ -85,19 +85,24 @@
             }
           }
 
-
           > .dropbtn {
             font-size: 16px;
             border: none;
             cursor: pointer;
             display: block;
             height: @top-bar-height;
+            padding: 1em;
           }
         }
 
         > .dropdown-menu {
           // TODO -ac Doesn\'t seem to work?
           width: 100%;
+          margin-top: -4px;
+
+          &.dropdown-menu-right {
+            margin-right: 1em;
+          }
 
           > li > a {
             white-space: pre-wrap;

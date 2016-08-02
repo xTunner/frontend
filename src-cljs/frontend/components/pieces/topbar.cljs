@@ -35,7 +35,7 @@
             :aria-haspopup "true"
             :aria-expanded "false"}
            "What's New " [:i.material-icons "keyboard_arrow_down"]]
-          [:ul.dropdown-menu
+          [:ul.dropdown-menu.dropdown-menu-right
            (when-not (config/enterprise?)
              [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
            [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Infrastructure Announcements"]]]]
@@ -77,7 +77,7 @@
             :aria-haspopup "true"
             :aria-expanded "false"}
            [:img.gravatar {:src avatar-url}] [:i.material-icons "keyboard_arrow_down"]]
-          [:ul.dropdown-menu
+          [:ul.dropdown-menu.dropdown-menu-right
            [:li [:a {:href "/logout/"} "Logout"]]]]]]]))))
 
 (dc/do
