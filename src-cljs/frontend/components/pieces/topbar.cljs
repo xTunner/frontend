@@ -38,7 +38,7 @@
           [:ul.dropdown-menu.dropdown-menu-right
            (when-not (config/enterprise?)
              [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
-           [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Infrastructure Announcements"]]]]
+           [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Announcements"]]]]
 
          ;; Support dropdown
          ;;
@@ -68,7 +68,7 @@
          [:li.top-nav-dropdown.header-nav-item
           [:a.header-nav-link support-info
            "Eng. Support"]]
-
+         [:li.header-nav-item.divider-vertical]
          [:li.top-nav-dropdown.header-nav-item.dropdown
           [:a.header-nav-link.dropdown-toggle.dropbtn
            {:href "#"

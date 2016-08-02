@@ -93,24 +93,37 @@
             height: @top-bar-height;
             padding: 1em;
           }
+
+          > .dropdown-menu {
+            // TODO -ac Doesn\'t seem to work?
+            margin-top: -4px;
+            padding: 8px 0;
+            border: none;
+
+            &.dropdown-menu-right {
+              margin-right: 1em;
+            }
+
+            > li > a {
+              padding: 6px 20px;
+              white-space: pre-wrap;
+            }
+
+            > .disabled {
+              color: @gray;
+              background-color: @grayDarker;
+            }
+          }
         }
 
-        > .dropdown-menu {
-          // TODO -ac Doesn\'t seem to work?
-          width: 100%;
-          margin-top: -4px;
-
-          &.dropdown-menu-right {
-            margin-right: 1em;
-          }
-
-          > li > a {
-            white-space: pre-wrap;
-          }
-
-          > .disabled {
-            color: @gray;
-            background-color: @grayDarker;
+        > .divider-vertical {
+          height: @tile;
+          margin: 0 9px;
+          border-right: 1px solid @gray;
+          border-left: 1px solid @gray;
+          opacity: .5;
+          @media (max-width: @screen-sm-max) {
+            display: none;
           }
         }
       }
