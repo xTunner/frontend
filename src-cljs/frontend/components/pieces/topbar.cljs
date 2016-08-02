@@ -78,7 +78,8 @@
             :aria-expanded "false"}
            [:img.gravatar {:src avatar-url}] [:i.material-icons "keyboard_arrow_down"]]
           [:ul.dropdown-menu.dropdown-menu-right
-           [:li [:a {:href "/logout/"} "Logout"]]]]]]]))))
+           [:li [:a {:href "/logout/"} "Logout"]]
+           [:li [:a {:href "/account"} "Account Settings"]]]]]]]))))
 
 (dc/do
   (defcard topbar
