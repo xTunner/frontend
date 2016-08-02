@@ -355,7 +355,8 @@
           "denied" [:div.section
                     "It looks like you've denied CircleCI access to send you web notifications.
                     Before you can change your web notification preferences please "
-                    [:a (open-ext {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"})
+                    [:a {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"
+                         :target "_blank"}
                      "turn on permissions for your browser."]]
           "default" [:div.section
                      "You haven't given CircleCI access to notify you through the browser — "
