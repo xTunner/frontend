@@ -67,7 +67,7 @@
            "Discuss"]]
          [:li.top-nav-dropdown.header-nav-item
           [:a.header-nav-link support-info
-           "Eng. Support"]]
+           "Support"]]
          [:li.header-nav-item.divider-vertical]
          [:li.top-nav-dropdown.header-nav-item.dropdown
           [:a.header-nav-link.dropdown-toggle.dropbtn
