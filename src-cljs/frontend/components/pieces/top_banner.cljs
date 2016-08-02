@@ -12,18 +12,19 @@
   disappear by themselves, after an event, or be dismissable (have a little (X)
   at the top right corner), and are *not* meant to be permanent interfaces.
 
-  :banner-type                  Can be one of :success, :warning, or :danger,
-  determines the background color of the banner.
+  :banner-type                      Can be one of :success, :warning, or :danger,
+                                    determines the background color of the banner.
 
-  :impression-event-type-event-type (optional) The event banner-type which will be tracked when
-  this banner displays. If not given, no event will be
-  tracked.
+  :impression-event-type-event-type (optional) The event banner-type which will
+                                    be tracked when this banner displays. If not
+                                    given, no event will be tracked.
 
-  :content               Content to go inside the banner.
+  :content                          Content to go inside the banner.
 
-  :dismiss-fn            (optional) A function which will be called when the
-  banner's dismiss button (X) is clicked. If not given,
-  no dismiss button will be shown."
+  :dismiss-fn                       (optional) A function which will be called
+                                    when the banner's dismiss button (X) is
+                                    clicked. If not given, no dismiss button
+                                    will be shown."
 
   [{:keys [banner-type content impression-event-type dismiss-fn]} owner]
   (reify
