@@ -21,7 +21,7 @@
       [:div.top-bar
        [:div.bar
         [:div.header-nav.left
-         [:a.logo
+         [:a.logo {:href "/"}
           [:div.logomark
            (common/ico :logo)]]]
         [:div.header-nav.right
