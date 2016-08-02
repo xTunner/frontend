@@ -141,14 +141,13 @@
            ;; vcs-type and the name). The list of projects will still be missing
            ;; until it's loaded by an additional API call.
            (if-let [[_ [vcs-type name]] selected-org-ident]
-             (card/titled
-              (html
-               [:span
-                name
-                (case vcs-type
-                  "github" [:i.octicon.octicon-mark-github]
-                  "bitbucket" [:i.fa.fa-bitbucket]
-                  nil)])
+             (card/titled {:title (html
+                                   [:span
+                                    name
+                                    (case vcs-type
+                                      "github" [:i.octicon.octicon-mark-github]
+                                      "bitbucket" [:i.fa.fa-bitbucket]
+                                      nil)])}
               (if-let [projects (:projects selected-org)]
                 (if-let [projects-with-followers
                          (seq (filter #(< 0 (count (:followers %))) projects))]

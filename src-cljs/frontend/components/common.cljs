@@ -25,8 +25,10 @@
                  (not (config/elevio-enabled?)))
              (not (config/zd-widget-enabled?)))
       {:href (str "mailto:" (config/support-email))
-       :target "_blank"}
-      {:on-click #(raise! owner tags)})
+       :target "_blank"
+       :class "disabled"}
+      {:href ""
+       :on-click #(raise! owner tags)})
     {:href "https://discuss.circleci.com/t/community-support/1470"
      :target "_blank"}))
 
