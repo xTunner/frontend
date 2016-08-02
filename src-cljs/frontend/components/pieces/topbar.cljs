@@ -2,6 +2,7 @@
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.common :as common]
             [frontend.config :as config]
+            [frontend.utils.html :as html]
             [frontend.utils.github :as gh-utils])
   (:require-macros [frontend.utils :refer [component html]]))
 
@@ -36,7 +37,7 @@
            "What's New " [:i.material-icons "keyboard_arrow_down"]]
           [:ul.dropdown-menu
            (when-not (config/enterprise?)
-             [:li [:a {:href "https://circleci.com/changelog/"} "Changelog"]])
+             [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
            [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Infrastructure Announcements"]]]]
 
          ;; Support dropdown
