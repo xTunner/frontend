@@ -498,7 +498,9 @@
                                                                            :data-loading-text "Adding..." ,
                                                                            :value "Add Variable" ,
                                                                            :type "submit"
-                                                                           :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]
+                                                                           :on-click #(raise! owner [:created-env-var
+                                                                                                     {:project-id project-id
+                                                                                                      :on-success close-fn}])}])]
                                        :close-fn close-fn})))
               (when-let [env-vars (seq (:envvars project-data))]
                 (om/build table/table
