@@ -509,26 +509,33 @@
               [:i.material-icons "group_add"]
               [:div.nav-label "Team"]])
 
-            [:hr]
+           (when-not (ld/feature-on? "top-bar-ui-v-1")
+             [:a.aside-item {:data-placement "right"
+                             :data-trigger "hover"
+                             :title "Account Settings"
+                             :href "/account"}
+              [:i.material-icons "settings"]
+              [:div.nav-label "Account Settings"]]
 
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+             [:hr]
+
              [:a.aside-item (open-ext {:title "Documentation"
                                        :data-placement "right"
                                        :data-trigger "hover"
                                        :href "https://circleci.com/docs/"})
               [:i.material-icons "description"]
-              [:div.nav-label "Docs"]])
+              [:div.nav-label "Docs"]]
 
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+
              [:a.aside-item (merge (common/contact-support-a-info owner)
                                    {:title "Support"
                                     :data-placement "right"
                                     :data-trigger "hover"
                                     :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
               [:i.material-icons "chat"]
-              [:div.nav-label "Support"]])
+              [:div.nav-label "Support"]]
 
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+
              (when-not (config/enterprise?)
                [:a.aside-item (open-ext {:data-placement "right"
                                          :data-trigger "hover"
@@ -537,7 +544,7 @@
                 [:i.material-icons "receipt"]
                 [:div.nav-label "Changelog"]]))
 
-            [:hr]
+           [:hr]
 
             (when (:admin user)
               [:a.aside-item {:data-placement "right"
