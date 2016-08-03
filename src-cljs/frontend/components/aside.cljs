@@ -509,9 +509,17 @@
               [:i.material-icons "group_add"]
               [:div.nav-label "Team"]])
 
-            [:hr]
+           (when-not (ld/feature-on? "top-bar-ui-v-1")
+             [:a.aside-item {:data-placement "right"
+                             :data-trigger "hover"
+                             :title "Account Settings"
+                             :href "/account"}
+              [:i.material-icons "settings"]
+              [:div.nav-label "Account Settings"]])
 
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+           [:hr]
+
+           (when-not (ld/feature-on? "top-bar-ui-v-1")
              [:a.aside-item (open-ext {:title "Documentation"
                                        :data-placement "right"
                                        :data-trigger "hover"
@@ -519,7 +527,7 @@
               [:i.material-icons "description"]
               [:div.nav-label "Docs"]])
 
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+           (when-not  (ld/feature-on? "top-bar-ui-v-1")
              [:a.aside-item (merge (common/contact-support-a-info owner)
                                    {:title "Support"
                                     :data-placement "right"
@@ -528,7 +536,7 @@
               [:i.material-icons "chat"]
               [:div.nav-label "Support"]])
 
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+           (when-not (ld/feature-on? "top-bar-ui-v-1")
              (when-not (config/enterprise?)
                [:a.aside-item (open-ext {:data-placement "right"
                                          :data-trigger "hover"
@@ -537,17 +545,17 @@
                 [:i.material-icons "receipt"]
                 [:div.nav-label "Changelog"]]))
 
-            [:hr]
+           [:hr]
 
-            (when (:admin user)
-              [:a.aside-item {:data-placement "right"
-                              :data-trigger "hover"
-                              :title "Admin"
-                              :href "/admin"}
+           (when (:admin user)
+             [:a.aside-item {:data-placement "right"
+                             :data-trigger "hover"
+                             :title "Admin"
+                             :href "/admin"}
                 [:i.material-icons "build"]
                 [:div.nav-label "Admin"]])
 
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
+           (when-not (ld/feature-on? "top-bar-ui-v-1")
             [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
                                            :title "Logout"
