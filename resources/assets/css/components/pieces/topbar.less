@@ -22,17 +22,18 @@
         padding: 0;
         list-style: none;
 
-        &.left, &.right {
+        &.left,
+        &.right {
           position: absolute;
         }
 
         &.left {
           left: 0;
         }
+
         &.right {
           right: 0;
         }
-
 
         > .logo {
           position: absolute;
@@ -42,7 +43,7 @@
           > .logomark {
             .flexy(center, center);
             .icon-style(@white, (@em * 2));
-            width: 60px;
+            width: 70px;
             height: @top-bar-height;
 
             > i {
@@ -52,10 +53,11 @@
         }
 
         > .header-nav-item {
+          float: left;
+
           > a {
             text-decoration: none;
           }
-          float: left;
 
           &:hover {
             background-color: @grayDark;
@@ -65,15 +67,13 @@
             border-right: 1px solid #444;
           }
 
-
           > .header-nav-link {
             display: block;
             padding: 20px;
             font-size: 13px;
-            font-weight: bold;
-            line-height: 20px;
+            font-weight: 400;
+            line-height: 30px;
             color: @white;
-
 
             // TODO -ac Note, this should become its own component, since we
             // reuse it - *a lot*
@@ -85,27 +85,44 @@
             }
           }
 
-
           > .dropbtn {
             font-size: 16px;
             border: none;
             cursor: pointer;
             display: block;
             height: @top-bar-height;
+            padding: 1.2em;
+          }
+
+          > .dropdown-menu {
+            margin-top: -4px;
+            padding: 8px 0;
+            border: none;
+
+            &.dropdown-menu-right {
+              margin-right: 1em;
+            }
+
+            > li > a {
+              padding: 6px 20px;
+              white-space: pre-wrap;
+            }
+
+            > .disabled {
+              color: @gray;
+              background-color: @grayDarker;
+            }
           }
         }
 
-        > .dropdown-menu {
-          // TODO -ac Doesn\'t seem to work?
-          width: 100%;
-
-          > li > a {
-            white-space: pre-wrap;
-          }
-
-          > .disabled {
-            color: @gray;
-            background-color: @grayDarker;
+        > .divider-vertical {
+          height: @tile;
+          margin: 0 9px;
+          border-right: 1px solid @gray;
+          border-left: 1px solid @gray;
+          opacity: .5;
+          @media (max-width: @screen-sm-max) {
+            display: none;
           }
         }
       }

@@ -21,7 +21,7 @@
       [:div.top-bar
        [:div.bar
         [:div.header-nav.left
-         [:a.logo
+         [:a.logo {:href "/"}
           [:div.logomark
            (common/ico :logo)]]]
         [:div.header-nav.right
@@ -35,10 +35,10 @@
             :aria-haspopup "true"
             :aria-expanded "false"}
            "What's New " [:i.material-icons "keyboard_arrow_down"]]
-          [:ul.dropdown-menu
+          [:ul.dropdown-menu.dropdown-menu-right
            (when-not (config/enterprise?)
              [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
-           [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Infrastructure Announcements"]]]]
+           [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Announcements"]]]]
 
          ;; Support dropdown
          ;;
@@ -67,8 +67,8 @@
            "Discuss"]]
          [:li.top-nav-dropdown.header-nav-item
           [:a.header-nav-link support-info
-           "Eng. Support"]]
-
+           "Support"]]
+         [:li.header-nav-item.divider-vertical]
          [:li.top-nav-dropdown.header-nav-item.dropdown
           [:a.header-nav-link.dropdown-toggle.dropbtn
            {:href "#"
@@ -77,8 +77,9 @@
             :aria-haspopup "true"
             :aria-expanded "false"}
            [:img.gravatar {:src avatar-url}] [:i.material-icons "keyboard_arrow_down"]]
-          [:ul.dropdown-menu
-           [:li [:a {:href "/logout/"} "Logout"]]]]]]]))))
+          [:ul.dropdown-menu.dropdown-menu-right
+           [:li [:a {:href "/logout/"} "Logout"]]
+           [:li [:a {:href "/account"} "Account Settings"]]]]]]]))))
 
 (dc/do
   (defcard topbar

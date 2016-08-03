@@ -509,13 +509,6 @@
               [:i.material-icons "group_add"]
               [:div.nav-label "Team"]])
 
-            [:a.aside-item {:data-placement "right"
-                                   :data-trigger "hover"
-                                   :title "Account Settings"
-                                   :href "/account"}
-              [:i.material-icons "settings"]
-              [:div.nav-label "Account Settings"]]
-
             [:hr]
 
            (when (not (ld/feature-on? "top-bar-ui-v-1"))
