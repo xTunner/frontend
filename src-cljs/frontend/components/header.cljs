@@ -403,7 +403,11 @@
                                                                                          (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true
                                                                                                                                                              :response response}]))))}
                                                                          "Click here to activate web notifications."]]
-                                                           :impression-event-type  :web-notification-banner-impression})
+                                                           :impression-event-type  :web-notification-banner-impression
+                                                           :dismiss-fn #(do
+                                                                          (raise! owner [:dismiss-web-notif-banner {:banner-number "one"
+                                                                                                                  :response "default"}])
+                                                                          (raise! owner [:dismiss-web-notif-banner {:banner-number "two"}]))})
                (and dismissed-banner-one
                     (not dismissed-banner-two)) (om/build top-banner/banner
                                                           {:banner-type (case (n/notifications-permission)
