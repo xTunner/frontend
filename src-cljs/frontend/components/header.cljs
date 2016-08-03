@@ -391,19 +391,23 @@
                     (not dismissed-banner-one)) (om/build top-banner/banner
                                                           {:banner-type "warning"
                                                            :content [:div
-                                                                        [:span.banner-alert-icon
-                                                                         [:img {:src (common/icon-path "Info-Info")}]]
-                                                                        [:b "  New: "] "You can now get web notifications when your build is done! "
-                                                                        [:a
-                                                                         {:href "#"
-                                                                          :on-click #(n/request-permission
-                                                                                       (fn [response]
-                                                                                         (raise! owner [:dismiss-web-notif-banner {:banner-number "one"
-                                                                                                                                   :response response}])
-                                                                                         (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true
-                                                                                                                                                             :response response}]))))}
-                                                                         "Click here to activate web notifications."]]
-                                                           :impression-event-type  :web-notification-banner-impression})
+                                                                     [:span.banner-alert-icon
+                                                                      [:img {:src (common/icon-path "Info-Info")}]]
+                                                                     [:b "  New: "] "You can now get web notifications when your build is done! "
+                                                                     [:a
+                                                                      {:href "#"
+                                                                       :on-click #(n/request-permission
+                                                                                    (fn [response]
+                                                                                      (raise! owner [:dismiss-web-notif-banner {:banner-number "one"
+                                                                                                                                :response response}])
+                                                                                      (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true
+                                                                                                                                                          :response response}]))))}
+                                                                      "Click here to activate web notifications."]]
+                                                           :impression-event-type  :web-notification-banner-impression
+                                                           :dismiss-fn #(do
+                                                                          (raise! owner [:dismiss-web-notif-banner {:banner-number "one"
+                                                                                                                    :response "default"}])
+                                                                          (raise! owner [:dismiss-web-notif-banner {:banner-number "two"}]))})
                (and dismissed-banner-one
                     (not dismissed-banner-two)) (om/build top-banner/banner
                                                           {:banner-type (case (n/notifications-permission)
