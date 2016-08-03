@@ -60,10 +60,11 @@
     :org-clicked
     :add-project-clicked
     :invite-teammates-clicked
-    :web-notification-banner-impression
-    :web-notification-banner-one-dismissed
-    :web-notification-banner-two-dismissed
-    :set-web-notifications-clicked})
+
+    :web-notifications-permissions-banner-impression
+    :web-notifications-permissions-set
+    :web-notifications-permissions-banner-dismissed
+    :account-settings-clicked})
 
 (def supported-controller-events
   ;; TODO: All these events should be server side

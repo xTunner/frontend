@@ -456,7 +456,7 @@
     (render [_]
       (let [user (get-in app state/user-path)
             projects (get-in app state/projects-path)
-            notifications-enabled? (get-in app state/web-notifications-enabled?-path)]
+            notifications-enabled? (get-in app state/web-notifications-enabled-path)]
         (html
          [:div#settings-notification
           [:legend "Notification Settings"]
@@ -480,4 +480,4 @@
          [:div#account-settings
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled?-path]))]])))))
+           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled-path]))]])))))

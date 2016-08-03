@@ -1512,32 +1512,44 @@
   [_ _ _ state]
   (assoc-in state state/dismissed-trial-update-banner true))
 
-(defmethod control-event :set-web-notifications
-  [_ _ {:keys [enabled? response]} state]
-  (assoc-in state state/web-notifications-enabled?-path enabled?))
-
-(defmethod post-control-event! :set-web-notifications
-  [_ _ {:keys [enabled? response]} state]
-  (when enabled?
-    (analytics/track {:event-type :set-web-notifications-clicked
-                      :current-state state
-                      :properties {:response response}})))
-
-(defmethod control-event :asked-about-web-notifications
+(defmethod control-event :dismiss-web-notifications-permissions-banner
   [_ _ _ state]
-  (assoc-in state state/asked-about-web-notifications? true))
+  (-> state
+      (assoc-in state/remove-web-notification-banner-path true)
+      (assoc-in state/remove-web-notification-confirmation-banner-path true)))
 
-(defmethod control-event :dismiss-web-notif-banner
-  [_ _ {:keys [banner-number _]} state]
-  (condp = banner-number
-    "one"  (assoc-in state state/dismissed-web-notif-banner-one? true)
-    "two"  (assoc-in state state/dismissed-web-notif-banner-two? true)))
+(defmethod post-control-event! :dismiss-web-notifications-permissions-banner
+  [_ _ {:keys [response]} _ current-state]
+  (analytics/track {:event-type :web-notifications-permissions-banner-dismissed
+                    :current-state current-state
+                    :properties {:response response}}))
 
-(defmethod post-control-event! :dismiss-web-notif-banner
-  [_ _ {:keys [banner-number response]} current-state]
-  (condp = banner-number
-    "one" (analytics/track {:event-type :web-notification-banner-one-dismissed
-                            :current-state current-state
-                            :properties {:response response}})
-    "two" (analytics/track {:event-type :web-notification-banner-two-dismissed
-                            :current-state current-state})))
+(defmethod control-event :set-web-notifications-permissions
+  [_ _ {:keys [enabled?]} state]
+  (-> state
+      (assoc-in state/remove-web-notification-banner-path true)
+      (assoc-in state/web-notifications-enabled-path enabled?)))
+
+(defmethod post-control-event! :set-web-notifications-permissions
+  [_ _ {:keys [enabled? response]} _ current-state]
+  (analytics/track {:event-type :web-notifications-permissions-set
+                    :current-state current-state
+                    :properties {:notifications-enabled enabled?
+                                 :response response}}))
+
+(defmethod control-event :dismiss-web-notifications-confirmation-banner
+  [_ _ _ state]
+  (assoc-in state state/remove-web-notification-confirmation-banner-path true))
+
+(defmethod control-event :web-notifications-confirmation-account-settings-clicked
+  [_ _ _ state]
+  (assoc-in state state/remove-web-notification-confirmation-banner-path true))
+
+(defmethod post-control-event! :web-notifications-confirmation-account-settings-clicked
+  [_ _ {:keys [response]} _ current-state]
+  (analytics/track {:event-type :account-settings-clicked
+                    :current-state current-state
+                    :properties {:response response
+                                 :component "web-notifications-confirmation-banner"}})
+  (let [nav-ch (get-in current-state [:comms :nav])]
+    (put! nav-ch [:navigate! {:path (routes/v1-account-subpage {:subpage "notifications"})}])))
