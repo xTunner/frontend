@@ -26,6 +26,7 @@
             [frontend.utils.html :refer [hiccup->html-str open-ext]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.vcs :as vcs]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
@@ -905,7 +906,7 @@
         ;; Generate the status badge with current settings.
         project-name (vcs-url/project-name (:vcs_url project))
         vcs-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
-        short-vcs-type (routes/->short-vcs (vcs-url/vcs-type (:vcs_url project)))
+        short-vcs-type (vcs/->short-vcs (vcs-url/vcs-type (:vcs_url project)))
         target (str (.. js/window -location -origin) "/" short-vcs-type "/" vcs-path)
         style (get-in project-data [:status-badges :style] "svg")
         image (str target (get-in status-styles [style :string]))

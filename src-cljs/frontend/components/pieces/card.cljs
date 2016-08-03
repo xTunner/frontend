@@ -21,7 +21,6 @@
     (when action
       [:.action action])]))
 
-
 (defn basic
   "The most basic of cards. The given content appears on a card."
   [content]

@@ -271,3 +271,14 @@
 
 (def system-settings-path [:system-settings])
 (def feature-flags-path (conj project-path :feature_flags))
+
+;--------- Om Next Paths -----------
+(defn org-ident [vcs-type org-name]
+  [:organization/by-vcs-type-and-name [vcs-type org-name]])
+
+(defn org-ident->vcs-type-and-org
+  "Given an org-ident returns a vector of [vcs-type org-name]."
+  [org-ident]
+  (second org-ident))
+
+(def current-org-ident [:current-org-ident])

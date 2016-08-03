@@ -5,6 +5,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.vcs :as vcs]
             [frontend.utils.github :as github]
             [goog.string :as gstring]
             goog.string.format)
@@ -12,11 +13,11 @@
 
 ;; TODO paths should use secretary
 (defn path-for [project build]
-  (str "/" (-> project proj/vcs-type routes/->short-vcs) "/" (proj/project-name project) "/" (:build_num build)))
+  (str "/" (-> project proj/vcs-type vcs/->short-vcs) "/" (proj/project-name project) "/" (:build_num build)))
 
 (defn path-for-parallelism [build]
   (let [vcs-url (:vcs_url build)]
-    (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type routes/->short-vcs)
+    (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
                                       :org (vcs-url/org-name vcs-url)
                                       :repo (vcs-url/repo-name vcs-url)
                                       :_fragment "parallel-builds"})))

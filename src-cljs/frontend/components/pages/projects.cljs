@@ -1,5 +1,6 @@
 (ns frontend.components.pages.projects
   (:require [frontend.api :as api]
+            [frontend.state :as state]
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
@@ -7,10 +8,11 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.project :as project-model]
+            [frontend.async :refer [navigate!]]
             [frontend.utils :as utils :include-macros true]
             [frontend.routes :as routes]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.vcs :as vcs-utils]
+            [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
@@ -27,7 +29,7 @@
                                     (let [parallelism (project-model/parallelism %)
                                           buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
                                           vcs-url (:vcs_url %)]
-                                      [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type routes/->short-vcs)
+                                      [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
                                                                                    :org (vcs-url/org-name vcs-url)
                                                                                    :repo (vcs-url/repo-name vcs-url)
                                                                                    :_fragment "parallel-builds"})}
@@ -90,29 +92,10 @@
 
 (defn- main-content [app owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:selected-org-ident nil})
-
-    om/IWillMount
-    (will-mount [_]
-      (api/get-orgs (om/get-shared owner [:comms :api]) :include-user? true))
-
-    ;; Emulate Om Next queries: Treat :selected-org-ident like a query param,
-    ;; and when it changes, re-read the query. That is, in this case, fetch from
-    ;; the API.
-    om/IWillUpdate
-    (will-update [_ _ next-state]
-      (when (not= (:selected-org-ident (om/get-render-state owner))
-                  (:selected-org-ident next-state))
-        (let [[_ [vcs-type name]] (:selected-org-ident next-state)
-              api-ch (om/get-shared owner [:comms :api])]
-          (api/get-org-plan-normalized name vcs-type api-ch)
-          (api/get-org-settings-normalized name vcs-type api-ch))))
-
-    om/IRenderState
-    (render-state [_ {:keys [selected-org-ident]}]
+    om/IRender
+    (render [_]
       (let [user (:current-user app)
+            selected-org-ident (get-in app state/current-org-ident)
             selected-org (when selected-org-ident (get-in app selected-org-ident))
             available-orgs (:organizations user)]
         (html
@@ -122,9 +105,10 @@
             (if available-orgs
               (om/build org-picker/picker
                         {:orgs available-orgs
-                         :selected-org (first (filter #(= selected-org-ident (organization-ident %)) available-orgs))
+                         :selected-org (first (filter #(= selected-org-ident (state/org-ident (:vcs_type %) (:login %))) available-orgs))
                          :on-org-click (fn [{:keys [login vcs_type] :as org}]
-                                         (om/set-state! owner :selected-org-ident (organization-ident org))
+                                         (navigate! owner (routes/v1-organization-projects-path {:org login
+                                                                                                 :vcs_type vcs_type}))
                                          ((om/get-shared owner :track-event) {:event-type :org-clicked
                                                                               :properties {:view :projects
                                                                                            :login login
@@ -140,21 +124,21 @@
            ;; will only have the keys the org list uses (which includes the
            ;; vcs-type and the name). The list of projects will still be missing
            ;; until it's loaded by an additional API call.
-           (if-let [[_ [vcs-type name]] selected-org-ident]
+           (if-let [[vcs-type name] (state/org-ident->vcs-type-and-org selected-org-ident)]
              (card/titled {:title (html
-                                   [:span
-                                    name
-                                    (case vcs-type
-                                      "github" [:i.octicon.octicon-mark-github]
-                                      "bitbucket" [:i.fa.fa-bitbucket]
-                                      nil)])}
-              (if-let [projects (:projects selected-org)]
-                (if-let [projects-with-followers
-                         (seq (filter #(< 0 (count (:followers %))) projects))]
-                  (table projects-with-followers (:plan selected-org))
-                  (no-projects-available selected-org))
-                (html [:div.loading-spinner common/spinner])))
-             (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
+                                    [:span
+                                     name
+                                     (case vcs-type
+                                       "github" [:i.octicon.octicon-mark-github]
+                                       "bitbucket" [:i.fa.fa-bitbucket]
+                                       nil)])}
+                          (if-let [projects (:projects selected-org)]
+                            (if-let [projects-with-followers
+                                     (seq (filter #(< 0 (count (:followers %))) projects))]
+                              (table projects-with-followers (:plan selected-org))
+                              (no-projects-available selected-org))
+                            (html [:div.loading-spinner common/spinner])))
+             (no-org-selected available-orgs (vcs/bitbucket-enabled? user)))]])))))
 
 (defn page [app owner]
   (reify
