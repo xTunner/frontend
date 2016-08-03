@@ -1,8 +1,6 @@
 .ns("frontend.components.pieces.top-banner", {
   .ui("banner", {
     position: relative;
-    margin-bottom: 15px;
-    height: 70px;
     padding: 15px;
 
     &.success {
@@ -18,7 +16,11 @@
     }
 
     > .text {
-      margin-top: 10px;
+      // TODO This is a bad componentization. When icons are
+      // componentized we should give them this styling, but until then ...
+      > div > .banner-alert-icon {
+        margin-right: 11px;
+      }
 
       > .banner-dismiss {
         cursor: pointer;
