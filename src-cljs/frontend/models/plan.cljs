@@ -15,6 +15,9 @@
 (def osx-plan-type "osx")
 (def linux-plan-type "linux")
 
+(def osx-key :osx)
+(def linux-key :paid)
+
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
   [plan]
@@ -67,6 +70,26 @@
 
 (defn freemium-containers [plan]
   (or (get-in plan [:free :template :free_containers]) 0))
+
+(defn has-had-osx-plan?
+  "True if this plan has ever had a :osx trial or :osx plan."
+  [plan]
+  (and
+    (:osx_plan_started_on plan)
+    (:osx_trial_end_date plan)))
+
+(defmulti trial-eligible?
+  "Is this plan eligable for a trial for this plan-type."
+  (fn [plan plan-type]
+    plan-type))
+
+(defmethod trial-eligible? osx-key
+  [plan plan-type]
+  (not (has-had-osx-plan? plan)))
+
+(defmethod trial-eligible? linux-key
+  [plan plan-type]
+  (not (trial? plan)))
 
 (defn paid-linux-containers [plan]
   (if (linux? plan)

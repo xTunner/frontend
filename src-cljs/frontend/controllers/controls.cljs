@@ -1290,7 +1290,7 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :cancel-plan-clicked
-  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes]} previous-state current-state]
+  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes plan-type] :or {plan-type :paid}} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         nav-ch (get-in current-state [:comms :nav])
@@ -1301,15 +1301,14 @@
                            (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                            vcs_type
                                            org-name)
-                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
+                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes :plan-type plan-type}))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
-         (let [plan-api-result (<! (ajax/managed-ajax
-                                    :get
-                                    (gstring/format "/api/v1.1/organization/%s/%s/plan"
-                                                    vcs_type
-                                                    org-name)))]
-           (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
+         (do
+           (put! api-ch [:org-plan
+                         (:status api-result)
+                         (assoc api-result :context {:org-name org-name
+                                                     :vcs-type vcs_type})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name
                                                                     :vcs_type vcs_type})
                                      :replace-token? true}])))
