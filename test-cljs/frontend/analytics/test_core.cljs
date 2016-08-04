@@ -36,7 +36,7 @@
 (def current-state (test-utils/state data))
 
 (deftest track-default-works
-  (let [click-event (first analytics/supported-click-and-impression-events)]
+  (let [click-event (first analytics/supported-events)]
     (testing "track :default works with a current-state"
       (let [calls (stub-segment-track-event #(analytics/track {:event-type click-event
                                                                :current-state current-state}))]
@@ -58,7 +58,7 @@
 
 (deftest track-external-click-works
   (let [event-type :external-click
-        event (first analytics/supported-click-and-impression-events)]
+        event (first analytics/supported-events)]
     (testing "a valid external-click event is fired"
       (let [calls (stub-segment-track-event #(analytics/track {:event-type event-type
                                                                :event event
@@ -220,7 +220,7 @@
 
 (deftest properties-overwrite-default-state
   (testing "for each type of tracking that calls segment/track-event, ensure that :properties overwrite the default values from :current-state"
-    (let [click-event (first analytics/supported-click-and-impression-events)
+    (let [click-event (first analytics/supported-events)
           ensure-overwrite (fn [event-type & extra-args]
                              (let [calls (stub-segment-track-event #(analytics/track
                                                                       (merge {:event-type event-type
