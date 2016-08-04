@@ -7,6 +7,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.vcs :as vcs]
             [frontend.routes :as routes]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]])
@@ -113,7 +114,7 @@
       (html
         [:li.side-item
          [:a {:href (str "/invite-teammates/organization/"
-                         (routes/long-to-short-vcs (:vcs_type org))
+                         (vcs/long-to-short-vcs (:vcs_type org))
                          "/" (:login org))}
           [:img {:src (gh-utils/make-avatar-url org :size 25)
                  :width 25 :height 25}]
