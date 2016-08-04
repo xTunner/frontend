@@ -34,6 +34,39 @@
             [frontend.components.pieces.card :as card])
   (:require-macros [frontend.utils :refer [html]]))
 
+(defn- remove-action-button
+  "Renders a \"Remove\" action button suitable for a settings table row which
+  presents a confirmation dialog before actually removing the row.
+
+  :confirmation-question - The content of the dialog. Should ask the user if
+                           they're sure they want to remove the row, clearly
+                           describing what the user is about to remove.
+
+  :remove-fn             - The function which will actually remove the row once
+                           confirmed."
+  [{:keys [confirmation-question remove-fn]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (html
+       [:span
+        (table/action-button
+         "Remove"
+         (icon/delete)
+         #(om/set-state! owner :show-modal? true))
+        (when show-modal?
+          (let [close-fn #(om/set-state! owner :show-modal? false)]
+            (modal/modal-dialog {:title "Are you sure?"
+                                 :body confirmation-question
+                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                           (button/button {:primary? true
+                                                           :on-click remove-fn}
+                                                          "Remove")]
+                                 :close-fn close-fn})))]))))
+
 (defn branch-names [project-data]
   (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
 
@@ -410,34 +443,6 @@
            [:hr]
            (clear-cache-button "source" project-data owner)]]]))))
 
-(defn remove-env-var-button [{:keys [env-var project-id]} owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:show-modal? false})
-    om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
-      (html
-       [:span
-        (table/action-button
-         "Remove"
-         (icon/delete)
-         #(om/set-state! owner :show-modal? true))
-        (when show-modal?
-          (let [close-fn #(om/set-state! owner :show-modal? false)]
-            (modal/modal-dialog {:title "Are you sure?"
-                                 :body (html
-                                        [:span
-                                         "Are you sure you want to remove the environment variable \""
-                                         (:name env-var)
-                                         "\"?"])
-                                 :actions [(button/button {:on-click close-fn} "Cancel")
-                                           (button/button {:primary? true
-                                                           :on-click #(raise! owner [:deleted-env-var {:project-id project-id
-                                                                                                       :env-var-name (:name env-var)}])}
-                                                          "Remove")]
-                                 :close-fn close-fn})))]))))
-
 (defn env-vars [project-data owner]
   (reify
     om/IInitState
@@ -514,8 +519,16 @@
                                       :type #{:shrink :right}
                                       :cell-fn
                                       (fn [env-var]
-                                        (om/build remove-env-var-button {:env-var env-var
-                                                                         :project-id project-id}))}]}))]))]])))))
+                                        (om/build remove-action-button
+                                                  {:confirmation-question
+                                                   (str
+                                                    "Are you sure you want to remove the environment variable \""
+                                                    (:name env-var)
+                                                    "\"?")
+
+                                                   :remove-fn
+                                                   #(raise! owner [:deleted-env-var {:project-id project-id
+                                                                                     :env-var-name (:name env-var)}])}))}]}))]))]])))))
 
 (defn advance [project-data owner]
   (reify
@@ -968,36 +981,6 @@
                                          :value code
                                          :on-click #(.select (.-target %))}]]]]]]))))
 
-(defn remove-ssh-key-button [{:keys [ssh-key project-id]} owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:show-modal? false})
-    om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
-      (html
-       [:span
-        (table/action-button
-         "Remove"
-         (icon/delete)
-         #(om/set-state! owner :show-modal? true))
-        (when show-modal?
-          (let [close-fn #(om/set-state! owner :show-modal? false)]
-            (modal/modal-dialog {:title "Are you sure?"
-                                 :body (html
-                                        [:span
-                                         "Are you sure you want to remove the \""
-                                         (:hostname ssh-key)
-                                         "\" SSH key?"])
-                                 :actions [(button/button {:on-click close-fn} "Cancel")
-                                           (button/button {:primary? true
-                                                           :on-click
-                                                           #(raise! owner [:deleted-ssh-key (-> ssh-key
-                                                                                                (select-keys [:hostname :fingerprint])
-                                                                                                (assoc :project-id project-id))])}
-                                                          "Remove")]
-                                 :close-fn close-fn})))]))))
-
 (defn ssh-keys [project-data owner]
   (reify
     om/IRender
@@ -1039,8 +1022,19 @@
                                     :cell-fn :fingerprint}
                                    {:header "Remove"
                                     :type #{:shrink :right}
-                                    :cell-fn #(om/build remove-ssh-key-button {:ssh-key %
-                                                                               :project-id project-id})}]}))]]])))))
+                                    :cell-fn (fn [ssh-key]
+                                               (om/build remove-action-button
+                                                         {:confirmation-question
+                                                          (str
+                                                           "Are you sure you want to remove the \""
+                                                           (:hostname ssh-key)
+                                                           "\" SSH key?")
+
+                                                          :remove-fn
+                                                          #(raise! owner [:deleted-ssh-key
+                                                                          (-> ssh-key
+                                                                              (select-keys [:hostname :fingerprint])
+                                                                              (assoc :project-id project-id))])}))}]}))]]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
@@ -1676,35 +1670,6 @@
             (om/build common/flashes error-message)
             (om/build body-component body-params)]]]]))))
 
-(defn remove-p12-button [row owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:show-modal? false})
-    om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
-      (html
-       [:span
-        (table/action-button
-         "Remove"
-         (icon/delete)
-         #(om/set-state! owner :show-modal? true))
-        (when show-modal?
-          (let [close-fn #(om/set-state! owner :show-modal? false)]
-            (modal/modal-dialog {:title "Are you sure?"
-                                 :body (html
-                                        [:span
-                                         "Are you sure you want to remove the \""
-                                         (:description row)
-                                         "\" Apple Code Signing Key?"])
-                                 :actions [(button/button {:on-click close-fn} "Cancel")
-                                           (button/button {:primary? true
-                                                           :on-click #(raise! owner
-                                                                              [:delete-p12
-                                                                               (select-keys row [:project-name :vcs-type :id])])}
-                                                          "Remove")]
-                                 :close-fn close-fn})))]))))
-
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
     om/IRender
@@ -1725,7 +1690,18 @@
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
                            {:header "Remove"
                             :type #{:shrink :right}
-                            :cell-fn #(om/build remove-p12-button %)}]}))))
+                            :cell-fn (fn [key]
+                                       (om/build remove-action-button
+                                                 {:confirmation-question
+                                                  (str
+                                                   "Are you sure you want to remove the \""
+                                                   (:description key)
+                                                   "\" Apple Code Signing Key?")
+
+                                                  :remove-fn
+                                                  #(raise! owner
+                                                           [:delete-p12
+                                                            (select-keys key [:project-name :vcs-type :id])])}))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name add-key]} owner]
   (reify
