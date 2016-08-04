@@ -95,6 +95,7 @@
              "No available masters."
              (om/build table/table
                        {:rows builders
+                        :key-fn :instance_id
                         :columns [{:header "Instance ID"
                                    :cell-fn :instance_id}
 
@@ -216,6 +217,7 @@
          [:div.user-table
           (om/build table/table
                     {:rows users
+                     :key-fn :login
                      :columns [{:header "GitHub ID"
                                 :cell-fn
                                 #(html

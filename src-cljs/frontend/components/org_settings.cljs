@@ -849,6 +849,7 @@
                [:div.offset1.span6
                 (om/build table/table
                           {:rows [card]
+                           :key-fn (constantly "card")
                            :columns [{:header "Name"
                                       :cell-fn #(:name % "N/A")}
                                      {:header "Card type"
@@ -1024,6 +1025,7 @@
                 [:span (->balance-string account-balance)]]]
               (om/build table/table
                         {:rows invoices
+                         :key-fn :id
                          :columns [{:header "Invoice date"
                                     :cell-fn (comp stripe-ts->date :date)}
 
@@ -1180,6 +1182,7 @@
                               :over-usage? (> amount max)})]
                   (om/build table/table
                             {:rows rows
+                             :key-fn (comp hash (juxt :from :to))
                              :columns [{:header "Billing Period"
                                         :type :shrink
                                         :cell-fn #(html

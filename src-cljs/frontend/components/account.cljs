@@ -140,6 +140,7 @@
            (when (seq tokens)
              (om/build table/table
                        {:rows tokens
+                        :key-fn :token
                         :columns [{:header "Label"
                                    :cell-fn :label}
 

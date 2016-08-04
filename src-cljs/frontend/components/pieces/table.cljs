@@ -1,7 +1,7 @@
 (ns frontend.components.pieces.table
   (:require [devcards.core :as dc :refer-macros [defcard-om]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component html]]))
 
 (defn- cell-classes
   "The HTML classes applied to a cell (th or td) in a column of the given type."
@@ -30,24 +30,33 @@
                         :shrink - Column width shrinks to fit its content. Columns without
                                   :shrink will share any leftover space.
   :rows    - A sequence of objects which will each generate a row. These will be passed to
-             the columns' :cell-fns to generate each cell."
-  [{:keys [columns rows]} owner]
+             the columns' :cell-fns to generate each cell.
+  :key-fn  - A function of a row object which returns a value to use as the React
+             key for the row."
+  [{:keys [columns rows key-fn]} owner]
+  {:pre (fn? key-fn)}
   (reify
     om/IRender
     (render [_]
-      (html
-       [:table {:data-component `table}
-        [:thead
-         [:tr
-          (for [{:keys [header type]} columns]
-            [:th {:class (cell-classes type)}
-             header])]]
-        [:tbody
-         (for [row rows]
+      (component
+        (html
+         [:table
+          [:thead
            [:tr
-            (for [{:keys [cell-fn type]} columns]
-              [:td {:class (cell-classes type)}
-               (cell-fn row)])])]]))))
+            (for [[idx {:keys [header type]}] (map-indexed vector columns)]
+              ;; We never reorder columns in a table, so the index works as a
+              ;; React key. If we ever do reorder columns, we'll need to come up
+              ;; with a key to identify them.
+              [:th {:key idx
+                    :class (cell-classes type)}
+               header])]]
+          [:tbody
+           (for [row rows]
+             [:tr (when key-fn {:key (key-fn row)})
+              (for [[idx {:keys [cell-fn type]}] (map-indexed vector columns)]
+                [:td {:key idx
+                      :class (cell-classes type)}
+                 (cell-fn row)])])]])))))
 
 (defn action-button
   "A button suitable for the action button cell of a table row.
