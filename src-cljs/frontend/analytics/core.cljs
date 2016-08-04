@@ -18,10 +18,16 @@
 ;; Events should NOT be view specific. They should be view agnostic and
 ;; include a view in the properties.
 ;; Add new events here and keep each list of event types sorted alphabetically
-(def supported-click-and-impression-events
-  ;; These are the click and impression events.
-  ;; They are in the fomat <item>-<clicked or impression>.
-  #{:add-more-containers-clicked
+(def supported-events
+  ;; There are two kinds of events:
+  ;;    click and impression events and
+  ;;    action events
+  ;; click and impression events should be in the format <item>-<clicked or impression>.
+  ;; action events should be in the format <item>-<action in the past tense>
+  ;;    examples: project-followed or banner-dismissed
+  #{:account-settings-clicked
+    :add-more-containers-clicked
+    :add-project-clicked
     :authorize-vcs-clicked
     :beta-accept-terms-clicked
     :beta-join-clicked
@@ -29,22 +35,25 @@
     :branch-clicked
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
+    :build-link-clicked
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
-    :build-link-clicked
-    :change-image-clicked
     :cancel-plan-clicked
+    :change-image-clicked
     :dismiss-trial-offer-banner-clicked
     :insights-bar-clicked
-    :invite-teammates-impression
+    :invite-teammates-clicked
     :invite-teammates-dismissed
+    :invite-teammates-impression
     :invite-teammates-select-all-clicked
     :invite-teammates-select-none-clicked
     :login-clicked
     :new-plan-clicked
     :no-plan-banner-impression
+    :org-clicked
     :parallelism-clicked
     :pr-link-clicked
+    :project-branch-changed
     :project-clicked
     :project-settings-clicked
     :revision-link-clicked
@@ -57,27 +66,24 @@
     :trial-offer-banner-impression
     :update-parallelism-clicked
     :update-plan-clicked
-    :org-clicked
-    :add-project-clicked
-    :invite-teammates-clicked
-    :web-notification-banner-impression
-    :web-notification-banner-one-dismissed
-    :web-notification-banner-two-dismissed
-    :set-web-notifications-clicked})
+    :web-notifications-permissions-banner-dismissed
+    :web-notifications-permissions-banner-impression
+    :web-notifications-permissions-set})
 
-(def supported-controller-events
-  ;; TODO: All these events should be server side
+(def supported-api-response-events
+  ;; TODO: All these events should be server side.
+  ;;       They all represent a change to data in our database, so they should be server side
+  ;;       where we update the data in the db.
   ;; These are the api response events.
-  ;; They are in the format of <object>-<action take in the past tense>
-  #{:project-branch-changed
-    :project-builds-stopped
+  ;; They are in the format of <object>-<action in the past tense>
+  #{:project-builds-stopped
     :project-followed
     :project-unfollowed})
 
 (def SupportedEvents
   (apply s/enum
-         (concat supported-click-and-impression-events
-                 supported-controller-events)))
+         (concat supported-events
+                 supported-api-response-events)))
 
 (def CoreAnalyticsEvent
   {:event-type s/Keyword
