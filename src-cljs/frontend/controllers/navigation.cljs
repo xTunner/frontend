@@ -349,6 +349,7 @@
       (assoc state/current-view navigation-point
              state/navigation-data (assoc args :show-aside-menu? false))
       (assoc-in [:invite-data :org] (:org args))
+      (assoc-in [:invite-data :vcs_type] (:vcs_type args))
       (assoc-in state/crumbs-path [{:type :invite-teammates}])))
 
 (defmethod navigated-to :team
@@ -363,11 +364,12 @@
 (defmethod post-navigated-to! :invite-teammates
   [history-imp navigation-point args previous-state current-state]
   (let [api-ch (get-in current-state [:comms :api])
-        org (:org args)]
+        org (:org args)
+        vcs_type (:vcs_type args)]
     ;; get the list of orgs
     (api/get-orgs api-ch :include-user? true)
     (when org
-      (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format "/api/v1/organization/%s/members" org)))]
+      (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format (api-path/org-members vcs_type org))))]
             (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))
     (set-page-title! "Invite teammates")))
 
