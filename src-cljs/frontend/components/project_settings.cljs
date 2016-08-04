@@ -1026,9 +1026,16 @@
                                                (om/build remove-action-button
                                                          {:confirmation-question
                                                           (str
-                                                           "Are you sure you want to remove the \""
-                                                           (:hostname ssh-key)
-                                                           "\" SSH key?")
+                                                           "Are you sure you want to remove the SSH key \""
+                                                           (:fingerprint ssh-key)
+                                                           "\""
+                                                           (if (:hostname ssh-key)
+                                                             (str
+                                                              " for the hostname \""
+                                                              (:hostname ssh-key)
+                                                              "\"")
+                                                             " for all hosts")
+                                                           "?")
 
                                                           :remove-fn
                                                           #(raise! owner [:deleted-ssh-key
