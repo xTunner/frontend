@@ -64,17 +64,21 @@
             project-id (project-model/id project)
             vcs-url (:vcs_url project)]
         (html
-          [:div.head-user
-           [:ol.breadcrumb (crumbs/crumbs crumbs-data)]
-           (settings-link app owner)
-           [:div.actions
-            actions
-            (when (show-follow-project-button? app)
-              (forms/managed-button
-               [:button#follow-project-button.btn.btn-primary
-                {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
-                 :data-spinner true}
-                "follow the " (vcs-url/repo-name vcs-url) " project"]))]])))))
+         [:div.head-user
+          ;; Avoids a React warning for not giving each `li` a key. Correctly,
+          ;; we should render the `li`s here directly, with a `for`, and give
+          ;; each one a `:key` here. This gets rid of the warning for now and
+          ;; avoids re-architecting the crumbs rendering.
+          (apply vector :ol.breadcrumb (crumbs/crumbs crumbs-data))
+          (settings-link app owner)
+          [:div.actions
+           actions
+           (when (show-follow-project-button? app)
+             (forms/managed-button
+              [:button#follow-project-button.btn.btn-primary
+               {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                :data-spinner true}
+               "follow the " (vcs-url/repo-name vcs-url) " project"]))]])))))
 
 (defn head-admin [app owner]
   (reify
@@ -110,7 +114,8 @@
               (let [current-build-id (get user-session-settings :om_build_id "dev")]
                 (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
                   [:a.menu-item
-                   {:on-click #(raise! owner [:set-user-session-setting {:setting :om-build-id
+                   {:key build-id
+                    :on-click #(raise! owner [:set-user-session-setting {:setting :om-build-id
                                                                          :value build-id}])}
                    [:span (str "om " build-id " ")]]))
               [:a {:on-click #(raise! owner [:show-inspector-toggled])}

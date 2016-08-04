@@ -107,22 +107,24 @@
               (let [project (:project branch)
                     latest-build (last (sort-by :build_num (concat (:running_builds branch)
                                                                    (:recent_builds branch))))
-                    vcs-url (:vcs_url project)
+                    vcs-type (project-model/vcs-type project)
                     org-name (project-model/org-name project)
-                    repo-name (project-model/repo-name project)]
-                [:li {:class (when (and (= org-name (:org navigation-data))
+                    repo-name (project-model/repo-name project)
+                    branch-identifier (:identifier branch)]
+                [:li {:key (hash [vcs-type org-name repo-name branch-identifier])
+                      :class (when (and (= org-name (:org navigation-data))
                                         (= repo-name (:repo navigation-data))
-                                        (= (name (:identifier branch))
+                                        (= (name branch-identifier)
                                            (:branch navigation-data)))
                                "selected")}
                  [:a {:href (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
                                                        :org (:username project)
                                                        :repo (:reponame project)
-                                                       :branch (name (:identifier branch))})
+                                                       :branch (name branch-identifier)})
                       :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
                                                                       :properties {:repo repo-name
                                                                                    :org org-name
-                                                                                   :branch (name (:identifier branch))}})}
+                                                                                   :branch (name branch-identifier)}})}
                   [:.branch
                    [:.last-build-status
                     (om/build svg {:class "badge-icon"
@@ -133,8 +135,8 @@
                        {:title (project-model/project-name project)}
                        (project-model/project-name project)])
                     [:.branch-name
-                     {:title (utils/display-branch (:identifier branch))}
-                     (utils/display-branch (:identifier branch))]
+                     {:title (utils/display-branch branch-identifier)}
+                     (utils/display-branch branch-identifier)]
                     (let [last-activity-time (project-model/most-recent-activity-time branch)]
                       [:.last-build-info
                        {:title (when last-activity-time
@@ -190,11 +192,12 @@
     (case (:type item)
 
       :heading
-      [:.aside-item.aside-heading
+      [:.aside-item.aside-heading {:key (hash item)}
        (:title item)]
 
       :subpage
-      [:a.aside-item {:href (:href item)
+      [:a.aside-item {:key (hash item)
+                      :href (:href item)
                       :class (when (= subpage (:subpage item)) "active")}
        (:title item)])))
 
