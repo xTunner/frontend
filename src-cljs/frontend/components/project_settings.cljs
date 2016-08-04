@@ -8,6 +8,8 @@
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.form :as form]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
@@ -25,13 +27,11 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.html :refer [hiccup->html-str open-ext]]
             [frontend.utils.state :as state-utils]
-            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true]
-            [frontend.components.pieces.button :as button]
-            [frontend.components.pieces.card :as card])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn- remove-action-button

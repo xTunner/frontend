@@ -1,0 +1,79 @@
+.ns("frontend.components.pieces.form", {
+  .ui("text-field", {
+    > label {
+      display: block;
+      margin-bottom: 2px;
+
+      font-size: @fontSizeSmaller;
+      font-weight: 400;
+      color: @gray;
+    }
+
+    > .field {
+      position: relative;
+      font-size: @baseFontSize;
+
+      > input {
+        width: 100%;
+        padding: 0px 10px;
+        line-height: 33px;
+        border: solid 1px @blueLight;
+
+        &[disabled] {
+          color: @grayLight;
+          background-color: @whiten;
+          border-color: @grayLighter;
+        }
+
+        &:focus {
+          outline: none;
+          border: solid 1px @blueLightest;
+          box-shadow: 0 0 4px 0 @blueLight;
+        }
+      }
+    }
+
+    &.invalid {
+      > label {
+        color: @red;
+      }
+
+      > .field {
+        > input {
+          background-color: @redLightest;
+          border-color: @red;
+
+          &:focus {
+            background-color: @white;
+            box-shadow: 0 0 4px 0 @redLight;
+          }
+        }
+
+        > .validation-error {
+          position: absolute;
+          top: 0;
+          right: 0;
+          padding: 10px;
+          transform: ~'translateY(calc(-100% - 5px))';
+          line-height: 1;
+          color: @white;
+          background-color: @red;
+
+          &::after {
+            content: "";
+
+            position: absolute;
+            bottom: 0;
+            right: 10px;
+            transform: translateY(100%);
+
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: @red;
+          }
+        }
+      }
+    }
+  });
+});
