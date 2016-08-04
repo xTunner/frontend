@@ -968,6 +968,36 @@
                                          :value code
                                          :on-click #(.select (.-target %))}]]]]]]))))
 
+(defn remove-ssh-key-button [{:keys [ssh-key project-id]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (html
+       [:span
+        (table/action-button
+         "Remove"
+         (icon/delete)
+         #(om/set-state! owner :show-modal? true))
+        (when show-modal?
+          (let [close-fn #(om/set-state! owner :show-modal? false)]
+            (modal/modal-dialog {:title "Are you sure?"
+                                 :body (html
+                                        [:span
+                                         "Are you sure you want to remove the \""
+                                         (:hostname ssh-key)
+                                         "\" SSH key?"])
+                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                           (button/button {:primary? true
+                                                           :on-click
+                                                           #(raise! owner [:deleted-ssh-key (-> ssh-key
+                                                                                                (select-keys [:hostname :fingerprint])
+                                                                                                (assoc :project-id project-id))])}
+                                                          "Remove")]
+                                 :close-fn close-fn})))]))))
+
 (defn ssh-keys [project-data owner]
   (reify
     om/IRender
@@ -1009,14 +1039,8 @@
                                     :cell-fn :fingerprint}
                                    {:header "Remove"
                                     :type #{:shrink :right}
-                                    :cell-fn
-                                    (fn [key]
-                                      (table/action-button
-                                       "Remove"
-                                       (icon/delete)
-                                       #(raise! owner [:deleted-ssh-key (-> key
-                                                                            (select-keys [:hostname :fingerprint])
-                                                                            (assoc :project-id project-id))])))}]}))]]])))))
+                                    :cell-fn #(om/build remove-ssh-key-button {:ssh-key %
+                                                                               :project-id project-id})}]}))]]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
@@ -1652,7 +1676,7 @@
             (om/build common/flashes error-message)
             (om/build body-component body-params)]]]]))))
 
-(defn remove-key-button [row owner]
+(defn remove-p12-button [row owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -1701,9 +1725,7 @@
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
                            {:header "Remove"
                             :type #{:shrink :right}
-                            :cell-fn
-                            (fn [row]
-                              (om/build remove-key-button row))}]}))))
+                            :cell-fn #(om/build remove-p12-button %)}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name add-key]} owner]
   (reify
