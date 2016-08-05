@@ -26,7 +26,8 @@
   :value            - The value of the field.
   :on-change        - An on-change handler for the field. Receives the change
                       event.
-  :size             - The size of the field. One of #{:full :medium}.
+  :password?        - (optional) If true, renders as a password field.
+  :size             - (optional) The size of the field. One of #{:full :medium}.
                       (default: :full)
   :validation-error - (optional) A validation error to display. If given, the
                       field will appear as invalid.
@@ -34,7 +35,7 @@
                       (default: false)
   :auto-complete    - (optional) If given, the value of the field's
                       :auto-complete attribute."
-  [{:keys [label value on-change size validation-error disabled? auto-complete] :or {size :full}}]
+  [{:keys [label value on-change password? size validation-error disabled? auto-complete] :or {size :full}}]
   (component
     (om/build text-type-field
               {:label label
@@ -51,7 +52,7 @@
                                                    (case size
                                                      :full nil
                                                      :medium "medium")])
-                              :type "text"
+                              :type (if password? "password" "text")
                               :value value
                               :disabled disabled?
                               :on-change on-change}

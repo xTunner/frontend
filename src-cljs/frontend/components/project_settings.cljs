@@ -1758,18 +1758,13 @@
             upload-form
             (html
              [:div {:data-component `p12-upload-form}
-              [:div
-               [:label.label "Description"]
-               [:input.dumb.text-input
-                {:type "text" :value description
-                 :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
-
-              [:div
-               [:label.label "Password (Optional)"]
-               [:input.dumb.text-input
-                {:type "password" :value password
-                 :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
-
+              (form/text-field {:label "Description"
+                                :value description
+                                :on-change #(om/set-state! owner :description (.. % -target -value))})
+              (form/text-field {:label "Password (Optional)"
+                                :password? true
+                                :value password
+                                :on-change #(om/set-state! owner :password (.. % -target -value))})
               [:div
                [:label.label "File"]
                [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
