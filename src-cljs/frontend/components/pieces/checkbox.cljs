@@ -5,7 +5,6 @@
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn checkbox
-<<<<<<< 7a55a159aa37c37eb42b8f8f297f1f6c2d874a30
   ;; TODO -ac Add docstring
   "This little checkbox component is useful for providing a consistent,
   completely styled checkbox input field.
@@ -23,10 +22,6 @@
 
   disabled?     - (optional) Boolean for setting the checkbox to a disabled state."
   [{:keys [id defaultValue value on-click checked? disabled?] :or {}} owner]
-=======
-  "<DOC STRING GOES here>."
-  [{:keys [id value checked? disabled?] :or {}} owner]
->>>>>>> Add basic modal components
   (reify
     om/IInitState
     (init-state [_]
@@ -37,21 +32,11 @@
         (html
           [:input {:id id
                    :value value
-<<<<<<< 7a55a159aa37c37eb42b8f8f297f1f6c2d874a30
                    :defaultChecked defaultValue
                    :checked checked?
                    :disabled disabled?
                    :type "checkbox"
                    :on-click on-click}])))))
-=======
-                   :checked (:checked? state)
-                   :disabled disabled?
-                   :type "checkbox"
-                   :onClick #(do
-                               (om/update-state! owner :checked? (fn [checked?] (not checked?)))
-                               ;; TODO -ac Hmmm, this doesn't seem to actually update anything ...
-                               (.log js/console (:checked? state)))}])))))
->>>>>>> Add basic modal components
 
 (dc/do
   (defcard various-checkboxed
