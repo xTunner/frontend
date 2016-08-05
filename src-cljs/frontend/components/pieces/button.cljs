@@ -1,6 +1,6 @@
 (ns frontend.components.pieces.button
   (:require [devcards.core :as dc :refer-macros [defcard]])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component html]]))
 
 (defn button
   "A standard button.
@@ -8,17 +8,17 @@
   :on-click  - A function called when the button is clicked.
   :primary?  - If true, the button appears as a primary button. (default: false)
   :disabled? - If true, the button is disabled. (default: false)
-  :size      - The size of the button. One of #{:full medium}. (default: :full)"
+  :size      - The size of the button. One of #{:full :medium}. (default: :full)"
   [{:keys [on-click primary? disabled? size] :or {size :full}} content]
-  (html
-   [:button {:data-component `button
-             :class (remove nil? [(when primary? "primary")
-                                  (case size
-                                    :full nil
-                                    :medium "medium")])
-             :disabled disabled?
-             :on-click on-click}
-    content]))
+  (component
+    (html
+     [:button {:class (remove nil? [(when primary? "primary")
+                                    (case size
+                                      :full nil
+                                      :medium "medium")])
+               :disabled disabled?
+               :on-click on-click}
+      content])))
 
 
 (dc/do
