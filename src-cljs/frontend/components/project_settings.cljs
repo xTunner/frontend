@@ -483,19 +483,15 @@
                                                 " To disable string substitution you need to escape the " [:code "$"]
                                                 " characters by prefixing them with " [:code "\\"] "."
                                                 " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
-                                               [:div.form-group
-                                                [:label "Name"]
-                                                [:input.form-control#env-var-name
-                                                 {:required true ,:type "text" ,:value new-env-var-name
-                                                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]]
-                                               [:div.form-group
-                                                [:label "Value"]
-                                                [:input.form-control#env-var-value
-                                                 {:required true
-                                                  :type "text"
-                                                  :value new-env-var-value
-                                                  :auto-complete "off"
-                                                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]])
+                                               (form/text-field {:label "Name"
+                                                                 :required true
+                                                                 :value new-env-var-name
+                                                                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
+                                               (form/text-field {:label "Value"
+                                                                 :required true
+                                                                 :value new-env-var-value
+                                                                 :auto-complete "off"
+                                                                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)})])
                                        :actions [(button/button {:on-click close-fn} "Cancel")
                                                  (forms/managed-button
                                                   [:input.btn.btn-primary {:data-failed-text "Failed" ,

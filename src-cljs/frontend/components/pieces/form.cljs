@@ -26,13 +26,15 @@
   :value            - The value of the field.
   :on-change        - An on-change handler for the field. Receives the change
                       event.
+  :size             - The size of the field. One of #{:full :medium}.
+                      (default: :full)
   :validation-error - (optional) A validation error to display. If given, the
                       field will appear as invalid.
   :disabled?        - (optional) If true, the field is disabled.
                       (default: false)
-  :size             - The size of the field. One of #{:full :medium}.
-                      (default: :full)"
-  [{:keys [label value on-change validation-error disabled? size] :or {size :full}}]
+  :auto-complete    - (optional) If given, the value of the field's
+                      :auto-complete attribute."
+  [{:keys [label value on-change size validation-error disabled? auto-complete] :or {size :full}}]
   (component
     (om/build text-type-field
               {:label label
@@ -43,15 +45,17 @@
                    (html
                     ;; This `.dumb` class opts us out of old global form styles. We can
                     ;; remove it once those styles are dead.
-                    [:input.dumb {:id id
-                                  :class (remove nil? [(when validation-error "invalid")
-                                                       (case size
-                                                         :full nil
-                                                         :medium "medium")])
-                                  :type "text"
-                                  :value value
-                                  :disabled disabled?
-                                  :on-change on-change}])))})))
+                    [:input.dumb
+                     (cond-> {:id id
+                              :class (remove nil? [(when validation-error "invalid")
+                                                   (case size
+                                                     :full nil
+                                                     :medium "medium")])
+                              :type "text"
+                              :value value
+                              :disabled disabled?
+                              :on-change on-change}
+                       auto-complete (assoc :auto-complete auto-complete))])))})))
 
 (defn text-area
   "A text area, with a label.
