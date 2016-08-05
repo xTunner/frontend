@@ -15,10 +15,6 @@
        (.requestPermission)
        (.then callback))))
 
-(defn notification-on-click [event]
-  (.preventDefault event)
-  (.focus js/window))
-
 ;; Some notes about properties
 ;; - The title should be 32 characters MAX, note that if using system default,
 ;;   only 22 chars are visible on hover (because of resulting UI), so keep
@@ -28,14 +24,18 @@
 (defn notify [title properties]
   (when (and (notifications-granted?)
              (ld/feature-on? "web-notifications"))
-    (-> (new js/Notification
-             title
-             (clj->js (merge
-                        properties
-                        {:lang "en"})))
-        (goog.events/listen
-          "click"
-          notification-on-click))))
+    (let [new-notification (js/Notification.
+                             title
+                             (clj->js (assoc
+                                        properties
+                                        :lang "en")))]
+      (goog.events/listen
+        new-notification
+        "click"
+        (fn [event]
+          (.preventDefault event)
+          (.focus js/window)
+          (.. event -target close))))))
 
 (defn status-icon-path [status-name]
   (utils/cdn-path (str "/img/email/"status-name"/icon@3x.png")))
