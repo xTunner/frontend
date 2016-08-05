@@ -14,6 +14,10 @@
        (.requestPermission)
        (.then callback))))
 
+(defn notification-on-click [event]
+  (.preventDefault event)
+  (.focus js/window))
+
 ;; Some notes about properties
 ;; - The title should be 32 characters MAX, note that if using system default,
 ;;   only 22 chars are visible on hover (because of resulting UI), so keep
@@ -23,11 +27,15 @@
 (defn notify [title properties]
   (when (and (notifications-granted?)
              (ld/feature-on? "web-notifications"))
-    (new js/Notification
-         title
-         (clj->js (merge
-                    properties
-                    {:lang "en"})))))
+    (set!
+      (.-onclick
+        (new js/Notification
+             title
+             (clj->js (merge
+                        properties
+                        {:lang "en"}))))
+      ;; TODO Maybe this should be a setting in the Web Notifications panel?
+      notification-on-click)))
 
 (defn status-icon-path [status-name]
   (utils/cdn-path (str "/img/email/"status-name"/icon@3x.png")))
