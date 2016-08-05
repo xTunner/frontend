@@ -28,14 +28,14 @@
 (defn notify [title properties]
   (when (and (notifications-granted?)
              (ld/feature-on? "web-notifications"))
-    (goog.events/listen
-      (new js/Notification
-        title
-        (clj->js (merge
-                   properties
-                   {:lang "en"})))
-      "click"
-      notification-on-click)))
+    (-> (new js/Notification
+             title
+             (clj->js (merge
+                        properties
+                        {:lang "en"})))
+        (goog.events/listen
+          "click"
+          notification-on-click))))
 
 (defn status-icon-path [status-name]
   (utils/cdn-path (str "/img/email/"status-name"/icon@3x.png")))
