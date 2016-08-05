@@ -1,5 +1,5 @@
 .ns("frontend.components.pieces.form", {
-  .ui("text-field", {
+  .ui("text-type-field", {
     > label {
       display: block;
       margin-bottom: 2px;
@@ -12,25 +12,6 @@
     > .field {
       position: relative;
       font-size: @baseFontSize;
-
-      > input {
-        width: 100%;
-        padding: 0px 10px;
-        line-height: 33px;
-        border: solid 1px @blueLight;
-
-        &[disabled] {
-          color: @grayLight;
-          background-color: @whiten;
-          border-color: @grayLighter;
-        }
-
-        &:focus {
-          outline: none;
-          border: solid 1px @blueLightest;
-          box-shadow: 0 0 4px 0 @blueLight;
-        }
-      }
     }
 
     &.invalid {
@@ -39,16 +20,6 @@
       }
 
       > .field {
-        > input {
-          background-color: @redLightest;
-          border-color: @red;
-
-          &:focus {
-            background-color: @white;
-            box-shadow: 0 0 4px 0 @redLight;
-          }
-        }
-
         > .validation-error {
           position: absolute;
           top: 0;
@@ -75,11 +46,54 @@
         }
       }
     }
+  });
 
-    &.medium {
-      > .field > input {
-        line-height: 28px;
+  // Mixin for common styles for the actual field element in a text-type-field.
+  .text-type-field-field() {
+    width: 100%;
+    padding: 7px 10px 8px;
+    line-height: 18px;
+    border: solid 1px @blueLight;
+
+    &[disabled] {
+      color: @grayLight;
+      background-color: @whiten;
+      border-color: @grayLighter;
+    }
+
+    &:focus {
+      outline: none;
+      border: solid 1px @blueLightest;
+      box-shadow: 0 0 4px 0 @blueLight;
+    }
+
+    &.invalid {
+      background-color: @redLightest;
+      border-color: @red;
+
+      &:focus {
+        background-color: @white;
+        box-shadow: 0 0 4px 0 @redLight;
       }
     }
+  }
+
+  .ui("text-field", {}, {
+    .el("input", {
+      .text-type-field-field;
+
+      &.medium {
+        line-height: 16px;
+      }
+    });
+  });
+
+  .ui("text-area", {}, {
+    .el("textarea", {
+      .text-type-field-field;
+
+      height: 100px;
+      resize: vertical;
+    });
   });
 });
