@@ -1,5 +1,6 @@
 (ns frontend.notifications
   (:require [frontend.utils :as utils :include-macros true]
+            [goog.events]
             [frontend.utils.launchdarkly :as ld]))
 
 (defn notifiable-browser? [] (exists? (.-Notification js/window)))
@@ -23,11 +24,18 @@
 (defn notify [title properties]
   (when (and (notifications-granted?)
              (ld/feature-on? "web-notifications"))
-    (new js/Notification
-         title
-         (clj->js (merge
-                    properties
-                    {:lang "en"})))))
+    (let [new-notification (js/Notification.
+                             title
+                             (clj->js (assoc
+                                        properties
+                                        :lang "en")))]
+      (goog.events/listen
+        new-notification
+        "click"
+        (fn [event]
+          (.preventDefault event)
+          (.focus js/window)
+          (.. event -target close))))))
 
 (defn status-icon-path [status-name]
   (utils/cdn-path (str "/img/email/"status-name"/icon@3x.png")))
