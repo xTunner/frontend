@@ -363,7 +363,7 @@
                      [:a {:href "javascript:void(0)"
                           :on-click #(notifications/request-permission
                                        (fn [response]
-                                         (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true :response response}]))))}
+                                         (when (= response "granted") (raise! owner [:set-web-notifications-permissions {:enabled? true :response response}]))))}
                       "click here to turn permissions on."]]
           nil)
         [:div.section
@@ -374,7 +374,7 @@
              {:name "web_notif_pref"
               :type "radio"
               :checked web-notifications-enabled?
-              :on-change #(raise! owner [:set-web-notifications {:enabled? true}])
+              :on-change #(raise! owner [:set-web-notifications-permissions {:enabled? true}])
               :disabled disabled?}]
             (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             [:span.label-contents " Show me notifications when a build finishes"]]]
@@ -384,7 +384,7 @@
              {:name "web_notif_pref"
               :type "radio"
               :checked (not web-notifications-enabled?)
-              :on-change #(raise! owner [:set-web-notifications {:enabled? false}])
+              :on-change #(raise! owner [:set-web-notifications-permissions {:enabled? false}])
               :disabled disabled?}]
             (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             [:span.label-contents " Don't show me notifications when a build finishes"]]]]]]
