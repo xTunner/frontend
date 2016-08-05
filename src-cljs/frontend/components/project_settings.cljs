@@ -1006,12 +1006,13 @@
                    {:title "Add an SSH Key"
                     :body (html
                            [:form
-                            [:input#hostname {:required true ,:type "text" :value (str hostname)
-                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)}]
-                            [:label {:placeholder "Hostname"}]
-                            [:textarea#privateKey {:required true :value (str private-key)
-                                                   :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}]
-                            [:label {:placeholder "Private Key"}]])
+                            (form/text-field {:label "Hostname"
+                                              :value hostname
+                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)})
+                            (form/text-area {:label "Private Key"
+                                             :required true
+                                             :value private-key
+                                             :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)})])
                     :actions [(button/button {:on-click close-fn} "Cancel")
                               (forms/managed-button
                              [:input.btn.btn-primary
