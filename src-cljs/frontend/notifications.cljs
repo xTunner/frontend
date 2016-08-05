@@ -1,5 +1,6 @@
 (ns frontend.notifications
   (:require [frontend.utils :as utils :include-macros true]
+            [goog.events]
             [frontend.utils.launchdarkly :as ld]))
 
 (defn notifiable-browser? [] (exists? (.-Notification js/window)))
@@ -27,14 +28,13 @@
 (defn notify [title properties]
   (when (and (notifications-granted?)
              (ld/feature-on? "web-notifications"))
-    (set!
-      (.-onclick
-        (new js/Notification
-             title
-             (clj->js (merge
-                        properties
-                        {:lang "en"}))))
-      ;; TODO Maybe this should be a setting in the Web Notifications panel?
+    (goog.events/listen
+      (new js/Notification
+        title
+        (clj->js (merge
+                   properties
+                   {:lang "en"})))
+      "click"
       notification-on-click)))
 
 (defn status-icon-path [status-name]
