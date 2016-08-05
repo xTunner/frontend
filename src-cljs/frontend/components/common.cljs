@@ -132,7 +132,10 @@
       [:svg {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
              :class (name ico-name)}
        (for [path (:paths template)]
-         (html [:path {:class (name path) :d (get ico-paths path)}]))]])))
+         (html
+          [:path {:key path
+                  :class (name path)
+                  :d (get ico-paths path)}]))]])))
 
 (def spinner
   (ico :spinner))

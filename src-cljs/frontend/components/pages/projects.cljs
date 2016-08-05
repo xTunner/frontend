@@ -20,6 +20,7 @@
 (defn- table [projects plan]
   (om/build table/table
             {:rows projects
+             :key-fn :vcs_url
              :columns [{:header "Project"
                         :cell-fn #(vcs-url/repo-name (:vcs_url %))}
 

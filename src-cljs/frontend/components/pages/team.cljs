@@ -15,6 +15,7 @@
 (defn- table [users]
   (om/build table/table
             {:rows users
+             :key-fn :login
              :columns [{:header "Login"
                         :cell-fn :login}
 

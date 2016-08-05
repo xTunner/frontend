@@ -505,6 +505,7 @@
               (when-let [env-vars (seq (:envvars project-data))]
                 (om/build table/table
                           {:rows env-vars
+                           :key-fn :name
                            :columns [{:header "Name"
                                       :cell-fn :name}
                                      {:header "Value"
@@ -1001,6 +1002,7 @@
             (when-let [ssh-keys (seq (:ssh_keys project))]
               (om/build table/table
                         {:rows ssh-keys
+                         :key-fn (comp hash (juxt :hostname :fingerprint))
                          :columns [{:header "Hostname"
                                     :cell-fn :hostname}
                                    {:header "Fingerprint"
@@ -1156,6 +1158,7 @@
                    "we will automatically fall back to the other keys if the preferred key is revoked."]
                   (om/build table/table
                             {:rows checkout-keys
+                             :key-fn :fingerprint
                              :columns [{:header "Description"
                                         :cell-fn #(if-let [vcs-link (checkout-key-link % project user)]
                                                     [:a {:href vcs-link :target "_blank"}
@@ -1302,6 +1305,7 @@
             (when-let [tokens (seq (:tokens project-data))]
               (om/build table/table
                         {:rows tokens
+                         :key-fn :token
                          :columns [{:header "Scope"
                                     :cell-fn :scope}
                                    {:header "Label"
@@ -1683,6 +1687,7 @@
     (render [_]
       (om/build table/table
                 {:rows rows
+                 :key-fn :id
                  :columns [{:header "Description"
                             :cell-fn :description}
                            {:header "Filename"
