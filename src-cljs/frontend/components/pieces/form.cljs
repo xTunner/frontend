@@ -3,7 +3,18 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn text-field [{:keys [label value validation-error disabled? on-change]} owner]
+(defn text-field
+  "A text field, with a label.
+
+  :label            - The label for the field.
+  :value            - The value of the field.
+  :on-change        - An on-change handler for the field. Receives the change
+                      event.
+  :validation-error - (optional) A validation error to display. If given, the
+                      field will appear as invalid.
+  :disabled?        - (optional) If true, the field is disabled.
+                      (default: false)"
+  [{:keys [label value on-change validation-error disabled?]} owner]
   (reify
     om/IInitState
     (init-state [_]
