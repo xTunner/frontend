@@ -590,7 +590,7 @@
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :created-env-var
-  [target message {:keys [project-id]} previous-state current-state]
+  [target message {:keys [project-id on-success]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
@@ -600,7 +600,8 @@
                  api-ch
                  :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
                           :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
-                 :context {:project-id project-id})))
+                 :context {:project-id project-id
+                           :on-success on-success})))
 
 
 (defmethod post-control-event! :deleted-env-var

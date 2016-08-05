@@ -534,6 +534,10 @@
         (assoc-in (conj state/inputs-path :new-env-var-name) "")
         (assoc-in (conj state/inputs-path :new-env-var-value) ""))))
 
+(defmethod post-api-event! [:create-env-var :success]
+  [target message status {:keys [context]} previous-state current-state]
+  ((:on-success context)))
+
 
 (defmethod api-event [:delete-env-var :success]
   [target message status {:keys [resp context]} state]
