@@ -13,8 +13,10 @@
   :validation-error - (optional) A validation error to display. If given, the
                       field will appear as invalid.
   :disabled?        - (optional) If true, the field is disabled.
-                      (default: false)"
-  [{:keys [label value on-change validation-error disabled?]} owner]
+                      (default: false)
+  :size             - The size of the field. One of #{:full :medium}.
+                      (default: :full)"
+  [{:keys [label value on-change validation-error disabled? size] :or {size :full}} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -23,7 +25,10 @@
     (render-state [_ {:keys [id]}]
       (component
         (html
-         [:div {:class (when validation-error "invalid")}
+         [:div {:class (remove nil? [(when validation-error "invalid")
+                                     (case size
+                                       :full nil
+                                       :medium "medium")])}
           [:label {:for id} label]
           [:.field
            ;; This `.dumb` class opts us out of old global form styles. We can
@@ -42,6 +47,14 @@
       (om/build text-field {:label "Hostname"
                             :value (:value @state)
                             :on-change #(swap! state assoc :value (.. % -target -value))}))
+    {:value "circleci.com"})
+
+  (defcard text-field-medium
+    (fn [state]
+      (om/build text-field {:label "Hostname"
+                            :value (:value @state)
+                            :on-change #(swap! state assoc :value (.. % -target -value))
+                            :size :medium}))
     {:value "circleci.com"})
 
   (defcard text-field-disabled
