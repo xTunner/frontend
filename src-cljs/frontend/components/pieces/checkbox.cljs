@@ -17,12 +17,12 @@
         (html
           [:input {:id id
                    :value value
-                   :checked (:checked? state)
+                   :defaultChecked (:checked? state)
                    :disabled disabled?
                    :type "checkbox"
                    :onClick #(do
-                               (om/update-state! owner :checked? (fn [checked?] (not checked?)))
                                ;; TODO -ac Hmmm, this doesn't seem to actually update anything ...
+                               (om/update-state! owner :checked? (fn [checked?] (not checked?)))
                                (.log js/console (:checked? state)))}])))))
 
 (dc/do

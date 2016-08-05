@@ -6,6 +6,7 @@
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
+            [frontend.components.pieces.text-input :as text-input]
             [frontend.components.templates.main :as main-template]
             [frontend.components.pieces.checkbox :as checkbox]
             [frontend.components.pieces.button :as button]
@@ -138,10 +139,9 @@
                                                                                  :cell-fn (fn [user-map]
                                                                                             (let [login (:login user-map)
                                                                                                   email (:email user-map)]
-                                                                                              (html
-                                                                                                [:input {:id (str login "-email")
-                                                                                                         :type "email"
-                                                                                                         :value email}])))}
+                                                                                              (component
+                                                                                                (text-input/text-input {:id (str login "-email")
+                                                                                                                      :value email}))))}
                                                                                 {:type :shrink
                                                                                  :cell-fn (fn [user-map]
                                                                                             (om/build checkbox/checkbox {:checked? (:email user-map)}))}]})]]
