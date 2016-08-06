@@ -70,8 +70,8 @@
           ;; each one a `:key` here. This gets rid of the warning for now and
           ;; avoids re-architecting the crumbs rendering.
           (apply vector :ol.breadcrumb (crumbs/crumbs crumbs-data))
-          (settings-link app owner)
           [:div.actions
+           (settings-link app owner)
            actions
            (when (show-follow-project-button? app)
              (forms/managed-button
