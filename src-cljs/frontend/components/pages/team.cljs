@@ -103,7 +103,9 @@
           (api/get-org-members api-chan (:name selected-org)))
         (when (and selected-org
                    invite-teammates?)
-          (.log js/console (str (keys selected-org))))))
+          ;; TODO -ac here or up there? ^
+          ;; (api/get-org-members api-chan (:name selected-org)))
+          )))
 
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident invite-teammates?]}]
@@ -151,14 +153,32 @@
                                                                                              (str "  " (:login user-map))])}
                                                                                 {:header "Email"
                                                                                  :cell-fn (fn [user-map]
-                                                                                            (let [login (:login user-map)
-                                                                                                  email (:email user-map)]
+                                                                                            (let [{:keys [avatar_url email login index]} user-map
+                                                                                                  id-name (str login "-email")]
                                                                                               (component
-                                                                                                (text-input/text-input {:id (str login "-email")
-                                                                                                                      :value email}))))}
+                                                                                                (om/build text-input/text-input {:input-type "email"
+                                                                                                                                 :on-change #(do
+                                                                                                                                               (utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
+                                                                                                                                               ;; TODO -ac Seems to be stuck
+                                                                                                                                               (om/update-state! owner :email (fn [email]
+                                                                                                                                                                                (.log js/console "Email is ?? : "email)
+                                                                                                                                                                                email))
+                                                                                                                                               (.log js/console id-name id-name "email : " (om/get-state owner :email)))
+                                                                                                                                 :required? true
+                                                                                                                                 :id id-name
+                                                                                                                                 :value email}))))}
                                                                                 {:type :shrink
                                                                                  :cell-fn (fn [user-map]
-                                                                                            (om/build checkbox/checkbox {:checked? (:email user-map)}))}]})]]
+                                                                                            (let [{:keys [email login index]} user-map
+                                                                                                  id-name (str login "-checkbox")]
+                                                                                              (component
+                                                                                                (om/build checkbox/checkbox {:id id-name
+                                                                                                                             :checked? (not (nil? email))
+                                                                                                                             :on-click #(do
+                                                                                                                                          (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)
+                                                                                                                                          (om/update-state! owner :checked? (fn [checked?]
+                                                                                                                                                                              (not checked?)))
+                                                                                                                                          (.log js/console id-name "checked? : " (om/get-state owner :checked?)))}))))}]})]]
                                        :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
                                                  (button/button {:on-click #(.log js/console "Send the emails in this on-click!")
                                                                  :primary? true} "Send emails")]
@@ -167,7 +187,7 @@
                   {:disabled? (nil? (:users selected-org))
                    :primary? true
                    :on-click (fn []
-                               ;; TODO -ac Add tracking back in
+                               ;; TODO -ac Add tracking back in before merging
                                #_((om/get-shared owner :track-event)
                                   {:event-type :invite-teammates-clicked
                                    :properties {:view :team}})
