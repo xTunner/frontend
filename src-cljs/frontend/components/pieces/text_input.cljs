@@ -5,25 +5,28 @@
 
 (defn text-input
   "<DOC STRING GOES here>."
-  [{:keys [id value size disabled?] :or {:size "medium"}}]
-  (component
-    (html
-    [:input {:type "text"
-             :id id
-             :defaultValue value
-             :disabled disabled?
-             ;; Ideally, we should remove our default styles and do *all*
-             ;; styling in the component
-             :class size
-             }])))
+  [{:keys [input-type on-change id value size disabled? required?] :or {:input-type "text"
+                                                                        :size "medium"}}
+   owner]
+  (reify
+    om/IRender
+    (render [_]
+      (component
+        (html
+          [:input {:type input-type
+                   :on-change on-change
+                   :id id
+                   :required required?
+                   :defaultValue value
+                   :disabled disabled?
+                   :class size}])))))
 
 (dc/do
   (defcard text-input
     (html
      [:div
-      (text-input {:value "Regular little text input"})
-      (text-input {:value "Medium sized text input"
+      (om/build text-input {:value "Regular little text input"})
+      (om/build text-input {:value "Medium sized text input"
                    :size "medium"})
-      (text-input {:value "Large sized text input"
-                   :size "large"})
-      ])))
+      (om/build text-input {:value "Large sized text input"
+                   :size "large"})])))

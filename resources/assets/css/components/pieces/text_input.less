@@ -10,8 +10,15 @@
           min-height: 99px !important;
       }
 
+      // TODO Alllllll of this is bad, should be removed in a future PR
+      // that switched over *all* of our input fields to this component
+      padding: 0 !important;
       width: auto !important;
       border-radius: 0 !important;
+
+      &.rounded {
+          border-radius: 30px !important;
+      }
   });
 });
 

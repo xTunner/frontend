@@ -5,8 +5,9 @@
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn checkbox
+  ;; TODO -ac Add docstring
   "<DOC STRING GOES here>."
-  [{:keys [id value checked? disabled?] :or {}} owner]
+  [{:keys [id value on-click checked? disabled?] :or {}} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -20,10 +21,7 @@
                    :defaultChecked (:checked? state)
                    :disabled disabled?
                    :type "checkbox"
-                   :onClick #(do
-                               ;; TODO -ac Hmmm, this doesn't seem to actually update anything ...
-                               (om/update-state! owner :checked? (fn [checked?] (not checked?)))
-                               (.log js/console (:checked? state)))}])))))
+                   :on-click on-click}])))))
 
 (dc/do
   (defcard various-checkboxed
