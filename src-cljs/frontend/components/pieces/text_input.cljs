@@ -5,7 +5,7 @@
 
 (defn text-input
   "<DOC STRING GOES here>."
-  [{:keys [input-type on-change id value size disabled? required?] :or {:input-type "text"
+  [{:keys [input-type on-change id value defaultvVlue size disabled? required?] :or {:input-type "text"
                                                                         :size "medium"}}
    owner]
   (reify
@@ -16,8 +16,9 @@
           [:input {:type input-type
                    :on-change on-change
                    :id id
-                   :required required?
+                   :value value
                    :defaultValue value
+                   :required required?
                    :disabled disabled?
                    :class size}])))))
 
