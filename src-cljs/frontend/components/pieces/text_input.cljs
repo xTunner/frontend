@@ -10,8 +10,8 @@
 
 (defn text-input
   "<DOC STRING GOES here>."
-  [{:keys [input-type on-change id value defaultValue size error? long? disabled? required?] :or {:input-type "text"
-                                                                                     :size "medium"}}
+  [{:keys [input-type on-change id value defaultvVlue size disabled? required?] :or {:input-type "text"
+                                                                        :size "medium"}}
    owner]
   (reify
     om/IRender

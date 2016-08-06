@@ -21,9 +21,11 @@
       min-height: 100px !important;
     }
 
-    &.rounded {
-      border-radius: 30px !important;
-    }
+      // TODO All these important!s are bad, should be removed in a future PR
+      // that switched over *all* of our input fields to this component
+      padding: 0 !important;
+      width: auto !important;
+      border-radius: 0 !important;
 
     &.error {
       background-color: @redLightest !important;

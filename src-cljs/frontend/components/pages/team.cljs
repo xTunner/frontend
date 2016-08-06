@@ -159,14 +159,14 @@
                                                                                                 (om/build text-input/text-input {:input-type "email"
                                                                                                                                  :on-change #(do
                                                                                                                                                (utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
-                                                                                                                                               ;; TODO -ac Seems to be stuck
                                                                                                                                                (om/update-state! owner :email (fn [email]
-                                                                                                                                                                                (.log js/console "Email is ?? : "email)
                                                                                                                                                                                 email))
-                                                                                                                                               (.log js/console id-name id-name "email : " (om/get-state owner :email)))
+                                                                                                                                               ;; TODO -ac Hmmm, seems to be delayed by 1 character input - follow up by checking state???
+                                                                                                                                               (.log js/console id-name id-name "email : " email))
                                                                                                                                  :required? true
                                                                                                                                  :id id-name
-                                                                                                                                 :value email}))))}
+                                                                                                                                 :value email
+                                                                                                                                 :defaultValue email}))))}
                                                                                 {:type :shrink
                                                                                  :cell-fn (fn [user-map]
                                                                                             (let [{:keys [email login index]} user-map
