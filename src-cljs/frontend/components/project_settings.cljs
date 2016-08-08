@@ -483,15 +483,15 @@
                                                 " To disable string substitution you need to escape the " [:code "$"]
                                                 " characters by prefixing them with " [:code "\\"] "."
                                                 " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
-                                               (form/text-field {:label "Name"
-                                                                 :required true
-                                                                 :value new-env-var-name
-                                                                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
-                                               (form/text-field {:label "Value"
-                                                                 :required true
-                                                                 :value new-env-var-value
-                                                                 :auto-complete "off"
-                                                                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)})])
+                                               (om/build form/text-field {:label "Name"
+                                                                          :required true
+                                                                          :value new-env-var-name
+                                                                          :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
+                                               (om/build form/text-field {:label "Value"
+                                                                          :required true
+                                                                          :value new-env-var-value
+                                                                          :auto-complete "off"
+                                                                          :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)})])
                                        :actions [(button/button {:on-click close-fn} "Cancel")
                                                  (forms/managed-button
                                                   [:input.btn.btn-primary {:data-failed-text "Failed" ,
@@ -1006,13 +1006,13 @@
                    {:title "Add an SSH Key"
                     :body (html
                            [:form
-                            (form/text-field {:label "Hostname"
-                                              :value hostname
-                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)})
-                            (form/text-area {:label "Private Key"
-                                             :required true
-                                             :value private-key
-                                             :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)})])
+                            (om/build form/text-field {:label "Hostname"
+                                                       :value hostname
+                                                       :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)})
+                            (om/build form/text-area {:label "Private Key"
+                                                      :required true
+                                                      :value private-key
+                                                      :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)})])
                     :actions [(button/button {:on-click close-fn} "Cancel")
                               (forms/managed-button
                              [:input.btn.btn-primary
@@ -1755,14 +1755,14 @@
            [:div
             (om/build common/flashes error-message)
             [:div
-             (form/text-field {:label "Description"
-                               :value description
-                               :on-change #(om/set-state! owner :description (.. % -target -value))})
-             (form/text-field {:label "Password (Optional)"
-                               :password? true
-                               :value password
-                               :on-change #(om/set-state! owner :password (.. % -target -value))})
-             (om/build form/file-selector {:label "File"
+             (om/build form/text-field {:label "Description"
+                                        :value description
+                                        :on-change #(om/set-state! owner :description (.. % -target -value))})
+             (om/build form/text-field {:label "Password (Optional)"
+                                        :password? true
+                                        :value password
+                                        :on-change #(om/set-state! owner :password (.. % -target -value))})
+             (om/build form/file-selector {:label "Key File"
                                            :file-name file-name
                                            :on-change (fn [{:keys [file-name file-content]}]
                                                         (om/update-state! owner #(merge % {:file-name file-name

@@ -1,5 +1,5 @@
 .ns("frontend.components.pieces.form", {
-  .ui("text-type-field", {
+  .ui("field-wrapper", {
     > label {
       display: block;
       margin-bottom: 2px;
@@ -48,8 +48,8 @@
     }
   });
 
-  // Mixin for common styles for the actual field element in a text-type-field.
-  .text-type-field-field() {
+  // Mixin for common styles for text inputs and textareas.
+  .text-type-field() {
     width: 100%;
     padding: 7px 10px 8px;
     line-height: 18px;
@@ -80,7 +80,7 @@
 
   .ui("text-field", {}, {
     .el("input", {
-      .text-type-field-field;
+      .text-type-field;
 
       &.medium {
         line-height: 16px;
@@ -90,15 +90,15 @@
 
   .ui("text-area", {}, {
     .el("textarea", {
-      .text-type-field-field;
+      .text-type-field;
 
       height: 100px;
       resize: vertical;
     });
   });
 
-  .ui("file-selector", {
-    > .drop-zone {
+  .ui("file-selector", {}, {
+    .el("drop-zone", {
       padding: 15px;
       border: 1px dashed @blueLight;
       text-align: center;
@@ -122,7 +122,7 @@
       > input {
         display: none;
       }
-    }
+    });
 
     .el("button-label", {
       // OVERRIDE--ICON-STYLE

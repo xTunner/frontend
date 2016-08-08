@@ -5,19 +5,16 @@
             [goog.events :as gevents])
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn- text-type-field [{:keys [label validation-error field-fn]} owner]
+(defn- field-wrapper [{:keys [label id validation-error field]} owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:id (random-uuid)})
     om/IRenderState
-    (render-state [_ {:keys [id]}]
+    (render-state [_ _]
       (component
         (html
          [:div {:class (when validation-error "invalid")}
           [:label {:for id} label]
           [:.field
-           (field-fn id)
+           field
            (when validation-error
              [:.validation-error validation-error])]])))))
 
@@ -38,27 +35,34 @@
   :auto-complete    - (optional) If given, the value of the field's
                       :auto-complete attribute."
   [{:keys [label value on-change password? size validation-error disabled? auto-complete] :or {size :full}}]
-  (component
-    (om/build text-type-field
-              {:label label
-               :validation-error validation-error
-               :field-fn
-               (fn [id]
-                 (element :input
-                   (html
-                    ;; This `.dumb` class opts us out of old global form styles. We can
-                    ;; remove it once those styles are dead.
-                    [:input.dumb
-                     (cond-> {:id id
-                              :class (remove nil? [(when validation-error "invalid")
-                                                   (case size
-                                                     :full nil
-                                                     :medium "medium")])
-                              :type (if password? "password" "text")
-                              :value value
-                              :disabled disabled?
-                              :on-change on-change}
-                       auto-complete (assoc :auto-complete auto-complete))])))})))
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:id (random-uuid)})
+
+    om/IRenderState
+    (render-state [_ {:keys [id]}]
+      (component
+        (om/build field-wrapper
+                  {:label label
+                   :id id
+                   :validation-error validation-error
+                   :field
+                   (element :input
+                     (html
+                      ;; This `.dumb` class opts us out of old global form styles. We can
+                      ;; remove it once those styles are dead.
+                      [:input.dumb
+                       (cond-> {:id id
+                                :class (remove nil? [(when validation-error "invalid")
+                                                     (case size
+                                                       :full nil
+                                                       :medium "medium")])
+                                :type (if password? "password" "text")
+                                :value value
+                                :disabled disabled?
+                                :on-change on-change}
+                         auto-complete (assoc :auto-complete auto-complete))]))})))))
 
 (defn text-area
   "A text area, with a label.
@@ -72,21 +76,28 @@
   :disabled?        - (optional) If true, the field is disabled.
                       (default: false)"
   [{:keys [label value on-change validation-error disabled? size] :or {size :full}}]
-  (component
-    (om/build text-type-field
-              {:label label
-               :validation-error validation-error
-               :field-fn
-               (fn [id]
-                 (element :textarea
-                   (html
-                    ;; This `.dumb` class opts us out of old global form styles. We can
-                    ;; remove it once those styles are dead.
-                    [:textarea.dumb {:id id
-                                     :class (when validation-error "invalid")
-                                     :value value
-                                     :disabled disabled?
-                                     :on-change on-change}])))})))
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:id (random-uuid)})
+
+    om/IRenderState
+    (render-state [_ {:keys [id]}]
+      (component
+        (om/build field-wrapper
+                  {:label label
+                   :id id
+                   :validation-error validation-error
+                   :field
+                   (element :textarea
+                     (html
+                      ;; This `.dumb` class opts us out of old global form styles. We can
+                      ;; remove it once those styles are dead.
+                      [:textarea.dumb {:id id
+                                       :class (when validation-error "invalid")
+                                       :value value
+                                       :disabled disabled?
+                                       :on-change on-change}]))})))))
 
 (defn file-selector
   "A file selector, which accepts dropped files and provides a button which
@@ -98,7 +109,7 @@
                function should take a map:
                :file-name    - The name of the selected file.
                :file-content - The data read from the selected file."
-  [{:keys [label file-name on-change]} owner]
+  [{:keys [label file-name validation-error on-change]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -107,72 +118,76 @@
 
     om/IRenderState
     (render-state [_ {:keys [id dragged-over?]}]
-      (let [file-selected-fn
-            (fn [file]
-              (doto (js/FileReader.)
-                (gevents/listen "load" #(on-change {:file-name (.-name file)
-                                                    :file-content (.. % -target -result)}))
-                (.readAsBinaryString file)))]
+      (component
+        (let [file-selected-fn
+              (fn [file]
+                (doto (js/FileReader.)
+                  (gevents/listen "load" #(on-change {:file-name (.-name file)
+                                                      :file-content (.. % -target -result)}))
+                  (.readAsBinaryString file)))]
 
-        (component
-          (html
-           [:div
-            [:label {:for id} label]
-            [:.drop-zone {:class (when dragged-over? "dragged-over")
-                          :on-drag-enter #(do (om/set-state! owner :dragged-over? true))
-                          :on-drag-over #(.preventDefault %)
-                          :on-drag-leave #(om/set-state! owner :dragged-over? false)
-                          :on-drop #(do
-                                      (.stopPropagation %)
-                                      (.preventDefault %)
-                                      (om/set-state! owner :dragged-over? false)
-                                      (file-selected-fn (-> % .-dataTransfer .-files (aget 0))))}
-             [:div.file-name
-              (or file-name
-                  (list "Drop your files here or click " [:b "Choose File"] " below to select them manually."))]
-             [:input {:id id
-                      :type "file"
-                      :ref "file-input"
-                      :on-change #(file-selected-fn (-> % .-target .-files (aget 0)))}]
-             (button/button {:on-click #(.click (om/get-node owner "file-input"))
-                             :size :medium}
-                            (element :button-label
-                              (html
-                               [:span
-                                [:i.material-icons "file_upload"]
-                                "Choose File"])))]]))))))
+          (om/build field-wrapper
+                    {:label label
+                     :id id
+                     :validation-error validation-error
+                     :field
+                     (element :drop-zone
+                       (html
+                        [:div {:class (when dragged-over? "dragged-over")
+                               :on-drag-enter #(do (om/set-state! owner :dragged-over? true))
+                               :on-drag-over #(.preventDefault %)
+                               :on-drag-leave #(om/set-state! owner :dragged-over? false)
+                               :on-drop #(do
+                                           (.stopPropagation %)
+                                           (.preventDefault %)
+                                           (om/set-state! owner :dragged-over? false)
+                                           (file-selected-fn (-> % .-dataTransfer .-files (aget 0))))}
+                         [:.file-name
+                          (or file-name
+                              (list "Drop your files here or click " [:b "Choose File"] " below to select them manually."))]
+                         [:input {:id id
+                                  :type "file"
+                                  :ref "file-input"
+                                  :on-change #(file-selected-fn (-> % .-target .-files (aget 0)))}]
+                         (button/button {:on-click #(.click (om/get-node owner "file-input"))
+                                         :size :medium}
+                                        (element :button-label
+                                          (html
+                                           [:span
+                                            [:i.material-icons "file_upload"]
+                                            "Choose File"])))]))}))))))
 
 
 (dc/do
   (defcard text-field
     (fn [state]
-      (text-field {:label "Hostname"
-                   :value (:value @state)
-                   :on-change #(swap! state assoc :value (.. % -target -value))}))
+      (om/build text-field {:label "Hostname"
+                            :value (:value @state)
+                            :on-change #(swap! state assoc :value (.. % -target -value))}))
     {:value "circleci.com"})
 
   (defcard text-field-medium
     (fn [state]
-      (text-field {:label "Hostname"
-                   :value (:value @state)
-                   :on-change #(swap! state assoc :value (.. % -target -value))
-                   :size :medium}))
+      (om/build text-field {:label "Hostname"
+                            :value (:value @state)
+                            :on-change #(swap! state assoc :value (.. % -target -value))
+                            :size :medium}))
     {:value "circleci.com"})
 
   (defcard text-field-disabled
     (fn [state]
-      (text-field {:label "Hostname"
-                   :value (:value @state)
-                   :disabled? true
-                   :on-change #(swap! state assoc :value (.. % -target -value))}))
+      (om/build text-field {:label "Hostname"
+                            :value (:value @state)
+                            :disabled? true
+                            :on-change #(swap! state assoc :value (.. % -target -value))}))
     {:value "circleci.com"})
 
   (defcard text-field-invalid
     (fn [state]
-      (text-field {:label "Hostname"
-                   :value (:value @state)
-                   :validation-error "\"foobar.example\" is not a valid hostname."
-                   :on-change #(swap! state assoc :value (.. % -target -value))}))
+      (om/build text-field {:label "Hostname"
+                            :value (:value @state)
+                            :validation-error "\"foobar.example\" is not a valid hostname."
+                            :on-change #(swap! state assoc :value (.. % -target -value))}))
     {:value "foobar.example"})
 
   (def lorem-ipsum
@@ -186,25 +201,25 @@ Sea ei equidem torquatos, duo in quis porro voluptaria, quo eligendi recusabo in
 
   (defcard text-area
     (fn [state]
-      (text-area {:label "Favorite Latin Passage"
-                  :value (:value @state)
-                  :on-change #(swap! state assoc :value (.. % -target -value))}))
+      (om/build text-area {:label "Favorite Latin Passage"
+                           :value (:value @state)
+                           :on-change #(swap! state assoc :value (.. % -target -value))}))
     {:value lorem-ipsum})
 
   (defcard text-area-disabled
     (fn [state]
-      (text-area {:label "Favorite Latin Passage"
-                  :value (:value @state)
-                  :disabled? true
-                  :on-change #(swap! state assoc :value (.. % -target -value))}))
+      (om/build text-area {:label "Favorite Latin Passage"
+                           :value (:value @state)
+                           :disabled? true
+                           :on-change #(swap! state assoc :value (.. % -target -value))}))
     {:value lorem-ipsum})
 
   (defcard text-area-invalid
     (fn [state]
-      (text-area {:label "Favorite Latin Passage"
-                  :value (:value @state)
-                  :validation-error "That's not even real Latin."
-                  :on-change #(swap! state assoc :value (.. % -target -value))}))
+      (om/build text-area {:label "Favorite Latin Passage"
+                           :value (:value @state)
+                           :validation-error "That's not even real Latin."
+                           :on-change #(swap! state assoc :value (.. % -target -value))}))
     {:value lorem-ipsum})
 
   (defcard-om file-selector
@@ -225,4 +240,10 @@ Sea ei equidem torquatos, duo in quis porro voluptaria, quo eligendi recusabo in
     {:file-name nil
      :file-content nil}
     {}
-    {:inspect-data true}))
+    {:inspect-data true})
+
+  (defcard file-selector-invalid
+    (om/build file-selector {:label "Favorite File"
+                             :file-name "a-file.txt"
+                             :validation-error "That file's not all that great."
+                             :on-change (constantly nil)})))
