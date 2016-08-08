@@ -144,7 +144,7 @@
                                            (file-selected-fn (-> % .-dataTransfer .-files (aget 0))))}
                          [:.file-name
                           (or file-name
-                              (list "Drop your files here or click " [:b "Choose File"] " below to select them manually."))]
+                              (list "Drop your file here or click " [:b "Choose File"] " below to select them manually."))]
                          [:input {:id id
                                   :type "file"
                                   :ref "file-input"
