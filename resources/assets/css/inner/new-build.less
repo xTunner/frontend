@@ -57,14 +57,11 @@
 
 // Build page V2 stuff
 .build-actions-v2 {
-  .flexy(center);
+  .flexy(baseline);
   font-size: 13px;
   color: @grayDark;
 
   .build-action {
-
-    .flexy();
-
     margin-right: 20px;
 
     &:last-of-type {
@@ -161,8 +158,6 @@
 }
 
 .build-settings {
-  .flexy(center);
-
   a:hover {
     text-decoration: none !important;
   }
@@ -172,8 +167,10 @@
   }
 
   a i.material-icons {
-    text-decoration: none;
+    position: relative;
+    bottom: 1px;
     margin-right: .5ex;
+    text-decoration: none;
   }
 
   a:hover i.material-icons {
