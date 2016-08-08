@@ -1736,7 +1736,7 @@
          [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
 
 
-(defn p12-upload-modal [{:keys [show-modal? close-fn error-message project-name vcs-type]} owner]
+(defn p12-upload-modal [{:keys [close-fn error-message project-name vcs-type]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -1747,42 +1747,41 @@
 
     om/IRenderState
     (render-state [_ {:keys [description password file-name file-content]}]
-      (when show-modal?
-        (modal/modal-dialog
-         {:title "Upload a New Apple Code Signing Key"
-          :body
-          (html
-           [:div
-            (om/build common/flashes error-message)
-            [:div
-             (om/build form/text-field {:label "Description"
-                                        :value description
-                                        :on-change #(om/set-state! owner :description (.. % -target -value))})
-             (om/build form/text-field {:label "Password (Optional)"
-                                        :password? true
-                                        :value password
-                                        :on-change #(om/set-state! owner :password (.. % -target -value))})
-             (om/build form/file-selector {:label "Key File"
-                                           :file-name file-name
-                                           :on-change (fn [{:keys [file-name file-content]}]
-                                                        (om/update-state! owner #(merge % {:file-name file-name
-                                                                                           :file-content file-content})))})]])
-          :actions [(forms/managed-button
-                     [:input.upload-p12-button
-                      {:data-failed-text "Failed" ,
-                       :data-success-text "Uploaded" ,
-                       :data-loading-text "Uploading..." ,
-                       :value "Upload" ,
-                       :type "submit"
-                       :disabled (not (and file-content description))
-                       :on-click #(raise! owner [:upload-p12 {:project-name project-name
-                                                              :vcs-type vcs-type
-                                                              :description description
-                                                              :password (or password "")
-                                                              :file-content (base64/encodeString file-content)
-                                                              :file-name file-name
-                                                              :on-success close-fn}])}])]
-          :close-fn close-fn})))))
+      (modal/modal-dialog
+       {:title "Upload a New Apple Code Signing Key"
+        :body
+        (html
+         [:div
+          (om/build common/flashes error-message)
+          [:div
+           (om/build form/text-field {:label "Description"
+                                      :value description
+                                      :on-change #(om/set-state! owner :description (.. % -target -value))})
+           (om/build form/text-field {:label "Password (Optional)"
+                                      :password? true
+                                      :value password
+                                      :on-change #(om/set-state! owner :password (.. % -target -value))})
+           (om/build form/file-selector {:label "Key File"
+                                         :file-name file-name
+                                         :on-change (fn [{:keys [file-name file-content]}]
+                                                      (om/update-state! owner #(merge % {:file-name file-name
+                                                                                         :file-content file-content})))})]])
+        :actions [(forms/managed-button
+                   [:input.upload-p12-button
+                    {:data-failed-text "Failed" ,
+                     :data-success-text "Uploaded" ,
+                     :data-loading-text "Uploading..." ,
+                     :value "Upload" ,
+                     :type "submit"
+                     :disabled (not (and file-content description))
+                     :on-click #(raise! owner [:upload-p12 {:project-name project-name
+                                                            :vcs-type vcs-type
+                                                            :description description
+                                                            :password (or password "")
+                                                            :file-content (base64/encodeString file-content)
+                                                            :file-name file-name
+                                                            :on-success close-fn}])}])]
+        :close-fn close-fn}))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
@@ -1814,11 +1813,11 @@
                                                                       :vcs-type vcs-type})))})
              (om/build no-keys-empty-state {:project-name project-name
                                             :add-key #(om/set-state! owner :show-modal? true)}))
-           (om/build p12-upload-modal {:show-modal? show-modal?
-                                       :close-fn #(om/set-state! owner :show-modal? false)
-                                       :error-message error-message
-                                       :project-name project-name
-                                       :vcs-type vcs-type})]])))))
+           (when show-modal?
+             (om/build p12-upload-modal {:close-fn #(om/set-state! owner :show-modal? false)
+                                         :error-message error-message
+                                         :project-name project-name
+                                         :vcs-type vcs-type}))]])))))
 
 (defn project-settings [data owner]
   (reify
