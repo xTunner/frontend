@@ -1743,73 +1743,46 @@
       {:description nil
        :password nil
        :file-name nil
-       :file-content nil
-       :dragged-over? false})
+       :file-content nil})
 
     om/IRenderState
-    (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
-      (let [file-selected-fn
-            (fn [file]
-              (om/set-state! owner :file-name (aget file "name"))
-              (doto (js/FileReader.)
-                (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
-                (.readAsBinaryString file)))
-
-            upload-form
-            (html
-             [:div {:data-component `p12-upload-form}
-              (form/text-field {:label "Description"
-                                :value description
-                                :on-change #(om/set-state! owner :description (.. % -target -value))})
-              (form/text-field {:label "Password (Optional)"
-                                :password? true
-                                :value password
-                                :on-change #(om/set-state! owner :password (.. % -target -value))})
-              [:div
-               [:label.label "File"]
-               [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
-                                         :on-drag-over #(do (.stopPropagation %)
-                                                            (.preventDefault %)
-                                                            (om/set-state! owner :dragged-over? true))
-                                         :on-drag-leave #(om/set-state! owner :dragged-over? false)
-                                         :on-drop #(do (.stopPropagation %)
-                                                       (.preventDefault %)
-                                                       (om/set-state! owner :dragged-over? false)
-                                                       (file-selected-fn (aget % "dataTransfer" "files" 0)))}
-                (if file-name
-                  [:div file-name]
-                  [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
-                [:label.p12-file-input
-                 [:input.hidden-p12-file-input {:type "file"
-                                                :on-change #(file-selected-fn (aget % "target" "files" 0))}]
-                 [:i.material-icons "file_upload"]
-                 "Choose file"]]]])
-
-            upload-button
-            (forms/managed-button
-             [:input.upload-p12-button
-              {:data-failed-text "Failed" ,
-               :data-success-text "Uploaded" ,
-               :data-loading-text "Uploading..." ,
-               :value "Upload" ,
-               :type "submit"
-               :disabled (not (and file-content description))
-               :on-click #(raise! owner [:upload-p12 {:project-name project-name
-                                                      :vcs-type vcs-type
-                                                      :description description
-                                                      :password (or password "")
-                                                      :file-content (base64/encodeString file-content)
-                                                      :file-name file-name
-                                                      :on-success close-fn}])}])]
-
-        (when show-modal?
-          (modal/modal-dialog {:title "Upload a New Apple Code Signing Key"
-                               :body (html
-                                      [:div
-                                       (om/build common/flashes error-message)
-                                       upload-form])
-                               :actions [upload-button]
-                               :close-fn close-fn}))))))
+    (render-state [_ {:keys [description password file-name file-content]}]
+      (when show-modal?
+        (modal/modal-dialog
+         {:title "Upload a New Apple Code Signing Key"
+          :body
+          (html
+           [:div
+            (om/build common/flashes error-message)
+            [:div
+             (form/text-field {:label "Description"
+                               :value description
+                               :on-change #(om/set-state! owner :description (.. % -target -value))})
+             (form/text-field {:label "Password (Optional)"
+                               :password? true
+                               :value password
+                               :on-change #(om/set-state! owner :password (.. % -target -value))})
+             (om/build form/file-selector {:label "File"
+                                           :file-name file-name
+                                           :on-change (fn [{:keys [file-name file-content]}]
+                                                        (om/update-state! owner #(merge % {:file-name file-name
+                                                                                           :file-content file-content})))})]])
+          :actions [(forms/managed-button
+                     [:input.upload-p12-button
+                      {:data-failed-text "Failed" ,
+                       :data-success-text "Uploaded" ,
+                       :data-loading-text "Uploading..." ,
+                       :value "Upload" ,
+                       :type "submit"
+                       :disabled (not (and file-content description))
+                       :on-click #(raise! owner [:upload-p12 {:project-name project-name
+                                                              :vcs-type vcs-type
+                                                              :description description
+                                                              :password (or password "")
+                                                              :file-content (base64/encodeString file-content)
+                                                              :file-name file-name
+                                                              :on-success close-fn}])}])]
+          :close-fn close-fn})))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify

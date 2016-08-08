@@ -96,4 +96,41 @@
       resize: vertical;
     });
   });
+
+  .ui("file-selector", {
+    > .drop-zone {
+      padding: 15px;
+      border: 1px dashed @blueLight;
+      text-align: center;
+
+      &.dragged-over {
+        border: 1px dashed @blueLightest;
+        box-shadow: 0 0 4px @blueLight;
+
+        > * {
+          // In some browsers, dragging over child elements fires drag* events
+          // which throw off the drag-and-drop logic. The simplest solution is
+          // to disable pointer events for all children during the drag.
+          pointer-events: none;
+        }
+      }
+
+      > .file-name {
+        margin-bottom: 10px;
+      }
+
+      > input {
+        display: none;
+      }
+    }
+
+    .el("button-label", {
+      // OVERRIDE--ICON-STYLE
+      > .material-icons {
+        margin-right: 2px;
+        margin-left: 0;
+        font-size: 18px;
+      }
+    });
+  });
 });

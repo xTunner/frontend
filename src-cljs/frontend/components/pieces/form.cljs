@@ -1,6 +1,8 @@
 (ns frontend.components.pieces.form
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [om.core :as om :include-macros true])
+  (:require [devcards.core :as dc :refer-macros [defcard defcard-om]]
+            [om.core :as om :include-macros true]
+            [frontend.components.pieces.button :as button]
+            [goog.events :as gevents])
   (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn- text-type-field [{:keys [label validation-error field-fn]} owner]
@@ -86,6 +88,61 @@
                                      :disabled disabled?
                                      :on-change on-change}])))})))
 
+(defn file-selector
+  "A file selector, which accepts dropped files and provides a button which
+  opens a file picker.
+
+  :label     - The label for the selector.
+  :file-name - The name of the selected file. Displayed in the selector.
+  :on-change - A function called when the value of the selector changes. The
+               function should take a map:
+               :file-name    - The name of the selected file.
+               :file-content - The data read from the selected file."
+  [{:keys [label file-name on-change]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:id (random-uuid)
+       :dragged-over? false})
+
+    om/IRenderState
+    (render-state [_ {:keys [id dragged-over?]}]
+      (let [file-selected-fn
+            (fn [file]
+              (doto (js/FileReader.)
+                (gevents/listen "load" #(on-change {:file-name (.-name file)
+                                                    :file-content (.. % -target -result)}))
+                (.readAsBinaryString file)))]
+
+        (component
+          (html
+           [:div
+            [:label {:for id} label]
+            [:.drop-zone {:class (when dragged-over? "dragged-over")
+                          :on-drag-enter #(do (om/set-state! owner :dragged-over? true))
+                          :on-drag-over #(.preventDefault %)
+                          :on-drag-leave #(om/set-state! owner :dragged-over? false)
+                          :on-drop #(do
+                                      (.stopPropagation %)
+                                      (.preventDefault %)
+                                      (om/set-state! owner :dragged-over? false)
+                                      (file-selected-fn (-> % .-dataTransfer .-files (aget 0))))}
+             [:div.file-name
+              (or file-name
+                  (list "Drop your files here or click " [:b "Choose File"] " below to select them manually."))]
+             [:input {:id id
+                      :type "file"
+                      :ref "file-input"
+                      :on-change #(file-selected-fn (-> % .-target .-files (aget 0)))}]
+             (button/button {:on-click #(.click (om/get-node owner "file-input"))
+                             :size :medium}
+                            (element :button-label
+                              (html
+                               [:span
+                                [:i.material-icons "file_upload"]
+                                "Choose File"])))]]))))))
+
+
 (dc/do
   (defcard text-field
     (fn [state]
@@ -148,4 +205,24 @@ Sea ei equidem torquatos, duo in quis porro voluptaria, quo eligendi recusabo in
                   :value (:value @state)
                   :validation-error "That's not even real Latin."
                   :on-change #(swap! state assoc :value (.. % -target -value))}))
-    {:value lorem-ipsum}))
+    {:value lorem-ipsum})
+
+  (defcard-om file-selector
+    (fn [{:keys [file-name] :as app-state} owner]
+      (om/component
+        (html
+         [:div
+          (om/build file-selector {:label "Favorite File"
+                                   :file-name file-name
+                                   :on-change #(om/update! app-state
+                                                           {:file-name (:file-name %)
+                                                            :file-content (:file-content %)})})
+          [:div {:style {:margin "10px 0"}}
+           (button/button {:on-click #(om/update! app-state
+                                                  {:file-name nil
+                                                   :file-content nil})}
+                          "Reset")]])))
+    {:file-name nil
+     :file-content nil}
+    {}
+    {:inspect-data true}))
