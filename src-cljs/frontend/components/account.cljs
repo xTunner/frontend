@@ -464,7 +464,7 @@
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
-          (when (ld/feature-on? "web-notifications") (web-notifications owner notifications-enabled? (notifications/notifications-permission)))])))))
+          (web-notifications owner notifications-enabled? (notifications/notifications-permission))])))))
 
 (defn account [app owner]
   (reify

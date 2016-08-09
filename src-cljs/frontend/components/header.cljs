@@ -390,8 +390,7 @@
                       (feature/enabled? :offer-linux-trial)
                       (not (get-in app state/dismissed-trial-offer-banner)))
              (om/build trial-offer-banner app))
-           (when (and (not (nil? (:build (get-in app state/build-data-path))))
-                      (ld/feature-on? "web-notifications"))
+           (when (not (nil? (:build (get-in app state/build-data-path))))
              (cond
                (and (= (n/notifications-permission) "default")
                     show-web-notif-banner?)
