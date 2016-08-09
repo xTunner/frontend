@@ -1,6 +1,5 @@
 (ns frontend.components.build-head
   (:require [clojure.string :as string]
-            [frontend.analytics.core :as analytics]
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.build-config :as build-cfg]
             [frontend.components.build-timings :as build-timings]
@@ -742,9 +741,9 @@
                                                                         (:reponame build)
                                                                         (:build_num build)
                                                                         (name %)))
-                                                      (analytics/track {:event-type :build-page-tab-clicked
-                                                                        :current-state state
-                                                                        :properties {:selected-tab-name selected-tab-name}}))}))]
+                                                      ((om/get-shared owner :track-event) {:event-type :build-page-tab-clicked
+                                                                                           :current-state state
+                                                                                           :properties {:selected-tab-name selected-tab-name}}))}))]
 
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name

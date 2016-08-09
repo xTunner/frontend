@@ -8,7 +8,6 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.analytics.core :as analytics]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -103,10 +102,10 @@
              [:div.build-settings
               [:a.build-action
                {:href (routes/v1-project-settings-path (:navigation-data data))
-                :on-click #(analytics/track {:event-type :build-page-project-settings-clicked
-                                             :current-state state
-                                             :properties {:project project
-                                                          :user user}})}
+                :on-click #((om/get-shared owner :track-event) {:event-type :build-page-project-settings-clicked
+                                                                :current-state state
+                                                                :properties {:project project
+                                                                             :user user}})}
                [:i.material-icons "settings"]
                "Project Settings"]])])))))
 
