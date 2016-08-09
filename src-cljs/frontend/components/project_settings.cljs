@@ -1029,35 +1029,30 @@
                                                                                    :private_key private-key}}])}])]
                     :close-fn close-fn})))
               (when-let [ssh-keys (seq (:ssh_keys project))]
-                (om/build table/table
-                          {:rows ssh-keys
-                           :key-fn (comp hash (juxt :hostname :fingerprint))
-                           :columns [{:header "Hostname"
-                                      :cell-fn :hostname}
-                                     {:header "Fingerprint"
-                                      :cell-fn :fingerprint}
-                                     {:header "Remove"
-                                      :type #{:shrink :right}
-                                      :cell-fn (fn [ssh-key]
-                                                 (om/build remove-action-button
-                                                           {:confirmation-question
-                                                            (str
-                                                             "Are you sure you want to remove the SSH key \""
-                                                             (:fingerprint ssh-key)
-                                                             "\""
-                                                             (if (:hostname ssh-key)
-                                                               (str
-                                                                " for the hostname \""
-                                                                (:hostname ssh-key)
-                                                                "\"")
-                                                               " for all hosts")
-                                                             "?")
+                (let [remove-key-button
+                      (fn [ssh-key]
+                        (om/build remove-action-button
+                                  {:confirmation-question
+                                   (str "Are you sure you want to remove the SSH key \"" (:fingerprint ssh-key) "\""
+                                        (if (:hostname ssh-key)
+                                          (str " for the hostname \"" (:hostname ssh-key) "\"")
+                                          " for all hosts")
+                                        "?")
 
-                                                            :remove-fn
-                                                            #(raise! owner [:deleted-ssh-key
-                                                                            (-> ssh-key
-                                                                                (select-keys [:hostname :fingerprint])
-                                                                                (assoc :project-id project-id))])}))}]}))]))]])))))
+                                   :remove-fn
+                                   #(raise! owner [:deleted-ssh-key (-> ssh-key
+                                                                        (select-keys [:hostname :fingerprint])
+                                                                        (assoc :project-id project-id))])}))]
+                  (om/build table/table
+                            {:rows ssh-keys
+                             :key-fn (comp hash (juxt :hostname :fingerprint))
+                             :columns [{:header "Hostname"
+                                        :cell-fn :hostname}
+                                       {:header "Fingerprint"
+                                        :cell-fn :fingerprint}
+                                       {:header "Remove"
+                                        :type #{:shrink :right}
+                                        :cell-fn remove-key-button}]})))]))]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
