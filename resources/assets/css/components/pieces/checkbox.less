@@ -7,6 +7,10 @@
         color: blue;
         position: relative;
 
+        &:focus:after {
+            border-color: @blueLight;
+        }
+
         &:before, &:after {
             content: '';
             left: 0;
@@ -54,7 +58,7 @@
         }
 
         &[disabled]:after {
-            background-color: @gray;
+            background-color: @grayLight;
         }
     });
 });

@@ -19,6 +19,7 @@
           [:input {:id id
                    :value value
                    :defaultChecked (:checked? state)
+                   :checked checked?
                    :disabled disabled?
                    :type "checkbox"
                    :on-click on-click}])))))
