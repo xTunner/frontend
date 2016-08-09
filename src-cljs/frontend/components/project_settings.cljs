@@ -1021,7 +1021,7 @@
                              [:input.btn.btn-primary
                               {:data-failed-text "Failed"
                                :data-success-text "Saved"
-                               :data-loading-text "Saving.."
+                               :data-loading-text "Saving..."
                                :value "Add SSH Key"
                                :type "submit"
                                :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
