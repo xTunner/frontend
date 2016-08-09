@@ -616,7 +616,7 @@
         [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
                                    :title commit
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked})}
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :build-head-revision-link-clicked})}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -792,7 +792,7 @@
      ", "
      (for [url urls]
        [:a {:href url
-            :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
+            :on-click #((om/get-shared owner :track-event) {:event-type :build-head-pr-link-clicked})}
         "#"
         (let [[_ number] (re-find #"/(\d+)$" url)]
           (or number "?"))]))]])

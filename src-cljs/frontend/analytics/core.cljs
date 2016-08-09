@@ -37,16 +37,27 @@
     :build-head-parallelism-clicked
     :build-page-project-settings-clicked
     :build-page-tab-clicked
+    :build-canceled
+    :build-head-pr-link-clicked
+    :build-head-revision-link-clicked
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
     :build-link-clicked
+    :build-row-cancel-build-clicked
+    :build-row-pr-link-clicked
+    :build-row-rebuild-clicked
+    :build-row-revision-link-clicked
+    :build-row-status-clicked
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
+    :cancel-build-clicked
     :cancel-plan-clicked
     :change-image-clicked
     :container-filter-changed
     :container-selected
     :dismiss-trial-offer-banner-clicked
+    :header-follow-project-clicked
+    :header-org-settings-link-clicked
     :insights-bar-clicked
     :insights-header-parallelism-clicked
     :invite-teammates-clicked
@@ -59,10 +70,12 @@
     :no-plan-banner-impression
     :org-clicked
     :pr-link-clicked
+    :parallelism-clicked
     :project-branch-changed
     :project-clicked
     :project-enabled
-    :revision-link-clicked
+    :project-followed
+    :project-settings-clicked
     :select-plan-clicked
     :set-up-junit-clicked
     :signup-clicked

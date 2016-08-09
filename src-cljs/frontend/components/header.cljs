@@ -41,11 +41,13 @@
     (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
       (cond repo (when (:write-settings (get-in app state/project-scopes-path))
                    [:a.settings.project-settings
-                    {:href (routes/v1-project-settings-path navigation-data) }
+                    {:href (routes/v1-project-settings-path navigation-data)}
                     [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                     "Project Settings"])
             org [:a.settings.org-settings
-                 {:href (routes/v1-org-settings-path navigation-data)}
+                 {:href (routes/v1-org-settings-path navigation-data)
+                  :on-click #((om/get-shared owner :track-event) {:event-type :header-org-settings-link-clicked
+                                                                  :properties {:org org}})}
                  [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                  "Organization Settings"]
             :else nil))))
@@ -76,7 +78,10 @@
            (when (show-follow-project-button? app)
              (forms/managed-button
               [:button#follow-project-button.btn.btn-primary
-               {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+               {:on-click #(do
+                             (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                             ((om/get-shared owner :track-event) {:event-type :header-follow-project-clicked
+                                                                  :properties {:vcs-url vcs-url}}))
                 :data-spinner true}
                "follow the " (vcs-url/repo-name vcs-url) " project"]))]])))))
 
