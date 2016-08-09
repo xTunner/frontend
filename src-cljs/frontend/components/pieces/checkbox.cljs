@@ -6,7 +6,20 @@
 
 (defn checkbox
   ;; TODO -ac Add docstring
-  "<DOC STRING GOES here>."
+  "This little checkbox component is useful for providing a consistent,
+  completely styled checkbox input field.
+
+  :id       - (optional) A unique ID for the checkbox
+
+  :value    - (optional) Used to provide
+
+  :on-click - A funciton that toggles the value of :checked.
+
+  :checked? - Used for both the :defaultChecked and :checked properties, this
+              should often be used in conjunction with :on-click, to toggle
+              :checked? on each click.
+
+  disabled? - (optional) Boolean for setting the checkbox to a disabled state."
   [{:keys [id value on-click checked? disabled?] :or {}} owner]
   (reify
     om/IInitState

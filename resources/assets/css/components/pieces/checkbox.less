@@ -32,13 +32,14 @@
             width: @checkbox-size;
             height: @checkbox-size;
             border-radius: 3px;
-            border: 2px solid black;
+            border: 2px solid @black;
             z-index: 0;
             margin-left: -5px;
         }
 
         &:checked:after {
-            background-color: @blueDark;
+            // background-color: @blueDark;
+            background-color: @green;
         }
 
         &:checked:before {
@@ -58,7 +59,7 @@
         }
 
         &[disabled]:after {
-            background-color: @grayLight;
+            background-color: @grayLighter;
         }
     });
 });
