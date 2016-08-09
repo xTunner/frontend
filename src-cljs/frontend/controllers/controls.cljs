@@ -398,7 +398,9 @@
 (defmethod control-event :invite-selected-all
   [_ _ _ state]
   (update-in state state/invite-github-users-path (fn [users]
-                                                    (vec (map #(assoc % :checked true) users)))))
+                                                    (vec (map #(if (utils/valid-email? (:email %))
+                                                                 (assoc % :checked true)
+                                                                 %) users)))))
 
 (defmethod post-control-event! :invite-selected-all
   [_ _ _ _ current-state]

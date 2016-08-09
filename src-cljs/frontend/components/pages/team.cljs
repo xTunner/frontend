@@ -1,5 +1,6 @@
 (ns frontend.components.pages.team
   (:require [frontend.api :as api]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
@@ -8,6 +9,7 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.text-input :as text-input]
             [frontend.components.templates.main :as main-template]
+            [frontend.components.invites :as invites]
             [frontend.components.pieces.checkbox :as checkbox]
             [frontend.components.pieces.button :as button]
             [frontend.routes :as routes]
@@ -15,6 +17,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs :as vcs-utils]
+            [goog.string :as gstr]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
 
@@ -66,6 +69,15 @@
                            :project project}))]]
     (assoc user ::follow-count (count (get followings user)))))
 
+(defn invitees
+  "Filters users to invite and returns only fields needed by invitation API"
+  [users]
+  (->> users
+       (filter (fn [u] (and (:email u)
+                            (:checked u))))
+       (map (fn [u] (select-keys u [:email :login :id])))
+       vec))
+
 (defn- main-content [app owner]
   (reify
     om/IInitState
@@ -101,90 +113,100 @@
             selected-org (when selected-org-ident (get-in app selected-org-ident))
             available-orgs (:organizations user)]
         (html
-         [:div {:data-component `page}
-          [:.sidebar
-           (card/basic
-            (if available-orgs
-              (om/build org-picker/picker
-                        {:orgs available-orgs
-                         :selected-org (first (filter #(= selected-org-ident (organization-ident %)) available-orgs))
-                         :on-org-click (fn [{:keys [login vcs_type] :as org}]
-                                         (om/set-state! owner :selected-org-ident (organization-ident org))
-                                         ((om/get-shared owner :track-event) {:event-type :org-clicked
-                                                                              :properties {:view :team
-                                                                                           :login login
-                                                                                           :vcs_type vcs_type}}))})
-              (html [:div.loading-spinner common/spinner])))]
-          [:.main
-           (if-let [[_ [vcs-type name]] selected-org-ident]
-             (card/titled
-              (html
-               [:div
-                name
-                (case vcs-type
-                  "github" [:i.octicon.octicon-mark-github]
-                  "bitbucket" [:i.fa.fa-bitbucket]
-                  nil)
-                (when (:invite-teammates? (om/get-render-state owner))
-                  (component
-                    (modal/modal-dialog {:title "Invite Teammates"
-                                       :body [:div
-                                              "These are the people who are not using CircleCI yet:"
-                                              [:div.constraining-modal
-                                               (om/build table/table {:rows (seq (remove :circle_member (:github-users (:invite-data app))))
-                                                                      :columns [{:header "Username"
-                                                                                 :cell-fn (fn [user-map]
-                                                                                            [:span
-                                                                                             [:img.invite-gravatar {:src (gh-utils/make-avatar-url user-map :size 50)}]
-                                                                                             ;; TODO -ac Uh, these spaces are a hack
-                                                                                             ;; should fix with padding on gravatar
-                                                                                             (str "  " (:login user-map))])}
-                                                                                {:header "Email"
-                                                                                 :cell-fn (fn [user-map]
-                                                                                            (let [{:keys [avatar_url email login index]} user-map
-                                                                                                  id-name (str login "-email")]
-                                                                                              (component
-                                                                                                (om/build text-input/text-input {:input-type "email"
-                                                                                                                                 :on-change #(do
-                                                                                                                                               (utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
-                                                                                                                                               (om/update-state! owner :email (fn [email]
-                                                                                                                                                                                email))
-                                                                                                                                               ;; TODO -ac Hmmm, seems to be delayed by 1 character input - follow up by checking state???
-                                                                                                                                               (.log js/console id-name id-name "email : " email))
-                                                                                                                                 :required? true
-                                                                                                                                 :id id-name
-                                                                                                                                 :value email
-                                                                                                                                 :defaultValue email}))))}
-                                                                                {:type :shrink
-                                                                                 :cell-fn (fn [user-map]
-                                                                                            (let [{:keys [email login index]} user-map
-                                                                                                  id-name (str login "-checkbox")]
-                                                                                              (component
-                                                                                                (om/build checkbox/checkbox {:id id-name
-                                                                                                                             :checked? (not (nil? email))
-                                                                                                                             :on-click #(do
-                                                                                                                                          (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)
-                                                                                                                                          (om/update-state! owner :checked? (fn [checked?]
-                                                                                                                                                                              (not checked?)))
-                                                                                                                                          (.log js/console id-name "checked? : " (om/get-state owner :checked?)))}))))}]})]]
-                                       :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
-                                                 (button/button {:on-click #(.log js/console "Send the emails in this on-click!")
-                                                                 :primary? true} "Send emails")]
-                                       :close-fn #(om/set-state! owner :invite-teammates? false)})))
-                (button/button
-                  {:disabled? (nil? (:users selected-org))
-                   :primary? true
-                   :on-click (fn []
-                               ;; TODO -ac Add tracking back in before merging
-                               #_((om/get-shared owner :track-event)
-                                  {:event-type :invite-teammates-clicked
-                                   :properties {:view :team}})
-                               (om/set-state! owner :invite-teammates? (not (:invite-teammates? (om/get-render-state owner)))))}
-                  "Invite Teammates")])
-              (if-let [users (:users selected-org)]
-                (table (add-follow-counts users (:projects selected-org)))
-                (html [:div.loading-spinner common/spinner])))
-             (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
+          [:div {:data-component `page}
+           [:.sidebar
+            (card/basic
+              (if available-orgs
+                (om/build org-picker/picker
+                          {:orgs available-orgs
+                           :selected-org (first (filter #(= selected-org-ident (organization-ident %)) available-orgs))
+                           :on-org-click (fn [{:keys [login vcs_type] :as org}]
+                                           (om/set-state! owner :selected-org-ident (organization-ident org))
+                                           ((om/get-shared owner :track-event) {:event-type :org-clicked
+                                                                                :properties {:view :team
+                                                                                             :login login
+                                                                                             :vcs_type vcs_type}}))})
+                (html [:div.loading-spinner common/spinner])))]
+           [:.main
+            (if-let [[_ [vcs-type name]] selected-org-ident]
+              (card/titled
+                (html
+                  [:div
+                   name
+                   (case vcs-type
+                     "github" [:i.octicon.octicon-mark-github]
+                     "bitbucket" [:i.fa.fa-bitbucket]
+                     nil)
+                   (when (:invite-teammates? (om/get-render-state owner))
+                     (component
+                       (modal/modal-dialog {:title "Invite Teammates"
+                                            :body
+                                            (let [users (remove :circle_member (:github-users (:invite-data app)))
+                                                  count-users (count users)
+                                                  count-with-email (count (filter #(utils/valid-email? (:email %)) users))
+                                                  count-selected (count (filter #(:checked %) users))
+                                                  ]
+                                              [:div
+                                               [:div
+                                                "These are the people who are not using CircleCI yet:"
+                                                [:br]
+                                                (str count-with-email " of " count-users " users have emails, " count-selected " are selected")
+                                                ;; TODO -ac Delete this before merging?
+                                                ;; [:br]
+                                                ;; (str "(" count-with-email " of " count-users " have emails)")
+                                                ;; [:br]
+                                                ;; (str "(" count-selected  " of "  count-with-email " with emails are selected)")
+                                                ]
+                                               [:div.constraining-modal
+                                                (om/build table/table {:rows users
+                                                                       :columns [{:header "Username"
+                                                                                  :cell-fn (fn [user-map]
+                                                                                             [:span
+                                                                                              [:img.invite-gravatar {:src (gh-utils/make-avatar-url user-map :size 50)}]
+                                                                                              (str "  " (:login user-map))])}
+                                                                                 {:header "Email"
+                                                                                  :cell-fn (fn [user-map]
+                                                                                             (let [{:keys [avatar_url email login index]} user-map
+                                                                                                   id-name (str login "-email")]
+                                                                                               [:span
+                                                                                                (component
+                                                                                                  (om/build text-input/text-input {:input-type "email"
+                                                                                                                                   :on-change #(utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
+                                                                                                                                   :required? true
+                                                                                                                                   :id id-name
+                                                                                                                                   :value email
+                                                                                                                                   :size "small"
+                                                                                                                                   :error? (and (not (empty? email))
+                                                                                                                                                (not (utils/valid-email? email)))
+                                                                                                                                   :defaultValue email}))]))}
+                                                                                 {:type :shrink
+                                                                                  :cell-fn (fn [user-map]
+                                                                                             (let [{:keys [email login index checked]} user-map
+                                                                                                   id-name (str login "-checkbox")]
+                                                                                               (component
+                                                                                                 (om/build checkbox/checkbox {:id id-name
+                                                                                                                              :disabled? (not (utils/valid-email? email))
+                                                                                                                              :checked? checked
+                                                                                                                              :on-click #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}))))}]
+                                                                       :striped? true})]])
+                                            :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
+                                                      (button/button {:on-click #(.log js/console "Send the emails in this on-click!" (seq (invitees (remove :circle_member (:github-users (:invite-data app))))))
+                                                                      :primary? true} "Send emails")]
+                                            :close-fn #(om/set-state! owner :invite-teammates? false)})))
+                   (button/button
+                     {:disabled? (nil? (:users selected-org))
+                      :primary? true
+                      :on-click (fn []
+                                  ;; TODO -ac Add tracking back in before merging
+                                  #_((om/get-shared owner :track-event)
+                                     {:event-type :invite-teammates-clicked
+                                      :properties {:view :team}})
+                                  (om/set-state! owner :invite-teammates? (not (:invite-teammates? (om/get-render-state owner)))))}
+                     "Invite Teammates")])
+                (if-let [users (:users selected-org)]
+                  (table (add-follow-counts users (:projects selected-org)))
+                  (html [:div.loading-spinner common/spinner])))
+              (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
 
 (defn page [app owner]
   (reify
