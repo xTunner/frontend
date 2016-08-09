@@ -8,6 +8,7 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.analytics.core :as analytics]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -74,8 +75,8 @@
 (defn- header-actions
   [data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IRenderState
+    (render-state [_ state]
       (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
             build (get-in data state/build-path)
             build-id (build-model/id build)
@@ -101,7 +102,11 @@
            (when can-write-settings?
              [:div.build-settings
               [:a.build-action
-               {:href (routes/v1-project-settings-path (:navigation-data data))}
+               {:href (routes/v1-project-settings-path (:navigation-data data))
+                :on-click #(analytics/track {:event-type :build-page-project-settings-clicked
+                                             :current-state state
+                                             :properties {:project project
+                                                          :user user}})}
                [:i.material-icons "settings"]
                "Project Settings"]])])))))
 

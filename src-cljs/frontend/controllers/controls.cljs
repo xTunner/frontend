@@ -291,7 +291,11 @@
                                :project-name (vcs-url/project-name vcs-url)
                                :old-container-id previous-container-id
                                :new-container-id container-id}
-                              (get-in current-state [:comms :api]))))))
+                              (get-in current-state [:comms :api])))
+      (analytics/track {:event-type :container-selected
+                        :current-state current-state
+                        :properties {:old-container-id previous-container-id
+                                     :new-container-id container-id}}))))
 
 (defmethod control-event :container-paging-offset-changed
   [target message {:keys [paging-offset]} state]
@@ -312,7 +316,10 @@
     (if-not (and selected-container-in-containers?
                  (seq containers))
       (put! controls-ch [:container-selected {:container-id (:index (first containers))
-                                              :animate? true}]))))
+                                              :animate? true}])))
+  (analytics/track {:event-type :container-filter-changed
+                    :current-state current-state
+                    :properties {:new-filter new-filter}}))
 
 (defmethod control-event :action-log-output-toggled
   [target message {:keys [index step value]} state]
@@ -898,7 +905,9 @@
                :enable-project
                (get-in current-state [:comms :api])
                :context {:project-name project-name
-                         :project-id project-id}))
+                         :project-id project-id})
+  (analytics/track {:event-type :project-enabled
+                    :current-state current-state}))
 
 (defmethod post-control-event! :new-plan-clicked
   [target message {:keys [containers price description linux]} previous-state current-state]

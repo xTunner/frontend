@@ -1,5 +1,6 @@
 (ns frontend.components.build-head
   (:require [clojure.string :as string]
+            [frontend.analytics.core :as analytics]
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.build-config :as build-cfg]
             [frontend.components.build-timings :as build-timings]
@@ -664,8 +665,8 @@
 
 (defn build-sub-head [data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IRenderState
+    (render-state [_ state]
       (let [build-data (:build-data data)
             scopes (:scopes data)
             user (:user data)
@@ -734,12 +735,16 @@
                         (conj {:name :build-parameters :label "Build Parameters"}))]
              (om/build tabs/tab-row {:tabs tabs
                                      :selected-tab-name selected-tab-name
-                                     :on-tab-click #(navigate! owner (routes/v1-build-path
-                                                                      (vcs-url/vcs-type (:vcs_url build))
-                                                                      (:username build)
-                                                                      (:reponame build)
-                                                                      (:build_num build)
-                                                                      (name %)))}))]
+                                     :on-tab-click #(do
+                                                      (navigate! owner (routes/v1-build-path
+                                                                        (vcs-url/vcs-type (:vcs_url build))
+                                                                        (:username build)
+                                                                        (:reponame build)
+                                                                        (:build_num build)
+                                                                        (name %)))
+                                                      (analytics/track {:event-type :build-page-tab-clicked
+                                                                        :current-state state
+                                                                        :properties {:selected-tab-name selected-tab-name}}))}))]
 
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name
@@ -895,7 +900,7 @@
                [:div.summary-item
                 [:span.summary-label "Parallelism: "]
                 [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :build-head-parallelism-clicked
                                                                                            :properties {:repo (project-model/repo-name project)
                                                                                                         :org (project-model/org-name project)}})
                                            :href (build-model/path-for-parallelism build)}
