@@ -983,65 +983,77 @@
 
 (defn ssh-keys [project-data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [project (:project project-data)
             project-id (project-model/id project)
             {:keys [hostname private-key]
              :or {hostname "" private-key ""}} (:new-ssh-key project-data)]
         (html
-         [:section.sshkeys-page
+         [:section
           [:article
-           [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
-           [:div.sshkeys-inner
-            [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
-            [:form
-             [:input#hostname {:required true, :type "text" :value (str hostname)
-                               :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)}]
-             [:label {:placeholder "Hostname"}]
-             [:textarea#privateKey {:required true :value (str private-key)
-                                    :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}]
-             [:label {:placeholder "Private Key"}]
-             (forms/managed-button
-              [:input#submit.btn
-               {:data-failed-text "Failed",
-                :data-success-text "Saved",
-                :data-loading-text "Saving..",
-                :value "Submit",
-                :type "submit"
-                :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
-                                                          :ssh-key {:hostname hostname
-                                                                    :private_key private-key}}])}])]
-            (when-let [ssh-keys (seq (:ssh_keys project))]
-              (om/build table/table
-                        {:rows ssh-keys
-                         :key-fn (comp hash (juxt :hostname :fingerprint))
-                         :columns [{:header "Hostname"
-                                    :cell-fn :hostname}
-                                   {:header "Fingerprint"
-                                    :cell-fn :fingerprint}
-                                   {:header "Remove"
-                                    :type #{:shrink :right}
-                                    :cell-fn (fn [ssh-key]
-                                               (om/build remove-action-button
-                                                         {:confirmation-question
-                                                          (str
-                                                           "Are you sure you want to remove the SSH key \""
-                                                           (:fingerprint ssh-key)
-                                                           "\""
-                                                           (if (:hostname ssh-key)
-                                                             (str
-                                                              " for the hostname \""
-                                                              (:hostname ssh-key)
-                                                              "\"")
-                                                             " for all hosts")
-                                                           "?")
+           (card/titled
+            {:title (str "SSH keys for " (vcs-url/project-name (:vcs_url project)))
+             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                     :primary? true
+                                     :size :medium}
+                                    "Add SSH Key")}
+            (html
+             [:div
+              [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
+              (when show-modal?
+                (let [close-fn #(om/set-state! owner :show-modal? false)]
+                  (modal/modal-dialog
+                   {:title "Add an SSH Key"
+                    :body (html
+                           [:form
+                            [:input#hostname {:required true ,:type "text" :value (str hostname)
+                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)}]
+                            [:label {:placeholder "Hostname"}]
+                            [:textarea#privateKey {:required true :value (str private-key)
+                                                   :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}]
+                            [:label {:placeholder "Private Key"}]])
+                    :actions [(button/button {:on-click close-fn} "Cancel")
+                              (forms/managed-button
+                             [:input.btn.btn-primary
+                              {:data-failed-text "Failed"
+                               :data-success-text "Saved"
+                               :data-loading-text "Saving..."
+                               :value "Add SSH Key"
+                               :type "submit"
+                               :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
+                                                                         :ssh-key {:hostname hostname
+                                                                                   :private_key private-key}
+                                                                         :on-success close-fn}])}])]
+                    :close-fn close-fn})))
+              (when-let [ssh-keys (seq (:ssh_keys project))]
+                (let [remove-key-button
+                      (fn [ssh-key]
+                        (om/build remove-action-button
+                                  {:confirmation-question
+                                   (str "Are you sure you want to remove the SSH key \"" (:fingerprint ssh-key) "\""
+                                        (if (:hostname ssh-key)
+                                          (str " for the hostname \"" (:hostname ssh-key) "\"")
+                                          " for all hosts")
+                                        "?")
 
-                                                          :remove-fn
-                                                          #(raise! owner [:deleted-ssh-key
-                                                                          (-> ssh-key
-                                                                              (select-keys [:hostname :fingerprint])
-                                                                              (assoc :project-id project-id))])}))}]}))]]])))))
+                                   :remove-fn
+                                   #(raise! owner [:deleted-ssh-key (-> ssh-key
+                                                                        (select-keys [:hostname :fingerprint])
+                                                                        (assoc :project-id project-id))])}))]
+                  (om/build table/table
+                            {:rows ssh-keys
+                             :key-fn (comp hash (juxt :hostname :fingerprint))
+                             :columns [{:header "Hostname"
+                                        :cell-fn :hostname}
+                                       {:header "Fingerprint"
+                                        :cell-fn :fingerprint}
+                                       {:header "Remove"
+                                        :type #{:shrink :right}
+                                        :cell-fn remove-key-button}]})))]))]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
