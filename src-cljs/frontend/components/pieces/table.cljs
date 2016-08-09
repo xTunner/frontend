@@ -32,8 +32,9 @@
   :rows    - A sequence of objects which will each generate a row. These will be passed to
              the columns' :cell-fns to generate each cell.
   :key-fn  - A function of a row object which returns a value to use as the React
-             key for the row."
-  [{:keys [columns rows key-fn]} owner]
+             key for the row.
+  :striped - (optional) Adds a .striped class to the table."
+  [{:keys [columns rows key-fn striped? ]} owner]
   {:pre (fn? key-fn)}
   (reify
     om/IRender
@@ -41,7 +42,7 @@
       (component
         (html
          [:table
-          [:thead
+          [:thead {:class (when striped? "striped")}
            [:tr
             (for [[idx {:keys [header type]}] (map-indexed vector columns)]
               ;; We never reorder columns in a table, so the index works as a

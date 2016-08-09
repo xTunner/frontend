@@ -44,6 +44,19 @@
       }
     }
 
+    &.striped {
+      border-color: 1px solid @grayLight;
+      > thead {
+        background-color: @grayLight;
+      }
+      > tbody > tr:nth-child(even) {
+        background-color: @grayLighter;
+      }
+      > tbody > tr:nth-child(odd) {
+        background-color: @whiten;
+      }
+    }
+
     > tbody > tr:hover {
       background-color: rgba(80, 198, 221, 0.04);
     }
