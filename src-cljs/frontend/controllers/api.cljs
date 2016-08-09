@@ -557,6 +557,7 @@
 (defmethod post-api-event! [:save-ssh-key :success]
   [target message status {:keys [context resp]} previous-state current-state]
   (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
+    ((:on-success context))
     (let [project-name (vcs-url/project-name (:project-id context))
           api-ch (get-in current-state [:comms :api])
           vcs-type (vcs-url/vcs-type (:project-id context))

@@ -1026,7 +1026,8 @@
                                :type "submit"
                                :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
                                                                          :ssh-key {:hostname hostname
-                                                                                   :private_key private-key}}])}])]
+                                                                                   :private_key private-key}
+                                                                         :on-success close-fn}])}])]
                     :close-fn close-fn})))
               (when-let [ssh-keys (seq (:ssh_keys project))]
                 (let [remove-key-button

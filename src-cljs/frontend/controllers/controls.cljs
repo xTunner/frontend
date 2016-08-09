@@ -740,7 +740,7 @@
 
 
 (defmethod post-control-event! :saved-ssh-key
-  [target message {:keys [project-id ssh-key]} previous-state current-state]
+  [target message {:keys [project-id ssh-key on-success]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
@@ -749,7 +749,8 @@
                  :save-ssh-key
                  api-ch
                  :params ssh-key
-                 :context {:project-id project-id})))
+                 :context {:project-id project-id
+                           :on-success on-success})))
 
 
 (defmethod post-control-event! :deleted-ssh-key
