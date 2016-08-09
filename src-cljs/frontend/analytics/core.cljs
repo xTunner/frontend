@@ -28,11 +28,15 @@
   #{:account-settings-clicked
     :add-more-containers-clicked
     :add-project-clicked
+    :aside-project-settings-clicked
     :authorize-vcs-clicked
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
     :branch-clicked
+    :build-head-parallelism-clicked
+    :build-page-project-settings-clicked
+    :build-page-tab-clicked
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
     :build-link-clicked
@@ -40,6 +44,8 @@
     :build-timing-upsell-impression
     :cancel-plan-clicked
     :change-image-clicked
+    :container-filter-changed
+    :container-selected
     :dismiss-trial-offer-banner-clicked
     :insights-bar-clicked
     :invite-teammates-clicked
@@ -55,7 +61,7 @@
     :pr-link-clicked
     :project-branch-changed
     :project-clicked
-    :project-settings-clicked
+    :project-enabled
     :revision-link-clicked
     :select-plan-clicked
     :set-up-junit-clicked
