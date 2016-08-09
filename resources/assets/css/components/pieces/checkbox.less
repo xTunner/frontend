@@ -1,11 +1,11 @@
 .ns("frontend.components.pieces.checkbox", {
-  .ui("checkbox", {
-    // A lot of this styling borrowed from:
-    // http://fezvrasta.github.io/bootstrap-material-design/#checkbox
-    @checkbox-size: 20px;
-    user-select: none;
-    color: blue;
-    position: relative;
+    .ui("checkbox", {
+        // A lot of this styling borrowed from:
+        // http://fezvrasta.github.io/bootstrap-material-design/#checkbox
+        @checkbox-size: 20px;
+        user-select: none;
+        color: blue;
+        position: relative;
 
         &:focus:after {
             border-color: @blueLight;
@@ -25,38 +25,41 @@
                 width             .20s   .1s;
             }
 
-    &:before, &:after {
-      content: '';
-      left: 0;
-      position: absolute;
-      margin-top:       -5px;
-      transition:
-      border            .25s,
-      background-color  .25s,
-      height            .20s   .1s,
-      left              .20s   .1s,
-      top               .20s   .1s,
-      width             .20s   .1s;
-    }
+        &:after {
+            color: transparent;
+            background-color: @white;
+            top: 0;
+            width: @checkbox-size;
+            height: @checkbox-size;
+            border-radius: 3px;
+            border: 2px solid @black;
+            z-index: 0;
+            margin-left: -5px;
+        }
 
-    &:after {
-      color: transparent;
-      background-color: @white;
-      top: 0;
-      width: @checkbox-size;
-      height: @checkbox-size;
-      border-radius: 3px;
-      border: 2px solid @black;
-      z-index: 0;
-      margin-left: -5px;
-    }
+        &:checked:after {
+            // background-color: @blueDark;
+            background-color: @green;
+        }
 
-    &:checked:after {
-      background-color: @green;
-    }
+        &:checked:before {
+            content: ' ';
+            top: 0;
+            left: 1px;
+            width: 8px;
+            height: 13px;
+            border-top: 2px solid transparent;
+            border-left: 2px solid transparent;
+            // Make the checkmark
+            @checkmark-color: @white;
+            border-right: 2px solid @checkmark-color;
+            border-bottom: 2px solid @checkmark-color;
+            transform: rotateZ(37deg);
+            z-index: 1;
+        }
 
         &[disabled]:after {
-            background-color: @grayLight;
+            background-color: @grayLighter;
         }
     });
 });

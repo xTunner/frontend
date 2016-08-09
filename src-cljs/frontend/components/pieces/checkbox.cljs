@@ -9,19 +9,18 @@
   "This little checkbox component is useful for providing a consistent,
   completely styled checkbox input field.
 
-  :id           - (optional) A unique ID for the checkbox
+  :id       - (optional) A unique ID for the checkbox
 
-  :defaultValue - (optional) A value to use as the default checked state
+  :value    - (optional) Used to provide
 
-  :value        - (optional) Used to provide
+  :on-click - A funciton that toggles the value of :checked.
 
-  :on-click     - A funciton that toggles the value of :checked.
+  :checked? - Used for both the :defaultChecked and :checked properties, this
+              should often be used in conjunction with :on-click, to toggle
+              :checked? on each click.
 
-  :checked?     - Used with the :checked property, this should often be used in
-                  conjunction with :on-click, to toggle :checked? on each click.
-
-  disabled?     - (optional) Boolean for setting the checkbox to a disabled state."
-  [{:keys [id defaultValue value on-click checked? disabled?] :or {}} owner]
+  disabled? - (optional) Boolean for setting the checkbox to a disabled state."
+  [{:keys [id value on-click checked? disabled?] :or {}} owner]
   (reify
     om/IInitState
     (init-state [_]
