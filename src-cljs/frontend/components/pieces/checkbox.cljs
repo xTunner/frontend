@@ -32,7 +32,7 @@
         (html
           [:input {:id id
                    :value value
-                   :defaultChecked defaultValue
+                   :defaultChecked (:checked? state)
                    :checked checked?
                    :disabled disabled?
                    :type "checkbox"
