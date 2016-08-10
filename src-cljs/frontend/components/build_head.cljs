@@ -664,8 +664,8 @@
 
 (defn build-sub-head [data owner]
   (reify
-    om/IRenderState
-    (render-state [_ state]
+    om/IRender
+    (render [_]
       (let [build-data (:build-data data)
             scopes (:scopes data)
             user (:user data)
@@ -742,7 +742,6 @@
                                                                         (:build_num build)
                                                                         (name %)))
                                                       ((om/get-shared owner :track-event) {:event-type :build-page-tab-clicked
-                                                                                           :current-state state
                                                                                            :properties {:selected-tab-name selected-tab-name}}))}))]
 
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
