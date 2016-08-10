@@ -10,7 +10,7 @@
 
 (defn text-input
   "<DOC STRING GOES here>."
-  [{:keys [input-type on-change id value defaultvVlue size error? disabled? required?] :or {:input-type "text"
+  [{:keys [input-type on-change id value defaultValue size error? long? disabled? required?] :or {:input-type "text"
                                                                                      :size "medium"}}
    owner]
   (reify
